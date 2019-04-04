@@ -18,7 +18,7 @@ interface IProps {
 class BookCard extends React.Component<IProps> {
   render() {
     return (
-      <CheapCard>
+      <CheapCard onClick={() => {}}>
         <div
           className={cx(
             image,

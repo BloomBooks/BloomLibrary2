@@ -27,3 +27,7 @@ h2 {
   font-size: 12pt;
   font-weight: bold;
 }
+
+ul {
+  list-style: none;
+}
