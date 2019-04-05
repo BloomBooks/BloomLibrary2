@@ -24,7 +24,7 @@ class CheapCard extends React.Component<IProps> {
 const cardStyle = css`
   width: 120px;
   height: 170px;
-  margin: 5px;
+  margin-right: 5px;
   background-color: white;
   border-radius: 4px;
 
@@ -32,7 +32,12 @@ const cardStyle = css`
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   &:hover {
     box-shadow: 0 4px 5px rgba(0, 0, 0, 0.25), 0 4px 5px rgba(0, 0, 0, 0.22);
+    background-color: lightgray;
   }
+
+  /* for on dark background*/
+  border: solid white;
+  box-sizing: border-box;
 `;
 
 export default CheapCard;

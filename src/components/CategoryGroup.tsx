@@ -22,9 +22,21 @@ class CategoryGroup extends React.Component<IProps> {
             padding-left: 0;
           `}
         >
-          <CategoryCard title="Africa Storybook Project" bookCount="100" query="publisher='ASP'"/>
-          <CategoryCard title="Pratham Books" bookCount="50"  query="publisher='Pratham'"/>
-          <CategoryCard title="Book Dash" bookCount="20"  query="publisher='BookDash'"/>
+          <CategoryCard
+            title="Africa Storybook Project"
+            bookCount="100"
+            query={{ publisher: "ASP" }}
+          />
+          <CategoryCard
+            title="Pratham Books"
+            bookCount="50"
+            query={{ publisher: "Pratham", lang: "en" }}
+          />
+          <CategoryCard
+            title="Book Dash"
+            bookCount="20"
+            query={{ publisher: "BookDash" }}
+          />
         </ul>
       </li>
     );

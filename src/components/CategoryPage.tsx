@@ -6,12 +6,12 @@ import { observer, Observer } from "mobx-react";
 @observer
 class CategoryPage extends Component {
   render() {
-    return (    
-    <div>
-      <h1>Category Page</h1>
-      <BookGroup title="Books in this category" />
-      <CategoryGroup title="Some kind of subcategory" />
-    </div>);
+    return (
+      <ul>
+        <BookGroup title="Books in this category" />
+        <CategoryGroup title="Some kind of subcategory" />
+      </ul>
+    );
   }
 }
 
