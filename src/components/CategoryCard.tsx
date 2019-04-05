@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { css, cx } from "emotion";
 import CheapCard from "./CheapCard";
-import { BrowseContextConsumer } from "./BrowseContext";
+import { RouterConsumer } from "../BlorgRouter";
 
 interface IProps {
   title: string;
@@ -12,13 +12,13 @@ interface IProps {
 class CategoryCard extends React.Component<IProps> {
   render() {
     return (
-      <BrowseContextConsumer>
-        {browseContext =>
-          browseContext && (
+      <RouterConsumer>
+        {router =>
+          router && (
             <CheapCard
               onClick={() => {
                 //alert("click " + this.props.title);
-                browseContext.push({
+                router.push({
                   title: this.props.title,
                   pageType: "category",
                   filter: this.props.query
@@ -36,7 +36,7 @@ class CategoryCard extends React.Component<IProps> {
             </CheapCard>
           )
         }
-      </BrowseContextConsumer>
+      </RouterConsumer>
     );
   }
 }

@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import { observer, Observer } from "mobx-react";
-import { BrowseContextProvider, BrowseContext } from "./BrowseContext";
+import { RouterProvider, BlorgRouter } from "../BlorgRouter";
 import HomePage from "./HomePage";
 import CategoryPage from "./CategoryPage";
 import { css } from "emotion";
 @observer
 class BrowseView extends Component {
-  private browseContext = new BrowseContext();
+  private browseContext = new BlorgRouter();
 
   private currentPage() {
     switch (this.browseContext.current.pageType) {
@@ -29,11 +29,11 @@ class BrowseView extends Component {
   render() {
     document.title = `Bloom Library: ${this.browseContext.current.title}`;
     return (
-      <BrowseContextProvider value={this.browseContext}>
+      <RouterProvider value={this.browseContext}>
         {/* <h1>{this.browseContext.currentPageType()}</h1> */}
         {this.breadcrumbs()}
         {this.currentPage()}
-      </BrowseContextProvider>
+      </RouterProvider>
     );
   }
 }

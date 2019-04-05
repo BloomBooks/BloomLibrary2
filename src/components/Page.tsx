@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import BookGroup from "./BookGroup";
 import { css, cx } from "emotion";
 import CategoryGroup from "./CategoryGroup";
-import { BrowseContextConsumer } from "./BrowseContext";
+import { RouterConsumer } from "../BlorgRouter";
 import { observer, Observer } from "mobx-react";
 
 @observer
@@ -11,7 +11,7 @@ class Page extends Component {
     return (
       //kind of a mess. See https://github.com/mobxjs/mobx-react/issues/471
       // can revisit when we try to use hooks and mobx-react-lite
-      <BrowseContextConsumer>
+      <RouterConsumer>
         {browseContext =>
           browseContext && (
             <Observer>
@@ -32,7 +32,7 @@ class Page extends Component {
             </Observer>
           )
         }
-      </BrowseContextConsumer>
+      </RouterConsumer>
     );
   }
 }
