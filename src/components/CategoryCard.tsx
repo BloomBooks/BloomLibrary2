@@ -6,6 +6,7 @@ import { BrowseContextConsumer } from "./BrowseContext";
 interface IProps {
   title: string;
   bookCount?: string;
+  query: string;
 }
 
 class CategoryCard extends React.Component<IProps> {
@@ -19,7 +20,8 @@ class CategoryCard extends React.Component<IProps> {
                 //alert("click " + this.props.title);
                 browseContext.push({
                   label: this.props.title,
-                  pageType: "category"
+                  pageType: "category",
+                  query:this.props.query
                 });
               }}
             >

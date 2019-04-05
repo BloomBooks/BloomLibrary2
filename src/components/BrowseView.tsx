@@ -21,7 +21,7 @@ class BrowseView extends Component {
     return (
       <ul>
         {this.browseContext.locationStack.map(l => (
-          <li>{l.label}</li>
+          <li key={l.label}>{l.label}</li>
         ))}
       </ul>
     );
