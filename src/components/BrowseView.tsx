@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { observer, Observer } from "mobx-react";
 import { RouterProvider, BlorgRouter } from "../BlorgRouter";
-import HomePage from "./HomePage";
+import { HomePage } from "./HomePage";
 import CategoryPage from "./CategoryPage";
 import { css } from "emotion";
 @observer
