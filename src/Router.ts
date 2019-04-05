@@ -8,15 +8,21 @@ interface ILocation {
   pageType: string;
   filter: {};
 }
+// This is a super simple router based on a stack of "locations" (page descriptors)
+// That stack is a mobx observable, so that the UI can redraw when the top of the stack changes.
 export class Router {
   @observable public locationStack: ILocation[] = new Array<ILocation>();
 
   public constructor() {
+    const home = { title: "Home", pageType: "home", filter: "" };
     if (window.location.search == "") {
-      // no filter
-      this.push({ title: "Home", pageType: "home", filter: "" });
+      // we're just at the root of the site
+      this.push(home);
     } else {
+      // we've been given a url describing something beyond the home page
       const queryWithoutQuestionMark = window.location.search.substr(1, 99999);
+      this.push(home); // so that the breadcrumb starts with Home
+
       this.push(qs.parse(queryWithoutQuestionMark));
     }
     window.onpopstate = event => {
@@ -24,7 +30,9 @@ export class Router {
       // to show our breadcrumbs. We solve this by supplying the browser's History API with our location stack every time we go deeper.
       // So now, we can just retrieve that stack from this event and make it our new location stack.
       // Since locationStack is a mobx observed object, don't just replace it, operate on it
-      this.locationStack.splice(0, this.locationStack.length, ...event.state);
+      if (event.state) {
+        this.locationStack.splice(0, this.locationStack.length, ...event.state);
+      }
     };
   }
 
@@ -32,7 +40,7 @@ export class Router {
     return this.locationStack[this.locationStack.length - 1];
   }
   public goToBreadCrumb(location: ILocation): void {
-    // We could just literaly adopt this location, but then we would lose any preceding breadcrumbs.
+    // We could just literally adopt this location, but then we would lose any preceding breadcrumbs.
     // Instead, we want to pop items off the stack until we get to it.
     while (this.current != location) {
       this.locationStack.pop();
