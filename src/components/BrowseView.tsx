@@ -1,15 +1,16 @@
 import React, { Component } from "react";
-import { observer, Observer } from "mobx-react";
-import { RouterProvider, BlorgRouter } from "../BlorgRouter";
+import { observer } from "mobx-react";
+import { BlorgRouter, RouterContext } from "../BlorgRouter";
 import { HomePage } from "./HomePage";
 import CategoryPage from "./CategoryPage";
 import { css } from "emotion";
+
 @observer
 class BrowseView extends Component {
-  private browseContext = new BlorgRouter();
+  private router = new BlorgRouter();
 
   private currentPage() {
-    switch (this.browseContext.current.pageType) {
+    switch (this.router.current.pageType) {
       case "home":
         return <HomePage />;
       case "category":
@@ -20,20 +21,27 @@ class BrowseView extends Component {
   private breadcrumbs() {
     return (
       <ul className={breadcrumbsStyle}>
-        {this.browseContext.locationStack.map(l => (
-          <li key={l.title}>{l.title}</li>
+        {this.router.locationStack.map(l => (
+          <li key={l.title}>
+            <a
+              onClick={() => {
+                this.router.goToBreadCrumb(l);
+              }}
+            >
+              {l.title}
+            </a>
+          </li>
         ))}
       </ul>
     );
   }
   render() {
-    document.title = `Bloom Library: ${this.browseContext.current.title}`;
+    document.title = `Bloom Library: ${this.router.current.title}`;
     return (
-      <RouterProvider value={this.browseContext}>
-        {/* <h1>{this.browseContext.currentPageType()}</h1> */}
+      <RouterContext.Provider value={this.router}>
         {this.breadcrumbs()}
         {this.currentPage()}
-      </RouterProvider>
+      </RouterContext.Provider>
     );
   }
 }

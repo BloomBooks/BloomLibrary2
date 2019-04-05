@@ -31,6 +31,13 @@ export class BlorgRouter {
   public get current() {
     return this.locationStack[this.locationStack.length - 1];
   }
+  public goToBreadCrumb(location: ILocation): void {
+    // We could just literaly adopt this location, but then we would lose any preceding breadcrumbs.
+    // Instead, we want to pop items off the stack until we get to it.
+    while (this.current != location) {
+      this.locationStack.pop();
+    }
+  }
 
   public push(location: ILocation) {
     this.locationStack.push(location);
@@ -42,7 +49,4 @@ export class BlorgRouter {
   }
 }
 
-const context = React.createContext<BlorgRouter | null>(null);
-export const RouterContext = context;
-export const RouterProvider = context.Provider;
-export const RouterConsumer = context.Consumer;
+export const RouterContext = React.createContext<BlorgRouter | null>(null);

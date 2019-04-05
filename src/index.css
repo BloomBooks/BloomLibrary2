@@ -38,3 +38,8 @@ ul {
 .App {
   margin-left: 10px;
 }
+
+a:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
