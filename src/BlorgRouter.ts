@@ -43,5 +43,6 @@ export class BlorgRouter {
 }
 
 const context = React.createContext<BlorgRouter | null>(null);
+export const RouterContext = context;
 export const RouterProvider = context.Provider;
 export const RouterConsumer = context.Consumer;
