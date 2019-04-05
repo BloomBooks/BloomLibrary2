@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import { observer } from "mobx-react";
-import { BlorgRouter, RouterContext } from "../BlorgRouter";
+import { Router, RouterContext } from "../Router";
 import { HomePage } from "./HomePage";
 import CategoryPage from "./CategoryPage";
 import { css } from "emotion";
 
 @observer
 class BrowseView extends Component {
-  private router = new BlorgRouter();
+  private router = new Router();
 
   private currentPage() {
     switch (this.router.current.pageType) {

@@ -1,7 +1,7 @@
 import React, { Component, useContext } from "react";
 import BookGroup from "./BookGroup";
 import CategoryGroup from "./CategoryGroup";
-import { RouterContext } from "../BlorgRouter";
+import { RouterContext } from "../Router";
 import mobx from "mobx-react";
 
 const Page: React.SFC = props => {

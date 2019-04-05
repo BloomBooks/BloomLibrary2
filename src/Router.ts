@@ -8,7 +8,7 @@ interface ILocation {
   pageType: string;
   filter: {};
 }
-export class BlorgRouter {
+export class Router {
   @observable public locationStack: ILocation[] = new Array<ILocation>();
 
   public constructor() {
@@ -49,4 +49,4 @@ export class BlorgRouter {
   }
 }
 
-export const RouterContext = React.createContext<BlorgRouter | null>(null);
+export const RouterContext = React.createContext<Router | null>(null);
