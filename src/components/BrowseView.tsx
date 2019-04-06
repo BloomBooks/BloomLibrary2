@@ -2,11 +2,16 @@ import React, { Component } from "react";
 import { observer } from "mobx-react";
 import { Router, RouterContext } from "../Router";
 import { HomePage } from "./HomePage";
-import CategoryPage from "./CategoryPage";
-import { css } from "emotion";
+import {
+  CategoryPage,
+  PrathamPage,
+  AfricaStoryBookPage,
+  BookDashPage
+} from "./CategoryPage";
+import { Breadcrumbs } from "./Breadcrumbs";
 
 @observer
-class BrowseView extends Component {
+export class BrowseView extends Component {
   private router = new Router();
 
   private currentPage() {
@@ -14,53 +19,26 @@ class BrowseView extends Component {
       case "home":
         return <HomePage />;
       case "category":
-        return <CategoryPage />;
-        break;
+        if (this.router.current.filter.publisher) {
+          switch (this.router.current.filter.publisher) {
+            case "Pratham":
+              return <PrathamPage />;
+            case "ASP":
+              return <AfricaStoryBookPage />;
+            case "BookDash":
+              return <BookDashPage />;
+          }
+        } else return <CategoryPage />;
     }
   }
-  private breadcrumbs() {
-    return (
-      <ul className={breadcrumbsStyle}>
-        {this.router.locationStack.map(l => (
-          <li key={l.title}>
-            <a
-              onClick={() => {
-                this.router.goToBreadCrumb(l);
-              }}
-            >
-              {l.title}
-            </a>
-          </li>
-        ))}
-      </ul>
-    );
-  }
+
   render() {
     document.title = `Bloom Library: ${this.router.current.title}`;
     return (
       <RouterContext.Provider value={this.router}>
-        {this.breadcrumbs()}
+        <Breadcrumbs />
         {this.currentPage()}
       </RouterContext.Provider>
     );
   }
 }
-const breadcrumbsStyle = css`
-  display: flex;
-  padding: 0;
-  li {
-    margin-right: 3px;
-    color: whitesmoke;
-    &:after {
-      margin-left: 3px;
-      margin-right: 3px;
-      content: "›";
-    }
-  }
-
-  li:last-child::after {
-    color: transparent;
-  }
-`;
-
-export default BrowseView;

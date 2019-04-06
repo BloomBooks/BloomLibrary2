@@ -1,25 +1,21 @@
-import React, { Component } from "react";
+import React from "react";
 import { css, cx } from "emotion";
 
 interface IProps {
   onClick: () => void;
 }
 
-class CheapCard extends React.Component<IProps> {
-  render() {
-    return (
-      <li
-        className={cardStyle}
-        onClick={() => {
-          this.props.onClick();
-          //   this.props.browseState.push(this.props.target);
-        }}
-      >
-        {this.props.children}
-      </li>
-    );
-  }
-}
+export const CheapCard: React.SFC<IProps> = props => (
+  <li
+    className={cardStyle}
+    onClick={() => {
+      props.onClick();
+      //   this.props.browseState.push(this.props.target);
+    }}
+  >
+    {props.children}
+  </li>
+);
 
 const cardStyle = css`
   width: 120px;
@@ -39,5 +35,3 @@ const cardStyle = css`
   border: solid white;
   box-sizing: border-box;
 `;
-
-export default CheapCard;

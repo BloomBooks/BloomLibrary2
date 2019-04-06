@@ -1,3 +1,9 @@
+html,
+body,
+#root,
+.App {
+  height: 100%;
+}
 body {
   margin: 0;
   padding: 0;
@@ -36,7 +42,7 @@ ul {
 }
 
 .App {
-  margin-left: 10px;
+  margin-left: 0;
 }
 
 a:hover {

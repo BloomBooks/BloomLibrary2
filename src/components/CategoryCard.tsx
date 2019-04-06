@@ -1,6 +1,6 @@
 import React, { Component, useContext } from "react";
 import { css, cx } from "emotion";
-import CheapCard from "./CheapCard";
+import { CheapCard } from "./CheapCard";
 import { RouterContext } from "../Router";
 
 interface IProps {

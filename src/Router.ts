@@ -3,10 +3,13 @@ import { observable } from "mobx";
 import qs from "qs";
 import * as mobx from "mobx";
 
+interface IFilter {
+  publisher?: string;
+}
 interface ILocation {
   title: string;
   pageType: string;
-  filter: {};
+  filter: IFilter;
 }
 // This is a super simple router based on a stack of "locations" (page descriptors)
 // That stack is a mobx observable, so that the UI can redraw when the top of the stack changes.
@@ -14,7 +17,7 @@ export class Router {
   @observable public locationStack: ILocation[] = new Array<ILocation>();
 
   public constructor() {
-    const home = { title: "Home", pageType: "home", filter: "" };
+    const home = { title: "Home", pageType: "home", filter: {} };
     if (window.location.search == "") {
       // we're just at the root of the site
       this.push(home);
@@ -39,6 +42,7 @@ export class Router {
   public get current() {
     return this.locationStack[this.locationStack.length - 1];
   }
+
   public goToBreadCrumb(location: ILocation): void {
     // We could just literally adopt this location, but then we would lose any preceding breadcrumbs.
     // Instead, we want to pop items off the stack until we get to it.
@@ -48,7 +52,9 @@ export class Router {
   }
 
   public push(location: ILocation) {
+    // This will be noticed by the observing view, causing us to move to this location.
     this.locationStack.push(location);
+    // Enter this location in the browser's history.
     window.history.pushState(
       mobx.toJS(this.locationStack),
       this.current.title,

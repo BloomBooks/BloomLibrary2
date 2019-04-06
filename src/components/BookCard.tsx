@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { css, cx } from "emotion";
-import CheapCard from "./CheapCard";
+import { CheapCard } from "./CheapCard";
 
 const image = css`
   height: 100px;
