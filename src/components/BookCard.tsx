@@ -11,29 +11,32 @@ const image = css`
 `;
 
 interface IProps {
-  title: string;
-  imageUrl: string;
+  // title: string;
+  // imageUrl: string;
+  book: any;
 }
 
 class BookCard extends React.Component<IProps> {
   render() {
     return (
       <CheapCard onClick={() => {}}>
-        <div
-          className={cx(
-            image,
-            css({
-              backgroundImage: `url('${this.props.imageUrl}')`
-            })
-          )}
+        {/* For (39a) Lara the Yellow Ladybird I placed a file named "test-cover" in the bucket
+        in order to play with how the cards can look once we have access to their actual cover images. */}
+        <img
+          src={this.props.book.baseUrl + "test-cover.jpg"} // we would have to generate new thumbnails that just have the image shown on the cover
+          onError={ev => {
+            (ev.target as any).src =
+              this.props.book.baseUrl + "thumbnail-70.png";
+          }}
         />
+
         <h2
           className={css`
             font-weight: normal;
             padding-left: 10px;
           `}
         >
-          {this.props.title}
+          {this.props.book.title}
         </h2>
       </CheapCard>
     );
