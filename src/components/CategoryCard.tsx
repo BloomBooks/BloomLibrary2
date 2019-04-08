@@ -26,11 +26,12 @@ const CategoryCard: React.SFC<IProps> = props => {
       <h2
         className={css`
           text-align: center;
+          flex-grow: 1; // push the rest to the bottom5
         `}
       >
         {props.title}
       </h2>
-      {props.bookCount ? `${props.bookCount} Books` : ""}
+      <div>{props.bookCount ? `${props.bookCount} Books` : ""}</div>
     </CheapCard>
   );
 };

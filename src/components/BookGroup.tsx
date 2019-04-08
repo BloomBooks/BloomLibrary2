@@ -37,7 +37,11 @@ export const BookGroup: React.SFC<IProps> = props => {
   const books: Array<Object> = response["data"]["results"];
   console.log(books);
   return (
-    <li>
+    <li
+      className={css`
+        margin-top: 30px;
+      `}
+    >
       <h1>{props.title}</h1>
       <ul
         className={css`

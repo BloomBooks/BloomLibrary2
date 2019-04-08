@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import BookCard from "./BookCard";
 import { css, cx } from "emotion";
 import CategoryCard from "./CategoryCard";
 
@@ -8,7 +7,11 @@ interface IProps {
 }
 
 export const CategoryGroup: React.SFC<IProps> = props => (
-  <li>
+  <li
+    className={css`
+      margin-top: 30px;
+    `}
+  >
     <h1>{props.title}</h1>
     <ul
       className={css`

@@ -19,6 +19,10 @@ export const CheapCard: React.SFC<IProps> = props => (
 
 const cardStyle = css`
   width: 120px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+
   height: 170px;
   margin-right: 5px;
   background-color: white;

@@ -23,10 +23,14 @@ class BookCard extends React.Component<IProps> {
         {/* For (39a) Lara the Yellow Ladybird I placed a file named "test-cover" in the bucket
         in order to play with how the cards can look once we have access to their actual cover images. */}
         <img
+          className={css`
+            height: 100px;
+            object-fit: contain;
+          `}
           src={this.props.book.baseUrl + "test-cover.jpg"} // we would have to generate new thumbnails that just have the image shown on the cover
           onError={ev => {
             (ev.target as any).src =
-              this.props.book.baseUrl + "thumbnail-70.png";
+              this.props.book.baseUrl + "thumbnail-256.png";
           }}
         />
 
@@ -34,6 +38,8 @@ class BookCard extends React.Component<IProps> {
           className={css`
             font-weight: normal;
             padding-left: 10px;
+            max-height: 40px;
+            overflow-y: hidden;
           `}
         >
           {this.props.book.title}
