@@ -24,9 +24,11 @@ export class Router {
     } else {
       // we've been given a url describing something beyond the home page
       const queryWithoutQuestionMark = window.location.search.substr(1, 99999);
-      this.push(home); // so that the breadcrumb starts with Home
-
-      this.push(qs.parse(queryWithoutQuestionMark));
+      const location = qs.parse(queryWithoutQuestionMark) as ILocation;
+      if (location && location.pageType != "home") {
+        this.push(home); // so that the breadcrumb starts with Home
+      }
+      this.push(location);
     }
     window.onpopstate = event => {
       // So, the user did a browser BACK or FORWARD...something. The  current url can tell us what to show, but not how
