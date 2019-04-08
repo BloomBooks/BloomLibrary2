@@ -5,13 +5,15 @@ import "./App.css";
 import { BrowseView } from "./components/BrowseView";
 
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <BrowseView />
-      </div>
-    );
-  }
+    render() {
+        return (
+            <React.StrictMode>
+                <div className="App">
+                    <BrowseView />
+                </div>
+            </React.StrictMode>
+        );
+    }
 }
 
 export default App;

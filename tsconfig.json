@@ -1,20 +1,19 @@
 {
   "compilerOptions": {
-    "experimentalDecorators": true,
     "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
+    "module": "commonjs",
+    "sourceMap": true,
+    "jsx": "react",
+    "lib": ["dom", "es5", "scripthost", "es2017.object"],
     "allowSyntheticDefaultImports": true,
-    "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "preserve"
+    "experimentalDecorators": true,
+    "alwaysStrict": true,
+    "noImplicitReturns": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "outDir": "../../output/browser",
+    "resolveJsonModule": true
   },
-  "include": ["src"]
+  "exclude": ["node_modules", "typings"]
 }
