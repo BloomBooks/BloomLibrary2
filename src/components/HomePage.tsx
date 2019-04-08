@@ -1,5 +1,5 @@
 import React from "react";
-import BookGroup from "./BookGroup";
+import { BookGroup } from "./BookGroup";
 import CategoryGroup from "./CategoryGroup";
 import { css } from "emotion";
 
@@ -15,8 +15,11 @@ const homePage = css`
 
 export const HomePage: React.SFC = () => (
   <ul className={homePage}>
-    <BookGroup title="Featured Shell Books You Can Translate" />
-    <BookGroup title="Local Language &amp; Culture Books" />
+    <BookGroup
+      title="Featured Shell Books You Can Translate"
+      filter={{ tags: "bookshelf:Featured" }}
+    />
+    <BookGroup title="New Arrivals" filter={{}} order={"-createdAt"} />
     <CategoryGroup title="Publishers" />
   </ul>
 );
