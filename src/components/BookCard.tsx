@@ -11,12 +11,11 @@ const image = css`
 `;
 
 interface IProps {
-    // title: string;
-    // imageUrl: string;
-    book: any;
+    title: string;
+    baseUrl: string;
 }
 
-class BookCard extends React.Component<IProps> {
+export class BookCard extends React.Component<IProps> {
     render() {
         return (
             <CheapCard
@@ -32,10 +31,10 @@ class BookCard extends React.Component<IProps> {
                         height: 100px;
                         object-fit: cover; //cover will crop, but fill up nicely
                     `}
-                    src={this.props.book.baseUrl + "test-cover.jpg"} // we would have to generate new thumbnails that just have the image shown on the cover
+                    src={this.props.baseUrl + "test-cover.jpg"} // we would have to generate new thumbnails that just have the image shown on the cover
                     onError={ev => {
                         (ev.target as any).src =
-                            this.props.book.baseUrl + "thumbnail-256.png";
+                            this.props.baseUrl + "thumbnail-256.png";
                     }}
                 />
 
@@ -47,11 +46,9 @@ class BookCard extends React.Component<IProps> {
                         overflow-y: hidden;
                     `}
                 >
-                    {this.props.book.title}
+                    {this.props.title}
                 </h2>
             </CheapCard>
         );
     }
 }
-
-export default BookCard;

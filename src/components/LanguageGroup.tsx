@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import BookCard from "./BookCard";
+import { BookCard } from "./BookCard";
 import { css, cx } from "emotion";
 import useAxios from "@use-hooks/axios";
 import { LanguageCard } from "./LanguageCard";

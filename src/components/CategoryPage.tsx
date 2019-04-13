@@ -5,70 +5,70 @@ import { css, cx } from "emotion";
 import { PublisherBanner } from "./PublisherBanner";
 
 export const CategoryPage: React.SFC = () => (
-  <ul style={{ backgroundColor: "grey" }}>
-    <BookGroup
-      title="Books in this category"
-      filter='{ tags: "bookshelf:Featured" }'
-    />
-    <CategoryGroup title="Some kind of subcategory" />
-  </ul>
+    <ul style={{ backgroundColor: "grey" }}>
+        <BookGroup
+            title="Books in this category"
+            filter={{ tags: "bookshelf:Featured" }}
+        />
+        <CategoryGroup title="Some kind of subcategory" />
+    </ul>
 );
 
 const blackOnWhite = css`
-  background-color: white;
-  height: 100%;
-  & h1 {
-    color: black;
-  }
-  padding-left: 20px;
-  padding-top: 20px;
+    background-color: white;
+    height: 100%;
+    & h1 {
+        color: black;
+    }
+    padding-left: 20px;
+    padding-top: 20px;
 `;
 
 export const AfricaStoryBookPage: React.SFC = () => {
-  return (
-    <div className={blackOnWhite}>
-      <PublisherBanner logoUrl="https://upload.wikimedia.org/wikipedia/en/thumb/5/5a/African_Storybook_logo_blue.png/150px-African_Storybook_logo_blue.png" />
-      <ul>
-        <BookGroup
-          title="African Storybook Project Books in Bloom Format"
-          filter={{ tags: "bookshelf:African Storybook" }}
-        />
-      </ul>
-    </div>
-  );
+    return (
+        <div className={blackOnWhite}>
+            <PublisherBanner logoUrl="https://upload.wikimedia.org/wikipedia/en/thumb/5/5a/African_Storybook_logo_blue.png/150px-African_Storybook_logo_blue.png" />
+            <ul>
+                <BookGroup
+                    title="African Storybook Project Books in Bloom Format"
+                    filter={{ tags: "bookshelf:African Storybook" }}
+                />
+            </ul>
+        </div>
+    );
 };
 export const BookDashPage: React.SFC = () => {
-  return (
-    <div className={blackOnWhite}>
-      <PublisherBanner logoUrl="https://allchildrenreading.org/wordpress/wp-content/uploads/2017/04/book-dash-logo-full-colour_full-transparency-300x149.png" />
-      <ul>
-        <BookGroup
-          title="Book Dash Books in Bloom Format"
-          filter={{ tags: "bookshelf:Book Dash" }}
-        />
-      </ul>
-    </div>
-  );
+    return (
+        <div className={blackOnWhite}>
+            <PublisherBanner logoUrl="https://allchildrenreading.org/wordpress/wp-content/uploads/2017/04/book-dash-logo-full-colour_full-transparency-300x149.png" />
+            <ul>
+                <BookGroup
+                    title="Book Dash Books in Bloom Format"
+                    filter={{ tags: "bookshelf:Book Dash" }}
+                />
+            </ul>
+        </div>
+    );
 };
 
 export const PrathamPage: React.SFC = () => {
-  return (
-    <div className={blackOnWhite}>
-      <PublisherBanner logoUrl="https://prathambooks.org/wp-content/uploads/2018/04/Logo-black.png" />
-      <ul>
-        <BookGroup
-          title="Pratham Level 1 Books"
-          filter={{ tags: "bookshelf:Pratham" }}
-        />
-        <BookGroup
-          title="Pratham Level 2 Books"
-          filter={{ tags: "bookshelf:Pratham" }}
-        />
-        <BookGroup
-          title="Pratham Level 3 Books"
-          filter={{ tags: "bookshelf:Pratham" }}
-        />
-      </ul>
-    </div>
-  );
+    return (
+        <div className={blackOnWhite}>
+            <PublisherBanner logoUrl="https://prathambooks.org/wp-content/uploads/2018/04/Logo-black.png" />
+            <ul>
+                <BookGroup
+                    title="Pratham Level 1 Books"
+                    filter={{ tags: "bookshelf:Pratham" }}
+                />
+                <BookGroup
+                    title="Pratham Level 2 Books"
+                    filter={{ tags: "bookshelf:Pratham" }}
+                />
+                <BookGroup
+                    title="Pratham Level 3 Books"
+                    filter={{ tags: "bookshelf:Pratham" }}
+                />
+            </ul>
+        </div>
+    );
 };
