@@ -1,36 +1,24 @@
 import React, { Component } from "react";
 import { BookCard } from "./BookCard";
 import { css, cx } from "emotion";
-import useAxios from "@use-hooks/axios";
 import { LanguageCard } from "./LanguageCard";
+import { useQueryBlorgClass } from "./useAxiosBlorg";
 
 interface IProps {
     title: string;
 }
 
 export const LanguageGroup: React.SFC<IProps> = props => {
-    const { response, loading, error, reFetch } = useAxios({
-        url: `https://bloom-parse-server-production.azurewebsites.net/parse/classes/language`,
-        method: "GET",
-        trigger: "true",
-        options: {
-            headers: {
-                "Content-Type": "text/json",
-                "X-Parse-Application-Id":
-                    "R6qNTeumQXjJCMutAJYAwPtip1qBulkFyLefkCE5",
-                "X-Parse-REST-API-Key":
-                    "bAgoDIISBcscMJTTAY4mBB2RHLfkowkqMBMhQ1CD"
-            },
-
-            params: {
-                include: "langPointers",
-                keys: "name,usageCount",
-                limit: 10,
-                //   where: props.filter || "",
-                order: "-usageCount"
-            }
+    const { response, loading, error, reFetch } = useQueryBlorgClass(
+        "language",
+        {
+            include: "langPointers",
+            keys: "name,usageCount",
+            limit: 10,
+            //   where: props.filter || "",
+            order: "-usageCount"
         }
-    });
+    );
 
     if (loading) return <div>"loading..."</div>;
     if (error) return <div>{"error: " + error.message}</div>;

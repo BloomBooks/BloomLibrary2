@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { BookCard } from "./BookCard";
 import { css, cx } from "emotion";
-import useAxios from "@use-hooks/axios";
 import { IFilter } from "../Router";
+import { useQueryBlorgClass } from "./useAxiosBlorg";
 
 interface IProps {
     title: string;
@@ -11,27 +11,12 @@ interface IProps {
 }
 
 export const BookGroup: React.SFC<IProps> = props => {
-    const { response, loading, error, reFetch } = useAxios({
-        url: `https://bloom-parse-server-production.azurewebsites.net/parse/classes/books`,
-        method: "GET",
-        trigger: "true",
-        options: {
-            headers: {
-                "Content-Type": "text/json",
-                "X-Parse-Application-Id":
-                    "R6qNTeumQXjJCMutAJYAwPtip1qBulkFyLefkCE5",
-                "X-Parse-REST-API-Key":
-                    "bAgoDIISBcscMJTTAY4mBB2RHLfkowkqMBMhQ1CD"
-            },
-
-            params: {
-                include: "langPointers",
-                keys: "title,baseUrl",
-                limit: 10,
-                where: props.filter || "",
-                order: props.order || "title"
-            }
-        }
+    const { response, loading, error, reFetch } = useQueryBlorgClass("books", {
+        include: "langPointers",
+        keys: "title,baseUrl",
+        limit: 10,
+        where: props.filter || "",
+        order: props.order || "title"
     });
 
     if (loading) return <div>"loading..."</div>;
