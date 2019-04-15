@@ -3,6 +3,7 @@ import { observer } from "mobx-react";
 import { Router, RouterContext } from "../Router";
 import { HomePage } from "./HomePage";
 import {
+    LanguagePage,
     CategoryPage,
     PrathamPage,
     AfricaStoryBookPage,

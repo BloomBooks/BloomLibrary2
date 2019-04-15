@@ -2,16 +2,17 @@ import React from "react";
 import { css, cx } from "emotion";
 
 interface IProps {
-  logoUrl: string;
+    logoUrl: string;
 }
-export const PublisherBanner: React.SFC<IProps> = props => (
-  <div
-    className={css`
+
+export const PublisherBanner: React.FunctionComponent<IProps> = props => (
+    <div
+        className={css`
       background-image: url('${props.logoUrl}');
       background-position: left;
       height: 100px;
       background-repeat: no-repeat;
       background-size: contain;
     `}
-  />
+    />
 );

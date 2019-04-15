@@ -5,7 +5,7 @@ interface IProps extends React.HTMLProps<HTMLLIElement> {
     onClick: () => void;
 }
 
-export const CheapCard: React.SFC<IProps> = props => (
+export const CheapCard: React.FunctionComponent<IProps> = props => (
     <li
         {...props}
         className={cx([cardStyle, props.className])}

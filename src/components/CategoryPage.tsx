@@ -4,7 +4,16 @@ import CategoryGroup from "./CategoryGroup";
 import { css, cx } from "emotion";
 import { PublisherBanner } from "./PublisherBanner";
 
-export const CategoryPage: React.SFC = () => (
+export const LanguagePage: React.FunctionComponent = () => (
+    <ul style={{ backgroundColor: "purple" }}>
+        <BookGroup
+            title="Books in this Language"
+            filter={{ tags: "bookshelf:Featured" }}
+        />
+        <CategoryGroup title="Some kind of subcategory" />
+    </ul>
+);
+export const CategoryPage: React.FunctionComponent = () => (
     <ul style={{ backgroundColor: "grey" }}>
         <BookGroup
             title="Books in this category"
@@ -13,7 +22,6 @@ export const CategoryPage: React.SFC = () => (
         <CategoryGroup title="Some kind of subcategory" />
     </ul>
 );
-
 const blackOnWhite = css`
     background-color: white;
     height: 100%;
@@ -24,7 +32,7 @@ const blackOnWhite = css`
     padding-top: 20px;
 `;
 
-export const AfricaStoryBookPage: React.SFC = () => {
+export const AfricaStoryBookPage: React.FunctionComponent = () => {
     return (
         <div className={blackOnWhite}>
             <PublisherBanner logoUrl="https://upload.wikimedia.org/wikipedia/en/thumb/5/5a/African_Storybook_logo_blue.png/150px-African_Storybook_logo_blue.png" />
@@ -37,7 +45,7 @@ export const AfricaStoryBookPage: React.SFC = () => {
         </div>
     );
 };
-export const BookDashPage: React.SFC = () => {
+export const BookDashPage: React.FunctionComponent = () => {
     return (
         <div className={blackOnWhite}>
             <PublisherBanner logoUrl="https://allchildrenreading.org/wordpress/wp-content/uploads/2017/04/book-dash-logo-full-colour_full-transparency-300x149.png" />
@@ -51,7 +59,7 @@ export const BookDashPage: React.SFC = () => {
     );
 };
 
-export const PrathamPage: React.SFC = () => {
+export const PrathamPage: React.FunctionComponent = () => {
     return (
         <div className={blackOnWhite}>
             <PublisherBanner logoUrl="https://prathambooks.org/wp-content/uploads/2018/04/Logo-black.png" />

@@ -14,9 +14,20 @@ const sampleUrl =
 storiesOf("BookCard", module).add("simple", () => (
     <BookCard title="Grandpa Fish and the Radio" baseUrl={sampleUrl} />
 ));
-storiesOf("BookGroup", module).add("All books by date", () => (
-    <BookGroup title="All books by date" filter={{}} order={"-createdAt"} />
-));
+storiesOf("BookGroup", module)
+    .add("All books by date", () => (
+        <BookGroup title="All books by date" filter={{}} order={"-createdAt"} />
+    ))
+    .add("Thai books", () => (
+        /*1	
+langPointers	{…}
+$inQuery	{…}
+className	language
+where	{…}
+isoCode	th*/
+
+        <BookGroup title="Thai books" filter={{ language: "th" }} />
+    ));
 storiesOf("LanguageGroup", module).add("By book count", () => (
     <LanguageGroup title="Languages" />
 ));

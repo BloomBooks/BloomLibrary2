@@ -6,9 +6,10 @@ import { RouterContext } from "../Router";
 interface IProps {
     name: string;
     bookCount: string;
+    languageCode: string;
 }
 
-export const LanguageCard: React.SFC<IProps> = props => {
+export const LanguageCard: React.FunctionComponent<IProps> = props => {
     const router = useContext(RouterContext);
 
     return (
@@ -22,7 +23,7 @@ export const LanguageCard: React.SFC<IProps> = props => {
                 router!.push({
                     title: props.name,
                     pageType: "language",
-                    filter: {}
+                    filter: { language: props.languageCode }
                 });
             }}
         >

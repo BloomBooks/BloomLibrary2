@@ -14,7 +14,7 @@ const homePage = css`
     padding-top: 20px;
 `;
 
-export const HomePage: React.SFC = () => (
+export const HomePage: React.FunctionComponent = () => (
     <ul className={homePage}>
         <BookGroup
             title="Featured Shell Books You Can Translate"

@@ -1,54 +1,53 @@
-import React, { Component } from "react";
-import { BookCard } from "./BookCard";
+import React from "react";
 import { css, cx } from "emotion";
 import { LanguageCard } from "./LanguageCard";
 import { useQueryBlorgClass } from "./useAxiosBlorg";
+import { getResultsOrMessageElement } from "./useAxiosBlorg";
 
 interface IProps {
     title: string;
 }
 
-export const LanguageGroup: React.SFC<IProps> = props => {
-    const { response, loading, error, reFetch } = useQueryBlorgClass(
+export const LanguageGroup: React.FunctionComponent<IProps> = props => {
+    const queryResultElements = useQueryBlorgClass(
         "language",
         {
-            include: "langPointers",
-            keys: "name,usageCount",
+            keys: "name,usageCount,isoCode",
             limit: 10,
             //   where: props.filter || "",
             order: "-usageCount"
-        }
+        },
+        {}
     );
 
-    if (loading) return <div>"loading..."</div>;
-    if (error) return <div>{"error: " + error.message}</div>;
-    if (!response) return <div>"response null!"</div>;
-    const langs: Array<Object> = response["data"]["results"];
-    //console.log(langs);
+    const { noResultsElement, results } = getResultsOrMessageElement(
+        queryResultElements
+    );
     return (
-        <li
-            className={css`
-                margin-top: 30px;
-            `}
-        >
-            <h1>{props.title}</h1>
-            <ul
+        noResultsElement || (
+            <li
                 className={css`
-                    list-style: none;
-                    display: flex;
-                    padding-left: 0;
+                    margin-top: 30px;
                 `}
             >
-                {langs.map(l => {
-                    const lang = l as any;
-                    return (
+                <h1>{props.title}</h1>
+                <ul
+                    className={css`
+                        list-style: none;
+                        display: flex;
+                        padding-left: 0;
+                    `}
+                >
+                    {results.map((l: any) => (
                         <LanguageCard
-                            name={lang.name}
-                            bookCount={lang.usageCount}
+                            key={l.isoCode}
+                            name={l.name}
+                            bookCount={l.usageCount}
+                            languageCode={l.isoCode}
                         />
-                    );
-                })}
-            </ul>
-        </li>
+                    ))}
+                </ul>
+            </li>
+        )
     );
 };

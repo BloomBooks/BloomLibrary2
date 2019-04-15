@@ -2,50 +2,56 @@ import React, { Component } from "react";
 import { BookCard } from "./BookCard";
 import { css, cx } from "emotion";
 import { IFilter } from "../Router";
-import { useQueryBlorgClass } from "./useAxiosBlorg";
+import {
+    useQueryBlorgClass,
+    getResultsOrMessageElement
+} from "./useAxiosBlorg";
 
 interface IProps {
     title: string;
-    filter: IFilter;
+    filter: IFilter; // becomes the "where" clause the query
     order?: string;
 }
 
-export const BookGroup: React.SFC<IProps> = props => {
-    const { response, loading, error, reFetch } = useQueryBlorgClass("books", {
-        include: "langPointers",
-        keys: "title,baseUrl",
-        limit: 10,
-        where: props.filter || "",
-        order: props.order || "title"
-    });
+export const BookGroup: React.FunctionComponent<IProps> = props => {
+    const queryResultElements = useQueryBlorgClass(
+        "books",
+        {
+            include: "langPointers",
+            keys: "title,baseUrl",
+            limit: 10,
+            order: props.order || "title"
+        },
+        props.filter
+    );
 
-    if (loading) return <div>"loading..."</div>;
-    if (error) return <div>{"error: " + error.message}</div>;
-    if (!response) return <div>"response null!"</div>;
-    const books: Array<Object> = response["data"]["results"];
-    console.log(books);
+    const { noResultsElement, results } = getResultsOrMessageElement(
+        queryResultElements
+    );
     return (
-        <li
-            className={css`
-                margin-top: 30px;
-            `}
-        >
-            <h1>{props.title}</h1>
-            <ul
+        noResultsElement || (
+            <li
                 className={css`
-                    list-style: none;
-                    display: flex;
-                    padding-left: 0;
+                    margin-top: 30px;
                 `}
             >
-                {books.map(b => {
-                    //"https://storage.googleapis.com/story-weaver-e2e-production/illustration_crops/100764/size1/4817793037c30462fd006e506752dce5.jpg"
-                    const book = b as any;
-                    return (
-                        <BookCard title={book.title} baseUrl={book.baseUrl} />
-                    );
-                })}
-            </ul>
-        </li>
+                <h1>{props.title}</h1>
+                <ul
+                    className={css`
+                        list-style: none;
+                        display: flex;
+                        padding-left: 0;
+                    `}
+                >
+                    {results.map((b: any) => (
+                        <BookCard
+                            key={b.baseUrl}
+                            title={b.title}
+                            baseUrl={b.baseUrl}
+                        />
+                    ))}
+                </ul>
+            </li>
+        )
     );
 };

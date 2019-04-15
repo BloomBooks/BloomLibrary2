@@ -9,7 +9,7 @@ interface IProps {
     query: Object;
 }
 
-const CategoryCard: React.SFC<IProps> = props => {
+const CategoryCard: React.FunctionComponent<IProps> = props => {
     const router = useContext(RouterContext);
 
     return (
