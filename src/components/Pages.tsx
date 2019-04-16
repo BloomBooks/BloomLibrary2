@@ -3,14 +3,14 @@ import { BookGroup } from "./BookGroup";
 import CategoryGroup from "./CategoryGroup";
 import { css, cx } from "emotion";
 import { PublisherBanner } from "./PublisherBanner";
+import { IFilter } from "../Router";
 
-export const LanguagePage: React.FunctionComponent = () => (
+interface IProps {
+    filter: IFilter;
+}
+export const LanguagePage: React.FunctionComponent<IProps> = props => (
     <ul style={{ backgroundColor: "purple" }}>
-        <BookGroup
-            title="Books in this Language"
-            filter={{ tags: "bookshelf:Featured" }}
-        />
-        <CategoryGroup title="Some kind of subcategory" />
+        <BookGroup title="Books in this Language" filter={props.filter} />
     </ul>
 );
 export const CategoryPage: React.FunctionComponent = () => (

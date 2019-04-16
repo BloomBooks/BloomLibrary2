@@ -1,8 +1,8 @@
 import React from "react";
 import { css, cx } from "emotion";
 import { LanguageCard } from "./LanguageCard";
-import { useQueryBlorgClass } from "./useAxiosBlorg";
-import { getResultsOrMessageElement } from "./useAxiosBlorg";
+import { useQueryBlorgClass } from "./useQueryBlorg";
+import { getResultsOrMessageElement } from "./useQueryBlorg";
 
 interface IProps {
     title: string;

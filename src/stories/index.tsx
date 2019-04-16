@@ -7,6 +7,7 @@ import { BookGroup } from "../components/BookGroup";
 import { IFilter } from "../Router";
 import { LanguageGroup } from "../components/LanguageGroup";
 import CategoryGroup from "../components/CategoryGroup";
+import { LanguagePage } from "../components/Pages";
 
 const sampleUrl =
     "https://s3.amazonaws.com/BloomLibraryBooks/librarian%40bloomlibrary.org%2f32916f6b-02bd-4e0b-9b2b-d971096259b7%2fGrandpa+Fish+and+the+Radio%2f";
@@ -19,13 +20,6 @@ storiesOf("BookGroup", module)
         <BookGroup title="All books by date" filter={{}} order={"-createdAt"} />
     ))
     .add("Thai books", () => (
-        /*1	
-langPointers	{…}
-$inQuery	{…}
-className	language
-where	{…}
-isoCode	th*/
-
         <BookGroup title="Thai books" filter={{ language: "th" }} />
     ));
 storiesOf("LanguageGroup", module).add("By book count", () => (
@@ -33,4 +27,7 @@ storiesOf("LanguageGroup", module).add("By book count", () => (
 ));
 storiesOf("CategoryGroup", module).add("Publishers", () => (
     <CategoryGroup title="Languages" />
+));
+storiesOf("Pages", module).add("Thai Book Page", () => (
+    <LanguagePage filter={{ language: "th" }} />
 ));

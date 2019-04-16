@@ -5,7 +5,7 @@ import { IFilter } from "../Router";
 import {
     useQueryBlorgClass,
     getResultsOrMessageElement
-} from "./useAxiosBlorg";
+} from "./useQueryBlorg";
 
 interface IProps {
     title: string;

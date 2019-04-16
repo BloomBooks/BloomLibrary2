@@ -8,7 +8,7 @@ import {
     PrathamPage,
     AfricaStoryBookPage,
     BookDashPage
-} from "./CategoryPage";
+} from "./Pages";
 import { Breadcrumbs } from "./Breadcrumbs";
 
 @observer
@@ -19,6 +19,8 @@ export class BrowseView extends Component {
         switch (this.router.current.pageType) {
             case "home":
                 return <HomePage />;
+            case "language":
+                return <LanguagePage filter={this.router.current.filter} />;
             case "category":
                 if (this.router.current.filter.publisher) {
                     switch (this.router.current.filter.publisher) {

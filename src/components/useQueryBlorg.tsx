@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import useAxios from "@use-hooks/axios";
 import { IFilter } from "../Router";
 
-// just wraps up the useAxios call with some commone stuff
 export function useQueryBlorgClass(
     queryClass: string,
     params: {},
@@ -29,7 +28,12 @@ export function useQueryBlorgClass(
 function constructParseDBQuery(params: any, filter: IFilter): object {
     // language {"where":{"langPointers":{"$inQuery":{"where":{"isoCode":"en"},"className":"language"}},"inCirculation":{"$in":[true,null]}},"limit":0,"count":1
     // topic {"where":{"tags":{"$in":["topic:Agriculture","Agriculture"]},"license":{"$regex":"^\\Qcc\\E"},"inCirculation":{"$in":[true,null]}},"include":"langPointers,uploader","keys":"$score,title,tags,baseUrl,langPointers,uploader","limit":10,"order":"title",
-    params.where = filter || "";
+
+    // doing a clone here because the semantics of deleting language from filter were not what was expected.
+    // it removed the "language" param from the filter paramter itself.
+    params.where = filter ? JSON.parse(JSON.stringify(filter)) : {};
+    delete params.where.language; // remove that, we need to make it more complicated because we need a join.
+
     // if filter.language is set, add the query needed to restrict books to those with that language
     if (filter.language != null) {
         params.where.langPointers = {
