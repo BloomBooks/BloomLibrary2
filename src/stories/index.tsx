@@ -20,6 +20,10 @@ storiesOf("BookGroup", module)
     .add("All books by date", () => (
         <BookGroup title="All books by date" filter={{}} order={"-createdAt"} />
     ))
+    .add("Math books", () => (
+        <BookGroup title="Math Books" filter={{ topic: "Math" }} />
+    ))
+
     .add("Thai books", () => (
         <BookGroup title="Thai books" filter={{ language: "th" }} />
     ));

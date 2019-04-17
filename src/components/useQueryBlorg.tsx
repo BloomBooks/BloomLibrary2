@@ -36,17 +36,29 @@ function constructParseDBQuery(params: any, filter: IFilter): object {
     // doing a clone here because the semantics of deleting language from filter were not what was expected.
     // it removed the "language" param from the filter paramter itself.
     params.where = filter ? JSON.parse(JSON.stringify(filter)) : {};
-    delete params.where.language; // remove that, we need to make it more complicated because we need a join.
 
     // if filter.language is set, add the query needed to restrict books to those with that language
     if (filter.language != null) {
+        delete params.where.language; // remove that, we need to make it more complicated because we need a join.
         params.where.langPointers = {
             $inQuery: {
-                where: { isoCode: filter.language || "" },
+                where: { isoCode: filter.language },
                 className: "language"
             }
         };
     }
+    if (filter.topic != null) {
+        delete params.where.topic;
+        params.where.tags = {
+            $in: [
+                "topic:" + filter.topic /* new style */,
+                filter.topic /*old style*/
+            ]
+        };
+    }
+
+    //tags: {$in: ["topic:Agriculture", "Agriculture"]}
+
     params.where.inCirculation = { $in: [true, null] };
     return params;
 }

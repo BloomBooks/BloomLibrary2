@@ -4,9 +4,10 @@ import qs from "qs";
 import * as mobx from "mobx";
 
 export interface IFilter {
-    publisher?: string;
-    tags?: string;
     language?: string; // review: what is this exactly? BCP 47? Our Parse has duplicate "ethnologueCode" and "isoCode" columns, which actually contain code and full script tags.
+    publisher?: string;
+    topic?: string;
+    otherTags?: string;
 }
 export interface ILocation {
     title: string;

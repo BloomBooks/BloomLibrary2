@@ -15,7 +15,10 @@ export const LanguagePage: React.FunctionComponent<IProps> = props => (
         <ul style={{ backgroundColor: "purple" }}>
             <BookGroup
                 title={`Featured ${props.filter.language} books.`}
-                filter={{ ...props.filter, ...{ tags: "bookshelf:Featured" } }}
+                filter={{
+                    ...props.filter,
+                    ...{ otherTags: "bookshelf:Featured" }
+                }}
             />
             <BookGroup
                 title="Most Recent"
@@ -33,7 +36,7 @@ export const CategoryPage: React.FunctionComponent = () => (
     <ul style={{ backgroundColor: "grey" }}>
         <BookGroup
             title="Books in this category"
-            filter={{ tags: "bookshelf:Featured" }}
+            filter={{ otherTags: "bookshelf:Featured" }}
         />
         <CategoryGroup title="Some kind of subcategory" />
     </ul>
@@ -55,7 +58,7 @@ export const AfricaStoryBookPage: React.FunctionComponent = () => {
             <ul>
                 <BookGroup
                     title="African Storybook Project Books in Bloom Format"
-                    filter={{ tags: "bookshelf:African Storybook" }}
+                    filter={{ otherTags: "bookshelf:African Storybook" }}
                 />
             </ul>
         </div>
@@ -68,7 +71,7 @@ export const BookDashPage: React.FunctionComponent = () => {
             <ul>
                 <BookGroup
                     title="Book Dash Books in Bloom Format"
-                    filter={{ tags: "bookshelf:Book Dash" }}
+                    filter={{ otherTags: "bookshelf:Book Dash" }}
                 />
             </ul>
         </div>
@@ -82,15 +85,15 @@ export const PrathamPage: React.FunctionComponent = () => {
             <ul>
                 <BookGroup
                     title="Pratham Level 1 Books"
-                    filter={{ tags: "bookshelf:Pratham" }}
+                    filter={{ otherTags: "bookshelf:Pratham" }}
                 />
                 <BookGroup
                     title="Pratham Level 2 Books"
-                    filter={{ tags: "bookshelf:Pratham" }}
+                    filter={{ otherTags: "bookshelf:Pratham" }}
                 />
                 <BookGroup
                     title="Pratham Level 3 Books"
-                    filter={{ tags: "bookshelf:Pratham" }}
+                    filter={{ otherTags: "bookshelf:Pratham" }}
                 />
             </ul>
         </div>

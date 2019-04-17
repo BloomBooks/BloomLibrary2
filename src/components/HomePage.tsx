@@ -27,7 +27,7 @@ export const HomePage: React.FunctionComponent = () => {
             <ul className={homePage}>
                 <BookGroup
                     title="Featured Shell Books You Can Translate"
-                    filter={{ tags: "bookshelf:Featured" }}
+                    filter={{ otherTags: "bookshelf:Featured" }}
                 />
                 <LanguageGroup title="Languages" />
                 <BookGroup
@@ -35,7 +35,7 @@ export const HomePage: React.FunctionComponent = () => {
                     filter={{}}
                     order={"-createdAt"}
                 />
-
+                <BookGroup title="Math Books" filter={{ topic: "Math" }} />
                 <CategoryGroup title="Publishers" />
             </ul>
         </>
