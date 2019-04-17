@@ -4,14 +4,30 @@ import CategoryGroup from "./CategoryGroup";
 import { css, cx } from "emotion";
 import { PublisherBanner } from "./PublisherBanner";
 import { IFilter } from "../Router";
+import { BookCount } from "./BookCount";
 
 interface IProps {
     filter: IFilter;
 }
 export const LanguagePage: React.FunctionComponent<IProps> = props => (
-    <ul style={{ backgroundColor: "purple" }}>
-        <BookGroup title="Books in this Language" filter={props.filter} />
-    </ul>
+    <>
+        <BookCount filter={props.filter} />
+        <ul style={{ backgroundColor: "purple" }}>
+            <BookGroup
+                title={`Featured ${props.filter.language} books.`}
+                filter={{ ...props.filter, ...{ tags: "bookshelf:Featured" } }}
+            />
+            <BookGroup
+                title="Most Recent"
+                filter={props.filter}
+                order={"-createdAt"}
+            />
+            <BookGroup
+                title={`All ${props.filter.language} books.`}
+                filter={props.filter}
+            />
+        </ul>
+    </>
 );
 export const CategoryPage: React.FunctionComponent = () => (
     <ul style={{ backgroundColor: "grey" }}>

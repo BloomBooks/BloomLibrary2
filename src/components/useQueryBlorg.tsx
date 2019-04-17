@@ -2,6 +2,10 @@ import React, { Component } from "react";
 import useAxios from "@use-hooks/axios";
 import { IFilter } from "../Router";
 
+//{"where":{"inCirculation":{"$in":[true,null]}},"limit":0,"count":1
+export function useGetBookCount(filter: IFilter) {
+    return useQueryBlorgClass("books", { limit: 0, count: 1 }, filter);
+}
 export function useQueryBlorgClass(
     queryClass: string,
     params: {},
@@ -43,6 +47,7 @@ function constructParseDBQuery(params: any, filter: IFilter): object {
             }
         };
     }
+    params.where.inCirculation = { $in: [true, null] };
     return params;
 }
 
@@ -57,5 +62,9 @@ export function getResultsOrMessageElement(queryResult: any) {
         };
     if (!response)
         return { noResultsElement: <div>"response null!"</div>, results: null };
-    return { noResultsElement: null, results: response["data"]["results"] };
+    return {
+        noResultsElement: null,
+        results: response["data"]["results"],
+        count: response["data"]["count"]
+    };
 }

@@ -28,8 +28,15 @@ export const BookGroup: React.FunctionComponent<IProps> = props => {
     const { noResultsElement, results } = getResultsOrMessageElement(
         queryResultElements
     );
+    const zeroBooksMatchedElement =
+        results && results.length > 0 ? null : (
+            <p>{`No Books for "${
+                props.title
+            }". Should not see this in production`}</p>
+        );
     return (
-        noResultsElement || (
+        noResultsElement ||
+        zeroBooksMatchedElement || (
             <li
                 className={css`
                     margin-top: 30px;
