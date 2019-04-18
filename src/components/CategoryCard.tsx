@@ -1,12 +1,12 @@
 import React, { Component, useContext } from "react";
 import { css, cx } from "emotion";
 import { CheapCard } from "./CheapCard";
-import { RouterContext } from "../Router";
+import { RouterContext, IFilter } from "../Router";
 
 interface IProps {
     title: string;
     bookCount?: string;
-    query: Object;
+    filter: IFilter;
 }
 
 const CategoryCard: React.FunctionComponent<IProps> = props => {
@@ -22,7 +22,7 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
                 router!.push({
                     title: props.title,
                     pageType: "category",
-                    filter: props.query
+                    filter: props.filter
                 });
             }}
         >

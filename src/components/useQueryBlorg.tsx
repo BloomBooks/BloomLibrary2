@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import useAxios from "@use-hooks/axios";
 import { IFilter } from "../Router";
 
-//{"where":{"inCirculation":{"$in":[true,null]}},"limit":0,"count":1
 export function useGetBookCount(filter: IFilter) {
     return useQueryBlorgClass("books", { limit: 0, count: 1 }, filter);
 }
@@ -37,6 +36,12 @@ function constructParseDBQuery(params: any, filter: IFilter): object {
     // it removed the "language" param from the filter paramter itself.
     params.where = filter ? JSON.parse(JSON.stringify(filter)) : {};
 
+    /* ----------------- TODO ---------------------
+
+            This needs to be rewritten so that we can combine  things like topic and bookshelf and langauge
+
+    --------------------------------------------------*/
+
     // if filter.language is set, add the query needed to restrict books to those with that language
     if (filter.language != null) {
         delete params.where.language; // remove that, we need to make it more complicated because we need a join.
@@ -56,8 +61,16 @@ function constructParseDBQuery(params: any, filter: IFilter): object {
             ]
         };
     }
+    if (filter.otherTags != null) {
+        delete params.where.otherTags;
+        params.where.tags = filter.otherTags;
+    }
 
-    //tags: {$in: ["topic:Agriculture", "Agriculture"]}
+    //tags: {$all: ["bookshelf:Enabling Writers Workshops/Bangladesh_Dhaka Ahsania Mission",
+    if (filter.bookshelf != null) {
+        delete params.where.bookshelf;
+        params.where.tags = "bookshelf:" + filter.bookshelf;
+    }
 
     params.where.inCirculation = { $in: [true, null] };
     return params;

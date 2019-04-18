@@ -23,17 +23,17 @@ export const CategoryGroup: React.FunctionComponent<IProps> = props => (
             <CategoryCard
                 title="Africa Storybook Project"
                 bookCount="100"
-                query={{ publisher: "ASP" }}
+                filter={{ publisher: "ASP" }}
             />
             <CategoryCard
                 title="Pratham Books"
                 bookCount="50"
-                query={{ publisher: "Pratham", lang: "en" }}
+                filter={{ publisher: "Pratham", lang: "en" }}
             />
             <CategoryCard
                 title="Book Dash"
                 bookCount="20"
-                query={{ publisher: "BookDash" }}
+                filter={{ publisher: "BookDash" }}
             />
         </ul>
     </li>

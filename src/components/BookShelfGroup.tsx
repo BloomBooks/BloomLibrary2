@@ -3,18 +3,18 @@ import { css, cx } from "emotion";
 import { LanguageCard } from "./LanguageCard";
 import { useQueryBlorgClass } from "./useQueryBlorg";
 import { getResultsOrMessageElement } from "./useQueryBlorg";
+import CategoryCard from "./CategoryCard";
 
 interface IProps {
     title: string;
 }
 
-export const LanguageGroup: React.FunctionComponent<IProps> = props => {
+export const BookshelfGroup: React.FunctionComponent<IProps> = props => {
     const queryResultElements = useQueryBlorgClass(
-        "language",
+        "bookshelf",
         {
-            keys: "name,usageCount,isoCode",
-            limit: 10,
-            order: "-usageCount"
+            keys: "englishName, key",
+            limit: 100
         },
         {}
     );
@@ -38,11 +38,10 @@ export const LanguageGroup: React.FunctionComponent<IProps> = props => {
                     `}
                 >
                     {results.map((l: any) => (
-                        <LanguageCard
-                            key={l.isoCode}
-                            name={l.name}
-                            bookCount={l.usageCount}
-                            languageCode={l.isoCode}
+                        <CategoryCard
+                            title={l.englishName}
+                            bookCount="??"
+                            filter={{ bookshelf: l.key }}
                         />
                     ))}
                 </ul>

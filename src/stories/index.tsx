@@ -9,6 +9,7 @@ import { LanguageGroup } from "../components/LanguageGroup";
 import CategoryGroup from "../components/CategoryGroup";
 import { LanguagePage } from "../components/Pages";
 import { HomePage } from "../components/HomePage";
+import { BookshelfGroup } from "../components/BookShelfGroup";
 
 const sampleUrl =
     "https://s3.amazonaws.com/BloomLibraryBooks/librarian%40bloomlibrary.org%2f32916f6b-02bd-4e0b-9b2b-d971096259b7%2fGrandpa+Fish+and+the+Radio%2f";
@@ -17,6 +18,13 @@ storiesOf("BookCard", module).add("simple", () => (
     <BookCard title="Grandpa Fish and the Radio" baseUrl={sampleUrl} />
 ));
 storiesOf("BookGroup", module)
+    .add("Featured", () => (
+        <BookGroup
+            title="Featured Shell Books You Can Translate"
+            filter={{ otherTags: "bookshelf:Featured" }}
+        />
+    ))
+    .add("All Bookshelves", () => <BookshelfGroup title="All Bookshelves" />)
     .add("All books by date", () => (
         <BookGroup title="All books by date" filter={{}} order={"-createdAt"} />
     ))
