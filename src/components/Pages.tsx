@@ -5,6 +5,13 @@ import { PublisherBanner } from "./PublisherBanner";
 import { IFilter } from "../Router";
 import { BookCount } from "./BookCount";
 
+export const CategoryPage: React.FunctionComponent<{
+    filter: IFilter;
+}> = props => (
+    <ul style={{ backgroundColor: "yellow" }}>
+        <BookGroup title={`hmmmm`} filter={props.filter} />
+    </ul>
+);
 interface IProps {
     filter: IFilter;
 }

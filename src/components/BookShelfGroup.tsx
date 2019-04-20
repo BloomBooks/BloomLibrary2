@@ -69,7 +69,7 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = props => {
                             <CategoryCard
                                 title={l.englishName}
                                 bookCount="??"
-                                filter={{ bookshelf: l.key }}
+                                filter={{ bookshelf: l.englishName }} //should be key but the query isn't give us that for some reason
                             />
                         ))}
                 </ul>

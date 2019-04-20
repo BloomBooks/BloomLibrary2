@@ -31,7 +31,8 @@ export class BrowseView extends Component {
                         case "BookDash":
                             return <BookDashPage />;
                     }
-                } else return <CategoryPage />;
+                } else
+                    return <CategoryPage filter={this.router.current.filter} />;
             default:
                 return "Unknown page type " + this.router.current.pageType;
         }
