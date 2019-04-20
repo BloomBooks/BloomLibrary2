@@ -65,7 +65,10 @@ function constructParseDBQuery(params: any, filter: IFilter): object {
         delete params.where.otherTags;
         params.where.tags = filter.otherTags;
     }
-
+    if (filter.bookShelfCategory != null) {
+        delete params.where.bookShelfCategory;
+        params.where.category = filter.bookShelfCategory;
+    }
     //tags: {$all: ["bookshelf:Enabling Writers Workshops/Bangladesh_Dhaka Ahsania Mission",
     if (filter.bookshelf != null) {
         delete params.where.bookshelf;

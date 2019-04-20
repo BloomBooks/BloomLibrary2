@@ -6,7 +6,6 @@ import { BookCard } from "../components/BookCard";
 import { BookGroup } from "../components/BookGroup";
 import { IFilter } from "../Router";
 import { LanguageGroup } from "../components/LanguageGroup";
-import CategoryGroup from "../components/CategoryGroup";
 import { LanguagePage } from "../components/Pages";
 import { HomePage } from "../components/HomePage";
 import { BookshelfGroup } from "../components/BookShelfGroup";
@@ -38,9 +37,26 @@ storiesOf("BookGroup", module)
 storiesOf("LanguageGroup", module).add("By book count", () => (
     <LanguageGroup title="Languages" />
 ));
-storiesOf("CategoryGroup", module).add("Publishers", () => (
-    <CategoryGroup title="Languages" />
-));
+storiesOf("BookShelfGroup", module)
+    .add("Publishers", () => (
+        <BookshelfGroup title="Publishers" bookShelfCategory="publisher" />
+    ))
+    .add("A specific project with multiple workshops: Enabling Writers", () => (
+        <BookshelfGroup
+            title="Enabling Writers"
+            bookShelfCategory="project"
+            parentBookshelf="Enabling Writers Workshops"
+        />
+    ))
+    .add("Projects", () => (
+        <BookshelfGroup title="Projects" bookShelfCategory="project" />
+    ))
+    .add("Organizations & Governments", () => (
+        <BookshelfGroup
+            title="Organizations & Governments"
+            bookShelfCategory="org"
+        />
+    ));
 storiesOf("Pages", module)
     .add("Home Page", () => <HomePage />)
     .add("Thai Book Page", () => <LanguagePage filter={{ language: "th" }} />);

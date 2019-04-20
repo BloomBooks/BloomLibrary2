@@ -1,7 +1,6 @@
-import React, { Component } from "react";
+import React from "react";
 import { BookGroup } from "./BookGroup";
-import CategoryGroup from "./CategoryGroup";
-import { css, cx } from "emotion";
+import { css } from "emotion";
 import { PublisherBanner } from "./PublisherBanner";
 import { IFilter } from "../Router";
 import { BookCount } from "./BookCount";
@@ -32,15 +31,7 @@ export const LanguagePage: React.FunctionComponent<IProps> = props => (
         </ul>
     </>
 );
-export const CategoryPage: React.FunctionComponent = () => (
-    <ul style={{ backgroundColor: "grey" }}>
-        <BookGroup
-            title="Books in this category"
-            filter={{ otherTags: "bookshelf:Featured" }}
-        />
-        <CategoryGroup title="Some kind of subcategory" />
-    </ul>
-);
+
 const blackOnWhite = css`
     background-color: white;
     height: 100%;

@@ -11,7 +11,10 @@ interface IProps {
 
 const CategoryCard: React.FunctionComponent<IProps> = props => {
     const router = useContext(RouterContext);
-
+    // some bookshelfs have multiple levels, separated by "/". For now,
+    // just use the last part.
+    const parts = props.title.split("/");
+    const title = parts[parts.length - 1];
     return (
         <CheapCard
             className={css`
@@ -32,7 +35,7 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
                     flex-grow: 1; // push the rest to the bottom5
                 `}
             >
-                {props.title}
+                {title}
             </h2>
             <div>{props.bookCount ? `${props.bookCount} Books` : ""}</div>
         </CheapCard>

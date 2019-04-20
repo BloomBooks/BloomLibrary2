@@ -1,15 +1,9 @@
 import React from "react";
 import { BookGroup } from "./BookGroup";
-import CategoryGroup from "./CategoryGroup";
 import { css } from "emotion";
 import { LanguageGroup } from "./LanguageGroup";
-import {
-    useGetBookCount,
-    useQueryBlorgClass,
-    getResultsOrMessageElement
-} from "./useQueryBlorg";
-import { IFilter } from "../Router";
 import { BookCount } from "./BookCount";
+import { BookshelfGroup } from "./BookShelfGroup";
 const homePage = css`
     background-color: lightgreen;
     height: 100%;
@@ -36,7 +30,23 @@ export const HomePage: React.FunctionComponent = () => {
                     order={"-createdAt"}
                 />
                 <BookGroup title="Math Books" filter={{ topic: "Math" }} />
-                <CategoryGroup title="Publishers" />
+                <BookshelfGroup
+                    title="Publishers"
+                    bookShelfCategory="publisher"
+                />
+
+                <BookshelfGroup
+                    title="Enabling Writers"
+                    bookShelfCategory="project"
+                    parentBookshelf="Enabling Writers Workshops"
+                />
+
+                <BookshelfGroup title="Projects" bookShelfCategory="project" />
+
+                <BookshelfGroup
+                    title="Organizations & Governments"
+                    bookShelfCategory="org"
+                />
             </ul>
         </>
     );

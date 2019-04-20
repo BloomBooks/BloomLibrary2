@@ -8,6 +8,7 @@ export interface IFilter {
     publisher?: string;
     bookshelf?: string;
     topic?: string;
+    bookShelfCategory?: string;
     otherTags?: string;
 }
 export interface ILocation {
