@@ -34,7 +34,15 @@ export const HomePage: React.FunctionComponent = () => {
                     title="Publishers"
                     bookShelfCategory="publisher"
                 />
+                <BookGroup
+                    title="Sign Language Books"
+                    filter={{ feature: "signLanguage" }}
+                />
 
+                <BookGroup
+                    title="Accessible to the Visually Impaired"
+                    filter={{ feature: "visuallyImpaired" }}
+                />
                 <BookshelfGroup
                     title="Enabling Writers"
                     bookShelfCategory="project"

@@ -23,6 +23,15 @@ storiesOf("BookGroup", module)
             filter={{ otherTags: "bookshelf:Featured" }}
         />
     ))
+    .add("Sign Language", () => (
+        <BookGroup title="Sign Language" filter={{ feature: "signLanguage" }} />
+    ))
+    .add("Accessible", () => (
+        <BookGroup
+            title="Visuall Impaired"
+            filter={{ feature: "visuallyImpaired" }}
+        />
+    ))
     .add("All Bookshelves", () => <BookshelfGroup title="All Bookshelves" />)
     .add("All books by date", () => (
         <BookGroup title="All books by date" filter={{}} order={"-createdAt"} />

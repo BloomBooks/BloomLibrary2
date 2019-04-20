@@ -74,6 +74,10 @@ function constructParseDBQuery(params: any, filter: IFilter): object {
         delete params.where.bookshelf;
         params.where.tags = "bookshelf:" + filter.bookshelf;
     }
+    if (filter.feature != null) {
+        delete params.where.feature;
+        params.where.features = filter.feature; //my understanding is that this means it just has to contain this, could have others
+    }
 
     params.where.inCirculation = { $in: [true, null] };
     return params;
