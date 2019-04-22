@@ -19,6 +19,7 @@
         "react-dom": "^16.8.6",
         "react-lazyload": "^2.5.0",
         "react-scripts": "2.1.8",
+        "typeface-roboto": "^0.0.54",
         "typescript": "3.4.1"
     },
     "scripts": {

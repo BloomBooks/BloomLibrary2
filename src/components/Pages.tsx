@@ -5,21 +5,32 @@ import { PublisherBanner } from "./PublisherBanner";
 import { IFilter } from "../Router";
 import { BookCount } from "./BookCount";
 import { useTopicList } from "./useQueryBlorg";
+import { BannerContents, LanguageBanner } from "./Banners";
 
 export const CategoryPage: React.FunctionComponent<{
-    filter: IFilter;
-}> = props => (
-    <ul style={{ backgroundColor: "yellow" }}>
-        <BookGroup title={`hmmmm`} filter={props.filter} />
-    </ul>
-);
-
-export const LanguagePage: React.FunctionComponent<{
+    title: string;
     filter: IFilter;
 }> = props => (
     <>
-        <BookCount filter={props.filter} />
-        <ul style={{ backgroundColor: "purple" }}>
+        <BannerContents
+            title={props.title}
+            about="some about"
+            bookCountMessage="{0}  books"
+            filter={props.filter}
+        />
+        <ul>
+            <BookGroup title={`All books`} filter={props.filter} />
+        </ul>
+    </>
+);
+
+export const LanguagePage: React.FunctionComponent<{
+    title: string;
+    filter: IFilter;
+}> = props => (
+    <>
+        <LanguageBanner filter={props.filter} title={props.title} />
+        <ul>
             <BookGroup
                 title={`Featured ${props.filter.language} books.`}
                 filter={{
@@ -77,51 +88,51 @@ const blackOnWhite = css`
     padding-top: 20px;
 `;
 
-export const AfricaStoryBookPage: React.FunctionComponent = () => {
-    return (
-        <div className={blackOnWhite}>
-            <PublisherBanner logoUrl="https://upload.wikimedia.org/wikipedia/en/thumb/5/5a/African_Storybook_logo_blue.png/150px-African_Storybook_logo_blue.png" />
-            <ul>
-                <BookGroup
-                    title="African Storybook Project Books in Bloom Format"
-                    filter={{ otherTags: "bookshelf:African Storybook" }}
-                />
-            </ul>
-        </div>
-    );
-};
-export const BookDashPage: React.FunctionComponent = () => {
-    return (
-        <div className={blackOnWhite}>
-            <PublisherBanner logoUrl="https://allchildrenreading.org/wordpress/wp-content/uploads/2017/04/book-dash-logo-full-colour_full-transparency-300x149.png" />
-            <ul>
-                <BookGroup
-                    title="Book Dash Books in Bloom Format"
-                    filter={{ otherTags: "bookshelf:Book Dash" }}
-                />
-            </ul>
-        </div>
-    );
-};
+// export const AfricaStoryBookPage: React.FunctionComponent = () => {
+//     return (
+//         <div className={blackOnWhite}>
+//             <PublisherBanner logoUrl="https://upload.wikimedia.org/wikipedia/en/thumb/5/5a/African_Storybook_logo_blue.png/150px-African_Storybook_logo_blue.png" />
+//             <ul>
+//                 <BookGroup
+//                     title="African Storybook Project Books in Bloom Format"
+//                     filter={{ otherTags: "bookshelf:African Storybook" }}
+//                 />
+//             </ul>
+//         </div>
+//     );
+// };
+// export const BookDashPage: React.FunctionComponent = () => {
+//     return (
+//         <div className={blackOnWhite}>
+//             <PublisherBanner logoUrl="https://allchildrenreading.org/wordpress/wp-content/uploads/2017/04/book-dash-logo-full-colour_full-transparency-300x149.png" />
+//             <ul>
+//                 <BookGroup
+//                     title="Book Dash Books in Bloom Format"
+//                     filter={{ otherTags: "bookshelf:Book Dash" }}
+//                 />
+//             </ul>
+//         </div>
+//     );
+// };
 
-export const PrathamPage: React.FunctionComponent = () => {
-    return (
-        <div className={blackOnWhite}>
-            <PublisherBanner logoUrl="https://prathambooks.org/wp-content/uploads/2018/04/Logo-black.png" />
-            <ul>
-                <BookGroup
-                    title="Pratham Level 1 Books"
-                    filter={{ otherTags: "bookshelf:Pratham" }}
-                />
-                <BookGroup
-                    title="Pratham Level 2 Books"
-                    filter={{ otherTags: "bookshelf:Pratham" }}
-                />
-                <BookGroup
-                    title="Pratham Level 3 Books"
-                    filter={{ otherTags: "bookshelf:Pratham" }}
-                />
-            </ul>
-        </div>
-    );
-};
+// export const PrathamPage: React.FunctionComponent = () => {
+//     return (
+//         <div className={blackOnWhite}>
+//             <PublisherBanner logoUrl="https://prathambooks.org/wp-content/uploads/2018/04/Logo-black.png" />
+//             <ul>
+//                 <BookGroup
+//                     title="Pratham Level 1 Books"
+//                     filter={{ otherTags: "bookshelf:Pratham" }}
+//                 />
+//                 <BookGroup
+//                     title="Pratham Level 2 Books"
+//                     filter={{ otherTags: "bookshelf:Pratham" }}
+//                 />
+//                 <BookGroup
+//                     title="Pratham Level 3 Books"
+//                     filter={{ otherTags: "bookshelf:Pratham" }}
+//                 />
+//             </ul>
+//         </div>
+//     );
+// };

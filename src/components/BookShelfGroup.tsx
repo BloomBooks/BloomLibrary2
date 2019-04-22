@@ -29,7 +29,7 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = props => {
     const queryResultElements = useQueryBlorgClass(
         "bookshelf",
         {
-            keys: "englishName, key", // somehow I'm not getting the key column back
+            keys: "englishName,key",
             limit: 1000
         },
         // optionally, this group can be limited to the second level shelves of a large project (e.g. Enabling Writers)
@@ -69,7 +69,7 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = props => {
                             <CategoryCard
                                 title={l.englishName}
                                 bookCount="??"
-                                filter={{ bookshelf: l.englishName }} //should be key but the query isn't give us that for some reason
+                                filter={{ bookshelf: l.key }}
                             />
                         ))}
                 </ul>

@@ -19,6 +19,7 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
         <CheapCard
             className={css`
                 width: 220px;
+                background-color: #dd8b82;
             `}
             onClick={() => {
                 //alert("click " + this.props.title);

@@ -24,7 +24,7 @@ export const Breadcrumbs: React.FunctionComponent = () => {
 const breadcrumbsStyle = css`
     display: flex;
     padding: 0;
-    padding-left: 20px;
+    //padding-left: 20px;
     li {
         margin-right: 3px;
         color: whitesmoke;

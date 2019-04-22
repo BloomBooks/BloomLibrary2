@@ -4,6 +4,8 @@ import { css } from "emotion";
 import { LanguageGroup } from "./LanguageGroup";
 import { BookCount } from "./BookCount";
 import { BookshelfGroup } from "./BookShelfGroup";
+import { HomeBanner } from "./Banners";
+import { IFilter } from "../Router";
 const homePage = css`
     //background-color: lightgreen;
     height: 100%;
@@ -11,13 +13,14 @@ const homePage = css`
         color: black;
     } */
     padding-left: 20px;
-    padding-top: 20px;
+    //padding-top: 20px;
 `;
 
 export const HomePage: React.FunctionComponent = () => {
+    const almostAllBooksFilter: IFilter = { inCirculation: true };
     return (
         <>
-            <BookCount filter={{}} />
+            <HomeBanner filter={almostAllBooksFilter} />
             <ul className={homePage}>
                 <BookGroup
                     title="Featured Shell Books You Can Translate"

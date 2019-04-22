@@ -4,7 +4,7 @@ import { storiesOf } from "@storybook/react";
 
 import { BookCard } from "../components/BookCard";
 import { BookGroup } from "../components/BookGroup";
-import { IFilter } from "../Router";
+
 import { LanguageGroup } from "../components/LanguageGroup";
 import { LanguagePage } from "../components/Pages";
 import { HomePage } from "../components/HomePage";
@@ -68,4 +68,6 @@ storiesOf("BookShelfGroup", module)
     ));
 storiesOf("Pages", module)
     .add("Home Page", () => <HomePage />)
-    .add("Thai Book Page", () => <LanguagePage filter={{ language: "th" }} />);
+    .add("Thai Book Page", () => (
+        <LanguagePage title="some title" filter={{ language: "th" }} />
+    ));

@@ -42,7 +42,7 @@ export const BookGroup: React.FunctionComponent<IProps> = props => {
             <LazyLoad height={200}>
                 <li
                     className={css`
-                        margin-top: 30px;
+                        //margin-top: 30px;
                         height: 200px; // want height to be same even if no results yet
                     `}
                 >

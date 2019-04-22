@@ -11,6 +11,7 @@ export interface IFilter {
     topic?: string;
     bookShelfCategory?: string;
     otherTags?: string;
+    inCirculation?: boolean;
 }
 export interface ILocation {
     title: string;
