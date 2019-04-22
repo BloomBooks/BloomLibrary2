@@ -6,6 +6,7 @@ import {
     useQueryBlorgClass,
     getResultsOrMessageElement
 } from "./useQueryBlorg";
+import LazyLoad from "react-lazyload";
 
 interface IProps {
     title: string;
@@ -30,35 +31,39 @@ export const BookGroup: React.FunctionComponent<IProps> = props => {
     );
     const zeroBooksMatchedElement =
         results && results.length > 0 ? null : (
-            <p>{`No Books for "${
-                props.title
-            }". Should not see this in production`}</p>
+            // <p>{`No Books for "${
+            //     props.title
+            // }". Should not see this in production`}</p>
+            <></>
         );
     return (
         noResultsElement ||
         zeroBooksMatchedElement || (
-            <li
-                className={css`
-                    margin-top: 30px;
-                `}
-            >
-                <h1>{props.title}</h1>
-                <ul
+            <LazyLoad height={200}>
+                <li
                     className={css`
-                        list-style: none;
-                        display: flex;
-                        padding-left: 0;
+                        margin-top: 30px;
+                        height: 200px; // want height to be same even if no results yet
                     `}
                 >
-                    {results.map((b: any) => (
-                        <BookCard
-                            key={b.baseUrl}
-                            title={b.title}
-                            baseUrl={b.baseUrl}
-                        />
-                    ))}
-                </ul>
-            </li>
+                    <h1>{props.title}</h1>
+                    <ul
+                        className={css`
+                            list-style: none;
+                            display: flex;
+                            padding-left: 0;
+                        `}
+                    >
+                        {results.map((b: any) => (
+                            <BookCard
+                                key={b.baseUrl}
+                                title={b.title}
+                                baseUrl={b.baseUrl}
+                            />
+                        ))}
+                    </ul>
+                </li>
+            </LazyLoad>
         )
     );
 };

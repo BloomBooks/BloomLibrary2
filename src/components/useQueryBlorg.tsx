@@ -5,6 +5,9 @@ import { IFilter } from "../Router";
 export function useGetBookCount(filter: IFilter) {
     return useQueryBlorgClass("books", { limit: 0, count: 1 }, filter);
 }
+export function useTopicList() {
+    return useQueryBlorgClass("tag", { limit: 1000, count: 1000 }, {});
+}
 export function useQueryBlorgClass(
     queryClass: string,
     params: {},

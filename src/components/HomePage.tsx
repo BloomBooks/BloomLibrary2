@@ -5,11 +5,11 @@ import { LanguageGroup } from "./LanguageGroup";
 import { BookCount } from "./BookCount";
 import { BookshelfGroup } from "./BookShelfGroup";
 const homePage = css`
-    background-color: lightgreen;
+    //background-color: lightgreen;
     height: 100%;
-    & h1 {
+    /* & h1 {
         color: black;
-    }
+    } */
     padding-left: 20px;
     padding-top: 20px;
 `;
@@ -29,7 +29,6 @@ export const HomePage: React.FunctionComponent = () => {
                     filter={{}}
                     order={"-createdAt"}
                 />
-                <BookGroup title="Math Books" filter={{ topic: "Math" }} />
                 <BookshelfGroup
                     title="Publishers"
                     bookShelfCategory="publisher"
@@ -38,7 +37,6 @@ export const HomePage: React.FunctionComponent = () => {
                     title="Sign Language Books"
                     filter={{ feature: "signLanguage" }}
                 />
-
                 <BookGroup
                     title="Accessible to the Visually Impaired"
                     filter={{ feature: "visuallyImpaired" }}
@@ -48,13 +46,12 @@ export const HomePage: React.FunctionComponent = () => {
                     bookShelfCategory="project"
                     parentBookshelf="Enabling Writers Workshops"
                 />
-
                 <BookshelfGroup title="Projects" bookShelfCategory="project" />
-
                 <BookshelfGroup
                     title="Organizations & Governments"
                     bookShelfCategory="org"
                 />
+                <BookGroup title="Math Books" filter={{ topic: "Math" }} />
             </ul>
         </>
     );

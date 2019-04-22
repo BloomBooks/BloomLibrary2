@@ -4,6 +4,7 @@ import { css } from "emotion";
 import { PublisherBanner } from "./PublisherBanner";
 import { IFilter } from "../Router";
 import { BookCount } from "./BookCount";
+import { useTopicList } from "./useQueryBlorg";
 
 export const CategoryPage: React.FunctionComponent<{
     filter: IFilter;
@@ -12,10 +13,10 @@ export const CategoryPage: React.FunctionComponent<{
         <BookGroup title={`hmmmm`} filter={props.filter} />
     </ul>
 );
-interface IProps {
+
+export const LanguagePage: React.FunctionComponent<{
     filter: IFilter;
-}
-export const LanguagePage: React.FunctionComponent<IProps> = props => (
+}> = props => (
     <>
         <BookCount filter={props.filter} />
         <ul style={{ backgroundColor: "purple" }}>
@@ -31,6 +32,7 @@ export const LanguagePage: React.FunctionComponent<IProps> = props => (
                 filter={props.filter}
                 order={"-createdAt"}
             />
+            <BookGroupForEachTopic filter={props.filter} />
             <BookGroup
                 title={`All ${props.filter.language} books.`}
                 filter={props.filter}
@@ -38,6 +40,32 @@ export const LanguagePage: React.FunctionComponent<IProps> = props => (
         </ul>
     </>
 );
+export const BookGroupForEachTopic: React.FunctionComponent<{
+    filter: IFilter;
+}> = props => {
+    const { response, loading, error, reFetch } = useTopicList();
+    if (response) {
+        console.log(response);
+        return (
+            <>
+                {response.data["results"].map((tag: any) => {
+                    if (tag.name.split(":")[0] === "topic") {
+                        const topic = tag.name.split(":")[1];
+                        return (
+                            <BookGroup
+                                title={`${topic} books`}
+                                filter={{
+                                    ...props.filter,
+                                    ...{ topic: topic }
+                                }}
+                            />
+                        );
+                    } else return <></>;
+                })}
+            </>
+        );
+    } else return <>"waiting for topics"</>;
+};
 
 const blackOnWhite = css`
     background-color: white;
