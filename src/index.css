@@ -50,6 +50,10 @@ a:hover {
     cursor: pointer;
 }
 
+.pageResults {
+    padding-left: 20px;
+}
+
 .banner {
     display: flex;
     flex-direction: column;
@@ -59,4 +63,8 @@ a:hover {
     background-size: cover;
     color: white;
     padding-left: 20px;
+}
+
+.banner a {
+    color: white;
 }

@@ -4,7 +4,8 @@ import { Router, RouterContext } from "../Router";
 import { HomePage } from "./HomePage";
 import {
     LanguagePage,
-    CategoryPage
+    CategoryPage,
+    ProjectPage
     // PrathamPage,
     // AfricaStoryBookPage,
     // BookDashPage
@@ -24,6 +25,13 @@ export class BrowseView extends Component {
             case "language":
                 return (
                     <LanguagePage
+                        title={this.router.current.title}
+                        filter={this.router.current.filter}
+                    />
+                );
+            case "project":
+                return (
+                    <ProjectPage
                         title={this.router.current.title}
                         filter={this.router.current.filter}
                     />

@@ -7,13 +7,10 @@ import { BookshelfGroup } from "./BookShelfGroup";
 import { HomeBanner } from "./Banners";
 import { IFilter } from "../Router";
 const homePage = css`
-    //background-color: lightgreen;
     height: 100%;
     /* & h1 {
         color: black;
     } */
-    padding-left: 20px;
-    //padding-top: 20px;
 `;
 
 export const HomePage: React.FunctionComponent = () => {
@@ -21,7 +18,7 @@ export const HomePage: React.FunctionComponent = () => {
     return (
         <>
             <HomeBanner filter={almostAllBooksFilter} />
-            <ul className={homePage}>
+            <ul className={"pageResults"}>
                 <BookGroup
                     title="Featured Shell Books You Can Translate"
                     filter={{ otherTags: "bookshelf:Featured" }}

@@ -1,11 +1,9 @@
 import React from "react";
 import { BookGroup } from "./BookGroup";
 import { css } from "emotion";
-import { PublisherBanner } from "./PublisherBanner";
 import { IFilter } from "../Router";
-import { BookCount } from "./BookCount";
 import { useTopicList } from "./useQueryBlorg";
-import { BannerContents, LanguageBanner } from "./Banners";
+import { BannerContents, LanguageBanner, ProjectBanner } from "./Banners";
 
 export const CategoryPage: React.FunctionComponent<{
     title: string;
@@ -18,7 +16,7 @@ export const CategoryPage: React.FunctionComponent<{
             bookCountMessage="{0}  books"
             filter={props.filter}
         />
-        <ul>
+        <ul className={"pageResults"}>
             <BookGroup title={`All books`} filter={props.filter} />
         </ul>
     </>
@@ -30,7 +28,7 @@ export const LanguagePage: React.FunctionComponent<{
 }> = props => (
     <>
         <LanguageBanner filter={props.filter} title={props.title} />
-        <ul>
+        <ul className={"pageResults"}>
             <BookGroup
                 title={`Featured ${props.filter.language} books.`}
                 filter={{
@@ -48,6 +46,17 @@ export const LanguagePage: React.FunctionComponent<{
                 title={`All ${props.filter.language} books.`}
                 filter={props.filter}
             />
+        </ul>
+    </>
+);
+export const ProjectPage: React.FunctionComponent<{
+    title: string;
+    filter: IFilter;
+}> = props => (
+    <>
+        <ProjectBanner filter={props.filter} title={props.title} />
+        <ul className={"pageResults"}>
+            <BookGroupForEachTopic filter={props.filter} />
         </ul>
     </>
 );
@@ -73,20 +82,16 @@ export const BookGroupForEachTopic: React.FunctionComponent<{
                         );
                     } else return <></>;
                 })}
+
+                {/* TODO: currently the above will show some books as "NoTopic" books. But the vast majority of books without a top
+             do not have topic:NoTopic. There isn't an obvious way of writing a ParseServer query to get a subset of
+             books (e.g. workshop) that also do not have any topics. We could a) do that on client b) custom function on server
+             or c) walk the Library and insert "NoTopic" wherever it is missing.
+            */}
             </>
         );
     } else return <>"waiting for topics"</>;
 };
-
-const blackOnWhite = css`
-    background-color: white;
-    height: 100%;
-    & h1 {
-        color: black;
-    }
-    padding-left: 20px;
-    padding-top: 20px;
-`;
 
 // export const AfricaStoryBookPage: React.FunctionComponent = () => {
 //     return (

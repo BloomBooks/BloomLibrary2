@@ -7,11 +7,12 @@ interface IProps {
     title: string;
     bookCount?: string;
     filter: IFilter;
+    pageType: string;
 }
 
 const CategoryCard: React.FunctionComponent<IProps> = props => {
     const router = useContext(RouterContext);
-    // some bookshelfs have multiple levels, separated by "/". For now,
+    // some bookshelves have multiple levels, separated by "/". For now,
     // just use the last part.
     const parts = props.title.split("/");
     const title = parts[parts.length - 1];
@@ -25,7 +26,7 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
                 //alert("click " + this.props.title);
                 router!.push({
                     title: props.title,
-                    pageType: "category",
+                    pageType: props.pageType ? props.pageType : "category",
                     filter: props.filter
                 });
             }}

@@ -6,7 +6,7 @@ import { BookCard } from "../components/BookCard";
 import { BookGroup } from "../components/BookGroup";
 
 import { LanguageGroup } from "../components/LanguageGroup";
-import { LanguagePage } from "../components/Pages";
+import { LanguagePage, BookGroupForEachTopic } from "../components/Pages";
 import { HomePage } from "../components/HomePage";
 import { BookshelfGroup } from "../components/BookShelfGroup";
 
@@ -23,16 +23,22 @@ storiesOf("BookGroup", module)
             filter={{ otherTags: "bookshelf:Featured" }}
         />
     ))
+    .add("All Topics", () => (
+        <BookGroupForEachTopic filter={{ language: "th" }} />
+    ))
+
     .add("Sign Language", () => (
         <BookGroup title="Sign Language" filter={{ feature: "signLanguage" }} />
     ))
     .add("Accessible", () => (
         <BookGroup
-            title="Visuall Impaired"
+            title="Visually Impaired"
             filter={{ feature: "visuallyImpaired" }}
         />
     ))
-    .add("All Bookshelves", () => <BookshelfGroup title="All Bookshelves" />)
+    .add("All Bookshelves", () => (
+        <BookshelfGroup title="All Bookshelves" bookShelfCategory="" />
+    ))
     .add("All books by date", () => (
         <BookGroup title="All books by date" filter={{}} order={"-createdAt"} />
     ))

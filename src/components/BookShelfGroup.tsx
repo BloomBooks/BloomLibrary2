@@ -6,7 +6,7 @@ import CategoryCard from "./CategoryCard";
 
 interface IProps {
     title: string;
-    bookShelfCategory?: string; // project, org, publisher, custom
+    bookShelfCategory: string; // project, org, publisher, custom
     parentBookshelf?: string;
 }
 /* This lets use show bookshelves. Not the books in them, but the list of shelves, themeselves.
@@ -70,6 +70,7 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = props => {
                                 title={l.englishName}
                                 bookCount="??"
                                 filter={{ bookshelf: l.key }}
+                                pageType={props.bookShelfCategory}
                             />
                         ))}
                 </ul>
