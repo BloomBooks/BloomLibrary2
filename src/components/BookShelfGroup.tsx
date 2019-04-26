@@ -1,6 +1,6 @@
 import React from "react";
 import { css, cx } from "emotion";
-import { useQueryBlorgClass } from "./useQueryBlorg";
+import { useGetBookshelves } from "./useQueryBlorg";
 import { getResultsOrMessageElement } from "./useQueryBlorg";
 import CategoryCard from "./CategoryCard";
 
@@ -26,17 +26,7 @@ interface IProps {
 export const BookshelfGroup: React.FunctionComponent<IProps> = props => {
     // At this point there are so few bookshelves that we just retrieve the whole list and then filter here.
     //Might would be a good thing to cache.
-    const queryResultElements = useQueryBlorgClass(
-        "bookshelf",
-        {
-            keys: "englishName,key",
-            limit: 1000
-        },
-        // optionally, this group can be limited to the second level shelves of a large project (e.g. Enabling Writers)
-        {
-            bookShelfCategory: props.bookShelfCategory
-        }
-    );
+    const queryResultElements = useGetBookshelves(props.bookShelfCategory);
 
     const { noResultsElement, results } = getResultsOrMessageElement(
         queryResultElements

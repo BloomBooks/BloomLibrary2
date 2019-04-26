@@ -25,6 +25,20 @@ export function useGetLanguageInfo(language: string) {
         }
     });
 }
+export function useGetBookshelves(category?: string) {
+    return useAxios({
+        url: `https://bloom-parse-server-production.azurewebsites.net/parse/classes/bookshelf`,
+        method: "GET",
+        trigger: "true",
+        options: {
+            headers: header,
+            params: {
+                where: { category: category },
+                keys: "englishName,key"
+            }
+        }
+    });
+}
 export function useTopicList() {
     return useQueryBlorgClass("tag", { limit: 1000, count: 1000 }, {});
 }

@@ -36,7 +36,8 @@ export class BrowseView extends Component {
                         filter={this.router.current.filter}
                     />
                 );
-            case "category":
+            case "publisher":
+            case "org":
                 // if (this.router.current.filter.publisher) {
                 //     switch (this.router.current.filter.publisher) {
                 //         // case "Pratham":
