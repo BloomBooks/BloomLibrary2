@@ -68,3 +68,11 @@ a:hover {
 .banner a {
     color: white;
 }
+
+.searchContainer {
+    display: inline-flex;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-right: 20px;
+}

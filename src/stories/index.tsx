@@ -9,6 +9,7 @@ import { LanguageGroup } from "../components/LanguageGroup";
 import { LanguagePage, BookGroupForEachTopic } from "../components/Pages";
 import { HomePage } from "../components/HomePage";
 import { BookshelfGroup } from "../components/BookShelfGroup";
+import "../index.css";
 
 const sampleUrl =
     "https://s3.amazonaws.com/BloomLibraryBooks/librarian%40bloomlibrary.org%2f32916f6b-02bd-4e0b-9b2b-d971096259b7%2fGrandpa+Fish+and+the+Radio%2f";
