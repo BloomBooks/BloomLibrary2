@@ -2,50 +2,69 @@ html,
 body,
 #root,
 .App {
-  height: 100%;
+    height: 100%;
 }
 body {
-  margin: 0;
-  padding: 0;
-  background-color: #212121;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    padding: 0;
+    /*background-color: #212121;*/
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+        monospace;
 }
 
 body,
 h1,
 h2,
 h3 {
-  font-family: "Roboto", "Noto", sans-serif;
+    font-family: "Roboto", "Noto", sans-serif;
 }
 h1 {
-  text-align: left;
-  font-size: 14pt;
-  font-weight: 500;
-  margin-bottom: 5px;
-  color: whitesmoke;
+    text-align: left;
+    font-size: 14pt;
+    font-weight: 500;
+    margin-bottom: 5px;
+    /*color: whitesmoke;*/
 }
 h2 {
-  text-align: left;
-  font-size: 12pt;
-  font-weight: bold;
+    text-align: left;
+    font-size: 12pt;
+    font-weight: bold;
 }
 
 ul {
-  list-style: none;
-  padding: 0;
+    list-style: none;
+    padding: 0;
 }
 
 .App {
-  margin-left: 0;
+    margin-left: 0;
 }
 
 a:hover {
-  text-decoration: underline;
-  cursor: pointer;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.pageResults {
+    padding-left: 20px;
+}
+
+.banner {
+    display: flex;
+    flex-direction: column;
+    background-position: left;
+    height: 300px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: white;
+    padding-left: 20px;
+}
+
+.banner a {
+    color: white;
 }

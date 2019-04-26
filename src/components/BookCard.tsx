@@ -26,7 +26,7 @@ export class BookCard extends React.Component<IProps> {
             >
                 {/* For (39a) Lara the Yellow Ladybird I placed a file named "test-cover" in the bucket
         in order to play with how the cards can look once we have access to their actual cover images. */}
-                {/* <img
+                <img
                     className={css`
                         height: 100px;
                         object-fit: cover; //cover will crop, but fill up nicely
@@ -36,7 +36,7 @@ export class BookCard extends React.Component<IProps> {
                         (ev.target as any).src =
                             this.props.baseUrl + "thumbnail-256.png";
                     }}
-                /> */}
+                />
 
                 <h2
                     className={css`

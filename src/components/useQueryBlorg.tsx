@@ -2,8 +2,31 @@ import React, { Component } from "react";
 import useAxios from "@use-hooks/axios";
 import { IFilter } from "../IFilter";
 
+const header = {
+    "Content-Type": "text/json",
+    "X-Parse-Application-Id": "R6qNTeumQXjJCMutAJYAwPtip1qBulkFyLefkCE5",
+    "X-Parse-REST-API-Key": "bAgoDIISBcscMJTTAY4mBB2RHLfkowkqMBMhQ1CD"
+};
+
 export function useGetBookCount(filter: IFilter) {
     return useQueryBlorgClass("books", { limit: 0, count: 1 }, filter);
+}
+export function useGetLanguageInfo(language: string) {
+    return useAxios({
+        url: `https://bloom-parse-server-production.azurewebsites.net/parse/classes/language`,
+        method: "GET",
+        trigger: "true",
+        options: {
+            headers: header,
+            params: {
+                where: { isoCode: language },
+                keys: "isoCode,name,usageCount,bannerImageUrl"
+            }
+        }
+    });
+}
+export function useTopicList() {
+    return useQueryBlorgClass("tag", { limit: 1000, count: 1000 }, {});
 }
 export function useQueryBlorgClass(
     queryClass: string,
@@ -15,14 +38,7 @@ export function useQueryBlorgClass(
         method: "GET",
         trigger: "true",
         options: {
-            headers: {
-                "Content-Type": "text/json",
-                "X-Parse-Application-Id":
-                    "R6qNTeumQXjJCMutAJYAwPtip1qBulkFyLefkCE5",
-                "X-Parse-REST-API-Key":
-                    "bAgoDIISBcscMJTTAY4mBB2RHLfkowkqMBMhQ1CD"
-            },
-
+            headers: header,
             params: constructParseDBQuery(params, filter)
         }
     });
@@ -57,7 +73,7 @@ function constructParseDBQuery(params: any, filter: IFilter): object {
         params.where.tags = {
             $in: [
                 "topic:" + filter.topic /* new style */,
-                filter.topic /*old style*/
+                filter.topic /*old style, which I suspect is all gone*/
             ]
         };
     }
@@ -67,19 +83,35 @@ function constructParseDBQuery(params: any, filter: IFilter): object {
     }
     if (filter.bookShelfCategory != null) {
         delete params.where.bookShelfCategory;
-        params.where.category = filter.bookShelfCategory;
     }
     //tags: {$all: ["bookshelf:Enabling Writers Workshops/Bangladesh_Dhaka Ahsania Mission",
     if (filter.bookshelf != null) {
         delete params.where.bookshelf;
-        params.where.tags = "bookshelf:" + filter.bookshelf;
     }
+
+    const tagParts = [];
+    if (filter.bookshelf) {
+        tagParts.push("bookshelf:" + filter.bookshelf);
+    }
+    if (filter.topic) {
+        tagParts.push("topic:" + filter.topic);
+    }
+    if (tagParts.length > 0) {
+        params.where.tags = {
+            $all: tagParts
+        };
+    }
+
     if (filter.feature != null) {
         delete params.where.feature;
         params.where.features = filter.feature; //my understanding is that this means it just has to contain this, could have others
     }
-
-    params.where.inCirculation = { $in: [true, null] };
+    if (filter.inCirculation != null) {
+        delete params.where.inCirculation;
+        params.where.inCirculation = { $in: [filter.inCirculation, null] };
+    } else {
+        params.where.inCirculation = { $in: [true, null] };
+    }
     return params;
 }
 
