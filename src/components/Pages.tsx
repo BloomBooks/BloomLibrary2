@@ -2,7 +2,7 @@ import React from "react";
 import { BookGroup } from "./BookGroup";
 import { css } from "emotion";
 import { PublisherBanner } from "./PublisherBanner";
-import { IFilter } from "../Router";
+import { IFilter } from "../IFilter";
 import { BookCount } from "./BookCount";
 
 export const CategoryPage: React.FunctionComponent<{

@@ -1,6 +1,6 @@
 import React from "react";
 import { useGetBookCount, getResultsOrMessageElement } from "./useQueryBlorg";
-import { IFilter } from "../Router";
+import { IFilter } from "../IFilter";
 
 export const BookCount: React.FunctionComponent<{
     filter: IFilter;

@@ -23,7 +23,7 @@ export const HomePage: React.FunctionComponent = () => {
                     title="Featured Shell Books You Can Translate"
                     filter={{ otherTags: "bookshelf:Featured" }}
                 />
-                <LanguageGroup title="Languages" />
+                <LanguageGroup />
                 <BookGroup
                     title="New Arrivals"
                     filter={{}}

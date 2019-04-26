@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import useAxios from "@use-hooks/axios";
-import { IFilter } from "../Router";
+import { IFilter } from "../IFilter";
 
 export function useGetBookCount(filter: IFilter) {
     return useQueryBlorgClass("books", { limit: 0, count: 1 }, filter);

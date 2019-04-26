@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { BookCard } from "./BookCard";
 import { css, cx } from "emotion";
-import { IFilter } from "../Router";
+import { IFilter } from "../IFilter";
 import {
     useQueryBlorgClass,
     getResultsOrMessageElement
