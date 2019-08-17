@@ -57,6 +57,7 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = props => {
                         )
                         .map((l: any) => (
                             <CategoryCard
+                                key={l.englishName}
                                 title={l.englishName}
                                 bookCount="??"
                                 filter={{ bookshelf: l.key }}

@@ -2,28 +2,31 @@
     "name": "blorg",
     "version": "0.1.0",
     "private": true,
+    "engines": {
+        "node": "~12.8.0"
+    },
     "dependencies": {
         "@material-ui/core": "^3.9.3",
-        "@types/jest": "24.0.11",
+        "@types/jest": "24.0.17",
         "@types/match-sorter": "^2.3.0",
-        "@types/node": "11.12.2",
+        "@types/node": "12.7.2",
         "@types/qs": "^6.5.2",
-        "@types/react": "16.8.10",
-        "@types/react-dom": "16.8.3",
-        "@types/react-lazyload": "^2.3.2",
+        "@types/react": "16.9.2",
+        "@types/react-dom": "16.8.5",
+        "@types/react-lazyload": "^2.5.0",
         "@use-hooks/axios": "^1.1.3",
         "downshift": "^3.2.10",
         "emotion": "^10.0.9",
-        "match-sorter": "^3.0.0",
-        "mobx": "^5.9.4",
-        "mobx-react": "^5.4.3",
+        "match-sorter": "^4.0.1",
+        "mobx": "^5.13.0",
+        "mobx-react": "^6.1.3",
         "qs": "^6.7.0",
-        "react": "^16.8.6",
-        "react-dom": "^16.8.6",
-        "react-lazyload": "^2.5.0",
-        "react-scripts": "2.1.8",
-        "typeface-roboto": "^0.0.54",
-        "typescript": "3.4.1"
+        "react": "^16.9.0",
+        "react-dom": "^16.9.0",
+        "react-lazyload": "^2.6.2",
+        "react-scripts": "3.1.1",
+        "typeface-roboto": "^0.0.75",
+        "typescript": "3.5.3"
     },
     "scripts": {
         "start": "react-scripts start",
@@ -43,7 +46,7 @@
         "not op_mini all"
     ],
     "devDependencies": {
-        "@babel/core": "^7.4.3",
+        "@babel/core": "^7.5.5",
         "@storybook/addon-actions": "^5.0.6",
         "@storybook/addon-info": "^5.0.6",
         "@storybook/addon-links": "^5.0.6",
@@ -51,6 +54,6 @@
         "@storybook/react": "^5.0.6",
         "@types/storybook__addon-info": "^4.1.1",
         "@types/storybook__react": "^4.0.1",
-        "babel-loader": "^8.0.5"
+        "babel-loader": "^8.0.6"
     }
 }
