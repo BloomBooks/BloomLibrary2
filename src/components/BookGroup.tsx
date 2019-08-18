@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
 import { BookCard } from "./BookCard";
 import { css, cx } from "emotion";
 import { IFilter } from "../IFilter";
@@ -29,6 +29,12 @@ export const BookGroup: React.FunctionComponent<IProps> = props => {
     const { noResultsElement, results } = getResultsOrMessageElement(
         queryResultElements
     );
+
+    // !!!!!!!!!!! TODO !!!!!!!!!!!!!!
+    // Currently we never get a new query going out, let alone get/display new results when the filter changes
+    // I (JH) haven't been able to figure out why. I cna see that useAxios has a useEffect() that doesn't notice
+    // that the query has changed.
+
     const zeroBooksMatchedElement =
         results && results.length > 0 ? null : (
             // <p>{`No Books for "${

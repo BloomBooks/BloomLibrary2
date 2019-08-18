@@ -6,12 +6,6 @@ import { BookCount } from "./BookCount";
 import { BookshelfGroup } from "./BookShelfGroup";
 import { HomeBanner } from "./Banners";
 import { IFilter } from "../Router";
-const homePage = css`
-    height: 100%;
-    /* & h1 {
-        color: black;
-    } */
-`;
 
 export const HomePage: React.FunctionComponent = () => {
     const almostAllBooksFilter: IFilter = { inCirculation: true };

@@ -5,13 +5,15 @@ import { HomePage } from "./HomePage";
 import {
     LanguagePage,
     CategoryPage,
-    ProjectPage
+    ProjectPage,
+    SearchResultsPage
     // PrathamPage,
     // AfricaStoryBookPage,
     // BookDashPage
 } from "./Pages";
 import { Breadcrumbs } from "./Breadcrumbs";
 import "typeface-roboto";
+import { Header } from "./header/Header";
 
 /* This is the top level component that can be hosted on a website to view and interact with the bloom library */
 @observer
@@ -22,6 +24,10 @@ export class BrowseView extends Component {
         switch (this.router.current.pageType) {
             case "home":
                 return <HomePage />;
+            case "search":
+                return (
+                    <SearchResultsPage filter={this.router.current.filter} />
+                );
             case "language":
                 return (
                     <LanguagePage
@@ -63,6 +69,7 @@ export class BrowseView extends Component {
         document.title = `Bloom Library: ${this.router.current.title}`;
         return (
             <RouterContext.Provider value={this.router}>
+                <Header />
                 {this.currentPage()}
             </RouterContext.Provider>
         );

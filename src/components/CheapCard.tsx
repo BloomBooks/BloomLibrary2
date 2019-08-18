@@ -2,7 +2,7 @@ import React from "react";
 import { css, cx } from "emotion";
 
 interface IProps extends React.HTMLProps<HTMLLIElement> {
-    onClick: () => void;
+    onClick?: () => void;
 }
 
 export const CheapCard: React.FunctionComponent<IProps> = props => (
@@ -10,7 +10,9 @@ export const CheapCard: React.FunctionComponent<IProps> = props => (
         {...props}
         className={cx([cardStyle, props.className])}
         onClick={() => {
-            props.onClick();
+            if (props.onClick) {
+                props.onClick();
+            }
             //   this.props.browseState.push(this.props.target);
         }}
     >
@@ -36,6 +38,6 @@ const cardStyle = css`
     }
 
     /* for on dark background*/
-    border: solid white;
+    //border: solid white;
     box-sizing: border-box;
 `;

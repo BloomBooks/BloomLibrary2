@@ -7,4 +7,5 @@ export interface IFilter {
     bookShelfCategory?: string;
     otherTags?: string;
     inCirculation?: boolean;
+    search?: string;
 }

@@ -1,36 +1,26 @@
 {
-  "compilerOptions": {
-    "target": "es5",
-    "module": "esnext",
-    "sourceMap": true,
-    "jsx": "preserve",
-    "lib": [
-      "dom",
-      "es5",
-      "scripthost",
-      "es2017.object"
-    ],
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "experimentalDecorators": true,
-    "alwaysStrict": true,
-    "noImplicitReturns": true,
-    "strict": true,
-    "strictNullChecks": true,
-    "outDir": "../../output/browser",
-    "resolveJsonModule": true,
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "isolatedModules": true,
-    "noEmit": true
-  },
-  "exclude": [
-    "node_modules",
-    "typings"
-  ],
-  "include": [
-    "src"
-  ]
+    "compilerOptions": {
+        "target": "es5",
+        "module": "esnext",
+        "sourceMap": true,
+        "jsx": "preserve",
+        "lib": ["dom", "es5", "scripthost", "es2017.object"],
+        "allowSyntheticDefaultImports": true,
+        "forceConsistentCasingInFileNames": true,
+        "experimentalDecorators": true,
+        "alwaysStrict": true,
+        "noImplicitReturns": true,
+        "strict": true,
+        "strictNullChecks": true,
+        "outDir": "../../output/browser",
+        "resolveJsonModule": true,
+        "allowJs": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "isolatedModules": true,
+        "noEmit": true
+    },
+    "exclude": ["node_modules", "typings"],
+    "include": ["src"]
 }

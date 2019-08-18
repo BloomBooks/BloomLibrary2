@@ -17,7 +17,7 @@ export const LanguageCard: React.FunctionComponent<IProps> = props => {
             className={css`
                 width: 120px;
                 height: 100px;
-                background-color: #9ed0b8;
+                //background-color: #9ed0b8;
             `}
             onClick={() => {
                 //alert("click " + this.props.title);
@@ -36,7 +36,13 @@ export const LanguageCard: React.FunctionComponent<IProps> = props => {
             >
                 {props.name}
             </h2>
-            <div>{props.bookCount ? `${props.bookCount} Books` : ""}</div>
+            <div
+                className={css`
+                    text-align: center;
+                `}
+            >
+                {props.bookCount ? `${props.bookCount} Books` : ""}
+            </div>
         </CheapCard>
     );
 };

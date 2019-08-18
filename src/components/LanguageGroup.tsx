@@ -56,12 +56,12 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                     <input
                                         className={css`
                                             display: block;
-                                            margin-bottom: 7px;
+                                            //margin-bottom: 7px;
 
                                             border: 0;
                                         `}
                                         {...getInputProps()}
-                                    />{" "}
+                                    />
                                     <img src={searchIcon} />
                                 </div>
 

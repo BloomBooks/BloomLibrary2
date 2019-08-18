@@ -3,12 +3,15 @@ import { css, cx } from "emotion";
 import { CheapCard } from "./CheapCard";
 import { RouterContext } from "../Router";
 import { IFilter } from "../IFilter";
+import * as ReactImage from "react-image";
+import { BookCount } from "./BookCount";
 
 interface IProps {
     title: string;
     bookCount?: string;
     filter: IFilter;
     pageType: string;
+    img: string;
 }
 
 const CategoryCard: React.FunctionComponent<IProps> = props => {
@@ -17,11 +20,23 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
     // just use the last part.
     const parts = props.title.split("/");
     const title = parts[parts.length - 1];
+
+    const titleElementIfNoImage = (
+        <h2
+            className={css`
+                text-align: center;
+                flex-grow: 1; // push the rest to the bottom5
+            `}
+        >
+            {title}
+        </h2>
+    );
+
     return (
         <CheapCard
             className={css`
                 width: 220px;
-                background-color: #dd8b82;
+                padding: 10px;
             `}
             onClick={() => {
                 //alert("click " + this.props.title);
@@ -32,15 +47,26 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
                 });
             }}
         >
-            <h2
+            <ReactImage
+                src={props.img}
                 className={css`
+                    max-height: 129px;
+                    max-width: 198px;
+                    margin-left: auto;
+                    margin-right: auto;
+                `}
+                loader={titleElementIfNoImage}
+                unloader={titleElementIfNoImage}
+            />
+
+            <div
+                className={css`
+                    margin-top: auto;
                     text-align: center;
-                    flex-grow: 1; // push the rest to the bottom5
                 `}
             >
-                {title}
-            </h2>
-            <div>{props.bookCount ? `${props.bookCount} Books` : ""}</div>
+                <BookCount message={`{0} Books`} filter={props.filter} />
+            </div>
         </CheapCard>
     );
 };

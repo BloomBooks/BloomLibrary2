@@ -3,6 +3,7 @@ import { css, cx } from "emotion";
 import { useGetBookshelves } from "./useQueryBlorg";
 import { getResultsOrMessageElement } from "./useQueryBlorg";
 import CategoryCard from "./CategoryCard";
+import { CheapCard } from "./CheapCard";
 
 interface IProps {
     title: string;
@@ -31,41 +32,79 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = props => {
     const { noResultsElement, results } = getResultsOrMessageElement(
         queryResultElements
     );
+    const skeletonCards = [1, 2, 3, 4, 5];
+    const parts =
+        noResultsElement ||
+        results
+            .filter(
+                (shelf: any) =>
+                    !props.parentBookshelf ||
+                    props.parentBookshelf.length == 0 ||
+                    shelf.englishName.indexOf(props.parentBookshelf) == 0
+            )
+            .map((l: any) => (
+                <CategoryCard
+                    key={l.key}
+                    title={l.englishName}
+                    bookCount="??"
+                    filter={{ bookshelf: l.key }}
+                    pageType={props.bookShelfCategory}
+                    img={
+                        "https://share.bloomlibrary.org/category-images/" +
+                        l.key +
+                        ".png"
+                    }
+                />
+            ));
+
+    // const parts = results
+    //     ? results
+    //           .filter(
+    //               (shelf: any) =>
+    //                   !props.parentBookshelf ||
+    //                   props.parentBookshelf.length == 0 ||
+    //                   shelf.englishName.indexOf(props.parentBookshelf) == 0
+    //           )
+    //           .map((l: any) => (
+    //               <CategoryCard
+    //                   key={l.key}
+    //                   title={l.englishName}
+    //                   bookCount="??"
+    //                   filter={{ bookshelf: l.key }}
+    //                   pageType={props.bookShelfCategory}
+    //                   img={
+    //                       "https://share.bloomlibrary.org/category-images/" +
+    //                       l.key +
+    //                       ".png"
+    //                   }
+    //               />
+    //           ))
+    //     : skeletonCards.map(c => (
+    //           <CheapCard
+    //               className={css`
+    //                   width: 100px;
+
+    //                   background-color: lightgray;
+    //               `}
+    //           />
+    //       ));
+
     return (
-        noResultsElement || (
-            <li
+        <li
+            className={css`
+                margin-top: 30px;
+            `}
+        >
+            <h1>{props.title}</h1>
+            <ul
                 className={css`
-                    margin-top: 30px;
+                    list-style: none;
+                    display: flex;
+                    padding-left: 0;
                 `}
             >
-                <h1>{props.title}</h1>
-                <ul
-                    className={css`
-                        list-style: none;
-                        display: flex;
-                        padding-left: 0;
-                    `}
-                >
-                    {results
-                        .filter(
-                            (shelf: any) =>
-                                !props.parentBookshelf ||
-                                props.parentBookshelf.length == 0 ||
-                                shelf.englishName.indexOf(
-                                    props.parentBookshelf
-                                ) == 0
-                        )
-                        .map((l: any) => (
-                            <CategoryCard
-                                key={l.englishName}
-                                title={l.englishName}
-                                bookCount="??"
-                                filter={{ bookshelf: l.key }}
-                                pageType={props.bookShelfCategory}
-                            />
-                        ))}
-                </ul>
-            </li>
-        )
+                {parts}
+            </ul>
+        </li>
     );
 };

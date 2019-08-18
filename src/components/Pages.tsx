@@ -1,10 +1,27 @@
 import React from "react";
 import { BookGroup } from "./BookGroup";
-import { css } from "emotion";
 import { IFilter } from "../IFilter";
-import { PublisherBanner } from "./PublisherBanner";
 import { useTopicList } from "./useQueryBlorg";
-import { BannerContents, LanguageBanner, ProjectBanner } from "./Banners";
+import {
+    BannerContents,
+    LanguageBanner,
+    ProjectBanner,
+    SearchBanner
+} from "./Banners";
+
+export const SearchResultsPage: React.FunctionComponent<{
+    filter: IFilter;
+}> = props => (
+    <>
+        <SearchBanner filter={props.filter} />
+        <ul className={"pageResults"}>
+            <BookGroup
+                title={`Books matching "${props.filter.search!}"`}
+                filter={props.filter}
+            />
+        </ul>
+    </>
+);
 
 export const CategoryPage: React.FunctionComponent<{
     title: string;

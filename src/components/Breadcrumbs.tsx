@@ -6,7 +6,7 @@ export const Breadcrumbs: React.FunctionComponent = () => {
     const router = useContext(RouterContext);
     return (
         <ul className={breadcrumbsStyle}>
-            {router!.locationStack.map(l => (
+            {router!.breadcrumbStack.map(l => (
                 <li key={l.title}>
                     <a
                         onClick={() => {

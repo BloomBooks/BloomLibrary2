@@ -23,7 +23,7 @@ export const BannerContents: React.FunctionComponent<{
                 className={css`
                     font-size: ${size}px;
                     margin-top: 0;
-                    flex-grow: 1; // push the rest to the bottom
+                    //flex-grow: 1; // push the rest to the bottom
                 `}
             >
                 {lines[0]}
@@ -161,3 +161,22 @@ export const ProjectBanner: React.FunctionComponent<{
         />
     </div>
 );
+
+export const SearchBanner: React.FunctionComponent<{
+    filter: IFilter;
+}> = props => {
+    const title = "xxxxxxx";
+    return (
+        <div
+            className={css`
+                background-color: #1c1c1c;
+                color: whitesmoke;
+                padding-bottom: 10px;
+                padding-left: 20px;
+            `}
+        >
+            <Breadcrumbs />
+            <BookCount filter={props.filter} />{" "}
+        </div>
+    );
+};
