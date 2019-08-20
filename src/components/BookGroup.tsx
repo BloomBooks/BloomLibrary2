@@ -7,7 +7,7 @@ import {
     getResultsOrMessageElement
 } from "./useQueryBlorg";
 import LazyLoad from "react-lazyload";
-
+import ReactIdSwiper from "react-id-swiper";
 interface IProps {
     title: string;
     filter: IFilter; // becomes the "where" clause the query
@@ -42,24 +42,38 @@ export const BookGroup: React.FunctionComponent<IProps> = props => {
             // }". Should not see this in production`}</p>
             <></>
         );
+    const params = {
+        navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev"
+        },
+        spaceBetween: 20,
+        slidesPerView: "auto"
+    };
+
     return (
         noResultsElement ||
         zeroBooksMatchedElement || (
             <LazyLoad height={200}>
                 <li
                     className={css`
-                        //margin-top: 30px;
+                        margin-top: 30px;
                         height: 200px; // want height to be same even if no results yet
                     `}
                 >
-                    <h1>{props.title}</h1>
-                    <ul
-                        className={css`
-                            list-style: none;
-                            display: flex;
-                            padding-left: 0;
-                        `}
-                    >
+                    <h1>
+                        {props.title}
+                        <span
+                            className={css`
+                                font-size: 9pt;
+                                color: gray;
+                                margin-left: 1em;
+                            `}
+                        >
+                            1
+                        </span>
+                    </h1>
+                    <ReactIdSwiper {...params}>
                         {results.map((b: any) => (
                             <BookCard
                                 key={b.baseUrl}
@@ -67,7 +81,7 @@ export const BookGroup: React.FunctionComponent<IProps> = props => {
                                 baseUrl={b.baseUrl}
                             />
                         ))}
-                    </ul>
+                    </ReactIdSwiper>
                 </li>
             </LazyLoad>
         )

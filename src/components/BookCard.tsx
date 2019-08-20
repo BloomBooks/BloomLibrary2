@@ -10,16 +10,23 @@ const image = css`
     background-position: center;
 `;
 
+export const cardWidth = 120;
+
 interface IProps {
     title: string;
     baseUrl: string;
+    className?: string;
 }
 export const BookCard: React.FunctionComponent<IProps> = props => (
     <CheapCard
-        onClick={() => {}}
-        className={css`
-            width: 120px;
-        `}
+        className={
+            props.className +
+            " " +
+            css`
+                width: ${cardWidth}px;
+            `
+        }
+        key={props.baseUrl}
     >
         {/* For (39a) Lara the Yellow Ladybird I placed a file named "test-cover" in the bucket
         in order to play with how the cards can look once we have access to their actual cover images. */}

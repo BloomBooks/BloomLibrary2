@@ -1,14 +1,15 @@
 import React from "react";
 import { css, cx } from "emotion";
 
-interface IProps extends React.HTMLProps<HTMLLIElement> {
+interface IProps extends React.HTMLProps<HTMLDivElement> {
     onClick?: () => void;
+    className?: string;
 }
 
 export const CheapCard: React.FunctionComponent<IProps> = props => (
-    <li
+    <div
         {...props}
-        className={cx([cardStyle, props.className])}
+        className={cx(["cheapCard", cardStyle, props.className])}
         onClick={() => {
             if (props.onClick) {
                 props.onClick();
@@ -17,7 +18,7 @@ export const CheapCard: React.FunctionComponent<IProps> = props => (
         }}
     >
         {props.children}
-    </li>
+    </div>
 );
 
 const cardStyle = css`
