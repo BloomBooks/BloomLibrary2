@@ -1,5 +1,8 @@
 import React from "react";
-import { useGetBookCount, getResultsOrMessageElement } from "./useQueryBlorg";
+import {
+    useGetBookCount,
+    getResultsOrMessageElement
+} from "./LibraryQueryHooks";
 import { IFilter } from "../IFilter";
 import { HtmlAttributes } from "csstype";
 

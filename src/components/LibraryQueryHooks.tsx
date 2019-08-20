@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import useAxios from "@use-hooks/axios";
 import { IFilter } from "../IFilter";
 import { css, cx } from "emotion";
+import { AxiosResponse } from "axios";
 
 const header = {
     "Content-Type": "text/json",
@@ -10,7 +11,7 @@ const header = {
 };
 
 export function useGetBookCount(filter: IFilter) {
-    return useQueryBlorgClass("books", { limit: 0, count: 1 }, filter);
+    return useLibraryQuery("books", { limit: 0, count: 1 }, filter);
 }
 export function useGetLanguageInfo(language: string) {
     return useAxios({
@@ -41,13 +42,20 @@ export function useGetBookshelves(category?: string) {
     });
 }
 export function useTopicList() {
-    return useQueryBlorgClass("tag", { limit: 1000, count: 1000 }, {});
+    return useLibraryQuery("tag", { limit: 1000, count: 1000 }, {});
 }
-export function useQueryBlorgClass(
+interface IAxiosAnswer {
+    response: null | AxiosResponse;
+    error: null | Error;
+    loading: boolean;
+    query: () => number;
+    reFetch: () => number;
+}
+export function useLibraryQuery(
     queryClass: string,
     params: {},
     filter: IFilter
-) {
+): IAxiosAnswer {
     return useAxios({
         url: `https://bloom-parse-server-production.azurewebsites.net/parse/classes/${queryClass}`,
         method: "GET",
@@ -58,6 +66,58 @@ export function useQueryBlorgClass(
             params: constructParseDBQuery(params, filter)
         }
     });
+}
+interface ISearchBooksResult {
+    totalMatchingRecords: number;
+    errorString: string | null;
+    results: [];
+}
+// the idea is for this to be higher level than useQueryLibrary. Initially
+// with a separate count for the full number, but eventually with paging.
+export function useSearchBooks(
+    params: {},
+    filter: IFilter
+): ISearchBooksResult {
+    const countStatus: IAxiosAnswer = useLibraryQuery(
+        "books",
+        { count: 1 },
+        filter
+    );
+    const resultStatus: IAxiosAnswer = useLibraryQuery("books", params, filter);
+    const simplifiedResultStatus = processAxiosStatus(resultStatus);
+    const simplifiedCountStatus = processAxiosStatus(countStatus);
+
+    return {
+        totalMatchingRecords: simplifiedCountStatus.count,
+        errorString: simplifiedResultStatus.error
+            ? simplifiedResultStatus.error.message
+            : null,
+        results: simplifiedResultStatus.results
+    };
+}
+interface ISimplifiedAxiosResult {
+    results: [];
+    count: number;
+    error: Error | null;
+}
+function processAxiosStatus(answer: IAxiosAnswer): ISimplifiedAxiosResult {
+    if (answer.error)
+        return {
+            count: -2,
+            results: [],
+            error: answer.error
+        };
+    return {
+        results:
+            answer.loading || !answer.response
+                ? []
+                : answer.response["data"]["results"],
+        count:
+            answer.loading || !answer.response
+                ? -1
+                : answer.response["data"]["count"],
+        error: null
+    };
 }
 
 function constructParseDBQuery(params: any, filter: IFilter): object {
@@ -137,7 +197,7 @@ function constructParseDBQuery(params: any, filter: IFilter): object {
     return params;
 }
 
-export function getResultsOrMessageElement(queryResult: any) {
+export function getResultsOrMessageElement(queryResult: IAxiosAnswer) {
     const { response, loading, error, reFetch } = queryResult;
     if (loading || !response)
         return {
@@ -164,4 +224,11 @@ export function getResultsOrMessageElement(queryResult: any) {
         results: response["data"]["results"],
         count: response["data"]["count"]
     };
+}
+
+export function getCountString(queryResult: any): string {
+    const { response, loading, error, reFetch } = queryResult;
+    if (loading || !response) return "";
+    if (error) return "error";
+    return response["data"]["count"].toString();
 }

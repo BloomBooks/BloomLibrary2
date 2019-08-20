@@ -5,7 +5,7 @@ import { Breadcrumbs } from "./Breadcrumbs";
 import { IFilter } from "../Router";
 import genericLanguageBannerImage from "book-pages.jpg";
 import genericProjectBannerImage from "generic-workshop.jpg";
-import { useGetLanguageInfo } from "./useQueryBlorg";
+import { useGetLanguageInfo } from "./LibraryQueryHooks";
 
 export const BannerContents: React.FunctionComponent<{
     title: string;

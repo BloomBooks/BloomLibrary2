@@ -1,14 +1,14 @@
 import React from "react";
 import { css, cx } from "emotion";
 import { LanguageCard } from "./LanguageCard";
-import { useQueryBlorgClass } from "./useQueryBlorg";
-import { getResultsOrMessageElement } from "./useQueryBlorg";
+import { useLibraryQuery } from "./LibraryQueryHooks";
+import { getResultsOrMessageElement } from "./LibraryQueryHooks";
 import Downshift from "downshift";
 import matchSorter from "match-sorter";
 import searchIcon from "../search.png";
 
 export const LanguageGroup: React.FunctionComponent = () => {
-    const queryResultElements = useQueryBlorgClass(
+    const queryResultElements = useLibraryQuery(
         "language",
         {
             keys: "name,usageCount,isoCode",
