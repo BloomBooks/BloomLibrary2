@@ -31,11 +31,14 @@ export const BookCard: React.FunctionComponent<IProps> = props => (
         {/* For (39a) Lara the Yellow Ladybird I placed a file named "test-cover" in the bucket
         in order to play with how the cards can look once we have access to their actual cover images. */}
         <img
-            className={css`
-                height: 100px;
-                object-fit: cover; //cover will crop, but fill up nicely
-            `}
-            src={props.baseUrl + "test-cover.jpg"} // we would have to generate new thumbnails that just have the image shown on the cover
+            className={
+                "swiper-lazy " +
+                css`
+                    height: 100px;
+                    object-fit: cover; //cover will crop, but fill up nicely
+                `
+            }
+            data-src={props.baseUrl + "test-cover.jpg"} // we would have to generate new thumbnails that just have the image shown on the cover
             onError={ev => {
                 if (props.baseUrl) {
                     (ev.target as any).src =
@@ -45,7 +48,16 @@ export const BookCard: React.FunctionComponent<IProps> = props => (
                 }
             }}
         />
-
+        {/* I think it would look better to have a calm, light grey Bloom logo, or a book outline, or something, instead of this animated
+            LOOK AT ME! spinner. */}
+        {/* <div
+            className={
+                "swiper-lazy-preloader " +
+                css`
+                    margin-top: -50px;
+                `
+            }
+        /> */}
         <h2
             className={css`
                 font-weight: normal;

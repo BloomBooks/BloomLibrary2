@@ -67,7 +67,8 @@ export function useLibraryQuery(
         }
     });
 }
-interface ISearchBooksResult {
+export interface ISearchBooksResult {
+    waiting: boolean;
     totalMatchingRecords: number;
     errorString: string | null;
     results: [];
@@ -92,20 +93,23 @@ export function useSearchBooks(
         errorString: simplifiedResultStatus.error
             ? simplifiedResultStatus.error.message
             : null,
-        results: simplifiedResultStatus.results
+        results: simplifiedResultStatus.results,
+        waiting: simplifiedResultStatus.waiting
     };
 }
 interface ISimplifiedAxiosResult {
     results: [];
     count: number;
     error: Error | null;
+    waiting: boolean;
 }
 function processAxiosStatus(answer: IAxiosAnswer): ISimplifiedAxiosResult {
     if (answer.error)
         return {
             count: -2,
             results: [],
-            error: answer.error
+            error: answer.error,
+            waiting: false
         };
     return {
         results:
@@ -116,7 +120,8 @@ function processAxiosStatus(answer: IAxiosAnswer): ISimplifiedAxiosResult {
             answer.loading || !answer.response
                 ? -1
                 : answer.response["data"]["count"],
-        error: null
+        error: null,
+        waiting: answer.loading
     };
 }
 
