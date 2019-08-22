@@ -18,6 +18,7 @@ storiesOf("BookCard", module).add("simple", () => (
     <BookCard
         lazy={false}
         title="Grandpa Fish and the Radio"
+        id="6rvW9OSAe9"
         baseUrl={sampleUrl}
     />
 ));

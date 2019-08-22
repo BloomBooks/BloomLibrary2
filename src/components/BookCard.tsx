@@ -1,7 +1,8 @@
-import React, { Component } from "react";
+import React, { Component, useContext } from "react";
 import { css } from "emotion";
 import { CheapCard } from "./CheapCard";
 import LazyLoad from "react-lazyload";
+import { Router, RouterContext } from "../Router";
 
 const image = css`
     height: 100px;
@@ -16,10 +17,13 @@ export const cardWidth = 120;
 interface IProps {
     title: string;
     baseUrl: string;
+    id: string;
     className?: string;
     lazy: boolean;
 }
 export const BookCard: React.FunctionComponent<IProps> = props => {
+    const router = useContext(RouterContext);
+
     const card = (
         <CheapCard
             className={
@@ -30,6 +34,7 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
                 `
             }
             key={props.baseUrl}
+            onClick={() => router!.pushBook(props.id)}
         >
             {/* For (39a) Lara the Yellow Ladybird I placed a file named "test-cover" in the bucket
         in order to play with how the cards can look once we have access to their actual cover images. */}

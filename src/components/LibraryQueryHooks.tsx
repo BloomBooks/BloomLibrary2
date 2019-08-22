@@ -41,6 +41,50 @@ export function useGetBookshelves(category?: string) {
         }
     });
 }
+
+interface IBookDetail {
+    title: string;
+    summary: string;
+    license: string;
+    baseUrl: string;
+    copyright: string;
+    credits: string;
+    pageCount: string;
+    tags: Array<string>;
+}
+interface ITags {
+    topic: string;
+}
+
+export function useGetBookDetail(
+    bookId: string
+): IBookDetail | undefined | null {
+    const { response, loading, error, reFetch } = useAxios({
+        url: `https://bloom-parse-server-production.azurewebsites.net/parse/classes/books`,
+        method: "GET",
+        trigger: "true",
+        options: {
+            headers: header,
+            params: {
+                where: { objectId: bookId },
+                keys:
+                    "title,baseUrl,license,summary,copyright,harvestState,tags,pages"
+                //how to get these? ,include: "langPointers,uploader"
+            }
+        }
+    });
+
+    if (loading || !response) return undefined;
+    if (error) return null;
+    const detail = response["data"]["results"][0];
+
+    // const parts = detail.tags.split(":");
+    // const x = parts.map(p => {tags[(p[0]) as string] = ""});
+
+    // return parts[0] + "-" + parts[1];
+    // detail.topic =
+    return detail;
+}
 export function useTopicList() {
     return useLibraryQuery("tag", { limit: 1000, count: 1000 }, {});
 }

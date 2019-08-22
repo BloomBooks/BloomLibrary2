@@ -34,7 +34,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
     const search = useSearchBooks(
         {
             include: "langPointers",
-            keys: "title,baseUrl",
+            keys: "title,baseUrl,objectId",
             // the following is arbitrary. I don't even yet no what the ux is that we want.
             limit: maxCardsToRetrieve,
             order: props.order || "title"
@@ -83,6 +83,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
             key={b.baseUrl}
             title={b.title}
             baseUrl={b.baseUrl}
+            id={b.objectId}
         />
     ));
     if (search.totalMatchingRecords > maxCardsToRetrieve) {

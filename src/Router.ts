@@ -1,6 +1,6 @@
 import * as React from "react";
 import { observable } from "mobx";
-import qs from "qs";
+import * as QueryString from "qs";
 import * as mobx from "mobx";
 import { IFilter } from "./IFilter";
 
@@ -15,6 +15,10 @@ export interface IFilter {
     inCirculation?: boolean;
 }
 export interface ILocation {
+    // this is used only when the location is a book detail
+    bookId?: string;
+
+    //these are used for other kinds of pages
     title: string;
     pageType: string;
     filter: IFilter;
@@ -40,7 +44,9 @@ export class Router {
                 1,
                 99999
             );
-            const location = qs.parse(queryWithoutQuestionMark) as ILocation;
+            const location = QueryString.parse(
+                queryWithoutQuestionMark
+            ) as ILocation;
             if (location && location.pageType != "home") {
                 this.push(home); // so that the breadcrumb starts with Home
             }
@@ -73,6 +79,15 @@ export class Router {
         }
     }
 
+    public pushBook(bookId: string) {
+        this.push({
+            bookId: bookId,
+            pageType: "book-detail",
+            filter: {},
+            title: "BOOKz"
+        });
+    }
+
     public push(location: ILocation) {
         // if we go here via a text search and are doing an new one,
         // we want to just replace the previous search term, rather
@@ -96,7 +111,7 @@ export class Router {
         window.history.pushState(
             mobx.toJS(this.breadcrumbStack),
             this.current.title,
-            "?" + qs.stringify(location)
+            "?" + QueryString.stringify(location)
         );
     }
 }
