@@ -6,7 +6,8 @@ import {
     LanguagePage,
     CategoryPage,
     ProjectPage,
-    SearchResultsPage
+    SearchResultsPage,
+    MorePage
     // PrathamPage,
     // AfricaStoryBookPage,
     // BookDashPage
@@ -27,6 +28,13 @@ export class BrowseView extends Component {
             case "search":
                 return (
                     <SearchResultsPage filter={this.router.current.filter} />
+                );
+            case "more":
+                return (
+                    <MorePage
+                        title={this.router.current.title}
+                        filter={this.router.current.filter}
+                    />
                 );
             case "language":
                 return (

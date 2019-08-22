@@ -8,6 +8,8 @@ import {
     ProjectBanner,
     SearchBanner
 } from "./Banners";
+import { Breadcrumbs } from "./Breadcrumbs";
+import { css } from "emotion";
 
 export const SearchResultsPage: React.FunctionComponent<{
     filter: IFilter;
@@ -18,7 +20,30 @@ export const SearchResultsPage: React.FunctionComponent<{
             <BookGroup
                 title={`Books matching "${props.filter.search!}"`}
                 filter={props.filter}
+                rows={20}
             />
+        </ul>
+    </>
+);
+
+// I don't know if we'll stick with this... but for now this is what you get
+// if there are lots of books and you scroll to the end of the 20 or so that
+// we put in a row, and then you click on the MoreCard there to see the rest
+export const MorePage: React.FunctionComponent<{
+    filter: IFilter;
+    title: string;
+}> = props => (
+    <>
+        <div
+            className={css`
+                background-color: black;
+            `}
+        >
+            <Breadcrumbs />
+        </div>
+        {/* <SearchBanner filter={props.filter} /> */}
+        <ul className={"pageResults"}>
+            <BookGroup title={props.title} filter={props.filter} rows={20} />
         </ul>
     </>
 );

@@ -5,11 +5,16 @@ import { IFilter } from "../IFilter";
 import { useSearchBooks } from "./LibraryQueryHooks";
 import LazyLoad from "react-lazyload";
 import ReactIdSwiper, { ReactIdSwiperProps } from "react-id-swiper";
+import { MoreCard } from "./MoreCard";
 interface IProps {
     title: string;
     filter: IFilter; // becomes the "where" clause the query
     order?: string;
+    // I don't know...l this could be "bookLimit" instead "rows". Have to think in terms
+    // of mobile versus big screen.... hmmm...
+    rows?: number;
 }
+
 export const BookGroup: React.FunctionComponent<IProps> = props => (
     // Enhance, this has parameters, height and offset, that should help
     // but so far I haven't got them to work well. It has many other
@@ -29,7 +34,8 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
         {
             include: "langPointers",
             keys: "title,baseUrl",
-            limit: 20,
+            // the following is arbitrary. I don't even yet no what the ux is that we want.
+            limit: props.rows ? props.rows * 5 : 20,
             order: props.order || "title"
         },
         props.filter
@@ -66,6 +72,42 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
         }
     }, [swiper]);
 
+    const showInOneRow = !props.rows || props.rows < 2;
+
+    const cards = search.results.map((b: any) => (
+        // if we're showing in one row, then we'll let swiper handle the laziness, otherwise
+        // we tell the card to try and be lazy itself.
+        <BookCard
+            lazy={!showInOneRow}
+            key={b.baseUrl}
+            title={b.title}
+            baseUrl={b.baseUrl}
+        />
+    ));
+    cards.push(
+        <MoreCard
+            title={props.title}
+            filter={props.filter}
+            count={search.totalMatchingRecords}
+            rows={props.rows ? props.rows * 2 : 2}
+        />
+    );
+
+    const bookList = showInOneRow ? (
+        <ReactIdSwiper {...swiperConfig} getSwiper={updateSwiper}>
+            {cards}
+        </ReactIdSwiper>
+    ) : (
+        <div
+            className={css`
+                display: flex;
+                flex-wrap: wrap;
+            `}
+        >
+            {cards}
+        </div>
+    );
+
     return (
         //noResultsElement ||
         zeroBooksMatchedElement || (
@@ -87,17 +129,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
                         {search.totalMatchingRecords}
                     </span>
                 </h1>
-                {search.waiting || (
-                    <ReactIdSwiper {...swiperConfig} getSwiper={updateSwiper}>
-                        {search.results.map((b: any) => (
-                            <BookCard
-                                key={b.baseUrl}
-                                title={b.title}
-                                baseUrl={b.baseUrl}
-                            />
-                        ))}
-                    </ReactIdSwiper>
-                )}
+                {search.waiting || bookList}
             </li>
         )
     );

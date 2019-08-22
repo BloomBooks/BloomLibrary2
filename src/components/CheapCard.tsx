@@ -26,6 +26,7 @@ const cardStyle = css`
     display: flex;
     flex-direction: column;
 
+    margin-bottom: 10px;
     height: 170px;
     margin-right: 5px;
     background-color: white;

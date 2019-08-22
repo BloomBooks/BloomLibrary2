@@ -126,6 +126,9 @@ function processAxiosStatus(answer: IAxiosAnswer): ISimplifiedAxiosResult {
 }
 
 function constructParseDBQuery(params: any, filter: IFilter): object {
+    // todo: I don't know why this is underfined
+    const f = filter ? filter : {};
+
     // language {"where":{"langPointers":{"$inQuery":{"where":{"isoCode":"en"},"className":"language"}},"inCirculation":{"$in":[true,null]}},"limit":0,"count":1
     // topic {"where":{"tags":{"$in":["topic:Agriculture","Agriculture"]},"license":{"$regex":"^\\Qcc\\E"},"inCirculation":{"$in":[true,null]}},"include":"langPointers,uploader","keys":"$score,title,tags,baseUrl,langPointers,uploader","limit":10,"order":"title",
     //{where: {search: {$text: {$search: {$term: "opposites"}}}, license: {$regex: "^\Qcc\E"},…},…}
@@ -139,49 +142,49 @@ function constructParseDBQuery(params: any, filter: IFilter): object {
             This needs to be rewritten so that we can combine  things like topic and bookshelf and language
 
     --------------------------------------------------*/
-    if (!!filter.search && filter.search.length > 0) {
+    if (!!f.search && f.search.length > 0) {
         params.where.search = {};
         params.where.search = {
-            $text: { $search: { $term: filter.search.trim() } }
+            $text: { $search: { $term: f.search.trim() } }
         };
     }
-    // if filter.language is set, add the query needed to restrict books to those with that language
-    if (filter.language != null) {
+    // if f.language is set, add the query needed to restrict books to those with that language
+    if (f.language != null) {
         delete params.where.language; // remove that, we need to make it more complicated because we need a join.
         params.where.langPointers = {
             $inQuery: {
-                where: { isoCode: filter.language },
+                where: { isoCode: f.language },
                 className: "language"
             }
         };
     }
-    if (filter.topic != null) {
+    if (f.topic != null) {
         delete params.where.topic;
         params.where.tags = {
             $in: [
-                "topic:" + filter.topic /* new style */,
-                filter.topic /*old style, which I suspect is all gone*/
+                "topic:" + f.topic /* new style */,
+                f.topic /*old style, which I suspect is all gone*/
             ]
         };
     }
-    if (filter.otherTags != null) {
+    if (f.otherTags != null) {
         delete params.where.otherTags;
-        params.where.tags = filter.otherTags;
+        params.where.tags = f.otherTags;
     }
-    if (filter.bookShelfCategory != null) {
+    if (f.bookShelfCategory != null) {
         delete params.where.bookShelfCategory;
     }
     //tags: {$all: ["bookshelf:Enabling Writers Workshops/Bangladesh_Dhaka Ahsania Mission",
-    if (filter.bookshelf != null) {
+    if (f.bookshelf != null) {
         delete params.where.bookshelf;
     }
 
     const tagParts = [];
-    if (filter.bookshelf) {
-        tagParts.push("bookshelf:" + filter.bookshelf);
+    if (f.bookshelf) {
+        tagParts.push("bookshelf:" + f.bookshelf);
     }
-    if (filter.topic) {
-        tagParts.push("topic:" + filter.topic);
+    if (f.topic) {
+        tagParts.push("topic:" + f.topic);
     }
     if (tagParts.length > 0) {
         params.where.tags = {
@@ -189,13 +192,13 @@ function constructParseDBQuery(params: any, filter: IFilter): object {
         };
     }
 
-    if (filter.feature != null) {
+    if (f.feature != null) {
         delete params.where.feature;
-        params.where.features = filter.feature; //my understanding is that this means it just has to contain this, could have others
+        params.where.features = f.feature; //my understanding is that this means it just has to contain this, could have others
     }
-    if (filter.inCirculation != null) {
+    if (f.inCirculation != null) {
         delete params.where.inCirculation;
-        params.where.inCirculation = { $in: [filter.inCirculation, null] };
+        params.where.inCirculation = { $in: [f.inCirculation, null] };
     } else {
         params.where.inCirculation = { $in: [true, null] };
     }

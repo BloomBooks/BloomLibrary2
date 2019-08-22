@@ -18,6 +18,7 @@ export interface ILocation {
     title: string;
     pageType: string;
     filter: IFilter;
+    rows?: number;
 }
 // This is a super simple router based on a stack of "locations" (page descriptors)
 // That stack is a mobx observable, so that the UI can redraw when the top of the stack changes.

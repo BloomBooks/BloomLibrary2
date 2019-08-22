@@ -15,7 +15,11 @@ const sampleUrl =
     "https://s3.amazonaws.com/BloomLibraryBooks/librarian%40bloomlibrary.org%2f32916f6b-02bd-4e0b-9b2b-d971096259b7%2fGrandpa+Fish+and+the+Radio%2f";
 
 storiesOf("BookCard", module).add("simple", () => (
-    <BookCard title="Grandpa Fish and the Radio" baseUrl={sampleUrl} />
+    <BookCard
+        lazy={false}
+        title="Grandpa Fish and the Radio"
+        baseUrl={sampleUrl}
+    />
 ));
 storiesOf("BookGroup", module)
     .add("Featured", () => (
