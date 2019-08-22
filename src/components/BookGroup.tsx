@@ -30,12 +30,13 @@ export const BookGroup: React.FunctionComponent<IProps> = props => (
 );
 export const BookGroupInner: React.FunctionComponent<IProps> = props => {
     const [swiper, updateSwiper] = useState<any | null>(null);
+    const maxCardsToRetrieve = props.rows ? props.rows * 5 : 20;
     const search = useSearchBooks(
         {
             include: "langPointers",
             keys: "title,baseUrl",
             // the following is arbitrary. I don't even yet no what the ux is that we want.
-            limit: props.rows ? props.rows * 5 : 20,
+            limit: maxCardsToRetrieve,
             order: props.order || "title"
         },
         props.filter
@@ -84,15 +85,16 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
             baseUrl={b.baseUrl}
         />
     ));
-    cards.push(
-        <MoreCard
-            title={props.title}
-            filter={props.filter}
-            count={search.totalMatchingRecords}
-            rows={props.rows ? props.rows * 2 : 2}
-        />
-    );
-
+    if (search.totalMatchingRecords > maxCardsToRetrieve) {
+        cards.push(
+            <MoreCard
+                title={props.title}
+                filter={props.filter}
+                count={search.totalMatchingRecords}
+                rows={props.rows ? props.rows * 2 : 2}
+            />
+        );
+    }
     const bookList = showInOneRow ? (
         <ReactIdSwiper {...swiperConfig} getSwiper={updateSwiper}>
             {cards}
