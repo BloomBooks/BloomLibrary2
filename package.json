@@ -15,6 +15,7 @@
     },
     "dependencies": {
         "@material-ui/core": "^3.9.3",
+        "@material-ui/icons": "^4.2.1",
         "@types/jest": "24.0.17",
         "@types/match-sorter": "^2.3.0",
         "@types/node": "12.7.2",

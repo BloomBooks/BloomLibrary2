@@ -2,17 +2,21 @@ import React, { Component, useEffect, useState } from "react";
 import { BookCard } from "./BookCard";
 import { css, cx } from "emotion";
 import { useGetBookDetail } from "./LibraryQueryHooks";
+import WarningIcon from "@material-ui/icons/Warning";
+import { IconButton } from "@material-ui/core";
+import { Alert } from "./Alert";
 
 interface IProps {
     id: string;
 }
 export const BookDetail: React.FunctionComponent<IProps> = props => {
     const book = useGetBookDetail(props.id);
-    {
-    }
+    const [alertText, setAlertText] = useState<string | null>(null);
+
     if (!book) {
         return <div>Loading...</div>;
     } else {
+        const showHarvesterWarning = book.harvesterLog.indexOf("Warning") >= 0;
         return (
             <div
                 className={css`
@@ -56,6 +60,14 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
                         return parts[0] + "-" + parts[1];
                     })}
                 </div>
+                {showHarvesterWarning && (
+                    <IconButton
+                        aria-label="harvester warning"
+                        onClick={() => setAlertText(book.harvesterLog)}
+                    >
+                        <WarningIcon />
+                    </IconButton>
+                )}
                 <div
                     className={css`
                         margin-top: 300px;
@@ -65,6 +77,14 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
                     <div>{"Raw Data:"}</div>
                     {JSON.stringify(book)}
                 </div>
+
+                <Alert
+                    open={alertText != null}
+                    close={() => {
+                        setAlertText(null);
+                    }}
+                    message={alertText!}
+                />
             </div>
         );
     }

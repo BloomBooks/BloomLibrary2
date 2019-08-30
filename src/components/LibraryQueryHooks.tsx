@@ -51,6 +51,8 @@ interface IBookDetail {
     credits: string;
     pageCount: string;
     tags: Array<string>;
+    harvesterLog: string;
+    harvestState: string;
 }
 interface ITags {
     topic: string;
@@ -68,7 +70,7 @@ export function useGetBookDetail(
             params: {
                 where: { objectId: bookId },
                 keys:
-                    "title,baseUrl,license,summary,copyright,harvestState,tags,pages"
+                    "title,baseUrl,license,summary,copyright,harvestState,tags,pages,harvestState"
                 //how to get these? ,include: "langPointers,uploader"
             }
         }
@@ -76,7 +78,23 @@ export function useGetBookDetail(
 
     if (loading || !response) return undefined;
     if (error) return null;
-    const detail = response["data"]["results"][0];
+    const detail: IBookDetail = response["data"]["results"][0];
+
+    // this is kind of a dummy thing just so that I have something to show in the log, and to trigger
+    // UI that would show if there was a problem.
+
+    switch (detail.harvestState) {
+        case "New":
+            detail.harvesterLog =
+                "Warning: this book has not yet been harvested.";
+            break;
+        case "Updated":
+            detail.harvesterLog =
+                "Warning: this book was re-uploaded and is now waiting to be harvested";
+            break;
+        default:
+            detail.harvesterLog = "";
+    }
 
     // const parts = detail.tags.split(":");
     // const x = parts.map(p => {tags[(p[0]) as string] = ""});
