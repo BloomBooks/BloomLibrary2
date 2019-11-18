@@ -1,8 +1,8 @@
 import React from "react";
 import { css, cx } from "emotion";
 import { LanguageCard } from "./LanguageCard";
-import { useLibraryQuery } from "./LibraryQueryHooks";
-import { getResultsOrMessageElement } from "./LibraryQueryHooks";
+import { useLibraryQuery } from "../connection/LibraryQueryHooks";
+import { getResultsOrMessageElement } from "../connection/LibraryQueryHooks";
 import Downshift from "downshift";
 import matchSorter from "match-sorter";
 import searchIcon from "../search.png";

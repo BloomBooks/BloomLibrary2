@@ -19,8 +19,8 @@ module.exports = {
         filename: "HarvesterArtifactUserControlBundle.js",
         libraryTarget: "window",
 
-        //makes the exports of bloom-player-root.ts accessible via window.BloomPlayer.X,
-        // e.g., window.BloomPlayer.BloomPlayerCore.
+        //makes the exports of bloom-player-root.ts accessible via window.NextBloomLibrary.X,
+        // e.g., window.NextBloomLibrary.connectHarvestArtifactUserControl().
         library: "NextBloomLibrary"
     },
 
@@ -42,7 +42,6 @@ module.exports = {
         rules: [
             {
                 test: /\.ts(x?)$/,
-                include: harvesterArtifactUserControlDir,
 
                 use: [
                     {
@@ -82,14 +81,7 @@ module.exports = {
                     }
                 }
             },
-            {
-                // this allows things like background-image: url("myComponentsButton.svg") and have the resulting path look for the svg in the stylesheet's folder
-                // the last few seem to be needed for (at least) slick-carousel to build.
-                test: /\.(svg|jpg|png|ttf|eot|gif)$/,
-                use: {
-                    loader: "file-loader"
-                }
-            }
+            { test: /\.(png|svg)$/, use: { loader: "url-loader" } }
         ]
     }
 };

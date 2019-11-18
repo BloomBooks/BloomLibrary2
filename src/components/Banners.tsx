@@ -5,7 +5,7 @@ import { Breadcrumbs } from "./Breadcrumbs";
 import { IFilter } from "../Router";
 import genericLanguageBannerImage from "book-pages.jpg";
 import genericProjectBannerImage from "generic-workshop.jpg";
-import { useGetLanguageInfo } from "./LibraryQueryHooks";
+import { useGetLanguageInfo } from "../connection/LibraryQueryHooks";
 
 export const BannerContents: React.FunctionComponent<{
     title: string;
@@ -53,9 +53,7 @@ export const BannerContents: React.FunctionComponent<{
                         )} */}
                         <a
                             target="_blank"
-                            href={`https://en.wikipedia.org/w/index.php?title=ISO_639:${
-                                props.filter.language
-                            }&redirect=yes`}
+                            href={`https://en.wikipedia.org/w/index.php?title=ISO_639:${props.filter.language}&redirect=yes`}
                         >
                             Wikipedia
                         </a>
