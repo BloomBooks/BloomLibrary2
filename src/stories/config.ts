@@ -7,7 +7,7 @@ import { withInfo } from "@storybook/addon-info";
 const req = require.context("../src", true, /.stories.tsx$/);
 
 function loadStories() {
-    addDecorator(withInfo);
+    addDecorator((story, context) => withInfo()(story)(context));
     req.keys().forEach(req);
 }
 

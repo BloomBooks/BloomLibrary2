@@ -1,10 +1,11 @@
 import React, { Component, useEffect, useState } from "react";
 import { BookCard } from "./BookCard";
 import { css, cx } from "emotion";
-import { useGetBookDetail } from "./LibraryQueryHooks";
+import { useGetBookDetail } from "../connection/LibraryQueryHooks";
 import WarningIcon from "@material-ui/icons/Warning";
 import { IconButton } from "@material-ui/core";
 import { Alert } from "./Alert";
+import { HarvesterArtifactUserControl } from "./HarvesterArtifactUserControl/HarvesterArtifactUserControl";
 
 interface IProps {
     id: string;
@@ -77,6 +78,9 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
                     <div>{"Raw Data:"}</div>
                     {JSON.stringify(book)}
                 </div>
+
+                {/* // This won't work yet because we don't have login working */}
+                {/* <HarvesterArtifactUserControl bookId={props.id} /> */}
 
                 <Alert
                     open={alertText != null}
