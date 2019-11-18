@@ -1,7 +1,7 @@
 import React from "react";
 import { BookGroup } from "./BookGroup";
 import { IFilter } from "../IFilter";
-import { useTopicList } from "./LibraryQueryHooks";
+import { useTopicList } from "../connection/LibraryQueryHooks";
 import {
     BannerContents,
     LanguageBanner,
