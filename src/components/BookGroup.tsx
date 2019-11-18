@@ -2,7 +2,7 @@ import React, { Component, useEffect, useState } from "react";
 import { BookCard } from "./BookCard";
 import { css, cx } from "emotion";
 import { IFilter } from "../IFilter";
-import { useSearchBooks } from "./LibraryQueryHooks";
+import { useSearchBooks } from "../connection/LibraryQueryHooks";
 import LazyLoad from "react-lazyload";
 import ReactIdSwiper, { ReactIdSwiperProps } from "react-id-swiper";
 import { MoreCard } from "./MoreCard";

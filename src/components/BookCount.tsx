@@ -2,7 +2,7 @@ import React from "react";
 import {
     useGetBookCount,
     getResultsOrMessageElement
-} from "./LibraryQueryHooks";
+} from "../connection/LibraryQueryHooks";
 import { IFilter } from "../IFilter";
 import { HtmlAttributes } from "csstype";
 

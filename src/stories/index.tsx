@@ -4,13 +4,15 @@ import { storiesOf } from "@storybook/react";
 
 import { BookCard } from "../components/BookCard";
 import { BookGroup } from "../components/BookGroup";
-import { IFilter } from "../IFilter";
 import { LanguageGroup } from "../components/LanguageGroup";
 import { LanguagePage, BookGroupForEachTopic } from "../components/Pages";
 import { HomePage } from "../components/HomePage";
 import { BookshelfGroup } from "../components/BookShelfGroup";
 import "../index.css";
 import { HarvesterArtifactUserControl } from "../components/HarvesterArtifactUserControl/HarvesterArtifactUserControl";
+import { ArtifactAndChoice } from "../components/HarvesterArtifactUserControl/ArtifactAndChoice";
+import { ShowSettings } from "../components/HarvesterArtifactUserControl/ShowSettings";
+import { ArtifactType } from "../components/HarvesterArtifactUserControl/HarvesterArtifactHelper";
 
 const sampleUrl =
     "https://s3.amazonaws.com/BloomLibraryBooks/librarian%40bloomlibrary.org%2f32916f6b-02bd-4e0b-9b2b-d971096259b7%2fGrandpa+Fish+and+the+Radio%2f";
@@ -84,6 +86,50 @@ storiesOf("Pages", module)
     .add("Thai Book Page", () => (
         <LanguagePage title="some title" filter={{ language: "th" }} />
     ));
-storiesOf("Harvester Artifact Control", module).add("Blah", () => (
-    <HarvesterArtifactUserControl />
-));
+
+const triStateBooleanOptions = [undefined, false, true];
+let i = 0;
+const toTriStateString = (value: boolean | undefined) => {
+    if (value === undefined) return "undefined";
+    return value.toString();
+};
+storiesOf("Harvester Artifact Control", module)
+    .add("Entire Control", () => (
+        // <HarvesterArtifactUserControl bookId="65XiBsxtYS" /> //dev
+        // <HarvesterArtifactUserControl bookId="WQvJ1kBoHE" /> //dev
+        // <HarvesterArtifactUserControl bookId="TgERGZnLVW" /> //dev
+        <HarvesterArtifactUserControl bookId="jnG2YFeIIG" /> //prod
+    ))
+    .add("ArtifactAndChoice", () => (
+        <>
+            {triStateBooleanOptions.map(user => {
+                return triStateBooleanOptions.map(librarian => {
+                    return triStateBooleanOptions.map(harvester => {
+                        return (
+                            <div key={i++} style={{ marginBottom: 15 }}>
+                                <div>
+                                    {`(harvester: ${toTriStateString(
+                                        harvester
+                                    )}, librarian: ${toTriStateString(
+                                        librarian
+                                    )}, user: ${toTriStateString(user)}):`}
+                                </div>
+                                <ArtifactAndChoice
+                                    type={ArtifactType["epub"]}
+                                    showSettings={
+                                        new ShowSettings(
+                                            harvester,
+                                            librarian,
+                                            user
+                                        )
+                                    }
+                                    url="https://google.com"
+                                    onChange={() => {}}
+                                />
+                            </div>
+                        );
+                    });
+                });
+            })}
+        </>
+    ));

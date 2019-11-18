@@ -1,7 +1,7 @@
 import React from "react";
 import { css, cx } from "emotion";
-import { useGetBookshelves } from "./LibraryQueryHooks";
-import { getResultsOrMessageElement } from "./LibraryQueryHooks";
+import { useGetBookshelves } from "../connection/LibraryQueryHooks";
+import { getResultsOrMessageElement } from "../connection/LibraryQueryHooks";
 import CategoryCard from "./CategoryCard";
 import { CheapCard } from "./CheapCard";
 
