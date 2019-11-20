@@ -14,6 +14,14 @@ const dev = {
 };
 
 export function getConnection() {
-    // TODO we'll need some way to switch the connection settings based on the environment
-    return prod;
+    if (window.location.hostname === "bloomlibrary.org") return prod;
+
+    // Storybook is currently configured to look at production
+    if (
+        window.location.hostname === "localhost" &&
+        window.location.port === "9090"
+    )
+        return prod;
+
+    return dev;
 }
