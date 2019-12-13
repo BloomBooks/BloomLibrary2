@@ -14,7 +14,11 @@ const dev = {
 };
 
 export function getConnection() {
-    if (window.location.hostname === "bloomlibrary.org") return prod;
+    if (
+        window.location.hostname === "bloomlibrary.org" ||
+        window.location.hostname === "next.bloomlibrary.org"
+    )
+        return prod;
 
     // Storybook is currently configured to look at production
     if (
