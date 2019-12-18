@@ -1,22 +1,22 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BookCard } from "./BookCard";
-import { css, cx } from "emotion";
+import { css } from "emotion";
 import { IFilter } from "../IFilter";
 import { useSearchBooks } from "../connection/LibraryQueryHooks";
 import LazyLoad from "react-lazyload";
-import ReactIdSwiper, { ReactIdSwiperProps } from "react-id-swiper";
+import ReactIdSwiper from "react-id-swiper";
 import { MoreCard } from "./MoreCard";
 interface IProps {
     title: string;
     filter: IFilter; // becomes the "where" clause the query
     order?: string;
-    // I don't know...l this could be "bookLimit" instead "rows". Have to think in terms
+    // I don't know... this could be "bookLimit" instead "rows". Have to think in terms
     // of mobile versus big screen.... hmmm...
     rows?: number;
 }
 
 export const BookGroup: React.FunctionComponent<IProps> = props => (
-    // Enhance, this has parameters, height and offset, that should help
+    // Enhance: this has parameters, height and offset, that should help
     // but so far I haven't got them to work well. It has many other
     // parameters too that someone should look into. Make sure to test
     // with the phone sizes in the browser debugger, and have the network
@@ -42,16 +42,6 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
         props.filter
     );
 
-    //const countString = getCountString(queryCount);
-
-    const zeroBooksMatchedElement =
-        search.results && search.results.length > 0 ? null : (
-            // <p>{`No Books for "${
-            //     props.title
-            // }". Should not see this in production`}</p>
-            <></>
-        );
-
     const swiperConfig = {
         preloadImages: false,
         lazy: true,
@@ -63,11 +53,13 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
         spaceBetween: 20,
         slidesPerView: "auto"
     };
-    const slideChanged = () => {
-        // ENHANCE: This is where we need to trigger loading more books if they are getting towards the end
-        console.log("current slide: " + swiper!.realIndex);
-    };
     useEffect(() => {
+        // Review: Is this still needed? At the moment we are capping the number of books we offer in the slider
+        // pretty drastically, followed by a "Show More".
+        const slideChanged = () => {
+            // ENHANCE: This is where we need to trigger loading more books if they are getting towards the end
+            console.log("current slide: " + swiper!.realIndex);
+        };
         if (swiper !== null) {
             swiper.on("slideChange", slideChanged);
         }
@@ -111,8 +103,17 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
         </div>
     );
 
+    const zeroBooksMatchedElement =
+        search.results && search.results.length > 0 ? null : (
+            // <p>{`No Books for "${
+            //     props.title
+            // }". Should not see this in production`}</p>
+            <></>
+        );
+
     return (
-        //noResultsElement ||
+        //We just don't show the row if there are no matches, e.g., no Health books for this project
+        // (ZeroBooksMatchedElement will be an empty pseudo-element that satisfies the 'or' but shows nothing)
         zeroBooksMatchedElement || (
             <li
                 className={css`

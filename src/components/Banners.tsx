@@ -2,9 +2,7 @@ import React from "react";
 import { css, cx } from "emotion";
 import { BookCount } from "./BookCount";
 import { Breadcrumbs } from "./Breadcrumbs";
-import { IFilter } from "../Router";
-import genericLanguageBannerImage from "book-pages.jpg";
-import genericProjectBannerImage from "generic-workshop.jpg";
+import { IFilter } from "../IFilter";
 import { useGetLanguageInfo } from "../connection/LibraryQueryHooks";
 
 export const BannerContents: React.FunctionComponent<{
@@ -14,20 +12,23 @@ export const BannerContents: React.FunctionComponent<{
     filter: IFilter;
 }> = props => {
     const lines = props.title.split("/");
-    const size = lines.length > 1 ? 36 : 72;
-    const second = lines.length > 1 ? <div> {lines[1]}</div> : "";
+    console.assert(
+        lines.length < 3,
+        "display code only supports one '/' in the title"
+    );
+    const secondLine = lines.length > 1 ? <div> {lines[1]}</div> : "";
     return (
         <>
             <Breadcrumbs />
             <h1
                 className={css`
-                    font-size: ${size}px;
+                    font-size: ${lines.length > 1 ? 36 : 72}px;
                     margin-top: 0;
                     //flex-grow: 1; // push the rest to the bottom
                 `}
             >
                 {lines[0]}
-                {second}
+                {secondLine}
             </h1>
             <div
                 className={css`
@@ -40,19 +41,18 @@ export const BannerContents: React.FunctionComponent<{
                 {props.about}
                 {props.filter.language && (
                     <>
-                        {/* works, but you quickly run out of monthly views
                         {props.filter.language.length === 3 && (
                             <a
                                 target="_blank"
-                                href={`https://www.ethnologue.com/language/${
-                                    props.filter.language
-                                }`}
+                                rel="noopener noreferrer"
+                                href={`https://www.ethnologue.com/language/${props.filter.language}`}
                             >
                                 Ethnologue
                             </a>
-                        )} */}
+                        )}
                         <a
                             target="_blank"
+                            rel="noopener noreferrer"
                             href={`https://en.wikipedia.org/w/index.php?title=ISO_639:${props.filter.language}&redirect=yes`}
                         >
                             Wikipedia
@@ -76,6 +76,7 @@ export const HomeBanner: React.FunctionComponent<{
     <div
         className={cx([
             "banner",
+            // TODO: move this image into this code base and reference as a local asset
             css`
                 background-image: url("https://bloomlibrary.org/assets/huyagirls.jpg");
                 background-position: left;
@@ -87,7 +88,7 @@ export const HomeBanner: React.FunctionComponent<{
         <BannerContents
             title="Library Home"
             about="Welcome to our Crowd Sourced library of free books that you can read, print, or adapt into your own language."
-            bookCountMessage="We current have {0} books."
+            bookCountMessage="We currently have {0} books."
             filter={props.filter} // all books in circulation
         />
     </div>
@@ -97,11 +98,11 @@ export const LanguageBanner: React.FunctionComponent<{
     title: string;
     filter: IFilter;
 }> = props => {
-    const queryResultElements = useGetLanguageInfo(props.filter.language!);
+    const queryLanguageInfo = useGetLanguageInfo(props.filter.language!);
     let imageUrl = null;
-    if (queryResultElements && queryResultElements.response) {
+    if (queryLanguageInfo && queryLanguageInfo.response) {
         imageUrl =
-            queryResultElements.response["data"]["results"][0].bannerImageUrl;
+            queryLanguageInfo.response["data"]["results"][0].bannerImageUrl;
     }
     // enhance: need to do something nice about the transition where we are waiting to find out if there is a custom image
     // enhance: need to factor out this custom image stuff as we also need it for all feature and tag-oriented pages (projects, topics)
@@ -163,7 +164,6 @@ export const ProjectBanner: React.FunctionComponent<{
 export const SearchBanner: React.FunctionComponent<{
     filter: IFilter;
 }> = props => {
-    const title = "xxxxxxx";
     return (
         <div
             className={css`
@@ -174,7 +174,7 @@ export const SearchBanner: React.FunctionComponent<{
             `}
         >
             <Breadcrumbs />
-            <BookCount filter={props.filter} />{" "}
+            <BookCount filter={props.filter} />
         </div>
     );
 };

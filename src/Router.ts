@@ -4,21 +4,12 @@ import * as QueryString from "qs";
 import * as mobx from "mobx";
 import { IFilter } from "./IFilter";
 
-export interface IFilter {
-    language?: string; // review: what is this exactly? BCP 47? Our Parse has duplicate "ethnologueCode" and "isoCode" columns, which actually contain code and full script tags.
-    publisher?: string;
-    bookshelf?: string;
-    feature?: string;
-    topic?: string;
-    bookShelfCategory?: string;
-    otherTags?: string;
-    inCirculation?: boolean;
-}
 export interface ILocation {
     // this is used only when the location is a book detail
     bookId?: string;
 
     //these are used for other kinds of pages
+    //enhance: change to pageTitle to differentiate from book title
     title: string;
     pageType: string;
     filter: IFilter;
@@ -30,12 +21,12 @@ export class Router {
     @observable public breadcrumbStack: ILocation[] = new Array<ILocation>();
 
     public constructor() {
-        const home = {
+        const home: ILocation = {
             title: "Home",
             pageType: "home",
             filter: {}
         };
-        if (window.location.search == "") {
+        if (window.location.search === "") {
             // we're just at the root of the site
             this.push(home);
         } else {
@@ -46,14 +37,17 @@ export class Router {
             );
             const location = QueryString.parse(
                 queryWithoutQuestionMark
-            ) as ILocation;
-            if (location && location.pageType != "home") {
-                this.push(home); // so that the breadcrumb starts with Home
+            ) as ILocation; // Enhance: do something if parsing the URL doesn't give all the info we need.
+
+            // If we start up the site from a page other than home, push home into the bottom of the
+            // stack so that you can use the breadcrumbs to go to home.
+            if (location && location.pageType !== "home") {
+                this.push(home);
             }
             this.push(location);
         }
-        window.onpopstate = event => {
-            // So, the user did a browser BACK or FORWARD...something. The  current url can tell us what to show, but not how
+        window.onpopstate = (event: PopStateEvent) => {
+            // So, the user did a browser BACK or FORWARD...something. The current url can tell us what to show, but not how
             // to show our breadcrumbs. We solve this by supplying the browser's History API with our location stack every time we go deeper.
             // So now, we can just retrieve that stack from this event and make it our new location stack.
             // Since locationStack is a mobx observed object, don't just replace it, operate on it
@@ -74,11 +68,12 @@ export class Router {
     public goToBreadCrumb(location: ILocation): void {
         // We could just literally adopt this location, but then we would lose any preceding breadcrumbs.
         // Instead, we want to pop items off the stack until we get to it.
-        while (this.current != location) {
+        while (this.current !== location) {
             this.breadcrumbStack.pop();
         }
     }
 
+    // TODO: make this real
     public pushBook(bookId: string) {
         this.push({
             bookId: bookId,
@@ -89,7 +84,7 @@ export class Router {
     }
 
     public push(location: ILocation) {
-        // if we go here via a text search and are doing an new one,
+        // if we go here via a text search and are doing a new one,
         // we want to just replace the previous search term, rather
         // than pushing another search on the breadcrumb stack.
         if (

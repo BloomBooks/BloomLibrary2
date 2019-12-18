@@ -1,18 +1,10 @@
-import React, { Component, useContext } from "react";
+import React, { useContext } from "react";
 import { css } from "emotion";
 import { CheapCard } from "./CheapCard";
 import LazyLoad from "react-lazyload";
-import { Router, RouterContext } from "../Router";
+import { RouterContext } from "../Router";
 
-const image = css`
-    height: 100px;
-    width: 100%;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-`;
-
-export const cardWidth = 120;
+const BookCardWidth = 120;
 
 interface IProps {
     title: string;
@@ -30,7 +22,7 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
                 props.className +
                 " " +
                 css`
-                    width: ${cardWidth}px;
+                    width: ${BookCardWidth}px;
                 `
             }
             key={props.baseUrl}
@@ -46,6 +38,9 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
                         object-fit: cover; //cover will crop, but fill up nicely
                     `
                 }
+                alt={"book thumbnail"}
+                // TODO: really this src shouldn't be needed because we are telling the swiper to be lazy,
+                // so it should use the data-src attribute. But at the moment that leaves us with just broken images.
                 src={props.baseUrl + "thumbnail-256.png"}
                 data-src={props.baseUrl + "thumbnail-256.png"} // we would have to generate new thumbnails that just have the image shown on the cover
                 // onError={ev => {

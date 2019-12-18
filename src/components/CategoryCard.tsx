@@ -1,5 +1,5 @@
-import React, { Component, useContext } from "react";
-import { css, cx } from "emotion";
+import React, { useContext } from "react";
+import { css } from "emotion";
 import { CheapCard } from "./CheapCard";
 import { RouterContext } from "../Router";
 import { IFilter } from "../IFilter";
@@ -47,6 +47,7 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
                 });
             }}
         >
+            {/* We want to show an image for the category if we have one */}
             <ReactImage
                 src={props.img}
                 className={css`
@@ -55,7 +56,9 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
                     margin-left: auto;
                     margin-right: auto;
                 `}
+                // While we're waiting, show the text title
                 loader={titleElementIfNoImage}
+                // If we could not get an image, show the text title
                 unloader={titleElementIfNoImage}
             />
 

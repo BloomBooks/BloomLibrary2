@@ -1,7 +1,8 @@
 import React, { Component, useContext } from "react";
 import { css } from "emotion";
 import { CheapCard } from "./CheapCard";
-import { RouterContext, IFilter } from "../Router";
+import { RouterContext } from "../Router";
+import { IFilter } from "../IFilter";
 
 const image = css`
     height: 100px;

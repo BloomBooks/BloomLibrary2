@@ -1,6 +1,5 @@
 import React from "react";
-import { css, cx } from "emotion";
-import { IFilter } from "../../Router";
+import { css } from "emotion";
 import logo from "./header-logo.png";
 import { SearchBox } from "../SearchBox";
 export const Header: React.FunctionComponent<{}> = props => {
@@ -16,7 +15,7 @@ export const Header: React.FunctionComponent<{}> = props => {
                 box-sizing: content-box;
             `}
         >
-            <img src={logo} />
+            <img src={logo} alt={"Bloom Logo"} />
             <SearchBox />
         </div>
     );

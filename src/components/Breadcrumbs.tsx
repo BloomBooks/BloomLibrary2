@@ -9,6 +9,7 @@ export const Breadcrumbs: React.FunctionComponent = () => {
             {router!.breadcrumbStack.map(l => (
                 <li key={l.title}>
                     <a
+                        // todo: seems we're supposed to make this a button that looks like a link for accessibility
                         onClick={() => {
                             router!.goToBreadCrumb(l);
                         }}
@@ -21,6 +22,7 @@ export const Breadcrumbs: React.FunctionComponent = () => {
     );
 };
 
+// TODO: this doesn't look good on a narrow screen (phone) when the breadcrumbs get very long.
 const breadcrumbsStyle = css`
     display: flex;
     padding: 0;

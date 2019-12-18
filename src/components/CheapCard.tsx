@@ -6,6 +6,7 @@ interface IProps extends React.HTMLProps<HTMLDivElement> {
     className?: string;
 }
 
+// just a wrapper around the children you provide, made to look like a card and responsive to a click.
 export const CheapCard: React.FunctionComponent<IProps> = props => (
     <div
         {...props}

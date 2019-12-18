@@ -1,13 +1,12 @@
 import React from "react";
 import { BookGroup } from "./BookGroup";
-import { css } from "emotion";
 import { LanguageGroup } from "./LanguageGroup";
-import { BookCount } from "./BookCount";
 import { BookshelfGroup } from "./BookShelfGroup";
 import { HomeBanner } from "./Banners";
-import { IFilter } from "../Router";
+import { IFilter } from "../IFilter";
 
 export const HomePage: React.FunctionComponent = () => {
+    // enhance (probably?) add CC license requirement. But we don't want to lose SB comics.
     const almostAllBooksFilter: IFilter = { inCirculation: true };
     return (
         <>

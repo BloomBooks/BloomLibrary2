@@ -12,7 +12,6 @@ import {
     // AfricaStoryBookPage,
     // BookDashPage
 } from "./Pages";
-import { Breadcrumbs } from "./Breadcrumbs";
 import "typeface-roboto";
 import { Header } from "./header/Header";
 import { BookDetail } from "./BookDetail";

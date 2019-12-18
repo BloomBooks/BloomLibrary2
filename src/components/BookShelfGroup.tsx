@@ -1,19 +1,18 @@
 import React from "react";
-import { css, cx } from "emotion";
+import { css } from "emotion";
 import { useGetBookshelves } from "../connection/LibraryQueryHooks";
 import { getResultsOrMessageElement } from "../connection/LibraryQueryHooks";
 import CategoryCard from "./CategoryCard";
-import { CheapCard } from "./CheapCard";
 
 interface IProps {
     title: string;
     bookShelfCategory: string; // project, org, publisher, custom
     parentBookshelf?: string;
 }
-/* This lets use show bookshelves. Not the books in them, but the list of shelves, themeselves.
+/* This lets us show bookshelves. Not the books in them, but the list of shelves, themselves.
     It's not obvious that we want/need the current system with bookshelves which live in the database.
-    On the one hand, we may find we need to do code work anyhow to do a good job of presenting a shelf
-    anyhow, so why not just locate it in the code.
+    On the one hand, we may find we need to do code work anyhow to do a good job of presenting a shelf,
+    so why not just locate it in the code.
 
     On the other hand, we will eventually need to support user-generated shelves. We may also eventually
     need to support alternate book library sites, and those would be even more driven by database
@@ -22,25 +21,30 @@ interface IProps {
     So for the moment, I'm just leaving things as they are. We can query for all bookshelves, but the
     home page will also choose to feature Enabling writers, from code. So it's a mix of approaches
     for now.
+
+    If parentBookShelf is supplied, it will show only bookshelves whose englishName starts with that;
+    otherwise, all bookshelves in the database.
 */
 
 export const BookshelfGroup: React.FunctionComponent<IProps> = props => {
     // At this point there are so few bookshelves that we just retrieve the whole list and then filter here.
-    //Might would be a good thing to cache.
-    const queryResultElements = useGetBookshelves(props.bookShelfCategory);
+    // Might be a good thing to cache.
+    const bookshelfResult = useGetBookshelves(props.bookShelfCategory);
 
     const { noResultsElement, results } = getResultsOrMessageElement(
-        queryResultElements
+        bookshelfResult
     );
-    const skeletonCards = [1, 2, 3, 4, 5];
     const parts =
         noResultsElement ||
         results
             .filter(
                 (shelf: any) =>
+                    // allow if we weren't given a bookshelf to filter by
                     !props.parentBookshelf ||
-                    props.parentBookshelf.length == 0 ||
-                    shelf.englishName.indexOf(props.parentBookshelf) == 0
+                    props.parentBookshelf.length === 0 ||
+                    // currently we only allow 2 levels of bookshelf, and a child bookshelf will look like
+                    // Art/Painting. So this is checking to see if "Art/Painting" starts with "Art"
+                    shelf.englishName.startsWith(props.parentBookshelf)
             )
             .map((l: any) => (
                 <CategoryCard

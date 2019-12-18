@@ -4,17 +4,18 @@ import {
     getResultsOrMessageElement
 } from "../connection/LibraryQueryHooks";
 import { IFilter } from "../IFilter";
-import { HtmlAttributes } from "csstype";
 
 export const BookCount: React.FunctionComponent<{
     message?: string;
     filter: IFilter;
     //ClassName?: string;
 }> = props => {
-    const queryResultElements = useGetBookCount(props.filter);
+    const bookCountResult = useGetBookCount(props.filter);
     const { noResultsElement, count } = getResultsOrMessageElement(
-        queryResultElements
+        bookCountResult
     );
+    // while we're waiting, this will be blank (from noResultsElement).
+    // if there is an error, we'll see that (from noResultsElement)
     return (
         noResultsElement || (
             <>

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { css, cx } from "emotion";
+import { css } from "emotion";
 import searchIcon from "../search.png";
 import { RouterContext } from "../Router";
 export const SearchBox: React.FunctionComponent<{}> = props => {
@@ -9,7 +9,6 @@ export const SearchBox: React.FunctionComponent<{}> = props => {
     );
     return (
         <div
-            //className="searchContainer"
             className={
                 "searchContainer " +
                 css`
@@ -21,7 +20,6 @@ export const SearchBox: React.FunctionComponent<{}> = props => {
             <input
                 className={css`
                     display: block;
-
                     border: 0;
                 `}
                 value={search || ""}
@@ -30,6 +28,7 @@ export const SearchBox: React.FunctionComponent<{}> = props => {
                 }}
                 onKeyDown={e => {
                     if (e.keyCode === 13) {
+                        // search on enter key
                         router!.push({
                             title: `search for "${(e.target as any).value}"`,
                             pageType: "search",
@@ -41,7 +40,7 @@ export const SearchBox: React.FunctionComponent<{}> = props => {
                     }
                 }}
             />
-            <img src={searchIcon} />
+            <img src={searchIcon} alt="Search" />
         </div>
     );
 };
