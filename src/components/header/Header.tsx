@@ -15,7 +15,9 @@ export const Header: React.FunctionComponent<{}> = props => {
                 box-sizing: content-box;
             `}
         >
-            <img src={logo} alt={"Bloom Logo"} />
+            <a href="/" title="Home">
+                <img src={logo} alt={"Bloom Logo"} />
+            </a>
             <SearchBox />
         </div>
     );
