@@ -1,5 +1,5 @@
 import React from "react";
-import { css, cx } from "emotion";
+import { css } from "emotion";
 import { LanguageCard } from "./LanguageCard";
 import { useLibraryQuery } from "../connection/LibraryQueryHooks";
 import { getResultsOrMessageElement } from "../connection/LibraryQueryHooks";
@@ -8,7 +8,7 @@ import matchSorter from "match-sorter";
 import searchIcon from "../search.png";
 
 export const LanguageGroup: React.FunctionComponent = () => {
-    const queryResultElements = useLibraryQuery(
+    const languageQueryResults = useLibraryQuery(
         "language",
         {
             keys: "name,usageCount,isoCode",
@@ -18,9 +18,11 @@ export const LanguageGroup: React.FunctionComponent = () => {
         {}
     );
 
-    const { noResultsElement, results } = getResultsOrMessageElement(
-        queryResultElements
-    );
+    // note on JS deconstruction syntax here: "{A:B} means "rename A to B"
+    const {
+        noResultsElement, // we'll get this at least temporarily while waiting
+        results: listOfAllLanguages
+    } = getResultsOrMessageElement(languageQueryResults);
     return (
         noResultsElement || (
             <li
@@ -30,19 +32,20 @@ export const LanguageGroup: React.FunctionComponent = () => {
             >
                 <h1>Find Books By Language</h1>
 
+                {/* Downshift handles telling us when to recompute the list of matching items.
+                It also claims to present it all in a WAI-ARIA compliant accessible way (untested).
+                We give it a function that returns a react element that contains the
+                list of matching cards, and it calls
+                that function on every keystroke. */}
                 <Downshift
-                    defaultIsOpen={true}
-                    onChange={selection =>
-                        alert(`You selected ${selection.value}`)
-                    }
-                    itemToString={item => (item ? item.value : "")}
+                    itemToString={language => (language ? language.name : "")}
                 >
                     {({
                         getInputProps,
-                        //getItemProps,
+                        getItemProps,
                         //getLabelProps,
                         getMenuProps,
-                        inputValue
+                        inputValue: currentInputBoxText
                         //highlightedIndex,
                         //selectedItem
                     }) => (
@@ -60,12 +63,12 @@ export const LanguageGroup: React.FunctionComponent = () => {
 
                                             border: 0;
                                         `}
-                                        {...getInputProps()}
+                                        {...getInputProps()} // presumably this connects keyboard events back to downshift
                                     />
-                                    <img src={searchIcon} />
+                                    <img src={searchIcon} alt="Search" />
                                 </div>
 
-                                <div>{`${results.length} Languages`}</div>
+                                <div>{`${listOfAllLanguages.length} Languages`}</div>
                             </div>
                             <ul
                                 {...getMenuProps()}
@@ -75,11 +78,20 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                     padding-left: 0;
                                 `}
                             >
+                                {/* MatchSorter is an npm module that does smart autocomplete over a list of values. */}
+                                {/* Enhance: it can handle some misspellings, but not other obvious ones (e.g. enlish) */}
                                 {// enhance: be able to type, e.g., "Bengali" and get the card for বাংলা
-                                matchSorter(results, inputValue || "", {
-                                    keys: ["name", "isoCode"]
-                                }).map((l: any, index: number) => (
+                                matchSorter(
+                                    listOfAllLanguages,
+                                    currentInputBoxText || "",
+                                    {
+                                        keys: ["name", "isoCode"]
+                                    }
+                                ).map((l: any, index: number) => (
+                                    // TODO: to complete the accessibility, we need to pass the Downshift getLabelProps into LanguageCard
+                                    // and apply it to the actual label.
                                     <LanguageCard
+                                        {...getItemProps({ item: l })}
                                         key={index}
                                         name={l.name}
                                         bookCount={l.usageCount}

@@ -1,15 +1,15 @@
+import { css } from "emotion";
 import React from "react";
-import { BookGroup } from "./BookGroup";
-import { IFilter } from "../IFilter";
 import { useTopicList } from "../connection/LibraryQueryHooks";
+import { IFilter } from "../IFilter";
 import {
     BannerContents,
     LanguageBanner,
     ProjectBanner,
     SearchBanner
 } from "./Banners";
+import { BookGroup } from "./BookGroup";
 import { Breadcrumbs } from "./Breadcrumbs";
-import { css } from "emotion";
 
 export const SearchResultsPage: React.FunctionComponent<{
     filter: IFilter;
@@ -29,7 +29,7 @@ export const SearchResultsPage: React.FunctionComponent<{
 // I don't know if we'll stick with this... but for now this is what you get
 // if there are lots of books and you scroll to the end of the 20 or so that
 // we put in a row, and then you click on the MoreCard there to see the rest
-export const MorePage: React.FunctionComponent<{
+export const AllResultsPage: React.FunctionComponent<{
     filter: IFilter;
     title: string;
 }> = props => (
@@ -44,6 +44,7 @@ export const MorePage: React.FunctionComponent<{
         {/* <SearchBanner filter={props.filter} /> */}
         <ul className={"pageResults"}>
             <BookGroup title={props.title} filter={props.filter} rows={20} />
+            // TODO: we need a way to say "OK, more rows, and more rows" etc.
         </ul>
     </>
 );
