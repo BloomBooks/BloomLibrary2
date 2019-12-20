@@ -4,6 +4,11 @@ import React, { useContext } from "react";
 
 export const Breadcrumbs: React.FunctionComponent = () => {
     const router = useContext(RouterContext);
+    if (!router) {
+        throw new Error(
+            "Breadcrumbs found that there is no Router defined in a RouterContext. If this is a story, see the examples using an AddDecorator()"
+        );
+    }
     return (
         <ul className={breadcrumbsStyle}>
             {router!.breadcrumbStack.map(l => (

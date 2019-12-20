@@ -1,7 +1,7 @@
 import React from "react";
 import { css } from "emotion";
 import { useGetBookshelves } from "../connection/LibraryQueryHooks";
-import { getResultsOrMessageElement } from "../connection/LibraryQueryHooks";
+import { getResultsOrMessageElement } from "../connection/GetQueryResultsUI";
 import CategoryCard from "./CategoryCard";
 
 interface IProps {

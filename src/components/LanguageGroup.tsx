@@ -1,22 +1,14 @@
 import React from "react";
 import { css } from "emotion";
 import { LanguageCard } from "./LanguageCard";
-import { useLibraryQuery } from "../connection/LibraryQueryHooks";
-import { getResultsOrMessageElement } from "../connection/LibraryQueryHooks";
+import { useGetLanguagesList } from "../connection/LibraryQueryHooks";
+import { getResultsOrMessageElement } from "../connection/GetQueryResultsUI";
 import Downshift from "downshift";
 import matchSorter from "match-sorter";
 import searchIcon from "../search.png";
 
 export const LanguageGroup: React.FunctionComponent = () => {
-    const languageQueryResults = useLibraryQuery(
-        "language",
-        {
-            keys: "name,usageCount,isoCode",
-            limit: 10000,
-            order: "-usageCount"
-        },
-        {}
-    );
+    const languageQueryResults = useGetLanguagesList();
 
     // note on JS deconstruction syntax here: "{A:B} means "rename A to B"
     const {

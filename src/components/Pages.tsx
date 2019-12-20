@@ -1,6 +1,6 @@
 import { css } from "emotion";
 import React from "react";
-import { useTopicList } from "../connection/LibraryQueryHooks";
+import { useGetTopicList } from "../connection/LibraryQueryHooks";
 import { IFilter } from "../IFilter";
 import {
     BannerContents,
@@ -107,7 +107,7 @@ export const ProjectPage: React.FunctionComponent<{
 export const BookGroupForEachTopic: React.FunctionComponent<{
     filter: IFilter;
 }> = props => {
-    const { response, loading, error, reFetch } = useTopicList();
+    const { response, loading, error, reFetch } = useGetTopicList();
     if (response) {
         console.log(response);
         return (

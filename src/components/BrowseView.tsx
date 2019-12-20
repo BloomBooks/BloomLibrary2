@@ -7,7 +7,7 @@ import {
     CategoryPage,
     ProjectPage,
     SearchResultsPage,
-    MorePage
+    AllResultsPage
     // PrathamPage,
     // AfricaStoryBookPage,
     // BookDashPage
@@ -33,7 +33,7 @@ export class BrowseView extends Component {
                 );
             case "more":
                 return (
-                    <MorePage
+                    <AllResultsPage
                         title={this.router.current.title}
                         filter={this.router.current.filter}
                     />

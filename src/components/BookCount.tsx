@@ -1,9 +1,7 @@
 import React from "react";
-import {
-    useGetBookCount,
-    getResultsOrMessageElement
-} from "../connection/LibraryQueryHooks";
+import { useGetBookCount } from "../connection/LibraryQueryHooks";
 import { IFilter } from "../IFilter";
+import { getResultsOrMessageElement } from "../connection/GetQueryResultsUI";
 
 export const BookCount: React.FunctionComponent<{
     message?: string;

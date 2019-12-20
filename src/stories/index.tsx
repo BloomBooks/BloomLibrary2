@@ -13,6 +13,14 @@ import { HarvesterArtifactUserControl } from "../components/HarvesterArtifactUse
 import { ArtifactAndChoice } from "../components/HarvesterArtifactUserControl/ArtifactAndChoice";
 import { ShowSettings } from "../components/HarvesterArtifactUserControl/ShowSettings";
 import { ArtifactType } from "../components/HarvesterArtifactUserControl/HarvesterArtifactHelper";
+import { Router, RouterContext } from "../Router";
+import { addDecorator } from "@storybook/react";
+
+// Provide all stories with a router in their context:
+const router = new Router();
+addDecorator(storyFn => (
+    <RouterContext.Provider value={router}>{storyFn()}</RouterContext.Provider>
+));
 
 const sampleUrl =
     "https://s3.amazonaws.com/BloomLibraryBooks/librarian%40bloomlibrary.org%2f32916f6b-02bd-4e0b-9b2b-d971096259b7%2fGrandpa+Fish+and+the+Radio%2f";
@@ -81,6 +89,7 @@ storiesOf("BookShelfGroup", module)
             bookShelfCategory="org"
         />
     ));
+
 storiesOf("Pages", module)
     .add("Home Page", () => <HomePage />)
     .add("Thai Book Page", () => (
