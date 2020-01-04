@@ -56,6 +56,7 @@ export interface IBookDetail {
     credits: string;
     pageCount: string;
     tags: Array<string>;
+    features: Array<string>;
     harvesterLog: string;
     harvestState: string;
     show: {
@@ -64,6 +65,8 @@ export interface IBookDetail {
         bloomReader: ShowSettings | undefined;
         readOnline: ShowSettings | undefined;
     };
+    uploadDate: string;
+    updateDate: string;
 }
 
 export function useGetBookDetail(
@@ -78,13 +81,23 @@ export function useGetBookDetail(
             params: {
                 where: { objectId: bookId },
                 keys:
-                    "title,baseUrl,license,summary,copyright,harvestState,tags,pages,show"
+                    "title,baseUrl,license,licenseNotes,summary,copyright,harvestState,tags,pageCount,show,credits,country,features,internetLimits"
                 //TODO: how to get these? ,include: "langPointers,uploader"
             }
         }
     });
 
-    if (loading || !response) return undefined;
+    if (
+        loading ||
+        !response ||
+        !response["data"] ||
+        !response["data"]["results"]
+    ) {
+        return undefined;
+    }
+    if (response["data"]["results"].length === 0) {
+        return null;
+    }
     if (error) return null;
     const detail: IBookDetail = response["data"]["results"][0];
 
@@ -109,6 +122,10 @@ export function useGetBookDetail(
     // return parts[0] + "-" + parts[1];
     // detail.topic =
     detail.id = bookId;
+
+    // todo: parse out the dates, in this YYYY-MM-DD format (e.g. with )
+    detail.uploadDate = "2020/1/30";
+    detail.updateDate = "2020/2/23";
     return detail;
 }
 

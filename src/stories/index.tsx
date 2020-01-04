@@ -15,6 +15,7 @@ import { ShowSettings } from "../components/HarvesterArtifactUserControl/ShowSet
 import { ArtifactType } from "../components/HarvesterArtifactUserControl/HarvesterArtifactHelper";
 import { Router, RouterContext } from "../Router";
 import { addDecorator } from "@storybook/react";
+import { BookDetail } from "../components/BookDetail";
 
 // Provide all stories with a router in their context:
 const router = new Router();
@@ -25,6 +26,9 @@ addDecorator(storyFn => (
 const sampleUrl =
     "https://s3.amazonaws.com/BloomLibraryBooks/librarian%40bloomlibrary.org%2f32916f6b-02bd-4e0b-9b2b-d971096259b7%2fGrandpa+Fish+and+the+Radio%2f";
 
+storiesOf("BookDetail", module).add("Beautiful Day", () => (
+    <BookDetail id={"lhQnYpvD9p"} />
+));
 storiesOf("BookCard", module).add("simple", () => (
     <BookCard
         lazy={false}

@@ -1,10 +1,13 @@
-import React, { Component, useEffect, useState } from "react";
-import { BookCard } from "./BookCard";
+import React, { useState } from "react";
 import { css, cx } from "emotion";
 import { useGetBookDetail } from "../connection/LibraryQueryHooks";
 import WarningIcon from "@material-ui/icons/Warning";
 import { IconButton } from "@material-ui/core";
 import { Alert } from "./Alert";
+import Button from "@material-ui/core/Button";
+
+//NB: v3.0 of title-case has a new API, but don't upgrade: it doesn't actually work like v2.x does, where it can take fooBar and give us "Foo Bar"
+import titleCase from "title-case";
 
 interface IProps {
     id: string;
@@ -13,81 +16,193 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
     const book = useGetBookDetail(props.id);
     const [alertText, setAlertText] = useState<string | null>(null);
 
-    if (!book) {
+    if (book === undefined) {
         return <div>Loading...</div>;
+    } else if (book === null) {
+        return <div>Sorry, we could not find that book.</div>;
     } else {
         const showHarvesterWarning = book.harvesterLog.indexOf("Warning") >= 0;
         return (
             <div
                 className={css`
-                    width: 400px;
+                    width: 800px;
                     margin-left: auto;
                     margin-right: auto;
                 `}
             >
-                <h1
-                    className={css`
-                        font-size: 32pt;
-                        margin-bottom: 12px;
-                    `}
-                >
-                    {book.title}
-                </h1>
                 <div
                     className={css`
-                        font-size: 14pt;
-                        margin-bottom: 12px;
+                        margin: 1em;
                     `}
                 >
-                    {book.summary}
-                </div>
-                <img
-                    src={book.baseUrl + "thumbnail-256.png"}
-                    className={css`
-                        height: 300px;
-                        object-fit: contain; //cover will crop, but fill up nicely
-                    `}
-                />
-                <div>{book.credits}</div>
-                <div>{book.copyright}</div>
-                <div>
-                    {"License: "}
-                    {book.license}
-                </div>
-                <div>
-                    {book.tags.map(t => {
-                        const parts = t.split(":");
-                        return parts[0] + "-" + parts[1];
-                    })}
-                </div>
-                {showHarvesterWarning && (
-                    <IconButton
-                        aria-label="harvester warning"
-                        onClick={() => setAlertText(book.harvesterLog)}
+                    <div
+                        id={"primaryInfoAndButtons"}
+                        className={css`
+                            display: flex;
+                            background-color: lightgreen;
+                        `}
                     >
-                        <WarningIcon />
-                    </IconButton>
-                )}
-                <div
-                    className={css`
-                        margin-top: 300px;
-                        color: lightgray;
-                    `}
-                >
-                    <div>{"Raw Data:"}</div>
-                    {JSON.stringify(book)}
+                        <section
+                            className={css`
+                                display: flex;
+                                margin-bottom: 1em;
+                                flex-direction: column;
+                                background-color: lightyellow;
+                                width: 900px; //hack
+                            `}
+                        >
+                            <div
+                                id={"left-side"}
+                                className={css`
+                                    display: flex;
+                                `}
+                            >
+                                <img
+                                    alt="book thumbnail"
+                                    src={book.baseUrl + "thumbnail-256.png"}
+                                    className={css`
+                                        width: 125px;
+                                        object-fit: contain; //cover will crop, but fill up nicely
+                                        margin-right: 16px;
+                                    `}
+                                />
+                                <div>
+                                    <h1
+                                        className={css`
+                                            font-size: 28pt;
+                                            margin-top: 0;
+                                            margin-bottom: 12px;
+                                        `}
+                                    >
+                                        {book.title}
+                                    </h1>
+                                    {/* These are the original credits, which aren't enough. See BL-79990
+                    <div>{book.credits}</div> */}
+                                    <div>Written by: somebody</div>
+                                    <div>Illustrated by: somebody</div>
+                                    <div>Narrated by: somebody else</div>
+                                </div>
+                            </div>
+                            <div
+                                className={css`
+                                    font-size: 14pt;
+                                    margin-bottom: 12px;
+                                `}
+                            >
+                                {book.summary}
+                            </div>
+                        </section>
+                        <div id="twoButtons" className={css``}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                className={css`
+                                    width: 250px;
+                                    height: 80px;
+                                    margin-bottom: 10px !important;
+                                `}
+                            >
+                                READ
+                            </Button>
+
+                            <Button
+                                variant="outlined"
+                                color="secondary"
+                                className={css`
+                                    width: 250px;
+                                    height: 80px;
+                                    display: block;
+                                `}
+                            >
+                                <div
+                                    className={css`
+                                        display: block;
+                                    `}
+                                >
+                                    <h3
+                                        className={css`
+                                            font-size: 12px;
+                                            line-height: 14px;
+                                        `}
+                                    >
+                                        {"Translate into"} <em>your</em>{" "}
+                                        {"language!"}
+                                    </h3>
+                                    <p
+                                        className={css`
+                                            font-size: 10pt;
+                                        `}
+                                    >
+                                        Download into Bloom Editor
+                                    </p>
+                                </div>
+                            </Button>
+                        </div>
+                    </div>
+                    <div className={"details"}>
+                        <div>{`${book.pageCount} Pages`}</div>
+                        <div>{book.copyright}</div>
+                        <div>
+                            {"License: "}
+                            {book.license}
+                        </div>
+                        <div>
+                            {"Uploaded "}
+                            {book.uploadDate}
+                            {" by TODO"}
+                        </div>
+                        <div>
+                            {"Last updated "}
+                            {book.updateDate}
+                        </div>
+                        <div>
+                            {"Tags: "}
+                            {book.tags
+                                .filter(t => !t.startsWith("system"))
+                                .map(t => {
+                                    const parts = t.split(":");
+                                    return parts[1];
+                                })
+                                .join(", ")}
+                        </div>
+                        <div>
+                            {"Features: "}
+                            {book.features
+                                .map(f => {
+                                    return titleCase(f);
+                                })
+                                .join(", ")}
+                        </div>
+                    </div>
+                    {showHarvesterWarning && (
+                        <IconButton
+                            aria-label="harvester warning"
+                            onClick={() => setAlertText(book.harvesterLog)}
+                        >
+                            <WarningIcon />
+                        </IconButton>
+                    )}
+                    <div
+                        className={css`
+                            margin-top: 300px;
+                            color: lightgray;
+                        `}
+                    >
+                        <div>{"Raw Data:"}</div>
+                        {JSON.stringify(book)}
+                    </div>
+
+                    {/* // This won't work yet because we don't have login working */}
+                    {/* <HarvesterArtifactUserControl bookId={props.id} /> */}
+
+                    <Alert
+                        open={alertText != null}
+                        close={() => {
+                            setAlertText(null);
+                        }}
+                        message={alertText!}
+                    />
                 </div>
-
-                {/* // This won't work yet because we don't have login working */}
-                {/* <HarvesterArtifactUserControl bookId={props.id} /> */}
-
-                <Alert
-                    open={alertText != null}
-                    close={() => {
-                        setAlertText(null);
-                    }}
-                    message={alertText!}
-                />
             </div>
         );
     }
