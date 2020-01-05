@@ -1,5 +1,10 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import React, { useState } from "react";
-import { css, cx } from "emotion";
 import { useGetBookDetail } from "../connection/LibraryQueryHooks";
 import WarningIcon from "@material-ui/icons/Warning";
 import { IconButton } from "@material-ui/core";
@@ -24,26 +29,27 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
         const showHarvesterWarning = book.harvesterLog.indexOf("Warning") >= 0;
         return (
             <div
-                className={css`
+                css={css`
                     width: 800px;
                     margin-left: auto;
                     margin-right: auto;
+                    label: BookDetail;
                 `}
             >
                 <div
-                    className={css`
+                    css={css`
                         margin: 1em;
                     `}
                 >
                     <div
                         id={"primaryInfoAndButtons"}
-                        className={css`
+                        css={css`
                             display: flex;
                             background-color: lightgreen;
                         `}
                     >
                         <section
-                            className={css`
+                            css={css`
                                 display: flex;
                                 margin-bottom: 1em;
                                 flex-direction: column;
@@ -53,14 +59,14 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
                         >
                             <div
                                 id={"left-side"}
-                                className={css`
+                                css={css`
                                     display: flex;
                                 `}
                             >
                                 <img
                                     alt="book thumbnail"
                                     src={book.baseUrl + "thumbnail-256.png"}
-                                    className={css`
+                                    css={css`
                                         width: 125px;
                                         object-fit: contain; //cover will crop, but fill up nicely
                                         margin-right: 16px;
@@ -68,7 +74,7 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
                                 />
                                 <div>
                                     <h1
-                                        className={css`
+                                        css={css`
                                             font-size: 28pt;
                                             margin-top: 0;
                                             margin-bottom: 12px;
@@ -84,7 +90,7 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
                                 </div>
                             </div>
                             <div
-                                className={css`
+                                css={css`
                                     font-size: 14pt;
                                     margin-bottom: 12px;
                                 `}
@@ -92,11 +98,11 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
                                 {book.summary}
                             </div>
                         </section>
-                        <div id="twoButtons" className={css``}>
+                        <div id="twoButtons" css={css``}>
                             <Button
                                 variant="contained"
                                 color="primary"
-                                className={css`
+                                css={css`
                                     width: 250px;
                                     height: 80px;
                                     margin-bottom: 10px !important;
@@ -108,19 +114,19 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
                             <Button
                                 variant="outlined"
                                 color="secondary"
-                                className={css`
+                                css={css`
                                     width: 250px;
                                     height: 80px;
                                     display: block;
                                 `}
                             >
                                 <div
-                                    className={css`
+                                    css={css`
                                         display: block;
                                     `}
                                 >
                                     <h3
-                                        className={css`
+                                        css={css`
                                             font-size: 12px;
                                             line-height: 14px;
                                         `}
@@ -129,7 +135,7 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
                                         {"language!"}
                                     </h3>
                                     <p
-                                        className={css`
+                                        css={css`
                                             font-size: 10pt;
                                         `}
                                     >
@@ -139,7 +145,7 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
                             </Button>
                         </div>
                     </div>
-                    <div className={"details"}>
+                    <div id={"details"}>
                         <div>{`${book.pageCount} Pages`}</div>
                         <div>{book.copyright}</div>
                         <div>
@@ -183,7 +189,7 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
                         </IconButton>
                     )}
                     <div
-                        className={css`
+                        css={css`
                             margin-top: 300px;
                             color: lightgray;
                         `}

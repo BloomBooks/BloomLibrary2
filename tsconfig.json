@@ -19,7 +19,15 @@
         "esModuleInterop": true,
         "moduleResolution": "node",
         "isolatedModules": true,
-        "noEmit": true
+        "noEmit": true,
+        "plugins": [
+            {
+                "name": "typescript-styled-plugin",
+                "lint": {
+                    "validProperties": ["label"]
+                }
+            }
+        ]
     },
     "exclude": ["node_modules", "typings"],
     "include": ["src"]

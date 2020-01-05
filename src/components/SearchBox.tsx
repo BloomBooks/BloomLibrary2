@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { css } from "emotion";
+import { css } from "@emotion/core";
 import searchIcon from "../search.png";
 import { RouterContext } from "../Router";
 export const SearchBox: React.FunctionComponent<{}> = props => {

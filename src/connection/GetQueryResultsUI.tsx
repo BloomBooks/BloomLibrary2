@@ -1,6 +1,6 @@
 import React from "react";
 import { IAxiosAnswer } from "./LibraryQueryHooks";
-import { css } from "emotion";
+import { css } from "@emotion/core";
 
 export function getResultsOrMessageElement(queryResult: IAxiosAnswer) {
     const { response, loading, error } = queryResult;

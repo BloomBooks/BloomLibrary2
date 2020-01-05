@@ -1,5 +1,9 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
 import React from "react";
-import { css, cx } from "emotion";
 
 interface IProps extends React.HTMLProps<HTMLDivElement> {
     onClick?: () => void;
@@ -10,7 +14,7 @@ interface IProps extends React.HTMLProps<HTMLDivElement> {
 export const CheapCard: React.FunctionComponent<IProps> = props => (
     <div
         {...props}
-        className={cx(["cheapCard", cardStyle, props.className])}
+        css={`cheapCard ${cardStyle} ${props.className}`}
         onClick={() => {
             if (props.onClick) {
                 props.onClick();
