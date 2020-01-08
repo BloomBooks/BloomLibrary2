@@ -44,7 +44,7 @@ export const AllResultsPage: React.FunctionComponent<{
         {/* <SearchBanner filter={props.filter} /> */}
         <ul className={"pageResults"}>
             <BookGroup title={props.title} filter={props.filter} rows={20} />
-            // TODO: we need a way to say "OK, more rows, and more rows" etc.
+            {/* TODO: we need a way to say "OK, more rows, and more rows" etc. */}
         </ul>
     </>
 );
