@@ -1,5 +1,10 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import React, { useContext, useState } from "react";
-import { css } from "@emotion/core";
 import searchIcon from "../search.png";
 import { RouterContext } from "../Router";
 export const SearchBox: React.FunctionComponent<{}> = props => {
@@ -9,16 +14,14 @@ export const SearchBox: React.FunctionComponent<{}> = props => {
     );
     return (
         <div
-            className={
-                "searchContainer " +
-                css`
-                    margin-left: auto;
-                    height: 30px;
-                `
-            }
+            className={"searchContainer"}
+            css={css`
+                margin-left: auto;
+                height: 30px;
+            `}
         >
             <input
-                className={css`
+                css={css`
                     display: block;
                     border: 0;
                 `}

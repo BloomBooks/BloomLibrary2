@@ -8,7 +8,7 @@ export function getResultsOrMessageElement(queryResult: IAxiosAnswer) {
         return {
             noResultsElement: (
                 <div
-                    className={css`
+                    css={css`
                         background-color: lightgray;
                         width: 100px;
                         height: 20px;

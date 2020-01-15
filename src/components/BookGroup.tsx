@@ -1,6 +1,11 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import React, { useEffect, useState } from "react";
 import { BookCard } from "./BookCard";
-import { css } from "@emotion/core";
 import { IFilter } from "../IFilter";
 import { useSearchBooks } from "../connection/LibraryQueryHooks";
 import LazyLoad from "react-lazyload";
@@ -94,7 +99,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
         </ReactIdSwiper>
     ) : (
         <div
-            className={css`
+            css={css`
                 display: flex;
                 flex-wrap: wrap;
             `}
@@ -108,7 +113,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
             // <p>{`No Books for "${
             //     props.title
             // }". Should not see this in production`}</p>
-            <></>
+            <React.Fragment></React.Fragment>
         );
 
     return (
@@ -116,7 +121,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
         // (ZeroBooksMatchedElement will be an empty pseudo-element that satisfies the 'or' but shows nothing)
         zeroBooksMatchedElement || (
             <li
-                className={css`
+                css={css`
                     margin-top: 30px;
                     height: 200px; // want height to be same even if no results yet
                 `}
@@ -124,7 +129,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
                 <h1>
                     {props.title}
                     <span
-                        className={css`
+                        css={css`
                             font-size: 9pt;
                             color: gray;
                             margin-left: 1em;

@@ -14,7 +14,8 @@ interface IProps extends React.HTMLProps<HTMLDivElement> {
 export const CheapCard: React.FunctionComponent<IProps> = props => (
     <div
         {...props}
-        css={`cheapCard ${cardStyle} ${props.className}`}
+        className={`cheapCard ${props.className}`}
+        css={cardStyle}
         onClick={() => {
             if (props.onClick) {
                 props.onClick();

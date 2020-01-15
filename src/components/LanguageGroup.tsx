@@ -1,5 +1,10 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import React from "react";
-import { css } from "@emotion/core";
 import { LanguageCard } from "./LanguageCard";
 import { useGetLanguagesList } from "../connection/LibraryQueryHooks";
 import { getResultsOrMessageElement } from "../connection/GetQueryResultsUI";
@@ -18,7 +23,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
     return (
         noResultsElement || (
             <li
-                className={css`
+                css={css`
                     margin-top: 30px;
                 `}
             >
@@ -43,13 +48,13 @@ export const LanguageGroup: React.FunctionComponent = () => {
                     }) => (
                         <div>
                             <div
-                                className={css`
+                                css={css`
                                     display: flex;
                                 `}
                             >
                                 <div className="searchContainer">
                                     <input
-                                        className={css`
+                                        css={css`
                                             display: block;
                                             //margin-bottom: 7px;
 
@@ -64,7 +69,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                             </div>
                             <ul
                                 {...getMenuProps()}
-                                className={css`
+                                css={css`
                                     list-style: none;
                                     display: flex;
                                     padding-left: 0;

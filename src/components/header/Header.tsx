@@ -1,11 +1,16 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import React from "react";
-import { css } from "@emotion/core";
 import logo from "./header-logo.png";
 import { SearchBox } from "../SearchBox";
 export const Header: React.FunctionComponent<{}> = props => {
     return (
         <div
-            className={css`
+            css={css`
                 display: flex;
                 background-color: #1c1c1c;
                 height: 48px;

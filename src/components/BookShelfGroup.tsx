@@ -1,5 +1,10 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import React from "react";
-import { css } from "@emotion/core";
 import { useGetBookshelves } from "../connection/LibraryQueryHooks";
 import { getResultsOrMessageElement } from "../connection/GetQueryResultsUI";
 import CategoryCard from "./CategoryCard";
@@ -85,7 +90,7 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = props => {
     //           ))
     //     : skeletonCards.map(c => (
     //           <CheapCard
-    //               className={css`
+    //               css={css`
     //                   width: 100px;
 
     //                   background-color: lightgray;
@@ -95,13 +100,13 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = props => {
 
     return (
         <li
-            className={css`
+            css={css`
                 margin-top: 30px;
             `}
         >
             <h1>{props.title}</h1>
             <ul
-                className={css`
+                css={css`
                     list-style: none;
                     display: flex;
                     padding-left: 0;

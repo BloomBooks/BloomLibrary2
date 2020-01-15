@@ -22,26 +22,21 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
 
     const card = (
         <CheapCard
-            className={
-                props.className +
-                " " +
-                css`
-                    width: ${BookCardWidth}px;
-                `
-            }
+            className={props.className}
+            css={css`
+                width: ${BookCardWidth}px;
+            `}
             key={props.baseUrl}
             onClick={() => router!.pushBook(props.id)}
         >
             {/* For (39a) Lara the Yellow Ladybird I placed a file named "test-cover" in the bucket
         in order to play with how the cards can look once we have access to their actual cover images. */}
             <img
-                className={
-                    "swiper-lazy " +
-                    css`
-                        height: 100px;
-                        object-fit: cover; //cover will crop, but fill up nicely
-                    `
-                }
+                className={"swiper-lazy"}
+                css={css`
+                    height: 100px;
+                    object-fit: cover; //cover will crop, but fill up nicely
+                `}
                 alt={"book thumbnail"}
                 // TODO: really this src shouldn't be needed because we are telling the swiper to be lazy,
                 // so it should use the data-src attribute. But at the moment that leaves us with just broken images.

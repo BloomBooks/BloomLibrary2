@@ -1,5 +1,10 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import React, { useContext } from "react";
-import { css } from "@emotion/core";
 import { CheapCard } from "./CheapCard";
 import { RouterContext } from "../Router";
 import { IFilter } from "../IFilter";
@@ -23,7 +28,7 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
 
     const titleElementIfNoImage = (
         <h2
-            className={css`
+            css={css`
                 text-align: center;
                 flex-grow: 1; // push the rest to the bottom5
             `}
@@ -34,7 +39,7 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
 
     return (
         <CheapCard
-            className={css`
+            css={css`
                 width: 220px;
                 padding: 10px;
             `}
@@ -50,7 +55,7 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
             {/* We want to show an image for the category if we have one */}
             <ReactImage
                 src={props.img}
-                className={css`
+                css={css`
                     max-height: 129px;
                     max-width: 198px;
                     margin-left: auto;
@@ -63,7 +68,7 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
             />
 
             <div
-                className={css`
+                css={css`
                     margin-top: auto;
                     text-align: center;
                 `}
