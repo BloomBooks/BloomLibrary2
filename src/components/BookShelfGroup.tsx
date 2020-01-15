@@ -1,5 +1,5 @@
 import React from "react";
-import { css } from "emotion";
+import { css } from "@emotion/core";
 import { useGetBookshelves } from "../connection/LibraryQueryHooks";
 import { getResultsOrMessageElement } from "../connection/GetQueryResultsUI";
 import CategoryCard from "./CategoryCard";

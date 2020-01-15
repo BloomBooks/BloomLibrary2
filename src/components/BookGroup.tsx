@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BookCard } from "./BookCard";
-import { css } from "emotion";
+import { css } from "@emotion/core";
 import { IFilter } from "../IFilter";
 import { useSearchBooks } from "../connection/LibraryQueryHooks";
 import LazyLoad from "react-lazyload";

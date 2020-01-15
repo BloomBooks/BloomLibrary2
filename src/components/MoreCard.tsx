@@ -1,16 +1,16 @@
-import React, { Component, useContext } from "react";
-import { css } from "emotion";
+import React, { useContext } from "react";
+import { css } from "@emotion/core";
 import { CheapCard } from "./CheapCard";
 import { RouterContext } from "../Router";
 import { IFilter } from "../IFilter";
 
-const image = css`
-    height: 100px;
-    width: 100%;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-`;
+// const image = css`
+//     height: 100px;
+//     width: 100%;
+//     background-size: contain;
+//     background-repeat: no-repeat;
+//     background-position: center;
+// `;
 
 export const cardWidth = 120;
 

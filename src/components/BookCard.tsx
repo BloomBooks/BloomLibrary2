@@ -1,5 +1,9 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
 import React, { useContext } from "react";
-import { css } from "emotion";
 import { CheapCard } from "./CheapCard";
 import LazyLoad from "react-lazyload";
 import { RouterContext } from "../Router";
@@ -63,7 +67,7 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
             }
         /> */}
             <h2
-                className={css`
+                css={css`
                     font-weight: normal;
                     padding-left: 10px;
                     max-height: 40px;

@@ -1,10 +1,16 @@
-import React from "react";
-import { css, cx } from "emotion";
+/*  ------- PROBLEM  -------------
+In this file, I (JH) haven't been able to get the new @emotion to work (see BookDetail for how it should work,
+with jsx and css={css``} and all, instead of css={}. When that new method is used, I get "react is undefined". */
+import css from "@emotion/css/macro";
+import React, { Fragment } from "react"; // see https://github.com/emotion-js/emotion/issues/1156
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core"; // <---- CURRENTLY UNUSED, SEE "PROBLEM" ABOVE // <---- CURRENTLY UNUSED, SEE "PROBLEM" ABOVE
+/** @jsx jsx */
+
 import { BookCount } from "./BookCount";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { IFilter } from "../IFilter";
 import { useGetLanguageInfo } from "../connection/LibraryQueryHooks";
-
 export const BannerContents: React.FunctionComponent<{
     title: string;
     about: string;
@@ -18,10 +24,10 @@ export const BannerContents: React.FunctionComponent<{
     );
     const secondLine = lines.length > 1 ? <div> {lines[1]}</div> : "";
     return (
-        <>
+        <div id="without this div i'm now getting react undefined. it should just be <Fragment></Fragment>">
             <Breadcrumbs />
             <h1
-                className={css`
+                css={css`
                     font-size: ${lines.length > 1 ? 36 : 72}px;
                     margin-top: 0;
                     //flex-grow: 1; // push the rest to the bottom
@@ -31,7 +37,7 @@ export const BannerContents: React.FunctionComponent<{
                 {secondLine}
             </h1>
             <div
-                className={css`
+                css={css`
                     font-size: 24px;
                     font-weight: normal;
                     max-width: 600px;
@@ -40,7 +46,7 @@ export const BannerContents: React.FunctionComponent<{
             >
                 {props.about}
                 {props.filter.language && (
-                    <>
+                    <Fragment>
                         {props.filter.language.length === 3 && (
                             <a
                                 target="_blank"
@@ -57,7 +63,7 @@ export const BannerContents: React.FunctionComponent<{
                         >
                             Wikipedia
                         </a>
-                    </>
+                    </Fragment>
                 )}
                 <br />
                 <br />
@@ -66,7 +72,7 @@ export const BannerContents: React.FunctionComponent<{
                     filter={props.filter}
                 />
             </div>
-        </>
+        </div>
     );
 };
 
@@ -74,8 +80,8 @@ export const HomeBanner: React.FunctionComponent<{
     filter: IFilter;
 }> = props => (
     <div
-        className={cx([
-            "banner",
+        className={"banner"}
+        css={
             // TODO: move this image into this code base and reference as a local asset
             css`
                 background-image: url("https://bloomlibrary.org/assets/huyagirls.jpg");
@@ -83,7 +89,7 @@ export const HomeBanner: React.FunctionComponent<{
                 background-blend-mode: darken;
                 background-color: rgba(0, 0, 0, 0.6); // fade the image to black
             `
-        ])}
+        }
     >
         <BannerContents
             title="Library Home"
@@ -117,15 +123,13 @@ export const LanguageBanner: React.FunctionComponent<{
           `;
     return (
         <div
-            className={cx([
-                "banner",
-                css({
-                    backgroundImage: `url(${imageUrl || "book-pages.jpg"})`,
-                    backgroundPosition: "left",
-                    backgroundSize: "cover"
-                }),
-                backgroundStyle
-            ])}
+            className={"banner"}
+            css={css`
+                background-image: url(${imageUrl || "book-pages.jpg"});
+                background-position: left;
+                background-size: cover;
+                ${backgroundStyle}
+            `}
         >
             <BannerContents
                 title={`${props.title}`}
@@ -142,15 +146,13 @@ export const ProjectBanner: React.FunctionComponent<{
     filter: IFilter;
 }> = props => (
     <div
-        className={cx([
-            "banner",
-            css({ backgroundImage: `url(generic-workshop.jpg)` }),
-            css`
-                background-position: left;
-                background-blend-mode: saturation;
-                background-color: rgb(70, 138, 150);
-            `
-        ])}
+        className={"banner"}
+        css={css`
+            background-image: url(generic-workshop.jpg);
+            background-position: left;
+            background-blend-mode: saturation;
+            background-color: rgb(70, 138, 150);
+        `}
     >
         <BannerContents
             title={`${props.title}`}
@@ -166,7 +168,7 @@ export const SearchBanner: React.FunctionComponent<{
 }> = props => {
     return (
         <div
-            className={css`
+            css={css`
                 background-color: #1c1c1c;
                 color: whitesmoke;
                 padding-bottom: 10px;

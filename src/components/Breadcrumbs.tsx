@@ -1,5 +1,6 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import { RouterContext } from "../Router";
-import { css } from "emotion";
+import { css } from "@emotion/core";
 import React, { useContext } from "react";
 
 export const Breadcrumbs: React.FunctionComponent = () => {
@@ -10,10 +11,11 @@ export const Breadcrumbs: React.FunctionComponent = () => {
         );
     }
     return (
-        <ul className={breadcrumbsStyle}>
+        <ul css={breadcrumbsStyle}>
             {router!.breadcrumbStack.map(l => (
                 <li key={l.title}>
                     <a
+                        target="_blank"
                         // todo: seems we're supposed to make this a button that looks like a link for accessibility
                         onClick={() => {
                             router!.goToBreadCrumb(l);

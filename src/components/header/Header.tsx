@@ -1,5 +1,5 @@
 import React from "react";
-import { css } from "emotion";
+import { css } from "@emotion/core";
 import logo from "./header-logo.png";
 import { SearchBox } from "../SearchBox";
 export const Header: React.FunctionComponent<{}> = props => {

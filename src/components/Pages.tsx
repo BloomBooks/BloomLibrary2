@@ -1,4 +1,4 @@
-import { css } from "emotion";
+import { css } from "@emotion/core";
 import React from "react";
 import { useGetTopicList } from "../connection/LibraryQueryHooks";
 import { IFilter } from "../IFilter";
@@ -35,7 +35,7 @@ export const AllResultsPage: React.FunctionComponent<{
 }> = props => (
     <>
         <div
-            className={css`
+            css={css`
                 background-color: black;
             `}
         >
@@ -107,6 +107,7 @@ export const ProjectPage: React.FunctionComponent<{
 export const BookGroupForEachTopic: React.FunctionComponent<{
     filter: IFilter;
 }> = props => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { response, loading, error, reFetch } = useGetTopicList();
     if (response) {
         console.log(response);

@@ -1,5 +1,5 @@
 import React from "react";
-import { css } from "emotion";
+import { css } from "@emotion/core";
 import { LanguageCard } from "./LanguageCard";
 import { useGetLanguagesList } from "../connection/LibraryQueryHooks";
 import { getResultsOrMessageElement } from "../connection/GetQueryResultsUI";

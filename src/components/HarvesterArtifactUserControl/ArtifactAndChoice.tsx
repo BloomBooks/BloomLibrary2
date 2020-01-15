@@ -58,8 +58,9 @@ export const ArtifactAndChoice: React.FunctionComponent<{
     const classes = useStyles();
 
     const getInitialShowValue = (): string => {
-        if (!props.showSettings || props.showSettings.user === undefined)
+        if (!props.showSettings || props.showSettings.user === undefined) {
             return "auto";
+        }
         return props.showSettings.user ? "show" : "hide";
     };
 
@@ -80,14 +81,17 @@ export const ArtifactAndChoice: React.FunctionComponent<{
     };
 
     const getAutoText = (): string => {
-        let show = "Show";
-        if (props.showSettings && !props.showSettings.getDecisionSansUser())
-            show = "Hide";
-        return `Automatic (${show})`;
+        let showOrNot = "Show";
+        if (props.showSettings && !props.showSettings.getDecisionSansUser()) {
+            showOrNot = "Hide";
+        }
+        return `Automatic (${showOrNot})`;
     };
 
     const getRationaleText = (): string => {
-        if (!props.showSettings) return "";
+        if (!props.showSettings) {
+            return "";
+        }
         if (props.showSettings.hasLibrarianDecided()) {
             return `Bloom staff has determined that this should be "${
                 props.showSettings.isLibrarianHide() ? "Hide" : "Show"
@@ -121,13 +125,15 @@ export const ArtifactAndChoice: React.FunctionComponent<{
     };
 
     const getArtifactButtonText = (): string | undefined => {
-        if (props.type === "readOnline") return "Read";
+        if (props.type === "readOnline") {
+            return "Read";
+        }
         return undefined;
     };
 
     const getButton = (): React.ReactNode => {
         const text = getArtifactButtonText();
-        if (text)
+        if (text) {
             return (
                 <Button
                     variant="outlined"
@@ -137,6 +143,7 @@ export const ArtifactAndChoice: React.FunctionComponent<{
                     {text}
                 </Button>
             );
+        }
         return (
             <Button
                 variant="outlined"

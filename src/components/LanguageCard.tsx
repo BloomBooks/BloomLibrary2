@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { css } from "emotion";
+import { css } from "@emotion/core";
 import { CheapCard } from "./CheapCard";
 import { RouterContext } from "../Router";
 
