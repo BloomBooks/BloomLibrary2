@@ -14,7 +14,7 @@ import {
 } from "./Pages";
 import "typeface-roboto";
 import { Header } from "./header/Header";
-import { BookDetail } from "./BookDetail";
+import { BookDetail } from "./BookDetail/BookDetail";
 
 /* This is the top level component that can be hosted on a website to view and interact with the bloom library */
 @observer

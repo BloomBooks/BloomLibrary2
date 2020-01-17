@@ -5,14 +5,15 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React, { useState } from "react";
-import { useGetBookDetail } from "../connection/LibraryQueryHooks";
+import { useGetBookDetail } from "../../connection/LibraryQueryHooks";
 import WarningIcon from "@material-ui/icons/Warning";
 import { IconButton } from "@material-ui/core";
-import { Alert } from "./Alert";
-import Button from "@material-ui/core/Button";
+import { Alert } from "../Alert";
 
 //NB: v3.0 of title-case has a new API, but don't upgrade: it doesn't actually work like v2.x does, where it can take fooBar and give us "Foo Bar"
 import titleCase from "title-case";
+import { ReadButton } from "./ReadButton";
+import { TranslateButton } from "./TranslateButton";
 
 interface IProps {
     id: string;
@@ -45,7 +46,7 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
                         id={"primaryInfoAndButtons"}
                         css={css`
                             display: flex;
-                            background-color: lightgreen;
+                            //background-color: lightgreen;
                         `}
                     >
                         <section
@@ -53,7 +54,7 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
                                 display: flex;
                                 margin-bottom: 1em;
                                 flex-direction: column;
-                                background-color: lightyellow;
+                                //  background-color: lightyellow;
                                 width: 900px; //hack
                             `}
                         >
@@ -61,13 +62,16 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
                                 id={"left-side"}
                                 css={css`
                                     display: flex;
+                                    margin-bottom: 1em;
                                 `}
                             >
                                 <img
                                     alt="book thumbnail"
                                     src={book.baseUrl + "thumbnail-256.png"}
                                     css={css`
-                                        width: 125px;
+                                        max-width: 125px;
+                                        height: 120px;
+
                                         object-fit: contain; //cover will crop, but fill up nicely
                                         margin-right: 16px;
                                     `}
@@ -75,7 +79,7 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
                                 <div>
                                     <h1
                                         css={css`
-                                            font-size: 28pt;
+                                            font-size: 18pt;
                                             margin-top: 0;
                                             margin-bottom: 12px;
                                         `}
@@ -99,50 +103,8 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
                             </div>
                         </section>
                         <div id="twoButtons" css={css``}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                css={css`
-                                    width: 250px;
-                                    height: 80px;
-                                    margin-bottom: 10px !important;
-                                `}
-                            >
-                                READ
-                            </Button>
-
-                            <Button
-                                variant="outlined"
-                                color="secondary"
-                                css={css`
-                                    width: 250px;
-                                    height: 80px;
-                                    display: block;
-                                `}
-                            >
-                                <div
-                                    css={css`
-                                        display: block;
-                                    `}
-                                >
-                                    <h3
-                                        css={css`
-                                            font-size: 12px;
-                                            line-height: 14px;
-                                        `}
-                                    >
-                                        {"Translate into"} <em>your</em>{" "}
-                                        {"language!"}
-                                    </h3>
-                                    <p
-                                        css={css`
-                                            font-size: 10pt;
-                                        `}
-                                    >
-                                        Download into Bloom Editor
-                                    </p>
-                                </div>
-                            </Button>
+                            <ReadButton id={props.id} />
+                            <TranslateButton id={props.id} />
                         </div>
                     </div>
                     <div id={"details"}>
