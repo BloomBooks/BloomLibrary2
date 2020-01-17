@@ -14,7 +14,7 @@ import epubIcon from "../../assets/epub.png";
 import bloomReaderIcon from "../../assets/bloomd.png";
 import readIcon from "../../assets/read.svg";
 import { ArtifactType } from "./HarvesterArtifactHelper";
-import { bloomRed } from "../styles";
+import { bloomRed } from "../../theme";
 
 const useStyles = makeStyles(() =>
     createStyles({

@@ -1,13 +1,17 @@
 import React, { Component } from "react";
 
 import { BrowseView } from "./components/BrowseView";
+import theme from "./theme";
+import { ThemeProvider } from "@material-ui/styles";
 
 class App extends Component {
     render() {
         return (
             <React.StrictMode>
                 <div className="App">
-                    <BrowseView />
+                    <ThemeProvider theme={theme}>
+                        <BrowseView />
+                    </ThemeProvider>
                 </div>
             </React.StrictMode>
         );
