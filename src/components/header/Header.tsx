@@ -7,7 +7,7 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import logo from "./header-logo.png";
 import { SearchBox } from "../SearchBox";
-import { useAuth0 } from "../../react-auth0-spa";
+import { useAuth0 } from "../../Auth0Provider";
 import { Button, Menu, MenuItem } from "@material-ui/core";
 import loginIcon from "../../assets/NoUser.svg";
 

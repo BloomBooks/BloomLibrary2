@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-import { Auth0Provider } from "./react-auth0-spa";
+import { Auth0Provider } from "./Auth0Provider";
 import { getConnection } from "./connection/Connection";
 import { ILocation } from "./Router";
 import QueryString from "qs";
