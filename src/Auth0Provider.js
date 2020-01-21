@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import createAuth0Client from "@auth0/auth0-spa-js";
-import { loginWithAuth0, logout } from "./connection/Connection";
+import { connectParsetoAuth0, logout } from "./connection/Connection";
 
 // This file provides a React wrapper for the Auth0 code that allows us to log in and out.
 // It exports the Auth0Provider React component which wraps our entire app, and the useAuth0
@@ -76,7 +76,7 @@ export const Auth0Provider = ({
                     // @auth0/auth0-spa-js.
                     const jwtEncodedToken = claims.__raw;
                     // Hook parse up to use this identity.
-                    loginWithAuth0(jwtEncodedToken, user.email);
+                    connectParsetoAuth0(jwtEncodedToken, user.email);
                 }
             } else {
                 setIsAuthorized(false);

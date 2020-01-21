@@ -49,7 +49,7 @@ const local: IConnection = {
 };
 
 export function getConnection(): IConnection {
-    if (true) {
+    if (false) {
         // change to true when testing with local database
         return local;
     }
@@ -69,7 +69,7 @@ export function getConnection(): IConnection {
     return dev;
 }
 
-export function loginWithAuth0(jwtToken: string, userId: string) {
+export function connectParsetoAuth0(jwtToken: string, userId: string) {
     const connection = getConnection();
     // Run a cloud code function which, if this is a new user with the email of a known user,
     // will link them; and if it is a new email, will create a user with that ID and link them.
