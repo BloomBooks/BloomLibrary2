@@ -2,6 +2,12 @@ import axios from "axios";
 import config_local from "./auth_config_local.json";
 import config_dev from "./auth_config_dev.json";
 import config_prod from "./auth_config_prod.json";
+
+// This file exports a function getConnection(), which returns an object containing
+// various constants and secrets needed to communicate with Auth0 and parse-server.
+// It keeps track of whether we're working with dev/staging or production or
+// (via a one-line code change) a local database, and also stores and returns
+// the token we get from parse-server when authorized as a particular user.
 interface IConnection {
     headers: {
         "Content-Type": string;
@@ -103,7 +109,6 @@ export function loginWithAuth0(jwtToken: string, userId: string) {
                     error => {}
                 );
         });
-    //todo: clean up closing braces.
 }
 
 // Remove the parse session header when the user logs out.

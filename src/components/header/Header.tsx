@@ -33,6 +33,14 @@ export const Header: React.FunctionComponent<{}> = props => {
     }, [isUnverified]);
 
     const toolbarHeight = "48px";
+    // This variable is used according to an apparently standard but rather
+    // obscure convention for managing Material button/menu combinations.
+    // When the menu is hidden, it is null. When the menu is showing, it
+    // is the element that determines the position of the menu...in our case,
+    // the element clicked. It's supposed to be an actual HTML element, which
+    // isn't easily accessible in React, so we get it (in showMenu) from the
+    // target of the clickAction. Since only one of the two button/menu
+    // combinations is visible at any one time, a single state works for both.
     const [anchorEl, setAnchorEl] = useState(null as Element | null);
     const showMenu = (ev: any) => {
         setAnchorEl(ev.target as Element);
@@ -78,6 +86,9 @@ export const Header: React.FunctionComponent<{}> = props => {
             <a href="/" title="Home">
                 <img src={logo} alt={"Bloom Logo"} />
             </a>
+            {/* The margin-left:auto here allows the containing flex-box to insert any spare space
+            into this element's margin-left, typically putting a large gap there and making
+            it the left-most of the block of controls at the right of the header.*/}
             <div
                 className={css`
                     margin-left: auto;
@@ -85,8 +96,10 @@ export const Header: React.FunctionComponent<{}> = props => {
             >
                 {!isAuthorized && (
                     <>
-                        {/* Review: Hate to use !important here...need to discusss with JohnH how better to beat Mui's
-                    determination to put 6px of top padding on buttons, which messes up the alignment of our icon.*/}
+                        {/* Material recommends a trick I could not make sense of to let Emotion styles
+                        beat Material ones, but there seems no reason to avoid !important here: we
+                        definitely always want to get rid of the Material top padding so the img aligns
+                        with other things in the Header.*/}
                         <Button
                             aria-controls="login-menu"
                             aria-haspopup="true"

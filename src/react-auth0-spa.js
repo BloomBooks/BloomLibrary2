@@ -2,6 +2,15 @@ import React, { useState, useEffect, useContext } from "react";
 import createAuth0Client from "@auth0/auth0-spa-js";
 import { loginWithAuth0, logout } from "./connection/Connection";
 
+// This file provides a React wrapper for the Auth0 code that allows us to log in and out.
+// It exports the Auth0Provider React component which wraps our entire app, and the useAuth0
+// function which manages a Context and makes various information and functions available
+// wherever needed. A useEffect() runs once only (because logging in and out both involve
+// a redirect that reloads the page, and causes the once-only to happen again) that evaluates
+// the current state of things and determines what user, if any, is logged in. The fields
+// available through useAuth0() are those of the value assigned to the Auth0Provider in the
+// final return statement.
+
 const DEFAULT_REDIRECT_CALLBACK = () =>
     window.history.replaceState({}, document.title, window.location.pathname);
 
@@ -32,6 +41,9 @@ export const Auth0Provider = ({
             const auth0FromHook = await createAuth0Client(initOptions);
             setAuth0(auth0FromHook);
 
+            // True immediately after a login redirect; auth0 appends code and state
+            // params to the URL we gave it which the local auth0 code uses to
+            // determine various things about the user who is logged in.
             if (window.location.search.includes("code=")) {
                 const {
                     appState
@@ -40,15 +52,14 @@ export const Auth0Provider = ({
             }
 
             const loggedIn = await auth0FromHook.isAuthenticated();
-
             setIsLoggedIn(loggedIn);
 
             if (loggedIn) {
                 const user = await auth0FromHook.getUser();
+                setUser(user);
                 const authorized = user.email_verified;
                 setIsAuthorized(authorized);
                 setIsUnverified(!user.email_verified);
-                setUser(user);
                 if (authorized) {
                     // Only if we have a verified email can we try to get a parse-server
                     // token.
@@ -66,10 +77,6 @@ export const Auth0Provider = ({
                     const jwtEncodedToken = claims.__raw;
                     // Hook parse up to use this identity.
                     loginWithAuth0(jwtEncodedToken, user.email);
-                    console.log("auth0FromHook data:");
-                    console.log(JSON.stringify(auth0FromHook));
-                    console.log("claims data:");
-                    console.log(JSON.stringify(claims));
                 }
             } else {
                 setIsAuthorized(false);
@@ -83,6 +90,11 @@ export const Auth0Provider = ({
         // eslint-disable-next-line
     }, []);
 
+    // This is saved from the original version of this code generated in the auth0
+    // react-spa tutorial. I think it can be used to login with a popup instead of
+    // by redirecting to the auth0 domain. However, I believe this requires 3rd party
+    // cookies to be enabled, and is therefore likely to fail (by default in some
+    // browsers, e.g., Firefox).
     // const loginWithPopup = async (params = {}) => {
     //     setPopupOpen(true);
     //     try {
@@ -98,6 +110,14 @@ export const Auth0Provider = ({
     // };
 
     return (
+        // These values are available anywhere by code like
+        // import { useAuth0 } from "../../Auth0Provider";
+        // const {
+        //     user,
+        //     isLoggedIn,
+        //     isAuthorized,
+        //     logout
+        // } = useAuth0()
         <Auth0Context.Provider
             value={{
                 isLoggedIn,
