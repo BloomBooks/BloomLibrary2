@@ -31,7 +31,7 @@ export const Header: React.FunctionComponent<{}> = props => {
             it the left-most of the block of controls at the right of the header.*/}
             <User
                 buttonHeight={toolbarHeight}
-                className={css`
+                css={css`
                     margin-left: auto;
                 `}
             />

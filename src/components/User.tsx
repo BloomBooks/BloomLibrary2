@@ -14,7 +14,6 @@ import loginIcon from "../assets/NoUser.svg";
 // email...currently just with an alert followed by forced logout. This functionality
 // might move when we decide what we really want to show.
 interface IProps extends React.HTMLProps<HTMLDivElement> {
-    className?: string;
     buttonHeight: string;
 }
 
@@ -77,7 +76,7 @@ export const User: React.FunctionComponent<IProps> = props => {
         logoutWithRedirect();
     };
     return (
-        <div {...props} className={cx(["user", "", props.className])}>
+        <div {...props}>
             {!isAuthorized && (
                 <>
                     {/* Material recommends a trick I could not make sense of to let Emotion styles
