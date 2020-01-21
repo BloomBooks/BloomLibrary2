@@ -1,5 +1,6 @@
 // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
 import css from "@emotion/css/macro";
+import { HarvesterArtifactUserControl } from "../HarvesterArtifactUserControl/HarvesterArtifactUserControl";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
@@ -160,8 +161,8 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
                         {JSON.stringify(book)}
                     </div>
 
-                    {/* // This won't work yet because we don't have login working */}
-                    {/* <HarvesterArtifactUserControl bookId={props.id} /> */}
+                    {/* Todo: this should only be shown if the owner of the book is currently authorized */}
+                    <HarvesterArtifactUserControl bookId={props.id} />
 
                     <Alert
                         open={alertText != null}

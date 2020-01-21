@@ -14,11 +14,12 @@ export const SearchBox: React.FunctionComponent<{}> = props => {
     );
     return (
         <div
-            className={"searchContainer"}
-            css={css`
-                margin-left: auto;
-                height: 30px;
-            `}
+            className={
+                "searchContainer " +
+                css`
+                    height: 30px;
+                `
+            }
         >
             <input
                 css={css`
