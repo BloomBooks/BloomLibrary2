@@ -54,8 +54,8 @@ export function getConnection(): IConnection {
         return local;
     }
     if (
-        window.location.hostname === "bloomlibrary.org" ||
-        window.location.hostname === "next.bloomlibrary.org"
+        window.location.hostname === "bloomlibrary.org"
+        // || window.location.hostname === "next.bloomlibrary.org"
     )
         return prod;
 
