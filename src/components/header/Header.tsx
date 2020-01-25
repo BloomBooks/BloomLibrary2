@@ -5,9 +5,10 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React from "react";
-import logo from "./header-logo.png";
+import logo from "./header-logo.svg";
 import { SearchBox } from "../SearchBox";
 import { User } from "../User";
+import { bloomRed } from "../../theme";
 
 export const Header: React.FunctionComponent<{}> = props => {
     const toolbarHeight = "48px";
@@ -15,7 +16,7 @@ export const Header: React.FunctionComponent<{}> = props => {
         <div
             css={css`
                 display: flex;
-                background-color: #1c1c1c;
+                background-color: ${bloomRed};
                 height: ${toolbarHeight};
                 flex-shrink: 0;
                 padding: 10px;
