@@ -1,6 +1,10 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import { css, cx } from "emotion";
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
+import React, { useState, useEffect } from "react";
 import { useAuth0 } from "../Auth0Provider";
 import { Button, Menu, MenuItem } from "@material-ui/core";
 import loginIcon from "../assets/NoUser.svg";
@@ -78,7 +82,7 @@ export const User: React.FunctionComponent<IProps> = props => {
     return (
         <div {...props}>
             {!isAuthorized && (
-                <>
+                <React.Fragment>
                     {/* Material recommends a trick I could not make sense of to let Emotion styles
                         beat Material ones, but there seems no reason to avoid !important here: we
                         definitely always want to get rid of the Material top padding so the img aligns
@@ -87,13 +91,13 @@ export const User: React.FunctionComponent<IProps> = props => {
                         aria-controls="login-menu"
                         aria-haspopup="true"
                         onClick={showMenu}
-                        className={css`
+                        css={css`
                             padding-top: 0 !important;
                         `}
                     >
                         <img
                             src={loginIcon}
-                            className={css`
+                            css={css`
                                 width: ${props.buttonHeight};
                             `}
                             alt="login"
@@ -109,16 +113,16 @@ export const User: React.FunctionComponent<IProps> = props => {
                         <MenuItem onClick={handleSignup}>Sign Up</MenuItem>
                         <MenuItem onClick={handleLogin}>Login</MenuItem>
                     </Menu>
-                </>
+                </React.Fragment>
             )}
 
             {isAuthorized && (
-                <>
+                <React.Fragment>
                     <Button
                         aria-controls="logout-menu"
                         aria-haspopup="true"
                         onClick={showMenu}
-                        className={css`
+                        css={css`
                             padding-top: 0 !important;
                         `}
                         // If we decide not to log out users with unverified emails immediately,
@@ -129,13 +133,23 @@ export const User: React.FunctionComponent<IProps> = props => {
                         // }}
                     >
                         {user && user.picture && (
-                            <img
-                                src={user.picture}
-                                alt="user"
-                                className={css`
+                            <div
+                                id="avatarCircle"
+                                css={css`
+                                    border-radius: 50%;
+                                    overflow: hidden;
                                     width: ${props.buttonHeight};
+                                    height: ${props.buttonHeight};
                                 `}
-                            ></img>
+                            >
+                                <img
+                                    src={user.picture}
+                                    alt="user"
+                                    css={css`
+                                        width: ${props.buttonHeight};
+                                    `}
+                                ></img>
+                            </div>
                         )}
                         {(!user || !user.picture) && <>Logout</>}
                     </Button>
@@ -153,7 +167,7 @@ export const User: React.FunctionComponent<IProps> = props => {
                                 <img
                                     src={user.picture}
                                     alt="user"
-                                    className={css`
+                                    css={css`
                                         width: ${props.buttonHeight};
                                         margin-right: 15px;
                                     `}
@@ -169,7 +183,7 @@ export const User: React.FunctionComponent<IProps> = props => {
                         </MenuItem>
                         <MenuItem onClick={handleLogout}>Log Out</MenuItem>
                     </Menu>
-                </>
+                </React.Fragment>
             )}
         </div>
     );
