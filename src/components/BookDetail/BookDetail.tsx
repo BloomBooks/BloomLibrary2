@@ -8,9 +8,9 @@ import { jsx } from "@emotion/core";
 import React, { useState } from "react";
 import { useGetBookDetail } from "../../connection/LibraryQueryHooks";
 import WarningIcon from "@material-ui/icons/Warning";
-import { IconButton } from "@material-ui/core";
+import { IconButton, Divider } from "@material-ui/core";
 import { Alert } from "../Alert";
-
+import { spacing } from "@material-ui/system";
 //NB: v3.0 of title-case has a new API, but don't upgrade: it doesn't actually work like v2.x does, where it can take fooBar and give us "Foo Bar"
 import titleCase from "title-case";
 import { ReadButton } from "./ReadButton";
@@ -22,7 +22,16 @@ interface IProps {
 export const BookDetail: React.FunctionComponent<IProps> = props => {
     const book = useGetBookDetail(props.id);
     const [alertText, setAlertText] = useState<string | null>(null);
-
+    const divider = (
+        <Divider
+            css={css`
+                margin-top: 10px !important;
+                margin-bottom: 10px !important;
+                background-color: rgba(29, 148, 164, 0.13) !important;
+                height: 2px !important;
+            `}
+        />
+    );
     if (book === undefined) {
         return <div>Loading...</div>;
     } else if (book === null) {
@@ -87,11 +96,18 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
                                     >
                                         {book.title}
                                     </h1>
-                                    {/* These are the original credits, which aren't enough. See BL-79990
+                                    {/* These are the original credits, which aren't enough. See BL-7990
                     <div>{book.credits}</div> */}
-                                    <div>Written by: somebody</div>
+                                    {/* <div>Written by: somebody</div>
                                     <div>Illustrated by: somebody</div>
-                                    <div>Narrated by: somebody else</div>
+                                    <div>Narrated by: somebody else</div> */}
+                                    {/* <p
+                                        css={css`
+                                            white-space: pre-line;
+                                        `}
+                                    >
+                                        {book.credits}
+                                    </p> */}
                                 </div>
                             </div>
                             <div
@@ -108,6 +124,7 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
                             <TranslateButton id={props.id} />
                         </div>
                     </div>
+                    {divider}
                     <div id={"details"}>
                         <div>{`${book.pageCount} Pages`}</div>
                         <div>{book.copyright}</div>
@@ -137,12 +154,15 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
                         <div>
                             {"Features: "}
                             {book.features
-                                .map(f => {
-                                    return titleCase(f);
-                                })
-                                .join(", ")}
+                                ? book.features
+                                      .map(f => {
+                                          return titleCase(f);
+                                      })
+                                      .join(", ")
+                                : []}
                         </div>
                     </div>
+                    {divider}
                     {showHarvesterWarning && (
                         <IconButton
                             aria-label="harvester warning"

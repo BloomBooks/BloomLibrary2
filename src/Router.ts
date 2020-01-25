@@ -86,13 +86,20 @@ export class Router {
     // TODO: make this real
     public pushBook(bookId: string) {
         this.push({
-            bookId: bookId,
+            bookId,
             pageType: "book-detail",
             filter: {},
             title: "BOOKz"
         });
     }
-
+    public pushBookRead(bookId: string) {
+        this.push({
+            bookId,
+            pageType: "book-read",
+            filter: {},
+            title: "BOOKz"
+        });
+    }
     public push(location: ILocation) {
         // if we go here via a text search and are doing a new one,
         // we want to just replace the previous search term, rather

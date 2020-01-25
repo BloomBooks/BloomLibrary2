@@ -15,6 +15,7 @@ import {
 import "typeface-roboto";
 import { Header } from "./header/Header";
 import { BookDetail } from "./BookDetail/BookDetail";
+import { ReadBookPage } from "./ReadBookPage";
 
 /* This is the top level component that can be hosted on a website to view and interact with the bloom library */
 @observer
@@ -27,6 +28,8 @@ export class BrowseView extends Component {
                 return <HomePage />;
             case "book-detail":
                 return <BookDetail id={this.router.current.bookId!} />;
+            case "book-read":
+                return <ReadBookPage id={this.router.current.bookId!} />;
             case "search":
                 return (
                     <SearchResultsPage filter={this.router.current.filter} />
