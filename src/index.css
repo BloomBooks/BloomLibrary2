@@ -59,7 +59,7 @@ a:hover {
     padding-left: 20px;
     /* Without this, as a list-item, I get an unwanted white border on top */
     display: inline-block;
-    background-color: #3f51b529;
+    /* background-color: #3f51b529; */
     flex-grow: 1;
 }
 
@@ -70,8 +70,8 @@ a:hover {
     height: 300px;
     background-repeat: no-repeat;
     background-size: cover;
-    color: white;
-    padding-left: 20px;
+    color: black;
+    /* padding-left: 20px; */
     flex-shrink: 0;
 }
 

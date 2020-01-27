@@ -24,7 +24,11 @@ export const BannerContents: React.FunctionComponent<{
     );
     const secondLine = lines.length > 1 ? <div> {lines[1]}</div> : "";
     return (
-        <div id="without this div i'm now getting react undefined. it should just be <Fragment></Fragment>">
+        <div
+            css={css`
+                margin-left: 20px;
+            `}
+        >
             <Breadcrumbs />
             <h1
                 css={css`
@@ -78,27 +82,46 @@ export const BannerContents: React.FunctionComponent<{
 
 export const HomeBanner: React.FunctionComponent<{
     filter: IFilter;
-}> = props => (
-    <div
-        className={"banner"}
-        css={
-            // TODO: move this image into this code base and reference as a local asset
-            css`
-                background-image: url("https://bloomlibrary.org/assets/huyagirls.jpg");
-                background-position: left;
-                background-blend-mode: darken;
-                background-color: rgba(0, 0, 0, 0.6); // fade the image to black
-            `
-        }
-    >
-        <BannerContents
-            title="Library Home"
-            about="Welcome to our Crowd Sourced library of free books that you can read, print, or adapt into your own language."
-            bookCountMessage="We currently have {0} books."
-            filter={props.filter} // all books in circulation
-        />
-    </div>
-);
+}> = props => {
+    //const backgroundColor = "rgba(210, 227, 254,.2)";
+    return (
+        <div
+            className={"banner"}
+            css={
+                // TODO: move this image into this code base and reference as a local asset
+                css`
+                    background-image: url("bloomgirls.jpg");
+                    background-position: right;
+                    background-size: contain;
+
+                    /* background-blend-mode: darken;
+                background-color: rgba(0, 0, 0, 0.6); // fade the image to black */
+                `
+            }
+        >
+            <div
+                css={css`
+                    height: 100%;
+                    background: linear-gradient(
+                        90deg,
+                        rgba(255, 255, 255, 1) 0%,
+                        rgba(255, 255, 255, 1)
+                            /* position near the width of image, which is right aligned */
+                            calc(100% - 507px),
+                        rgba(255, 255, 255, 0.2) 100%
+                    );
+                `}
+            >
+                <BannerContents
+                    title="Library Home"
+                    about="Welcome to our Crowd Sourced library of free books that you can read, print, or adapt into your own language."
+                    bookCountMessage="We currently have {0} books."
+                    filter={props.filter} // all books in circulation
+                />
+            </div>
+        </div>
+    );
+};
 
 export const LanguageBanner: React.FunctionComponent<{
     title: string;
