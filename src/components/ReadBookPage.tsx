@@ -4,12 +4,27 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useGetBookDetail, IBookDetail } from "../connection/LibraryQueryHooks";
 
 export const ReadBookPage: React.FunctionComponent<{ id: string }> = props => {
+    const handleMessageFromBloomPlayer = (event: MessageEvent) => {
+        if (
+            event.data &&
+            JSON.parse(event.data).messageType === "backButtonClicked"
+        ) {
+            window.history.back();
+        }
+    };
+    useEffect(() => {
+        window.addEventListener("message", handleMessageFromBloomPlayer);
+        return () => {
+            window.removeEventListener("message", handleMessageFromBloomPlayer);
+        };
+    }, []);
+
     const book = useGetBookDetail(props.id);
-    const url = book ? getUrlOfHtmlOfDigitalVersion(book) : "waiting";
+    const url = book ? getUrlOfHtmlOfDigitalVersion(book) : "working";
 
     const bloomPlayerHost =
         "https://" +
@@ -18,7 +33,7 @@ export const ReadBookPage: React.FunctionComponent<{ id: string }> = props => {
             : window.location.hostname);
 
     const bloomPlayerUrl = bloomPlayerHost + "/bloom-player/bloomplayer.htm";
-    const iframeSrc = `${bloomPlayerUrl}?url=${url}&amp;showBackButton=true`;
+    const iframeSrc = `${bloomPlayerUrl}?url=${url}&showBackButton=true`;
     //console.log("iframe src = " + iframeSrc);
 
     // note that bloom-player is *supposed* to handle url="waiting" by just showing a loading
