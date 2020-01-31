@@ -1,7 +1,8 @@
-export class ShowSettings {
-    harvester: boolean | undefined;
-    librarian: boolean | undefined;
-    user: boolean | undefined;
+// This is related to the "show" column on book in ParseServer
+export class ArtifactVisibilitySettings {
+    public harvester: boolean | undefined;
+    public librarian: boolean | undefined;
+    public user: boolean | undefined;
 
     constructor(
         harvester?: boolean | undefined,

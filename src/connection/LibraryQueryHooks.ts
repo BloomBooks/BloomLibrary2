@@ -2,7 +2,7 @@ import useAxios, { IReturns } from "@use-hooks/axios";
 import { IFilter } from "../IFilter";
 // import { AxiosResponse } from "axios";
 import { getConnection } from "./Connection";
-import { ShowSettings } from "../components/HarvesterArtifactUserControl/ShowSettings";
+import { Book, createBookFromParseServerData } from "../model/Book";
 
 // For things other than books, which should use `useBookQuery()`
 function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
@@ -46,32 +46,7 @@ export function useGetBookCount(filter: IFilter) {
     return useBookQuery({ limit: 0, count: 1 }, filter);
 }
 
-export interface IBookDetail {
-    id: string;
-    title: string;
-    summary: string;
-    license: string;
-    baseUrl: string;
-    copyright: string;
-    credits: string;
-    pageCount: string;
-    tags: Array<string>;
-    features: Array<string>;
-    harvesterLog: string;
-    harvestState: string;
-    show: {
-        pdf: ShowSettings | undefined;
-        epub: ShowSettings | undefined;
-        bloomReader: ShowSettings | undefined;
-        readOnline: ShowSettings | undefined;
-    };
-    uploadDate: string;
-    updateDate: string;
-}
-
-export function useGetBookDetail(
-    bookId: string
-): IBookDetail | undefined | null {
+export function useGetBookDetail(bookId: string): Book | undefined | null {
     const { response, loading, error } = useAxios({
         url: `${getConnection().url}classes/books`,
         method: "GET",
@@ -81,7 +56,7 @@ export function useGetBookDetail(
             params: {
                 where: { objectId: bookId },
                 keys:
-                    "title,baseUrl,license,licenseNotes,summary,copyright,harvestState,tags,pageCount,show,credits,country,features,internetLimits"
+                    "title,baseUrl,license,licenseNotes,summary,copyright,harvestState,tags,pageCount,show,credits,country,features,internetLimits,librarianNote"
                 //TODO: how to get these? ,include: "langPointers,uploader"
             }
         }
@@ -98,34 +73,20 @@ export function useGetBookDetail(
     if (response["data"]["results"].length === 0) {
         return null;
     }
-    if (error) return null;
-    const detail: IBookDetail = response["data"]["results"][0];
-
-    // this is kind of a dummy thing just so that I have something to show in the log, and to trigger
-    // UI that would show if there was a problem.
-    switch (detail.harvestState) {
-        case "New":
-            detail.harvesterLog =
-                "Warning: this book has not yet been harvested.";
-            break;
-        case "Updated":
-            detail.harvesterLog =
-                "Warning: this book was re-uploaded and is now waiting to be harvested";
-            break;
-        default:
-            detail.harvesterLog = "";
+    if (error) {
+        return null;
     }
+    const detail: Book = createBookFromParseServerData(
+        response["data"]["results"][0],
+        bookId
+    );
 
     // const parts = detail.tags.split(":");
     // const x = parts.map(p => {tags[(p[0]) as string] = ""});
 
     // return parts[0] + "-" + parts[1];
     // detail.topic =
-    detail.id = bookId;
 
-    // todo: parse out the dates, in this YYYY-MM-DD format (e.g. with )
-    detail.uploadDate = "2020/1/30";
-    detail.updateDate = "2020/2/23";
     return detail;
 }
 

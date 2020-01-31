@@ -7,21 +7,42 @@ import { jsx } from "@emotion/core";
 
 import React, { useState } from "react";
 import { useGetBookDetail } from "../../connection/LibraryQueryHooks";
+import { Book } from "../../model/Book";
 import WarningIcon from "@material-ui/icons/Warning";
 import { IconButton, Divider } from "@material-ui/core";
 import { Alert } from "../Alert";
 import { spacing } from "@material-ui/system";
+
+import { observable } from "mobx";
+
 //NB: v3.0 of title-case has a new API, but don't upgrade: it doesn't actually work like v2.x does, where it can take fooBar and give us "Foo Bar"
 import titleCase from "title-case";
 import { ReadButton } from "./ReadButton";
 import { TranslateButton } from "./TranslateButton";
+import { AdminPanel } from "../Admin/AdminPanel";
+import { observer } from "mobx-react";
+import { useAuth0 } from "../../Auth0Provider";
 
 interface IProps {
     id: string;
 }
 export const BookDetail: React.FunctionComponent<IProps> = props => {
     const book = useGetBookDetail(props.id);
-    const [alertText, setAlertText] = useState<string | null>(null);
+    if (book === undefined) {
+        return <div>Loading...</div>;
+    } else if (book === null) {
+        return <div>Sorry, we could not find that book.</div>;
+    } else {
+        return <BookDetailInternal book={book}></BookDetailInternal>;
+    }
+};
+
+export const BookDetailInternal: React.FunctionComponent<{
+    book: Book;
+}> = observer(props => {
+    const { parseUser } = useAuth0();
+    const showHarvesterWarning =
+        props.book.harvesterLog.indexOf("Warning") >= 0;
     const divider = (
         <Divider
             css={css`
@@ -32,167 +53,165 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
             `}
         />
     );
-    if (book === undefined) {
-        return <div>Loading...</div>;
-    } else if (book === null) {
-        return <div>Sorry, we could not find that book.</div>;
-    } else {
-        const showHarvesterWarning = book.harvesterLog.indexOf("Warning") >= 0;
-        return (
+    const [alertText, setAlertText] = useState<string | null>(null);
+    return (
+        <div
+            css={css`
+                width: 800px;
+                margin-left: auto;
+                margin-right: auto;
+                label: BookDetail;
+            `}
+        >
             <div
                 css={css`
-                    width: 800px;
-                    margin-left: auto;
-                    margin-right: auto;
-                    label: BookDetail;
+                    margin: 1em;
                 `}
             >
                 <div
+                    id={"primaryInfoAndButtons"}
                     css={css`
-                        margin: 1em;
+                        display: flex;
+                        //background-color: lightgreen;
                     `}
                 >
-                    <div
-                        id={"primaryInfoAndButtons"}
+                    <section
                         css={css`
                             display: flex;
-                            //background-color: lightgreen;
+                            margin-bottom: 1em;
+                            flex-direction: column;
+                            //  background-color: lightyellow;
+                            width: 900px; //hack
                         `}
                     >
-                        <section
+                        <div
+                            id={"left-side"}
                             css={css`
                                 display: flex;
                                 margin-bottom: 1em;
-                                flex-direction: column;
-                                //  background-color: lightyellow;
-                                width: 900px; //hack
                             `}
                         >
-                            <div
-                                id={"left-side"}
+                            <img
+                                alt="book thumbnail"
+                                src={props.book.baseUrl + "thumbnail-256.png"}
                                 css={css`
-                                    display: flex;
-                                    margin-bottom: 1em;
-                                `}
-                            >
-                                <img
-                                    alt="book thumbnail"
-                                    src={book.baseUrl + "thumbnail-256.png"}
-                                    css={css`
-                                        max-width: 125px;
-                                        height: 120px;
+                                    max-width: 125px;
+                                    height: 120px;
 
-                                        object-fit: contain; //cover will crop, but fill up nicely
-                                        margin-right: 16px;
+                                    object-fit: contain; //cover will crop, but fill up nicely
+                                    margin-right: 16px;
+                                `}
+                            />
+                            <div>
+                                <h1
+                                    css={css`
+                                        font-size: 18pt;
+                                        margin-top: 0;
+                                        margin-bottom: 12px;
                                     `}
-                                />
-                                <div>
-                                    <h1
-                                        css={css`
-                                            font-size: 18pt;
-                                            margin-top: 0;
-                                            margin-bottom: 12px;
-                                        `}
-                                    >
-                                        {book.title}
-                                    </h1>
-                                    {/* These are the original credits, which aren't enough. See BL-7990
-                    <div>{book.credits}</div> */}
-                                    {/* <div>Written by: somebody</div>
+                                >
+                                    {props.book.title}
+                                </h1>
+                                {/* These are the original credits, which aren't enough. See BL-7990
+                    <div>{props.book.credits}</div> */}
+                                {/* <div>Written by: somebody</div>
                                     <div>Illustrated by: somebody</div>
                                     <div>Narrated by: somebody else</div> */}
-                                    {/* <p
+                                {/* <p
                                         css={css`
                                             white-space: pre-line;
                                         `}
                                     >
                                         {book.credits}
                                     </p> */}
-                                </div>
                             </div>
-                            <div
-                                css={css`
-                                    font-size: 14pt;
-                                    margin-bottom: 12px;
-                                `}
-                            >
-                                {book.summary}
-                            </div>
-                        </section>
-                        <div id="twoButtons" css={css``}>
-                            <ReadButton id={props.id} />
-                            <TranslateButton id={props.id} />
                         </div>
-                    </div>
-                    {divider}
-                    <div id={"details"}>
-                        <div>{`${book.pageCount} Pages`}</div>
-                        <div>{book.copyright}</div>
-                        <div>
-                            {"License: "}
-                            {book.license}
-                        </div>
-                        <div>
-                            {"Uploaded "}
-                            {book.uploadDate}
-                            {" by TODO"}
-                        </div>
-                        <div>
-                            {"Last updated "}
-                            {book.updateDate}
-                        </div>
-                        <div>
-                            {"Tags: "}
-                            {book.tags
-                                .filter(t => !t.startsWith("system"))
-                                .map(t => {
-                                    const parts = t.split(":");
-                                    return parts[1];
-                                })
-                                .join(", ")}
-                        </div>
-                        <div>
-                            {"Features: "}
-                            {book.features
-                                ? book.features
-                                      .map(f => {
-                                          return titleCase(f);
-                                      })
-                                      .join(", ")
-                                : []}
-                        </div>
-                    </div>
-                    {divider}
-                    {showHarvesterWarning && (
-                        <IconButton
-                            aria-label="harvester warning"
-                            onClick={() => setAlertText(book.harvesterLog)}
+                        <div
+                            css={css`
+                                font-size: 14pt;
+                                margin-bottom: 12px;
+                            `}
                         >
-                            <WarningIcon />
-                        </IconButton>
-                    )}
-                    <div
-                        css={css`
-                            margin-top: 300px;
-                            color: lightgray;
-                        `}
-                    >
-                        <div>{"Raw Data:"}</div>
-                        {JSON.stringify(book)}
+                            {props.book.summary}
+                        </div>
+                    </section>
+                    <div id="twoButtons" css={css``}>
+                        <ReadButton id={props.book.id} />
+                        <TranslateButton id={props.book.id} />
                     </div>
-
-                    {/* Todo: this should only be shown if the owner of the book is currently authorized */}
-                    <HarvesterArtifactUserControl bookId={props.id} />
-
-                    <Alert
-                        open={alertText != null}
-                        close={() => {
-                            setAlertText(null);
-                        }}
-                        message={alertText!}
-                    />
                 </div>
+                {divider}
+                <div id={"details"}>
+                    <div>{`${props.book.pageCount} Pages`}</div>
+                    <div>{props.book.copyright}</div>
+                    <div>
+                        {"License: "}
+                        {props.book.license}
+                    </div>
+                    <div>
+                        {"Uploaded "}
+                        {props.book.uploadDate}
+                        {" by TODO"}
+                    </div>
+                    <div>
+                        {"Last updated "}
+                        {props.book.updateDate}
+                    </div>
+                    <div>
+                        {"Tags: "}
+                        {props.book.tags
+                            .filter(t => !t.startsWith("system"))
+                            .map(t => {
+                                const parts = t.split(":");
+                                return parts[1];
+                            })
+                            .join(", ")}
+                    </div>
+                    <div>
+                        {"Features: "}
+                        {props.book.features
+                            ? props.book.features
+                                  .map(f => {
+                                      return titleCase(f);
+                                  })
+                                  .join(", ")
+                            : []}
+                    </div>
+                </div>
+                {divider}
+                {showHarvesterWarning && (
+                    <IconButton
+                        aria-label="harvester warning"
+                        onClick={() => setAlertText(props.book.harvesterLog)}
+                    >
+                        <WarningIcon />
+                    </IconButton>
+                )}
+                {/* The admin panel is only shown if the user is logged in as a parse administrator.  */}
+                {parseUser && parseUser.administrator && (
+                    <AdminPanel book={props.book!}></AdminPanel>
+                )}
+                <div
+                    css={css`
+                        margin-top: 300px;
+                        color: lightgray;
+                    `}
+                >
+                    <div>{"Raw Data:"}</div>
+                    {JSON.stringify(props.book)}
+                </div>
+
+                {/* Todo: this should only be shown if the owner of the book is currently authorized */}
+                <HarvesterArtifactUserControl bookId={props.book.id} />
+
+                <Alert
+                    open={alertText != null}
+                    close={() => {
+                        setAlertText(null);
+                    }}
+                    message={alertText!}
+                />
             </div>
-        );
-    }
-};
+        </div>
+    );
+});

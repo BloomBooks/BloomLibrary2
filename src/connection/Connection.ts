@@ -55,60 +55,73 @@ export function getConnection(): IConnection {
     }
     if (
         window.location.hostname === "bloomlibrary.org"
+        // for now, next.bloomlibrary.org is using the dev site.
         // || window.location.hostname === "next.bloomlibrary.org"
-    )
+    ) {
         return prod;
+    }
 
     // Storybook is currently configured to look at production
     if (
         window.location.hostname === "localhost" &&
         window.location.port === "9090"
-    )
+    ) {
         return prod;
+    }
 
     return dev;
 }
 
-export function connectParsetoAuth0(jwtToken: string, userId: string) {
-    const connection = getConnection();
-    // Run a cloud code function which, if this is a new user with the email of a known user,
-    // will link them; and if it is a new email, will create a user with that ID and link them.
-    axios
-        .post(
-            `${connection.url}functions/bloomLink`,
-            {
-                token: jwtToken,
-                id: userId
-            },
+export async function connectParsetoAuth0(
+    jwtToken: string,
+    userId: string
+    //,returnParseUser: (user: any) => void
+) {
+    return new Promise<any>(resolve => {
+        const connection = getConnection();
+        // Run a cloud code function which, if this is a new user with the email of a known user,
+        // will link them; and if it is a new email, will create a user with that ID and link them.
+        axios
+            .post(
+                `${connection.url}functions/bloomLink`,
+                {
+                    token: jwtToken,
+                    id: userId
+                },
 
-            {
-                headers: connection.headers
-            }
-        )
-        .then(result => {
-            // now we can log in
-            axios
-                .post(
-                    `${connection.url}users`,
-                    {
-                        authData: { bloom: { token: jwtToken, id: userId } },
-                        username: userId
-                    },
+                {
+                    headers: connection.headers
+                }
+            )
+            .then(bloomLinkResult => {
+                // now we can log in
+                axios
+                    .post(
+                        `${connection.url}users`,
+                        {
+                            authData: {
+                                bloom: { token: jwtToken, id: userId }
+                            },
+                            username: userId
+                        },
 
-                    {
-                        headers: connection.headers
-                    }
-                )
-                .then(
-                    result => {
-                        if (result.data.sessionToken) {
-                            connection.headers["X-Parse-Session-Token"] =
-                                result.data.sessionToken;
+                        {
+                            headers: connection.headers
                         }
-                    },
-                    error => {}
-                );
-        });
+                    )
+                    .then(
+                        usersResult => {
+                            if (usersResult.data.sessionToken) {
+                                connection.headers["X-Parse-Session-Token"] =
+                                    usersResult.data.sessionToken;
+                                resolve(usersResult.data);
+                                //returnParseUser(result.data);
+                            }
+                        },
+                        error => {}
+                    );
+            });
+    });
 }
 
 // Remove the parse session header when the user logs out.

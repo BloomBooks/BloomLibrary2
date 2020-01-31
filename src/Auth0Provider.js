@@ -35,6 +35,7 @@ export const Auth0Provider = ({
     const [auth0Client, setAuth0] = useState();
     const [loading, setLoading] = useState(true);
     const [popupOpen, setPopupOpen] = useState(false);
+    const [parseUser, setParseUser] = useState();
 
     useEffect(() => {
         const initAuth0 = async () => {
@@ -75,8 +76,14 @@ export const Auth0Provider = ({
                     // It may however require some rework if we some day get a different version of
                     // @auth0/auth0-spa-js.
                     const jwtEncodedToken = claims.__raw;
-                    // Hook parse up to use this identity.
-                    connectParsetoAuth0(jwtEncodedToken, user.email);
+                    // Hook parse up to use this identity. When we get a parse user object,
+                    // make it available to our clients.
+                    // Enhance: there's surely an elegant way to do this with await
+                    // by making connectParseToAuth0 an async function that returns pUser.
+                    // It would also be nice to define somewhere the interface of parseUser.
+                    connectParsetoAuth0(jwtEncodedToken, user.email).then(u =>
+                        setParseUser(u)
+                    );
                 }
             } else {
                 setIsAuthorized(false);
@@ -124,6 +131,7 @@ export const Auth0Provider = ({
                 isAuthorized,
                 isUnverified,
                 user,
+                parseUser,
                 loading,
                 popupOpen,
                 //loginWithPopup,
