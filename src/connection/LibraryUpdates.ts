@@ -6,7 +6,9 @@ export function updateBook(
     params: object,
     currentSession?: string
 ): void {
-    if (!bookId || !params) return;
+    if (!bookId || !params) {
+        return;
+    }
 
     const headers = getConnection().headers;
     // currentSession is for old BloomLibrary code. In BL2, the login
@@ -22,6 +24,6 @@ export function updateBook(
     Object.assign(params, { updateSource: "libraryUserControl" });
 
     axios.put(`${getConnection().url}classes/books/${bookId}`, params, {
-        headers: headers
+        headers
     });
 }

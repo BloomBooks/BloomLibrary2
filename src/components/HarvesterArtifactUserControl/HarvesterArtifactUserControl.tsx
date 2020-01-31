@@ -10,7 +10,7 @@ import {
     getArtifactUrl,
     getArtifactSettings,
     getArtifactTypeFromKey,
-    getDefaultShowValue
+    getDefaultShowValue as getDefaultArtifactVisibilitySettings
 } from "./HarvesterArtifactHelper";
 
 // A set of controls by which the user can hide or show the artifacts for a book
@@ -31,13 +31,16 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
         if (showSetting === "auto") userDecision = undefined;
         else userDecision = showSetting === "show";
 
-        let show = book.show;
-        if (!show) show = getDefaultShowValue();
+        let artifactsToOfferToUsers = book.artifactsToOfferToUsers;
+        if (!artifactsToOfferToUsers) {
+            artifactsToOfferToUsers = getDefaultArtifactVisibilitySettings();
+        }
 
-        Object.assign(show[artifactType], { user: userDecision });
+        Object.assign(artifactsToOfferToUsers[artifactType], {
+            user: userDecision
+        });
 
-        updateBook(props.bookId, { show: show }, props.currentSession);
-
+        book.saveArtifactVisibilityToParseServer();
         if (props.onChange) props.onChange();
     };
 
@@ -48,7 +51,8 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
     // This method assumes the book has been harvested.
     const getExistingArtifactTypeKeys = (): Array<string> => {
         // For now, a harvested book with no show record is assumed to have these three artifacts.
-        if (!book.show) return ["epub", "bloomReader", "readOnline"];
+        if (!book.artifactsToOfferToUsers)
+            return ["epub", "bloomReader", "readOnline"];
 
         // It would be simpler to just return Object.keys(book.show),
         // but we want the resulting array to have the keys in the same
@@ -56,7 +60,9 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
         // keys which don't appear in the enum.
         return Object.keys(ArtifactType).filter(artifactTypeKey => {
             return (
-                book.show[getArtifactTypeFromKey(artifactTypeKey)] !== undefined
+                book.artifactsToOfferToUsers[
+                    getArtifactTypeFromKey(artifactTypeKey)
+                ] !== undefined
             );
         });
     };

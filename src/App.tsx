@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import { BrowseView } from "./components/BrowseView";
 import theme from "./theme";
-import { ThemeProvider } from "@material-ui/styles";
+import { ThemeProvider } from "@material-ui/core";
 
 class App extends Component {
     render() {

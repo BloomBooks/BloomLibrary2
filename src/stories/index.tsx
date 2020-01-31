@@ -11,7 +11,7 @@ import { BookshelfGroup } from "../components/BookShelfGroup";
 import "../index.css";
 import { HarvesterArtifactUserControl } from "../components/HarvesterArtifactUserControl/HarvesterArtifactUserControl";
 import { ArtifactAndChoice } from "../components/HarvesterArtifactUserControl/ArtifactAndChoice";
-import { ShowSettings } from "../components/HarvesterArtifactUserControl/ShowSettings";
+import { ArtifactVisibilitySettings } from "../model/ArtifactVisibilitySettings";
 import { ArtifactType } from "../components/HarvesterArtifactUserControl/HarvesterArtifactHelper";
 import { Router, RouterContext } from "../Router";
 import { addDecorator } from "@storybook/react";
@@ -142,7 +142,7 @@ storiesOf("Harvester Artifact Control", module)
                                 <ArtifactAndChoice
                                     type={ArtifactType["epub"]}
                                     showSettings={
-                                        new ShowSettings(
+                                        new ArtifactVisibilitySettings(
                                             harvester,
                                             librarian,
                                             user

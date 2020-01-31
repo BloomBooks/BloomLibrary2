@@ -7,7 +7,7 @@ import {
     Select,
     FormHelperText
 } from "@material-ui/core";
-import { ShowSettings } from "./ShowSettings";
+import { ArtifactVisibilitySettings } from "../../model/ArtifactVisibilitySettings";
 
 import pdfIcon from "../../assets/pdf.png";
 import epubIcon from "../../assets/epub.png";
@@ -51,7 +51,7 @@ const useStyles = makeStyles(() =>
 // hide or show it by default.
 export const ArtifactAndChoice: React.FunctionComponent<{
     type: ArtifactType;
-    showSettings: ShowSettings;
+    showSettings: ArtifactVisibilitySettings;
     url: string;
     onChange: (show: string) => void;
 }> = props => {

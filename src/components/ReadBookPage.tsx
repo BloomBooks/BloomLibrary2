@@ -5,8 +5,8 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React, { useEffect } from "react";
-import { useGetBookDetail, IBookDetail } from "../connection/LibraryQueryHooks";
-
+import { useGetBookDetail } from "../connection/LibraryQueryHooks";
+import { Book } from "../model/Book";
 export const ReadBookPage: React.FunctionComponent<{ id: string }> = props => {
     const handleMessageFromBloomPlayer = (event: MessageEvent) => {
         if (
@@ -54,7 +54,7 @@ export const ReadBookPage: React.FunctionComponent<{ id: string }> = props => {
     );
 };
 
-function getHarvesterBaseUrl(book: IBookDetail) {
+function getHarvesterBaseUrl(book: Book) {
     // typical input url:
     // https://s3.amazonaws.com/BloomLibraryBooks-Sandbox/ken%40example.com%2faa647178-ed4d-4316-b8bf-0dc94536347d%2fsign+language+test%2f
     // want:
@@ -79,7 +79,7 @@ function getHarvesterBaseUrl(book: IBookDetail) {
     // Using slash rather than %2f at the end helps us download as the filename we want.
     // Otherwise, the filename can be something like ken@example.com_007b3c03-52b7-4689-80bd-06fd4b6f9f28_Fox+and+Frog.bloomd
 }
-function getUrlOfHtmlOfDigitalVersion(book: IBookDetail) {
+function getUrlOfHtmlOfDigitalVersion(book: Book) {
     const harvesterBaseUrl = getHarvesterBaseUrl(book);
     // use this if you are are working on bloom-player and are using the bloom-player npm script tobloomlibrary
     // bloomPlayerUrl = "http://localhost:3000/bloomplayer-for-developing.htm";

@@ -1,5 +1,5 @@
-import { IBookDetail } from "../../connection/LibraryQueryHooks";
-import { ShowSettings } from "./ShowSettings";
+import { Book } from "../../model/Book";
+import { ArtifactVisibilitySettings } from "../../model/ArtifactVisibilitySettings";
 
 export enum ArtifactType {
     pdf = "pdf",
@@ -14,16 +14,13 @@ export enum ArtifactType {
 export function getDefaultShowValue() {
     return {
         pdf: undefined,
-        epub: new ShowSettings(),
-        bloomReader: new ShowSettings(),
-        readOnline: new ShowSettings()
+        epub: new ArtifactVisibilitySettings(),
+        bloomReader: new ArtifactVisibilitySettings(),
+        readOnline: new ArtifactVisibilitySettings()
     };
 }
 
-export function getArtifactUrl(
-    book: IBookDetail,
-    artifactType: ArtifactType
-): string {
+export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
     let url;
     switch (artifactType) {
         case ArtifactType.readOnline:
@@ -40,23 +37,27 @@ export function getArtifactUrl(
 }
 
 export function getArtifactSettings(
-    book: IBookDetail,
+    book: Book,
     artifactType: ArtifactType
-): ShowSettings {
-    if (book.show && book.show[artifactType] !== undefined) {
+): ArtifactVisibilitySettings {
+    if (
+        book.artifactsToOfferToUsers &&
+        book.artifactsToOfferToUsers[artifactType] !== undefined
+    ) {
         // I don't fully understand why, but if we just return
-        // book.show[artifactType] here, the object returned is not
+        // book.artifactsToOfferToUsers[artifactType] here, the object returned is not
         // a *true* ShowSettings object with methods, etc.
-        const artifactShowSettings: ShowSettings = book.show[
+        const artifactShowSettings: ArtifactVisibilitySettings = book
+            .artifactsToOfferToUsers[
             artifactType
-        ] as ShowSettings;
-        return new ShowSettings(
+        ] as ArtifactVisibilitySettings;
+        return new ArtifactVisibilitySettings(
             artifactShowSettings.harvester,
             artifactShowSettings.librarian,
             artifactShowSettings.user
         );
     } else {
-        return new ShowSettings();
+        return new ArtifactVisibilitySettings();
     }
 }
 
@@ -66,11 +67,11 @@ export function getArtifactTypeFromKey(artifactTypeKey: string): ArtifactType {
 }
 
 // The following functions were basically copied as-is from BloomLibrary's services.js
-function isHarvested(book: IBookDetail) {
+function isHarvested(book: Book) {
     return book && book.harvestState === "Done";
 }
 
-function getHarvesterBaseUrl(book: IBookDetail): string | undefined {
+function getHarvesterBaseUrl(book: Book): string | undefined {
     if (!book) {
         return undefined;
     }
@@ -114,10 +115,7 @@ function getBookNameFromUrl(baseUrl: string): string | undefined {
     return leadin.substring(slashBeforeBookName + 3); // includes leading slash (%2f)
 }
 
-function getDownloadUrl(
-    book: IBookDetail,
-    fileType: string
-): string | undefined {
+function getDownloadUrl(book: Book, fileType: string): string | undefined {
     var harvesterBaseUrl = getHarvesterBaseUrl(book);
     if (!harvesterBaseUrl) {
         return undefined;

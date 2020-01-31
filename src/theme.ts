@@ -1,4 +1,4 @@
-import { createMuiTheme } from "@material-ui/core/styles";
+import { createMuiTheme } from "@material-ui/core";
 export const bloomRed = "#D65649";
 const bloomBlue = "#1d94a4";
 const kDialogTopBottomGray = "#F1F3F4";
