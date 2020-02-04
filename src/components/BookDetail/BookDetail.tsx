@@ -1,6 +1,5 @@
 // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
 import css from "@emotion/css/macro";
-import { HarvesterArtifactUserControl } from "../HarvesterArtifactUserControl/HarvesterArtifactUserControl";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
@@ -11,17 +10,13 @@ import { Book } from "../../model/Book";
 import WarningIcon from "@material-ui/icons/Warning";
 import { IconButton, Divider } from "@material-ui/core";
 import { Alert } from "../Alert";
-import { spacing } from "@material-ui/system";
-
-import { observable } from "mobx";
 
 //NB: v3.0 of title-case has a new API, but don't upgrade: it doesn't actually work like v2.x does, where it can take fooBar and give us "Foo Bar"
 import titleCase from "title-case";
 import { ReadButton } from "./ReadButton";
 import { TranslateButton } from "./TranslateButton";
-import { AdminPanel } from "../Admin/AdminPanel";
 import { observer } from "mobx-react";
-import { useAuth0 } from "../../Auth0Provider";
+import { BookExtraPanels } from "./BookExtraPanels";
 
 interface IProps {
     id: string;
@@ -40,7 +35,6 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
 export const BookDetailInternal: React.FunctionComponent<{
     book: Book;
 }> = observer(props => {
-    const { parseUser } = useAuth0();
     const showHarvesterWarning =
         props.book.harvesterLog.indexOf("Warning") >= 0;
     const divider = (
@@ -178,7 +172,7 @@ export const BookDetailInternal: React.FunctionComponent<{
                             : []}
                     </div>
                 </div>
-                {divider}
+
                 {showHarvesterWarning && (
                     <IconButton
                         aria-label="harvester warning"
@@ -187,23 +181,8 @@ export const BookDetailInternal: React.FunctionComponent<{
                         <WarningIcon />
                     </IconButton>
                 )}
-                {/* The admin panel is only shown if the user is logged in as a parse administrator.  */}
-                {parseUser && parseUser.administrator && (
-                    <AdminPanel book={props.book!}></AdminPanel>
-                )}
-                <div
-                    css={css`
-                        margin-top: 300px;
-                        color: lightgray;
-                    `}
-                >
-                    <div>{"Raw Data:"}</div>
-                    {JSON.stringify(props.book)}
-                </div>
 
-                {/* Todo: this should only be shown if the owner of the book is currently authorized */}
-                <HarvesterArtifactUserControl bookId={props.book.id} />
-
+                <BookExtraPanels book={props.book} />
                 <Alert
                     open={alertText != null}
                     close={() => {

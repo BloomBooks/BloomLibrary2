@@ -89,20 +89,9 @@ export const AdminPanel: React.FunctionComponent<IProps> = observer(props => {
         // review: is there some shade-of-grey constant we should use for the background color?
         <div
             css={css`
-                margin-top: 10px;
-                label: AdminPanel;
-                background-color: #eee;
-                padding: 10px;
+                width: 100%;
             `}
         >
-            <div
-                css={css`
-                    font-size: larger;
-                    font-weight: bold;
-                `}
-            >
-                Admin Panel
-            </div>
             <div
                 id="apTopRow"
                 css={css`

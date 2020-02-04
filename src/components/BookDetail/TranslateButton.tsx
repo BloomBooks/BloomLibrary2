@@ -18,6 +18,7 @@ export const TranslateButton: React.FunctionComponent<IProps> = props => {
             color="secondary"
             size="large"
             css={css`
+                margin-top: 16px !important;
                 width: 250px;
                 height: 80px;
                 display: block;

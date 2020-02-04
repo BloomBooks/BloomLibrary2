@@ -1,3 +1,9 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import React from "react";
 import ReactDOM from "react-dom";
 import Box from "@material-ui/core/Box";
@@ -69,8 +75,19 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
 
     const artifactCount = getExistingArtifactTypeKeys().length;
     return (
-        <>
-            <h4>As the uploader of this book, you also have these controls:</h4>
+        <div
+            css={css`
+                display: block;
+            `}
+        >
+            <h4
+                css={css`
+                    margin-top: 0;
+                `}
+            >
+                As the uploader of this book, you can control what formats to
+                offer to people:
+            </h4>
             <Box padding={1} border={1} borderRadius="borderRadius">
                 Sometimes books created for one format don't look good in
                 another. Use the following to hide any formats that look bad.
@@ -97,10 +114,12 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
                     );
                 })}
             </Box>
-        </>
+        </div>
     );
 };
 
+// The legacy angular bloomlibrary.org calls this. The production version of that build uses the
+// the version of this library that is tagged as "legacyBlorgProduction" on TeamCity.
 export function connectHarvestArtifactUserControl(
     attachmentPoint: HTMLElement,
     props: any
