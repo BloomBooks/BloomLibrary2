@@ -55,8 +55,11 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
             headers: getConnection().headers,
             params: {
                 where: { objectId: bookId },
-                keys:
-                    "title,baseUrl,license,licenseNotes,summary,copyright,harvestState,tags,pageCount,show,credits,country,features,internetLimits,librarianNote"
+                // keys:
+                //     "title,baseUrl,license,licenseNotes,summary,copyright,harvestState," +
+                //     "tags,pageCount,show,credits,country,features,internetLimits",
+                //"librarianNote,uploader"
+                include: "librarianNote,uploader"
                 //TODO: how to get these? ,include: "langPointers,uploader"
             }
         }
@@ -76,6 +79,7 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
     if (error) {
         return null;
     }
+
     const detail: Book = createBookFromParseServerData(
         response["data"]["results"][0],
         bookId

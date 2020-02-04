@@ -41,6 +41,7 @@ export class Book {
         bloomReader: undefined,
         readOnline: undefined
     };
+    public uploader: string | undefined;
     public uploadDate: string = "";
     public updateDate: string = "";
     @observable public librarianNote: string = "";

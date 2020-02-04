@@ -144,8 +144,9 @@ export const BookDetailInternal: React.FunctionComponent<{
                     </div>
                     <div>
                         {"Uploaded "}
-                        {props.book.uploadDate}
-                        {" by TODO"}
+                        {`${props.book.uploadDate} by ${obfuscateEmail(
+                            props.book.uploader
+                        )}`}
                     </div>
                     <div>
                         {"Last updated "}
@@ -194,3 +195,15 @@ export const BookDetailInternal: React.FunctionComponent<{
         </div>
     );
 });
+
+function obfuscateEmail(user: any): string {
+    const email = user.username;
+    if (!email) {
+        return "";
+    }
+    const index = email.lastIndexOf("@");
+    if (index < 0 || index + 1 >= email.length) {
+        return email;
+    }
+    return email.substring(0, index + 1) + "...";
+}

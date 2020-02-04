@@ -58,7 +58,6 @@ export const BookExtraPanels: React.FunctionComponent<{
                     <ExpansionPanelDetails>
                         <div
                             css={css`
-                                color: darkgray;
                                 overflow: auto;
                             `}
                         >
