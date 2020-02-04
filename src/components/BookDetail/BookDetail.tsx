@@ -144,14 +144,11 @@ export const BookDetailInternal: React.FunctionComponent<{
                     </div>
                     <div>
                         {"Uploaded "}
-                        {`${props.book.uploadDate} by ${obfuscateEmail(
+                        {`${props.book.uploadDate!.toLocaleDateString()} by ${obfuscateEmail(
                             props.book.uploader
                         )}`}
                     </div>
-                    <div>
-                        {"Last updated "}
-                        {props.book.updateDate}
-                    </div>
+                    <div>{`Last updated on ${props.book.updateDate!.toLocaleDateString()}`}</div>
                     <div>
                         {"Tags: "}
                         {props.book.tags

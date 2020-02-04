@@ -42,8 +42,13 @@ export class Book {
         readOnline: undefined
     };
     public uploader: string | undefined;
-    public uploadDate: string = "";
-    public updateDate: string = "";
+    // this is the raw ISO date we get from the query
+    private createdAt: string = "";
+    private updatedAt: string = "";
+    // which we parse into
+    public uploadDate: Date | undefined;
+    public updateDate: Date | undefined;
+
     @observable public librarianNote: string = "";
 
     // Make various changes to the object we get from parse server to make it more
@@ -84,8 +89,8 @@ export class Book {
         }
 
         // todo: parse out the dates, in this YYYY-MM-DD format (e.g. with )
-        this.uploadDate = "2020/1/30";
-        this.updateDate = "2020/2/23";
+        this.uploadDate = new Date(Date.parse(this.createdAt));
+        this.updateDate = new Date(Date.parse(this.updatedAt as string));
     }
 
     public saveAdminDataToParse() {
