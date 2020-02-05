@@ -23,7 +23,7 @@ interface IProps {
 }
 // This React functional component displays some administrator controls, shown (for example)
 // in the book detail page when the logged-in use is an administrator.
-export const AdminPanel: React.FunctionComponent<IProps> = observer(props => {
+export const StaffPanel: React.FunctionComponent<IProps> = observer(props => {
     const router = useContext(RouterContext);
 
     // Whether anything has been edited and not yet saved.

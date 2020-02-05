@@ -13,14 +13,14 @@ import {
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { HarvesterArtifactUserControl } from "../HarvesterArtifactUserControl/HarvesterArtifactUserControl";
-import { AdminPanel } from "../Admin/AdminPanel";
+import { StaffPanel } from "../Admin/StaffPanel";
 import { useAuth0 } from "../../Auth0Provider";
 
 export const BookExtraPanels: React.FunctionComponent<{
     book: Book;
 }> = observer(props => {
     //const { parseUser } =  useAuth0(); Temporarily disabled because this breaks Storybook
-    const parseUser: any = { administrator: true };
+    const parseUser: any = { staff: true };
 
     return (
         <div
@@ -29,7 +29,7 @@ export const BookExtraPanels: React.FunctionComponent<{
             `}
         >
             {/* Todo: BL-8090 also shown if parseUser is the uploader of the book */}
-            {parseUser && parseUser.administrator && (
+            {parseUser && parseUser.staff && (
                 <ExpansionPanel>
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                         Artifact Controls
@@ -40,20 +40,20 @@ export const BookExtraPanels: React.FunctionComponent<{
                 </ExpansionPanel>
             )}
             {/* The admin panel is only shown if the user is logged in as a parse administrator.  */}
-            {parseUser && parseUser.administrator && (
+            {parseUser && parseUser.staff && (
                 <ExpansionPanel>
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                        Admin Controls
+                        Staff Controls
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
-                        <AdminPanel book={props.book!}></AdminPanel>
+                        <StaffPanel book={props.book!}></StaffPanel>
                     </ExpansionPanelDetails>
                 </ExpansionPanel>
             )}
-            {parseUser && parseUser.administrator && (
+            {parseUser && parseUser.staff && (
                 <ExpansionPanel>
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                        Raw Book Data (Admin Only)
+                        Raw Book Data (Staff Only)
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
                         <div

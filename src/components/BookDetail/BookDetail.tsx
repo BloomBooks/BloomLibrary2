@@ -17,6 +17,7 @@ import { ReadButton } from "./ReadButton";
 import { TranslateButton } from "./TranslateButton";
 import { observer } from "mobx-react";
 import { BookExtraPanels } from "./BookExtraPanels";
+import { LicenseLink } from "./LicenseLink";
 
 interface IProps {
     id: string;
@@ -129,45 +130,69 @@ export const BookDetailInternal: React.FunctionComponent<{
                             {props.book.summary}
                         </div>
                     </section>
-                    <div id="twoButtons" css={css``}>
+                    <div
+                        id="twoButtons"
+                        css={css`
+                            flex-shrink: 2;
+                        `}
+                    >
                         <ReadButton id={props.book.id} />
                         <TranslateButton id={props.book.id} />
                     </div>
                 </div>
                 {divider}
-                <div id={"details"}>
-                    <div>{`${props.book.pageCount} Pages`}</div>
-                    <div>{props.book.copyright}</div>
-                    <div>
-                        {"License: "}
-                        {props.book.license}
+                <div
+                    id={"details"}
+                    css={css`
+                        display: flex;
+                    `}
+                >
+                    <div
+                        id="column1"
+                        css={css`
+                            flex-grow: 1;
+                        `}
+                    >
+                        <div>{`${props.book.pageCount} Pages`}</div>
+                        <div>{props.book.copyright}</div>
+                        <div>
+                            {"License: "}
+                            <LicenseLink book={props.book} />
+                        </div>
+                        <div>
+                            {"Uploaded "}
+                            {`${props.book.uploadDate!.toLocaleDateString()} by ${obfuscateEmail(
+                                props.book.uploader
+                            )}`}
+                        </div>
+                        <div>{`Last updated on ${props.book.updateDate!.toLocaleDateString()}`}</div>
                     </div>
-                    <div>
-                        {"Uploaded "}
-                        {`${props.book.uploadDate!.toLocaleDateString()} by ${obfuscateEmail(
-                            props.book.uploader
-                        )}`}
-                    </div>
-                    <div>{`Last updated on ${props.book.updateDate!.toLocaleDateString()}`}</div>
-                    <div>
-                        {"Tags: "}
-                        {props.book.tags
-                            .filter(t => !t.startsWith("system"))
-                            .map(t => {
-                                const parts = t.split(":");
-                                return parts[1];
-                            })
-                            .join(", ")}
-                    </div>
-                    <div>
-                        {"Features: "}
-                        {props.book.features
-                            ? props.book.features
-                                  .map(f => {
-                                      return titleCase(f);
-                                  })
-                                  .join(", ")
-                            : []}
+                    <div
+                        id="column2"
+                        css={css`
+                            width: 250px;
+                        `}
+                    >
+                        <div>
+                            {"Features: "}
+                            {props.book.features
+                                ? props.book.features
+                                      .map(f => {
+                                          return titleCase(f);
+                                      })
+                                      .join(", ")
+                                : []}
+                        </div>
+                        <div>
+                            {"Tags: "}
+                            {props.book.tags
+                                .filter(t => !t.startsWith("system"))
+                                .map(t => {
+                                    const parts = t.split(":");
+                                    return parts[1];
+                                })
+                                .join(", ")}
+                        </div>
                     </div>
                 </div>
 
