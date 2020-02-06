@@ -4,14 +4,18 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useState, useEffect } from "react";
-import { useAuth0 } from "../Auth0Provider";
+import React, { useState, useEffect, useRef } from "react";
 import { Button, Menu, MenuItem } from "@material-ui/core";
-import loginIcon from "../assets/NoUser.svg";
+import loginIcon from "../../assets/NoUser.svg";
+import firebase from "firebase";
+import { ShowLoginDialog } from "./LoginDialog";
+//import { staticUser } from "./User";
+//import { observable } from "mobx";
+import { observer } from "mobx-react";
 
 // This React component displays a button for functions related to the user who may
 // be logged in. If no user is logged in, it displays a generic icon with pull-down
-// menu for loggin in or signing up. If a user is logged in, it displays the user's
+// menu for logging in or signing up. If a user is logged in, it displays the user's
 // picture (sometimes just a couple of letters of name) and the pull-down has items
 // for logging out, showing a profile, and showing this user's books.
 // Currently, it is also responsible for handling a user who lacks a verified
@@ -21,26 +25,7 @@ interface IProps extends React.HTMLProps<HTMLDivElement> {
     buttonHeight: string;
 }
 
-export const User: React.FunctionComponent<IProps> = props => {
-    const {
-        user,
-        isAuthorized,
-        isUnverified,
-        loginWithRedirect,
-        logout
-    } = useAuth0();
-
-    const logoutWithRedirect = () =>
-        logout({
-            returnTo: window.location.origin
-        });
-    useEffect(() => {
-        if (isUnverified) {
-            alert("Please verify your email address, then log in again");
-            logoutWithRedirect();
-        }
-    }, [isUnverified]);
-
+export const UserMenu: React.FunctionComponent<IProps> = observer(props => {
     // This variable is used according to an apparently standard but rather
     // obscure convention for managing Material button/menu combinations.
     // When the menu is hidden, it is null. When the menu is showing, it
@@ -50,6 +35,49 @@ export const User: React.FunctionComponent<IProps> = props => {
     // target of the clickAction. Since only one of the two button/menu
     // combinations is visible at any one time, a single state works for both.
     const [anchorEl, setAnchorEl] = useState(null as Element | null);
+    const [refresh, setRefresh] = useState(0);
+    const refreshSource = useRef(0);
+
+    useEffect(() => {
+        firebase
+            .auth()
+            .getRedirectResult()
+            .then(result => {
+                if (result.credential) {
+                    // This gives you a Google Access Token. You can use it to access the Google API.
+                    //var token = result.credential.accessToken;
+                    // ...
+                }
+
+                //staticUser.set(result.user);
+                firebase.auth().updateCurrentUser(result.user);
+                console.log("getRedirectResult:user = " + result.user);
+            })
+            .catch(function(error) {
+                // Handle Errors here.
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                // The email of the user's account used.
+                var email = error.email;
+                // The firebase.auth.AuthCredential type that was used.
+                var credential = error.credential;
+                // ...
+                console.log("During getRedirectResult, got " + error);
+            });
+    }, []);
+    useEffect(
+        () =>
+            firebase.auth().onAuthStateChanged(() => {
+                refreshSource.current = refreshSource.current + 1;
+                setRefresh(refreshSource.current);
+                console.log(
+                    "$$$$$$$$$$$$ onAuthStateChanged " +
+                        firebase.auth().currentUser
+                );
+            }),
+        []
+    );
+
     const showMenu = (ev: any) => {
         setAnchorEl(ev.target as Element);
     };
@@ -60,29 +88,32 @@ export const User: React.FunctionComponent<IProps> = props => {
     };
     const handleLogin = () => {
         closeMenu();
-        loginWithRedirect();
+        //loginWithRedirect();
+        try {
+            ShowLoginDialog(true);
+        } catch (error) {
+            // setState({ isLoading: false, error: error });
+        }
     };
     const handleSignup = () => {
         closeMenu();
-        // The main url is the same as is configured (for login) when initializing
-        // Auth0Provider in index.tsx. The extra parameter triggers some server-side
-        // code...see auth0.com dashboard, Universal Login, Login tab, custom Login code...which uses
-        // this as a trigger for showing the signup tab instead of the login one.
-        // If you decide to use a different trigger remember to change it in both
-        // tenants as well as here.
-        loginWithRedirect({
-            redirect_uri: window.location.origin,
-            login_hint: "signUp"
-        });
+        //firebase.auth().signInWithRedirect();
     };
     const handleLogout = () => {
         closeMenu();
-        logoutWithRedirect();
+        firebase.auth().signOut();
     };
+
+    //const user = staticUser.get();
+    const user = firebase.auth().currentUser;
+    const haveUser = user !== null;
     return (
+        // <FirebaseAuthConsumer>
+        //     {(authState: AuthEmission) => (
         <div {...props}>
-            {!isAuthorized && (
+            {!haveUser /*authState.isSignedIn */ && (
                 <React.Fragment>
+                    <h1>{refresh}</h1>
                     {/* Material recommends a trick I could not make sense of to let Emotion styles
                         beat Material ones, but there seems no reason to avoid !important here: we
                         definitely always want to get rid of the Material top padding so the img aligns
@@ -116,7 +147,7 @@ export const User: React.FunctionComponent<IProps> = props => {
                 </React.Fragment>
             )}
 
-            {isAuthorized && (
+            {haveUser && (
                 <React.Fragment>
                     <Button
                         aria-controls="logout-menu"
@@ -132,7 +163,7 @@ export const User: React.FunctionComponent<IProps> = props => {
                         //     border: isAuthorized ? "" : "2px solid red"
                         // }}
                     >
-                        {user && user.picture && (
+                        {user && user.photoURL && (
                             <div
                                 id="avatarCircle"
                                 css={css`
@@ -143,7 +174,7 @@ export const User: React.FunctionComponent<IProps> = props => {
                                 `}
                             >
                                 <img
-                                    src={user.picture}
+                                    src={user.photoURL}
                                     alt="user"
                                     css={css`
                                         width: ${props.buttonHeight};
@@ -151,7 +182,7 @@ export const User: React.FunctionComponent<IProps> = props => {
                                 ></img>
                             </div>
                         )}
-                        {(!user || !user.picture) && <>Logout</>}
+                        {(!user || !user.photoURL) && <>Logout</>}
                     </Button>
                     <Menu
                         id="logout-menu"
@@ -163,9 +194,9 @@ export const User: React.FunctionComponent<IProps> = props => {
                         <MenuItem onClick={closeMenu}>
                             {/* It's not clear from BL-7984 what this menu item is supposed to do.
                             Possibly it's meant to be part of the Profile menu item. */}
-                            {user && user.picture && (
+                            {user && user.photoURL && (
                                 <img
-                                    src={user.picture}
+                                    src={user.photoURL}
                                     alt="user"
                                     css={css`
                                         width: ${props.buttonHeight};
@@ -186,5 +217,7 @@ export const User: React.FunctionComponent<IProps> = props => {
                 </React.Fragment>
             )}
         </div>
+        // )}
+        // </FirebaseAuthConsumer>
     );
-};
+});

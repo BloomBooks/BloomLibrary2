@@ -3,53 +3,44 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-import { Auth0Provider } from "./Auth0Provider";
-import { getConnection } from "./connection/Connection";
-import { ILocation } from "./Router";
-import QueryString from "qs";
+import firebase from "firebase";
+import * as firebaseui from "firebaseui";
 
-// auth0 recommended version, involves using their history mechanism
-// and route provider. May want something similar using ours??
-// const onRedirectCallback = appState => {
-//     history.push(
-//         appState && appState.targetUrl
-//             ? appState.targetUrl
-//             : window.location.pathname
-//     );
-// };
-
-const onRedirectCallback = () => {
-    // strip out the code and search params, keep any others.
-    // There might be a useful integration of this with the Router code;
-    // but the instance of that currently belongs to BrowseView, about three layers in.
-    const queryWithoutQuestionMark = window.location.search.substr(1, 99999);
-    const location = QueryString.parse(queryWithoutQuestionMark) as ILocation;
-    delete location.code;
-    delete location.state;
-    let newSearch = QueryString.stringify(location);
-    if (newSearch) {
-        newSearch = "?" + newSearch;
-    }
-    window.history.replaceState(
-        {},
-        document.title,
-        window.location.pathname + newSearch
-    );
+const firebaseConfig = {
+    apiKey: "AIzaSyACJ7fi7_Rg_bFgTIacZef6OQckr6QKoTY",
+    authDomain: "sil-bloomlibrary.firebaseapp.com",
+    databaseURL: "https://sil-bloomlibrary.firebaseio.com",
+    projectId: "sil-bloomlibrary",
+    storageBucket: "sil-bloomlibrary.appspot.com",
+    messagingSenderId: "481016061476",
+    appId: "1:481016061476:web:8c9905ffec02e8579b82b1"
 };
 
-const auth0Config = getConnection().auth0Config;
+firebase.initializeApp(firebaseConfig);
 
-ReactDOM.render(
-    <Auth0Provider
-        domain={auth0Config.domain}
-        client_id={auth0Config.clientId}
-        redirect_uri={window.location.origin} // if changed, see Header.tsx signup function
-        onRedirectCallback={onRedirectCallback}
-    >
-        <App />
-    </Auth0Provider>,
-    document.getElementById("root")
+let ui: firebaseui.auth.AuthUI;
+// if (ui) {
+//   ui.reset();
+// } else {
+window.setTimeout(
+    () => (ui = new firebaseui.auth.AuthUI(firebase.auth())),
+    1000
 );
+//ui.reset();
+// }
+// ui.start('#firebaseui-auth-container', uiConfig);
+
+// setTimeout(() => {
+//     firebase
+//         .auth()
+//         .getRedirectResult()
+//         .then((u: firebase.auth.UserCredential) => {
+//             console.log(
+//                 "@@@@@@@@@ (delayed) getRedirectResult " + JSON.stringify(u)
+//             );
+//         });
+// }, 1000);
+ReactDOM.render(<App />, document.getElementById("root"));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

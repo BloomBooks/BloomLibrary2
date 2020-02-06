@@ -14,7 +14,6 @@ import {
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { HarvesterArtifactUserControl } from "./ArtifactVisibilityPanel/ArtifactVisibilityPanel";
 import { StaffPanel } from "../Admin/StaffPanel";
-import { useAuth0 } from "../../Auth0Provider";
 
 export const BookExtraPanels: React.FunctionComponent<{
     book: Book;

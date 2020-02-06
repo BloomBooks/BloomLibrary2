@@ -1,0 +1,113 @@
+//  NB: the background overlay cannot be set from a stylesheet:
+//  It is set in app.tsx, ReactModal!.defaultStyles!.overlay!.backgroundColor
+
+// .ReactModal__Overlay {
+//   background-color: rgba(0, 0, 0, 0.5);
+// }
+
+.ReactModalPortal {
+    //z-index: 100;
+}
+
+.ReactModal__Content {
+    //z-index: 100;
+    position: absolute;
+    border: none;
+    background: white;
+    overflow: auto;
+    border-radius: 4px;
+    outline: none;
+    flex-direction: row;
+
+    left: 50%;
+    right: auto;
+    transform: translate(-50%, -50%);
+    bottom: auto;
+    top: 50%;
+
+    .dialogTitle {
+        padding: 10px;
+        font-weight: bold;
+    }
+    .dialogContent {
+        background-color: white;
+        display: flex;
+        flex-direction: column;
+
+        //make the radio buttons align with label
+        input {
+            vertical-align: text-top;
+        }
+        h1 {
+            font-size: 12px;
+            height: 1em;
+            font-weight: bold;
+            margin: 0;
+        }
+    }
+    .bottomButtonRow {
+        align-self: flex-end;
+        float: right;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        margin-right: 20px;
+
+        // see flex-direction in a rule that incorporates os class from app
+        display: flex;
+        flex-direction: row; // use for mac & Ubuntu
+
+        button {
+            width: auto;
+            min-width: 100px;
+            margin-left: 10px;
+        }
+        button:disabled {
+            color: gray;
+            border-color: lightgray;
+            border-style: solid;
+            border-width: 1px;
+        }
+    }
+
+    .okCancelGroup {
+        display: flex;
+        flex-direction: row; // use for mac & Ubuntu
+    }
+
+    // .bottomButtonRow {
+    //   align-self: flex-end;
+    //   display: flex; // this makes the help button's margin-right:auto work
+
+    //   //todo: fix this
+    //   width: 558px;
+
+    //   position: absolute;
+    //   bottom: 20px;
+
+    //   // see flex-direction in a rule that incorporates os class from app
+    //   //display: flex;
+    //   //flex-direction: row; // use for mac & Ubuntu
+
+    //   button {
+    //     width: auto;
+    //     min-width: 100px;
+    //     margin-left: 10px;
+    //   }
+    //   button:disabled {
+    //     color: gray;
+    //     border-color: lightgray;
+    //     border-style: solid;
+    //     border-width: 1px;
+    //   }
+    //   #helpButton {
+    //     //push the other buttons to the right margin
+    //     margin-right: auto;
+    //   }
+    // }
+}
+
+//NB this has to be outside of the wrapping above, because .win32 is up on body
+.win32 .okCancelGroup {
+    // get the buttons ordered according to operating system preference
+    flex-direction: row-reverse;
+}
