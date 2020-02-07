@@ -166,6 +166,19 @@ export const BookDetailInternal: React.FunctionComponent<{
                             )}`}
                         </div>
                         <div>{`Last updated on ${props.book.updateDate!.toLocaleDateString()}`}</div>
+                        {props.book.originalBookSourceUrl &&
+                            props.book.originalBookSourceUrl.length > 0 && (
+                                <div>
+                                    Imported from&nbsp;
+                                    <a href={props.book.originalBookSourceUrl}>
+                                        {
+                                            new URL(
+                                                props.book.originalBookSourceUrl
+                                            ).host
+                                        }
+                                    </a>
+                                </div>
+                            )}
                     </div>
                     <div
                         id="column2"
