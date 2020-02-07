@@ -8,16 +8,15 @@ import React, { useState } from "react";
 import { useGetBookDetail } from "../../connection/LibraryQueryHooks";
 import { Book } from "../../model/Book";
 import WarningIcon from "@material-ui/icons/Warning";
-import { IconButton, Divider } from "@material-ui/core";
+import { Button, IconButton, Divider } from "@material-ui/core";
 import { Alert } from "../Alert";
 
-//NB: v3.0 of title-case has a new API, but don't upgrade: it doesn't actually work like v2.x does, where it can take fooBar and give us "Foo Bar"
-import titleCase from "title-case";
-import { ReadButton } from "./ReadButton";
-import { TranslateButton } from "./TranslateButton";
 import { observer } from "mobx-react";
 import { BookExtraPanels } from "./BookExtraPanels";
-import { LicenseLink } from "./LicenseLink";
+import { MetadataGroup } from "./MetadataGroup";
+import { ArtifactGroup } from "./ArtifactGroup";
+import { BookDetailHeaderGroup } from "./BookDetailHeaderGroup";
+import { ReportButton } from "./ReportButton";
 
 interface IProps {
     id: string;
@@ -63,150 +62,18 @@ export const BookDetailInternal: React.FunctionComponent<{
                     margin: 1em;
                 `}
             >
-                <div
-                    id={"primaryInfoAndButtons"}
-                    css={css`
-                        display: flex;
-                        //background-color: lightgreen;
-                    `}
-                >
-                    <section
-                        css={css`
-                            display: flex;
-                            margin-bottom: 1em;
-                            flex-direction: column;
-                            //  background-color: lightyellow;
-                            width: 900px; //hack
-                        `}
-                    >
-                        <div
-                            id={"left-side"}
-                            css={css`
-                                display: flex;
-                                margin-bottom: 1em;
-                            `}
-                        >
-                            <img
-                                alt="book thumbnail"
-                                src={props.book.baseUrl + "thumbnail-256.png"}
-                                css={css`
-                                    max-width: 125px;
-                                    height: 120px;
-
-                                    object-fit: contain; //cover will crop, but fill up nicely
-                                    margin-right: 16px;
-                                `}
-                            />
-                            <div>
-                                <h1
-                                    css={css`
-                                        font-size: 18pt;
-                                        margin-top: 0;
-                                        margin-bottom: 12px;
-                                    `}
-                                >
-                                    {props.book.title}
-                                </h1>
-                                {/* These are the original credits, which aren't enough. See BL-7990
-                    <div>{props.book.credits}</div> */}
-                                {/* <div>Written by: somebody</div>
-                                    <div>Illustrated by: somebody</div>
-                                    <div>Narrated by: somebody else</div> */}
-                                {/* <p
-                                        css={css`
-                                            white-space: pre-line;
-                                        `}
-                                    >
-                                        {book.credits}
-                                    </p> */}
-                            </div>
-                        </div>
-                        <div
-                            css={css`
-                                font-size: 14pt;
-                                margin-bottom: 12px;
-                            `}
-                        >
-                            {props.book.summary}
-                        </div>
-                    </section>
-                    <div
-                        id="twoButtons"
-                        css={css`
-                            flex-shrink: 2;
-                        `}
-                    >
-                        <ReadButton id={props.book.id} />
-                        <TranslateButton id={props.book.id} />
-                    </div>
-                </div>
+                <BookDetailHeaderGroup book={props.book} />
+                {divider}
+                <MetadataGroup book={props.book} />
                 {divider}
                 <div
-                    id={"details"}
                     css={css`
                         display: flex;
+                        justify-content: space-between;
                     `}
                 >
-                    <div
-                        id="column1"
-                        css={css`
-                            flex-grow: 1;
-                        `}
-                    >
-                        <div>{`${props.book.pageCount} Pages`}</div>
-                        <div>{props.book.copyright}</div>
-                        <div>
-                            {"License: "}
-                            <LicenseLink book={props.book} />
-                        </div>
-                        <div>
-                            {"Uploaded "}
-                            {`${props.book.uploadDate!.toLocaleDateString()} by ${obfuscateEmail(
-                                props.book.uploader
-                            )}`}
-                        </div>
-                        <div>{`Last updated on ${props.book.updateDate!.toLocaleDateString()}`}</div>
-                        {props.book.originalBookSourceUrl &&
-                            props.book.originalBookSourceUrl.length > 0 && (
-                                <div>
-                                    Imported from&nbsp;
-                                    <a href={props.book.originalBookSourceUrl}>
-                                        {
-                                            new URL(
-                                                props.book.originalBookSourceUrl
-                                            ).host
-                                        }
-                                    </a>
-                                </div>
-                            )}
-                    </div>
-                    <div
-                        id="column2"
-                        css={css`
-                            width: 250px;
-                        `}
-                    >
-                        <div>
-                            {"Features: "}
-                            {props.book.features
-                                ? props.book.features
-                                      .map(f => {
-                                          return titleCase(f);
-                                      })
-                                      .join(", ")
-                                : []}
-                        </div>
-                        <div>
-                            {"Tags: "}
-                            {props.book.tags
-                                .filter(t => !t.startsWith("system"))
-                                .map(t => {
-                                    const parts = t.split(":");
-                                    return parts[1];
-                                })
-                                .join(", ")}
-                        </div>
-                    </div>
+                    <ReportButton book={props.book} />
+                    <ArtifactGroup book={props.book} />
                 </div>
 
                 {showHarvesterWarning && (
@@ -230,15 +97,3 @@ export const BookDetailInternal: React.FunctionComponent<{
         </div>
     );
 });
-
-function obfuscateEmail(user: any): string {
-    const email = user.username;
-    if (!email) {
-        return "";
-    }
-    const index = email.lastIndexOf("@");
-    if (index < 0 || index + 1 >= email.length) {
-        return email;
-    }
-    return email.substring(0, index + 1) + "...";
-}

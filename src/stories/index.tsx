@@ -9,10 +9,10 @@ import { LanguagePage, BookGroupForEachTopic } from "../components/Pages";
 import { HomePage } from "../components/HomePage";
 import { BookshelfGroup } from "../components/BookShelfGroup";
 import "../index.css";
-import { HarvesterArtifactUserControl } from "../components/HarvesterArtifactUserControl/HarvesterArtifactUserControl";
-import { ArtifactAndChoice } from "../components/HarvesterArtifactUserControl/ArtifactAndChoice";
+import { HarvesterArtifactUserControl } from "../components/BookDetail/ArtifactVisibilityPanel/ArtifactVisibilityPanel";
+import { ArtifactAndChoice } from "../components/BookDetail/ArtifactVisibilityPanel/ArtifactAndChoice";
 import { ArtifactVisibilitySettings } from "../model/ArtifactVisibilitySettings";
-import { ArtifactType } from "../components/HarvesterArtifactUserControl/HarvesterArtifactHelper";
+import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
 import { Router, RouterContext } from "../Router";
 import { addDecorator } from "@storybook/react";
 import { BookDetail } from "../components/BookDetail/BookDetail";
@@ -141,7 +141,7 @@ storiesOf("Harvester Artifact Control", module)
                                 </div>
                                 <ArtifactAndChoice
                                     type={ArtifactType["epub"]}
-                                    showSettings={
+                                    visibility={
                                         new ArtifactVisibilitySettings(
                                             harvester,
                                             librarian,

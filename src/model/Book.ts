@@ -1,6 +1,7 @@
 import { observable } from "mobx";
 import { updateBook } from "../connection/LibraryUpdates";
 import { ArtifactVisibilitySettings } from "./ArtifactVisibilitySettings";
+import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
 
 export function createBookFromParseServerData(
     pojo: object,
@@ -49,6 +50,8 @@ export class Book {
     public uploadDate: Date | undefined;
     public updateDate: Date | undefined;
     public originalBookSourceUrl?: string;
+    // todo: We need to handle limited visibility, i.e. by country
+    public ePUBVisible: boolean = false;
 
     @observable public librarianNote: string = "";
 
@@ -92,6 +95,26 @@ export class Book {
         // todo: parse out the dates, in this YYYY-MM-DD format (e.g. with )
         this.uploadDate = new Date(Date.parse(this.createdAt));
         this.updateDate = new Date(Date.parse(this.updatedAt as string));
+
+        //TODO: this is just experimenting with the logic, but what we need
+        // is 1) something factored out so we don't have to repeat for each artifact type
+        // 2) a way that the ArtifactVisibility panel actually changes some mobx-observed
+        // value on this class, which will cause the Detail View to re-render and thus
+        // give the user (be it the uploader or staff member) instant feedback on what
+        // changing settings will do.
+        if (
+            this.artifactsToOfferToUsers &&
+            this.artifactsToOfferToUsers[ArtifactType.epub]
+        ) {
+            const x = this.artifactsToOfferToUsers[ArtifactType.epub];
+            if (x?.user !== undefined) {
+                this.ePUBVisible = x.user;
+            } else if (x?.librarian !== undefined) {
+                this.ePUBVisible = x.librarian;
+            } else if (x?.harvester !== undefined) {
+                this.ePUBVisible = x.harvester;
+            } else this.ePUBVisible = true;
+        }
     }
 
     public saveAdminDataToParse() {

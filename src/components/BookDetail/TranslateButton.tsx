@@ -29,6 +29,7 @@ export const TranslateButton: React.FunctionComponent<IProps> = props => {
             <div
                 css={css`
                     display: block;
+                    padding-top: 10px;
                 `}
             >
                 <p

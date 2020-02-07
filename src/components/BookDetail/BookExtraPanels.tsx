@@ -12,7 +12,7 @@ import {
     ExpansionPanelDetails
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { HarvesterArtifactUserControl } from "../HarvesterArtifactUserControl/HarvesterArtifactUserControl";
+import { HarvesterArtifactUserControl } from "./ArtifactVisibilityPanel/ArtifactVisibilityPanel";
 import { StaffPanel } from "../Admin/StaffPanel";
 import { useAuth0 } from "../../Auth0Provider";
 

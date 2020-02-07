@@ -9,15 +9,15 @@ import ReactDOM from "react-dom";
 import Box from "@material-ui/core/Box";
 import Divider from "@material-ui/core/Divider";
 import { ArtifactAndChoice } from "./ArtifactAndChoice";
-import { useGetBookDetail } from "../../connection/LibraryQueryHooks";
-import { updateBook } from "../../connection/LibraryUpdates";
+import { useGetBookDetail } from "../../../connection/LibraryQueryHooks";
+import { ArtifactVisibilitySettings } from "../../../model/ArtifactVisibilitySettings";
+import { updateBook } from "../../../connection/LibraryUpdates";
 import {
     ArtifactType,
     getArtifactUrl,
-    getArtifactSettings,
-    getArtifactTypeFromKey,
-    getDefaultShowValue as getDefaultArtifactVisibilitySettings
-} from "./HarvesterArtifactHelper";
+    getArtifactVisibilitySettings,
+    getArtifactTypeFromKey
+} from "../ArtifactHelper";
 
 // A set of controls by which the user can hide or show the artifacts for a book
 // which the harvester produced.
@@ -99,7 +99,7 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
                         <div key={artifactType}>
                             <ArtifactAndChoice
                                 type={artifactType}
-                                showSettings={getArtifactSettings(
+                                visibility={getArtifactVisibilitySettings(
                                     book,
                                     artifactType
                                 )}
@@ -128,4 +128,16 @@ export function connectHarvestArtifactUserControl(
         React.createElement(HarvesterArtifactUserControl, props),
         attachmentPoint
     );
+}
+
+// This is what we use if the show column is not populated in parse.
+// Before we started populating the show column, we only and always
+// harvested epub, bloomReader, and readOnline.
+function getDefaultArtifactVisibilitySettings() {
+    return {
+        pdf: undefined,
+        epub: new ArtifactVisibilitySettings(),
+        bloomReader: new ArtifactVisibilitySettings(),
+        readOnline: new ArtifactVisibilitySettings()
+    };
 }

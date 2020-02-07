@@ -8,18 +8,6 @@ export enum ArtifactType {
     readOnline = "readOnline"
 }
 
-// This is what we use if the show column is not populated in parse.
-// Before we started populating the show column, we only and always
-// harvested epub, bloomReader, and readOnline.
-export function getDefaultShowValue() {
-    return {
-        pdf: undefined,
-        epub: new ArtifactVisibilitySettings(),
-        bloomReader: new ArtifactVisibilitySettings(),
-        readOnline: new ArtifactVisibilitySettings()
-    };
-}
-
 export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
     let url;
     switch (artifactType) {
@@ -27,6 +15,11 @@ export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
             return `/readBook/${book.id}`;
         case ArtifactType.bloomReader:
             url = getDownloadUrl(book, "bloomd");
+            break;
+        case ArtifactType.pdf:
+            url = `${book.baseUrl}${getBookNameFromUrl(
+                book.baseUrl
+            )}.pdf`.replace(/%2f/g, "/");
             break;
         default:
             url = getDownloadUrl(book, artifactType);
@@ -36,7 +29,7 @@ export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
     return url;
 }
 
-export function getArtifactSettings(
+export function getArtifactVisibilitySettings(
     book: Book,
     artifactType: ArtifactType
 ): ArtifactVisibilitySettings {
@@ -75,7 +68,7 @@ function getHarvesterBaseUrl(book: Book): string | undefined {
     if (!book) {
         return undefined;
     }
-    var baseUrl = book.baseUrl;
+    const baseUrl = book.baseUrl;
     if (baseUrl == null) {
         return undefined;
     }
@@ -90,12 +83,12 @@ function getHarvesterBaseUrl(book: Book): string | undefined {
     // We come up with that URL by
     //  (a) changing BloomLibraryBooks{-Sandbox} to bloomharvest{-sandbox}
     //  (b) strip off everything after the next-to-final slash
-    var folderWithoutLastSlash = baseUrl;
+    let folderWithoutLastSlash = baseUrl;
     if (baseUrl.endsWith("%2f")) {
         folderWithoutLastSlash = baseUrl.substring(0, baseUrl.length - 3);
     }
-    var index = folderWithoutLastSlash.lastIndexOf("%2f");
-    var pathWithoutBookName = folderWithoutLastSlash.substring(0, index);
+    const index = folderWithoutLastSlash.lastIndexOf("%2f");
+    const pathWithoutBookName = folderWithoutLastSlash.substring(0, index);
     return (
         pathWithoutBookName
             .replace("BloomLibraryBooks-Sandbox", "bloomharvest-sandbox")
@@ -106,9 +99,9 @@ function getHarvesterBaseUrl(book: Book): string | undefined {
 }
 
 function getBookNameFromUrl(baseUrl: string): string | undefined {
-    var lastSlashIndex = baseUrl.lastIndexOf("%2f");
-    var leadin = baseUrl.substring(0, lastSlashIndex);
-    var slashBeforeBookName = leadin.lastIndexOf("%2f");
+    const lastSlashIndex = baseUrl.lastIndexOf("%2f");
+    let leadin = baseUrl.substring(0, lastSlashIndex);
+    let slashBeforeBookName = leadin.lastIndexOf("%2f");
     if (slashBeforeBookName < 0) {
         return undefined;
     }
@@ -116,12 +109,12 @@ function getBookNameFromUrl(baseUrl: string): string | undefined {
 }
 
 function getDownloadUrl(book: Book, fileType: string): string | undefined {
-    var harvesterBaseUrl = getHarvesterBaseUrl(book);
+    let harvesterBaseUrl = getHarvesterBaseUrl(book);
     if (!harvesterBaseUrl) {
         return undefined;
     }
 
-    var bookName = getBookNameFromUrl(book.baseUrl);
+    let bookName = getBookNameFromUrl(book.baseUrl);
 
     if (bookName) {
         if (fileType === "bloomd") {
@@ -131,4 +124,3 @@ function getDownloadUrl(book: Book, fileType: string): string | undefined {
     }
     return undefined;
 }
-// end functions copied from BloomLibrary's services.js

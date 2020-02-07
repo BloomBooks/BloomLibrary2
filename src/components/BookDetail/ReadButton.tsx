@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 
 import React, { useState, useContext } from "react";
 import Button from "@material-ui/core/Button";
-import ReadIcon from "../../assets/read.svg";
+import ReadIcon from "./read.svg";
 import { RouterContext } from "../../Router";
 
 interface IProps {

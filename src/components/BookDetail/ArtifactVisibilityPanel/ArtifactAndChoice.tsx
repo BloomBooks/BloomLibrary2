@@ -7,14 +7,14 @@ import {
     Select,
     FormHelperText
 } from "@material-ui/core";
-import { ArtifactVisibilitySettings } from "../../model/ArtifactVisibilitySettings";
+import { ArtifactVisibilitySettings } from "../../../model/ArtifactVisibilitySettings";
 
-import pdfIcon from "../../assets/pdf.png";
-import epubIcon from "../../assets/epub.png";
-import bloomReaderIcon from "../../assets/bloomd.png";
-import readIcon from "../../assets/read.svg";
-import { ArtifactType } from "./HarvesterArtifactHelper";
-import { bloomRed } from "../../theme";
+import pdfIcon from "./pdf.png";
+import epubIcon from "./epub.png";
+import bloomReaderIcon from "./bloomd.png";
+import readIcon from "../read.svg";
+import { ArtifactType } from "../ArtifactHelper";
+import { bloomRed } from "../../../theme";
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -51,17 +51,17 @@ const useStyles = makeStyles(() =>
 // hide or show it by default.
 export const ArtifactAndChoice: React.FunctionComponent<{
     type: ArtifactType;
-    showSettings: ArtifactVisibilitySettings;
+    visibility: ArtifactVisibilitySettings;
     url: string;
     onChange: (show: string) => void;
 }> = props => {
     const classes = useStyles();
 
     const getInitialShowValue = (): string => {
-        if (!props.showSettings || props.showSettings.user === undefined) {
+        if (!props.visibility || props.visibility.user === undefined) {
             return "auto";
         }
-        return props.showSettings.user ? "show" : "hide";
+        return props.visibility.user ? "show" : "hide";
     };
 
     const [show, setShow] = React.useState(getInitialShowValue());
@@ -82,24 +82,24 @@ export const ArtifactAndChoice: React.FunctionComponent<{
 
     const getAutoText = (): string => {
         let showOrNot = "Show";
-        if (props.showSettings && !props.showSettings.getDecisionSansUser()) {
+        if (props.visibility && !props.visibility.getDecisionSansUser()) {
             showOrNot = "Hide";
         }
         return `Automatic (${showOrNot})`;
     };
 
     const getRationaleText = (): string => {
-        if (!props.showSettings) {
+        if (!props.visibility) {
             return "";
         }
-        if (props.showSettings.hasLibrarianDecided()) {
+        if (props.visibility.hasLibrarianDecided()) {
             return `Bloom staff has determined that this should be "${
-                props.showSettings.isLibrarianHide() ? "Hide" : "Show"
+                props.visibility.isLibrarianHide() ? "Hide" : "Show"
             }"`;
         }
-        if (props.showSettings.hasHarvesterDecided()) {
+        if (props.visibility.hasHarvesterDecided()) {
             return `Our system has guessed that this should be "${
-                props.showSettings.isHarvesterHide() ? "Hide" : "Show"
+                props.visibility.isHarvesterHide() ? "Hide" : "Show"
             }"`;
         }
         return "";
@@ -107,21 +107,26 @@ export const ArtifactAndChoice: React.FunctionComponent<{
 
     const getArtifactIcon = (): React.ReactNode => {
         let src;
+        let alt;
         switch (props.type) {
             case ArtifactType.pdf:
                 src = pdfIcon;
+                alt = "PDF";
                 break;
             case ArtifactType.epub:
                 src = epubIcon;
+                alt = "epub";
                 break;
             case ArtifactType.bloomReader:
                 src = bloomReaderIcon;
+                alt = "Bloom Reader";
                 break;
             case ArtifactType.readOnline:
                 src = readIcon;
+                alt = "Read online";
                 break;
         }
-        return <img src={src} />;
+        return <img src={src} alt={alt} />;
     };
 
     const getArtifactButtonText = (): string | undefined => {
