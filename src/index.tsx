@@ -5,6 +5,7 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import firebase from "firebase";
 import * as firebaseui from "firebaseui";
+import { connectParsetoAuth0 } from "./connection/Connection";
 
 const firebaseConfig = {
     apiKey: "AIzaSyACJ7fi7_Rg_bFgTIacZef6OQckr6QKoTY",
@@ -17,6 +18,16 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+
+firebase.auth().onAuthStateChanged(() => {
+    const user = firebase.auth().currentUser;
+    if (!user || !user.emailVerified || !user.email) {
+        return;
+    }
+    user.getIdToken().then((idToken: string) => {
+        connectParsetoAuth0(idToken, user.email!);
+    });
+});
 
 let ui: firebaseui.auth.AuthUI;
 // if (ui) {
