@@ -7,7 +7,7 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import logo from "./header-logo.svg";
 import { SearchBox } from "../SearchBox";
-import { User } from "../User";
+import { UserMenu } from "../User/UserMenu";
 import { bloomRed } from "../../theme";
 
 export const Header: React.FunctionComponent<{}> = props => {
@@ -30,7 +30,7 @@ export const Header: React.FunctionComponent<{}> = props => {
             {/* The margin-left:auto here allows the containing flex-box to insert any spare space
             into this element's margin-left, typically putting a large gap there and making
             it the left-most of the block of controls at the right of the header.*/}
-            <User
+            <UserMenu
                 buttonHeight={toolbarHeight}
                 css={css`
                     margin-left: auto;

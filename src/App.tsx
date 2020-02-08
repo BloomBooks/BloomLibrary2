@@ -1,21 +1,21 @@
-import React, { Component } from "react";
+import React from "react";
 
 import { BrowseView } from "./components/BrowseView";
 import theme from "./theme";
 import { ThemeProvider } from "@material-ui/core";
+import { LoginDialog } from "./components/User/LoginDialog";
 
-class App extends Component {
-    render() {
-        return (
-            <React.StrictMode>
-                <div className="App">
-                    <ThemeProvider theme={theme}>
-                        <BrowseView />
-                    </ThemeProvider>
-                </div>
-            </React.StrictMode>
-        );
-    }
-}
+export const App: React.FunctionComponent<{}> = props => {
+    return (
+        <React.StrictMode>
+            <div className="App">
+                <ThemeProvider theme={theme}>
+                    <BrowseView />
+                </ThemeProvider>
+            </div>
+            <LoginDialog />
+        </React.StrictMode>
+    );
+};
 
 export default App;

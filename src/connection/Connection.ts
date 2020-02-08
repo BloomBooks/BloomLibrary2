@@ -72,12 +72,12 @@ export function getConnection(): IConnection {
     return dev;
 }
 
-export async function connectParsetoAuth0(
+export async function connectParseServer(
     jwtToken: string,
     userId: string
     //,returnParseUser: (user: any) => void
 ) {
-    return new Promise<any>(resolve => {
+    return new Promise<any>((resolve, reject) => {
         const connection = getConnection();
         // Run a cloud code function which, if this is a new user with the email of a known user,
         // will link them; and if it is a new email, will create a user with that ID and link them.
@@ -109,25 +109,46 @@ export async function connectParsetoAuth0(
                             headers: connection.headers
                         }
                     )
-                    .then(
-                        usersResult => {
-                            if (usersResult.data.sessionToken) {
-                                connection.headers["X-Parse-Session-Token"] =
-                                    usersResult.data.sessionToken;
-                                resolve(usersResult.data);
-                                //returnParseUser(result.data);
-                            }
-                        },
-                        error => {}
-                    );
+                    .then(usersResult => {
+                        if (usersResult.data.sessionToken) {
+                            connection.headers["X-Parse-Session-Token"] =
+                                usersResult.data.sessionToken;
+                            console.log("Got ParseServer Session ID");
+                            resolve(usersResult.data);
+                            //returnParseUser(result.data);
+                        } else failedToLoginInToParseServer();
+                    })
+                    .catch(err => {
+                        failedToLoginInToParseServer();
+                        reject(err);
+                    });
+            })
+            .catch(err => {
+                console.log(
+                    "The `Bloom Link` call failed:" + JSON.stringify(err)
+                );
+                failedToLoginInToParseServer();
+                reject(err);
             });
     });
 }
-
+function failedToLoginInToParseServer() {
+    alert(
+        "Oops, something went wrong when trying to log you into our database."
+    );
+}
 // Remove the parse session header when the user logs out.
 // This is probably redundant since currently the logout process reloads the whole page.
 // Leaving it just in case that changes.
 export function logout() {
     const connection = getConnection();
-    delete connection.headers["X-Parse-Session-Token"];
+    axios
+        .post(`${connection.url}logout`, {
+            headers: connection.headers
+        })
+        .then(response => {
+            console.log("ParseServer logged out.");
+        })
+        .catch(error => console.error("While logging out, got" + error))
+        .finally(() => delete connection.headers["X-Parse-Session-Token"]);
 }
