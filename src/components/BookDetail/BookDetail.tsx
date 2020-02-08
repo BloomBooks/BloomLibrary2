@@ -28,7 +28,11 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
     } else if (book === null) {
         return <div>Sorry, we could not find that book.</div>;
     } else {
-        return <BookDetailInternal book={book}></BookDetailInternal>;
+        return (
+            <React.StrictMode>
+                <BookDetailInternal book={book}></BookDetailInternal>
+            </React.StrictMode>
+        );
     }
 };
 

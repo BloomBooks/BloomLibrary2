@@ -8,7 +8,7 @@ import React, { useContext } from "react";
 import { CheapCard } from "./CheapCard";
 import { RouterContext } from "../Router";
 import { IFilter } from "../IFilter";
-import * as ReactImage from "react-image";
+import Img from "react-image";
 import { BookCount } from "./BookCount";
 
 interface IProps {
@@ -53,7 +53,8 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
             }}
         >
             {/* We want to show an image for the category if we have one */}
-            <ReactImage
+            {/* Note, react-image (Img) currently breaks strict mode. See app.tsx */}
+            <Img
                 src={props.img}
                 css={css`
                     max-height: 129px;
@@ -66,7 +67,6 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
                 // If we could not get an image, show the text title
                 unloader={titleElementIfNoImage}
             />
-
             <div
                 css={css`
                     margin-top: auto;

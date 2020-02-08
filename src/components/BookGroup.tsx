@@ -29,6 +29,8 @@ export const BookGroup: React.FunctionComponent<IProps> = props => (
     // because this has loaded a new BookGroupInner.
     // If the params are good, this list will grow as you scroll.
     // If the params are bad, some groups at the end will NEVER show.
+
+    /* Note, this currently breaks strict mode. See app.tsx */
     <LazyLoad>
         <BookGroupInner {...props} />
     </LazyLoad>

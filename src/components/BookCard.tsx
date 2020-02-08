@@ -73,6 +73,6 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
             </h2>
         </CheapCard>
     );
-
+    /* Note, LazyLoad currently breaks strict mode. See app.tsx */
     return props.lazy ? <LazyLoad>{card}</LazyLoad> : card;
 };
