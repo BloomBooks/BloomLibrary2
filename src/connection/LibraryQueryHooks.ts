@@ -1,7 +1,7 @@
 import useAxios, { IReturns } from "@use-hooks/axios";
 import { IFilter } from "../IFilter";
 // import { AxiosResponse } from "axios";
-import { getConnection } from "./Connection";
+import { getConnection } from "./ParseServerConnection";
 import { Book, createBookFromParseServerData } from "../model/Book";
 
 // For things other than books, which should use `useBookQuery()`

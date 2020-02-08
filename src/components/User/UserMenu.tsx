@@ -10,7 +10,7 @@ import loginIcon from "../../assets/NoUser.svg";
 import firebase from "firebase";
 import { ShowLoginDialog } from "./LoginDialog";
 import { observer } from "mobx-react";
-import { logout as logoutFromParseServer } from "../../connection/Connection";
+import { logout as logoutFromParseServer } from "../../connection/ParseServerConnection";
 
 // This React component displays a button for functions related to the user who may
 // be logged in. If no user is logged in, it displays a generic icon with pull-down

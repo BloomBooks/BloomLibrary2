@@ -16,8 +16,8 @@ export interface ILocation {
     rows?: number;
 
     // These apply to logging in with auth0 and may be combined with anything else
-    state?: string;
-    code?: string;
+    // state?: string;
+    // code?: string;
 }
 // This is a super simple router based on a stack of "locations" (page descriptors)
 // That stack is a mobx observable, so that the UI can redraw when the top of the stack changes.
@@ -44,18 +44,18 @@ export class Router {
                 queryWithoutQuestionMark
             ) as ILocation; // Enhance: do something if parsing the URL doesn't give all the info we need.
 
-            if (location && location.state && location.code) {
-                // just logged in. That does a redirect to a url with these params
-                // I think we lose our state! Reset everything...
-                this.push({ ...home, ...location });
-            } else {
-                // If we start up the site from a page other than home, push home into the bottom of the
-                // stack so that you can use the breadcrumbs to go to home.
-                if (location && location.pageType !== "home") {
-                    this.push(home);
-                }
-                this.push(location);
+            // if (location && location.state && location.code) {
+            //     // just logged in. That does a redirect to a url with these params
+            //     // I think we lose our state! Reset everything...
+            //     this.push({ ...home, ...location });
+            // } else {
+            //     // If we start up the site from a page other than home, push home into the bottom of the
+            //     // stack so that you can use the breadcrumbs to go to home.
+            if (location && location.pageType !== "home") {
+                this.push(home);
             }
+            this.push(location);
+            //}
         }
         window.onbeforeunload = (event: BeforeUnloadEvent) => {
             if (this.waitingOnSaveOrCancel) {

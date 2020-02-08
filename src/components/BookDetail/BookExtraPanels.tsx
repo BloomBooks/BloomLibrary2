@@ -18,7 +18,6 @@ import { StaffPanel } from "../Admin/StaffPanel";
 export const BookExtraPanels: React.FunctionComponent<{
     book: Book;
 }> = observer(props => {
-    //const { parseUser } =  useAuth0(); Temporarily disabled because this breaks Storybook
     const parseUser: any = { staff: true };
 
     return (

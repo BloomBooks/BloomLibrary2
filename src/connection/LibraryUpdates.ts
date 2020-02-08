@@ -1,5 +1,5 @@
 import { axios } from "@use-hooks/axios";
-import { getConnection } from "./Connection";
+import { getConnection } from "./ParseServerConnection";
 
 export function updateBook(
     bookId: string,

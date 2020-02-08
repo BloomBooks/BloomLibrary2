@@ -5,7 +5,7 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import firebase from "firebase";
 import * as firebaseui from "firebaseui";
-import { connectParseServer } from "./connection/Connection";
+import { connectParseServer } from "./connection/ParseServerConnection";
 
 const firebaseConfig = {
     apiKey: "AIzaSyACJ7fi7_Rg_bFgTIacZef6OQckr6QKoTY",

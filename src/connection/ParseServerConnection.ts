@@ -1,10 +1,7 @@
 import axios from "axios";
-import config_local from "./auth_config_local.json";
-import config_dev from "./auth_config_dev.json";
-import config_prod from "./auth_config_prod.json";
 
-// This file exports a function getConnection(), which returns an object containing
-// various constants and secrets needed to communicate with Auth0 and parse-server.
+// This file exports a function getConnection(), which returns the headers
+// needed to talk to our Parse Server backend db.
 // It keeps track of whether we're working with dev/staging or production or
 // (via a one-line code change) a local database, and also stores and returns
 // the token we get from parse-server when authorized as a particular user.
@@ -15,37 +12,28 @@ interface IConnection {
         "X-Parse-Session-Token"?: string;
     };
     url: string;
-    // for auth0
-    auth0Config: {
-        domain: string;
-        clientId: string;
-    };
 }
 const prod: IConnection = {
     headers: {
         "Content-Type": "text/json",
         "X-Parse-Application-Id": "R6qNTeumQXjJCMutAJYAwPtip1qBulkFyLefkCE5"
     },
-    url: "https://bloom-parse-server-production.azurewebsites.net/parse/",
-    auth0Config: config_prod
+    url: "https://bloom-parse-server-production.azurewebsites.net/parse/"
 };
 const dev: IConnection = {
     headers: {
         "Content-Type": "text/json",
         "X-Parse-Application-Id": "yrXftBF6mbAuVu3fO6LnhCJiHxZPIdE7gl1DUVGR"
     },
-    url: "https://bloom-parse-server-develop.azurewebsites.net/parse/",
-    auth0Config: config_dev
+    url: "https://bloom-parse-server-develop.azurewebsites.net/parse/"
 };
 
 const local: IConnection = {
-    // for parse-server
     headers: {
         "Content-Type": "text/json",
         "X-Parse-Application-Id": "myAppId"
     },
-    url: "http://localhost:1337/parse/",
-    auth0Config: config_local
+    url: "http://localhost:1337/parse/"
 };
 
 export function getConnection(): IConnection {
