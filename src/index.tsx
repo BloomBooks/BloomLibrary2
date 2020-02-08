@@ -3,8 +3,12 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-import firebase from "firebase";
-import * as firebaseui from "firebaseui";
+
+// these two firebase imports are strange, but not an error. See https://github.com/firebase/firebase-js-sdk/issues/1832
+import firebase from "firebase/app";
+import "firebase/auth";
+
+//import * as firebaseui from "firebaseui";
 import { connectParseServer } from "./connection/ParseServerConnection";
 
 const firebaseConfig = {

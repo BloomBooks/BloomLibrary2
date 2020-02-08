@@ -7,7 +7,9 @@ import { jsx } from "@emotion/core";
 import React, { useState, useEffect, useRef } from "react";
 import { Button, Menu, MenuItem } from "@material-ui/core";
 import loginIcon from "../../assets/NoUser.svg";
-import firebase from "firebase";
+// these two firebase imports are strange, but not an error. See https://github.com/firebase/firebase-js-sdk/issues/1832
+import firebase from "firebase/app";
+import "firebase/auth";
 import { ShowLoginDialog } from "./LoginDialog";
 import { observer } from "mobx-react";
 import { logout as logoutFromParseServer } from "../../connection/ParseServerConnection";
