@@ -9,9 +9,8 @@ import { Button, Menu, MenuItem } from "@material-ui/core";
 import loginIcon from "../../assets/NoUser.svg";
 import firebase from "firebase";
 import { ShowLoginDialog } from "./LoginDialog";
-//import { staticUser } from "./User";
-//import { observable } from "mobx";
 import { observer } from "mobx-react";
+import { logout as logoutFromParseServer } from "../../connection/Connection";
 
 // This React component displays a button for functions related to the user who may
 // be logged in. If no user is logged in, it displays a generic icon with pull-down
@@ -35,8 +34,10 @@ export const UserMenu: React.FunctionComponent<IProps> = observer(props => {
     // target of the clickAction. Since only one of the two button/menu
     // combinations is visible at any one time, a single state works for both.
     const [anchorEl, setAnchorEl] = useState(null as Element | null);
-    const [refresh, setRefresh] = useState(0);
-    const refreshSource = useRef(0);
+
+    const [loggedInUser, setLoggedInUser] = useState(
+        firebase.auth().currentUser
+    );
 
     useEffect(() => {
         firebase
@@ -68,8 +69,7 @@ export const UserMenu: React.FunctionComponent<IProps> = observer(props => {
     useEffect(
         () =>
             firebase.auth().onAuthStateChanged(() => {
-                refreshSource.current = refreshSource.current + 1;
-                setRefresh(refreshSource.current);
+                setLoggedInUser(firebase.auth().currentUser);
                 console.log(
                     "$$$$$$$$$$$$ onAuthStateChanged " +
                         firebase.auth().currentUser
@@ -95,25 +95,20 @@ export const UserMenu: React.FunctionComponent<IProps> = observer(props => {
             // setState({ isLoading: false, error: error });
         }
     };
-    const handleSignup = () => {
-        closeMenu();
-        //firebase.auth().signInWithRedirect();
-    };
     const handleLogout = () => {
         closeMenu();
-        firebase.auth().signOut();
+        firebase
+            .auth()
+            .signOut()
+            .then(() => logoutFromParseServer());
     };
 
-    //const user = staticUser.get();
-    const user = firebase.auth().currentUser;
-    const haveUser = user !== null;
     return (
         // <FirebaseAuthConsumer>
         //     {(authState: AuthEmission) => (
         <div {...props}>
-            {!haveUser /*authState.isSignedIn */ && (
+            {!loggedInUser /*authState.isSignedIn */ && (
                 <React.Fragment>
-                    <h1>{refresh}</h1>
                     {/* Material recommends a trick I could not make sense of to let Emotion styles
                         beat Material ones, but there seems no reason to avoid !important here: we
                         definitely always want to get rid of the Material top padding so the img aligns
@@ -141,13 +136,12 @@ export const UserMenu: React.FunctionComponent<IProps> = observer(props => {
                         open={Boolean(anchorEl)}
                         onClose={closeMenu}
                     >
-                        <MenuItem onClick={handleSignup}>Sign Up</MenuItem>
                         <MenuItem onClick={handleLogin}>Login</MenuItem>
                     </Menu>
                 </React.Fragment>
             )}
 
-            {haveUser && (
+            {!!loggedInUser && (
                 <React.Fragment>
                     <Button
                         aria-controls="logout-menu"
@@ -163,7 +157,7 @@ export const UserMenu: React.FunctionComponent<IProps> = observer(props => {
                         //     border: isAuthorized ? "" : "2px solid red"
                         // }}
                     >
-                        {user && user.photoURL && (
+                        {loggedInUser && loggedInUser.photoURL && (
                             <div
                                 id="avatarCircle"
                                 css={css`
@@ -174,7 +168,7 @@ export const UserMenu: React.FunctionComponent<IProps> = observer(props => {
                                 `}
                             >
                                 <img
-                                    src={user.photoURL}
+                                    src={loggedInUser.photoURL}
                                     alt="user"
                                     css={css`
                                         width: ${props.buttonHeight};
@@ -182,7 +176,9 @@ export const UserMenu: React.FunctionComponent<IProps> = observer(props => {
                                 ></img>
                             </div>
                         )}
-                        {(!user || !user.photoURL) && <>Logout</>}
+                        {(!loggedInUser || !loggedInUser.photoURL) && (
+                            <>Logout</>
+                        )}
                     </Button>
                     <Menu
                         id="logout-menu"
@@ -194,9 +190,9 @@ export const UserMenu: React.FunctionComponent<IProps> = observer(props => {
                         <MenuItem onClick={closeMenu}>
                             {/* It's not clear from BL-7984 what this menu item is supposed to do.
                             Possibly it's meant to be part of the Profile menu item. */}
-                            {user && user.photoURL && (
+                            {loggedInUser && loggedInUser.photoURL && (
                                 <img
-                                    src={user.photoURL}
+                                    src={loggedInUser.photoURL}
                                     alt="user"
                                     css={css`
                                         width: ${props.buttonHeight};
@@ -204,7 +200,9 @@ export const UserMenu: React.FunctionComponent<IProps> = observer(props => {
                                     `}
                                 ></img>
                             )}
-                            {user && user.email && <> {user.email}</>}
+                            {loggedInUser && loggedInUser.email && (
+                                <> {loggedInUser.email}</>
+                            )}
                         </MenuItem>
                         <MenuItem onClick={handleNotImplemented}>
                             Profile

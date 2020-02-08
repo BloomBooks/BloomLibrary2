@@ -5,7 +5,7 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import firebase from "firebase";
 import * as firebaseui from "firebaseui";
-import { connectParsetoAuth0 } from "./connection/Connection";
+import { connectParseServer } from "./connection/Connection";
 
 const firebaseConfig = {
     apiKey: "AIzaSyACJ7fi7_Rg_bFgTIacZef6OQckr6QKoTY",
@@ -25,32 +25,19 @@ firebase.auth().onAuthStateChanged(() => {
         return;
     }
     user.getIdToken().then((idToken: string) => {
-        connectParsetoAuth0(idToken, user.email!);
+        connectParseServer(idToken, user.email!)
+            .then(result =>
+                console.log("ConnectParseServer resolved with " + result)
+            )
+            .catch(err => {
+                console.log(
+                    "*** Signing out of firebase because of an error connecting to ParseServer"
+                );
+                firebase.auth().signOut();
+            });
     });
 });
 
-let ui: firebaseui.auth.AuthUI;
-// if (ui) {
-//   ui.reset();
-// } else {
-window.setTimeout(
-    () => (ui = new firebaseui.auth.AuthUI(firebase.auth())),
-    1000
-);
-//ui.reset();
-// }
-// ui.start('#firebaseui-auth-container', uiConfig);
-
-// setTimeout(() => {
-//     firebase
-//         .auth()
-//         .getRedirectResult()
-//         .then((u: firebase.auth.UserCredential) => {
-//             console.log(
-//                 "@@@@@@@@@ (delayed) getRedirectResult " + JSON.stringify(u)
-//             );
-//         });
-// }, 1000);
 ReactDOM.render(<App />, document.getElementById("root"));
 
 // If you want your app to work offline and load faster, you can change

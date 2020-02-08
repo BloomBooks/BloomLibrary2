@@ -3,16 +3,14 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import "../commonDialog.scss";
 
 import React, { useState, useEffect } from "react";
-
-import ReactModal from "react-modal";
 
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import firebase from "firebase";
 import * as firebaseui from "firebaseui";
-import { Button } from "@material-ui/core";
+import { Button, DialogTitle } from "@material-ui/core";
+import Dialog from "@material-ui/core/Dialog";
 
 //import { staticUser } from "./User";
 
@@ -72,16 +70,13 @@ export const LoginDialog: React.FunctionComponent<{}> = props => {
 
     staticShowLoginDialog = (doOpen: boolean) => setIsOpen(doOpen);
     return (
-        <ReactModal
+        <Dialog
             className="loginDialog"
-            isOpen={isOpen}
-            shouldCloseOnOverlayClick={true}
-            onRequestClose={() => setIsOpen(false)}
-            ariaHideApp={false}
-            style={{
-                overlay: { zIndex: 1000 }
-            }}
+            open={isOpen}
+            onClose={() => setIsOpen(false)}
+            aria-labelledby="title"
         >
+            <DialogTitle id="title">Login</DialogTitle>
             <div>
                 {/* <Button
                     variant="outlined"
@@ -112,6 +107,6 @@ export const LoginDialog: React.FunctionComponent<{}> = props => {
                     firebaseAuth={firebase.auth()}
                 />
             </div>
-        </ReactModal>
+        </Dialog>
     );
 };
