@@ -39,7 +39,7 @@ export const UserMenu: React.FunctionComponent<IProps> = observer(props => {
         firebase.auth().currentUser
     );
 
-    useEffect(() => {
+    /*useEffect(() => {
         firebase
             .auth()
             .getRedirectResult()
@@ -65,7 +65,8 @@ export const UserMenu: React.FunctionComponent<IProps> = observer(props => {
                 // ...
                 console.log("During getRedirectResult, got " + error);
             });
-    }, []);
+    }, []);*/
+
     useEffect(
         () =>
             firebase.auth().onAuthStateChanged(() => {
