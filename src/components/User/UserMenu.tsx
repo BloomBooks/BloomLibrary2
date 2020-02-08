@@ -135,6 +135,9 @@ export const UserMenu: React.FunctionComponent<IProps> = observer(props => {
                         keepMounted
                         open={Boolean(anchorEl)}
                         onClose={closeMenu}
+                        css={css`
+                            top: 40px !important;
+                        `}
                     >
                         <MenuItem onClick={handleLogin}>Login</MenuItem>
                     </Menu>
