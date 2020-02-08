@@ -127,7 +127,7 @@ export const StaffPanel: React.FunctionComponent<IProps> = observer(props => {
                         variant="outlined"
                         multiline
                         rows={2}
-                        value={props.book.summary}
+                        value={props.book.summary || ""}
                         onChange={handleSummaryChange}
                     ></TextField>
                     <TextField

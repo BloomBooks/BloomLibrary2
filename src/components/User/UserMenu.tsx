@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Menu, MenuItem } from "@material-ui/core";
 import loginIcon from "../../assets/NoUser.svg";
 // these two firebase imports are strange, but not an error. See https://github.com/firebase/firebase-js-sdk/issues/1832

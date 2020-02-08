@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useState } from "react";
+import React from "react";
 import { Book } from "../../model/Book";
 import ReportIcon from "@material-ui/icons/Flag";
 import { Button } from "@material-ui/core";

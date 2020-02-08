@@ -8,7 +8,7 @@ import React, { useState } from "react";
 import { useGetBookDetail } from "../../connection/LibraryQueryHooks";
 import { Book } from "../../model/Book";
 import WarningIcon from "@material-ui/icons/Warning";
-import { Button, IconButton, Divider } from "@material-ui/core";
+import { IconButton, Divider } from "@material-ui/core";
 import { Alert } from "../Alert";
 
 import { observer } from "mobx-react";

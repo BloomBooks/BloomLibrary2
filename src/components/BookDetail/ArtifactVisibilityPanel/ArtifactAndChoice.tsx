@@ -74,7 +74,7 @@ export const ArtifactAndChoice: React.FunctionComponent<{
         }
 
         props.onChange(show);
-    }, [show]);
+    }, [show, props]);
 
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         setShow(event.target.value as string);

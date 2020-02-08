@@ -11,7 +11,6 @@ import Divider from "@material-ui/core/Divider";
 import { ArtifactAndChoice } from "./ArtifactAndChoice";
 import { useGetBookDetail } from "../../../connection/LibraryQueryHooks";
 import { ArtifactVisibilitySettings } from "../../../model/ArtifactVisibilitySettings";
-import { updateBook } from "../../../connection/LibraryUpdates";
 import {
     ArtifactType,
     getArtifactUrl,

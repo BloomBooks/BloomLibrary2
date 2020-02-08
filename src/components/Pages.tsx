@@ -79,16 +79,19 @@ export const LanguagePage: React.FunctionComponent<{
                     ...props.filter,
                     ...{ otherTags: "bookshelf:Featured" }
                 }}
+                key={"featured"}
             />
             <BookGroup
                 title="Most Recent"
                 filter={props.filter}
                 order={"-createdAt"}
+                key={"recent"}
             />
             <BookGroupForEachTopic filter={props.filter} />
             <BookGroup
                 title={`All ${props.filter.language} books.`}
                 filter={props.filter}
+                key={"all filtered"}
             />
         </ul>
     </>
@@ -112,16 +115,17 @@ export const BookGroupForEachTopic: React.FunctionComponent<{
     if (response) {
         console.log(response);
         return (
-            <>
-                {response.data["results"].map((tag: any) => {
+            <div key={props.filter.topic}>
+                {response.data["results"].map((tag: any, index: number) => {
                     if (tag.name.split(":")[0] === "topic") {
                         const topic = tag.name.split(":")[1];
                         return (
                             <BookGroup
+                                key={index}
                                 title={`${topic} books`}
                                 filter={{
                                     ...props.filter,
-                                    ...{ topic: topic }
+                                    ...{ topic }
                                 }}
                             />
                         );
@@ -133,7 +137,7 @@ export const BookGroupForEachTopic: React.FunctionComponent<{
              books (e.g. workshop) that also do not have any topics. We could a) do that on client b) custom function on server
              or c) walk the Library and insert "NoTopic" wherever it is missing.
             */}
-            </>
+            </div>
         );
     } else return <>"waiting for topics"</>;
 };

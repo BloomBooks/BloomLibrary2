@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useState } from "react";
+import React from "react";
 import Button from "@material-ui/core/Button";
 import TranslationIcon from "./translation.svg";
 
@@ -25,7 +25,9 @@ export const TranslateButton: React.FunctionComponent<IProps> = props => {
                 padding-top: 3px; /* shift it all up*/
                 float: right;
             `}
-            startIcon={<img src={TranslationIcon} />}
+            startIcon={
+                <img alt="Download Translation Icon" src={TranslationIcon} />
+            }
         >
             <div
                 css={css`

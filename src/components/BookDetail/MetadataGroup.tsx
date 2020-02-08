@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useState } from "react";
+import React from "react";
 import { Book } from "../../model/Book";
 import { observer } from "mobx-react";
 import { LicenseLink } from "./LicenseLink";
