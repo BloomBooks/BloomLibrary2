@@ -86,6 +86,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
     if (search.totalMatchingRecords > maxCardsToRetrieve) {
         cards.push(
             <MoreCard
+                key={"more"}
                 title={props.title}
                 filter={props.filter}
                 count={search.totalMatchingRecords}
