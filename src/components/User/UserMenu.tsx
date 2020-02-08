@@ -103,11 +103,12 @@ export const UserMenu: React.FunctionComponent<IProps> = observer(props => {
             .signOut()
             .then(() => logoutFromParseServer());
     };
-
+    // split out buttonHeight else react complains because it doesn't apply to <div>s
+    const { buttonHeight, ...otherProps } = props;
     return (
         // <FirebaseAuthConsumer>
         //     {(authState: AuthEmission) => (
-        <div {...props}>
+        <div {...otherProps}>
             {!loggedInUser /*authState.isSignedIn */ && (
                 <React.Fragment>
                     {/* Material recommends a trick I could not make sense of to let Emotion styles
