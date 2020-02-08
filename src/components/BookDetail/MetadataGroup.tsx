@@ -10,6 +10,7 @@ import { observer } from "mobx-react";
 import { LicenseLink } from "./LicenseLink";
 //NB: v3.0 of title-case has a new API, but don't upgrade: it doesn't actually work like v2.x does, where it can take fooBar and give us "Foo Bar"
 import titleCase from "title-case";
+import { Link } from "@material-ui/core";
 
 export const MetadataGroup: React.FunctionComponent<{
     book: Book;
@@ -43,9 +44,12 @@ export const MetadataGroup: React.FunctionComponent<{
                 props.book.originalBookSourceUrl.length > 0 && (
                     <div>
                         Imported from&nbsp;
-                        <a href={props.book.originalBookSourceUrl}>
+                        <Link
+                            color="secondary"
+                            href={props.book.originalBookSourceUrl}
+                        >
                             {new URL(props.book.originalBookSourceUrl).host}
-                        </a>
+                        </Link>
                     </div>
                 )}
         </div>

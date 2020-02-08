@@ -14,12 +14,18 @@ export const SearchBox: React.FunctionComponent<{}> = props => {
     );
     return (
         <div
-            className={
-                "searchContainer " +
-                css`
-                    height: 30px;
-                `
-            }
+            css={css`
+                display: inline-flex;
+                height: 30px;
+                margin-right: 20px;
+                margin-top: auto;
+                margin-bottom: auto;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                background-color: white;
+                overflow: hidden;
+                padding-left: 5px;
+            `}
         >
             <input
                 css={css`

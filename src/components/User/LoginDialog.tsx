@@ -76,7 +76,7 @@ export const LoginDialog: React.FunctionComponent<{}> = props => {
             onClose={() => setIsOpen(false)}
             aria-labelledby="title"
         >
-            <DialogTitle id="title">Login</DialogTitle>
+            <DialogTitle id="title">Sign In / Sign Up</DialogTitle>
             <div>
                 {/* <Button
                     variant="outlined"

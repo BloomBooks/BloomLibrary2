@@ -33,6 +33,7 @@ export const ReadButton: React.FunctionComponent<IProps> = props => {
                 width: 250px;
                 height: 80px;
                 margin-bottom: 10px !important;
+                float: right;
             `}
             onClick={() => router!.pushBookRead(props.id)}
         >

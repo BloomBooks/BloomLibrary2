@@ -6,12 +6,14 @@ import { jsx } from "@emotion/core";
 
 import { Book } from "../../model/Book";
 import { observer } from "mobx-react";
+import { Link } from "@material-ui/core";
 
 export const LicenseLink: React.FunctionComponent<{
     book: Book;
 }> = observer(props => {
     return (
-        <a
+        <Link
+            color="secondary"
             target="_blank"
             rel="noopener noreferrer"
             href={
@@ -23,6 +25,6 @@ export const LicenseLink: React.FunctionComponent<{
             }
         >
             {props.book.license}
-        </a>
+        </Link>
     );
 });

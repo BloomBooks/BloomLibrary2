@@ -17,7 +17,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
         id={"primaryInfoAndButtons"}
         css={css`
             display: flex;
-            //background-color: lightgreen;
+            justify-content: space-between;
         `}
     >
         <section
@@ -25,8 +25,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                 display: flex;
                 margin-bottom: 1em;
                 flex-direction: column;
-                //  background-color: lightyellow;
-                width: 900px; //hack
+                width: 500px; //hack
             `}
         >
             <div
@@ -41,7 +40,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                     src={props.book.baseUrl + "thumbnail-256.png"}
                     css={css`
                         max-width: 125px;
-                        height: 120px;
+                        max-height: 120px;
 
                         object-fit: contain; //cover will crop, but fill up nicely
                         margin-right: 16px;

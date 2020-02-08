@@ -23,6 +23,7 @@ export const TranslateButton: React.FunctionComponent<IProps> = props => {
                 height: 80px;
                 display: block;
                 padding-top: 3px; /* shift it all up*/
+                float: right;
             `}
             startIcon={<img src={TranslationIcon} />}
         >

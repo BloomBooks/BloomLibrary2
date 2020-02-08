@@ -9,6 +9,7 @@ import logo from "./header-logo.svg";
 import { SearchBox } from "../SearchBox";
 import { UserMenu } from "../User/UserMenu";
 import { bloomRed } from "../../theme";
+import Link from "@material-ui/core/Link/Link";
 
 export const Header: React.FunctionComponent<{}> = props => {
     const toolbarHeight = "48px";
@@ -22,21 +23,28 @@ export const Header: React.FunctionComponent<{}> = props => {
                 padding: 10px;
                 padding-left: 20px;
                 box-sizing: content-box;
+                justify-content: space-between;
             `}
         >
-            <a href="/" title="Home">
+            <Link href="/" title="Home">
                 <img src={logo} alt={"Bloom Logo"} />
-            </a>
-            {/* The margin-left:auto here allows the containing flex-box to insert any spare space
+            </Link>
+            <div
+                css={css`
+                    display: flex;
+                `}
+            >
+                <SearchBox />
+                {/* The margin-left:auto here allows the containing flex-box to insert any spare space
             into this element's margin-left, typically putting a large gap there and making
             it the left-most of the block of controls at the right of the header.*/}
-            <UserMenu
-                buttonHeight={toolbarHeight}
-                css={css`
-                    margin-left: auto;
-                `}
-            />
-            <SearchBox />
+                <UserMenu
+                    buttonHeight={toolbarHeight}
+                    css={css`
+                        margin-left: auto;
+                    `}
+                />
+            </div>
         </div>
     );
 };

@@ -139,7 +139,9 @@ export const UserMenu: React.FunctionComponent<IProps> = observer(props => {
                             top: 40px !important;
                         `}
                     >
-                        <MenuItem onClick={handleLogin}>Login</MenuItem>
+                        <MenuItem onClick={handleLogin}>
+                            Sign In / Sign Up
+                        </MenuItem>
                     </Menu>
                 </React.Fragment>
             )}
