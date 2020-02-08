@@ -26,6 +26,7 @@ export class Book {
     public copyright: string = "";
     public credits: string = "";
     public pageCount: string = "";
+    public bookOrder: string = "";
     @observable public tags: string[] = [];
     public features: string[] = [];
     public harvesterLog: string = "";
@@ -36,11 +37,13 @@ export class Book {
         epub: ArtifactVisibilitySettings | undefined;
         bloomReader: ArtifactVisibilitySettings | undefined;
         readOnline: ArtifactVisibilitySettings | undefined;
+        shellbook: ArtifactVisibilitySettings | undefined;
     } = {
         pdf: undefined,
         epub: undefined,
         bloomReader: undefined,
-        readOnline: undefined
+        readOnline: undefined,
+        shellbook: undefined
     };
     public uploader: string | undefined;
     // this is the raw ISO date we get from the query

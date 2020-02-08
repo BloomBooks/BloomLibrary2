@@ -5,7 +5,8 @@ export enum ArtifactType {
     pdf = "pdf",
     epub = "epub",
     bloomReader = "bloomReader",
-    readOnline = "readOnline"
+    readOnline = "readOnline",
+    shellbook = "shellbook"
 }
 
 export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
@@ -15,6 +16,10 @@ export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
             return `/readBook/${book.id}`;
         case ArtifactType.bloomReader:
             url = getDownloadUrl(book, "bloomd");
+            break;
+        case ArtifactType.shellbook:
+            //https://s3.amazonaws.com/bloomharvest-sandbox/hattonlists%40gmail.com%2fa7c32c37-a048-441d-aa12-707221c41b70/BloomBookOrder/Two+Brothers.BloomBookOrder
+            url = book.bookOrder;
             break;
         case ArtifactType.pdf:
             url = `${book.baseUrl}${getBookNameFromUrl(

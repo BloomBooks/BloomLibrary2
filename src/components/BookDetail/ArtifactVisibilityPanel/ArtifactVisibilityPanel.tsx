@@ -137,6 +137,7 @@ function getDefaultArtifactVisibilitySettings() {
         pdf: undefined,
         epub: new ArtifactVisibilitySettings(),
         bloomReader: new ArtifactVisibilitySettings(),
-        readOnline: new ArtifactVisibilitySettings()
+        readOnline: new ArtifactVisibilitySettings(),
+        shellbook: new ArtifactVisibilitySettings()
     };
 }

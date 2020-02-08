@@ -7,11 +7,12 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import Button from "@material-ui/core/Button";
 import TranslationIcon from "./translation.svg";
+import { getArtifactUrl, ArtifactType } from "./ArtifactHelper";
+import { Book } from "../../model/Book";
 
-interface IProps {
-    id: string;
-}
-export const TranslateButton: React.FunctionComponent<IProps> = props => {
+export const TranslateButton: React.FunctionComponent<{
+    book: Book;
+}> = props => {
     return (
         <Button
             variant="outlined"
@@ -28,6 +29,8 @@ export const TranslateButton: React.FunctionComponent<IProps> = props => {
             startIcon={
                 <img alt="Download Translation Icon" src={TranslationIcon} />
             }
+            /* TODO: give some UI around this. See BL-8111 */
+            href={getArtifactUrl(props.book, ArtifactType.shellbook)}
         >
             <div
                 css={css`

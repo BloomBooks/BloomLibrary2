@@ -56,7 +56,9 @@ export const MetadataGroup: React.FunctionComponent<{
         <div
             id="column2"
             css={css`
-                width: 250px;
+                min-width: 300px;
+                float: right;
+                margin-left: 40px;
             `}
         >
             <div>

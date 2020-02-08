@@ -86,7 +86,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
             `}
         >
             <ReadButton id={props.book.id} />
-            <TranslateButton id={props.book.id} />
+            <TranslateButton book={props.book} />
         </div>
     </div>
 ));
