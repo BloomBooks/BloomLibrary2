@@ -42,9 +42,8 @@ export function getConnection(): IConnection {
         return local;
     }
     if (
-        window.location.hostname === "bloomlibrary.org"
-        // for now, next.bloomlibrary.org is using the dev site.
-        // || window.location.hostname === "next.bloomlibrary.org"
+        window.location.hostname === "bloomlibrary.org" ||
+        window.location.hostname === "next.bloomlibrary.org"
     ) {
         return prod;
     }
