@@ -41,7 +41,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
     const search = useSearchBooks(
         {
             include: "langPointers",
-            keys: "title,baseUrl,objectId",
+            keys: "title,baseUrl,objectId,langPointers",
             // the following is arbitrary. I don't even yet no what the ux is that we want.
             limit: maxCardsToRetrieve,
             order: props.order || "title"
@@ -77,13 +77,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
     const cards = search.results.map((b: any) => (
         // if we're showing in one row, then we'll let swiper handle the laziness, otherwise
         // we tell the card to try and be lazy itself.
-        <BookCard
-            lazy={!showInOneRow}
-            key={b.baseUrl}
-            title={b.title}
-            baseUrl={b.baseUrl}
-            id={b.objectId}
-        />
+        <BookCard lazy={!showInOneRow} key={b.baseUrl} bookResults={b} />
     ));
     if (search.totalMatchingRecords > maxCardsToRetrieve) {
         cards.push(

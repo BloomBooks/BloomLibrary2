@@ -7,13 +7,13 @@ import React, { useContext } from "react";
 import { CheapCard } from "./CheapCard";
 import LazyLoad from "react-lazyload";
 import { RouterContext } from "../Router";
+import { Book as any } from "../model/Book";
+import { Link } from "@material-ui/core";
 
-const BookCardWidth = 120;
+const BookCardWidth = 140;
 
 interface IProps {
-    title: string;
-    baseUrl: string;
-    id: string;
+    bookResults: any;
     className?: string;
     lazy: boolean;
 }
@@ -26,8 +26,8 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
             css={css`
                 width: ${BookCardWidth}px;
             `}
-            key={props.baseUrl}
-            onClick={() => router!.pushBook(props.id)}
+            key={props.bookResults.baseUrl}
+            onClick={() => router!.pushBook(props.bookResults.id)}
         >
             {/* For (39a) Lara the Yellow Ladybird I placed a file named "test-cover" in the bucket
         in order to play with how the cards can look once we have access to their actual cover images. */}
@@ -40,8 +40,8 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
                 alt={"book thumbnail"}
                 // TODO: really this src shouldn't be needed because we are telling the swiper to be lazy,
                 // so it should use the data-src attribute. But at the moment that leaves us with just broken images.
-                src={props.baseUrl + "thumbnail-256.png"}
-                data-src={props.baseUrl + "thumbnail-256.png"} // we would have to generate new thumbnails that just have the image shown on the cover
+                src={props.bookResults.baseUrl + "thumbnail-256.png"}
+                data-src={props.bookResults.baseUrl + "thumbnail-256.png"} // we would have to generate new thumbnails that just have the image shown on the cover
                 // onError={ev => {
                 //     if (props.baseUrl) {
                 //         (ev.target as any).src =
@@ -64,13 +64,24 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
             <h2
                 css={css`
                     font-weight: normal;
-                    padding-left: 10px;
+                    padding-left: 5px;
                     max-height: 40px;
                     overflow-y: hidden;
+                    margin-top: 5px;
                 `}
             >
-                {props.title}
+                {props.bookResults.title}
             </h2>
+            <div
+                css={css`
+                    color: gray;
+                `}
+            >
+                {props.bookResults.langPointers &&
+                    props.bookResults.langPointers.map((l: any) => {
+                        return <Link href={l}>{l.name}</Link>;
+                    })}
+            </div>
         </CheapCard>
     );
     /* Note, LazyLoad currently breaks strict mode. See app.tsx */

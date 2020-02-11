@@ -20,18 +20,25 @@ export function createBookFromParseServerData(
 export class Book {
     public id: string = "";
     public title: string = "";
-    @observable public summary: string = "";
+
     public license: string = "";
     public baseUrl: string = "";
     public copyright: string = "";
     public credits: string = "";
     public pageCount: string = "";
     public bookOrder: string = "";
-    @observable public tags: string[] = [];
+
     public features: string[] = [];
+    public xlanguages: string[] = ["Elvish"];
     public harvesterLog: string = "";
     public harvestState: string = "";
+
+    // things that can be edited on the site are observable so that the rest of the UI will update if they are changed.
+    @observable public summary: string = "";
+    @observable public tags: string[] = [];
     @observable public level: string = "";
+    @observable public librarianNote: string = "";
+
     public artifactsToOfferToUsers: {
         pdf: ArtifactVisibilitySettings | undefined;
         epub: ArtifactVisibilitySettings | undefined;
