@@ -84,3 +84,22 @@ a:hover {
 .swiper-button-disabled {
     visibility: hidden;
 }
+
+/* Make the buttons the same height as the cards so clicking above or
+    below the buttons performs the next/previous action */
+.swiper-button-next {
+    height: 100%;
+    top: 0;
+    right: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-top: 0;
+}
+.swiper-button-previous {
+    height: 100%;
+    top: 0;
+    left: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-top: 0;
+}
