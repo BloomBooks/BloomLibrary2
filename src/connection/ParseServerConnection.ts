@@ -66,8 +66,13 @@ export async function connectParseServer(
 ) {
     return new Promise<any>((resolve, reject) => {
         const connection = getConnection();
-        // Run a cloud code function which, if this is a new user with the email of a known user,
-        // will link them; and if it is a new email, will create a user with that ID and link them.
+        // Run a cloud code function (bloomLink) which,
+        // if this is a new Firebase user with the email of a known parse server user, will link them.
+        // It will do nothing if
+        // - we have an existing parse server user with authData
+        //   - in this case, the POST to users will log them in
+        // - we have no existing parse server user
+        //   - in this case, the POST to users will create the parse server user and link to the Firebase user
         axios
             .post(
                 `${connection.url}functions/bloomLink`,
@@ -80,8 +85,8 @@ export async function connectParseServer(
                     headers: connection.headers
                 }
             )
-            .then(bloomLinkResult => {
-                // now we can log in
+            .then(() => {
+                // Now we can log in (or create a new parse server user if needed)
                 axios
                     .post(
                         `${connection.url}users`,
@@ -89,7 +94,8 @@ export async function connectParseServer(
                             authData: {
                                 bloom: { token: jwtToken, id: userId }
                             },
-                            username: userId
+                            username: userId,
+                            email: userId // needed in case we are creating a new user
                         },
 
                         {
