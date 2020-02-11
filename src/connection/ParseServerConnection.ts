@@ -1,4 +1,5 @@
 import axios from "axios";
+import { LoggedInUser } from "./LoggedInUser";
 
 // This file exports a function getConnection(), which returns the headers
 // needed to talk to our Parse Server backend db.
@@ -104,6 +105,8 @@ export async function connectParseServer(
                     )
                     .then(usersResult => {
                         if (usersResult.data.sessionToken) {
+                            LoggedInUser.current = usersResult.data;
+                            //Object.assign(CurrentUser, usersResult.data);
                             connection.headers["X-Parse-Session-Token"] =
                                 usersResult.data.sessionToken;
                             console.log("Got ParseServer Session ID");
@@ -143,5 +146,8 @@ export function logout() {
             console.log("ParseServer logged out.");
         })
         .catch(error => console.error("While logging out, got" + error))
-        .finally(() => delete connection.headers["X-Parse-Session-Token"]);
+        .finally(() => {
+            delete connection.headers["X-Parse-Session-Token"];
+            LoggedInUser.current = undefined;
+        });
 }

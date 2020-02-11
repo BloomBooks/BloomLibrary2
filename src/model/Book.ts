@@ -45,7 +45,7 @@ export class Book {
         readOnline: undefined,
         shellbook: undefined
     };
-    public uploader: string | undefined;
+    public uploader: { username: string } | undefined;
     // this is the raw ISO date we get from the query
     private createdAt: string = "";
     private updatedAt: string = "";

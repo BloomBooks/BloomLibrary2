@@ -73,6 +73,9 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
     };
 
     const artifactCount = getExistingArtifactTypeKeys().length;
+    const msg = !!props.currentUserIsUploader
+        ? "As the uploader of this book, you can control what formats to offer to people"
+        : "Because you have STAFF permissions, you can control what formats to offer to people. The uploader can also do this.";
     return (
         <div
             css={css`
@@ -84,8 +87,7 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
                     margin-top: 0;
                 `}
             >
-                As the uploader of this book, you can control what formats to
-                offer to people:
+                {msg}
             </h4>
             <Box padding={1} border={1} borderRadius="borderRadius">
                 Sometimes books created for one format don't look good in

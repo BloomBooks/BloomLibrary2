@@ -14,31 +14,33 @@ import {
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { HarvesterArtifactUserControl } from "./ArtifactVisibilityPanel/ArtifactVisibilityPanel";
 import { StaffPanel } from "../Admin/StaffPanel";
-
+import { LoggedInUser } from "../../connection/LoggedInUser";
 export const BookExtraPanels: React.FunctionComponent<{
     book: Book;
 }> = observer(props => {
-    const parseUser: any = { staff: true };
-
+    const user = LoggedInUser.current;
+    const userIsUploader = user?.username === props.book.uploader?.username;
     return (
         <div
             css={css`
                 margin-top: 32px;
             `}
         >
-            {/* Todo: BL-8090 also shown if parseUser is the uploader of the book */}
-            {parseUser && parseUser.staff && (
+            {(user?.administrator || userIsUploader) && (
                 <ExpansionPanel>
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                         Artifact Controls
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
-                        <HarvesterArtifactUserControl bookId={props.book.id} />
+                        <HarvesterArtifactUserControl
+                            bookId={props.book.id}
+                            currentUserIsUploader={userIsUploader}
+                        />
                     </ExpansionPanelDetails>
                 </ExpansionPanel>
             )}
-            {/* The admin panel is only shown if the user is logged in as a parse administrator.  */}
-            {parseUser && parseUser.staff && (
+
+            {user?.administrator && (
                 <ExpansionPanel>
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                         Staff Controls
@@ -48,7 +50,7 @@ export const BookExtraPanels: React.FunctionComponent<{
                     </ExpansionPanelDetails>
                 </ExpansionPanel>
             )}
-            {parseUser && parseUser.staff && (
+            {user?.administrator && (
                 <ExpansionPanel>
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                         Raw Book Data (Staff Only)
