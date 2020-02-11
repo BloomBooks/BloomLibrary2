@@ -55,7 +55,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
         watchSlidesVisibility: true,
         navigation: {
             nextEl: ".swiper-button-next.swiper-button-black",
-            prevEl: ".swiper-button-prev"
+            prevEl: ".swiper-button-prev.swiper-button-black"
         },
         spaceBetween: 20,
         slidesPerView: "auto"
