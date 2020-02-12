@@ -49,13 +49,14 @@ export function getConnection(): IConnection {
         return prod;
     }
 
-    // Storybook is currently configured to look at production
-    if (
-        window.location.hostname === "localhost" &&
-        window.location.port === "9090"
-    ) {
-        return prod;
-    }
+    // Storybook is currently configured to look at development
+    // Uncomment this to point it at production
+    // if (
+    //     window.location.hostname === "localhost" &&
+    //     window.location.port === "9009"
+    // ) {
+    //     return prod;
+    // }
 
     return dev;
 }
@@ -109,7 +110,7 @@ export async function connectParseServer(
                             //Object.assign(CurrentUser, usersResult.data);
                             connection.headers["X-Parse-Session-Token"] =
                                 usersResult.data.sessionToken;
-                            console.log("Got ParseServer Session ID");
+                            //console.log("Got ParseServer Session ID");
                             resolve(usersResult.data);
                             //returnParseUser(result.data);
                         } else failedToLoginInToParseServer();

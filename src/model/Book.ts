@@ -2,6 +2,7 @@ import { observable } from "mobx";
 import { updateBook } from "../connection/LibraryUpdates";
 import { ArtifactVisibilitySettings } from "./ArtifactVisibilitySettings";
 import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
+import { ILanguage } from "./Language";
 
 export function createBookFromParseServerData(
     pojo: object,
@@ -58,11 +59,7 @@ export class Book {
 
     @observable public librarianNote: string = "";
 
-    public langPointers: Array<{
-        name: string;
-        isoCode: string;
-        englishName: string;
-    }> = [];
+    public langPointers: ILanguage[] = [];
 
     // Make various changes to the object we get from parse server to make it more
     // convenient for various BloomLibrary uses.

@@ -3,6 +3,7 @@ import { IFilter } from "../IFilter";
 // import { AxiosResponse } from "axios";
 import { getConnection } from "./ParseServerConnection";
 import { Book, createBookFromParseServerData } from "../model/Book";
+import { getCleanedAndOrderedLanguageList } from "../model/Language";
 
 // For things other than books, which should use `useBookQuery()`
 function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
@@ -16,12 +17,22 @@ function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
         }
     });
 }
-export function useGetLanguagesList() {
+function useGetLanguagesList() {
     return useLibraryQuery("language", {
         keys: "name,usageCount,isoCode",
         limit: 10000,
         order: "-usageCount"
     });
+}
+export function useGetCleanedAndOrderedLanguageList() {
+    const axiosResult = useGetLanguagesList();
+    if (axiosResult.response?.data?.results) {
+        axiosResult.response.data.results = getCleanedAndOrderedLanguageList(
+            axiosResult.response.data.results
+        );
+    }
+
+    return axiosResult;
 }
 export function useGetTopicList() {
     // todo: this is going to give more than topics

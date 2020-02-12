@@ -30,9 +30,9 @@ firebase.auth().onAuthStateChanged(() => {
     }
     user.getIdToken().then((idToken: string) => {
         connectParseServer(idToken, user.email!)
-            .then(result =>
-                console.log("ConnectParseServer resolved with " + result)
-            )
+            // .then(result =>
+            //     console.log("ConnectParseServer resolved with " + result)
+            // )
             .catch(err => {
                 console.log(
                     "*** Signing out of firebase because of an error connecting to ParseServer"

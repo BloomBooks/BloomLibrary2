@@ -6,14 +6,14 @@ import { jsx } from "@emotion/core";
 
 import React from "react";
 import { LanguageCard } from "./LanguageCard";
-import { useGetLanguagesList } from "../connection/LibraryQueryHooks";
+import { useGetCleanedAndOrderedLanguageList } from "../connection/LibraryQueryHooks";
 import { getResultsOrMessageElement } from "../connection/GetQueryResultsUI";
 import Downshift from "downshift";
 import matchSorter from "match-sorter";
 import searchIcon from "../search.png";
 
 export const LanguageGroup: React.FunctionComponent = () => {
-    const languageQueryResults = useGetLanguagesList();
+    const languageQueryResults = useGetCleanedAndOrderedLanguageList();
 
     // note on JS deconstruction syntax here: "{A:B} means "rename A to B"
     const {

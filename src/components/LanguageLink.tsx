@@ -10,7 +10,7 @@ import { RouterContext } from "../Router";
 
 export const LanguageLink: React.FunctionComponent<{
     name: string;
-    englishName: string;
+    englishName?: string;
     isoCode: string;
 }> = props => {
     const router = useContext(RouterContext);
