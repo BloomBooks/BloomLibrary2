@@ -5,7 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React, { useState, useEffect } from "react";
-import { Button, Menu, MenuItem } from "@material-ui/core";
+import { Button, Menu, MenuItem, useTheme } from "@material-ui/core";
 import loginIcon from "../../assets/NoUser.svg";
 // these two firebase imports are strange, but not an error. See https://github.com/firebase/firebase-js-sdk/issues/1832
 import firebase from "firebase/app";
@@ -191,6 +191,7 @@ export const UserMenu: React.FunctionComponent<IProps> = observer(props => {
                                     email={loggedInUser.email ?? ""}
                                     name={loggedInUser.displayName ?? ""}
                                     size={props.buttonHeight}
+                                    color={useTheme().palette.secondary.main}
                                 />
                             )}
                         </div>
