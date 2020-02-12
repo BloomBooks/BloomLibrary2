@@ -125,7 +125,7 @@ export class Router {
             bookId,
             pageType: "book-detail",
             filter: {},
-            title: "BOOKz"
+            title: "Book Detail"
         });
     }
     public pushBookRead(bookId: string) {
@@ -133,7 +133,7 @@ export class Router {
             bookId,
             pageType: "book-read",
             filter: {},
-            title: "BOOKz"
+            title: "Book Read"
         });
     }
     public push(location: ILocation) {
