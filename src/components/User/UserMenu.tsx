@@ -13,6 +13,7 @@ import "firebase/auth";
 import { ShowLoginDialog } from "./LoginDialog";
 import { observer } from "mobx-react";
 import { logout as logoutFromParseServer } from "../../connection/ParseServerConnection";
+import Avatar from "react-avatar";
 
 // This React component displays a button for functions related to the user who may
 // be logged in. If no user is logged in, it displays a generic icon with pull-down
@@ -111,6 +112,7 @@ export const UserMenu: React.FunctionComponent<IProps> = observer(props => {
         // <FirebaseAuthConsumer>
         //     {(authState: AuthEmission) => (
         <div {...otherProps}>
+            {/* Logged out state */}
             {!loggedInUser /*authState.isSignedIn */ && (
                 <React.Fragment>
                     {/* Material recommends a trick I could not make sense of to let Emotion styles
@@ -149,7 +151,7 @@ export const UserMenu: React.FunctionComponent<IProps> = observer(props => {
                     </Menu>
                 </React.Fragment>
             )}
-
+            {/* Logged in state */}
             {!!loggedInUser && (
                 <React.Fragment>
                     <Button
@@ -166,28 +168,32 @@ export const UserMenu: React.FunctionComponent<IProps> = observer(props => {
                         //     border: isAuthorized ? "" : "2px solid red"
                         // }}
                     >
-                        {loggedInUser && loggedInUser.photoURL && (
-                            <div
-                                id="avatarCircle"
-                                css={css`
-                                    border-radius: 50%;
-                                    overflow: hidden;
-                                    width: ${props.buttonHeight};
-                                    height: ${props.buttonHeight};
-                                `}
-                            >
+                        <div
+                            id="avatarCircle"
+                            css={css`
+                                border-radius: 50%;
+                                overflow: hidden;
+                                width: ${props.buttonHeight};
+                                height: ${props.buttonHeight};
+                            `}
+                        >
+                            {loggedInUser.photoURL && (
                                 <img
                                     src={loggedInUser.photoURL}
                                     alt="user"
                                     css={css`
                                         width: ${props.buttonHeight};
                                     `}
-                                ></img>
-                            </div>
-                        )}
-                        {(!loggedInUser || !loggedInUser.photoURL) && (
-                            <>Logout</>
-                        )}
+                                />
+                            )}
+                            {!loggedInUser.photoURL && (
+                                <Avatar
+                                    email={loggedInUser.email ?? ""}
+                                    name={loggedInUser.displayName ?? ""}
+                                    size={props.buttonHeight}
+                                />
+                            )}
+                        </div>
                     </Button>
                     <Menu
                         id="logout-menu"
