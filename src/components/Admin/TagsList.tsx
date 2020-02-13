@@ -47,7 +47,7 @@ export const TagsList: React.FunctionComponent<IProps> = observer(props => {
     const tags = useRef<string[]>([]);
     useEffect(() => {
         const temp = new Set<string>();
-        for (const book of search.results) {
+        for (const book of search.books) {
             for (const tag1 of (book as any).tags) {
                 const tag = tag1 as string;
                 temp.add(tag);

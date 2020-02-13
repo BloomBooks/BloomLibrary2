@@ -112,17 +112,27 @@ export function useBookQuery(
         }
     });
 }
+export interface IBasicBookInfo {
+    objectId: string;
+    baseUrl: string;
+    title: string;
+    langPointers: Array<{
+        name: string;
+        isoCode: string;
+        englishName: string;
+    }>;
+}
 export interface ISearchBooksResult {
     waiting: boolean;
     totalMatchingRecords: number;
     errorString: string | null;
-    results: [];
+    books: IBasicBookInfo[];
 }
 interface ISimplifiedAxiosResult {
     waiting: boolean;
     count: number;
     error: Error | null;
-    results: [];
+    books: IBasicBookInfo[];
 }
 
 // the idea is for this to be higher level than useQueryLibrary. Initially
@@ -144,7 +154,7 @@ export function useSearchBooks(
         errorString: simplifiedResultStatus.error
             ? simplifiedResultStatus.error.message
             : null,
-        results: simplifiedResultStatus.results,
+        books: simplifiedResultStatus.books,
         waiting: simplifiedResultStatus.waiting
     };
 }
@@ -153,12 +163,12 @@ function processAxiosStatus(answer: IAxiosAnswer): ISimplifiedAxiosResult {
     if (answer.error)
         return {
             count: -2,
-            results: [],
+            books: [],
             error: answer.error,
             waiting: false
         };
     return {
-        results:
+        books:
             answer.loading || !answer.response
                 ? []
                 : answer.response["data"]["results"],
