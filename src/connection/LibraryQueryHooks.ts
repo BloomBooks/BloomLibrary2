@@ -112,15 +112,17 @@ export function useBookQuery(
         }
     });
 }
+export interface ILangPointer {
+    name: string;
+    isoCode: string;
+    englishName: string;
+}
+
 export interface IBasicBookInfo {
     objectId: string;
     baseUrl: string;
     title: string;
-    langPointers: Array<{
-        name: string;
-        isoCode: string;
-        englishName: string;
-    }>;
+    langPointers: ILangPointer[];
 }
 export interface ISearchBooksResult {
     waiting: boolean;

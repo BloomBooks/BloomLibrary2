@@ -7,7 +7,7 @@ import React, { useContext } from "react";
 import { CheapCard } from "./CheapCard";
 import LazyLoad from "react-lazyload";
 import { RouterContext } from "../Router";
-import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
+import { IBasicBookInfo, ILangPointer } from "../connection/LibraryQueryHooks";
 
 const BookCardWidth = 140;
 
@@ -80,9 +80,11 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
                     padding: 3px;
                     overflow: hidden;
                     white-space: nowrap;
-                    text-overflow: ${"' (" +
-                        props.oneBookResult.langPointers.length.toString() +
-                        ")'"};
+                    /* showed the total number of languages
+                        text-overflow: ${"' (" +
+                            props.oneBookResult.langPointers.length.toString() +
+                            ")'"}; */
+                        text-overflow:"..."
                 `}
             >
                 {props.oneBookResult.langPointers &&
@@ -90,9 +92,19 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
                         // This `from()` and `Set()` removes duplicates, which
                         new Set( // we get if there are multiple scripts for the same language in the book
                             props.oneBookResult.langPointers.map(
-                                (l: any) =>
+                                (l: ILangPointer) => {
+                                    // For languages where the name differs in English, we are currently
+                                    // showing the English followed by the autonym in parentheses.
+                                    const primaryName = l.englishName
+                                        ? l.englishName
+                                        : l.name;
                                     // Intentionally not making these a link, for now
-                                    l.name
+                                    return `${primaryName}${
+                                        primaryName !== l.name
+                                            ? " (" + l.name + ")"
+                                            : ""
+                                    }`;
+                                }
                             )
                         )
                     ).join(", ")}

@@ -2,6 +2,7 @@ import { observable } from "mobx";
 import { updateBook } from "../connection/LibraryUpdates";
 import { ArtifactVisibilitySettings } from "./ArtifactVisibilitySettings";
 import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
+import { ILangPointer } from "../connection/LibraryQueryHooks";
 
 export function createBookFromParseServerData(
     pojo: object,
@@ -63,11 +64,7 @@ export class Book {
     // todo: We need to handle limited visibility, i.e. by country
     public ePUBVisible: boolean = false;
 
-    public langPointers: Array<{
-        name: string;
-        isoCode: string;
-        englishName: string;
-    }> = [];
+    public langPointers: ILangPointer[] = [];
 
     // Make various changes to the object we get from parse server to make it more
     // convenient for various BloomLibrary uses.

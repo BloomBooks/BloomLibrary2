@@ -11,6 +11,7 @@ import { ReadButton } from "./ReadButton";
 import { TranslateButton } from "./TranslateButton";
 import { Link } from "@material-ui/core";
 import { LanguageLink } from "../LanguageLink";
+import { ILangPointer } from "../../connection/LibraryQueryHooks";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{
     book: Book;
@@ -71,7 +72,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                         {book.credits}
                     </p> */}
                     <ul>
-                        {props.book.langPointers.map(l => (
+                        {props.book.langPointers.map((l: ILangPointer) => (
                             <li>
                                 <LanguageLink
                                     name={l.name}
