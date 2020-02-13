@@ -44,7 +44,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
             keys: "title,baseUrl,objectId",
             // the following is arbitrary. I don't even yet no what the ux is that we want.
             limit: maxCardsToRetrieve,
-            order: props.order || "title"
+            order: props.order || "titleOrScore"
         },
         props.filter
     );
