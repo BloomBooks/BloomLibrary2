@@ -63,8 +63,6 @@ export class Book {
     // todo: We need to handle limited visibility, i.e. by country
     public ePUBVisible: boolean = false;
 
-    @observable public librarianNote: string = "";
-
     public langPointers: Array<{
         name: string;
         isoCode: string;

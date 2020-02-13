@@ -8,7 +8,6 @@ import { CheapCard } from "./CheapCard";
 import LazyLoad from "react-lazyload";
 import { RouterContext } from "../Router";
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
-import { Link } from "@material-ui/core";
 
 const BookCardWidth = 140;
 
@@ -60,26 +59,43 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
                 `
             }
         /> */}
-            <h2
+            <div
                 css={css`
                     font-weight: normal;
-                    padding-left: 5px;
+                    padding-left: 3px;
                     max-height: 40px;
                     overflow-y: hidden;
-                    margin-top: 5px;
+                    margin-top: 3px;
+                    margin-bottom: 0;
+                    font-size: 10pt;
                 `}
             >
                 {props.oneBookResult.title}
-            </h2>
+            </div>
             <div
                 css={css`
                     color: gray;
+                    font-size: 9pt;
+                    margin-top: auto;
+                    padding: 3px;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ${"' (" +
+                        props.oneBookResult.langPointers.length.toString() +
+                        ")'"};
                 `}
             >
-                {props.bookResults.langPointers &&
-                    props.bookResults.langPointers.map((l: any) => {
-                        return <Link href={l}>{l.name}</Link>;
-                    })}
+                {props.oneBookResult.langPointers &&
+                    Array.from(
+                        // This `from()` and `Set()` removes duplicates, which
+                        new Set( // we get if there are multiple scripts for the same language in the book
+                            props.oneBookResult.langPointers.map(
+                                (l: any) =>
+                                    // Intentionally not making these a link, for now
+                                    l.name
+                            )
+                        )
+                    ).join(", ")}
             </div>
         </CheapCard>
     );
