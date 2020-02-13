@@ -9,6 +9,8 @@ import { Book } from "../../model/Book";
 import { observer } from "mobx-react";
 import { ReadButton } from "./ReadButton";
 import { TranslateButton } from "./TranslateButton";
+import { Link } from "@material-ui/core";
+import { LanguageLink } from "../LanguageLink";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{
     book: Book;
@@ -68,6 +70,17 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                     >
                         {book.credits}
                     </p> */}
+                    <ul>
+                        {props.book.langPointers.map(l => (
+                            <li>
+                                <LanguageLink
+                                    name={l.name}
+                                    englishName={l.englishName}
+                                    isoCode={l.isoCode}
+                                />
+                            </li>
+                        ))}
+                    </ul>
                 </div>
             </div>
             <div

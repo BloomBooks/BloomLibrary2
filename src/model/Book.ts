@@ -58,6 +58,12 @@ export class Book {
 
     @observable public librarianNote: string = "";
 
+    public langPointers: Array<{
+        name: string;
+        isoCode: string;
+        englishName: string;
+    }> = [];
+
     // Make various changes to the object we get from parse server to make it more
     // convenient for various BloomLibrary uses.
     public finishCreationFromParseServerData(bookId: string): void {
