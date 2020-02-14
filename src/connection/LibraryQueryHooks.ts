@@ -20,7 +20,7 @@ function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
 }
 function useGetLanguagesList() {
     return useLibraryQuery("language", {
-        keys: "name,usageCount,isoCode",
+        keys: "name,englishName,usageCount,isoCode",
         limit: 10000,
         order: "-usageCount"
     });

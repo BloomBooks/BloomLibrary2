@@ -7,47 +7,67 @@ import { jsx } from "@emotion/core";
 import React, { useContext } from "react";
 import { CheapCard } from "./CheapCard";
 import { RouterContext } from "../Router";
+import { ILanguage } from "../model/Language";
 
-interface IProps {
-    name: string;
-    bookCount: string;
-    languageCode: string;
-}
-
-export const LanguageCard: React.FunctionComponent<IProps> = props => {
+export const LanguageCard: React.FunctionComponent<ILanguage> = props => {
     const router = useContext(RouterContext);
+    let languageName: string;
+    let autonym: string | undefined;
+    if (props.englishName && props.englishName !== props.name) {
+        autonym = props.name;
+        languageName = props.englishName;
+    } else {
+        languageName = props.name;
+    }
+
+    const {
+        name,
+        isoCode,
+        usageCount,
+        englishName,
+        ...propsToPassDown
+    } = props; // Prevent React warnings
 
     return (
         <CheapCard
-            {...props}
+            {...propsToPassDown}
             css={css`
+                text-align: center;
                 width: 120px;
                 height: 100px;
-                //background-color: #9ed0b8;
+                padding-bottom: 3px;
             `}
             onClick={() => {
-                //alert("click " + this.props.title);
                 router!.push({
-                    title: props.name,
+                    title: languageName,
                     pageType: "language",
-                    filter: { language: props.languageCode }
+                    filter: { language: props.isoCode }
                 });
             }}
         >
             <h2
                 css={css`
                     text-align: center;
-                    flex-grow: 1; // push the rest to the bottom5
+                    flex-grow: 1; // push the rest to the bottom
+                    max-height: 40px;
                 `}
             >
-                {props.name}
+                {languageName}
             </h2>
             <div
                 css={css`
-                    text-align: center;
+                    margin-bottom: 15px;
                 `}
             >
-                {props.bookCount ? `${props.bookCount} Books` : ""}
+                {autonym}
+            </div>
+            <div
+                css={css`
+                    font-size: 0.8rem;
+                    color: #1d94a4;
+                `}
+            >
+                {props.usageCount ? `${props.usageCount} Books` : ""}
             </div>
         </CheapCard>
     );

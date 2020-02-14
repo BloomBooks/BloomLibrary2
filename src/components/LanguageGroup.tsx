@@ -90,8 +90,9 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                         {...getItemProps({ item: l })}
                                         key={index}
                                         name={l.name}
-                                        bookCount={l.usageCount}
-                                        languageCode={l.isoCode}
+                                        englishName={l.englishName}
+                                        usageCount={l.usageCount}
+                                        isoCode={l.isoCode}
                                     />
                                 ))}
                             </Swiper>

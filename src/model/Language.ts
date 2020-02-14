@@ -13,6 +13,10 @@ export function getCleanedAndOrderedLanguageList(
         number
     >();
     const codeToNameMap: Map<string, string> = new Map<string, string>();
+    const codeToEnglishNameMap: Map<string, string | undefined> = new Map<
+        string,
+        string | undefined
+    >();
     languages.forEach((languageResult: ILanguage) => {
         const languageCode = languageResult.isoCode;
         if (!distinctCodeToCountMap.has(languageCode)) {
@@ -20,6 +24,7 @@ export function getCleanedAndOrderedLanguageList(
 
             // For now, use the name of the one with the most books
             codeToNameMap.set(languageCode, languageResult.name);
+            codeToEnglishNameMap.set(languageCode, languageResult.englishName);
         } else {
             const sumSoFar = distinctCodeToCountMap.get(languageCode)!;
             distinctCodeToCountMap.set(
@@ -34,6 +39,7 @@ export function getCleanedAndOrderedLanguageList(
         ([languageCode, usageCount]) => {
             return {
                 name: codeToNameMap.get(languageCode)!,
+                englishName: codeToEnglishNameMap.get(languageCode),
                 isoCode: languageCode,
                 usageCount
             };
