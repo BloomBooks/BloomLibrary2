@@ -10,10 +10,19 @@ import Downshift from "downshift";
 import matchSorter from "match-sorter";
 import searchIcon from "../search.png";
 import { CachedTablesContext } from "../App";
+import Swiper from "react-id-swiper";
 
 export const LanguageGroup: React.FunctionComponent = () => {
     const { languages } = useContext(CachedTablesContext);
 
+    const swiperConfig = {
+        navigation: {
+            nextEl: ".swiper-button-next.swiper-button-black",
+            prevEl: ".swiper-button-prev.swiper-button-black"
+        },
+        spaceBetween: 20,
+        slidesPerView: "auto"
+    };
     return (
         <li
             css={css`
@@ -34,24 +43,27 @@ export const LanguageGroup: React.FunctionComponent = () => {
                     {({
                         getInputProps,
                         getItemProps,
-                        //getLabelProps,
-                        getMenuProps,
                         inputValue: currentInputBoxText
-                        //highlightedIndex,
-                        //selectedItem
                     }) => (
                         <div>
                             <div
                                 css={css`
                                     display: flex;
+                                    margin-bottom: 2px;
                                 `}
                             >
-                                <div>
+                                <div
+                                    css={css`
+                                        display: flex;
+                                        border: 1px solid #ccc;
+                                        border-radius: 5px;
+                                        padding-left: 5px;
+                                        margin-right: 10px;
+                                    `}
+                                >
                                     <input
                                         css={css`
                                             display: block;
-                                            //margin-bottom: 7px;
-
                                             border: 0;
                                         `}
                                         {...getInputProps()} // presumably this connects keyboard events back to downshift
@@ -61,14 +73,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
 
                                 <div>{`${languages.length} Languages`}</div>
                             </div>
-                            <ul
-                                {...getMenuProps()}
-                                css={css`
-                                    list-style: none;
-                                    display: flex;
-                                    padding-left: 0;
-                                `}
-                            >
+                            <Swiper {...swiperConfig}>
                                 {/* MatchSorter is an npm module that does smart autocomplete over a list of values. */}
                                 {/* Enhance: it can handle some misspellings, but not other obvious ones (e.g. enlish) */}
                                 {// enhance: be able to type, e.g., "Bengali" and get the card for বাংলা
@@ -89,7 +94,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                         languageCode={l.isoCode}
                                     />
                                 ))}
-                            </ul>
+                            </Swiper>
                         </div>
                     )}
                 </Downshift>

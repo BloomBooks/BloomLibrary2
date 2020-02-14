@@ -83,7 +83,9 @@ storiesOf("BookGroup", module)
         <BookGroup title="Thai books" filter={{ language: "th" }} />
     ));
 storiesOf("LanguageGroup", module).add("By book count", () => (
-    <LanguageGroup />
+    <ul>
+        <LanguageGroup />
+    </ul>
 ));
 storiesOf("BookShelfGroup", module)
     .add("Publishers", () => (
