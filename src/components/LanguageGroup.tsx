@@ -4,36 +4,30 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React from "react";
+import React, { useContext } from "react";
 import { LanguageCard } from "./LanguageCard";
-import { useGetCleanedAndOrderedLanguageList } from "../connection/LibraryQueryHooks";
-import { getResultsOrMessageElement } from "../connection/GetQueryResultsUI";
 import Downshift from "downshift";
 import matchSorter from "match-sorter";
 import searchIcon from "../search.png";
+import { CachedTablesContext } from "../App";
 
 export const LanguageGroup: React.FunctionComponent = () => {
-    const languageQueryResults = useGetCleanedAndOrderedLanguageList();
+    const { languages } = useContext(CachedTablesContext);
 
-    // note on JS deconstruction syntax here: "{A:B} means "rename A to B"
-    const {
-        noResultsElement, // we'll get this at least temporarily while waiting
-        results: listOfAllLanguages
-    } = getResultsOrMessageElement(languageQueryResults);
     return (
-        noResultsElement || (
-            <li
-                css={css`
-                    margin-top: 30px;
-                `}
-            >
-                <h1>Find Books By Language</h1>
+        <li
+            css={css`
+                margin-top: 30px;
+            `}
+        >
+            <h1>Find Books By Language</h1>
 
-                {/* Downshift handles telling us when to recompute the list of matching items.
+            {(languages.length && (
+                /* Downshift handles telling us when to recompute the list of matching items.
                 It also claims to present it all in a WAI-ARIA compliant accessible way (untested).
                 We give it a function that returns a react element that contains the
                 list of matching cards, and it calls
-                that function on every keystroke. */}
+                that function on every keystroke. */
                 <Downshift
                     itemToString={language => (language ? language.name : "")}
                 >
@@ -52,7 +46,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                     display: flex;
                                 `}
                             >
-                                <div className="searchContainer">
+                                <div>
                                     <input
                                         css={css`
                                             display: block;
@@ -65,7 +59,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                     <img src={searchIcon} alt="Search" />
                                 </div>
 
-                                <div>{`${listOfAllLanguages.length} Languages`}</div>
+                                <div>{`${languages.length} Languages`}</div>
                             </div>
                             <ul
                                 {...getMenuProps()}
@@ -79,7 +73,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                 {/* Enhance: it can handle some misspellings, but not other obvious ones (e.g. enlish) */}
                                 {// enhance: be able to type, e.g., "Bengali" and get the card for বাংলা
                                 matchSorter(
-                                    listOfAllLanguages,
+                                    languages,
                                     currentInputBoxText || "",
                                     {
                                         keys: ["name", "isoCode"]
@@ -99,7 +93,16 @@ export const LanguageGroup: React.FunctionComponent = () => {
                         </div>
                     )}
                 </Downshift>
-            </li>
-        )
+            )) || (
+                // still loading or no response
+                <div
+                    css={css`
+                        height: 100px;
+                    `}
+                >
+                    Loading...
+                </div>
+            )}
+        </li>
     );
 };

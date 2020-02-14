@@ -1,36 +1,26 @@
-import React, { useEffect, useRef, useState } from "react";
-
+import React from "react";
 import { BrowseView } from "./components/BrowseView";
 import theme from "./theme";
 import { ThemeProvider } from "@material-ui/core";
 import { LoginDialog } from "./components/User/LoginDialog";
-import { useGetTagList } from "./connection/LibraryQueryHooks";
+import {
+    useGetTagList,
+    useGetCleanedAndOrderedLanguageList
+} from "./connection/LibraryQueryHooks";
+import { ILanguage } from "./model/Language";
 
-export const CachedTablesContext = React.createContext<{ tags: string[] }>({
-    tags: []
+export const CachedTablesContext = React.createContext<{
+    tags: string[];
+    languages: ILanguage[];
+}>({
+    tags: [],
+    languages: []
 });
 
 export const App: React.FunctionComponent<{}> = props => {
-    // Initialization of the global app context. Other items may be added later.
-    // Populate it with a list of the known tags.
-    const { response } = useGetTagList();
-    const [tags, setTags] = useState<string[]>([]);
-    useEffect(() => {
-        // When we actually get a response, update our state to contain the tags.
-        // (We only expect response to change once, from something like undefined
-        // to the actual list of tag objects from the database.)
-        // (Note that this means that currently tags will not update if someone
-        // either here or elsewhere adds a new tag. It would be fairly easy
-        // to insert an addTag function to the context that could be called
-        // when a librarian adds a new tag locally.)
-        if (response && response.data && response.data.results) {
-            const temp: string[] = [];
-            for (const tag of response.data.results) {
-                temp.push(tag.name);
-            }
-            setTags(temp);
-        }
-    }, [response]);
+    const tags = useGetTagList();
+
+    const languages = useGetCleanedAndOrderedLanguageList();
 
     return (
         <>
@@ -50,7 +40,7 @@ export const App: React.FunctionComponent<{}> = props => {
             */}
             <div className="App">
                 <ThemeProvider theme={theme}>
-                    <CachedTablesContext.Provider value={{ tags }}>
+                    <CachedTablesContext.Provider value={{ tags, languages }}>
                         <BrowseView />
                     </CachedTablesContext.Provider>
                 </ThemeProvider>

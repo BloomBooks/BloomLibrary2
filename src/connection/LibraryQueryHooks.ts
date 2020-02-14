@@ -1,12 +1,10 @@
 import useAxios, { IReturns } from "@use-hooks/axios";
 import { IFilter } from "../IFilter";
-// import { AxiosResponse } from "axios";
 import { getConnection } from "./ParseServerConnection";
 import { Book, createBookFromParseServerData } from "../model/Book";
-import axios from "axios";
-import { useRef, useEffect, useState, useContext } from "react";
+import { useContext } from "react";
 import { CachedTablesContext } from "../App";
-import { getCleanedAndOrderedLanguageList } from "../model/Language";
+import { getCleanedAndOrderedLanguageList, ILanguage } from "../model/Language";
 
 // For things other than books, which should use `useBookQuery()`
 function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
@@ -27,18 +25,27 @@ function useGetLanguagesList() {
         order: "-usageCount"
     });
 }
-export function useGetCleanedAndOrderedLanguageList() {
+export function useGetCleanedAndOrderedLanguageList(): ILanguage[] {
     const axiosResult = useGetLanguagesList();
     if (axiosResult.response?.data?.results) {
-        axiosResult.response.data.results = getCleanedAndOrderedLanguageList(
+        return getCleanedAndOrderedLanguageList(
             axiosResult.response.data.results
         );
     }
 
-    return axiosResult;
+    return [];
 }
-export function useGetTagList() {
-    return useLibraryQuery("tag", { limit: 1000, count: 1000 });
+export function useGetTagList(): string[] {
+    const axiosResult = useLibraryQuery("tag", { limit: 1000, count: 1000 });
+
+    if (axiosResult.response?.data?.results) {
+        return axiosResult.response.data.results.map(
+            (parseTag: { name: string }) => {
+                return parseTag.name;
+            }
+        );
+    }
+    return [];
 }
 export function useGetTopicList() {
     // todo: this is going to give more than topics
