@@ -6,6 +6,7 @@ import { Book, createBookFromParseServerData } from "../model/Book";
 import axios from "axios";
 import { useRef, useEffect, useState, useContext } from "react";
 import { CachedTablesContext } from "../App";
+import { getCleanedAndOrderedLanguageList } from "../model/Language";
 
 // For things other than books, which should use `useBookQuery()`
 function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
@@ -19,12 +20,22 @@ function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
         }
     });
 }
-export function useGetLanguagesList() {
+function useGetLanguagesList() {
     return useLibraryQuery("language", {
         keys: "name,usageCount,isoCode",
         limit: 10000,
         order: "-usageCount"
     });
+}
+export function useGetCleanedAndOrderedLanguageList() {
+    const axiosResult = useGetLanguagesList();
+    if (axiosResult.response?.data?.results) {
+        axiosResult.response.data.results = getCleanedAndOrderedLanguageList(
+            axiosResult.response.data.results
+        );
+    }
+
+    return axiosResult;
 }
 export function useGetTagList() {
     return useLibraryQuery("tag", { limit: 1000, count: 1000 });

@@ -9,7 +9,6 @@ import { Book } from "../../model/Book";
 import { observer } from "mobx-react";
 import { ReadButton } from "./ReadButton";
 import { TranslateButton } from "./TranslateButton";
-import { Link } from "@material-ui/core";
 import { LanguageLink } from "../LanguageLink";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{

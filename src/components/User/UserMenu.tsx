@@ -74,10 +74,10 @@ export const UserMenu: React.FunctionComponent<IProps> = observer(props => {
         () =>
             firebase.auth().onAuthStateChanged(() => {
                 setLoggedInUser(firebase.auth().currentUser);
-                console.log(
-                    "$$$$$$$$$$$$ onAuthStateChanged " +
-                        firebase.auth().currentUser
-                );
+                // console.log(
+                //     "$$$$$$$$$$$$ onAuthStateChanged " +
+                //         firebase.auth().currentUser
+                // );
             }),
         []
     );
