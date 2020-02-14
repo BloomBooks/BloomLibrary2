@@ -9,11 +9,14 @@ import { useGetBookDetail } from "../connection/LibraryQueryHooks";
 import { Book } from "../model/Book";
 export const ReadBookPage: React.FunctionComponent<{ id: string }> = props => {
     const handleMessageFromBloomPlayer = (event: MessageEvent) => {
-        if (
-            event.data &&
-            JSON.parse(event.data).messageType === "backButtonClicked"
-        ) {
-            window.history.back();
+        //        console.log(JSON.stringify(event.data));
+        try {
+            const r = event.data;
+            if (r.messageType === "backButtonClicked") {
+                window.history.back();
+            }
+        } catch (err) {
+            console.log(`Got error with message: ${err}`);
         }
     };
     useEffect(() => {
