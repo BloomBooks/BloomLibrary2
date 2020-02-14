@@ -9,7 +9,7 @@ import { LanguagePage, BookGroupForEachTopic } from "../components/Pages";
 import { HomePage } from "../components/HomePage";
 import { BookshelfGroup } from "../components/BookShelfGroup";
 import "../index.css";
-import { HarvesterArtifactUserControl } from "../components/BookDetail/ArtifactVisibilityPanel/ArtifactVisibilityPanel";
+import { StandAloneHarvesterArtifactUserControl } from "../components/BookDetail/ArtifactVisibilityPanel/ArtifactVisibilityPanel";
 import { ArtifactAndChoice } from "../components/BookDetail/ArtifactVisibilityPanel/ArtifactAndChoice";
 import { ArtifactVisibilitySettings } from "../model/ArtifactVisibilitySettings";
 import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
@@ -120,10 +120,10 @@ const toTriStateString = (value: boolean | undefined) => {
 };
 storiesOf("Harvester Artifact Control", module)
     .add("Entire Control", () => (
-        // <HarvesterArtifactUserControl bookId="65XiBsxtYS" /> //dev
-        // <HarvesterArtifactUserControl bookId="WQvJ1kBoHE" /> //dev
-        // <HarvesterArtifactUserControl bookId="TgERGZnLVW" /> //dev
-        <HarvesterArtifactUserControl bookId="jnG2YFeIIG" /> //prod
+        // <StandAloneHarvesterArtifactUserControl bookId="65XiBsxtYS" /> //dev
+        // <StandAloneHarvesterArtifactUserControl bookId="WQvJ1kBoHE" /> //dev
+        // <StandAloneHarvesterArtifactUserControl bookId="TgERGZnLVW" /> //dev
+        <StandAloneHarvesterArtifactUserControl bookId="jnG2YFeIIG" /> //prod
     ))
     .add("ArtifactAndChoice", () => (
         <>

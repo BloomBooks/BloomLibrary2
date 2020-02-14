@@ -1,6 +1,9 @@
 import { observable } from "mobx";
 import { updateBook } from "../connection/LibraryUpdates";
-import { ArtifactVisibilitySettings } from "./ArtifactVisibilitySettings";
+import {
+    ArtifactVisibilitySettings,
+    ArtifactVisibilitySettingsGroup
+} from "./ArtifactVisibilitySettings";
 import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
 import { ILanguage } from "./Language";
 
@@ -9,8 +12,10 @@ export function createBookFromParseServerData(
     bookId: string
 ): Book {
     const b = Object.assign(new Book(), pojo);
-    // just change to a more transparent name internally
-    b.artifactsToOfferToUsers = (pojo as any).show;
+    // change to a more transparent name internally, and make an observable object
+    b.artifactsToOfferToUsers = ArtifactVisibilitySettingsGroup.createFromParseServerData(
+        (pojo as any).show
+    );
     b.finishCreationFromParseServerData(bookId);
     return b;
 }
@@ -33,19 +38,8 @@ export class Book {
     public harvesterLog: string = "";
     public harvestState: string = "";
     @observable public level: string = "";
-    public artifactsToOfferToUsers: {
-        pdf: ArtifactVisibilitySettings | undefined;
-        epub: ArtifactVisibilitySettings | undefined;
-        bloomReader: ArtifactVisibilitySettings | undefined;
-        readOnline: ArtifactVisibilitySettings | undefined;
-        shellbook: ArtifactVisibilitySettings | undefined;
-    } = {
-        pdf: undefined,
-        epub: undefined,
-        bloomReader: undefined,
-        readOnline: undefined,
-        shellbook: undefined
-    };
+    @observable
+    public artifactsToOfferToUsers: ArtifactVisibilitySettingsGroup = new ArtifactVisibilitySettingsGroup();
     public uploader: { username: string } | undefined;
     // this is the raw ISO date we get from the query
     private createdAt: string = "";

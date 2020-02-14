@@ -10,95 +10,108 @@ import { observer } from "mobx-react";
 import { ReadButton } from "./ReadButton";
 import { TranslateButton } from "./TranslateButton";
 import { LanguageLink } from "../LanguageLink";
+import { getArtifactVisibilitySettings, ArtifactType } from "./ArtifactHelper";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{
     book: Book;
-}> = observer(props => (
-    <div
-        id={"primaryInfoAndButtons"}
-        css={css`
-            display: flex;
-            justify-content: space-between;
-        `}
-    >
-        <section
+}> = observer(props => {
+    const readOnlineSettings = getArtifactVisibilitySettings(
+        props.book,
+        ArtifactType.readOnline
+    );
+    const showReadOnLine = readOnlineSettings && readOnlineSettings.decision;
+    const shellBookSettings = getArtifactVisibilitySettings(
+        props.book,
+        ArtifactType.shellbook
+    );
+    const showTranslateButton = shellBookSettings && shellBookSettings.decision;
+    return (
+        <div
+            id={"primaryInfoAndButtons"}
             css={css`
                 display: flex;
-                margin-bottom: 1em;
-                flex-direction: column;
-                width: 500px; //hack
+                justify-content: space-between;
             `}
         >
-            <div
-                id={"left-side"}
+            <section
                 css={css`
                     display: flex;
                     margin-bottom: 1em;
+                    flex-direction: column;
+                    width: 500px; //hack
                 `}
             >
-                <img
-                    alt="book thumbnail"
-                    src={props.book.baseUrl + "thumbnail-256.png"}
+                <div
+                    id={"left-side"}
                     css={css`
-                        max-width: 125px;
-                        max-height: 120px;
-
-                        object-fit: contain; //cover will crop, but fill up nicely
-                        margin-right: 16px;
+                        display: flex;
+                        margin-bottom: 1em;
                     `}
-                />
-                <div>
-                    <h1
+                >
+                    <img
+                        alt="book thumbnail"
+                        src={props.book.baseUrl + "thumbnail-256.png"}
                         css={css`
-                            font-size: 18pt;
-                            margin-top: 0;
-                            margin-bottom: 12px;
+                            max-width: 125px;
+                            max-height: 120px;
+
+                            object-fit: contain; //cover will crop, but fill up nicely
+                            margin-right: 16px;
                         `}
-                    >
-                        {props.book.title}
-                    </h1>
-                    {/* These are the original credits, which aren't enough. See BL-7990
+                    />
+                    <div>
+                        <h1
+                            css={css`
+                                font-size: 18pt;
+                                margin-top: 0;
+                                margin-bottom: 12px;
+                            `}
+                        >
+                            {props.book.title}
+                        </h1>
+                        {/* These are the original credits, which aren't enough. See BL-7990
     <div>{props.book.credits}</div> */}
-                    {/* <div>Written by: somebody</div>
+                        {/* <div>Written by: somebody</div>
                     <div>Illustrated by: somebody</div>
                     <div>Narrated by: somebody else</div> */}
-                    {/* <p
+                        {/* <p
                         css={css`
                             white-space: pre-line;
                         `}
                     >
                         {book.credits}
                     </p> */}
-                    <ul>
-                        {props.book.langPointers.map(l => (
-                            <li>
-                                <LanguageLink
-                                    name={l.name}
-                                    englishName={l.englishName}
-                                    isoCode={l.isoCode}
-                                />
-                            </li>
-                        ))}
-                    </ul>
+                        <ul>
+                            {props.book.langPointers.map(l => (
+                                <li>
+                                    <LanguageLink
+                                        name={l.name}
+                                        englishName={l.englishName}
+                                        isoCode={l.isoCode}
+                                    />
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
                 </div>
-            </div>
+                <div
+                    css={css`
+                        font-size: 14pt;
+                        margin-bottom: 12px;
+                    `}
+                >
+                    {props.book.summary}
+                </div>
+            </section>
             <div
+                id="twoButtons"
                 css={css`
-                    font-size: 14pt;
-                    margin-bottom: 12px;
+                    flex-shrink: 2;
                 `}
             >
-                {props.book.summary}
+                {showReadOnLine && <ReadButton id={props.book.id} />}
+                {showTranslateButton && <TranslateButton book={props.book} />}
             </div>
-        </section>
-        <div
-            id="twoButtons"
-            css={css`
-                flex-shrink: 2;
-            `}
-        >
-            <ReadButton id={props.book.id} />
-            <TranslateButton book={props.book} />
         </div>
-    </div>
-));
+    );
+});

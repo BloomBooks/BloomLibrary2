@@ -12,10 +12,26 @@ import ePUBIcon from "./ePUB.svg";
 import bloomReaderIcon from "./BloomPub.svg";
 
 import { IconButton } from "@material-ui/core";
-import { getArtifactUrl, ArtifactType } from "./ArtifactHelper";
+import {
+    getArtifactUrl,
+    ArtifactType,
+    getArtifactVisibilitySettings
+} from "./ArtifactHelper";
 export const ArtifactGroup: React.FunctionComponent<{
     book: Book;
 }> = observer(props => {
+    const pdfSettings = getArtifactVisibilitySettings(
+        props.book,
+        ArtifactType.pdf
+    )!;
+    const epubSettings = getArtifactVisibilitySettings(
+        props.book,
+        ArtifactType.epub
+    );
+    const bloomReaderSettings = getArtifactVisibilitySettings(
+        props.book,
+        ArtifactType.bloomReader
+    );
     return (
         <ul
             css={css`
@@ -27,19 +43,19 @@ export const ArtifactGroup: React.FunctionComponent<{
                     icon: pdfIcon,
                     alt: "Download PDF",
                     type: ArtifactType.pdf,
-                    visible: true
+                    visible: pdfSettings.decision
                 },
                 {
                     icon: ePUBIcon,
                     alt: "Download ePUB",
                     type: ArtifactType.epub,
-                    visible: props.book.ePUBVisible
+                    visible: epubSettings && epubSettings.decision
                 },
                 {
                     icon: bloomReaderIcon,
                     alt: "Download for Bloom Reader",
                     type: ArtifactType.bloomReader,
-                    visible: true
+                    visible: bloomReaderSettings && bloomReaderSettings.decision
                 }
             ].map(
                 a =>

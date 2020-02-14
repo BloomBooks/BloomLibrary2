@@ -13,6 +13,7 @@ import pdfIcon from "./pdf.png";
 import epubIcon from "./epub.png";
 import bloomReaderIcon from "./bloomd.png";
 import readIcon from "../read.svg";
+import translationIcon from "../translation.svg";
 import { ArtifactType } from "../ArtifactHelper";
 import { bloomRed } from "../../../theme";
 
@@ -124,6 +125,10 @@ export const ArtifactAndChoice: React.FunctionComponent<{
             case ArtifactType.readOnline:
                 src = readIcon;
                 alt = "Read online";
+                break;
+            case ArtifactType.shellbook:
+                src = translationIcon;
+                alt = "Download Translation";
                 break;
         }
         return <img src={src} alt={alt} />;
