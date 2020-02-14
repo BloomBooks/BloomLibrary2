@@ -1,5 +1,8 @@
 import { Book } from "../../model/Book";
-import { ArtifactVisibilitySettings } from "../../model/ArtifactVisibilitySettings";
+import {
+    ArtifactVisibilitySettings,
+    ArtifactVisibilitySettingsGroup
+} from "../../model/ArtifactVisibilitySettings";
 
 export enum ArtifactType {
     pdf = "pdf",
@@ -34,29 +37,22 @@ export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
     return url;
 }
 
+// Note that this may MODIFY the object, if it previously had no settings at all
+// (though this is unlikely, since books usually come from createBookFromParseServerData,
+// which always creates one).
+// However, this is necessary, because these settings are observable, and returning
+// a different object each time defeats the observability.
+// The function must NOT create a settings object for a particular field if one
+// does not exist, as that would (probably falsely) indicate that the relevant
+// artifact was available.
 export function getArtifactVisibilitySettings(
     book: Book,
     artifactType: ArtifactType
-): ArtifactVisibilitySettings {
-    if (
-        book.artifactsToOfferToUsers &&
-        book.artifactsToOfferToUsers[artifactType] !== undefined
-    ) {
-        // I don't fully understand why, but if we just return
-        // book.artifactsToOfferToUsers[artifactType] here, the object returned is not
-        // a *true* ShowSettings object with methods, etc.
-        const artifactShowSettings: ArtifactVisibilitySettings = book
-            .artifactsToOfferToUsers[
-            artifactType
-        ] as ArtifactVisibilitySettings;
-        return new ArtifactVisibilitySettings(
-            artifactShowSettings.harvester,
-            artifactShowSettings.librarian,
-            artifactShowSettings.user
-        );
-    } else {
-        return new ArtifactVisibilitySettings();
+): ArtifactVisibilitySettings | undefined {
+    if (!book.artifactsToOfferToUsers) {
+        book.artifactsToOfferToUsers = new ArtifactVisibilitySettingsGroup();
     }
+    return book.artifactsToOfferToUsers[artifactType];
 }
 
 export function getArtifactTypeFromKey(artifactTypeKey: string): ArtifactType {

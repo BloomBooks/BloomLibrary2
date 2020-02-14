@@ -33,7 +33,7 @@ export const BookExtraPanels: React.FunctionComponent<{
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
                         <HarvesterArtifactUserControl
-                            bookId={props.book.id}
+                            book={props.book}
                             currentUserIsUploader={userIsUploader}
                         />
                     </ExpansionPanelDetails>

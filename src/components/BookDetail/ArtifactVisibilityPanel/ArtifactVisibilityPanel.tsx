@@ -17,17 +17,18 @@ import {
     getArtifactVisibilitySettings,
     getArtifactTypeFromKey
 } from "../ArtifactHelper";
+import { Book } from "../../../model/Book";
 
 // A set of controls by which the user can hide or show the artifacts for a book
 // which the harvester produced.
 export const HarvesterArtifactUserControl: React.FunctionComponent<{
-    bookId: string;
+    book: Book | null | undefined;
     currentSession?: string;
     currentUserIsUploader?: boolean;
     currentUserIsAdmin?: boolean;
     onChange?: () => {};
 }> = props => {
-    const book = useGetBookDetail(props.bookId);
+    const book = props.book;
     if (!book) return <></>;
     if (!book.harvestState || book.harvestState !== "Done") return <></>;
 
@@ -36,14 +37,12 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
         if (showSetting === "auto") userDecision = undefined;
         else userDecision = showSetting === "show";
 
-        let artifactsToOfferToUsers = book.artifactsToOfferToUsers;
-        if (!artifactsToOfferToUsers) {
-            artifactsToOfferToUsers = getDefaultArtifactVisibilitySettings();
-        }
-
-        Object.assign(artifactsToOfferToUsers[artifactType], {
-            user: userDecision
-        });
+        // if the setting didn't exist, we wouldn't be showing a control for it.
+        const artifactSettings = getArtifactVisibilitySettings(
+            book,
+            artifactType
+        )!;
+        artifactSettings.user = userDecision;
 
         book.saveArtifactVisibilityToParseServer();
         if (props.onChange) props.onChange();
@@ -100,10 +99,12 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
                         <div key={artifactType}>
                             <ArtifactAndChoice
                                 type={artifactType}
-                                visibility={getArtifactVisibilitySettings(
-                                    book,
-                                    artifactType
-                                )}
+                                visibility={
+                                    getArtifactVisibilitySettings(
+                                        book,
+                                        artifactType
+                                    )!
+                                }
                                 url={getArtifactUrl(book, artifactType)}
                                 onChange={showSetting =>
                                     handleChange(artifactType, showSetting)
@@ -119,6 +120,27 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
     );
 };
 
+// This version of the control doesn't require the caller to have previously created
+// a book. That is useful to various tests and perhaps to the legacy angular Bloom Library,
+// though we are currently expecting to fork this project and stick with an older
+// version of HarvesterArtifactUserControl if we need modifications for that.
+export const StandAloneHarvesterArtifactUserControl: React.FunctionComponent<{
+    bookId: string;
+    currentSession?: string;
+    currentUserIsUploader?: boolean;
+    currentUserIsAdmin?: boolean;
+    onChange?: () => {};
+}> = props => {
+    const book = useGetBookDetail(props.bookId);
+    if (!book) return <></>;
+    return (
+        <HarvesterArtifactUserControl
+            {...props}
+            book={book}
+        ></HarvesterArtifactUserControl>
+    );
+};
+
 // The legacy angular bloomlibrary.org calls this. The production version of that build uses the
 // the version of this library that is tagged as "legacyBlorgProduction" on TeamCity.
 export function connectHarvestArtifactUserControl(
@@ -126,7 +148,7 @@ export function connectHarvestArtifactUserControl(
     props: any
 ) {
     ReactDOM.render(
-        React.createElement(HarvesterArtifactUserControl, props),
+        React.createElement(StandAloneHarvesterArtifactUserControl, props),
         attachmentPoint
     );
 }
