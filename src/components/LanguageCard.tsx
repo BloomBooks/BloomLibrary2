@@ -19,6 +19,7 @@ export const LanguageCard: React.FunctionComponent<IProps> = props => {
 
     return (
         <CheapCard
+            {...props}
             css={css`
                 width: 120px;
                 height: 100px;
