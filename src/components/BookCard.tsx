@@ -7,27 +7,26 @@ import React, { useContext } from "react";
 import { CheapCard } from "./CheapCard";
 import LazyLoad from "react-lazyload";
 import { RouterContext } from "../Router";
+import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
+import { getLanguageNames } from "./LanguageLink";
 
-const BookCardWidth = 120;
+const BookCardWidth = 140;
 
 interface IProps {
-    title: string;
-    baseUrl: string;
-    id: string;
+    onBasicBookInfo: IBasicBookInfo;
     className?: string;
     lazy: boolean;
 }
 export const BookCard: React.FunctionComponent<IProps> = props => {
     const router = useContext(RouterContext);
-
     const card = (
         <CheapCard
             className={props.className}
             css={css`
                 width: ${BookCardWidth}px;
             `}
-            key={props.baseUrl}
-            onClick={() => router!.pushBook(props.id)}
+            key={props.onBasicBookInfo.baseUrl}
+            onClick={() => router!.pushBook(props.onBasicBookInfo.objectId)}
         >
             {/* For (39a) Lara the Yellow Ladybird I placed a file named "test-cover" in the bucket
         in order to play with how the cards can look once we have access to their actual cover images. */}
@@ -40,8 +39,8 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
                 alt={"book thumbnail"}
                 // TODO: really this src shouldn't be needed because we are telling the swiper to be lazy,
                 // so it should use the data-src attribute. But at the moment that leaves us with just broken images.
-                src={props.baseUrl + "thumbnail-256.png"}
-                data-src={props.baseUrl + "thumbnail-256.png"} // we would have to generate new thumbnails that just have the image shown on the cover
+                src={props.onBasicBookInfo.baseUrl + "thumbnail-256.png"}
+                data-src={props.onBasicBookInfo.baseUrl + "thumbnail-256.png"} // we would have to generate new thumbnails that just have the image shown on the cover
                 // onError={ev => {
                 //     if (props.baseUrl) {
                 //         (ev.target as any).src =
@@ -61,16 +60,36 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
                 `
             }
         /> */}
-            <h2
+            <div
                 css={css`
                     font-weight: normal;
-                    padding-left: 10px;
+                    padding-left: 3px;
                     max-height: 40px;
                     overflow-y: hidden;
+                    margin-top: 3px;
+                    margin-bottom: 0;
+                    font-size: 10pt;
                 `}
             >
-                {props.title}
-            </h2>
+                {props.onBasicBookInfo.title}
+            </div>
+            <div
+                css={css`
+                    color: gray;
+                    font-size: 9pt;
+                    margin-top: auto;
+                    padding: 3px;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    /* showed the total number of languages
+                        text-overflow: ${"' (" +
+                            props.onBasicBookInfo.languages.length.toString() +
+                            ")'"}; */
+                        text-overflow:"..."
+                `}
+            >
+                {getLanguageNames(props.onBasicBookInfo.languages).join(", ")}
+            </div>
         </CheapCard>
     );
     /* Note, LazyLoad currently breaks strict mode. See app.tsx */

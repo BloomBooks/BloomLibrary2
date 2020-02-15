@@ -11,6 +11,7 @@ import { ReadButton } from "./ReadButton";
 import { TranslateButton } from "./TranslateButton";
 import { LanguageLink } from "../LanguageLink";
 import { getArtifactVisibilitySettings, ArtifactType } from "./ArtifactHelper";
+import { ILanguage } from "../../model/Language";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{
     book: Book;
@@ -82,25 +83,21 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                         {book.credits}
                     </p> */}
                         <ul>
-                            {props.book.langPointers.map(l => (
+                            {props.book.languages.map((l: ILanguage) => (
                                 <li>
-                                    <LanguageLink
-                                        name={l.name}
-                                        englishName={l.englishName}
-                                        isoCode={l.isoCode}
-                                    />
+                                    <LanguageLink language={l} />
                                 </li>
                             ))}
                         </ul>
                     </div>
-                </div>
-                <div
-                    css={css`
-                        font-size: 14pt;
-                        margin-bottom: 12px;
-                    `}
-                >
-                    {props.book.summary}
+                    <div
+                        css={css`
+                            font-size: 14pt;
+                            margin-bottom: 12px;
+                        `}
+                    >
+                        {props.book.summary}
+                    </div>
                 </div>
             </section>
             <div

@@ -19,6 +19,7 @@ import { BookDetail } from "../components/BookDetail/BookDetail";
 import { ThemeProvider } from "@material-ui/styles";
 import theme from "../theme";
 import { ReadBookPage } from "../components/ReadBookPage";
+import { Book } from "../model/Book";
 
 // Provide all stories with a router in their context:
 const router = new Router();
@@ -41,14 +42,16 @@ storiesOf("BookDetail", module)
             }
         />
     ));
-storiesOf("BookCard", module).add("simple", () => (
-    <BookCard
-        lazy={false}
-        title="Grandpa Fish and the Radio"
-        id="6rvW9OSAe9"
-        baseUrl={sampleUrl}
-    />
-));
+storiesOf("BookCard", module).add("simple", () => {
+    const book = {
+        title: "Grandpa Fish and the Radio",
+        objectId: "6rvW9OSAe9",
+        baseUrl: sampleUrl,
+        languages: []
+    };
+
+    return <BookCard lazy={false} onBasicBookInfo={book} />;
+});
 storiesOf("BookGroup", module)
     .add("Featured", () => (
         <BookGroup

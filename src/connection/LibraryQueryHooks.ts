@@ -125,6 +125,7 @@ export interface IAxiosAnswer extends IReturns<any> {}
 // score available. For this to work, params must also specify keys.
 export function useBookQuery(
     params: {}, // this is the order, which fields, limits, etc.
+
     filter: IFilter // this is *which* records to return
 ): IAxiosAnswer {
     const { tags } = useContext(CachedTablesContext);
@@ -145,17 +146,29 @@ export function useBookQuery(
         }
     });
 }
+
+// Note that we also have a full-fledge "book" class, so why aren't we just using that?
+// The is because Book class is basically everything we might want to know about a book,
+// and it is used in the BookDetail screen. In contrast, this is just some type wrapping
+// around the raw REST result, used to quickly make book cards.
+export interface IBasicBookInfo {
+    objectId: string;
+    baseUrl: string;
+    title: string;
+    languages: ILanguage[];
+}
+
 export interface ISearchBooksResult {
     waiting: boolean;
     totalMatchingRecords: number;
     errorString: string | null;
-    results: [];
+    books: IBasicBookInfo[];
 }
 interface ISimplifiedAxiosResult {
     waiting: boolean;
     count: number;
     error: Error | null;
-    results: [];
+    books: IBasicBookInfo[];
 }
 
 // the idea is for this to be higher level than useQueryLibrary. Initially
@@ -175,12 +188,20 @@ export function useSearchBooks(
     const simplifiedResultStatus = processAxiosStatus(bookResultsStatus);
     const simplifiedCountStatus = processAxiosStatus(bookCountStatus);
 
+    const typeSafeBookRecords: IBasicBookInfo[] = simplifiedResultStatus.books.map(
+        (rawFromREST: any) => {
+            const b: IBasicBookInfo = { ...rawFromREST };
+            b.languages = rawFromREST.langPointers;
+            return b;
+        }
+    );
+
     return {
         totalMatchingRecords: simplifiedCountStatus.count,
         errorString: simplifiedResultStatus.error
             ? simplifiedResultStatus.error.message
             : null,
-        results: simplifiedResultStatus.results,
+        books: typeSafeBookRecords,
         waiting: simplifiedResultStatus.waiting
     };
 }
@@ -189,12 +210,12 @@ function processAxiosStatus(answer: IAxiosAnswer): ISimplifiedAxiosResult {
     if (answer.error)
         return {
             count: -2,
-            results: [],
+            books: [],
             error: answer.error,
             waiting: false
         };
     return {
-        results:
+        books:
             answer.loading || !answer.response
                 ? []
                 : answer.response["data"]["results"],

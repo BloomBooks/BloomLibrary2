@@ -1,21 +1,17 @@
 import { observable } from "mobx";
 import { updateBook } from "../connection/LibraryUpdates";
-import {
-    ArtifactVisibilitySettings,
-    ArtifactVisibilitySettingsGroup
-} from "./ArtifactVisibilitySettings";
+import { ArtifactVisibilitySettingsGroup } from "./ArtifactVisibilitySettings";
 import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
 import { ILanguage } from "./Language";
 
-export function createBookFromParseServerData(
-    pojo: object,
-    bookId: string
-): Book {
+export function createBookFromParseServerData(pojo: any, bookId: string): Book {
     const b = Object.assign(new Book(), pojo);
     // change to a more transparent name internally, and make an observable object
     b.artifactsToOfferToUsers = ArtifactVisibilitySettingsGroup.createFromParseServerData(
-        (pojo as any).show
+        pojo.show
     );
+
+    b.languages = pojo.langPointers;
     b.finishCreationFromParseServerData(bookId);
     return b;
 }
@@ -26,18 +22,23 @@ export function createBookFromParseServerData(
 export class Book {
     public id: string = "";
     public title: string = "";
-    @observable public summary: string = "";
+
     public license: string = "";
     public baseUrl: string = "";
     public copyright: string = "";
     public credits: string = "";
     public pageCount: string = "";
     public bookOrder: string = "";
-    @observable public tags: string[] = [];
+
     public features: string[] = [];
     public harvesterLog: string = "";
     public harvestState: string = "";
+
+    // things that can be edited on the site are observable so that the rest of the UI will update if they are changed.
+    @observable public summary: string = "";
+    @observable public tags: string[] = [];
     @observable public level: string = "";
+    public librarianNote: string = "";
     @observable
     public artifactsToOfferToUsers: ArtifactVisibilitySettingsGroup = new ArtifactVisibilitySettingsGroup();
     public uploader: { username: string } | undefined;
@@ -51,9 +52,7 @@ export class Book {
     // todo: We need to handle limited visibility, i.e. by country
     public ePUBVisible: boolean = false;
 
-    @observable public librarianNote: string = "";
-
-    public langPointers: ILanguage[] = [];
+    public languages: ILanguage[] = [];
 
     // Make various changes to the object we get from parse server to make it more
     // convenient for various BloomLibrary uses.
