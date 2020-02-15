@@ -7,7 +7,10 @@ import { jsx } from "@emotion/core";
 import React, { useEffect, useState } from "react";
 import { BookCard } from "./BookCard";
 import { IFilter } from "../IFilter";
-import { useSearchBooks } from "../connection/LibraryQueryHooks";
+import {
+    useSearchBooks,
+    IBasicBookInfo
+} from "../connection/LibraryQueryHooks";
 import LazyLoad from "react-lazyload";
 import ReactIdSwiper from "react-id-swiper";
 import { MoreCard } from "./MoreCard";
@@ -41,7 +44,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
     const search = useSearchBooks(
         {
             include: "langPointers",
-            keys: "title,baseUrl,objectId",
+            keys: "title,baseUrl,objectId,langPointers",
             // the following is arbitrary. I don't even yet no what the ux is that we want.
             limit: maxCardsToRetrieve,
             order: props.order || "titleOrScore"
@@ -74,16 +77,10 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
 
     const showInOneRow = !props.rows || props.rows < 2;
 
-    const cards = search.results.map((b: any) => (
+    const cards = search.books.map((b: IBasicBookInfo) => (
         // if we're showing in one row, then we'll let swiper handle the laziness, otherwise
         // we tell the card to try and be lazy itself.
-        <BookCard
-            lazy={!showInOneRow}
-            key={b.baseUrl}
-            title={b.title}
-            baseUrl={b.baseUrl}
-            id={b.objectId}
-        />
+        <BookCard lazy={!showInOneRow} key={b.baseUrl} onBasicBookInfo={b} />
     ));
     if (search.totalMatchingRecords > maxCardsToRetrieve) {
         cards.push(
@@ -112,7 +109,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
     );
 
     const zeroBooksMatchedElement =
-        search.results && search.results.length > 0 ? null : (
+        search.books && search.books.length > 0 ? null : (
             // <p>{`No Books for "${
             //     props.title
             // }". Should not see this in production`}</p>
