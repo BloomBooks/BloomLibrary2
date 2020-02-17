@@ -15,7 +15,7 @@ import bloomReaderIcon from "./bloomd.png";
 import readIcon from "../read.svg";
 import translationIcon from "../translation.svg";
 import { ArtifactType } from "../ArtifactHelper";
-import { bloomRed } from "../../../theme";
+import { commonUI } from "../../../theme";
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -33,7 +33,7 @@ const useStyles = makeStyles(() =>
         buttonWithText: {
             color: "white",
             textTransform: "none", // prevent all caps
-            backgroundColor: bloomRed
+            backgroundColor: commonUI.colors.bloomRed
         },
         buttonWithIconOnly: {
             "& img": { height: 43 } // makes it the same as a button with text

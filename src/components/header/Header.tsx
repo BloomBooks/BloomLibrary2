@@ -8,7 +8,7 @@ import React from "react";
 import logo from "./header-logo.svg";
 import { SearchBox } from "../SearchBox";
 import { UserMenu } from "../User/UserMenu";
-import { bloomRed } from "../../theme";
+import { commonUI } from "../../theme";
 import Link from "@material-ui/core/Link/Link";
 
 export const Header: React.FunctionComponent<{}> = props => {
@@ -17,7 +17,7 @@ export const Header: React.FunctionComponent<{}> = props => {
         <div
             css={css`
                 display: flex;
-                background-color: ${bloomRed};
+                background-color: ${commonUI.colors.bloomRed};
                 height: ${toolbarHeight};
                 flex-shrink: 0;
                 padding: 10px;

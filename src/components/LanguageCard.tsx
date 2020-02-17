@@ -8,6 +8,7 @@ import React, { useContext } from "react";
 import { CheapCard } from "./CheapCard";
 import { RouterContext } from "../Router";
 import { ILanguage } from "../model/Language";
+import { commonUI } from "../theme";
 
 export const LanguageCard: React.FunctionComponent<ILanguage> = props => {
     const router = useContext(RouterContext);
@@ -34,7 +35,7 @@ export const LanguageCard: React.FunctionComponent<ILanguage> = props => {
             css={css`
                 text-align: center;
                 width: 120px;
-                height: 100px;
+                height: ${commonUI.languageCardHeightInPx}px;
                 padding-bottom: 3px;
             `}
             onClick={() => {

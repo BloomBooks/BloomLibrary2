@@ -4,6 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import React from "react";
+import { commonUI } from "../theme";
 
 interface IProps extends React.HTMLProps<HTMLDivElement> {
     onClick?: () => void;
@@ -32,7 +33,7 @@ const cardStyle = css`
     display: flex;
     flex-direction: column;
 
-    margin-bottom: 10px;
+    margin-bottom: ${commonUI.cheapCardMarginBottomInPx}px;
     height: 170px;
     margin-right: 5px;
     background-color: white;
@@ -48,4 +49,8 @@ const cardStyle = css`
     /* for on dark background*/
     //border: solid white;
     box-sizing: border-box;
+
+    /* Allows the top and left shadow of cards to appear correctly. */
+    top: 1px;
+    left: 1px;
 `;

@@ -6,11 +6,13 @@ import { jsx } from "@emotion/core";
 
 import React, { useContext } from "react";
 import { LanguageCard } from "./LanguageCard";
-import Downshift from "downshift";
+import Downshift, { GetItemPropsOptions } from "downshift";
 import matchSorter from "match-sorter";
 import searchIcon from "../search.png";
 import { CachedTablesContext } from "../App";
 import Swiper from "react-id-swiper";
+import { ILanguage } from "../model/Language";
+import { commonUI } from "../theme";
 
 export const LanguageGroup: React.FunctionComponent = () => {
     const { languages } = useContext(CachedTablesContext);
@@ -22,6 +24,48 @@ export const LanguageGroup: React.FunctionComponent = () => {
         },
         spaceBetween: 20,
         slidesPerView: "auto"
+    };
+    const getFilteredLanguages = (filter: string | null): ILanguage[] => {
+        return matchSorter(languages, filter || "", {
+            keys: ["englishName", "name", "isoCode"]
+        });
+    };
+    const getFilterLanguagesUI = (
+        filter: string | null,
+        getItemProps: (options: GetItemPropsOptions<any>) => {}
+    ) => {
+        const filteredLanguages = getFilteredLanguages(filter);
+        if (filteredLanguages.length) {
+            return (
+                <Swiper {...swiperConfig}>
+                    {/* MatchSorter is an npm module that does smart autocomplete over a list of values. */
+                    filteredLanguages.map((l: any, index: number) => (
+                        // TODO: to complete the accessibility, we need to pass the Downshift getLabelProps into LanguageCard
+                        // and apply it to the actual label.
+                        <LanguageCard
+                            {...getItemProps({ item: l })}
+                            key={index}
+                            name={l.name}
+                            englishName={l.englishName}
+                            usageCount={l.usageCount}
+                            isoCode={l.isoCode}
+                        />
+                    ))}
+                </Swiper>
+            );
+        } else {
+            return (
+                <div
+                    css={css`
+                        height: ${commonUI.languageCardHeightInPx +
+                            commonUI.cheapCardMarginBottomInPx -
+                            10}px; // 10 matches the padding-top
+                        padding-top: 10px;
+                        font-size: 0.8rem;
+                    `}
+                >{`We could not find any book with languages matching '${filter}'`}</div>
+            );
+        }
     };
     return (
         <li
@@ -77,29 +121,10 @@ export const LanguageGroup: React.FunctionComponent = () => {
 
                                 <div>{`${languages.length} Languages`}</div>
                             </div>
-                            <Swiper {...swiperConfig}>
-                                {/* MatchSorter is an npm module that does smart autocomplete over a list of values. */}
-                                {/* Enhance: it can handle some misspellings, but not other obvious ones (e.g. enlish) */}
-                                {// enhance: be able to type, e.g., "Bengali" and get the card for বাংলা
-                                matchSorter(
-                                    languages,
-                                    currentInputBoxText || "",
-                                    {
-                                        keys: ["englishName", "name", "isoCode"]
-                                    }
-                                ).map((l: any, index: number) => (
-                                    // TODO: to complete the accessibility, we need to pass the Downshift getLabelProps into LanguageCard
-                                    // and apply it to the actual label.
-                                    <LanguageCard
-                                        {...getItemProps({ item: l })}
-                                        key={index}
-                                        name={l.name}
-                                        englishName={l.englishName}
-                                        usageCount={l.usageCount}
-                                        isoCode={l.isoCode}
-                                    />
-                                ))}
-                            </Swiper>
+                            {getFilterLanguagesUI(
+                                currentInputBoxText,
+                                getItemProps
+                            )}
                         </div>
                     )}
                 </Downshift>
