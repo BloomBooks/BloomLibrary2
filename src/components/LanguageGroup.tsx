@@ -37,9 +37,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                 We give it a function that returns a react element that contains the
                 list of matching cards, and it calls
                 that function on every keystroke. */
-                <Downshift
-                    itemToString={language => (language ? language.name : "")}
-                >
+                <Downshift>
                     {({
                         getInputProps,
                         getItemProps,
@@ -67,6 +65,12 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                             border: 0;
                                         `}
                                         {...getInputProps()} // presumably this connects keyboard events back to downshift
+                                        onBlur={() => {
+                                            // Overridden.
+                                            // Otherwise, the filtered list of cards reverts
+                                            // to unfiltered BEFORE the click event, with the result
+                                            // that the wrong card is selected.
+                                        }}
                                     />
                                     <img src={searchIcon} alt="Search" />
                                 </div>
