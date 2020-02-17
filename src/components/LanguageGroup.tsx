@@ -81,7 +81,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                     languages,
                                     currentInputBoxText || "",
                                     {
-                                        keys: ["name", "isoCode"]
+                                        keys: ["englishName", "name", "isoCode"]
                                     }
                                 ).map((l: any, index: number) => (
                                     // TODO: to complete the accessibility, we need to pass the Downshift getLabelProps into LanguageCard
