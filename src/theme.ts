@@ -1,13 +1,21 @@
 import { createMuiTheme } from "@material-ui/core";
-export const bloomRed = "#D65649";
-const bloomBlue = "#1d94a4";
-const kDialogTopBottomGray = "#F1F3F4";
+
+export const commonUI = {
+    colors: {
+        bloomRed: "#D65649",
+        bloomBlue: "#1d94a4",
+        dialogTopBottomGray: "#F1F3F4"
+    },
+
+    languageCardHeightInPx: 100,
+    cheapCardMarginBottomInPx: 10
+};
 
 // lots of examples: https://github.com/search?q=createMuiTheme&type=Code
 const theme = createMuiTheme({
     palette: {
-        primary: { main: bloomRed },
-        secondary: { main: bloomBlue },
+        primary: { main: commonUI.colors.bloomRed },
+        secondary: { main: commonUI.colors.bloomBlue },
         warning: { main: "#F3AA18" }
     },
     // typography: {
@@ -32,13 +40,13 @@ const theme = createMuiTheme({
         // },
         MuiDialogTitle: {
             root: {
-                backgroundColor: kDialogTopBottomGray,
+                backgroundColor: commonUI.colors.dialogTopBottomGray,
                 "& h6": { fontWeight: "bold" }
             }
         },
         MuiDialogActions: {
             root: {
-                backgroundColor: kDialogTopBottomGray
+                backgroundColor: commonUI.colors.dialogTopBottomGray
             }
         }
         // MuiTypography: {
