@@ -11,6 +11,7 @@ import { RouterContext } from "../../Router";
 
 interface IProps {
     id: string;
+    fullWidth?: boolean;
 }
 export const ReadButton: React.FunctionComponent<IProps> = props => {
     const router = useContext(RouterContext);
@@ -30,7 +31,7 @@ export const ReadButton: React.FunctionComponent<IProps> = props => {
             }
             size="large"
             css={css`
-                width: 250px;
+                width: ${props.fullWidth ? "100%" : "250px"};
                 height: 80px;
                 margin-bottom: 10px !important;
                 float: right;

@@ -307,8 +307,7 @@ export function splitString(
             )
                 // I'm not sure this cleanup matters to the mongo search engine, but
                 // it makes results more natural and predictable for testing
-                .replace("  ", " ") // easier than trying to adjust endpoints to get exactly one space
-                .replace("  ", " ") // we might easily start with three
+                .replace(/\s+/, " ") // easier than trying to adjust endpoints to get exactly one space
                 .trim(); // in case we removed from start or end
             break;
         }

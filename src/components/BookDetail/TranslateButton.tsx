@@ -12,6 +12,7 @@ import { Book } from "../../model/Book";
 
 export const TranslateButton: React.FunctionComponent<{
     book: Book;
+    fullWidth?: boolean;
 }> = props => {
     return (
         <Button
@@ -20,10 +21,10 @@ export const TranslateButton: React.FunctionComponent<{
             size="large"
             css={css`
                 margin-top: 16px !important;
-                width: 250px;
+                width: ${props.fullWidth ? "100%" : "250px"};
                 height: 80px;
                 display: block;
-                padding-top: 3px; /* shift it all up*/
+                padding-top: 0px; /* shift it all up*/
                 float: right;
             `}
             startIcon={
@@ -35,7 +36,7 @@ export const TranslateButton: React.FunctionComponent<{
             <div
                 css={css`
                     display: block;
-                    padding-top: 10px;
+                    padding-top: 5px;
                 `}
             >
                 <p
@@ -55,6 +56,7 @@ export const TranslateButton: React.FunctionComponent<{
                         font-size: 9pt;
                         line-height: 1.1;
                         text-transform: initial;
+                        margin-top: 2px;
                     `}
                 >
                     Download into Bloom Editor

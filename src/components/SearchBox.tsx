@@ -7,7 +7,12 @@ import { jsx } from "@emotion/core";
 import React, { useContext, useState } from "react";
 import searchIcon from "../search.png";
 import { RouterContext } from "../Router";
-export const SearchBox: React.FunctionComponent<{}> = props => {
+export const SearchBox: React.FunctionComponent<{
+    // Extra CSS props to apply to the root div. (A bit of a kludge; there's no clean way
+    // to be able to use Emotion css both in the implementation of the component and
+    // where it is invoked.)
+    cssExtra?: string;
+}> = props => {
     const router = useContext(RouterContext);
     const [search, setSearch] = useState(
         router!.current.filter ? router!.current.filter.search : ""
@@ -25,6 +30,7 @@ export const SearchBox: React.FunctionComponent<{}> = props => {
                 background-color: white;
                 overflow: hidden;
                 padding-left: 5px;
+                ${props.cssExtra || ""}
             `}
         >
             <input

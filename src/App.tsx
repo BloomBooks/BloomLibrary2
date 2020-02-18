@@ -17,6 +17,24 @@ export const CachedTablesContext = React.createContext<{
     languages: []
 });
 
+const bloomDesktopAvailable =
+    navigator.appVersion.indexOf("Win") >= 0 ||
+    navigator.appVersion.indexOf("Linux") >= 0;
+const bloomReaderAvailable = navigator.appVersion.indexOf("Android") >= 0;
+
+// This context allows anyone interested to find out whether the OS on which the
+// user is running has support for bloom desktop (e.g., to hide a download/translate
+// button) and whether it has bloomReader support (and so downloading for that should
+// be prominent).
+export const OSFeaturesContext = React.createContext<{
+    bloomDesktopAvailable: boolean;
+    bloomReaderAvailable: boolean;
+}>({
+    bloomDesktopAvailable,
+    bloomReaderAvailable
+    //navigator.appVersion.indexOf("Android") >=0;
+});
+
 export const App: React.FunctionComponent<{}> = props => {
     const tags = useGetTagList();
 
@@ -41,7 +59,14 @@ export const App: React.FunctionComponent<{}> = props => {
             <div className="App">
                 <ThemeProvider theme={theme}>
                     <CachedTablesContext.Provider value={{ tags, languages }}>
-                        <BrowseView />
+                        <OSFeaturesContext.Provider
+                            value={{
+                                bloomDesktopAvailable,
+                                bloomReaderAvailable
+                            }}
+                        >
+                            <BrowseView />
+                        </OSFeaturesContext.Provider>
                     </CachedTablesContext.Provider>
                 </ThemeProvider>
             </div>

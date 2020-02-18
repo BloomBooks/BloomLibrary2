@@ -14,11 +14,16 @@ import { Link } from "@material-ui/core";
 
 export const MetadataGroup: React.FunctionComponent<{
     book: Book;
+    breakToColumn: string;
 }> = observer(props => (
     <div
         id={"details"}
         css={css`
             display: flex;
+            max-width: calc(100vw - 2em);
+            @media (max-width: ${props.breakToColumn}) {
+                flex-direction: column-reverse;
+            }
         `}
     >
         <div
@@ -55,10 +60,16 @@ export const MetadataGroup: React.FunctionComponent<{
         </div>
         <div
             id="column2"
+            // This would be more concise using min-width. But we use max-width above.
+            // If we mix the two, there is one pixel of width where they aren't consistent.
             css={css`
                 min-width: 300px;
                 float: right;
                 margin-left: 40px;
+                @media (max-width: ${props.breakToColumn}) {
+                    float: inherit;
+                    margin-left: 0;
+                }
             `}
         >
             <div>
