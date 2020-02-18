@@ -7,8 +7,12 @@ export const commonUI = {
         dialogTopBottomGray: "#F1F3F4"
     },
 
+    // Some of these aren't very global, but this is a convenient place to put
+    // constants shared by various components to keep them consistent
     languageCardHeightInPx: 100,
-    cheapCardMarginBottomInPx: 10
+    cheapCardMarginBottomInPx: 10,
+    detailViewMargin: "1em",
+    detailViewMainButtonWidth: "250px"
 };
 
 // lots of examples: https://github.com/search?q=createMuiTheme&type=Code

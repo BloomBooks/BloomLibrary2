@@ -10,9 +10,13 @@ import { SearchBox } from "../SearchBox";
 import { UserMenu } from "../User/UserMenu";
 import { commonUI } from "../../theme";
 import Link from "@material-ui/core/Link/Link";
+import { useMediaQuery } from "@material-ui/core";
 
-export const Header: React.FunctionComponent = () => {
-    const toolbarHeight = "48px";
+export const Header: React.FunctionComponent = props => {
+    const searchBelow = !useMediaQuery("(min-width:500px)");
+    const normalToobarHeight = "48px";
+    const toolbarHeight = searchBelow ? "90px" : normalToobarHeight;
+
     return (
         <div
             css={css`
@@ -24,27 +28,49 @@ export const Header: React.FunctionComponent = () => {
                 padding-left: 20px;
                 box-sizing: content-box;
                 justify-content: space-between;
+                flex-direction: ${searchBelow ? "column" : "row"};
             `}
         >
-            <Link href="/" title="Home">
-                <img src={logo} alt={"Bloom Logo"} />
-            </Link>
-            <div
-                css={css`
-                    display: flex;
-                `}
-            >
-                <SearchBox />
-                {/* The margin-left:auto here allows the containing flex-box to insert any spare space
+            {searchBelow || (
+                <React.Fragment>
+                    <Link href="/" title="Home">
+                        <img src={logo} alt={"Bloom Logo"} />
+                    </Link>
+                    <div
+                        css={css`
+                            display: flex;
+                            margin-left: auto;
+                        `}
+                    >
+                        <SearchBox />
+                        {/* The margin-left:auto here allows the containing flex-box to insert any spare space
             into this element's margin-left, typically putting a large gap there and making
             it the left-most of the block of controls at the right of the header.*/}
-                <UserMenu
-                    buttonHeight={toolbarHeight}
-                    css={css`
-                        margin-left: auto;
-                    `}
-                />
-            </div>
+                        <UserMenu buttonHeight={normalToobarHeight} />
+                    </div>
+                </React.Fragment>
+            )}
+            {searchBelow && (
+                <React.Fragment>
+                    <div
+                        css={css`
+                            display: flex;
+                        `}
+                    >
+                        <Link href="/" title="Home">
+                            <img src={logo} alt={"Bloom Logo"} />
+                        </Link>
+                        <UserMenu
+                            buttonHeight={normalToobarHeight}
+                            css={css`
+                                margin-left: auto;
+                            `}
+                        />
+                    </div>
+
+                    <SearchBox cssExtra="margin-left: auto; margin-right:5px;" />
+                </React.Fragment>
+            )}
         </div>
     );
 };
