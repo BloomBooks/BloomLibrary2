@@ -15,7 +15,8 @@ export const ReportButton: React.FunctionComponent<{
     <Button
         color="secondary"
         css={css`
-            padding-left: 0;
+            padding-left: 0 !important;
+            justify-content: left !important;
         `}
         onClick={() => alert("not implemented yet")}
     >

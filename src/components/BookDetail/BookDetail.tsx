@@ -4,11 +4,13 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useGetBookDetail } from "../../connection/LibraryQueryHooks";
 import { Book } from "../../model/Book";
 import WarningIcon from "@material-ui/icons/Warning";
-import { IconButton, Divider } from "@material-ui/core";
+import PrintIcon from "@material-ui/icons/Print";
+import TranslationIcon from "./translation.svg";
+import { IconButton, Divider, Link } from "@material-ui/core";
 import { Alert } from "../Alert";
 
 import { observer } from "mobx-react";
@@ -17,6 +19,8 @@ import { MetadataGroup } from "./MetadataGroup";
 import { ArtifactGroup } from "./ArtifactGroup";
 import { BookDetailHeaderGroup } from "./BookDetailHeaderGroup";
 import { ReportButton } from "./ReportButton";
+import { OSFeaturesContext } from "../../components/OSFeaturesContext";
+import { commonUI } from "../../theme";
 
 interface IProps {
     id: string;
@@ -39,6 +43,9 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
 export const BookDetailInternal: React.FunctionComponent<{
     book: Book;
 }> = observer(props => {
+    const { bloomDesktopAvailable, bloomReaderAvailable } = useContext(
+        OSFeaturesContext
+    );
     const showHarvesterWarning =
         props.book.harvesterLog.indexOf("Warning") >= 0;
     const divider = (
@@ -52,23 +59,32 @@ export const BookDetailInternal: React.FunctionComponent<{
         />
     );
     const [alertText, setAlertText] = useState<string | null>(null);
+    const breakToColumn = "540px";
+
     return (
         <div
+            // had width:800px, but that destroys responsiveness
             css={css`
-                width: 800px;
                 margin-left: auto;
                 margin-right: auto;
                 label: BookDetail;
+                max-width: 800px;
             `}
         >
             <div
                 css={css`
-                    margin: 1em;
+                    margin: ${commonUI.detailViewMargin};
                 `}
             >
-                <BookDetailHeaderGroup book={props.book} />
+                <BookDetailHeaderGroup
+                    book={props.book}
+                    breakToColumn={breakToColumn}
+                />
                 {divider}
-                <MetadataGroup book={props.book} />
+                <MetadataGroup
+                    book={props.book}
+                    breakToColumn={breakToColumn}
+                />
                 {divider}
                 <div
                     css={css`
@@ -76,8 +92,87 @@ export const BookDetailInternal: React.FunctionComponent<{
                         justify-content: space-between;
                     `}
                 >
-                    <ReportButton book={props.book} />
-                    <ArtifactGroup book={props.book} />
+                    <div
+                        css={css`
+                            display: flex;
+                            width: 100%;
+                            justify-content: space-between;
+                            flex-wrap: wrap;
+                            align-items: center;
+                            @media (max-width: ${breakToColumn}) {
+                                flex-direction: column-reverse;
+                                align-items: flex-start;
+                            }
+                        `}
+                    >
+                        <ReportButton
+                            book={props.book}
+                            css={css`
+                                margin-right: auto;
+                                justify-content: left;
+                            `}
+                        />
+
+                        <Link
+                            color="secondary"
+                            target="_blank"
+                            rel="noopener noreferrer" // copied from LicenseLink
+                            href="https://bloomlibrary.org/HowToMakePrintVersions.htm"
+                            css={css`
+                                flex-shrink: 1;
+                                margin-right: 10px !important;
+                            `}
+                        >
+                            <div
+                                css={css`display:flex; align:items:center; margin-top:5px;`}
+                            >
+                                <PrintIcon
+                                    css={css`
+                                        margin-right: 20px;
+                                    `}
+                                />
+                                <div
+                                    css={css`
+                                        margin-top: 2px;
+                                    `}
+                                >
+                                    How to Make Print Versions
+                                </div>
+                            </div>
+                        </Link>
+                        {bloomDesktopAvailable || (
+                            <Link
+                                color="secondary"
+                                target="_blank"
+                                rel="noopener noreferrer" // copied from LicenseLink
+                                href="https://bloomlibrary.org/HowToTranslate.htm"
+                                css={css`
+                                    flex-shrink: 1;
+                                    margin-right: 10px !important;
+                                `}
+                            >
+                                <div
+                                    css={css`display:flex; align:items:center`}
+                                >
+                                    <img
+                                        alt="Download Translation Icon"
+                                        src={TranslationIcon}
+                                        css={css`
+                                            margin-right: 9px;
+                                        `}
+                                    />
+                                    <div
+                                        css={css`
+                                            margin-top: 10px;
+                                        `}
+                                    >
+                                        How to translate
+                                    </div>
+                                </div>
+                            </Link>
+                        )}
+                        <ArtifactGroup book={props.book} />
+                    </div>
                 </div>
 
                 {showHarvesterWarning && (

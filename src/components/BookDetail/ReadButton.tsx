@@ -8,9 +8,11 @@ import React, { useContext } from "react";
 import Button from "@material-ui/core/Button";
 import ReadIcon from "./read.svg";
 import { RouterContext } from "../../Router";
+import { commonUI } from "../../theme";
 
 interface IProps {
     id: string;
+    fullWidth?: boolean;
 }
 export const ReadButton: React.FunctionComponent<IProps> = props => {
     const router = useContext(RouterContext);
@@ -30,8 +32,10 @@ export const ReadButton: React.FunctionComponent<IProps> = props => {
             }
             size="large"
             css={css`
-                width: 250px;
-                height: 80px;
+                width: ${props.fullWidth
+                    ? "100%"
+                    : commonUI.detailViewMainButtonWidth};
+                height: ${commonUI.detailViewMainButtonHeight};
                 margin-bottom: 10px !important;
                 float: right;
             `}
