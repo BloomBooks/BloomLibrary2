@@ -35,7 +35,12 @@ const HtmlTooltip = withStyles((theme: Theme) => ({
     }
 }))(Tooltip);
 
-export const SearchBox: React.FunctionComponent = () => {
+export const SearchBox: React.FunctionComponent<{
+    // Extra CSS props to apply to the root div. (A bit of a kludge; there's no clean way
+    // to be able to use Emotion css both in the implementation of the component and
+    // where it is invoked.)
+    cssExtra?: string;
+}> = props => {
     const router = useContext(RouterContext);
     const startSearch = router!.current.filter?.search
         ? router!.current.filter.search
@@ -124,6 +129,8 @@ export const SearchBox: React.FunctionComponent = () => {
                 border-radius: 5px;
                 background-color: white;
                 overflow: hidden;
+                padding-left: 5px;
+                ${props.cssExtra || ""}
             `}
             onKeyPress={handleEnter}
         >

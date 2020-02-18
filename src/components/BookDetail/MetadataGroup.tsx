@@ -11,14 +11,23 @@ import { LicenseLink } from "./LicenseLink";
 //NB: v3.0 of title-case has a new API, but don't upgrade: it doesn't actually work like v2.x does, where it can take fooBar and give us "Foo Bar"
 import titleCase from "title-case";
 import { Link } from "@material-ui/core";
+import { commonUI } from "../../theme";
 
 export const MetadataGroup: React.FunctionComponent<{
     book: Book;
+    breakToColumn: string;
 }> = observer(props => (
     <div
         id={"details"}
         css={css`
             display: flex;
+            max-width: calc(
+                100vw - ${commonUI.detailViewMargin} -
+                    ${commonUI.detailViewMargin}
+            );
+            @media (max-width: ${props.breakToColumn}) {
+                flex-direction: column-reverse;
+            }
         `}
     >
         <div
@@ -55,10 +64,16 @@ export const MetadataGroup: React.FunctionComponent<{
         </div>
         <div
             id="column2"
+            // This would be more concise using min-width. But we use max-width above.
+            // If we mix the two, there is one pixel of width where they aren't consistent.
             css={css`
                 min-width: 300px;
                 float: right;
                 margin-left: 40px;
+                @media (max-width: ${props.breakToColumn}) {
+                    float: inherit;
+                    margin-left: 0;
+                }
             `}
         >
             <div>

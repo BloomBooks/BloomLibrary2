@@ -8,6 +8,11 @@ import {
     useGetCleanedAndOrderedLanguageList
 } from "./connection/LibraryQueryHooks";
 import { ILanguage } from "./model/Language";
+import {
+    OSFeaturesContext,
+    bloomDesktopAvailable,
+    bloomReaderAvailable
+} from "./components/OSFeaturesContext";
 
 export const CachedTablesContext = React.createContext<{
     tags: string[];
@@ -41,7 +46,14 @@ export const App: React.FunctionComponent<{}> = props => {
             <div className="App">
                 <ThemeProvider theme={theme}>
                     <CachedTablesContext.Provider value={{ tags, languages }}>
-                        <BrowseView />
+                        <OSFeaturesContext.Provider
+                            value={{
+                                bloomDesktopAvailable,
+                                bloomReaderAvailable
+                            }}
+                        >
+                            <BrowseView />
+                        </OSFeaturesContext.Provider>
                     </CachedTablesContext.Provider>
                 </ThemeProvider>
             </div>
