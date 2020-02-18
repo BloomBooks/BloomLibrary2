@@ -57,6 +57,7 @@ export const LanguageCard: React.FunctionComponent<ILanguage> = props => {
             </h2>
             <div
                 css={css`
+                    font-size: 0.9rem;
                     margin-bottom: 15px;
                 `}
             >

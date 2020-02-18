@@ -26,6 +26,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
         slidesPerView: "auto"
     };
     const getFilteredLanguages = (filter: string | null): ILanguage[] => {
+        // MatchSorter is an npm module that does smart autocomplete over a list of values.
         return matchSorter(languages, filter || "", {
             keys: ["englishName", "name", "isoCode"]
         });
@@ -38,8 +39,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
         if (filteredLanguages.length) {
             return (
                 <Swiper {...swiperConfig}>
-                    {/* MatchSorter is an npm module that does smart autocomplete over a list of values. */
-                    filteredLanguages.map((l: any, index: number) => (
+                    {filteredLanguages.map((l: any, index: number) => (
                         // TODO: to complete the accessibility, we need to pass the Downshift getLabelProps into LanguageCard
                         // and apply it to the actual label.
                         <LanguageCard

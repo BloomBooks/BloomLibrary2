@@ -53,4 +53,6 @@ const cardStyle = css`
     /* Allows the top and left shadow of cards to appear correctly. */
     top: 1px;
     left: 1px;
+
+    overflow: hidden;
 `;
