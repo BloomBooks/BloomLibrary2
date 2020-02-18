@@ -11,7 +11,7 @@ import { UserMenu } from "../User/UserMenu";
 import { commonUI } from "../../theme";
 import Link from "@material-ui/core/Link/Link";
 
-export const Header: React.FunctionComponent<{}> = props => {
+export const Header: React.FunctionComponent = () => {
     const toolbarHeight = "48px";
     return (
         <div
