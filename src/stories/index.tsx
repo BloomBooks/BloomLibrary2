@@ -1,6 +1,6 @@
 import React from "react";
 
-import { storiesOf } from "@storybook/react";
+import { storiesOf, addDecorator } from "@storybook/react";
 
 import { BookCard } from "../components/BookCard";
 import { BookGroup } from "../components/BookGroup";
@@ -8,13 +8,13 @@ import { LanguageGroup } from "../components/LanguageGroup";
 import { LanguagePage, BookGroupForEachTopic } from "../components/Pages";
 import { HomePage } from "../components/HomePage";
 import { BookshelfGroup } from "../components/BookShelfGroup";
+import { SearchBox } from "../components/SearchBox";
 import "../index.css";
 import { StandAloneHarvesterArtifactUserControl } from "../components/BookDetail/ArtifactVisibilityPanel/ArtifactVisibilityPanel";
 import { ArtifactAndChoice } from "../components/BookDetail/ArtifactVisibilityPanel/ArtifactAndChoice";
 import { ArtifactVisibilitySettings } from "../model/ArtifactVisibilitySettings";
 import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
 import { Router, RouterContext } from "../Router";
-import { addDecorator } from "@storybook/react";
 import { BookDetail } from "../components/BookDetail/BookDetail";
 import { ThemeProvider } from "@material-ui/styles";
 import theme from "../theme";
@@ -116,6 +116,20 @@ storiesOf("Pages", module)
     .add("Thai Book Page", () => (
         <LanguagePage title="some title" filter={{ language: "th" }} />
     ));
+
+storiesOf("Components", module).add("SearchBox", () => {
+    const bloomRed: string = theme.palette.primary.main;
+    return (
+        <div
+            style={{
+                height: "48px",
+                backgroundColor: bloomRed
+            }}
+        >
+            <SearchBox />
+        </div>
+    );
+});
 
 const triStateBooleanOptions = [undefined, false, true];
 let i = 0;
