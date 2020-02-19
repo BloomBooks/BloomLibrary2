@@ -35,7 +35,9 @@ export const ReadBookPage: React.FunctionComponent<{ id: string }> = props => {
             ? "dev.bloomlibrary.org"
             : window.location.hostname);
 
-    const bloomPlayerUrl = bloomPlayerHost + "/bloom-player/bloomplayer.htm";
+    // use the bloomplayer.htm we copy into our public/ folder, where CRA serves from
+    const bloomPlayerUrl = "bloom-player/bloomplayer.htm";
+
     const iframeSrc = `${bloomPlayerUrl}?url=${url}&showBackButton=true`;
     //console.log("iframe src = " + iframeSrc);
 
