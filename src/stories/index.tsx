@@ -47,7 +47,22 @@ storiesOf("BookCard", module).add("simple", () => {
         title: "Grandpa Fish and the Radio",
         objectId: "6rvW9OSAe9",
         baseUrl: sampleUrl,
-        languages: []
+        languages: [
+            { name: "English", englishName: "English", isoCode: "en" },
+            { name: "Francais", englishName: "French", isoCode: "fr" },
+            { name: "Deutsch", englishName: "German", isoCode: "de" }
+        ],
+        tags: ["level:2"],
+        features: [
+            "motion",
+            "talkingBook",
+            "talkingBook:en",
+            "talkingBook:fr",
+            "blind",
+            "blind:en",
+            "activity",
+            "comic"
+        ]
     };
 
     return <BookCard lazy={false} onBasicBookInfo={book} />;
