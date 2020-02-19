@@ -10,7 +10,6 @@ import Box from "@material-ui/core/Box";
 import Divider from "@material-ui/core/Divider";
 import { ArtifactAndChoice } from "./ArtifactAndChoice";
 import { useGetBookDetail } from "../../../connection/LibraryQueryHooks";
-import { ArtifactVisibilitySettings } from "../../../model/ArtifactVisibilitySettings";
 import {
     ArtifactType,
     getArtifactUrl,
@@ -155,13 +154,13 @@ export function connectHarvestArtifactUserControl(
 
 // This is what we use if the show column is not populated in parse.
 // Before we started populating the show column, we only and always
-// harvested epub, bloomReader, and readOnline.
-function getDefaultArtifactVisibilitySettings() {
-    return {
-        pdf: undefined,
-        epub: new ArtifactVisibilitySettings(),
-        bloomReader: new ArtifactVisibilitySettings(),
-        readOnline: new ArtifactVisibilitySettings(),
-        shellbook: new ArtifactVisibilitySettings()
-    };
-}
+// harvested epub, bloomReader, and readOnline. (Not currently used.)
+// function getDefaultArtifactVisibilitySettings() {
+//     return {
+//         pdf: undefined,
+//         epub: new ArtifactVisibilitySettings(),
+//         bloomReader: new ArtifactVisibilitySettings(),
+//         readOnline: new ArtifactVisibilitySettings(),
+//         shellbook: new ArtifactVisibilitySettings()
+//     };
+// }

@@ -43,6 +43,7 @@ export const BookDetail: React.FunctionComponent<IProps> = props => {
 export const BookDetailInternal: React.FunctionComponent<{
     book: Book;
 }> = observer(props => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { bloomDesktopAvailable, bloomReaderAvailable } = useContext(
         OSFeaturesContext
     );

@@ -4,10 +4,9 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useContext } from "react";
+import React from "react";
 import Button from "@material-ui/core/Button";
 import BloomPubIcon from "./BloomPubWhite.svg";
-import { RouterContext } from "../../Router";
 import { commonUI } from "../../theme";
 
 interface IProps {
@@ -15,7 +14,6 @@ interface IProps {
     fullWidth?: boolean;
 }
 export const ReadOfflineButton: React.FunctionComponent<IProps> = props => {
-    const router = useContext(RouterContext);
     return (
         <Button
             variant="contained"

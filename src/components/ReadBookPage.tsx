@@ -29,12 +29,6 @@ export const ReadBookPage: React.FunctionComponent<{ id: string }> = props => {
     const book = useGetBookDetail(props.id);
     const url = book ? getUrlOfHtmlOfDigitalVersion(book) : "working";
 
-    const bloomPlayerHost =
-        "https://" +
-        (window.location.hostname.indexOf("localhost") > -1
-            ? "dev.bloomlibrary.org"
-            : window.location.hostname);
-
     // use the bloomplayer.htm we copy into our public/ folder, where CRA serves from
     const bloomPlayerUrl = "bloom-player/bloomplayer.htm";
 
