@@ -10,7 +10,7 @@ import { RouterContext, Router } from "../Router";
 import { ILanguage, getLanguageNames } from "../model/Language";
 import { commonUI } from "../theme";
 
-export const routeToLanguage = (language: ILanguage, router: Router) => {
+export function routeToLanguage(language: ILanguage, router: Router) {
     const { displayName } = getLanguageNames(language);
 
     router.push({
@@ -18,7 +18,7 @@ export const routeToLanguage = (language: ILanguage, router: Router) => {
         pageType: "language",
         filter: { language: language.isoCode }
     });
-};
+}
 
 export const LanguageCard: React.FunctionComponent<ILanguage> = props => {
     const router = useContext(RouterContext);
