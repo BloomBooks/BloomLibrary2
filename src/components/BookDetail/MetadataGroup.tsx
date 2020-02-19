@@ -36,6 +36,7 @@ export const MetadataGroup: React.FunctionComponent<{
                 flex-grow: 1;
             `}
         >
+            {props.book.level && <div>{`Level ${props.book.level}`}</div>}
             <div>{`${props.book.pageCount} Pages`}</div>
             <div>{props.book.copyright}</div>
             <div>

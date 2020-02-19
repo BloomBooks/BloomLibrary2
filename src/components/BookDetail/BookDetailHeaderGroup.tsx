@@ -124,7 +124,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                     </p> */}
                         <ul>
                             {props.book.languages.map((l: ILanguage) => (
-                                <li>
+                                <li key={l.isoCode}>
                                     <LanguageLink language={l} />
                                 </li>
                             ))}
