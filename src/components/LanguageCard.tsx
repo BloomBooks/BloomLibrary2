@@ -6,20 +6,23 @@ import { jsx } from "@emotion/core";
 
 import React, { useContext } from "react";
 import { CheapCard } from "./CheapCard";
-import { RouterContext } from "../Router";
-import { ILanguage } from "../model/Language";
+import { RouterContext, Router } from "../Router";
+import { ILanguage, getLanguageNames } from "../model/Language";
 import { commonUI } from "../theme";
+
+export const routeToLanguage = (language: ILanguage, router: Router) => {
+    const { displayName } = getLanguageNames(language);
+
+    router.push({
+        title: displayName,
+        pageType: "language",
+        filter: { language: language.isoCode }
+    });
+};
 
 export const LanguageCard: React.FunctionComponent<ILanguage> = props => {
     const router = useContext(RouterContext);
-    let languageName: string;
-    let autonym: string | undefined;
-    if (props.englishName && props.englishName !== props.name) {
-        autonym = props.name;
-        languageName = props.englishName;
-    } else {
-        languageName = props.name;
-    }
+    const { displayName: languageName, autonym } = getLanguageNames(props);
 
     const {
         name,
@@ -39,11 +42,7 @@ export const LanguageCard: React.FunctionComponent<ILanguage> = props => {
                 padding-bottom: 3px;
             `}
             onClick={() => {
-                router!.push({
-                    title: languageName,
-                    pageType: "language",
-                    filter: { language: props.isoCode }
-                });
+                routeToLanguage(props, router!);
             }}
         >
             <h2

@@ -4,8 +4,8 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useContext } from "react";
-import { LanguageCard } from "./LanguageCard";
+import React, { useContext, useState } from "react";
+import { LanguageCard, routeToLanguage } from "./LanguageCard";
 import Downshift, { GetItemPropsOptions } from "downshift";
 import matchSorter from "match-sorter";
 import searchIcon from "../search.png";
@@ -13,9 +13,15 @@ import { CachedTablesContext } from "../App";
 import Swiper from "react-id-swiper";
 import { ILanguage } from "../model/Language";
 import { commonUI } from "../theme";
+import { RouterContext } from "../Router";
 
 export const LanguageGroup: React.FunctionComponent = () => {
+    const router = useContext(RouterContext);
+
+    const [swiper, updateSwiper] = useState<any | null>(null);
     const { languages } = useContext(CachedTablesContext);
+
+    let filteredLanguages: ILanguage[] = [];
 
     const swiperConfig = {
         navigation: {
@@ -35,10 +41,10 @@ export const LanguageGroup: React.FunctionComponent = () => {
         filter: string | null,
         getItemProps: (options: GetItemPropsOptions<any>) => {}
     ) => {
-        const filteredLanguages = getFilteredLanguages(filter);
+        filteredLanguages = getFilteredLanguages(filter);
         if (filteredLanguages.length) {
             return (
-                <Swiper {...swiperConfig}>
+                <Swiper {...swiperConfig} getSwiper={updateSwiper}>
                     {filteredLanguages.map((l: any, index: number) => (
                         // TODO: to complete the accessibility, we need to pass the Downshift getLabelProps into LanguageCard
                         // and apply it to the actual label.
@@ -67,6 +73,14 @@ export const LanguageGroup: React.FunctionComponent = () => {
             );
         }
     };
+
+    const handleKeyPress = (e: React.KeyboardEvent) => {
+        if (e.key === "Enter") {
+            if (filteredLanguages.length) {
+                routeToLanguage(filteredLanguages[0], router!);
+            }
+        }
+    };
     return (
         <li
             css={css`
@@ -79,8 +93,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                 /* Downshift handles telling us when to recompute the list of matching items.
                 It also claims to present it all in a WAI-ARIA compliant accessible way (untested).
                 We give it a function that returns a react element that contains the
-                list of matching cards, and it calls
-                that function on every keystroke. */
+                list of matching cards, and it calls that function on every keystroke. */
                 <Downshift>
                     {({
                         getInputProps,
@@ -108,7 +121,17 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                             display: block;
                                             border: 0;
                                         `}
-                                        {...getInputProps()} // presumably this connects keyboard events back to downshift
+                                        {...getInputProps({
+                                            onChange: () => {
+                                                if (filteredLanguages.length) {
+                                                    // Need to slide back to the beginning.
+                                                    // This prevents a UI issue when user has slid over to the right and the
+                                                    // filtered items would then be off the left side of the screen.
+                                                    swiper.slideTo(0);
+                                                }
+                                            },
+                                            onKeyPress: e => handleKeyPress(e)
+                                        })}
                                         onBlur={() => {
                                             // Overridden.
                                             // Otherwise, the filtered list of cards reverts
