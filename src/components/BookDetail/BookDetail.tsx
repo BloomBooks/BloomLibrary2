@@ -8,7 +8,6 @@ import React, { useState, useContext } from "react";
 import { useGetBookDetail } from "../../connection/LibraryQueryHooks";
 import { Book } from "../../model/Book";
 import WarningIcon from "@material-ui/icons/Warning";
-import PrintIcon from "@material-ui/icons/Print";
 import TranslationIcon from "./translation.svg";
 import { IconButton, Divider, Link } from "@material-ui/core";
 import { Alert } from "../Alert";
@@ -21,6 +20,7 @@ import { BookDetailHeaderGroup } from "./BookDetailHeaderGroup";
 import { ReportButton } from "./ReportButton";
 import { OSFeaturesContext } from "../../components/OSFeaturesContext";
 import { commonUI } from "../../theme";
+import { HowToPrintButton } from "./HowToPrintButton";
 
 interface IProps {
     id: string;
@@ -114,33 +114,7 @@ export const BookDetailInternal: React.FunctionComponent<{
                             `}
                         />
 
-                        <Link
-                            color="secondary"
-                            target="_blank"
-                            rel="noopener noreferrer" // copied from LicenseLink
-                            href="https://bloomlibrary.org/HowToMakePrintVersions.htm"
-                            css={css`
-                                flex-shrink: 1;
-                                margin-right: 10px !important;
-                            `}
-                        >
-                            <div
-                                css={css`display:flex; align:items:center; margin-top:5px;`}
-                            >
-                                <PrintIcon
-                                    css={css`
-                                        margin-right: 20px;
-                                    `}
-                                />
-                                <div
-                                    css={css`
-                                        margin-top: 2px;
-                                    `}
-                                >
-                                    How to Make Print Versions
-                                </div>
-                            </div>
-                        </Link>
+                        <HowToPrintButton />
                         {bloomDesktopAvailable || (
                             <Link
                                 color="secondary"
@@ -153,7 +127,10 @@ export const BookDetailInternal: React.FunctionComponent<{
                                 `}
                             >
                                 <div
-                                    css={css`display:flex; align:items:center`}
+                                    css={css`
+                                        display: flex;
+                                        align-items: center;
+                                    `}
                                 >
                                     <img
                                         alt="Download Translation Icon"

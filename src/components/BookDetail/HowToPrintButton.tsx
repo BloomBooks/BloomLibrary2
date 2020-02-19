@@ -5,22 +5,10 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React from "react";
-import { Book } from "../../model/Book";
-import ReportIcon from "@material-ui/icons/Flag";
-import { Button, Link } from "@material-ui/core";
+import { Link } from "@material-ui/core";
+import PrintIcon from "@material-ui/icons/Print";
 
-export const ReportButton: React.FunctionComponent<{
-    book: Book;
-}> = props => (
-    // <Button
-    //     color="secondary"
-    //     css={css`
-    //         padding-left: 0 !important;
-    //         justify-content: left !important;
-    //         margin-top: 2px;
-    //     `}
-    //     onClick={() => alert("not implemented yet")}
-    // >
+export const HowToPrintButton: React.FunctionComponent = () => (
     <Link
         color="secondary"
         target="_blank"
@@ -34,11 +22,17 @@ export const ReportButton: React.FunctionComponent<{
         `}
         onClick={() => alert("not implemented yet")}
     >
-        <ReportIcon
+        <PrintIcon
             css={css`
-                margin-right: 3px;
+                margin-right: 5px;
             `}
         />
-        <div>Report</div>
+        <div
+            css={css`
+                margin-top: 2px;
+            `}
+        >
+            How to Make Print Versions
+        </div>
     </Link>
 );
