@@ -5,12 +5,11 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React, { useContext, useState } from "react";
-import TextField from "@material-ui/core/TextField";
 import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import { Theme } from "@material-ui/core";
+import { Theme, InputBase, Paper, Grow } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import CancelIcon from "@material-ui/icons/Cancel";
 import { RouterContext } from "../Router";
@@ -25,13 +24,16 @@ const HtmlTooltip = withStyles((theme: Theme) => ({
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
         maxWidth: 220,
-        fontSize: theme.typography.pxToRem(12),
         border: "1px solid #ccc",
-        borderRadius: "5",
+        borderRadius: "6px",
         paddingLeft: "20px",
         paddingRight: "20px",
         paddingTop: "14px",
-        paddingBottom: "14px"
+        paddingBottom: "14px",
+        marginTop: "6px"
+    },
+    arrow: {
+        color: theme.palette.background.default
     }
 }))(Tooltip);
 
@@ -48,7 +50,7 @@ export const SearchBox: React.FunctionComponent<{
     const [search, setSearch] = useState(startSearch);
 
     const searchTooltip: JSX.Element = (
-        <Typography>
+        <Typography style={{ lineHeight: "1.25rem" }}>
             {"Press <Enter> to search"}
             <br />
             <br />
@@ -96,50 +98,64 @@ export const SearchBox: React.FunctionComponent<{
     };
 
     const searchTextField: JSX.Element = (
-        <TextField
-            placeholder="search for books"
-            margin="dense"
-            InputProps={{
-                startAdornment: (
-                    <InputAdornment position="start">
-                        <IconButton
-                            aria-label="search"
-                            size="small"
-                            disabled={true}
-                        >
-                            <SearchIcon />
-                        </IconButton>
-                    </InputAdornment>
-                )
-            }}
-            value={search}
-            onChange={handleChange}
-        />
-    );
-
-    return (
-        <div
+        <Paper
             css={css`
                 display: inline-flex;
                 height: 40px;
                 margin-right: 20px;
-                margin-top: auto;
+                margin-top: 4px;
                 margin-bottom: auto;
                 border: 1px solid #ccc;
-                border-radius: 5px;
+                border-radius: 6px !important;
                 background-color: white;
                 overflow: hidden;
                 padding-left: 5px;
                 ${props.cssExtra || ""}
             `}
-            onKeyPress={handleEnter}
+            component="form"
         >
-            <HtmlTooltip title={searchTooltip}>{searchTextField}</HtmlTooltip>
-            {search && (
+            <IconButton
+                aria-label="search with Enter"
+                disabled
+                css={css`
+                    padding: 0px 8px 0px 0px !important;
+                `}
+            >
+                <SearchIcon fontSize="large" />
+            </IconButton>
+            <InputBase
+                css={css`
+                    font-size: 1.45rem !important;
+                `}
+                placeholder="search for books"
+                inputProps={{ "aria-label": "search for books" }}
+                value={search}
+                onChange={handleChange}
+            />
+            <Grow in={!!search}>
+                <IconButton
+                    aria-label="cancel search"
+                    onClick={() => cancelSearch()}
+                    css={css`
+                        padding: 0px 8px 0px 0px !important;
+                    `}
+                >
+                    <CancelIcon fontSize="large" color="disabled" />
+                </IconButton>
+            </Grow>
+        </Paper>
+    );
+
+    return (
+        <div onKeyPress={handleEnter}>
+            <HtmlTooltip title={searchTooltip} arrow disableHoverListener>
+                {searchTextField}
+            </HtmlTooltip>
+            {/* {search && (
                 <IconButton onClick={() => cancelSearch()}>
                     <CancelIcon />
                 </IconButton>
-            )}
+            )} */}
         </div>
     );
 };
