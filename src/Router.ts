@@ -1,6 +1,7 @@
 import * as React from "react";
 import { observable } from "mobx";
 import * as QueryString from "qs";
+// tslint:disable-next-line: no-duplicate-imports
 import * as mobx from "mobx";
 import { IFilter } from "./IFilter";
 
@@ -44,18 +45,10 @@ export class Router {
                 queryWithoutQuestionMark
             ) as ILocation; // Enhance: do something if parsing the URL doesn't give all the info we need.
 
-            // if (location && location.state && location.code) {
-            //     // just logged in. That does a redirect to a url with these params
-            //     // I think we lose our state! Reset everything...
-            //     this.push({ ...home, ...location });
-            // } else {
-            //     // If we start up the site from a page other than home, push home into the bottom of the
-            //     // stack so that you can use the breadcrumbs to go to home.
             if (location && location.pageType !== "home") {
                 this.push(home);
             }
             this.push(location);
-            //}
         }
         window.onbeforeunload = (event: BeforeUnloadEvent) => {
             if (this.waitingOnSaveOrCancel) {
