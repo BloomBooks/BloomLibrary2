@@ -5,6 +5,20 @@ export interface ILanguage {
     englishName?: string;
 }
 
+export function getLanguageNames(
+    language: ILanguage
+): { displayName: string; autonym: string | undefined } {
+    let displayName: string;
+    let autonym: string | undefined;
+    if (language.englishName && language.englishName !== language.name) {
+        autonym = language.name;
+        displayName = language.englishName;
+    } else {
+        displayName = language.name;
+    }
+    return { displayName, autonym };
+}
+
 export function getCleanedAndOrderedLanguageList(
     languages: ILanguage[]
 ): ILanguage[] {
