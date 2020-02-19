@@ -156,6 +156,8 @@ export interface IBasicBookInfo {
     baseUrl: string;
     title: string;
     languages: ILanguage[];
+    features: string[];
+    tags: string[];
 }
 
 export interface ISearchBooksResult {
