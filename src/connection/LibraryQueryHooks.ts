@@ -269,7 +269,7 @@ export function splitString(
     const tagOptions = ["uploader:", "copyright:", ...tagOptions1];
     // Start with the string with extra spaces (doubles and following colon) removed.
     let keywords = input
-        .replace(/  /g, " ")
+        .replace(/ {2}/g, " ")
         .trim()
         .replace(/: /g, ":");
     const specialParts: string[] = [];
