@@ -1,4 +1,4 @@
-import { getLanguageFeatures } from "./BookCard";
+import { getLanguageFeatures } from "./FeatureHelper";
 it("getLanguageFeatures finds no features when passed empty list", () => {
     const result = getLanguageFeatures(undefined, "en");
     expect(result.length).toBe(0);
