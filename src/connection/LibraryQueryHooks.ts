@@ -154,6 +154,7 @@ export function useBookQuery(
 export interface IBasicBookInfo {
     objectId: string;
     baseUrl: string;
+    harvestState?: string;
     title: string;
     languages: ILanguage[];
 }

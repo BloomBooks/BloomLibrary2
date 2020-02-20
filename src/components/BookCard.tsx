@@ -9,6 +9,7 @@ import LazyLoad from "react-lazyload";
 import { RouterContext } from "../Router";
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
 import { getLanguageNames } from "./LanguageLink";
+import { getThumbnailUrl } from "./BookDetail/ArtifactHelper";
 
 const BookCardWidth = 140;
 
@@ -17,8 +18,14 @@ interface IProps {
     className?: string;
     lazy: boolean;
 }
+
 export const BookCard: React.FunctionComponent<IProps> = props => {
     const router = useContext(RouterContext);
+    const originalThumbnail =
+        props.onBasicBookInfo.baseUrl + "thumbnail-256.png";
+    const tryThumbnail =
+        getThumbnailUrl(props.onBasicBookInfo) || originalThumbnail;
+
     const card = (
         <CheapCard
             className={props.className}
@@ -39,16 +46,15 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
                 alt={"book thumbnail"}
                 // TODO: really this src shouldn't be needed because we are telling the swiper to be lazy,
                 // so it should use the data-src attribute. But at the moment that leaves us with just broken images.
-                src={props.onBasicBookInfo.baseUrl + "thumbnail-256.png"}
-                data-src={props.onBasicBookInfo.baseUrl + "thumbnail-256.png"} // we would have to generate new thumbnails that just have the image shown on the cover
-                // onError={ev => {
-                //     if (props.baseUrl) {
-                //         (ev.target as any).src =
-                //             props.baseUrl + "thumbnail-256.png";
-                //     } else {
-                //         console.log("what");
-                //     }
-                // }}
+                src={tryThumbnail}
+                data-src={tryThumbnail} // we would have to generate new thumbnails that just have the image shown on the cover
+                onError={ev => {
+                    if ((ev.target as any).src !== originalThumbnail) {
+                        (ev.target as any).src = originalThumbnail;
+                    } else {
+                        console.log("ugh! no thumbnail in either place");
+                    }
+                }}
             />
             {/* I think it would look better to have a calm, light grey Bloom logo, or a book outline, or something, instead of this animated
             LOOK AT ME! spinner. */}
