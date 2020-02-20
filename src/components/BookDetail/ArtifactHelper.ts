@@ -1,4 +1,5 @@
 import { Book } from "../../model/Book";
+import { IBasicBookInfo } from "../../connection/LibraryQueryHooks";
 import {
     ArtifactVisibilitySettings,
     ArtifactVisibilitySettingsGroup
@@ -61,11 +62,11 @@ export function getArtifactTypeFromKey(artifactTypeKey: string): ArtifactType {
 }
 
 // The following functions were basically copied as-is from BloomLibrary's services.js
-function isHarvested(book: Book) {
+function isHarvested(book: Book | IBasicBookInfo) {
     return book && book.harvestState === "Done";
 }
 
-function getHarvesterBaseUrl(book: Book): string | undefined {
+function getHarvesterBaseUrl(book: Book | IBasicBookInfo): string | undefined {
     if (!book) {
         return undefined;
     }
@@ -107,6 +108,16 @@ function getBookNameFromUrl(baseUrl: string): string | undefined {
         return undefined;
     }
     return leadin.substring(slashBeforeBookName + 3); // includes leading slash (%2f)
+}
+
+export function getHarvesterProducedThumbnailUrl(
+    book: Book | IBasicBookInfo
+): string | undefined {
+    let harvesterBaseUrl = getHarvesterBaseUrl(book);
+    if (!harvesterBaseUrl) {
+        return undefined;
+    }
+    return harvesterBaseUrl + "thumbnails/thumbnail-256.png";
 }
 
 function getDownloadUrl(book: Book, fileType: string): string | undefined {
