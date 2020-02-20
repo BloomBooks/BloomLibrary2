@@ -61,6 +61,35 @@ export function getConnection(): IConnection {
     return dev;
 }
 
+// This should only be called when there is a current user logged in.
+// It attempts to retrieve a role with name moderator and this user as
+// one of its users. If it gets one, this establishes that this user
+// belongs to the moderator role, and that is recorded in the object.
+function checkIfUserIsModerator() {
+    LoggedInUser.current!.moderator = false; // default, unless we can verify otherwise
+    const connection = getConnection();
+    const userId = LoggedInUser.current!.objectId;
+    axios
+        .get(`${connection.url}roles`, {
+            headers: connection.headers,
+            params: {
+                where: {
+                    name: "moderator",
+                    users: {
+                        __type: "Pointer",
+                        className: "_User",
+                        objectId: userId
+                    }
+                }
+            }
+        })
+        .then(result => {
+            if (result.data.results.length > 0) {
+                LoggedInUser.current!.moderator = true;
+            }
+        });
+}
+
 export async function connectParseServer(
     jwtToken: string,
     userId: string
@@ -113,6 +142,7 @@ export async function connectParseServer(
                             //console.log("Got ParseServer Session ID");
                             resolve(usersResult.data);
                             //returnParseUser(result.data);
+                            checkIfUserIsModerator();
                         } else failedToLoginInToParseServer();
                     })
                     .catch(err => {

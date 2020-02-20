@@ -26,7 +26,7 @@ export const BookExtraPanels: React.FunctionComponent<{
                 margin-top: 32px;
             `}
         >
-            {(user?.administrator || userIsUploader) && (
+            {(user?.moderator || userIsUploader) && (
                 <ExpansionPanel>
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                         Artifact Controls
@@ -40,7 +40,7 @@ export const BookExtraPanels: React.FunctionComponent<{
                 </ExpansionPanel>
             )}
 
-            {user?.administrator && (
+            {user?.moderator && (
                 <ExpansionPanel>
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                         Staff Controls
@@ -50,7 +50,7 @@ export const BookExtraPanels: React.FunctionComponent<{
                     </ExpansionPanelDetails>
                 </ExpansionPanel>
             )}
-            {user?.administrator && (
+            {user?.moderator && (
                 <ExpansionPanel>
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                         Raw Book Data (Staff Only)
