@@ -48,9 +48,24 @@ storiesOf("BookCard", module).add("simple", () => {
         objectId: "6rvW9OSAe9",
         baseUrl: sampleUrl,
         languages: [
-            { name: "English", englishName: "English", isoCode: "en" },
-            { name: "Francais", englishName: "French", isoCode: "fr" },
-            { name: "Deutsch", englishName: "German", isoCode: "de" }
+            {
+                name: "English",
+                englishName: "English",
+                isoCode: "en",
+                usageCount: 3
+            },
+            {
+                name: "Francais",
+                englishName: "French",
+                isoCode: "fr",
+                usageCount: 3
+            },
+            {
+                name: "Deutsch",
+                englishName: "German",
+                isoCode: "de",
+                usageCount: 3
+            }
         ],
         tags: ["level:2"],
         features: [
