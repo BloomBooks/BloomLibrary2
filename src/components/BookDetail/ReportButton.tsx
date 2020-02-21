@@ -7,7 +7,7 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import { Book } from "../../model/Book";
 import ReportIcon from "@material-ui/icons/Flag";
-import { Button, Link } from "@material-ui/core";
+import { Link } from "@material-ui/core";
 
 export const ReportButton: React.FunctionComponent<{
     book: Book;

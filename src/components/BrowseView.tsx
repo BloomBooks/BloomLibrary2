@@ -8,14 +8,16 @@ import {
     ProjectPage,
     SearchResultsPage,
     AllResultsPage
-    // PrathamPage,
-    // AfricaStoryBookPage,
-    // BookDashPage
 } from "./Pages";
 import "typeface-roboto";
 import { Header } from "./header/Header";
 import { BookDetail } from "./BookDetail/BookDetail";
 import { ReadBookPage } from "./ReadBookPage";
+import {
+    PrathamPage,
+    AfricanStorybookPage,
+    BookDashPage
+} from "./PublisherPages";
 
 /* This is the top level component that can be hosted on a website to view and interact with the bloom library */
 @observer
@@ -57,28 +59,27 @@ export class BrowseView extends Component {
                 );
             case "publisher":
             case "org":
-                // if (this.router.current.filter.publisher) {
-                //     switch (this.router.current.filter.publisher) {
-                //         // case "Pratham":
-                //         //     return <PrathamPage />;
-                //         // case "ASP":
-                //         //     return <AfricaStoryBookPage />;
-                //         // case "BookDash":
-                //         //     return <BookDashPage />;
-                //     }
-                // } else
-                return (
-                    <CategoryPage
-                        title={this.router.current.title}
-                        filter={this.router.current.filter}
-                    />
-                );
+                switch (this.router.current.filter.bookshelf) {
+                    case "Pratham":
+                        return <PrathamPage />;
+                    case "African Storybook":
+                        return <AfricanStorybookPage />;
+                    case "Book Dash":
+                        return <BookDashPage />;
+                    default:
+                        return (
+                            <CategoryPage
+                                title={this.router.current.title}
+                                filter={this.router.current.filter}
+                            />
+                        );
+                }
             default:
                 return "Unknown page type " + this.router.current.pageType;
         }
     }
 
-    render() {
+    public render() {
         document.title = `Bloom Library: ${this.router.current.title}`;
         return (
             <RouterContext.Provider value={this.router}>

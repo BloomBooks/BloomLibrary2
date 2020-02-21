@@ -41,7 +41,7 @@ const breadcrumbsStyle = css`
     //padding-left: 20px;
     li {
         margin-right: 3px;
-        color: whitesmoke;
+        //color: whitesmoke;
         &:after {
             margin-left: 3px;
             margin-right: 3px;

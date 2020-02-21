@@ -1,4 +1,8 @@
-import { css } from "@emotion/core";
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
 import React from "react";
 import { useGetTopicList } from "../connection/LibraryQueryHooks";
 import { IFilter } from "../IFilter";
@@ -14,7 +18,7 @@ import { Breadcrumbs } from "./Breadcrumbs";
 export const SearchResultsPage: React.FunctionComponent<{
     filter: IFilter;
 }> = props => (
-    <>
+    <React.Fragment>
         <SearchBanner filter={props.filter} />
         <ul className={"pageResults"}>
             <BookGroup
@@ -23,7 +27,7 @@ export const SearchResultsPage: React.FunctionComponent<{
                 rows={20}
             />
         </ul>
-    </>
+    </React.Fragment>
 );
 
 // I don't know if we'll stick with this... but for now this is what you get
@@ -33,7 +37,7 @@ export const AllResultsPage: React.FunctionComponent<{
     filter: IFilter;
     title: string;
 }> = props => (
-    <>
+    <React.Fragment>
         <div
             css={css`
                 background-color: black;
@@ -46,14 +50,14 @@ export const AllResultsPage: React.FunctionComponent<{
             <BookGroup title={props.title} filter={props.filter} rows={20} />
             {/* TODO: we need a way to say "OK, more rows, and more rows" etc. */}
         </ul>
-    </>
+    </React.Fragment>
 );
 
 export const CategoryPage: React.FunctionComponent<{
     title: string;
     filter: IFilter;
 }> = props => (
-    <>
+    <React.Fragment>
         <BannerContents
             title={props.title}
             about="some about"
@@ -63,14 +67,14 @@ export const CategoryPage: React.FunctionComponent<{
         <ul className={"pageResults"}>
             <BookGroup title={`All books`} filter={props.filter} />
         </ul>
-    </>
+    </React.Fragment>
 );
 
 export const LanguagePage: React.FunctionComponent<{
     title: string;
     filter: IFilter;
 }> = props => (
-    <>
+    <React.Fragment>
         <LanguageBanner filter={props.filter} title={props.title} />
         <ul className={"pageResults"}>
             <BookGroup
@@ -94,18 +98,22 @@ export const LanguagePage: React.FunctionComponent<{
                 key={"all filtered"}
             />
         </ul>
-    </>
+    </React.Fragment>
 );
 export const ProjectPage: React.FunctionComponent<{
     title: string;
     filter: IFilter;
 }> = props => (
-    <>
-        <ProjectBanner filter={props.filter} title={props.title} />
+    <React.Fragment>
+        <ProjectBanner
+            filter={props.filter}
+            title={props.title}
+            bannerImageUrl={"banners/generic-workshop.jpg"}
+        />
         <ul className={"pageResults"}>
             <BookGroupForEachTopic filter={props.filter} />
         </ul>
-    </>
+    </React.Fragment>
 );
 export const BookGroupForEachTopic: React.FunctionComponent<{
     filter: IFilter;
@@ -141,52 +149,3 @@ export const BookGroupForEachTopic: React.FunctionComponent<{
         );
     } else return <>"waiting for topics"</>;
 };
-
-// export const AfricaStoryBookPage: React.FunctionComponent = () => {
-//     return (
-//         <div className={blackOnWhite}>
-//             <PublisherBanner logoUrl="https://upload.wikimedia.org/wikipedia/en/thumb/5/5a/African_Storybook_logo_blue.png/150px-African_Storybook_logo_blue.png" />
-//             <ul>
-//                 <BookGroup
-//                     title="African Storybook Project Books in Bloom Format"
-//                     filter={{ otherTags: "bookshelf:African Storybook" }}
-//                 />
-//             </ul>
-//         </div>
-//     );
-// };
-// export const BookDashPage: React.FunctionComponent = () => {
-//     return (
-//         <div className={blackOnWhite}>
-//             <PublisherBanner logoUrl="https://allchildrenreading.org/wordpress/wp-content/uploads/2017/04/book-dash-logo-full-colour_full-transparency-300x149.png" />
-//             <ul>
-//                 <BookGroup
-//                     title="Book Dash Books in Bloom Format"
-//                     filter={{ otherTags: "bookshelf:Book Dash" }}
-//                 />
-//             </ul>
-//         </div>
-//     );
-// };
-
-// export const PrathamPage: React.FunctionComponent = () => {
-//     return (
-//         <div className={blackOnWhite}>
-//             <PublisherBanner logoUrl="https://prathambooks.org/wp-content/uploads/2018/04/Logo-black.png" />
-//             <ul>
-//                 <BookGroup
-//                     title="Pratham Level 1 Books"
-//                     filter={{ otherTags: "bookshelf:Pratham" }}
-//                 />
-//                 <BookGroup
-//                     title="Pratham Level 2 Books"
-//                     filter={{ otherTags: "bookshelf:Pratham" }}
-//                 />
-//                 <BookGroup
-//                     title="Pratham Level 3 Books"
-//                     filter={{ otherTags: "bookshelf:Pratham" }}
-//                 />
-//             </ul>
-//         </div>
-//     );
-// };

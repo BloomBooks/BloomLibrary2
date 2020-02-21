@@ -17,12 +17,13 @@ export const BannerContents: React.FunctionComponent<{
     bookCountMessage: string;
     filter: IFilter;
 }> = props => {
-    const lines = props.title.split("/");
+    const titleLines = props.title.split("/");
     console.assert(
-        lines.length < 3,
+        titleLines.length < 3,
         "display code only supports one '/' in the title"
     );
-    const secondLine = lines.length > 1 ? <div> {lines[1]}</div> : "";
+    const secondTitleLine =
+        titleLines.length > 1 ? <div> {titleLines[1]}</div> : "";
     return (
         <div
             css={css`
@@ -32,14 +33,15 @@ export const BannerContents: React.FunctionComponent<{
             <Breadcrumbs />
             <h1
                 css={css`
-                    font-size: ${lines.length > 1 ? 36 : 72}px;
+                    font-size: ${titleLines.length > 1 ? 36 : 72}px;
                     margin-top: 0;
                     //flex-grow: 1; // push the rest to the bottom
                 `}
             >
-                {lines[0]}
-                {secondLine}
+                {titleLines[0]}
+                {secondTitleLine}
             </h1>
+
             <div
                 css={css`
                     font-size: 24px;
@@ -90,7 +92,7 @@ export const HomeBanner: React.FunctionComponent<{
             css={
                 // TODO: move this image into this code base and reference as a local asset
                 css`
-                    background-image: url("bloomgirls.jpg");
+                    background-image: url("banners/bloomgirls.jpg");
                     background-position: right;
                     background-size: contain;
 
@@ -148,7 +150,7 @@ export const LanguageBanner: React.FunctionComponent<{
         <div
             className={"banner"}
             css={css`
-                background-image: url(${imageUrl || "book-pages.jpg"});
+                background-image: url(${imageUrl || "banners/book-pages.jpg"});
                 background-position: left;
                 background-size: cover;
                 ${backgroundStyle}
@@ -167,11 +169,12 @@ export const LanguageBanner: React.FunctionComponent<{
 export const ProjectBanner: React.FunctionComponent<{
     title: string;
     filter: IFilter;
+    bannerImageUrl: string;
 }> = props => (
     <div
         className={"banner"}
         css={css`
-            background-image: url(generic-workshop.jpg);
+            background-image: url(${props.bannerImageUrl});
             background-position: left;
             background-blend-mode: saturation;
             background-color: rgb(70, 138, 150);
