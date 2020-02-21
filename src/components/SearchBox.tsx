@@ -75,9 +75,8 @@ export const SearchBox: React.FunctionComponent<{
         setSearch(event.target.value);
     };
 
-    const handleEnter = (event: React.KeyboardEvent<HTMLDivElement>) => {
-        // search on 'Enter' key
-        if (event.key === "Enter") {
+    const handleSearchInner = () => {
+        if (search.length > 0) {
             const location = {
                 title: `search for "${search}"`,
                 pageType: "search",
@@ -87,6 +86,13 @@ export const SearchBox: React.FunctionComponent<{
                 }
             };
             router!.push(location);
+        }
+    };
+
+    const handleEnter = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        // search on 'Enter' key
+        if (event.key === "Enter") {
+            handleSearchInner();
             event.preventDefault();
         }
     };
@@ -119,12 +125,12 @@ export const SearchBox: React.FunctionComponent<{
         >
             <IconButton
                 aria-label="search with Enter"
-                disabled
+                onClick={handleSearchInner}
                 css={css`
                     padding: 0px 8px 0px 0px !important;
                 `}
             >
-                <SearchIcon fontSize="large" />
+                <SearchIcon fontSize="large" color="disabled" />
             </IconButton>
             <InputBase
                 css={css`
