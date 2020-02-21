@@ -417,8 +417,7 @@ export function constructParseBookQuery(
     // }
     if (f.otherTags != null) {
         delete params.where.otherTags;
-        // f.otherTags is currently always a single tag, if it's present at all.
-        tagParts.push(f.otherTags);
+        f.otherTags.split(",").forEach(t => tagParts.push(t));
     }
     // we can search for bookshelves by category (org, project, etc) using useGetBookshelves(). But
     // we cannot, here, filter books by category. We cannot say "give me all the books that are listed in all project bookshelves"

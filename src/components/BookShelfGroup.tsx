@@ -56,7 +56,7 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = props => {
                     key={l.key}
                     title={l.englishName}
                     bookCount="??"
-                    filter={{ bookshelf: l.key }}
+                    filter={{ bookshelf: l.key, bookShelfCategory: l.category }}
                     pageType={props.bookShelfCategory}
                     img={
                         "https://share.bloomlibrary.org/category-images/" +
