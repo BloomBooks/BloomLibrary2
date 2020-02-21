@@ -8,8 +8,9 @@ import { CheapCard } from "./CheapCard";
 import LazyLoad from "react-lazyload";
 import { RouterContext } from "../Router";
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
-import { getLanguageNames } from "./LanguageLink";
 import { getHarvesterProducedThumbnailUrl } from "./BookDetail/ArtifactHelper";
+import { FeatureLevelBar } from "./FeatureLevelBar";
+import { LanguageFeatureList } from "./LanguageFeatureList";
 
 const BookCardWidth = 140;
 
@@ -57,6 +58,7 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
                     }
                 }}
             />
+
             {/* I think it would look better to have a calm, light grey Bloom logo, or a book outline, or something, instead of this animated
             LOOK AT ME! spinner. */}
             {/* <div
@@ -67,6 +69,7 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
                 `
             }
         /> */}
+            <FeatureLevelBar onBasicBookInfo={props.onBasicBookInfo} />
             <div
                 css={css`
                     font-weight: normal;
@@ -80,23 +83,7 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
             >
                 {props.onBasicBookInfo.title}
             </div>
-            <div
-                css={css`
-                    color: gray;
-                    font-size: 9pt;
-                    margin-top: auto;
-                    padding: 3px;
-                    overflow: hidden;
-                    white-space: nowrap;
-                    /* showed the total number of languages
-                        text-overflow: ${"' (" +
-                            props.onBasicBookInfo.languages.length.toString() +
-                            ")'"}; */
-                        text-overflow:"..."
-                `}
-            >
-                {getLanguageNames(props.onBasicBookInfo.languages).join(", ")}
-            </div>
+            <LanguageFeatureList onBasicBookInfo={props.onBasicBookInfo} />
         </CheapCard>
     );
     /* Note, LazyLoad currently breaks strict mode. See app.tsx */

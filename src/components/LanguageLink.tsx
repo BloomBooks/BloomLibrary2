@@ -25,6 +25,19 @@ export const LanguageLink: React.FunctionComponent<{
     );
 };
 
+// filter the list to contain only one out of any group that have the same
+// display name.
+// I'm sure there's a more efficient way to do this, but this approach
+// gives the same sequence of names as getLanguageNames() and avoids
+// needing to change the existing method.
+export function getUniqueLanguages(languages: ILanguage[]): ILanguage[] {
+    const result: ILanguage[] = [];
+    for (const name of getLanguageNames(languages)) {
+        result.push(languages.filter(l => getNameDisplay(l) === name)[0]);
+    }
+    return result;
+}
+
 export function getLanguageNames(languages: ILanguage[]): string[] {
     return languages
         ? Array.from(
@@ -37,7 +50,7 @@ export function getLanguageNames(languages: ILanguage[]): string[] {
 
 // For languages where the name differs in English, we are currently
 // showing the autonym followed by English in parentheses.
-function getNameDisplay(l: ILanguage) {
+export function getNameDisplay(l: ILanguage) {
     // Intentionally not making these a link, for now
     return `${l.name}${
         l.englishName && l.englishName !== l.name

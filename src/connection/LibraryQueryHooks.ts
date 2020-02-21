@@ -157,6 +157,8 @@ export interface IBasicBookInfo {
     harvestState?: string;
     title: string;
     languages: ILanguage[];
+    features: string[];
+    tags: string[];
 }
 
 export interface ISearchBooksResult {
