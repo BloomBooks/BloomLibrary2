@@ -14,7 +14,7 @@ function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
         trigger: "true",
         options: {
             headers: getConnection().headers,
-            params: params
+            params
         }
     });
 }
@@ -59,11 +59,15 @@ export function useGetBookshelves(category?: string) {
     });
 }
 
-export function useGetLanguageInfo(language: string) {
-    return useLibraryQuery("language", {
+export function useGetLanguageInfo(language: string): ILanguage[] {
+    const axiosResult = useLibraryQuery("language", {
         where: { isoCode: language },
         keys: "isoCode,name,usageCount,bannerImageUrl"
     });
+
+    if (axiosResult.response?.data?.results) {
+        return axiosResult.response.data.results as ILanguage[];
+    } else return [];
 }
 
 export function useGetBookCount(filter: IFilter) {

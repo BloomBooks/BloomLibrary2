@@ -6,14 +6,10 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import { useGetTopicList } from "../connection/LibraryQueryHooks";
 import { IFilter } from "../IFilter";
-import {
-    BannerContents,
-    LanguageBanner,
-    ProjectBanner,
-    SearchBanner
-} from "./Banners";
+import { BannerContents, ProjectBanner, SearchBanner } from "./banners/Banners";
 import { BookGroup } from "./BookGroup";
 import { Breadcrumbs } from "./Breadcrumbs";
+import { LanguageBanner } from "./banners/LanguageBanner";
 
 export const SearchResultsPage: React.FunctionComponent<{
     filter: IFilter;
@@ -60,7 +56,7 @@ export const CategoryPage: React.FunctionComponent<{
     <React.Fragment>
         <BannerContents
             title={props.title}
-            about="some about"
+            about={<div>"some about"</div>}
             bookCountMessage="{0}  books"
             filter={props.filter}
         />
@@ -74,7 +70,7 @@ export const LanguagePage: React.FunctionComponent<{
     title: string;
     filter: IFilter;
 }> = props => (
-    <React.Fragment>
+    <div>
         <LanguageBanner filter={props.filter} title={props.title} />
         <ul className={"pageResults"}>
             <BookGroup
@@ -98,7 +94,7 @@ export const LanguagePage: React.FunctionComponent<{
                 key={"all filtered"}
             />
         </ul>
-    </React.Fragment>
+    </div>
 );
 export const ProjectPage: React.FunctionComponent<{
     title: string;
@@ -137,7 +133,7 @@ export const BookGroupForEachTopic: React.FunctionComponent<{
                                 }}
                             />
                         );
-                    } else return <></>;
+                    } else return null; //<></>;
                 })}
 
                 {/* TODO: currently the above will show some books as "NoTopic" books. But the vast majority of books without a top
@@ -147,5 +143,8 @@ export const BookGroupForEachTopic: React.FunctionComponent<{
             */}
             </div>
         );
-    } else return <>"waiting for topics"</>;
+    } else return null;
+    // <React.Fragment key={"waiting"}>
+    //     "waiting for topics"
+    // </React.Fragment>
 };

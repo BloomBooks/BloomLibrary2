@@ -2,7 +2,7 @@ import React from "react";
 import { BookGroup } from "./BookGroup";
 import { LanguageGroup } from "./LanguageGroup";
 import { BookshelfGroup } from "./BookShelfGroup";
-import { HomeBanner } from "./Banners";
+import { HomeBanner } from "./banners/Banners";
 import { IFilter } from "../IFilter";
 
 export const HomePage: React.FunctionComponent = () => {
