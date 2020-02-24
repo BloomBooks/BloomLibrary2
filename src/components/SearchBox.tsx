@@ -75,18 +75,27 @@ export const SearchBox: React.FunctionComponent<{
         setSearch(event.target.value);
     };
 
-    const handleEnter = (event: React.KeyboardEvent<HTMLDivElement>) => {
-        // search on 'Enter' key
-        if (event.key === "Enter") {
+    const processSearchString = (searchInput: string) => searchInput.trim();
+
+    const handleSearchInner = () => {
+        const searchString = processSearchString(search);
+        if (searchString.length > 0) {
             const location = {
-                title: `search for "${search}"`,
+                title: `search for "${searchString}"`,
                 pageType: "search",
                 filter: {
                     ...router!.current.filter,
-                    search
+                    search: searchString
                 }
             };
             router!.push(location);
+        }
+    };
+
+    const handleEnter = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        // search on 'Enter' key
+        if (event.key === "Enter") {
+            handleSearchInner();
             event.preventDefault();
         }
     };
@@ -94,7 +103,7 @@ export const SearchBox: React.FunctionComponent<{
     const cancelSearch = () => {
         const curFilter = router!.current.filter;
         // If the user previously pressed 'Enter' with this search text, we need to go back up the stack.
-        if (curFilter?.search === search) {
+        if (curFilter?.search === processSearchString(search)) {
             window.history.back(); // Observable router will handle breadcrumbs.
         }
         setSearch("");
@@ -119,12 +128,12 @@ export const SearchBox: React.FunctionComponent<{
         >
             <IconButton
                 aria-label="search with Enter"
-                disabled
+                onClick={handleSearchInner}
                 css={css`
                     padding: 0px 8px 0px 0px !important;
                 `}
             >
-                <SearchIcon fontSize="large" />
+                <SearchIcon fontSize="large" color="disabled" />
             </IconButton>
             <InputBase
                 css={css`
@@ -136,7 +145,7 @@ export const SearchBox: React.FunctionComponent<{
                 onChange={handleChange}
                 onKeyPress={handleEnter}
             />
-            <Grow in={!!search}>
+            <Grow in={!!processSearchString(search)}>
                 <IconButton
                     aria-label="cancel search"
                     onClick={() => cancelSearch()}
