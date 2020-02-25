@@ -48,7 +48,7 @@ export class Book {
     // which we parse into
     public uploadDate: Date | undefined;
     public updateDate: Date | undefined;
-    public originalBookSourceUrl?: string;
+    public importedBookSourceUrl?: string;
     // todo: We need to handle limited visibility, i.e. by country
     public ePUBVisible: boolean = false;
 

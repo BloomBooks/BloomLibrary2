@@ -50,15 +50,15 @@ export const MetadataGroup: React.FunctionComponent<{
                 )}`}
             </div>
             <div>{`Last updated on ${props.book.updateDate!.toLocaleDateString()}`}</div>
-            {props.book.originalBookSourceUrl &&
-                props.book.originalBookSourceUrl.length > 0 && (
+            {props.book.importedBookSourceUrl &&
+                props.book.importedBookSourceUrl.length > 0 && (
                     <div>
                         Imported from&nbsp;
                         <Link
                             color="secondary"
-                            href={props.book.originalBookSourceUrl}
+                            href={props.book.importedBookSourceUrl}
                         >
-                            {new URL(props.book.originalBookSourceUrl).host}
+                            {new URL(props.book.importedBookSourceUrl).host}
                         </Link>
                     </div>
                 )}
