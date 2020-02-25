@@ -336,6 +336,13 @@ export function constructParseBookQuery(
     // it removed the "language" param from the filter parameter itself.
     params.where = filter ? JSON.parse(JSON.stringify(filter)) : {};
 
+    // parse server does not handle spaces in this comma-separated list,
+    // so guard against programmer accidentally inserting one.
+    // (It does not even complain, but quietly omits the field that has a space before it)
+    if (params.keys) {
+        params.keys = params.keys.replace(/ /g, "");
+    }
+
     /* ----------------- TODO ---------------------
 
             This needs to be rewritten so that we can combine  things like topic and bookshelf and language
