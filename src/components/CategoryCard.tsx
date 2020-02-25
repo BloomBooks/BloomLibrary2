@@ -10,6 +10,7 @@ import { RouterContext } from "../Router";
 import { IFilter } from "../IFilter";
 import Img from "react-image";
 import { BookCount } from "./BookCount";
+import { IBookshelfResult } from "../connection/LibraryQueryHooks";
 
 interface IProps {
     title: string;
@@ -17,6 +18,7 @@ interface IProps {
     filter: IFilter;
     pageType: string;
     img: string;
+    bookshelfInfo: IBookshelfResult;
 }
 
 const CategoryCard: React.FunctionComponent<IProps> = props => {
@@ -49,6 +51,7 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
                     title: props.title,
                     pageType: props.pageType ? props.pageType : "category",
                     filter: props.filter
+                    // pageInfoAlreadyInHand: props.bookshelfInfo
                 });
             }}
         >

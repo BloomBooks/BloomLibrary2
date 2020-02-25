@@ -3,6 +3,7 @@ export interface ILanguage {
     isoCode: string;
     usageCount: number;
     englishName?: string;
+    bannerImageUrl?: string;
 }
 
 export function getLanguageNames(

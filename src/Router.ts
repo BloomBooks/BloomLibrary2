@@ -16,6 +16,14 @@ export interface ILocation {
     filter: IFilter;
     rows?: number;
 
+    // Often the card that we click on to go to a page, well it already has information
+    // about the page that the page will just have to re-query. For example a card that
+    // represents a bookshelf has to already have done the query on the bookshelf table
+    // in order to know that such a card should exist. So in the onclick for such a card,
+    // we can pass on information on that row so that the page can more quickly start
+    // building itself instead of having to wait for a whole redundant query round-trip.
+    // not ready for this yet: pageInfoAlreadyInHand?: any;
+
     // These apply to logging in with auth0 and may be combined with anything else
     // state?: string;
     // code?: string;

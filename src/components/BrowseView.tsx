@@ -4,7 +4,7 @@ import { Router, RouterContext } from "../Router";
 import { HomePage } from "./HomePage";
 import {
     LanguagePage,
-    CategoryPage,
+    DefaultOrganizationPage,
     ProjectPage,
     SearchResultsPage,
     AllResultsPage
@@ -18,6 +18,7 @@ import {
     AfricanStorybookPage,
     BookDashPage
 } from "./PublisherPages";
+import { GuatemalaMOEPage } from "./banners/OrganizationCustomizations";
 
 /* This is the top level component that can be hosted on a website to view and interact with the bloom library */
 @observer
@@ -66,9 +67,11 @@ export class BrowseView extends Component {
                         return <AfricanStorybookPage />;
                     case "Book Dash":
                         return <BookDashPage />;
+                    case "Ministerio de Educación de Guatemala":
+                        return <GuatemalaMOEPage />;
                     default:
                         return (
-                            <CategoryPage
+                            <DefaultOrganizationPage
                                 title={this.router.current.title}
                                 filter={this.router.current.filter}
                             />
