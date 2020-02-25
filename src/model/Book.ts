@@ -38,7 +38,7 @@ export class Book {
     @observable public summary: string = "";
     @observable public tags: string[] = [];
     @observable public level: string = "";
-    public librarianNote: string = "";
+    @observable public librarianNote: string = "";
     @observable
     public artifactsToOfferToUsers: ArtifactVisibilitySettingsGroup = new ArtifactVisibilitySettingsGroup();
     public uploader: { username: string } | undefined;
