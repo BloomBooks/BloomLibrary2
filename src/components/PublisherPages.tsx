@@ -1,7 +1,7 @@
 import React from "react";
 import { PublisherBanner } from "./banners/PublisherBanner";
-import { Link } from "@material-ui/core";
 import { StandardPublisherGroups } from "./StandardPublisherGroups";
+import { ExternalLink } from "./banners/Banners";
 
 export const AfricanStorybookPage: React.FunctionComponent = () => {
     const filter = { bookshelf: "African Storybook" };
@@ -24,7 +24,7 @@ export const AfricanStorybookPage: React.FunctionComponent = () => {
             <PublisherBanner
                 title="African Storybook Project"
                 filter={filter}
-                bannerImageUrl={`https://share.bloomlibrary.org/category-images/African Storybook.png`}
+                logoUrl={`https://share.bloomlibrary.org/category-images/African Storybook.png`}
                 collectionDescription={description}
             />
 
@@ -62,7 +62,7 @@ export const PrathamPage: React.FunctionComponent = () => {
             <PublisherBanner
                 title="Pratham - StoryWeaver"
                 filter={filter}
-                bannerImageUrl={`https://share.bloomlibrary.org/category-images/Pratham-banner.jpg`}
+                logoUrl={`https://share.bloomlibrary.org/category-images/Pratham-banner.jpg`}
                 collectionDescription={description}
             />
             <StandardPublisherGroups filter={filter} />
@@ -93,7 +93,7 @@ export const BookDashPage: React.FunctionComponent = () => {
             <PublisherBanner
                 title="Book Dash"
                 filter={filter}
-                bannerImageUrl={`https://share.bloomlibrary.org/category-images/Book Dash.png`}
+                logoUrl={`https://share.bloomlibrary.org/category-images/Book Dash.png`}
                 collectionDescription={description}
             />
 
@@ -101,14 +101,3 @@ export const BookDashPage: React.FunctionComponent = () => {
         </div>
     );
 };
-
-// Open a new tab when this is clicked
-const ExternalLink: React.FunctionComponent<{
-    href: string;
-}> = props => (
-    <React.Fragment>
-        <Link target="_blank" color="secondary" href={props.href}>
-            {props.children}
-        </Link>
-    </React.Fragment>
-);

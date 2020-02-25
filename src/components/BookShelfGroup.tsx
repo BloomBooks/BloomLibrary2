@@ -4,8 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import React from "react";
-import { useGetBookshelves } from "../connection/LibraryQueryHooks";
-import { getResultsOrMessageElement } from "../connection/GetQueryResultsUI";
+import { useGetBookshelvesByCategory } from "../connection/LibraryQueryHooks";
 import CategoryCard from "./CategoryCard";
 import LazyLoad from "react-lazyload";
 
@@ -50,14 +49,13 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = props => (
 export const BookshelfGroupInner: React.FunctionComponent<IProps> = props => {
     // At this point there are so few bookshelves that we just retrieve the whole list and then filter here.
     // Might be a good thing to cache.
-    const bookshelfResult = useGetBookshelves(props.bookShelfCategory);
-
-    const { noResultsElement, results } = getResultsOrMessageElement(
-        bookshelfResult
+    const bookshelfResults = useGetBookshelvesByCategory(
+        props.bookShelfCategory
     );
+
     const parts =
-        noResultsElement ||
-        results
+        bookshelfResults &&
+        bookshelfResults
             .filter(
                 (shelf: any) =>
                     // allow if we weren't given a bookshelf to filter by
@@ -79,6 +77,7 @@ export const BookshelfGroupInner: React.FunctionComponent<IProps> = props => {
                         l.key +
                         ".png"
                     }
+                    bookshelfInfo={l}
                 />
             ));
 
