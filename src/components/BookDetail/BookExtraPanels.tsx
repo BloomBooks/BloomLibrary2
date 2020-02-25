@@ -4,6 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
+import { Suspense, lazy } from "react";
 import { Book } from "../../model/Book";
 import { observer } from "mobx-react";
 import {
@@ -20,6 +21,11 @@ export const BookExtraPanels: React.FunctionComponent<{
 }> = observer(props => {
     const user = LoggedInUser.current;
     const userIsUploader = user?.username === props.book.uploader?.username;
+
+    // causes webpack to create a chunk for this which we only download as needed.
+    const ReactJsonView = lazy(() =>
+        user?.moderator ? import("react-json-view") : new Promise(() => {})
+    );
     return (
         <div
             css={css`
@@ -77,7 +83,17 @@ export const BookExtraPanels: React.FunctionComponent<{
                                 width: calc(95vw - 4em);
                             `}
                         >
-                            {JSON.stringify(props.book)}
+                            <Suspense
+                                fallback={
+                                    <div>Loading chunk for showing json...</div>
+                                }
+                            >
+                                <ReactJsonView
+                                    src={props.book}
+                                    theme="monokai"
+                                />
+                            </Suspense>
+                            {/* {JSON.stringify(props.book)} */}
                         </div>
                     </ExpansionPanelDetails>
                 </ExpansionPanel>
