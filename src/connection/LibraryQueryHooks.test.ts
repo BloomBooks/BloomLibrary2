@@ -8,33 +8,30 @@ const headers = {
     "X-Parse-Application-Id": "r1H3zle1Iopm1IB30S4qEtycvM4xYjZ85kRChjkM"
 };
 
+const unitTestBaseUrl =
+    "https://bloom-parse-server-unittest.azurewebsites.net/parse/";
+//"https://bloom-parse-server-develop.azurewebsites.net/parse/";
+
 async function getBook(filter: IFilter) {
-    return axios.get(
-        `https://bloom-parse-server-unittest.azurewebsites.net/parse/classes/books`,
-        {
-            headers,
-            params: constructParseBookQuery({ count: 5 }, filter, [
-                "region:Pacific",
-                "topic:Math",
-                "bookshelf:Enabling writers workshops"
-            ])
-        }
-    );
+    return axios.get(`${unitTestBaseUrl}classes/books`, {
+        headers,
+        params: constructParseBookQuery({ count: 5 }, filter, [
+            "region:Pacific",
+            "topic:Math",
+            "bookshelf:Enabling writers workshops"
+        ])
+    });
 }
 async function createBook(book: object) {
-    const result = await axios.post(
-        `https://bloom-parse-server-unittest.azurewebsites.net/parse/classes/books`,
-        book,
-        {
-            headers
-        }
-    );
+    const result = await axios.post(`${unitTestBaseUrl}classes/books`, book, {
+        headers
+    });
     return result.data.objectId;
 }
 
 async function createUser(username: string, password: string) {
     const result = await axios.post(
-        `https://bloom-parse-server-unittest.azurewebsites.net/parse/users`,
+        `${unitTestBaseUrl}users`,
         { username, password, email: username },
         {
             headers
@@ -45,10 +42,10 @@ async function createUser(username: string, password: string) {
 
 async function loginUser(username: string, password: string) {
     try {
-        const result = await axios.get(
-            `https://bloom-parse-server-unittest.azurewebsites.net/parse/login`,
-            { headers, params: { username, password } }
-        );
+        const result = await axios.get(`${unitTestBaseUrl}login`, {
+            headers,
+            params: { username, password }
+        });
         return [result.data.objectId, result.data.sessionToken];
     } catch (error) {
         return undefined;
@@ -56,23 +53,17 @@ async function loginUser(username: string, password: string) {
 }
 
 async function deleteBook(id: string) {
-    return axios.delete(
-        `https://bloom-parse-server-unittest.azurewebsites.net/parse/classes/books/${id}`,
-        {
-            headers
-        }
-    );
+    return axios.delete(`${unitTestBaseUrl}classes/books/${id}`, {
+        headers
+    });
 }
 
 // Even though the unit test database is about as wide open as it can be,
 // parse only allows us to delete a user if logged in as that user.
 async function deleteUser(id: string, sessionToken: string) {
-    return axios.delete(
-        `https://bloom-parse-server-unittest.azurewebsites.net/parse/users/${id}`,
-        {
-            headers: { ...headers, "X-Parse-Session-Token": sessionToken }
-        }
-    );
+    return axios.delete(`${unitTestBaseUrl}users/${id}`, {
+        headers: { ...headers, "X-Parse-Session-Token": sessionToken }
+    });
 }
 
 const testUserName = "Fred_XYZ@example.com";
@@ -99,21 +90,18 @@ async function cleanup() {
         return;
     }
     const [fredId, sessionToken] = fredData;
-    const books = await axios.get(
-        `https://bloom-parse-server-unittest.azurewebsites.net/parse/classes/books`,
-        {
-            headers,
-            params: {
-                where: {
-                    uploader: {
-                        __type: "Pointer",
-                        className: "_User",
-                        objectId: fredId
-                    }
+    const books = await axios.get(`${unitTestBaseUrl}classes/books`, {
+        headers,
+        params: {
+            where: {
+                uploader: {
+                    __type: "Pointer",
+                    className: "_User",
+                    objectId: fredId
                 }
             }
         }
-    );
+    });
     for (const book of books.data.results) {
         await deleteBook(book.objectId);
     }
@@ -127,47 +115,52 @@ const title3 = "Another book with anunlikelykeyword";
 
 beforeAll(async () => {
     // In case of anything left over from a previous failed run
-    await cleanup();
-    const fredData = await getFred();
-    const [fredId] = fredData!;
-    await createBook({
-        title: title1,
-        search: title1,
-        uploader: {
-            __type: "Pointer",
-            className: "_User",
-            objectId: fredId
-        },
-        tags: [
-            "topic:Math",
-            "region:Pacific",
-            "bookshelf:Enabling writers workshops"
-        ],
-        copyright: "Copyright © 2014, Nicole and bookdash.org"
-    });
-    // This is there specifically to NOT be found by tag searches or the copyright search
-    // It SHOULD be found by the uploader search, however.
-    // In particular it has the bookshelf tag but not the unlikely keyword.
-    await createBook({
-        title: title2,
-        search: title2,
-        uploader: {
-            __type: "Pointer",
-            className: "_User",
-            objectId: fredId
-        },
-        tags: ["bookshelf:Enabling writers workshops"]
-    });
-    // This one has the unlikely keyword but not the bookshelf tag.
-    await createBook({
-        title: title3,
-        search: title3,
-        uploader: {
-            __type: "Pointer",
-            className: "_User",
-            objectId: fredId
-        }
-    });
+    try {
+        await cleanup();
+        const fredData = await getFred();
+        const [fredId] = fredData!;
+        await createBook({
+            title: title1,
+            search: title1,
+            uploader: {
+                __type: "Pointer",
+                className: "_User",
+                objectId: fredId
+            },
+            tags: [
+                "topic:Math",
+                "region:Pacific",
+                "bookshelf:Enabling writers workshops"
+            ],
+            copyright: "Copyright © 2014, Nicole and bookdash.org"
+        });
+        // This is there specifically to NOT be found by tag searches or the copyright search
+        // It SHOULD be found by the uploader search, however.
+        // In particular it has the bookshelf tag but not the unlikely keyword.
+        await createBook({
+            title: title2,
+            search: title2,
+            uploader: {
+                __type: "Pointer",
+                className: "_User",
+                objectId: fredId
+            },
+            tags: ["bookshelf:Enabling writers workshops"]
+        });
+        // This one has the unlikely keyword but not the bookshelf tag.
+        await createBook({
+            title: title3,
+            search: title3,
+            uploader: {
+                __type: "Pointer",
+                className: "_User",
+                objectId: fredId
+            }
+        });
+    } catch (error) {
+        console.log(JSON.stringify(error));
+        throw error;
+    }
 }, 10000); // This function can take a while to run, give it up to 10s
 
 afterAll(async () => {
@@ -180,12 +173,19 @@ afterAll(async () => {
 // replaced around that time to match the fuller set of fields on the real and dev
 // databases. Full-text search is working on the other two and the indexes appear
 // identical, so this may well not be the problem.
-// it("retrieves a parse book using full-text search", async () => {
-//     const result = await getBook({ search: "anunlikelykeyword" });
-//     expect(result.data.results.length).toBe(2);
-//     const titles = result.data.results.map((x: { title: string }) => x.title);
-//     expect(titles).toEqual(expect.arrayContaining([title1, title3]));
-// });
+it("retrieves a parse book using full-text search", async () => {
+    try {
+        const result = await getBook({ search: "anunlikelykeyword" });
+        expect(result.data.results.length).toBe(2);
+        const titles = result.data.results.map(
+            (x: { title: string }) => x.title
+        );
+        expect(titles).toEqual(expect.arrayContaining([title1, title3]));
+    } catch (error) {
+        console.log("full-text error: " + JSON.stringify(error));
+        throw error;
+    }
+});
 
 it("retrieves a parse book using case-insensitive RE on uploader", async () => {
     const result = await getBook({ search: "uploader:fred_xyz@example" });
@@ -213,16 +213,16 @@ it("retrieves a book with topic:Math in tags, but not one with that string in ti
 });
 
 // tests disabled because mysteriously not passing, see note above.
-// it("retrieves a book with a quoted string, but not one with the two words separately", async () => {
-//     const result = await getBook({ search: '"test book"' });
-//     expect(result.data.results.length).toBe(1);
-//     expect(result.data.results[0].title).toBe(title1);
-// });
+it("retrieves a book with a quoted string, but not one with the two words separately", async () => {
+    const result = await getBook({ search: '"test book"' });
+    expect(result.data.results.length).toBe(1);
+    expect(result.data.results[0].title).toBe(title1);
+});
 
-// it("retrieves a book with quoted tag value", async () => {
-//     const result = await getBook({
-//         search: "bookshelf:Enabling writers workshops anunlikelykeyword"
-//     });
-//     expect(result.data.results.length).toBe(1);
-//     expect(result.data.results[0].title).toBe(title1);
-// });
+it("retrieves a book with quoted tag value", async () => {
+    const result = await getBook({
+        search: "bookshelf:Enabling writers workshops anunlikelykeyword"
+    });
+    expect(result.data.results.length).toBe(1);
+    expect(result.data.results[0].title).toBe(title1);
+});
