@@ -22,6 +22,7 @@
         "@material-ui/icons": "^4.9.1",
         "@material-ui/lab": "^4.0.0-alpha.43",
         "@material-ui/styles": "^4.9.0",
+        "@sentry/browser": "^5.12.4",
         "@types/match-sorter": "^4.0.0",
         "@types/node": "12.7.2",
         "@types/qs": "^6.5.2",
