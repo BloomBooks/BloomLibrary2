@@ -8,9 +8,9 @@ import { useGetTopicList } from "../connection/LibraryQueryHooks";
 import { IFilter } from "../IFilter";
 import {
     BannerContents,
-    LanguageBanner,
     ProjectBanner,
-    SearchBanner
+    SearchBanner,
+    LanguageBanner
 } from "./Banners";
 import { BookGroup } from "./BookGroup";
 import { Breadcrumbs } from "./Breadcrumbs";
@@ -75,12 +75,7 @@ export const LanguagePage: React.FunctionComponent<{
     filter: IFilter;
 }> = props => (
     <React.Fragment>
-        <CustomizableBanner
-            filter={props.filter}
-            title={props.title}
-            getSpec={getLanguageBannerSpec}
-            customSpecsKey={props.filter.language!}
-        />
+        <LanguageBanner filter={props.filter} title={props.title} />
         <ul className={"pageResults"}>
             <BookGroup
                 title={`Featured ${props.filter.language} books.`}
