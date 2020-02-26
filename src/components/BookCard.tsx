@@ -17,7 +17,9 @@ const BookCardWidth = 140;
 interface IProps {
     onBasicBookInfo: IBasicBookInfo;
     className?: string;
-    lazy: boolean;
+    // if we're showing in one row, then we'll let swiper handle the laziness, otherwise
+    // we tell the card to try and be lazy itself.
+    handleYourOwnLaziness: boolean;
 }
 
 export const BookCard: React.FunctionComponent<IProps> = props => {
@@ -46,9 +48,12 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
                     object-fit: cover; //cover will crop, but fill up nicely
                 `}
                 alt={"book thumbnail"}
-                // TODO: really this src shouldn't be needed because we are telling the swiper to be lazy,
-                // so it should use the data-src attribute. But at the moment that leaves us with just broken images.
-                src={harvestedThumbnailUrl}
+                // NB: if you're not getting an image, e.g. in Storybook, it's because it's not inside of a swiper
+                src={
+                    props.handleYourOwnLaziness
+                        ? harvestedThumbnailUrl
+                        : undefined
+                }
                 data-src={harvestedThumbnailUrl} // we would have to generate new thumbnails that just have the image shown on the cover
                 onError={ev => {
                     if ((ev.target as any).src !== legacyStyleThumbnail) {
@@ -87,5 +92,5 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
         </CheapCard>
     );
     /* Note, LazyLoad currently breaks strict mode. See app.tsx */
-    return props.lazy ? <LazyLoad>{card}</LazyLoad> : card;
+    return props.handleYourOwnLaziness ? <LazyLoad>{card}</LazyLoad> : card;
 };

@@ -14,6 +14,7 @@ import {
 import LazyLoad from "react-lazyload";
 import ReactIdSwiper from "react-id-swiper";
 import { MoreCard } from "./MoreCard";
+import { commonUI } from "../theme";
 interface IProps {
     title: string;
     filter: IFilter; // becomes the "where" clause the query
@@ -34,12 +35,22 @@ export const BookGroup: React.FunctionComponent<IProps> = props => (
     // If the params are bad, some groups at the end will NEVER show.
 
     /* Note, this currently breaks strict mode. See app.tsx */
-    <LazyLoad>
+    <LazyLoad
+        height={
+            /* note, if the number of cards is too small to fill up those rows, this will expect
+                    to be taller than it is, but then when it is replaced by the actual content, the
+                    scrollbar will adjust, so no big deal?*/
+            (props.rows ?? 1) * commonUI.bookCardHeightPx +
+            commonUI.bookGroupTopMarginPx
+        }
+    >
         <BookGroupInner {...props} />
     </LazyLoad>
 );
 export const BookGroupInner: React.FunctionComponent<IProps> = props => {
     const [swiper, updateSwiper] = useState<any | null>(null);
+    // we have either a horizontally-scrolling list of 20, or several rows
+    // of 5 each
     const maxCardsToRetrieve = props.rows ? props.rows * 5 : 20;
     const search = useSearchBooks(
         {
@@ -81,7 +92,11 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
     const cards = search.books.map((b: IBasicBookInfo) => (
         // if we're showing in one row, then we'll let swiper handle the laziness, otherwise
         // we tell the card to try and be lazy itself.
-        <BookCard lazy={!showInOneRow} key={b.baseUrl} onBasicBookInfo={b} />
+        <BookCard
+            handleYourOwnLaziness={!showInOneRow}
+            key={b.baseUrl}
+            onBasicBookInfo={b}
+        />
     ));
     if (search.totalMatchingRecords > maxCardsToRetrieve) {
         cards.push(
@@ -123,8 +138,8 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
         zeroBooksMatchedElement || (
             <li
                 css={css`
-                    margin-top: 30px;
-                    height: 200px; // want height to be same even if no results yet
+                    margin-top: ${commonUI.bookGroupTopMarginPx}px;
+                    height: ${commonUI.bookCardHeightPx}px; // want height to be same even if no results yet
                 `}
             >
                 <h1>

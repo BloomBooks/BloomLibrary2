@@ -34,7 +34,7 @@ const cardStyle = css`
     flex-direction: column;
 
     margin-bottom: ${commonUI.cheapCardMarginBottomInPx}px;
-    height: 190px;
+    height: 190px; // todo derive from commonUI.something
     margin-right: 5px;
     background-color: white;
     border-radius: 4px;

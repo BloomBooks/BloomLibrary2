@@ -75,7 +75,12 @@ export const LanguagePage: React.FunctionComponent<{
     filter: IFilter;
 }> = props => (
     <React.Fragment>
-        <LanguageBanner filter={props.filter} title={props.title} />
+        <CustomizableBanner
+            filter={props.filter}
+            title={props.title}
+            getSpec={getLanguageBannerSpec}
+            customSpecsKey={props.filter.language!}
+        />
         <ul className={"pageResults"}>
             <BookGroup
                 title={`Featured ${props.filter.language} books.`}

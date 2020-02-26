@@ -80,7 +80,7 @@ storiesOf("BookCard", module).add("simple", () => {
         ]
     };
 
-    return <BookCard lazy={false} onBasicBookInfo={book} />;
+    return <BookCard handleYourOwnLaziness={false} onBasicBookInfo={book} />;
 });
 storiesOf("BookGroup", module)
     .add("Featured", () => (

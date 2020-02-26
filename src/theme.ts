@@ -11,6 +11,9 @@ export const commonUI = {
     // constants shared by various components to keep them consistent
     languageCardHeightInPx: 100,
     cheapCardMarginBottomInPx: 10,
+    bookGroupTopMarginPx: 30,
+    bookCardHeightPx: 200,
+
     detailViewMargin: "1em",
     detailViewMainButtonWidth: "250px",
     detailViewMainButtonHeight: "80px"
