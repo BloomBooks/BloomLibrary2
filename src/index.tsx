@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
+import * as Sentry from "@sentry/browser";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 
@@ -10,6 +11,20 @@ import "firebase/auth";
 
 //import * as firebaseui from "firebaseui";
 import { connectParseServer } from "./connection/ParseServerConnection";
+
+try {
+    // we're sending errors so long as we're not running on localhost
+    if (window.location.hostname.indexOf("bloomlibrary.org") > -1) {
+        Sentry.init({
+            dsn:
+                "https://f33c34679bd044ba93eebb6fdf2132e3@sentry.keyman.com/18",
+            environment: window.location.hostname,
+            attachStacktrace: true
+        });
+    }
+} catch (error) {
+    console.error(error);
+}
 
 const firebaseConfig = {
     apiKey: "AIzaSyACJ7fi7_Rg_bFgTIacZef6OQckr6QKoTY",
