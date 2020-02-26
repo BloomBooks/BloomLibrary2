@@ -23,6 +23,7 @@ export const AfricanStorybookPage: React.FunctionComponent = () => {
         <div>
             <PublisherBanner
                 title="African Storybook Project"
+                showTitle={false}
                 filter={filter}
                 logoUrl={`https://share.bloomlibrary.org/category-images/African Storybook.png`}
                 collectionDescription={description}
@@ -61,6 +62,7 @@ export const PrathamPage: React.FunctionComponent = () => {
         <div>
             <PublisherBanner
                 title="Pratham - StoryWeaver"
+                showTitle={true}
                 filter={filter}
                 logoUrl={`https://share.bloomlibrary.org/category-images/Pratham-banner.jpg`}
                 collectionDescription={description}
@@ -92,6 +94,7 @@ export const BookDashPage: React.FunctionComponent = () => {
         <div>
             <PublisherBanner
                 title="Book Dash"
+                showTitle={false}
                 filter={filter}
                 logoUrl={`https://share.bloomlibrary.org/category-images/Book Dash.png`}
                 collectionDescription={description}

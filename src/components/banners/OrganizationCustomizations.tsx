@@ -70,7 +70,8 @@ export const GuatemalaMOEPage: React.FunctionComponent = () => {
     return (
         <div>
             <PublisherBanner
-                title=""
+                title="Guatemala government logo"
+                showTitle={false}
                 filter={filter}
                 logoUrl={`${imageBase}guatemala-moe-logo.svg`}
                 collectionDescription={description}
