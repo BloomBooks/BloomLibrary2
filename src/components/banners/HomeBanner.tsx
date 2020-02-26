@@ -14,17 +14,14 @@ export const HomeBanner: React.FunctionComponent<{
     return (
         <div
             className={"banner"}
-            css={
-                // TODO: move this image into this code base and reference as a local asset
-                css`
-                    background-image: url("banners/bloomgirls.jpg");
-                    background-position: right;
-                    background-size: contain;
+            css={css`
+                background-image: url("banners/bloomgirls.jpg");
+                background-position: right;
+                background-size: contain;
 
-                    /* background-blend-mode: darken;
+                /* background-blend-mode: darken;
                 background-color: rgba(0, 0, 0, 0.6); // fade the image to black */
-                `
-            }
+            `}
         >
             <div
                 css={css`

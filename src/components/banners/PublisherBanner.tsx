@@ -12,6 +12,7 @@ import { IFilter } from "../../IFilter";
 // but when it comes to showing a page for one of them, they are currently the same
 export const PublisherBanner: React.FunctionComponent<{
     title: string;
+    showTitle: boolean;
     filter: IFilter;
     logoUrl?: string;
     collectionDescription: JSX.Element;
@@ -27,8 +28,8 @@ export const PublisherBanner: React.FunctionComponent<{
                 font-size: 24pt;
             `}
         >
-            {/* some times the logo is the name, so we don't want to repeat it in the title */}
-            {props.title && <span>Publisher: {props.title}</span>}
+            {/* sometimes the logo is the name, so we don't want to repeat it in the title */}
+            {props.showTitle && <span>{props.title}</span>}
         </h1>
         <div
             css={css`

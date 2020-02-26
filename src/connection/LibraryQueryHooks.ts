@@ -64,16 +64,6 @@ export function useGetBookshelvesByCategory(
     } else return [];
 }
 
-export function useGetOneBookshelf(
-    bookshelfKey: string
-): IBookshelfResult | undefined {
-    const axiosResult = useLibraryQuery("bookshelf", {
-        where: { key: bookshelfKey }
-    });
-    if (axiosResult.response?.data?.results) {
-        return axiosResult.response.data.results[0] as IBookshelfResult;
-    } else return undefined;
-}
 export function useGetLanguageInfo(language: string): ILanguage[] {
     const axiosResult = useLibraryQuery("language", {
         where: { isoCode: language },

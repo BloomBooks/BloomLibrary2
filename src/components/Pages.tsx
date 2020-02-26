@@ -64,6 +64,7 @@ export const DefaultOrganizationPage: React.FunctionComponent<{
     <React.Fragment>
         <PublisherBanner
             title={props.title}
+            showTitle={true}
             filter={props.filter}
             collectionDescription={<div />}
             // logoUrl={`https://share.bloomlibrary.org/category-images/African Storybook.png`}

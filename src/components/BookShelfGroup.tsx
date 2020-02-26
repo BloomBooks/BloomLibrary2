@@ -6,6 +6,7 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import { useGetBookshelvesByCategory } from "../connection/LibraryQueryHooks";
 import CategoryCard from "./CategoryCard";
+const encodeUrl = require("encodeurl");
 import LazyLoad from "react-lazyload";
 
 interface IProps {
@@ -65,19 +66,22 @@ export const BookshelfGroupInner: React.FunctionComponent<IProps> = props => {
                     // Art/Painting. So this is checking to see if "Art/Painting" starts with "Art"
                     shelf.englishName.startsWith(props.parentBookshelf)
             )
-            .map((l: any) => (
+            .map((shelf: any) => (
                 <CategoryCard
-                    key={l.key}
-                    title={l.englishName}
+                    key={shelf.key}
+                    title={shelf.englishName}
                     bookCount="??"
-                    filter={{ bookshelf: l.key, bookShelfCategory: l.category }}
+                    filter={{
+                        bookshelf: shelf.key,
+                        bookShelfCategory: shelf.category
+                    }}
                     pageType={props.bookShelfCategory}
                     img={
                         "https://share.bloomlibrary.org/category-images/" +
-                        l.key +
+                        encodeUrl(shelf.key) +
                         ".png"
                     }
-                    bookshelfInfo={l}
+                    bookshelfInfo={shelf}
                 />
             ));
 

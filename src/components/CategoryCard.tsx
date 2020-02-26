@@ -11,7 +11,7 @@ import { IFilter } from "../IFilter";
 import Img from "react-image";
 import { BookCount } from "./BookCount";
 import { IBookshelfResult } from "../connection/LibraryQueryHooks";
-
+import teamIcon from "../assets/team.svg";
 interface IProps {
     title: string;
     bookCount?: string;
@@ -29,16 +29,28 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
     const title = parts[parts.length - 1];
 
     const titleElementIfNoImage = (
-        <h2
-            css={css`
-                text-align: center;
-                flex-grow: 1; // push the rest to the bottom5
-            `}
-        >
-            {title}
-        </h2>
+        <React.Fragment>
+            <h2
+                css={css`
+                    text-align: center;
+                    flex-grow: 1; // push the rest to the bottom5
+                `}
+            >
+                {title}
+            </h2>
+            <img
+                src={teamIcon}
+                css={css`
+                    height: 40px;
+                    margin-bottom: 10px;
+                `}
+                alt="team"
+            ></img>
+        </React.Fragment>
     );
 
+    console.log(props.bookshelfInfo.key);
+    console.log("props.img=" + props.img);
     return (
         <CheapCard
             css={css`
@@ -57,6 +69,7 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
         >
             {/* We want to show an image for the category if we have one */}
             {/* Note, react-image (Img) currently breaks strict mode. See app.tsx */}
+
             <Img
                 src={props.img}
                 css={css`
@@ -70,6 +83,8 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
                 // If we could not get an image, show the text title
                 unloader={titleElementIfNoImage}
             />
+
+            {!!!props.img && <div>FOOBAR</div>}
             <div
                 css={css`
                     margin-top: auto;
