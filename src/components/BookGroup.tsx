@@ -56,7 +56,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
         {
             include: "langPointers",
             keys:
-                "title,baseUrl,objectId,langPointers,tags,features,harvestState",
+                "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt",
             // the following is arbitrary. I don't even yet no what the ux is that we want.
             limit: maxCardsToRetrieve,
             order: props.order || "titleOrScore"

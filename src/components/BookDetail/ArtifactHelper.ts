@@ -113,6 +113,15 @@ function getBookNameFromUrl(baseUrl: string): string | undefined {
 export function getHarvesterProducedThumbnailUrl(
     book: Book | IBasicBookInfo
 ): string | undefined {
+    const harvestTime = book.harvestStartedAt;
+    if (!harvestTime || new Date(harvestTime.iso) < new Date(2020, 2, 12, 11)) {
+        // book not havested recently enough to have useful harvester thumbnail.
+        // (We'd prefer to do this with harvester version, or even to just be
+        // able to assume that any harvested book has this, but it's not yet so.
+        // When it is, we can use harvestState === "Done" and remove harvestStartedAt from
+        // Book, IBasicBookInfo, and the keys for BookGroup queries.)
+        return undefined;
+    }
     let harvesterBaseUrl = getHarvesterBaseUrl(book);
     if (!harvesterBaseUrl) {
         return undefined;

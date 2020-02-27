@@ -155,6 +155,8 @@ export interface IBasicBookInfo {
     objectId: string;
     baseUrl: string;
     harvestState?: string;
+    // conceptually a date, but uploaded from parse server this is what it has.
+    harvestStartedAt?: { iso: string } | undefined;
     title: string;
     languages: ILanguage[];
     features: string[];
