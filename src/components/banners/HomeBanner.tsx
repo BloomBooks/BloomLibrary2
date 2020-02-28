@@ -1,5 +1,5 @@
 import css from "@emotion/css/macro";
-import React, { Fragment } from "react"; // see https://github.com/emotion-js/emotion/issues/1156
+import React from "react"; // see https://github.com/emotion-js/emotion/issues/1156
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
@@ -40,7 +40,7 @@ export const HomeBanner: React.FunctionComponent<{
                     title="Library Home"
                     about={
                         <div>
-                            "Welcome to our Crowd Sourced library of free books
+                            "Welcome to our Crowdsourced library of free books
                             that you can read, print, or adapt into your own
                             language."
                         </div>

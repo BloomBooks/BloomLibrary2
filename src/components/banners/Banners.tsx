@@ -124,27 +124,6 @@ export const BannerContents: React.FunctionComponent<{
     );
 };
 
-// Open a new tab when this is clicked
-export const ExternalLink: React.FunctionComponent<{
-    href: string;
-}> = props => (
-    <React.Fragment>
-        <a target="_blank" rel="noopener noreferrer" href={props.href}>
-            {props.children}
-        </a>
-    </React.Fragment>
-);
-
-export const LearnMoreLink: React.FunctionComponent<{
-    href: string;
-}> = props => (
-    <React.Fragment>
-        <a target="_blank" rel="noopener noreferrer" href={props.href}>
-            Learn More
-        </a>
-    </React.Fragment>
-);
-
 export const SearchBanner: React.FunctionComponent<{
     filter: IFilter;
 }> = props => {

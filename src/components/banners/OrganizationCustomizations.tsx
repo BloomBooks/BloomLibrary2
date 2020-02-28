@@ -4,9 +4,9 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import { ExternalLink } from "./Banners";
 import { PublisherBanner } from "./PublisherBanner";
 import { StandardPublisherGroups } from "../StandardPublisherGroups";
+import { ExternalLink } from "./ExternalLink";
 
 const imageBase = "https://share.bloomlibrary.org/bookshelf-images/";
 

@@ -20,7 +20,6 @@ import { BookDetailHeaderGroup } from "./BookDetailHeaderGroup";
 import { ReportButton } from "./ReportButton";
 import { OSFeaturesContext } from "../../components/OSFeaturesContext";
 import { commonUI } from "../../theme";
-import { HowToPrintButton } from "./HowToPrintButton";
 
 interface IProps {
     id: string;

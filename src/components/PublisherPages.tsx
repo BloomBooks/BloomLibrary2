@@ -1,7 +1,7 @@
 import React from "react";
 import { PublisherBanner } from "./banners/PublisherBanner";
 import { StandardPublisherGroups } from "./StandardPublisherGroups";
-import { ExternalLink } from "./banners/Banners";
+import { ExternalLink } from "./banners/ExternalLink";
 
 export const AfricanStorybookPage: React.FunctionComponent = () => {
     const filter = { bookshelf: "African Storybook" };

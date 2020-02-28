@@ -84,7 +84,6 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
                 unloader={titleElementIfNoImage}
             />
 
-            {!!!props.img && <div>FOOBAR</div>}
             <div
                 css={css`
                     margin-top: auto;

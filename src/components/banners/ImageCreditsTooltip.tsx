@@ -1,7 +1,7 @@
 import css from "@emotion/css/macro";
 import React from "react"; // see https://github.com/emotion-js/emotion/issues/1156
 // these two lines make the css prop work on react elements
-import { jsx, SerializedStyles } from "@emotion/core";
+import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import { Button, Tooltip } from "@material-ui/core";
 import InfoIcon from "@material-ui/icons/InfoOutlined";

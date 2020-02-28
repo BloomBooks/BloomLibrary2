@@ -6,9 +6,9 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import { useGetBookshelvesByCategory } from "../connection/LibraryQueryHooks";
 import CategoryCard from "./CategoryCard";
-const encodeUrl = require("encodeurl");
 import LazyLoad from "react-lazyload";
 
+const encodeUrl = require("encodeurl");
 interface IProps {
     title: string;
     bookShelfCategory: string; // project, org, publisher, custom

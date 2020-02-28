@@ -6,18 +6,13 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import { useGetTopicList } from "../connection/LibraryQueryHooks";
 import { IFilter } from "../IFilter";
-import {
-    BannerContents,
-    ProjectBanner,
-    SearchBanner,
-    LanguageBanner
-} from "./Banners";
 import { BookGroup } from "./BookGroup";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { CustomizableBanner } from "./banners/CustomizableBanner";
 import { getLanguageBannerSpec } from "./banners/LanguageCustomizations";
 import { getProjectBannerSpec } from "./banners/ProjectCustomizations";
 import { PublisherBanner } from "./banners/PublisherBanner";
+import { SearchBanner } from "./banners/Banners";
 
 export const SearchResultsPage: React.FunctionComponent<{
     filter: IFilter;

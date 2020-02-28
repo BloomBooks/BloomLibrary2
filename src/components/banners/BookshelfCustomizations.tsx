@@ -4,7 +4,8 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import { IBannerSpec, LearnMoreLink } from "./Banners";
+import { IBannerSpec } from "./Banners";
+import { LearnMoreLink } from "./LearnMoreLink";
 
 const imageBase = "https://share.bloomlibrary.org/bookshelf-images/";
 const enablingWritersBlurb =
