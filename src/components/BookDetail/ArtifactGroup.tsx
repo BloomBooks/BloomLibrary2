@@ -52,12 +52,14 @@ export const ArtifactGroup: React.FunctionComponent<{
             {showMoreDownloadsHeading && <div>More downloads</div>}
             <ul
                 // margin-left defeats the padding built into mui-buttons, so the
-                // row can be left-aligned
+                // row can be left-aligned when in mobile layout where it is on the left.
+                // margin-right allows right-aligning when in desktop layout mode.
                 // margin-top defeats most of the mui padding to bring the buttons closer
                 // to the heading if there is one.
                 css={css`
                     margin: 0;
                     margin-left: -12px;
+                    margin-right: -12px;
                     margin-top: ${showMoreDownloadsHeading ? "-10px" : "0"};
                 `}
             >

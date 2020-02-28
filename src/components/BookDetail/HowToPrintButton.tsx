@@ -27,6 +27,7 @@ export const HowToPrintButton: React.FunctionComponent = () => (
                 margin-right: 5px;
             `}
         />
+
         <div
             css={css`
                 margin-top: 2px;

@@ -114,7 +114,7 @@ export const BookDetailInternal: React.FunctionComponent<{
                             `}
                         />
 
-                        <HowToPrintButton />
+                        {/* Enhance, maybe, add this and wire to some message <HowToPrintButton />*/}
                         {bloomDesktopAvailable || (
                             <Link
                                 color="secondary"

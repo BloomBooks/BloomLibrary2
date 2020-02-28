@@ -21,7 +21,8 @@ export const TranslateButton: React.FunctionComponent<{
             color="secondary"
             size="large"
             css={css`
-                margin-top: 16px !important;
+                /*don't do this. When the READ button is hidden, this will make it not align with the top
+                margin-top: 16px !important;*/
                 width: ${props.fullWidth
                     ? "100%"
                     : commonUI.detailViewMainButtonWidth};
