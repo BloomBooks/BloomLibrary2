@@ -10,8 +10,9 @@ import { Book } from "../model/Book";
 export const ReadBookPage: React.FunctionComponent<{ id: string }> = props => {
     const handleMessageFromBloomPlayer = (event: MessageEvent) => {
         //        console.log(JSON.stringify(event.data));
+
         try {
-            const r = event.data;
+            const r = JSON.parse(event.data);
             if (r.messageType === "backButtonClicked") {
                 window.history.back();
             }
