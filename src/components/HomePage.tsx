@@ -2,8 +2,8 @@ import React from "react";
 import { BookGroup } from "./BookGroup";
 import { LanguageGroup } from "./LanguageGroup";
 import { BookshelfGroup } from "./BookShelfGroup";
-import { HomeBanner } from "./Banners";
 import { IFilter } from "../IFilter";
+import { HomeBanner } from "./banners/HomeBanner";
 
 export const HomePage: React.FunctionComponent = () => {
     // enhance (probably?) add CC license requirement. But we don't want to lose SB comics.

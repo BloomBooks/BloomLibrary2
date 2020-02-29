@@ -6,14 +6,13 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import { useGetTopicList } from "../connection/LibraryQueryHooks";
 import { IFilter } from "../IFilter";
-import {
-    BannerContents,
-    ProjectBanner,
-    SearchBanner,
-    LanguageBanner
-} from "./Banners";
 import { BookGroup } from "./BookGroup";
 import { Breadcrumbs } from "./Breadcrumbs";
+import { CustomizableBanner } from "./banners/CustomizableBanner";
+import { getLanguageBannerSpec } from "./banners/LanguageCustomizations";
+import { getProjectBannerSpec } from "./banners/ProjectCustomizations";
+import { PublisherBanner } from "./banners/PublisherBanner";
+import { SearchBanner } from "./banners/Banners";
 
 export const SearchResultsPage: React.FunctionComponent<{
     filter: IFilter;
@@ -53,17 +52,19 @@ export const AllResultsPage: React.FunctionComponent<{
     </React.Fragment>
 );
 
-export const CategoryPage: React.FunctionComponent<{
+export const DefaultOrganizationPage: React.FunctionComponent<{
     title: string;
     filter: IFilter;
 }> = props => (
     <React.Fragment>
-        <BannerContents
+        <PublisherBanner
             title={props.title}
-            about="some about"
-            bookCountMessage="{0}  books"
+            showTitle={true}
             filter={props.filter}
+            collectionDescription={<div />}
+            // logoUrl={`https://share.bloomlibrary.org/category-images/African Storybook.png`}
         />
+
         <ul className={"pageResults"}>
             <BookGroup title={`All books`} filter={props.filter} />
         </ul>
@@ -74,8 +75,12 @@ export const LanguagePage: React.FunctionComponent<{
     title: string;
     filter: IFilter;
 }> = props => (
-    <React.Fragment>
-        <LanguageBanner filter={props.filter} title={props.title} />
+    <div>
+        <CustomizableBanner
+            filter={props.filter}
+            title={props.title}
+            spec={getLanguageBannerSpec(props.filter.language!)}
+        />
         <ul className={"pageResults"}>
             <BookGroup
                 title={`Featured ${props.filter.language} books.`}
@@ -98,23 +103,27 @@ export const LanguagePage: React.FunctionComponent<{
                 key={"all filtered"}
             />
         </ul>
-    </React.Fragment>
+    </div>
 );
 export const ProjectPage: React.FunctionComponent<{
     title: string;
     filter: IFilter;
-}> = props => (
-    <React.Fragment>
-        <ProjectBanner
-            filter={props.filter}
-            title={props.title}
-            bannerImageUrl={"banners/generic-workshop.jpg"}
-        />
-        <ul className={"pageResults"}>
-            <BookGroupForEachTopic filter={props.filter} />
-        </ul>
-    </React.Fragment>
-);
+}> = props => {
+    console.log("Project Page " + JSON.stringify(props));
+    return (
+        <React.Fragment>
+            <CustomizableBanner
+                filter={props.filter}
+                title={props.title}
+                spec={getProjectBannerSpec(props.filter.bookshelf!)}
+            />
+            <ul className={"pageResults"}>
+                <BookGroup filter={props.filter} title={"All books"} />
+                {/* <BookGroupForEachTopic filter={props.filter} /> */}
+            </ul>
+        </React.Fragment>
+    );
+};
 export const BookGroupForEachTopic: React.FunctionComponent<{
     filter: IFilter;
 }> = props => {
@@ -137,15 +146,18 @@ export const BookGroupForEachTopic: React.FunctionComponent<{
                                 }}
                             />
                         );
-                    } else return <></>;
+                    } else return null; //<></>;
                 })}
 
-                {/* TODO: currently the above will show some books as "NoTopic" books. But the vast majority of books without a top
+                {/* TODO: currently the above will show some books as "NoTopic" books. But the vast majority of books without a topic
              do not have topic:NoTopic. There isn't an obvious way of writing a ParseServer query to get a subset of
              books (e.g. workshop) that also do not have any topics. We could a) do that on client b) custom function on server
              or c) walk the Library and insert "NoTopic" wherever it is missing.
             */}
             </div>
         );
-    } else return <>"waiting for topics"</>;
+    } else return null;
+    // <React.Fragment key={"waiting"}>
+    //     "waiting for topics"
+    // </React.Fragment>
 };

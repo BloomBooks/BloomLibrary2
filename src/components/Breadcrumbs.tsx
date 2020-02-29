@@ -20,6 +20,9 @@ export const Breadcrumbs: React.FunctionComponent = () => {
             {router!.breadcrumbStack.map(l => (
                 <li key={l.title}>
                     <a
+                        css={css`
+                            text-decoration: none !important;
+                        `}
                         target="_blank"
                         // todo: seems we're supposed to make this a button that looks like a link for accessibility
                         onClick={() => {

@@ -4,11 +4,11 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import React from "react";
-import { useGetBookshelves } from "../connection/LibraryQueryHooks";
-import { getResultsOrMessageElement } from "../connection/GetQueryResultsUI";
+import { useGetBookshelvesByCategory } from "../connection/LibraryQueryHooks";
 import CategoryCard from "./CategoryCard";
 import LazyLoad from "react-lazyload";
 
+const encodeUrl = require("encodeurl");
 interface IProps {
     title: string;
     bookShelfCategory: string; // project, org, publisher, custom
@@ -50,14 +50,13 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = props => (
 export const BookshelfGroupInner: React.FunctionComponent<IProps> = props => {
     // At this point there are so few bookshelves that we just retrieve the whole list and then filter here.
     // Might be a good thing to cache.
-    const bookshelfResult = useGetBookshelves(props.bookShelfCategory);
-
-    const { noResultsElement, results } = getResultsOrMessageElement(
-        bookshelfResult
+    const bookshelfResults = useGetBookshelvesByCategory(
+        props.bookShelfCategory
     );
+
     const parts =
-        noResultsElement ||
-        results
+        bookshelfResults &&
+        bookshelfResults
             .filter(
                 (shelf: any) =>
                     // allow if we weren't given a bookshelf to filter by
@@ -67,18 +66,22 @@ export const BookshelfGroupInner: React.FunctionComponent<IProps> = props => {
                     // Art/Painting. So this is checking to see if "Art/Painting" starts with "Art"
                     shelf.englishName.startsWith(props.parentBookshelf)
             )
-            .map((l: any) => (
+            .map((shelf: any) => (
                 <CategoryCard
-                    key={l.key}
-                    title={l.englishName}
+                    key={shelf.key}
+                    title={shelf.englishName}
                     bookCount="??"
-                    filter={{ bookshelf: l.key, bookShelfCategory: l.category }}
+                    filter={{
+                        bookshelf: shelf.key,
+                        bookShelfCategory: shelf.category
+                    }}
                     pageType={props.bookShelfCategory}
                     img={
                         "https://share.bloomlibrary.org/category-images/" +
-                        l.key +
+                        encodeUrl(shelf.key) +
                         ".png"
                     }
+                    bookshelfInfo={shelf}
                 />
             ));
 

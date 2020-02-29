@@ -3127,6 +3127,11 @@
   resolved "https://registry.yarnpkg.com/@types/color-name/-/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
   integrity sha512-rr+OQyAjxze7GgWrSaJwydHStIhHq2lvY3BOC2Mj7KnzI7XK0Uw1TOOdI9lDoajEbSWLiYgoo4f1R51erQfhPQ==
 
+"@types/encodeurl@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/encodeurl/-/encodeurl-1.0.0.tgz#b811667d62e53d01adc4bbbfc3b5a1ad99b4738a"
+  integrity sha512-iO2Q6xQOJ5DtOB6wJ2KIetFq9JRTbpzcKTe2aS6CCsa+W9KNWX2yXx9KeB5sY/nBfAWN43LkPg6SFB+ldsW9ZA==
+
 "@types/eslint-visitor-keys@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@types/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#1ee30d79544ca84d68d4b3cdb0af4f205663dd2d"
@@ -6503,7 +6508,7 @@ emotion@^10.0.27:
     babel-plugin-emotion "^10.0.27"
     create-emotion "^10.0.27"
 
-encodeurl@~1.0.2:
+encodeurl@^1.0.2, encodeurl@~1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/encodeurl/-/encodeurl-1.0.2.tgz#ad3ff4c86ec2d029322f5a02c3a9a606c95b3f59"
   integrity sha1-rT/0yG7C0CkyL1oCw6mmBslbP1k=

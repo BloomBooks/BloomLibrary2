@@ -8,10 +8,13 @@ import { BookCount } from "../BookCount";
 import { Breadcrumbs } from "../Breadcrumbs";
 import { IFilter } from "../../IFilter";
 
+// Note, Publisher & Organization may be treated differently for some things,
+// but when it comes to showing a page for one of them, they are currently the same
 export const PublisherBanner: React.FunctionComponent<{
     title: string;
+    showTitle: boolean;
     filter: IFilter;
-    bannerImageUrl: string;
+    logoUrl?: string;
     collectionDescription: JSX.Element;
 }> = props => (
     <div
@@ -25,7 +28,8 @@ export const PublisherBanner: React.FunctionComponent<{
                 font-size: 24pt;
             `}
         >
-            Publisher: {props.title}
+            {/* sometimes the logo is the name, so we don't want to repeat it in the title */}
+            {props.showTitle && <span>{props.title}</span>}
         </h1>
         <div
             css={css`
@@ -33,14 +37,16 @@ export const PublisherBanner: React.FunctionComponent<{
                 margin-top: 20px;
             `}
         >
-            <img
-                src={props.bannerImageUrl}
-                alt={props.title}
-                css={css`
-                    height: 150px;
-                    margin-right: 50px;
-                `}
-            />
+            {props.logoUrl && (
+                <img
+                    src={props.logoUrl}
+                    alt={props.title}
+                    css={css`
+                        height: 150px;
+                        margin-right: 50px;
+                    `}
+                />
+            )}
             <div
                 css={css`
                     max-width: 500px;

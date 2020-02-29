@@ -14,7 +14,7 @@ function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
         trigger: "true",
         options: {
             headers: getConnection().headers,
-            params: params
+            params
         }
     });
 }
@@ -52,18 +52,27 @@ export function useGetTopicList() {
     return useLibraryQuery("tag", { limit: 1000, count: 1000 });
 }
 
-export function useGetBookshelves(category?: string) {
-    return useLibraryQuery("bookshelf", {
-        where: category ? { category: category } : null,
-        keys: "englishName,key"
+export function useGetBookshelvesByCategory(
+    category?: string
+): IBookshelfResult[] {
+    const axiosResult = useLibraryQuery("bookshelf", {
+        where: category ? { category } : null
+        //,keys: "englishName,key"
     });
+    if (axiosResult.response?.data?.results) {
+        return axiosResult.response.data.results as IBookshelfResult[];
+    } else return [];
 }
 
-export function useGetLanguageInfo(language: string) {
-    return useLibraryQuery("language", {
+export function useGetLanguageInfo(language: string): ILanguage[] {
+    const axiosResult = useLibraryQuery("language", {
         where: { isoCode: language },
         keys: "isoCode,name,usageCount,bannerImageUrl"
     });
+
+    if (axiosResult.response?.data?.results) {
+        return axiosResult.response.data.results as ILanguage[];
+    } else return [];
 }
 
 export function useGetBookCount(filter: IFilter) {
@@ -168,6 +177,13 @@ export interface ISearchBooksResult {
     totalMatchingRecords: number;
     errorString: string | null;
     books: IBasicBookInfo[];
+}
+export interface IBookshelfResult {
+    objectId: string;
+    englishName: string;
+    key: string;
+    normallyVisible: boolean;
+    category: string;
 }
 interface ISimplifiedAxiosResult {
     waiting: boolean;
