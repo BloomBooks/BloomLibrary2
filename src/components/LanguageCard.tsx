@@ -48,16 +48,29 @@ export const LanguageCard: React.FunctionComponent<ILanguage> = props => {
             <h2
                 css={css`
                     text-align: center;
-                    flex-grow: 1; // push the rest to the bottom
                     max-height: 40px;
+                    margin-top: 0;
+                    margin-bottom: 0;
+                    margin-block-start: 0;
+                    margin-block-end: 0;
                 `}
             >
                 {languageName}
             </h2>
+            {props.isoCode.indexOf("-") > -1 &&
+                props.isoCode !== props.englishName && (
+                    <div
+                        css={css`
+                            font-size: 0.7rem;
+                        `}
+                    >
+                        {props.isoCode}
+                    </div>
+                )}
             <div
                 css={css`
                     font-size: 0.9rem;
-                    margin-bottom: 15px;
+                    margin-top: 5px;
                 `}
             >
                 {autonym}
@@ -66,6 +79,7 @@ export const LanguageCard: React.FunctionComponent<ILanguage> = props => {
                 css={css`
                     font-size: 0.8rem;
                     color: #1d94a4;
+                    margin-top: auto;
                 `}
             >
                 {props.usageCount ? `${props.usageCount} Books` : ""}
