@@ -29,7 +29,7 @@ export class Book {
     public credits: string = "";
     public pageCount: string = "";
     public bookOrder: string = "";
-
+    public downloadCount: number = -1;
     public features: string[] = [];
     public harvesterLog: string = "";
     public harvestState: string = "";

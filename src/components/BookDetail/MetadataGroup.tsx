@@ -12,6 +12,7 @@ import { LicenseLink } from "./LicenseLink";
 import titleCase from "title-case";
 import { Link } from "@material-ui/core";
 import { commonUI } from "../../theme";
+import { BookAnalytics } from "./BookAnalytics";
 
 export const MetadataGroup: React.FunctionComponent<{
     book: Book;
@@ -62,6 +63,7 @@ export const MetadataGroup: React.FunctionComponent<{
                         </Link>
                     </div>
                 )}
+            <BookAnalytics book={props.book} />
         </div>
         <div
             id="column2"

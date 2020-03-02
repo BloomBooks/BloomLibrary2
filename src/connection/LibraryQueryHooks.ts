@@ -91,8 +91,9 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
                 keys:
                     "title,baseUrl,license,licenseNotes,summary,copyright,harvestState," +
                     "tags,pageCount,show,credits,country,features,internetLimits," +
-                    "librarianNote,uploader,langPointers,importedBookSourceUrl",
-                include: "librarianNote,uploader,langPointers"
+                    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount",
+                // fluff up fields that reference other tables
+                include: "uploader,langPointers"
             }
         }
     });
