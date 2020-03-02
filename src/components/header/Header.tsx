@@ -4,18 +4,24 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React from "react";
+import React, { useContext } from "react";
 import logo from "./header-logo.svg";
 import { SearchBox } from "../SearchBox";
 import { UserMenu } from "../User/UserMenu";
 import { commonUI } from "../../theme";
 import Link from "@material-ui/core/Link/Link";
 import { useMediaQuery } from "@material-ui/core";
+import { RouterContext, Router } from "../../Router";
 
 export const Header: React.FunctionComponent = props => {
     const searchBelow = !useMediaQuery("(min-width:500px)");
     const normalToobarHeight = "48px";
     const toolbarHeight = searchBelow ? "90px" : normalToobarHeight;
+
+    const router = useContext(RouterContext);
+    function handleClickBloomLogo() {
+        router!.goHome();
+    }
 
     return (
         <div
@@ -33,7 +39,7 @@ export const Header: React.FunctionComponent = props => {
         >
             {searchBelow || (
                 <React.Fragment>
-                    <Link href="/" title="Home">
+                    <Link title="Home" onClick={() => handleClickBloomLogo()}>
                         <img src={logo} alt={"Bloom Logo"} />
                     </Link>
                     <div
