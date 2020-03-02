@@ -6,9 +6,9 @@ import { ReactComponent as SignLanguageIcon } from "../assets/Sign Language.svg"
 import { ReactComponent as TalkingBookIcon } from "../assets/Talking Book.svg";
 import { ReactComponent as VisuallyImpairedIcon } from "../assets/Visually Impaired.svg";
 
-export interface FeatureOption {
-    feature: string;
-    icon: (props: object) => any;
+export interface IFeatureOption {
+    featureKey: string;
+    icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
     languageDependent: boolean;
 }
 
@@ -18,7 +18,7 @@ export const featureIconHeight = 12;
 // (appears next to the language in the languages list) or not (appears on the left of the
 // feature bar). In addition, the icon is given as a function that takes some props and
 // returns a react component.
-// It would be simpler to, e.g., import comicIcon from "../assests/Comic.svg"
+// It would be simpler to, e.g., import comicIcon from "../assets/Comic.svg"
 // (which yields a url), then let the icon: simply be that string, and let the code
 // that wants the icon make an <img> with src={feature.icon}. But then we can't use
 // fill: to control the color.
@@ -28,34 +28,34 @@ export const featureIconHeight = 12;
 // in different places. So icon can't just be a fixed react component.
 // Thus, I ended up making icon a function that takes the props and builds the
 // appropriate react component containing the right icon and using the supplied props.
-export const featureOptions: FeatureOption[] = [
+export const featureOptions: IFeatureOption[] = [
     {
-        feature: "talkingBook",
+        featureKey: "talkingBook",
         icon: props => <TalkingBookIcon {...props}></TalkingBookIcon>,
         languageDependent: true
     },
     {
-        feature: "blind",
+        featureKey: "blind",
         icon: props => <VisuallyImpairedIcon {...props}></VisuallyImpairedIcon>,
         languageDependent: true
     },
     {
-        feature: "comic",
+        featureKey: "comic",
         icon: props => <ComicIcon {...props}></ComicIcon>,
         languageDependent: false
     }, // todo: can't find this feature, is there another name?
     {
-        feature: "motion",
+        featureKey: "motion",
         icon: props => <MotionIcon {...props}></MotionIcon>,
         languageDependent: false
     },
     {
-        feature: "signLanguage",
+        featureKey: "signLanguage",
         icon: props => <SignLanguageIcon {...props}></SignLanguageIcon>,
         languageDependent: true
     },
     {
-        feature: "activity",
+        featureKey: "activity",
         icon: props => <ActivityIcon {...props}></ActivityIcon>,
         languageDependent: false
     } // todo: can't find this feature, is there another name?
@@ -63,13 +63,13 @@ export const featureOptions: FeatureOption[] = [
 
 export const getNonLanguageFeatures = (
     features: string[] | undefined
-): FeatureOption[] => {
+): IFeatureOption[] => {
     if (!features) return [];
     return features
         .map(
             f =>
                 featureOptions.filter(
-                    x => x.feature === f && !x.languageDependent
+                    x => x.featureKey === f && !x.languageDependent
                 )[0]
         )
         .filter(f => !!f);
@@ -81,7 +81,7 @@ export const getNonLanguageFeatures = (
 export const getLanguageFeatures = (
     features: string[] | undefined,
     lang: string
-): FeatureOption[] => {
+): IFeatureOption[] => {
     if (!features) return [];
     return features
         .map(
@@ -95,7 +95,7 @@ export const getLanguageFeatures = (
             f =>
                 featureOptions.filter(
                     x =>
-                        f.startsWith(x.feature + ":") &&
+                        f.startsWith(x.featureKey + ":") &&
                         f.split(":")[1] === lang
                 )[0]
         )

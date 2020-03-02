@@ -51,6 +51,7 @@ export const FeatureLevelBar: React.FunctionComponent<IProps> = props => {
     );
     const featureElements = featureBarFeatures.map(feature =>
         feature.icon({
+            key: feature.featureKey,
             fill: "black", // They must have a color specified or will be transparent
             // I can't figure out how to make emotion CSS work here.
             style: {

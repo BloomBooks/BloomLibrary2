@@ -37,6 +37,7 @@ export const LanguageFeatureList: React.FunctionComponent<IProps> = props => {
         for (const feature of langFeatures) {
             languageElements.push(
                 feature.icon({
+                    key: language.isoCode + feature.featureKey,
                     fill: "rgb(86,166,177)",
                     style: {
                         height: featureIconHeight + "px",

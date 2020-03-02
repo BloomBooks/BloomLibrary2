@@ -19,6 +19,6 @@ it("getLanguageFeatures finds expected features", () => {
         "tpi"
     );
     expect(result.length).toBe(2);
-    expect(result[0].feature).toBe("blind");
-    expect(result[1].feature).toBe("talkingBook");
+    expect(result[0].featureKey).toBe("blind");
+    expect(result[1].featureKey).toBe("talkingBook");
 });
