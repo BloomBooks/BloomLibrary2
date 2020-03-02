@@ -113,11 +113,21 @@ export class Router {
     }
 
     public goToBreadCrumb(location: ILocation): void {
+        if (location.pageType === "home") {
+            // Treat home as a special case so history will work correctly
+            this.goHome();
+            return;
+        }
         // We could just literally adopt this location, but then we would lose any preceding breadcrumbs.
         // Instead, we want to pop items off the stack until we get to it.
         while (this.current !== location) {
             this.breadcrumbStack.pop();
         }
+    }
+
+    public goHome(): void {
+        this.breadcrumbStack = new Array<ILocation>();
+        this.push(Router.home);
     }
 
     // TODO: make this real
