@@ -105,6 +105,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                 css={css`
                                     display: flex;
                                     margin-bottom: 2px;
+                                    height: 32px;
                                 `}
                             >
                                 <div
@@ -114,6 +115,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                         border-radius: 5px;
                                         padding-left: 5px;
                                         margin-right: 10px;
+                                        height: 26px;
                                     `}
                                 >
                                     <input
@@ -142,7 +144,11 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                     <img src={searchIcon} alt="Search" />
                                 </div>
 
-                                <div>{`${languages.length} Languages`}</div>
+                                <div
+                                    css={css`
+                                        margin-top: 4px;
+                                    `}
+                                >{`${languages.length} Languages`}</div>
                             </div>
                             {getFilterLanguagesUI(
                                 currentInputBoxText,
