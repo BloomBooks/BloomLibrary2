@@ -1,5 +1,5 @@
 import React from "react";
-import { useGetBookCount } from "../connection/LibraryQueryHooks";
+import { useGetBookCountRaw } from "../connection/LibraryQueryHooks";
 import { IFilter } from "../IFilter";
 import { getResultsOrMessageElement } from "../connection/GetQueryResultsUI";
 
@@ -8,7 +8,7 @@ export const BookCount: React.FunctionComponent<{
     filter: IFilter;
     //ClassName?: string;
 }> = props => {
-    const bookCountResult = useGetBookCount(props.filter);
+    const bookCountResult = useGetBookCountRaw(props.filter);
     const { noResultsElement, count } = getResultsOrMessageElement(
         bookCountResult
     );

@@ -75,8 +75,17 @@ export function useGetLanguageInfo(language: string): ILanguage[] {
     } else return [];
 }
 
-export function useGetBookCount(filter: IFilter) {
-    return useBookQuery({ limit: 0, count: 1 }, filter);
+export function useGetBookCountRaw(filter: IFilter) {
+    return useBookQueryInternal({ limit: 0, count: 1 }, filter);
+}
+
+export function useGetBookCount(filter: IFilter): number {
+    const answer = useBookQueryInternal({ limit: 0, count: 1 }, filter);
+    if (!answer.response) {
+        return 0;
+    }
+    const s = answer.response["data"]["count"];
+    return parseInt(s, 10);
 }
 
 export function useGetBookDetail(bookId: string): Book | undefined | null {
@@ -133,10 +142,12 @@ export interface IAxiosAnswer extends IReturns<any> {}
 // May set param.order to "titleOrScore" to indicate that books should be
 // sorted by title unless the search is a keyword search that makes a ranking
 // score available. For this to work, params must also specify keys.
-export function useBookQuery(
+function useBookQueryInternal(
     params: {}, // this is the order, which fields, limits, etc.
 
-    filter: IFilter // this is *which* records to return
+    filter: IFilter, // this is *which* records to return
+    limit?: number, //pagination
+    skip?: number //pagination
 ): IAxiosAnswer {
     const { tags } = useContext(CachedTablesContext);
 
@@ -149,18 +160,41 @@ export function useBookQuery(
         trigger:
             JSON.stringify(params) +
             JSON.stringify(filter) +
-            JSON.stringify(!!tags),
+            JSON.stringify(!!tags) +
+            JSON.stringify(limit) +
+            JSON.stringify(skip),
         options: {
             headers: getConnection().headers,
-            params: constructParseBookQuery(params, filter, tags)
+            params: constructParseBookQuery(params, filter, tags, limit, skip)
         }
     });
 }
 
+export function useBookQuery(
+    params: {},
+    filter: IFilter,
+    limit?: number, //pagination
+    skip?: number //pagination
+): IBasicBookInfo[] {
+    const bookResultsStatus: IAxiosAnswer = useBookQueryInternal(
+        params,
+        filter,
+        limit,
+        skip
+    );
+    const simplifiedResultStatus = processAxiosStatus(bookResultsStatus);
+
+    return simplifiedResultStatus.books.map((rawFromREST: any) => {
+        const b: IBasicBookInfo = { ...rawFromREST };
+        b.languages = rawFromREST.langPointers;
+        return b;
+    });
+}
+
 // Note that we also have a full-fledge "book" class, so why aren't we just using that?
-// The is because Book class is basically everything we might want to know about a book,
-// and it is used in the BookDetail screen. In contrast, this is just some type wrapping
-// around the raw REST result, used to quickly make book cards.
+// Book class, used in the BookDetail screen, is basically everything we might want to
+// know about a book, and is more expensive to get and prepare. In contrast, this is just some type wrapping
+// around the raw REST result, used to quickly make book cards & grid rows.
 export interface IBasicBookInfo {
     objectId: string;
     baseUrl: string;
@@ -171,6 +205,10 @@ export interface IBasicBookInfo {
     languages: ILanguage[];
     features: string[];
     tags: string[];
+    license: string;
+    copyright: string;
+    pageCount: string;
+    createdAt: string;
 }
 
 export interface ISearchBooksResult {
@@ -202,11 +240,14 @@ export function useSearchBooks(
     params: {}, // this is the order, which fields, limits, etc.
     filter: IFilter // this is *which* books to return
 ): ISearchBooksResult {
-    const bookCountStatus: IAxiosAnswer = useBookQuery(
+    const bookCountStatus: IAxiosAnswer = useBookQueryInternal(
         { count: 1 }, // we're just looking for one number here, the count
         filter
     );
-    const bookResultsStatus: IAxiosAnswer = useBookQuery(params, filter);
+    const bookResultsStatus: IAxiosAnswer = useBookQueryInternal(
+        params,
+        filter
+    );
     const simplifiedResultStatus = processAxiosStatus(bookResultsStatus);
     const simplifiedCountStatus = processAxiosStatus(bookCountStatus);
 
@@ -342,10 +383,19 @@ export function splitString(
 export function constructParseBookQuery(
     params: any,
     filter: IFilter,
-    tagOptions?: string[]
+    tagOptions?: string[],
+    limit?: number, //pagination
+    skip?: number //pagination
 ): object {
-    // todo: I don't know why this is underfined
+    // todo: I don't know why this is undefined
     const f = filter ? filter : {};
+
+    if (limit) {
+        params.limit = limit;
+    }
+    if (skip) {
+        params.skip = skip;
+    }
 
     // language {"where":{"langPointers":{"$inQuery":{"where":{"isoCode":"en"},"className":"language"}},"inCirculation":{"$in":[true,null]}},"limit":0,"count":1
     // topic {"where":{"tags":{"$in":["topic:Agriculture","Agriculture"]},"license":{"$regex":"^\\Qcc\\E"},"inCirculation":{"$in":[true,null]}},"include":"langPointers,uploader","keys":"$score,title,tags,baseUrl,langPointers,uploader","limit":10,"order":"title",

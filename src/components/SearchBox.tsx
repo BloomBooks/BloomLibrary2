@@ -82,7 +82,8 @@ export const SearchBox: React.FunctionComponent<{
         if (searchString.length > 0) {
             const location = {
                 title: `search for "${searchString}"`,
-                pageType: "search",
+                pageType:
+                    router?.current.pageType === "grid" ? "grid" : "search",
                 filter: {
                     ...router!.current.filter,
                     search: searchString

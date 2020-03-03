@@ -1835,6 +1835,39 @@
   resolved "https://registry.yarnpkg.com/@csstools/normalize.css/-/normalize.css-10.1.0.tgz#f0950bba18819512d42f7197e56c518aa491cf18"
   integrity sha512-ij4wRiunFfaJxjB0BdrYHIH8FxBJpOwNPhhAcunlmPdXudL1WQV1qoP9un6JsEBAgQH+7UXyyjh0g7jTxXK6tg==
 
+"@devexpress/dx-core@2.4.1":
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/@devexpress/dx-core/-/dx-core-2.4.1.tgz#c371ee814c17ee11808cadf6c599487ee290a1d5"
+  integrity sha512-ZRFcg5YDsNpd8PbCbswiVvY+V0HePgNW2DkRhpbQPApF2ZT2OGnVVHB9uoOmzsfPNqvK/wR/qLUnLs7FTkV4AA==
+
+"@devexpress/dx-grid-core@2.4.1":
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/@devexpress/dx-grid-core/-/dx-grid-core-2.4.1.tgz#bc8288ef470ce28f8c14bf20c97a848a1a032ba1"
+  integrity sha512-ad1ZyKjDOZeipNQOKQqEjPMnEQm/TbEklrYfQq0iRbV+8WGQM/uuXHCKlWpWPbnVG/3H6XlFVplLgoBtHUAMGA==
+
+"@devexpress/dx-react-core@^2.4.1":
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/@devexpress/dx-react-core/-/dx-react-core-2.4.1.tgz#e8284b0c2299b42c17743dc4567f0af45b67a4a5"
+  integrity sha512-x7BSKJQeGtWkyn7INgJnFesX1qOrZZj0v4yvlYuWdE7anznPbcsycvooK7T8oOUot/jvUYzhdjtnis1uR+8NXA==
+  dependencies:
+    "@devexpress/dx-core" "2.4.1"
+    prop-types "^15.7.2"
+
+"@devexpress/dx-react-grid-material-ui@^2.4.1":
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/@devexpress/dx-react-grid-material-ui/-/dx-react-grid-material-ui-2.4.1.tgz#617c37288e6e2565abf64a91d4f6d7e7a9ee43ab"
+  integrity sha512-BZPH9q5pV/Tci+1IckLaggBubGhWyDntJWl+gtvXUy53bwFVdObdSkZQUa1dF6IvMV5BZrAYSLhkSJJe/g9wsQ==
+  dependencies:
+    clsx "^1.0.4"
+    prop-types "^15.7.2"
+
+"@devexpress/dx-react-grid@^2.4.1":
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/@devexpress/dx-react-grid/-/dx-react-grid-2.4.1.tgz#3ca7465852861834d4f3186efcf047831be6805d"
+  integrity sha512-ncMVY29QrVuhi7fAumhG5yDXNOI35pVwKYaulu0skG4R96wFIgswBRE99Ta95zFUJfyX8jFw/i4x+qpjgJ1GuA==
+  dependencies:
+    "@devexpress/dx-grid-core" "2.4.1"
+
 "@emotion/cache@^10.0.17":
   version "10.0.19"
   resolved "https://registry.yarnpkg.com/@emotion/cache/-/cache-10.0.19.tgz#d258d94d9c707dcadaf1558def968b86bb87ad71"

@@ -77,7 +77,11 @@ storiesOf("BookCard", module).add("simple", () => {
             "blind:en",
             "activity",
             "comic"
-        ]
+        ],
+        license: "",
+        copyright: "",
+        pageCount: "",
+        createdAt: ""
     };
 
     return <BookCard handleYourOwnLaziness={false} onBasicBookInfo={book} />;

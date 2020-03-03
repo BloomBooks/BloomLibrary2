@@ -40,7 +40,10 @@ export class Router {
     public waitingOnSaveOrCancel: boolean = false;
     public constructor() {
         const home = Router.home;
-        if (window.location.search === "") {
+        if (window.location.pathname === "/grid") {
+            this.push(home);
+            this.push({ title: "Grid", pageType: "grid" } as ILocation);
+        } else if (window.location.search === "") {
             // we're just at the root of the site
             this.push(home);
         } else {
