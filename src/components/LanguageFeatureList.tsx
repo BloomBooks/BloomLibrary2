@@ -7,6 +7,7 @@ import React from "react";
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
 import { getLanguageFeatures, featureIconHeight } from "./FeatureHelper";
 import { getUniqueLanguages, getNameDisplay } from "./LanguageLink";
+import { commonUI } from "../theme";
 
 interface IProps {
     onBasicBookInfo: IBasicBookInfo;
@@ -53,7 +54,7 @@ export const LanguageFeatureList: React.FunctionComponent<IProps> = props => {
     return (
         <div
             css={css`
-                color: gray;
+                color: ${commonUI.colors.lightestAccessibleGrayAgainstWhite};
                 font-size: 9pt;
                 margin-top: auto;
                 padding: 3px;

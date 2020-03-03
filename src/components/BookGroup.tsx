@@ -147,7 +147,8 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
                     <span
                         css={css`
                             font-size: 9pt;
-                            color: gray;
+                            color: ${commonUI.colors
+                                .lightestAccessibleGrayAgainstWhite};
                             margin-left: 1em;
                         `}
                     >

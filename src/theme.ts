@@ -4,7 +4,8 @@ export const commonUI = {
     colors: {
         bloomRed: "#D65649",
         bloomBlue: "#1d94a4",
-        dialogTopBottomGray: "#F1F3F4"
+        dialogTopBottomGray: "#F1F3F4",
+        lightestAccessibleGrayAgainstWhite: "#767676"
     },
 
     // Some of these aren't very global, but this is a convenient place to put
