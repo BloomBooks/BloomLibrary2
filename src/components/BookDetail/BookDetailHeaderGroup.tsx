@@ -10,7 +10,12 @@ import { observer } from "mobx-react";
 import { ReadButton } from "./ReadButton";
 import { TranslateButton } from "./TranslateButton";
 import { LanguageLink } from "../LanguageLink";
-import { getArtifactVisibilitySettings, ArtifactType } from "./ArtifactHelper";
+import {
+    getArtifactVisibilitySettings,
+    ArtifactType,
+    getThumbnailUrl,
+    getLegacyThumbnailUrl
+} from "./ArtifactHelper";
 import { ILanguage } from "../../model/Language";
 import { ReadOfflineButton } from "./ReadOfflineButton";
 import { useMediaQuery } from "@material-ui/core";
@@ -53,6 +58,9 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
         `(max-width:${props.breakToColumn})`
     );
 
+    const thumbnailUrl = getThumbnailUrl(props.book);
+    const legacyStyleThumbnail = getLegacyThumbnailUrl(props.book);
+
     return (
         <div
             id={"primaryInfoAndButtons"}
@@ -91,7 +99,22 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                 >
                     <img
                         alt="book thumbnail"
-                        src={props.book.baseUrl + "thumbnail-256.png"}
+                        src={thumbnailUrl}
+                        onError={ev => {
+                            // This is unlikely to be necessary now, as we have what we think is a reliable
+                            // way to know whether the harvester has created a thumbnail.
+                            // And eventually all books should simply have harvester thumbnails.
+                            // Keeping the fall-back just in case it occasionally helps.
+                            if (
+                                (ev.target as any).src !== legacyStyleThumbnail
+                            ) {
+                                (ev.target as any).src = legacyStyleThumbnail;
+                            } else {
+                                console.log(
+                                    "ugh! no thumbnail in either place"
+                                );
+                            }
+                        }}
                         css={css`
                             max-width: 125px;
                             max-height: 120px;

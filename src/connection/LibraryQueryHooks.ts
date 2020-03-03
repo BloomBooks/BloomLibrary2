@@ -91,9 +91,11 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
                 keys:
                     "title,baseUrl,license,licenseNotes,summary,copyright,harvestState," +
                     "tags,pageCount,show,credits,country,features,internetLimits," +
-                    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount",
+                    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount," +
+                    "harvestStartedAt",
                 // fluff up fields that reference other tables
                 include: "uploader,langPointers"
+                    
             }
         }
     });
@@ -171,6 +173,7 @@ export interface IBasicBookInfo {
     languages: ILanguage[];
     features: string[];
     tags: string[];
+    updatedAt?: string;
 }
 
 export interface ISearchBooksResult {
