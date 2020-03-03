@@ -8,7 +8,11 @@ import { CheapCard } from "./CheapCard";
 import LazyLoad from "react-lazyload";
 import { RouterContext } from "../Router";
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
-import { getHarvesterProducedThumbnailUrl } from "./BookDetail/ArtifactHelper";
+import {
+    getHarvesterProducedThumbnailUrl,
+    getLegacyThumbnailUrl,
+    getThumbnailUrl
+} from "./BookDetail/ArtifactHelper";
 import { FeatureLevelBar } from "./FeatureLevelBar";
 import { LanguageFeatureList } from "./LanguageFeatureList";
 
@@ -24,11 +28,8 @@ interface IProps {
 
 export const BookCard: React.FunctionComponent<IProps> = props => {
     const router = useContext(RouterContext);
-    const legacyStyleThumbnail =
-        props.onBasicBookInfo.baseUrl + "thumbnail-256.png";
-    const harvestedThumbnailUrl =
-        getHarvesterProducedThumbnailUrl(props.onBasicBookInfo) ||
-        legacyStyleThumbnail;
+    const legacyStyleThumbnail = getLegacyThumbnailUrl(props.onBasicBookInfo);
+    const thumbnailUrlToTry = getThumbnailUrl(props.onBasicBookInfo);
 
     const card = (
         <CheapCard
@@ -50,11 +51,9 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
                 alt={"book thumbnail"}
                 // NB: if you're not getting an image, e.g. in Storybook, it's because it's not inside of a swiper
                 src={
-                    props.handleYourOwnLaziness
-                        ? harvestedThumbnailUrl
-                        : undefined
+                    props.handleYourOwnLaziness ? thumbnailUrlToTry : undefined
                 }
-                data-src={harvestedThumbnailUrl} // we would have to generate new thumbnails that just have the image shown on the cover
+                data-src={thumbnailUrlToTry} // we would have to generate new thumbnails that just have the image shown on the cover
                 onError={ev => {
                     if ((ev.target as any).src !== legacyStyleThumbnail) {
                         (ev.target as any).src = legacyStyleThumbnail;

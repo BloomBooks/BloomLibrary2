@@ -10,7 +10,11 @@ import { observer } from "mobx-react";
 import { ReadButton } from "./ReadButton";
 import { TranslateButton } from "./TranslateButton";
 import { LanguageLink } from "../LanguageLink";
-import { getArtifactVisibilitySettings, ArtifactType } from "./ArtifactHelper";
+import {
+    getArtifactVisibilitySettings,
+    ArtifactType,
+    getThumbnailUrl
+} from "./ArtifactHelper";
 import { ILanguage } from "../../model/Language";
 import { ReadOfflineButton } from "./ReadOfflineButton";
 import { useMediaQuery } from "@material-ui/core";
@@ -53,6 +57,8 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
         `(max-width:${props.breakToColumn})`
     );
 
+    const thumbnailUrl = getThumbnailUrl(props.book);
+
     return (
         <div
             id={"primaryInfoAndButtons"}
@@ -91,7 +97,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                 >
                     <img
                         alt="book thumbnail"
-                        src={props.book.baseUrl + "thumbnail-256.png"}
+                        src={thumbnailUrl}
                         css={css`
                             max-width: 125px;
                             max-height: 120px;

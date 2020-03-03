@@ -44,7 +44,7 @@ export class Book {
     public uploader: { username: string } | undefined;
     // this is the raw ISO date we get from the query
     private createdAt: string = "";
-    private updatedAt: string = "";
+    public updatedAt?: string = "";
     // which we parse into
     public uploadDate: Date | undefined;
     public updateDate: Date | undefined;

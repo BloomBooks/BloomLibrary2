@@ -6,6 +6,7 @@ import { jsx } from "@emotion/core";
 
 import { IFilter } from "../../IFilter";
 import { BannerContents } from "./Banners";
+import bloomgirls from "../../assets/banners/bloomgirls.jpg";
 
 export const HomeBanner: React.FunctionComponent<{
     filter: IFilter;
@@ -15,7 +16,7 @@ export const HomeBanner: React.FunctionComponent<{
         <div
             className={"banner"}
             css={css`
-                background-image: url("banners/bloomgirls.jpg");
+                background-image: url(${bloomgirls});
                 background-position: right;
                 background-size: contain;
 

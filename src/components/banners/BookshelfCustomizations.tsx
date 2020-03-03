@@ -6,6 +6,7 @@ import { jsx } from "@emotion/core";
 
 import { IBannerSpec } from "./Banners";
 import { LearnMoreLink } from "./LearnMoreLink";
+import genericWorkshop from "../../assets/banners/generic-workshop.jpg";
 
 const imageBase = "https://share.bloomlibrary.org/bookshelf-images/";
 const enablingWritersBlurb =
@@ -33,7 +34,7 @@ const projectBannerCustomizations: IBannerSpec[] = [
             #contrast-overlay {
                 background-color: transparent;
             }
-            //background-image: url(/banners/generic-workshop.jpg);
+            //background-image: url(${genericWorkshop});
         `
     },
     {
