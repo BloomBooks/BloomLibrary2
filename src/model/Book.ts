@@ -42,9 +42,11 @@ export class Book {
     @observable
     public artifactsToOfferToUsers: ArtifactVisibilitySettingsGroup = new ArtifactVisibilitySettingsGroup();
     public uploader: { username: string } | undefined;
-    // this is the raw ISO date we get from the query
+    // this is the raw ISO date we get from the query. These dates are automatically included
+    // in every real query, even when not listed in the keys list. However, they may be omitted
+    // in instances created by test code, so we make the public one optional.
     private createdAt: string = "";
-    private updatedAt: string = "";
+    public updatedAt?: string = "";
     // which we parse into
     public uploadDate: Date | undefined;
     public updateDate: Date | undefined;

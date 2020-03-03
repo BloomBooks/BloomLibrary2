@@ -8,7 +8,11 @@ import { CheapCard } from "./CheapCard";
 import LazyLoad from "react-lazyload";
 import { RouterContext } from "../Router";
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
-import { getHarvesterProducedThumbnailUrl } from "./BookDetail/ArtifactHelper";
+import {
+    getHarvesterProducedThumbnailUrl,
+    getLegacyThumbnailUrl,
+    getThumbnailUrl
+} from "./BookDetail/ArtifactHelper";
 import { FeatureLevelBar } from "./FeatureLevelBar";
 import { LanguageFeatureList } from "./LanguageFeatureList";
 
@@ -24,11 +28,8 @@ interface IProps {
 
 export const BookCard: React.FunctionComponent<IProps> = props => {
     const router = useContext(RouterContext);
-    const legacyStyleThumbnail =
-        props.onBasicBookInfo.baseUrl + "thumbnail-256.png";
-    const harvestedThumbnailUrl =
-        getHarvesterProducedThumbnailUrl(props.onBasicBookInfo) ||
-        legacyStyleThumbnail;
+    const legacyStyleThumbnail = getLegacyThumbnailUrl(props.onBasicBookInfo);
+    const thumbnailUrl = getThumbnailUrl(props.onBasicBookInfo);
 
     const card = (
         <CheapCard
@@ -48,14 +49,15 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
                     object-fit: cover; //cover will crop, but fill up nicely
                 `}
                 alt={"book thumbnail"}
-                // NB: if you're not getting an image, e.g. in Storybook, it's because it's not inside of a swiper
-                src={
-                    props.handleYourOwnLaziness
-                        ? harvestedThumbnailUrl
-                        : undefined
-                }
-                data-src={harvestedThumbnailUrl} // we would have to generate new thumbnails that just have the image shown on the cover
+                // NB: if you're not getting an image, e.g. in Storybook, it might be because it's not inside of a swiper,
+                // but wasn't told to 'handle its own laziness'.
+                src={props.handleYourOwnLaziness ? thumbnailUrl : undefined}
+                data-src={thumbnailUrl}
                 onError={ev => {
+                    // This is unlikely to be necessary now, as we have what we think is a reliable
+                    // way to know whether the harvester has created a thumbnail.
+                    // And eventually all books should simply have harvester thumbnails.
+                    // Keeping the fall-back just in case it occasionally helps.
                     if ((ev.target as any).src !== legacyStyleThumbnail) {
                         (ev.target as any).src = legacyStyleThumbnail;
                     } else {
