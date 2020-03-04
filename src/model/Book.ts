@@ -4,7 +4,7 @@ import { ArtifactVisibilitySettingsGroup } from "./ArtifactVisibilitySettings";
 import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
 import { ILanguage } from "./Language";
 
-export function createBookFromParseServerData(pojo: any, bookId: string): Book {
+export function createBookFromParseServerData(pojo: any): Book {
     const b = Object.assign(new Book(), pojo);
     // change to a more transparent name internally, and make an observable object
     b.artifactsToOfferToUsers = ArtifactVisibilitySettingsGroup.createFromParseServerData(
@@ -12,7 +12,7 @@ export function createBookFromParseServerData(pojo: any, bookId: string): Book {
     );
 
     b.languages = pojo.langPointers;
-    b.finishCreationFromParseServerData(bookId);
+    b.finishCreationFromParseServerData(pojo.bookId);
     return b;
 }
 

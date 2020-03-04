@@ -123,8 +123,7 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
     }
 
     const detail: Book = createBookFromParseServerData(
-        response["data"]["results"][0],
-        bookId
+        response["data"]["results"][0]
     );
 
     // const parts = detail.tags.split(":");
@@ -134,6 +133,54 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
     // detail.topic =
 
     return detail;
+}
+
+export function useGetBooksForGrid(
+    filter: IFilter,
+    limit: number,
+    skip: number
+): Book[] {
+    const { response, loading, error } = useAxios({
+        url: `${getConnection().url}classes/books`,
+        method: "GET",
+        trigger: "true",
+        options: {
+            headers: getConnection().headers,
+            params: {
+                limit,
+                skip,
+
+                keys:
+                    "title,baseUrl,license,licenseNotes,summary,copyright,harvestState," +
+                    "tags,pageCount,show,credits,country,features,internetLimits," +
+                    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount",
+                // fluff up fields that reference other tables
+                include: "uploader,langPointers",
+                ...constructParseBookQuery({}, filter)
+            }
+        }
+    });
+
+    if (
+        loading ||
+        !response ||
+        !response["data"] ||
+        !response["data"]["results"] ||
+        response["data"]["results"].length === 0 ||
+        error
+    ) {
+        return [];
+    }
+
+    return response["data"]["results"].map((r: object) =>
+        createBookFromParseServerData(r)
+    );
+
+    // const parts = detail.tags.split(":");
+    // const x = parts.map(p => {tags[(p[0]) as string] = ""});
+
+    // return parts[0] + "-" + parts[1];
+    // detail.topic =
 }
 
 // we just want a better name

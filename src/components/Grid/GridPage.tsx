@@ -13,11 +13,12 @@ import {
     Toolbar,
     ColumnChooser,
     TableFilterRow,
-    PagingPanel
+    PagingPanel,
+    TableColumnResizing
 } from "@devexpress/dx-react-grid-material-ui";
 import {
-    useBookQuery,
-    useGetBookCount
+    useGetBookCount,
+    useGetBooksForGrid
 } from "../../connection/LibraryQueryHooks";
 import { RouterContext } from "../../Router";
 import {
@@ -28,20 +29,33 @@ import {
     PagingState,
     CustomPaging
 } from "@devexpress/dx-react-grid";
+import { Book } from "../../model/Book";
+import { Checkbox } from "@material-ui/core";
+import { TagsList } from "../Admin/TagsList";
 
 const GridPage: React.FunctionComponent<{}> = props => {
-    const kBooksPerGridPage = 50;
+    const kBooksPerGridPage = 20;
     const router = useContext(RouterContext);
     const [gridPage, setGridPage] = useState(0);
-    const books = useBookQuery(
-        {},
-        router?.current.filter || {},
+    // const books = useBookQuery(
+    //     {},
+    //     router?.current.filter || {},
+    //     kBooksPerGridPage,
+    //     (gridPage * kBooksPerGridPage) as number
+    // );
+    const books = useGetBooksForGrid(
+        router!.current.filter,
         kBooksPerGridPage,
-        (gridPage * kBooksPerGridPage) as number
+        gridPage * kBooksPerGridPage
     );
     const totalBookMatchingFilter = useGetBookCount(
         router?.current.filter || {}
     );
+
+    // TODO, Don't Merge while this line is here: I seem to have broken saving changes from the Staff panel. It works on dev-next, but not locally.
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    // TODO: Moving the column widths crashes
 
     const defaultHiddenColumnNames = ["pageCount", "license", "harvestState"];
     console.log("books " + books.length);
@@ -51,6 +65,41 @@ const GridPage: React.FunctionComponent<{}> = props => {
                 rows={books}
                 columns={[
                     { name: "title", title: "Title" },
+                    {
+                        name: "languages",
+                        title: "Languages",
+                        getCellValue: (b: Book) =>
+                            b.languages.map(l => l.name).join(", ")
+                    },
+                    {
+                        name: "tags",
+                        title: "Other Tags",
+                        getCellValue: (b: Book) => (
+                            <TagsList
+                                book={b}
+                                setModified={() => {}}
+                                borderColor={"transparent"}
+                            ></TagsList>
+                        )
+                    },
+                    {
+                        name: "incoming",
+                        title: "Incoming",
+                        getCellValue: (b: Book) => (
+                            <Checkbox
+                                checked={b.tags.includes("system:Incoming")}
+                            />
+                        )
+                    },
+                    {
+                        name: "topic",
+                        title: "Topic",
+                        getCellValue: (b: Book) =>
+                            b.tags
+                                .filter(t => t.startsWith("topic:"))
+                                .map(t => t.replace(/topic:/, ""))
+                                .join(", ")
+                    },
                     { name: "harvestState" },
                     { name: "license" },
                     { name: "copyright" },
@@ -69,6 +118,7 @@ const GridPage: React.FunctionComponent<{}> = props => {
                 <IntegratedSorting />
                 <CustomPaging totalCount={totalBookMatchingFilter} />
                 <Table />
+                <TableColumnResizing />
                 <TableHeaderRow showSortingControls />
                 <TableColumnVisibility
                     defaultHiddenColumnNames={defaultHiddenColumnNames}
