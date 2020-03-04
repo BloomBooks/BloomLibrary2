@@ -3,7 +3,7 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-
+import titleCase from "title-case";
 import React, { useContext, useState } from "react";
 import {
     Grid,
@@ -27,38 +27,52 @@ import {
     SortingState,
     IntegratedSorting,
     PagingState,
-    CustomPaging
+    CustomPaging,
+    Filter as GridFilter
 } from "@devexpress/dx-react-grid";
 import { Book } from "../../model/Book";
-import { Checkbox } from "@material-ui/core";
+import { Checkbox, TableCell } from "@material-ui/core";
 import { TagsList } from "../Admin/TagsList";
+import { IFilter } from "../../IFilter";
 
+const kColumnsWeCantFilter = [
+    "title",
+    "incoming",
+    "createdAt",
+    "pagCount",
+    "languages"
+];
 const GridPage: React.FunctionComponent<{}> = props => {
     const kBooksPerGridPage = 20;
     const router = useContext(RouterContext);
+    const [gridFilters, setGridFilters] = useState<GridFilter[]>([]);
     const [gridPage, setGridPage] = useState(0);
-    // const books = useBookQuery(
-    //     {},
-    //     router?.current.filter || {},
-    //     kBooksPerGridPage,
-    //     (gridPage * kBooksPerGridPage) as number
-    // );
+
+    const combinedFilter = CombineGridAndSearchBoxFilter(
+        gridFilters,
+        router!.current.filter
+    );
+
     const books = useGetBooksForGrid(
-        router!.current.filter,
+        combinedFilter,
         kBooksPerGridPage,
         gridPage * kBooksPerGridPage
     );
-    const totalBookMatchingFilter = useGetBookCount(
-        router?.current.filter || {}
-    );
+    const totalBookMatchingFilter = useGetBookCount(combinedFilter || {});
 
     // TODO, Don't Merge while this line is here: I seem to have broken saving changes from the Staff panel. It works on dev-next, but not locally.
     //!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     // TODO: Moving the column widths crashes
 
-    const defaultHiddenColumnNames = ["pageCount", "license", "harvestState"];
-    console.log("books " + books.length);
+    const defaultHiddenColumnNames = [
+        "pageCount",
+        "license",
+        "harvestState",
+        "tags",
+        "createdAt"
+    ];
+    //console.log("books " + books.length);
     return (
         <div>
             <Grid
@@ -81,6 +95,15 @@ const GridPage: React.FunctionComponent<{}> = props => {
                                 borderColor={"transparent"}
                             ></TagsList>
                         )
+                    },
+                    {
+                        name: "bookshelves",
+                        title: "Bookshelves",
+                        getCellValue: (b: Book) =>
+                            b.tags
+                                .filter(t => t.startsWith("bookshelf:"))
+                                .map(t => t.replace(/bookshelf:/, ""))
+                                .join(", ")
                     },
                     {
                         name: "incoming",
@@ -112,18 +135,27 @@ const GridPage: React.FunctionComponent<{}> = props => {
                     onCurrentPageChange={setGridPage}
                     pageSize={kBooksPerGridPage}
                 />
-                <FilteringState defaultFilters={[]} />
-                <IntegratedFiltering />
+
+                <FilteringState
+                    defaultFilters={[]}
+                    onFiltersChange={setGridFilters}
+                    columnExtensions={kColumnsWeCantFilter.map(n => ({
+                        columnName: n,
+                        filteringEnabled: false
+                    }))}
+                />
+
                 <SortingState defaultSorting={[]} />
                 <IntegratedSorting />
                 <CustomPaging totalCount={totalBookMatchingFilter} />
+                {/* <IntegratedFiltering /> */}
                 <Table />
                 <TableColumnResizing />
                 <TableHeaderRow showSortingControls />
                 <TableColumnVisibility
                     defaultHiddenColumnNames={defaultHiddenColumnNames}
                 />
-                <TableFilterRow />
+                <TableFilterRow cellComponent={FilterCell} />
                 <Toolbar />
                 <ColumnChooser />
                 <PagingPanel />
@@ -131,4 +163,44 @@ const GridPage: React.FunctionComponent<{}> = props => {
         </div>
     );
 };
+
+// used to hide filter UI if we don't support filtering; the default ui, inexplicably, just shows it greyed out
+function FilterCell(props: TableFilterRow.CellProps) {
+    if (kColumnsWeCantFilter.indexOf(props.column.name) > -1) {
+        // empty
+        return <TableCell />;
+    }
+    // return the default UI
+    return <TableFilterRow.Cell {...props} />;
+}
+// combine the search-box filter with filtering done in the columns
+function CombineGridAndSearchBoxFilter(
+    gridFilters: GridFilter[],
+    routerFilter: IFilter
+): IFilter {
+    //gridFilters[0].
+    const f: IFilter = routerFilter || {};
+
+    gridFilters.forEach(g => {
+        if (g.operation !== "contains") {
+            // or maybe it should be "equals"?
+            console.error(`Cannot yet filter using ${g.operation}`);
+        }
+        switch (g.columnName) {
+            case "bookshelves":
+                f.bookshelf = g.value;
+                break;
+            case "topic":
+                f.topic = titleCase(g.value!);
+                break;
+            // case "languages":
+            //     f.language = g.value;
+            //     break;
+            default:
+                console.error(`Cannot yet filter on ${g.columnName}`);
+        }
+    });
+    return f;
+}
+
 export default GridPage;

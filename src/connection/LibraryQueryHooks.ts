@@ -143,7 +143,8 @@ export function useGetBooksForGrid(
     const { response, loading, error } = useAxios({
         url: `${getConnection().url}classes/books`,
         method: "GET",
-        trigger: "true",
+        trigger: JSON.stringify(filter),
+
         options: {
             headers: getConnection().headers,
             params: {

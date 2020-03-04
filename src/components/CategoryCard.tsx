@@ -77,6 +77,7 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
                     max-width: 198px;
                     margin-left: auto;
                     margin-right: auto;
+                    margin-top: auto; // at the moment, seems to work best without margin-bottom
                 `}
                 // While we're waiting, show the text title
                 loader={titleElementIfNoImage}
