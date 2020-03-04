@@ -101,10 +101,17 @@ function getCloudFlareUrl(inputUrl: string): string {
     // bloomlibrary.org/books/* -> https://s3.amazonaws.com/BloomLibraryBooks/$1
     // we want to convert URLs starting with https://s3.amazonaws.com/BloomLibraryBooks
     // to ones starting with bloomlibrary.org/books.
-    const cfSub = cloudFlareSubstitutions.find(s => inputUrl.startsWith(s.to));
-    if (cfSub) {
-        return "https://" + cfSub.from + inputUrl.substring(cfSub.to.length);
-    }
+
+    // Keeping this code in case the above actually works one day. However, we
+    // discovered while trying to set up CloudFlare to actually do it that right
+    // now ClouldFlare just redirects the query back to S3. Thus, the only effect of
+    // going through CloudFlare is an EXTRA request. We think we need an Enterprise
+    // subscription to CloudFlare to do better. So for now, just leave the URL
+    // unmodified.
+    // const cfSub = cloudFlareSubstitutions.find(s => inputUrl.startsWith(s.to));
+    // if (cfSub) {
+    //     return "https://" + cfSub.from + inputUrl.substring(cfSub.to.length);
+    // }
     return inputUrl;
 }
 
