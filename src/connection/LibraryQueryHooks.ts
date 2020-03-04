@@ -95,7 +95,6 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
                     "harvestStartedAt",
                 // fluff up fields that reference other tables
                 include: "uploader,langPointers"
-                    
             }
         }
     });
@@ -205,13 +204,12 @@ export function useSearchBooks(
     params: {}, // this is the order, which fields, limits, etc.
     filter: IFilter // this is *which* books to return
 ): ISearchBooksResult {
-    const bookCountStatus: IAxiosAnswer = useBookQuery(
-        { count: 1 }, // we're just looking for one number here, the count
+    const paramsWithCount = { ...params, count: 1 };
+    const bookResultsStatus: IAxiosAnswer = useBookQuery(
+        paramsWithCount,
         filter
     );
-    const bookResultsStatus: IAxiosAnswer = useBookQuery(params, filter);
     const simplifiedResultStatus = processAxiosStatus(bookResultsStatus);
-    const simplifiedCountStatus = processAxiosStatus(bookCountStatus);
 
     const typeSafeBookRecords: IBasicBookInfo[] = simplifiedResultStatus.books.map(
         (rawFromREST: any) => {
@@ -222,7 +220,7 @@ export function useSearchBooks(
     );
 
     return {
-        totalMatchingRecords: simplifiedCountStatus.count,
+        totalMatchingRecords: simplifiedResultStatus.count,
         errorString: simplifiedResultStatus.error
             ? simplifiedResultStatus.error.message
             : null,
