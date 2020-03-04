@@ -33,7 +33,7 @@ const languageBannerCustomizations: IBannerSpec[] = [
     {
         key: "default",
         bannerCss: css`
-            background-color: blue;
+            background-color: #348c98;
             #contrast-overlay {
                 background-color: transparent;
             }
