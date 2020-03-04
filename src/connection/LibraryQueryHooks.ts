@@ -529,7 +529,7 @@ export function constructParseBookQuery(
             }
         };
     }
-    // topic is handled below. This older version is not compatible with the possiblity of other topics.
+    // topic is handled below. This older version is not compatible with the possibility of other topics.
     // Hopefully the old style really is gone. Certainly any update inserts topic:
     // if (f.topic != null) {
     // params.where.tags = {

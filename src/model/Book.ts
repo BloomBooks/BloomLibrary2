@@ -12,7 +12,7 @@ export function createBookFromParseServerData(pojo: any): Book {
     );
 
     b.languages = pojo.langPointers;
-    b.finishCreationFromParseServerData(pojo.bookId);
+    b.finishCreationFromParseServerData(pojo.objectId);
     return b;
 }
 

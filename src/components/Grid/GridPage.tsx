@@ -31,7 +31,7 @@ import {
     Filter as GridFilter
 } from "@devexpress/dx-react-grid";
 import { Book } from "../../model/Book";
-import { Checkbox, TableCell } from "@material-ui/core";
+import { Checkbox, TableCell, Link } from "@material-ui/core";
 import { TagsList } from "../Admin/TagsList";
 import { IFilter } from "../../IFilter";
 
@@ -60,9 +60,6 @@ const GridPage: React.FunctionComponent<{}> = props => {
     );
     const totalBookMatchingFilter = useGetBookCount(combinedFilter || {});
 
-    // TODO, Don't Merge while this line is here: I seem to have broken saving changes from the Staff panel. It works on dev-next, but not locally.
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!
-
     // TODO: Moving the column widths crashes
 
     const defaultHiddenColumnNames = [
@@ -78,7 +75,19 @@ const GridPage: React.FunctionComponent<{}> = props => {
             <Grid
                 rows={books}
                 columns={[
-                    { name: "title", title: "Title" },
+                    {
+                        name: "title",
+                        title: "Title",
+                        getCellValue: (b: Book) => (
+                            <Link
+                                href={`/?bookId=${b.id}&pageType=book-detail&title=${b.title}`}
+                                color="secondary"
+                                target="_blank"
+                            >
+                                {b.title}
+                            </Link>
+                        )
+                    },
                     {
                         name: "languages",
                         title: "Languages",

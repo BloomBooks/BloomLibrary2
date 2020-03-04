@@ -133,7 +133,6 @@ export class Router {
         this.push(Router.home);
     }
 
-    // TODO: make this real
     public pushBook(bookId: string) {
         this.push({
             bookId,
