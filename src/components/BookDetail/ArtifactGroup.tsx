@@ -21,7 +21,9 @@ import { OSFeaturesContext } from "../../components/OSFeaturesContext";
 export const ArtifactGroup: React.FunctionComponent<{
     book: Book;
 }> = observer(props => {
-    const { bloomReaderAvailable } = useContext(OSFeaturesContext);
+    const { bloomReaderAvailable, cantUseBloomD } = useContext(
+        OSFeaturesContext
+    );
     const pdfSettings = getArtifactVisibilitySettings(
         props.book,
         ArtifactType.pdf
@@ -34,18 +36,24 @@ export const ArtifactGroup: React.FunctionComponent<{
         props.book,
         ArtifactType.bloomReader
     );
-    // If bloom reader is available for this device, a more prominent button is shown elsewhere.
-    // So we don't show that button here. And of course we only show it if the harvester
-    // was able to make one and no one has decided not to show it.
+    const haveABloomDToDownload = bloomReaderSettings?.decision;
+    // If bloom reader is available for this device and we have a bloomd, a more prominent button is shown elsewhere.
+    const showingBloomReaderDownloadElsewhere =
+        bloomReaderAvailable && haveABloomDToDownload;
+
+    // We show the bloomD download button here if (a) we have one, and (b) we're not showing the larger
+    // button elsewhere, and (c) we're not on a device (like an iphone) which we consider to have
+    // no good reason to download it.
     const showBloomReaderButton =
-        bloomReaderSettings?.decision && !bloomReaderAvailable;
-    // If the bloom reader is available for the device and a bloomd is available for the book,
-    // then we're showing a main download button elsewhere. Iff there are
+        haveABloomDToDownload &&
+        !showingBloomReaderDownloadElsewhere &&
+        !cantUseBloomD;
+
+    // If we're showing a bloomd download button elsewhere AND there are
     // some other downloads to offer here, we give them a heading to indicate
     // they are additional.
     const showMoreDownloadsHeading =
-        bloomReaderAvailable &&
-        bloomReaderSettings?.decision &&
+        showingBloomReaderDownloadElsewhere &&
         (pdfSettings.decision || epubSettings?.decision);
     return (
         <div>
