@@ -90,6 +90,9 @@ export const SearchBox: React.FunctionComponent<{
                 }
             };
             router!.push(location);
+        } else {
+            // delete everything and press enter is the same as "cancel"
+            cancelSearch();
         }
     };
 
@@ -103,11 +106,13 @@ export const SearchBox: React.FunctionComponent<{
 
     const cancelSearch = () => {
         const curFilter = router!.current.filter;
+        setSearch("");
         // If the user previously pressed 'Enter' with this search text, we need to go back up the stack.
-        if (curFilter?.search === processSearchString(search)) {
+        if (router?.current.pageType === "grid") {
+            router!.push({ title: "Grid", pageType: "grid", filter: {} });
+        } else if (curFilter?.search === processSearchString(search)) {
             window.history.back(); // Observable router will handle breadcrumbs.
         }
-        setSearch("");
     };
 
     const searchTextField: JSX.Element = (

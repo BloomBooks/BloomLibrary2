@@ -1,5 +1,7 @@
 import { observable } from "mobx";
-
+import React from "react";
+import * as mobx from "mobx";
+import { useObserver } from "mobx-react";
 // This is currently just a subset of what ParseServer returns,
 // so don't go renaming anything
 export interface IUser {
@@ -16,3 +18,7 @@ class UserHolder {
     @observable public current?: IUser;
 }
 export const LoggedInUser: UserHolder = new UserHolder();
+
+export function useGetLoggedInUser(): IUser | undefined {
+    return useObserver(() => LoggedInUser.current);
+}

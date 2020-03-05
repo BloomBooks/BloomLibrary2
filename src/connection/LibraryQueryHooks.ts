@@ -140,6 +140,7 @@ export function useGetBooksForGrid(
     limit: number,
     skip: number
 ): Book[] {
+    const { tags } = useContext(CachedTablesContext);
     const { response, loading, error } = useAxios({
         url: `${getConnection().url}classes/books`,
         method: "GET",
@@ -157,7 +158,7 @@ export function useGetBooksForGrid(
                     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount",
                 // fluff up fields that reference other tables
                 include: "uploader,langPointers",
-                ...constructParseBookQuery({}, filter)
+                ...constructParseBookQuery({}, filter, tags)
             }
         }
     });
