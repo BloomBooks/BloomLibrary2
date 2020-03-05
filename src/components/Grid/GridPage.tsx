@@ -3,7 +3,6 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import titleCase from "title-case";
 import React, { useContext, useState, useEffect, useMemo } from "react";
 import {
     Grid,
@@ -44,21 +43,11 @@ const GridPage: React.FunctionComponent<{}> = props => {
     const [gridPage, setGridPage] = useState(0);
     const [columns, setColumns] = useState<ReadonlyArray<IGridColumn>>([]);
 
-    const combinedFilter = CombineGridAndSearchBoxFilter(
-        gridFilters,
-        router!.current.filter
-    );
-
-    const books = useGetBooksForGrid(
-        combinedFilter,
-        kBooksPerGridPage,
-        gridPage * kBooksPerGridPage
-    );
-    const totalBookMatchingFilter = useGetBookCount(combinedFilter || {});
-
-    // TODO: Moving the column widths crashes
-    // TODO: remember visible columns & column widths
-    // TODO: make the date nice (remove Hour/Minute/Seconds, show as YYYY-MM-DD)
+    // enhance: remember visible columns & column widths
+    // enhance: make the date nice (remove Hour/Minute/Seconds, show as YYYY-MM-DD)
+    // enhance: make changing checkboxes work
+    // enhance: expand details of a row to show staff panel
+    // enhance: add "in circulation" column
 
     const bookGridColumns = useMemo(() => getBookGridColumns(router!), [
         router
@@ -67,22 +56,37 @@ const GridPage: React.FunctionComponent<{}> = props => {
         () => bookGridColumns.filter(c => !c.defaultVisible).map(c => c.name),
         [bookGridColumns]
     );
-
+    const defaultColumnWidths = useMemo(
+        () => bookGridColumns.map(c => ({ columnName: c.name, width: "auto" })),
+        [bookGridColumns]
+    );
+    const combinedFilter = CombineGridAndSearchBoxFilter(
+        bookGridColumns,
+        gridFilters,
+        router!.current.filter
+    );
+    const totalBookMatchingFilter = useGetBookCount(combinedFilter || {});
+    const books = useGetBooksForGrid(
+        combinedFilter,
+        kBooksPerGridPage,
+        gridPage * kBooksPerGridPage
+    );
     useEffect(() => {
         setColumns(
             bookGridColumns.filter(
+                // some columns we only include if we are logged in with the right permissions
                 col =>
                     !col.moderatorOnly || user?.moderator || user?.administrator
             )
         );
-    }, [router, user]);
+    }, [router, user, bookGridColumns]);
 
     // used to hide filter UI if we don't support filtering; the default ui, inexplicably, just shows it greyed out
     const FilterCell = useMemo(
         () => (fprops: TableFilterRow.CellProps) => {
             if (
                 bookGridColumns.find(
-                    c => c.name === fprops.column.name && c.canFilter
+                    c => c.name === fprops.column.name && c.addToFilter
                 )
             ) {
                 // return the default UI
@@ -118,7 +122,10 @@ const GridPage: React.FunctionComponent<{}> = props => {
                 <IntegratedSorting />
                 <CustomPaging totalCount={totalBookMatchingFilter} />
                 <Table />
-                <TableColumnResizing />
+                <TableColumnResizing
+                    resizingMode={"nextColumn"}
+                    defaultColumnWidths={defaultColumnWidths}
+                />
                 <TableHeaderRow showSortingControls />
                 <TableColumnVisibility
                     defaultHiddenColumnNames={defaultHiddenColumnNames}
@@ -134,30 +141,21 @@ const GridPage: React.FunctionComponent<{}> = props => {
 
 // combine the search-box filter with filtering done in the columns
 function CombineGridAndSearchBoxFilter(
+    bookGridColumns: IGridColumn[],
     gridFilters: GridFilter[],
     routerFilter: IFilter
 ): IFilter {
-    //gridFilters[0].
     const f: IFilter = routerFilter || {};
-
     gridFilters.forEach(g => {
+        // the business of contains vs. equals has not been worked out yet, on the grid ui side nor the actual query side
         if (g.operation !== "contains") {
-            // or maybe it should be "equals"?
             console.error(`Cannot yet filter using ${g.operation}`);
         }
-        switch (g.columnName) {
-            case "bookshelves":
-                f.bookshelf = g.value;
-                break;
-            case "topic":
-                f.topic = titleCase(g.value!);
-                break;
-            // case "languages":
-            //     f.language = g.value;
-            //     break;
-            default:
-                // the ui should never have give then user a way to try to filter this
-                alert(`Cannot yet filter on ${g.columnName}`);
+        if (g.value) {
+            const gridColumnDefinition = bookGridColumns.find(
+                c => c.name === g.columnName
+            );
+            gridColumnDefinition!.addToFilter!(f, g.value);
         }
     });
     return f;

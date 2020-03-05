@@ -13,11 +13,13 @@ import { TagsList } from "../Admin/TagsList";
 import { Router } from "../../Router";
 import QueryString from "qs";
 import titleCase from "title-case";
+import { IFilter } from "../../IFilter";
 
 export interface IGridColumn extends DevExpressColumn {
     moderatorOnly?: boolean;
     defaultVisible?: boolean;
-    canFilter?: boolean;
+
+    addToFilter?: (filter: IFilter, value: string) => void;
 }
 export function getBookGridColumns(router: Router): IGridColumn[] {
     const columns = [
@@ -35,13 +37,21 @@ export function getBookGridColumns(router: Router): IGridColumn[] {
                 >
                     {b.title}
                 </Link>
-            )
+            ),
+            addToFilter: (filter: IFilter, value: string) => {
+                // enhance: at the moment we don't have a "title:" search axis, so this will search other fields as well
+                filter.search = value;
+            }
         },
         {
             name: "languages",
             title: "Languages",
             defaultVisible: true,
-            getCellValue: (b: Book) => b.languages.map(l => l.name).join(", ")
+            getCellValue: (b: Book) => b.languages.map(l => l.name).join(", "),
+            addToFilter: (filter: IFilter, value: string) => {
+                // enhance: at the moment we don't have a "language:" search axis, so this will search other fields as well
+                filter.search = value;
+            }
         },
         {
             name: "tags",
@@ -57,11 +67,18 @@ export function getBookGridColumns(router: Router): IGridColumn[] {
         {
             name: "bookshelves",
             title: "Bookshelves",
+            defaultVisible: true,
             getCellValue: (b: Book) =>
                 b.tags
                     .filter(t => t.startsWith("bookshelf:"))
-                    .map(t => t.replace(/bookshelf:/, ""))
-                    .join(", ")
+                    .map(t => (
+                        <GridSearchLink key={t} search={t}>
+                            {t.replace(/bookshelf:/, "")}
+                        </GridSearchLink>
+                    )),
+            addToFilter: (filter: IFilter, value: string) => {
+                filter.bookshelf = value;
+            }
         },
         {
             name: "incoming",
@@ -75,12 +92,18 @@ export function getBookGridColumns(router: Router): IGridColumn[] {
             name: "topic",
 
             defaultVisible: true,
-            canFilter: true,
+
             getCellValue: (b: Book) =>
                 b.tags
                     .filter(t => t.startsWith("topic:"))
-                    .map(t => t.replace(/topic:/, ""))
-                    .join(", ")
+                    .map(t => (
+                        <GridSearchLink key={t} search={t}>
+                            {t.replace(/topic:/, "")}
+                        </GridSearchLink>
+                    )),
+            addToFilter: (filter: IFilter, value: string) => {
+                filter.topic = titleCase(value);
+            }
         },
         { name: "harvestState" },
         { name: "license" },
@@ -92,10 +115,16 @@ export function getBookGridColumns(router: Router): IGridColumn[] {
             defaultVisible: true,
             moderatorOnly: true,
             getCellValue: (b: Book) => (
-                <GridSearchLink search={`uploader:${b.uploader?.username}`}>
+                <GridSearchLink
+                    key={b.id}
+                    search={`uploader:${b.uploader?.username}`}
+                >
                     {b.uploader?.username}
                 </GridSearchLink>
-            )
+            ),
+            addToFilter: (filter: IFilter, value: string) => {
+                filter.search = `uploader:${value}`;
+            }
         }
     ];
 
