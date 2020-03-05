@@ -1,6 +1,4 @@
 import { observable } from "mobx";
-import React from "react";
-import * as mobx from "mobx";
 import { useObserver } from "mobx-react";
 // This is currently just a subset of what ParseServer returns,
 // so don't go renaming anything

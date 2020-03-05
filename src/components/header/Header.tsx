@@ -11,7 +11,7 @@ import { UserMenu } from "../User/UserMenu";
 import { commonUI } from "../../theme";
 import Link from "@material-ui/core/Link/Link";
 import { useMediaQuery } from "@material-ui/core";
-import { RouterContext, Router } from "../../Router";
+import { RouterContext } from "../../Router";
 
 export const Header: React.FunctionComponent = props => {
     const router = useContext(RouterContext);

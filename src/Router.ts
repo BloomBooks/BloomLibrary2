@@ -181,7 +181,7 @@ export class Router {
             this.current.title,
             "?" + QueryString.stringify(location)
         );
-        console.log("State=" + JSON.stringify(location));
+        //console.log("State=" + JSON.stringify(location));
     }
 }
 
