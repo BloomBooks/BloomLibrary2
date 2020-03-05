@@ -27,24 +27,13 @@ import {
     IntegratedSorting,
     PagingState,
     CustomPaging,
-    Filter as GridFilter,
-    Column
+    Filter as GridFilter
 } from "@devexpress/dx-react-grid";
-import { Book } from "../../model/Book";
-import { Checkbox, TableCell, Link } from "@material-ui/core";
-import { TagsList } from "../Admin/TagsList";
+import { TableCell } from "@material-ui/core";
 import { IFilter } from "../../IFilter";
-import {
-    LoggedInUser,
-    useGetLoggedInUser
-} from "../../connection/LoggedInUser";
-import { observer } from "mobx-react";
-
-interface IGridColumn extends Column {
-    moderatorOnly?: boolean;
-    defaultVisible?: boolean;
-    canFilter?: boolean;
-}
+import { useGetLoggedInUser } from "../../connection/LoggedInUser";
+import { getBookGridColumns, IGridColumn } from "./GridColumns";
+import { Breadcrumbs } from "../Breadcrumbs";
 
 // we need the observer in order to get the logged in user, which may not be immediately available
 const GridPage: React.FunctionComponent<{}> = props => {
@@ -71,107 +60,17 @@ const GridPage: React.FunctionComponent<{}> = props => {
     // TODO: remember visible columns & column widths
     // TODO: make the date nice (remove Hour/Minute/Seconds, show as YYYY-MM-DD)
 
-    const allColumns: IGridColumn[] = useMemo(
-        () => [
-            {
-                name: "title",
-                title: "Title",
-                defaultVisible: true,
-                getCellValue: (b: Book) => (
-                    <Link
-                        href={`/?bookId=${b.id}&pageType=book-detail&title=${b.title}`}
-                        color="secondary"
-                        target="_blank"
-                    >
-                        {b.title}
-                    </Link>
-                )
-            },
-            {
-                name: "languages",
-                title: "Languages",
-                defaultVisible: true,
-                getCellValue: (b: Book) =>
-                    b.languages.map(l => l.name).join(", ")
-            },
-            {
-                name: "tags",
-                title: "Other Tags",
-                getCellValue: (b: Book) => (
-                    <TagsList
-                        book={b}
-                        setModified={() => {}}
-                        borderColor={"transparent"}
-                    ></TagsList>
-                )
-            },
-            {
-                name: "bookshelves",
-                title: "Bookshelves",
-                getCellValue: (b: Book) =>
-                    b.tags
-                        .filter(t => t.startsWith("bookshelf:"))
-                        .map(t => t.replace(/bookshelf:/, ""))
-                        .join(", ")
-            },
-            {
-                name: "incoming",
-                title: "Incoming",
-                defaultVisible: true,
-                getCellValue: (b: Book) => (
-                    <Checkbox checked={b.tags.includes("system:Incoming")} />
-                )
-            },
-            {
-                name: "topic",
-                title: "Topic",
-                defaultVisible: true,
-                canFilter: true,
-                getCellValue: (b: Book) =>
-                    b.tags
-                        .filter(t => t.startsWith("topic:"))
-                        .map(t => t.replace(/topic:/, ""))
-                        .join(", ")
-            },
-            { name: "harvestState" },
-            { name: "license" },
-            { name: "copyright" },
-            { name: "pageCount" },
-            { name: "createdAt" },
-            {
-                name: "uploader",
-                defaultVisible: true,
-                moderatorOnly: true,
-                getCellValue: (b: Book) => (
-                    <Link
-                        //href={`/grid?filter%5Bsearch%5D=uploader%3A${b.uploader?.username}`}
-                        onClick={() => {
-                            const location = {
-                                title: `BloomLibrary Grid`,
-                                pageType: "search",
-                                filter: {
-                                    search: `uploader:${b.uploader?.username}`
-                                }
-                            };
-                            router?.push(location);
-                        }}
-                    >
-                        {b.uploader?.username}
-                    </Link>
-                )
-            }
-        ],
-        [router]
-    );
-
+    const bookGridColumns = useMemo(() => getBookGridColumns(router!), [
+        router
+    ]);
     const defaultHiddenColumnNames = useMemo(
-        () => allColumns.filter(c => !c.defaultVisible).map(c => c.name),
-        [allColumns]
+        () => bookGridColumns.filter(c => !c.defaultVisible).map(c => c.name),
+        [bookGridColumns]
     );
 
     useEffect(() => {
         setColumns(
-            allColumns.filter(
+            bookGridColumns.filter(
                 col =>
                     !col.moderatorOnly || user?.moderator || user?.administrator
             )
@@ -182,7 +81,7 @@ const GridPage: React.FunctionComponent<{}> = props => {
     const FilterCell = useMemo(
         () => (fprops: TableFilterRow.CellProps) => {
             if (
-                allColumns.find(
+                bookGridColumns.find(
                     c => c.name === fprops.column.name && c.canFilter
                 )
             ) {
@@ -192,10 +91,17 @@ const GridPage: React.FunctionComponent<{}> = props => {
             // empty
             return <TableCell />;
         },
-        [allColumns]
+        [bookGridColumns]
     );
     return (
         <div>
+            <div
+                css={css`
+                    margin-left: 22px;
+                `}
+            >
+                <Breadcrumbs />
+            </div>
             <Grid rows={books} columns={columns}>
                 <PagingState
                     currentPage={gridPage}
