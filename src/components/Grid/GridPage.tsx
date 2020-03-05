@@ -33,6 +33,7 @@ import { IFilter } from "../../IFilter";
 import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 import { getBookGridColumns, IGridColumn } from "./GridColumns";
 import { Breadcrumbs } from "../Breadcrumbs";
+import { useStorageState } from "react-storage-hooks";
 
 // we need the observer in order to get the logged in user, which may not be immediately available
 const GridPage: React.FunctionComponent<{}> = props => {
@@ -42,20 +43,20 @@ const GridPage: React.FunctionComponent<{}> = props => {
     const [gridFilters, setGridFilters] = useState<GridFilter[]>([]);
     const [gridPage, setGridPage] = useState(0);
     const [columns, setColumns] = useState<ReadonlyArray<IGridColumn>>([]);
+    const bookGridColumns = useMemo(() => getBookGridColumns(router!), [
+        router
+    ]);
+    const [hiddenColumnNames, setHiddenColumnNames] = useStorageState<string[]>(
+        localStorage,
+        "book-grid-hidden-column-names",
+        bookGridColumns.filter(c => !c.defaultVisible).map(c => c.name)
+    );
 
-    // enhance: remember visible columns & column widths
     // enhance: make the date nice (remove Hour/Minute/Seconds, show as YYYY-MM-DD)
     // enhance: make changing checkboxes work
     // enhance: expand details of a row to show staff panel
     // enhance: add "in circulation" column
 
-    const bookGridColumns = useMemo(() => getBookGridColumns(router!), [
-        router
-    ]);
-    const defaultHiddenColumnNames = useMemo(
-        () => bookGridColumns.filter(c => !c.defaultVisible).map(c => c.name),
-        [bookGridColumns]
-    );
     const defaultColumnWidths = useMemo(
         () => bookGridColumns.map(c => ({ columnName: c.name, width: "auto" })),
         [bookGridColumns]
@@ -128,7 +129,10 @@ const GridPage: React.FunctionComponent<{}> = props => {
                 />
                 <TableHeaderRow showSortingControls />
                 <TableColumnVisibility
-                    defaultHiddenColumnNames={defaultHiddenColumnNames}
+                    defaultHiddenColumnNames={hiddenColumnNames}
+                    onHiddenColumnNamesChange={names =>
+                        setHiddenColumnNames(names)
+                    }
                 />
                 <TableFilterRow cellComponent={FilterCell} />
                 <Toolbar />

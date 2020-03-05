@@ -13011,6 +13011,11 @@ react-sizeme@^2.6.7:
     shallowequal "^1.1.0"
     throttle-debounce "^2.1.0"
 
+react-storage-hooks@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/react-storage-hooks/-/react-storage-hooks-4.0.0.tgz#1ebe40367cbe7699bf7d7cd0e24041b9717c0048"
+  integrity sha512-b0iTTosRF7EbQMwi17kjIOkD+3po/AxEueObKm3fQoQXERWaMVYIt+iGN0Lhbwm5YkyJMb+hzEyK+IM8kYwT6w==
+
 react-syntax-highlighter@^8.0.1:
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/react-syntax-highlighter/-/react-syntax-highlighter-8.1.0.tgz#59103ff17a828a27ed7c8f035ae2558f09b6b78c"

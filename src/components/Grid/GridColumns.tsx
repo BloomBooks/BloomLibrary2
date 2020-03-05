@@ -129,13 +129,15 @@ export function getBookGridColumns(router: Router): IGridColumn[] {
     ];
 
     // generate the capitalized column names since the grid doesn't do that.
-    return columns.map(c => {
-        const x = { ...c };
-        if (c.title === undefined) {
-            x.title = titleCase(c.name);
-        }
-        return x;
-    });
+    return columns
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map(c => {
+            const x = { ...c };
+            if (c.title === undefined) {
+                x.title = titleCase(c.name);
+            }
+            return x;
+        });
 }
 
 export const GridSearchLink: React.FunctionComponent<{
