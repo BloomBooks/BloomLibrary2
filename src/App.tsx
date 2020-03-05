@@ -11,7 +11,8 @@ import { ILanguage } from "./model/Language";
 import {
     OSFeaturesContext,
     bloomDesktopAvailable,
-    bloomReaderAvailable
+    bloomReaderAvailable,
+    cantUseBloomD
 } from "./components/OSFeaturesContext";
 
 export const CachedTablesContext = React.createContext<{
@@ -49,7 +50,8 @@ export const App: React.FunctionComponent<{}> = props => {
                         <OSFeaturesContext.Provider
                             value={{
                                 bloomDesktopAvailable,
-                                bloomReaderAvailable
+                                bloomReaderAvailable,
+                                cantUseBloomD
                             }}
                         >
                             <BrowseView />
