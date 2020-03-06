@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React from "react";
+import React, { useState } from "react";
 import { Column as DevExpressColumn } from "@devexpress/dx-react-grid";
 
 import { Checkbox, Link } from "@material-ui/core";
@@ -82,10 +82,9 @@ export function getBookGridColumns(router: Router): IGridColumn[] {
         },
         {
             name: "incoming",
-
             defaultVisible: true,
             getCellValue: (b: Book) => (
-                <Checkbox checked={b.tags.includes("system:Incoming")} />
+                <TagCheckbox book={b} tag={"system:Incoming"} />
             )
         },
         {
@@ -160,5 +159,22 @@ export const GridSearchLink: React.FunctionComponent<{
         >
             {props.children}
         </Link>
+    );
+};
+
+const TagCheckbox: React.FunctionComponent<{
+    book: Book;
+    tag: string;
+}> = props => {
+    const [present, setPresent] = useState(props.book.tags.includes(props.tag));
+    return (
+        <Checkbox
+            checked={present}
+            onChange={e => {
+                props.book.setBooleanTag(props.tag, e.target.checked);
+                props.book.saveAdminDataToParse();
+                setPresent(e.target.checked);
+            }}
+        />
     );
 };

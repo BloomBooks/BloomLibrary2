@@ -136,4 +136,15 @@ export class Book {
     public saveArtifactVisibilityToParseServer() {
         updateBook(this.id, { show: this.artifactsToOfferToUsers });
     }
+
+    // e.g. system:Incoming
+    public setBooleanTag(name: string, value: boolean) {
+        const i = this.tags.indexOf(name);
+        if (i > -1 && !value) {
+            this.tags.splice(i, 1);
+        }
+        if (i < 0 && value) {
+            this.tags.push(name);
+        }
+    }
 }
