@@ -23,7 +23,11 @@ export function updateBook(
     // and certain unwanted changes would be made to the book record
     Object.assign(params, { updateSource: "libraryUserControl" });
 
-    axios.put(`${getConnection().url}classes/books/${bookId}`, params, {
-        headers
-    });
+    axios
+        .put(`${getConnection().url}classes/books/${bookId}`, params, {
+            headers
+        })
+        .catch(error => {
+            alert(error);
+        });
 }

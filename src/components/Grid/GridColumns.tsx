@@ -5,11 +5,14 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React, { useState } from "react";
-import { Column as DevExpressColumn } from "@devexpress/dx-react-grid";
+import {
+    Column as DevExpressColumn,
+    Filter as GridFilter,
+    TableFilterRow
+} from "@devexpress/dx-react-grid";
 
-import { Checkbox, Link } from "@material-ui/core";
+import { Checkbox, Link, TableCell, Select, MenuItem } from "@material-ui/core";
 import { Book } from "../../model/Book";
-import { TagsList } from "../Admin/TagsList";
 import { Router } from "../../Router";
 import QueryString from "qs";
 import titleCase from "title-case";
@@ -18,10 +21,15 @@ import { IFilter } from "../../IFilter";
 export interface IGridColumn extends DevExpressColumn {
     moderatorOnly?: boolean;
     defaultVisible?: boolean;
-
     addToFilter?: (filter: IFilter, value: string) => void;
+    // getFilterComponent?: (
+    //     props: TableFilterRow.CellProps
+    // ) => React.ComponentType<TableFilterRow.CellProps>;
 }
+
+const kTagsToFilterOutOfTagsList = ["bookshelf:", "system:Incoming"];
 export function getBookGridColumns(router: Router): IGridColumn[] {
+    // Note, the order here is also the default order in the table
     const columns = [
         {
             name: "title",
@@ -56,13 +64,18 @@ export function getBookGridColumns(router: Router): IGridColumn[] {
         {
             name: "tags",
             title: "Other Tags",
-            getCellValue: (b: Book) => (
-                <TagsList
-                    book={b}
-                    setModified={() => {}}
-                    borderColor={"transparent"}
-                ></TagsList>
-            )
+            getCellValue: (b: Book) =>
+                b.tags
+                    .filter(
+                        t =>
+                            !kTagsToFilterOutOfTagsList.find(tagToFilterOut =>
+                                t.startsWith(tagToFilterOut)
+                            )
+                    )
+                    .join(", "),
+            addToFilter: (filter: IFilter, value: string) => {
+                filter.otherTags = value;
+            }
         },
         {
             name: "bookshelves",
@@ -82,6 +95,7 @@ export function getBookGridColumns(router: Router): IGridColumn[] {
         },
         {
             name: "incoming",
+            moderatorOnly: true,
             defaultVisible: true,
             getCellValue: (b: Book) => (
                 <TagCheckbox book={b} tag={"system:Incoming"} />
@@ -104,7 +118,16 @@ export function getBookGridColumns(router: Router): IGridColumn[] {
                 filter.topic = titleCase(value);
             }
         },
-        { name: "harvestState" },
+        {
+            name: "harvestState",
+            addToFilter: (filter: IFilter, value: string) => {
+                filter.search = `harvestState:${value}`;
+            },
+            foo: "x"
+            // getFilterComponent: (props: TableFilterRow.CellProps) => (
+            //     <ChoicesFilterCell {...props} />
+            // )
+        },
         { name: "license" },
         { name: "copyright" },
         { name: "pageCount" },
@@ -128,15 +151,17 @@ export function getBookGridColumns(router: Router): IGridColumn[] {
     ];
 
     // generate the capitalized column names since the grid doesn't do that.
-    return columns
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .map(c => {
-            const x = { ...c };
-            if (c.title === undefined) {
-                x.title = titleCase(c.name);
-            }
-            return x;
-        });
+    return (
+        columns
+            //.sort((a, b) => a.name.localeCompare(b.name))
+            .map(c => {
+                const x = { ...c };
+                if (c.title === undefined) {
+                    x.title = titleCase(c.name);
+                }
+                return x;
+            })
+    );
 }
 
 export const GridSearchLink: React.FunctionComponent<{
@@ -178,3 +203,36 @@ const TagCheckbox: React.FunctionComponent<{
         />
     );
 };
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+/*const ChoicesFilterCell: React.FunctionComponent<TableFilterRow.CellProps> = props => (
+    <TableCell>
+        {/* <Checkbox
+            //value={props.filter ? props.filter.value : ""}
+            checked={props.filter ? props.filter.value==="true" : false}
+            onChange={e =>
+                props.onFilter({
+                    columnName: props.column.name,
+                    operation: "contains",
+                    value: e.target.value ? "true" : "false"
+                })
+            }
+        /> }
+        <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={""}
+            onChange={e =>
+                props.onFilter({
+                    columnName: props.column.name,
+                    operation: "contains",
+                    value: e.target.value as string
+                })
+            }
+        >
+            <MenuItem value={"Done"}>Done</MenuItem>
+            <MenuItem value={"Failed"}>Failed</MenuItem>
+        </Select>
+    </TableCell>
+);
+*/

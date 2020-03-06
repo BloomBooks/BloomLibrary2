@@ -155,7 +155,7 @@ export function useGetBooksForGrid(
                 keys:
                     "title,baseUrl,license,licenseNotes,summary,copyright,harvestState," +
                     "tags,pageCount,show,credits,country,features,internetLimits," +
-                    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount",
+                    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher",
                 // fluff up fields that reference other tables
                 include: "uploader,langPointers",
                 ...constructParseBookQuery({}, filter, tags)
@@ -371,14 +371,17 @@ function processAxiosStatus(answer: IAxiosAnswer): ISimplifiedAxiosResult {
 // copyright:John.Smith would come pretty close.)
 export function splitString(
     input: string,
-    tagOptions1?: string[]
+    // these would be things like "system:Incoming"
+    tagsFoundInDatabase?: string[]
 ): { keywords: string; specialParts: string[] } {
-    if (!tagOptions1) {
+    if (!tagsFoundInDatabase) {
         // should only happen during an early render that happens before we get
         // the results of the tag query.
         return { keywords: input, specialParts: [] };
     }
-    const tagOptions = ["uploader:", "copyright:", ...tagOptions1];
+    const facets = ["uploader:", "copyright:", "harvestState:"];
+
+    const possibleParts = [...facets, ...tagsFoundInDatabase];
     // Start with the string with extra spaces (doubles and following colon) removed.
     let keywords = input
         .replace(/ {2}/g, " ")
@@ -389,27 +392,27 @@ export function splitString(
     for (;;) {
         let gotOne = false;
         const keywordsLc = keywords.toLowerCase();
-        for (const tag of tagOptions) {
-            const tagLc = tag.toLowerCase();
-            const index = keywordsLc.indexOf(tagLc);
+        for (const possiblePart of possibleParts) {
+            const possiblePartLowerCase = possiblePart.toLowerCase();
+            const index = keywordsLc.indexOf(possiblePartLowerCase);
             if (index < 0) continue;
             gotOne = true;
-            let end = index + tag.length;
-            const specialTag = tag === "uploader:" || tag === "copyright:";
-            if (specialTag) {
+            let end = index + possiblePart.length;
+            const isFacet = facets.includes(possiblePart);
+            if (isFacet) {
                 end = keywords.indexOf(" ", end);
                 if (end < 0) {
                     end = keywords.length;
                 }
             }
             let part = keywords.substring(index, end);
-            // If tagOptions contains an exact match for the part, we'll keep that case.
+            // If possibleParts contains an exact match for the part, we'll keep that case.
             // So for example if we have both system:Incoming and system:incoming, it's
             // possible to search for either. Otherwise, we want to switch to the case
             // that actually occurs in the database, because tag searches are case sensitive
             // and won't match otherwise.
-            if (!specialTag && tagOptions.indexOf(part) < 0) {
-                part = tag;
+            if (!isFacet && possibleParts.indexOf(part) < 0) {
+                part = possiblePart;
             }
             specialParts.push(part);
             keywords = (
@@ -491,6 +494,9 @@ export function constructParseBookQuery(
                         $regex: keyVal[1],
                         $options: "i"
                     };
+                    break;
+                case "harvestState":
+                    params.where.harvestState = keyVal[1];
                     break;
                 default:
                     tagParts.push(part);

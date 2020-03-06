@@ -13,7 +13,9 @@ import {
     ColumnChooser,
     TableFilterRow,
     PagingPanel,
-    TableColumnResizing
+    TableColumnResizing,
+    DragDropProvider,
+    TableColumnReordering
 } from "@devexpress/dx-react-grid-material-ui";
 import {
     useGetBookCount,
@@ -46,9 +48,18 @@ const GridPage: React.FunctionComponent<{}> = props => {
     const bookGridColumns = useMemo(() => getBookGridColumns(router!), [
         router
     ]);
+    const [
+        columnNamesInDisplayOrder,
+        setColumnNamesInDisplayOrder
+    ] = useStorageState<string[]>(
+        localStorage,
+        "book-grid-column-order",
+        bookGridColumns.map(c => c.name)
+    );
+
     const [hiddenColumnNames, setHiddenColumnNames] = useStorageState<string[]>(
         localStorage,
-        "book-grid-hidden-column-names",
+        "book-grid-column-hidden",
         bookGridColumns.filter(c => !c.defaultVisible).map(c => c.name)
     );
 
@@ -61,14 +72,16 @@ const GridPage: React.FunctionComponent<{}> = props => {
         () => bookGridColumns.map(c => ({ columnName: c.name, width: "auto" })),
         [bookGridColumns]
     );
-    const combinedFilter = CombineGridAndSearchBoxFilter(
+    const filterMadeFromPageSearchPlusColumnFilters = CombineGridAndSearchBoxFilter(
         bookGridColumns,
         gridFilters,
         router!.current.filter
     );
-    const totalBookMatchingFilter = useGetBookCount(combinedFilter || {});
+    const totalBookMatchingFilter = useGetBookCount(
+        filterMadeFromPageSearchPlusColumnFilters || {}
+    );
     const books = useGetBooksForGrid(
-        combinedFilter,
+        filterMadeFromPageSearchPlusColumnFilters,
         kBooksPerGridPage,
         gridPage * kBooksPerGridPage
     );
@@ -80,17 +93,21 @@ const GridPage: React.FunctionComponent<{}> = props => {
                     !col.moderatorOnly || user?.moderator || user?.administrator
             )
         );
+        //setColumnNamesInDisplayOrder(bookGridColumns.map(c => c.name));
     }, [router, user, bookGridColumns]);
 
     // used to hide filter UI if we don't support filtering; the default ui, inexplicably, just shows it greyed out
     const FilterCell = useMemo(
         () => (fprops: TableFilterRow.CellProps) => {
-            if (
-                bookGridColumns.find(
-                    c => c.name === fprops.column.name && c.addToFilter
-                )
-            ) {
-                // return the default UI
+            // : React.ComponentType<TableFilterRowBase.CellProps> => {
+            const columnDef = bookGridColumns.find(
+                c => c.name === fprops.column.name && c.addToFilter
+            );
+            if (columnDef) {
+                // if (columnDef.getFilterComponent) {
+                //     return columnDef.getFilterComponent!(fprops);
+                // }
+                //return the default UI
                 return <TableFilterRow.Cell {...fprops} />;
             }
             // empty
@@ -122,7 +139,12 @@ const GridPage: React.FunctionComponent<{}> = props => {
                 <SortingState defaultSorting={[]} />
                 <IntegratedSorting />
                 <CustomPaging totalCount={totalBookMatchingFilter} />
+                <DragDropProvider />
                 <Table />
+                <TableColumnReordering
+                    order={columnNamesInDisplayOrder}
+                    onOrderChange={setColumnNamesInDisplayOrder}
+                />
                 <TableColumnResizing
                     resizingMode={"nextColumn"}
                     defaultColumnWidths={defaultColumnWidths}
