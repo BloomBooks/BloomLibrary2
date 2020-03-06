@@ -10,6 +10,7 @@ import React, {
     useMemo,
     ReactText
 } from "react";
+
 import {
     Grid,
     Table,
@@ -46,11 +47,8 @@ import { Breadcrumbs } from "../Breadcrumbs";
 import { useStorageState } from "react-storage-hooks";
 import { Book } from "../../model/Book";
 import { StaffPanel } from "../Admin/StaffPanel";
-import {
-    LoggedInUser,
-    useGetLoggedInUser
-} from "../../connection/LoggedInUser";
-import { useObserver, observer } from "mobx-react";
+import { useGetLoggedInUser } from "../../connection/LoggedInUser";
+import { observer } from "mobx-react";
 
 // we need the observer in order to get the logged in user, which may not be immediately available
 const GridPage: React.FunctionComponent<{}> = observer(() => {
@@ -61,23 +59,26 @@ const GridPage: React.FunctionComponent<{}> = observer(() => {
     const [gridFilters, setGridFilters] = useState<GridFilter[]>([]);
     const [gridPage, setGridPage] = useState(0);
     const [columns, setColumns] = useState<ReadonlyArray<IGridColumn>>([]);
+    const bookGridColumnDefinitions = useMemo(
+        () => getBookGridColumns(router!),
+        [router]
+    );
     const [expandedRowIds, setExpandedRowIds] = useState<ReactText[]>([]);
-    const bookGridColumns = useMemo(() => getBookGridColumns(router!), [
-        router
-    ]);
     const [
         columnNamesInDisplayOrder,
         setColumnNamesInDisplayOrder
     ] = useStorageState<string[]>(
         localStorage,
         "book-grid-column-order",
-        bookGridColumns.map(c => c.name)
+        bookGridColumnDefinitions.map(c => c.name)
     );
 
     const [hiddenColumnNames, setHiddenColumnNames] = useStorageState<string[]>(
         localStorage,
         "book-grid-column-hidden",
-        bookGridColumns.filter(c => !c.defaultVisible).map(c => c.name)
+        bookGridColumnDefinitions
+            .filter(c => !c.defaultVisible)
+            .map(c => c.name)
     );
 
     // enhance: make the date nice (remove Hour/Minute/Seconds, show as YYYY-MM-DD)
@@ -86,11 +87,15 @@ const GridPage: React.FunctionComponent<{}> = observer(() => {
     // enhance: add "in circulation" column
 
     const defaultColumnWidths = useMemo(
-        () => bookGridColumns.map(c => ({ columnName: c.name, width: "auto" })),
-        [bookGridColumns]
+        () =>
+            bookGridColumnDefinitions.map(c => ({
+                columnName: c.name,
+                width: "auto"
+            })),
+        [bookGridColumnDefinitions]
     );
     const filterMadeFromPageSearchPlusColumnFilters = CombineGridAndSearchBoxFilter(
-        bookGridColumns,
+        bookGridColumnDefinitions,
         gridFilters,
         router!.current.filter
     );
@@ -104,34 +109,30 @@ const GridPage: React.FunctionComponent<{}> = observer(() => {
     );
     useEffect(() => {
         setColumns(
-            bookGridColumns.filter(
+            bookGridColumnDefinitions.filter(
                 // some columns we only include if we are logged in with the right permissions
                 col =>
                     !col.moderatorOnly || user?.moderator || user?.administrator
             )
         );
         //setColumnNamesInDisplayOrder(bookGridColumns.map(c => c.name));
-    }, [router, user, bookGridColumns]);
+    }, [router, user, bookGridColumnDefinitions]);
 
-    // used to hide filter UI if we don't support filtering; the default ui, inexplicably, just shows it greyed out
-    const FilterCell = useMemo(
-        () => (fprops: TableFilterRow.CellProps) => {
-            // : React.ComponentType<TableFilterRowBase.CellProps> => {
-            const columnDef = bookGridColumns.find(
-                c => c.name === fprops.column.name && c.addToFilter
-            );
-            if (columnDef) {
-                // if (columnDef.getFilterComponent) {
-                //     return columnDef.getFilterComponent!(fprops);
-                // }
-                //return the default UI
-                return <TableFilterRow.Cell {...fprops} />;
+    const FilteringComponentForOneColumn: React.FunctionComponent<TableFilterRow.CellProps> = fprops => {
+        const columnDef = bookGridColumnDefinitions.find(
+            c => c.name === fprops.column.name && c.addToFilter
+        );
+        if (columnDef) {
+            if (columnDef.getCustomFilterComponent) {
+                return columnDef.getCustomFilterComponent!(fprops);
             }
-            // empty
-            return <TableCell />;
-        },
-        [bookGridColumns]
-    );
+            //return the default UI
+            return <TableFilterRow.Cell {...fprops} />;
+        }
+        //  hide filter UI if we don't support filtering; the default ui, inexplicably, just shows it greyed out
+        return <TableCell />;
+    };
+
     return (
         <div>
             <div
@@ -196,7 +197,9 @@ const GridPage: React.FunctionComponent<{}> = observer(() => {
                         setHiddenColumnNames(names)
                     }
                 />
-                <TableFilterRow cellComponent={FilterCell} />
+                <TableFilterRow
+                    cellComponent={FilteringComponentForOneColumn}
+                />
                 <Toolbar />
                 <ColumnChooser />
                 <PagingPanel />

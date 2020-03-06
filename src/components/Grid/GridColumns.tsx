@@ -4,14 +4,20 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useState } from "react";
+import React, { useState, FunctionComponent } from "react";
 import {
     Column as DevExpressColumn,
-    Filter as GridFilter,
     TableFilterRow
 } from "@devexpress/dx-react-grid";
 
-import { Checkbox, Link, TableCell, Select, MenuItem } from "@material-ui/core";
+import {
+    Checkbox,
+    Link,
+    TableCell,
+    Select,
+    MenuItem,
+    useTheme
+} from "@material-ui/core";
 import { Book } from "../../model/Book";
 import { Router } from "../../Router";
 import QueryString from "qs";
@@ -21,10 +27,11 @@ import { IFilter } from "../../IFilter";
 export interface IGridColumn extends DevExpressColumn {
     moderatorOnly?: boolean;
     defaultVisible?: boolean;
+    // A column definition specifies this if it needs a custom filter control
+    getCustomFilterComponent?: FunctionComponent<TableFilterRow.CellProps>;
+    // Whether the column uses a default (text box) filter or a custom filter control,
+    // given a BloomLibrary filter, modify it to include the value the user has set while using this column's filter control
     addToFilter?: (filter: IFilter, value: string) => void;
-    // getFilterComponent?: (
-    //     props: TableFilterRow.CellProps
-    // ) => React.ComponentType<TableFilterRow.CellProps>;
 }
 
 const kTagsToFilterOutOfTagsList = ["bookshelf:", "system:Incoming"];
@@ -123,10 +130,12 @@ export function getBookGridColumns(router: Router): IGridColumn[] {
             addToFilter: (filter: IFilter, value: string) => {
                 filter.search = `harvestState:${value}`;
             },
-            foo: "x"
-            // getFilterComponent: (props: TableFilterRow.CellProps) => (
-            //     <ChoicesFilterCell {...props} />
-            // )
+            getCustomFilterComponent: (props: TableFilterRow.CellProps) => (
+                <ChoicesFilterCell
+                    choices={["", "Done", "Failed"]}
+                    {...props}
+                />
+            )
         },
         { name: "license" },
         { name: "copyright" },
@@ -205,9 +214,13 @@ const TagCheckbox: React.FunctionComponent<{
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-/*const ChoicesFilterCell: React.FunctionComponent<TableFilterRow.CellProps> = props => (
-    <TableCell>
-        {/* <Checkbox
+const ChoicesFilterCell: React.FunctionComponent<TableFilterRow.CellProps & {
+    choices: string[];
+}> = props => {
+    const theme = useTheme();
+    return (
+        <TableCell>
+            {/* <Checkbox
             //value={props.filter ? props.filter.value : ""}
             checked={props.filter ? props.filter.value==="true" : false}
             onChange={e =>
@@ -217,22 +230,29 @@ const TagCheckbox: React.FunctionComponent<{
                     value: e.target.value ? "true" : "false"
                 })
             }
-        /> }
-        <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={""}
-            onChange={e =>
-                props.onFilter({
-                    columnName: props.column.name,
-                    operation: "contains",
-                    value: e.target.value as string
-                })
-            }
-        >
-            <MenuItem value={"Done"}>Done</MenuItem>
-            <MenuItem value={"Failed"}>Failed</MenuItem>
-        </Select>
-    </TableCell>
-);
-*/
+        /> */}
+            <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                color="secondary" //<--- doesn't work
+                value={props.filter?.value || ""}
+                css={css`
+                    font-size: 0.875rem !important;
+                `}
+                onChange={e =>
+                    props.onFilter({
+                        columnName: props.column.name,
+                        operation: "contains",
+                        value: e.target.value as string
+                    })
+                }
+            >
+                {props.choices.map(c => (
+                    <MenuItem key={c} value={c}>
+                        {c.length === 0 ? "All" : c}
+                    </MenuItem>
+                ))}
+            </Select>
+        </TableCell>
+    );
+};
