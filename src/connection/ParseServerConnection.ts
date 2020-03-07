@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LoggedInUser } from "./LoggedInUser";
+import { LoggedInUser, User } from "./LoggedInUser";
 
 // This file exports a function getConnection(), which returns the headers
 // needed to talk to our Parse Server backend db.
@@ -86,6 +86,12 @@ function checkIfUserIsModerator() {
         .then(result => {
             if (result.data.results.length > 0) {
                 LoggedInUser.current!.moderator = true;
+                /*
+                was trying to get mobx / useGetLoggedInUser to cause a refresh once this is known
+                const copy = LoggedInUser.current!;
+                copy.moderator = true;
+                LoggedInUser.current = copy;
+                */
             }
         });
 }
@@ -135,7 +141,7 @@ export async function connectParseServer(
                     )
                     .then(usersResult => {
                         if (usersResult.data.sessionToken) {
-                            LoggedInUser.current = usersResult.data;
+                            LoggedInUser.current = new User(usersResult.data);
                             //Object.assign(CurrentUser, usersResult.data);
                             connection.headers["X-Parse-Session-Token"] =
                                 usersResult.data.sessionToken;

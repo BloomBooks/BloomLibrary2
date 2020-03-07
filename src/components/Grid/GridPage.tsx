@@ -3,7 +3,13 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React, { useContext, useState, useEffect, useMemo } from "react";
+import React, {
+    useContext,
+    useState,
+    useEffect,
+    useMemo,
+    ReactText
+} from "react";
 import {
     Grid,
     Table,
@@ -15,7 +21,8 @@ import {
     PagingPanel,
     TableColumnResizing,
     DragDropProvider,
-    TableColumnReordering
+    TableColumnReordering,
+    TableRowDetail
 } from "@devexpress/dx-react-grid-material-ui";
 import {
     useGetBookCount,
@@ -28,23 +35,33 @@ import {
     IntegratedSorting,
     PagingState,
     CustomPaging,
-    Filter as GridFilter
+    Filter as GridFilter,
+    RowDetailState
 } from "@devexpress/dx-react-grid";
 import { TableCell } from "@material-ui/core";
 import { IFilter } from "../../IFilter";
-import { useGetLoggedInUser } from "../../connection/LoggedInUser";
+//import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 import { getBookGridColumns, IGridColumn } from "./GridColumns";
 import { Breadcrumbs } from "../Breadcrumbs";
 import { useStorageState } from "react-storage-hooks";
+import { Book } from "../../model/Book";
+import { StaffPanel } from "../Admin/StaffPanel";
+import {
+    LoggedInUser,
+    useGetLoggedInUser
+} from "../../connection/LoggedInUser";
+import { useObserver, observer } from "mobx-react";
 
 // we need the observer in order to get the logged in user, which may not be immediately available
-const GridPage: React.FunctionComponent<{}> = props => {
-    const user = useGetLoggedInUser(); //LoggedInUser.current;
+const GridPage: React.FunctionComponent<{}> = observer(() => {
+    const user = useGetLoggedInUser();
+
     const kBooksPerGridPage = 20;
     const router = useContext(RouterContext);
     const [gridFilters, setGridFilters] = useState<GridFilter[]>([]);
     const [gridPage, setGridPage] = useState(0);
     const [columns, setColumns] = useState<ReadonlyArray<IGridColumn>>([]);
+    const [expandedRowIds, setExpandedRowIds] = useState<ReactText[]>([]);
     const bookGridColumns = useMemo(() => getBookGridColumns(router!), [
         router
     ]);
@@ -123,7 +140,9 @@ const GridPage: React.FunctionComponent<{}> = props => {
                 `}
             >
                 <Breadcrumbs />
+                {user && `user: ${user.email} moderator:${user.moderator}`}
             </div>
+
             <Grid rows={books} columns={columns}>
                 <PagingState
                     currentPage={gridPage}
@@ -140,6 +159,10 @@ const GridPage: React.FunctionComponent<{}> = props => {
                 <IntegratedSorting />
                 <CustomPaging totalCount={totalBookMatchingFilter} />
                 <DragDropProvider />
+                <RowDetailState
+                    expandedRowIds={expandedRowIds}
+                    onExpandedRowIdsChange={setExpandedRowIds}
+                />
                 <Table />
                 <TableColumnReordering
                     order={columnNamesInDisplayOrder}
@@ -150,6 +173,23 @@ const GridPage: React.FunctionComponent<{}> = props => {
                     defaultColumnWidths={defaultColumnWidths}
                 />
                 <TableHeaderRow showSortingControls />
+
+                {user && user.moderator && (
+                    <TableRowDetail
+                        contentComponent={row => {
+                            const book: Book = row.row;
+                            return (
+                                <div
+                                    css={css`
+                                        background-color: #1d94a438;
+                                    `}
+                                >
+                                    <StaffPanel book={book}></StaffPanel>
+                                </div>
+                            );
+                        }}
+                    />
+                )}
                 <TableColumnVisibility
                     defaultHiddenColumnNames={hiddenColumnNames}
                     onHiddenColumnNamesChange={names =>
@@ -163,7 +203,7 @@ const GridPage: React.FunctionComponent<{}> = props => {
             </Grid>
         </div>
     );
-};
+});
 
 // combine the search-box filter with filtering done in the columns
 function CombineGridAndSearchBoxFilter(
