@@ -10,16 +10,8 @@ import {
     TableFilterRow
 } from "@devexpress/dx-react-grid";
 
-import {
-    Checkbox,
-    Link,
-    TableCell,
-    Select,
-    MenuItem,
-    useTheme
-} from "@material-ui/core";
+import { Checkbox, Link, TableCell, Select, MenuItem } from "@material-ui/core";
 import { Book } from "../../model/Book";
-import { Router } from "../../Router";
 import QueryString from "qs";
 import titleCase from "title-case";
 import { IFilter } from "../../IFilter";
@@ -29,15 +21,17 @@ export interface IGridColumn extends DevExpressColumn {
     defaultVisible?: boolean;
     // A column definition specifies this if it needs a custom filter control
     getCustomFilterComponent?: FunctionComponent<TableFilterRow.CellProps>;
-    // Whether the column uses a default (text box) filter or a custom filter control,
-    // given a BloomLibrary filter, modify it to include the value the user has set while using this column's filter control
+    // Given a BloomLibrary filter, modify it to include the value the user has set while using this column's filter control.
+    // This happens regardless of whether the column uses a default (text box) filter or a custom filter control.
     addToFilter?: (filter: IFilter, value: string) => void;
 }
 
-const kTagsToFilterOutOfTagsList = ["bookshelf:", "system:Incoming"];
-export function getBookGridColumns(router: Router): IGridColumn[] {
+// For some tags, we want to give them their own column. So we don't want to show them in the tags column.
+const kTagsToFilterOutOfTagsList = ["bookshelf:", "system:Incoming", "level:"];
+
+export function getBookGridColumnsDefinitions(): IGridColumn[] {
     // Note, the order here is also the default order in the table
-    const columns = [
+    const definitions: IGridColumn[] = [
         {
             name: "title",
             title: "Title",
@@ -109,10 +103,22 @@ export function getBookGridColumns(router: Router): IGridColumn[] {
             )
         },
         {
-            name: "topic",
-
+            name: "level",
             defaultVisible: true,
-
+            getCellValue: (b: Book) => b.level,
+            getCustomFilterComponent: (props: TableFilterRow.CellProps) => (
+                <ChoicesFilterCell
+                    choices={["", "1", "2", "3", "4"]}
+                    {...props}
+                />
+            ),
+            addToFilter: (filter: IFilter, value: string) => {
+                filter.search += ` level:${titleCase(value)}`;
+            }
+        },
+        {
+            name: "topic",
+            defaultVisible: true,
             getCellValue: (b: Book) =>
                 b.tags
                     .filter(t => t.startsWith("topic:"))
@@ -161,7 +167,7 @@ export function getBookGridColumns(router: Router): IGridColumn[] {
 
     // generate the capitalized column names since the grid doesn't do that.
     return (
-        columns
+        definitions
             //.sort((a, b) => a.name.localeCompare(b.name))
             .map(c => {
                 const x = { ...c };
@@ -217,7 +223,13 @@ const TagCheckbox: React.FunctionComponent<{
 const ChoicesFilterCell: React.FunctionComponent<TableFilterRow.CellProps & {
     choices: string[];
 }> = props => {
-    const theme = useTheme();
+    const [value, setValue] = useState(props.filter?.value || "");
+    //const theme = useTheme();
+    const displayValue =
+        props.filter?.value && props.filter?.value.length > 0
+            ? props.filter?.value
+            : "All";
+    console.log(`displayValue:[${displayValue}]`);
     return (
         <TableCell>
             {/* <Checkbox
@@ -235,17 +247,23 @@ const ChoicesFilterCell: React.FunctionComponent<TableFilterRow.CellProps & {
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 color="secondary" //<--- doesn't work
-                value={props.filter?.value || ""}
+                displayEmpty={true}
+                renderValue={v => {
+                    const x = v as string;
+                    return <div>{x ? x : "All"}</div>;
+                }}
+                value={value}
                 css={css`
                     font-size: 0.875rem !important;
                 `}
-                onChange={e =>
+                onChange={e => {
+                    setValue(e.target.value as string);
                     props.onFilter({
                         columnName: props.column.name,
                         operation: "contains",
                         value: e.target.value as string
-                    })
-                }
+                    });
+                }}
             >
                 {props.choices.map(c => (
                     <MenuItem key={c} value={c}>

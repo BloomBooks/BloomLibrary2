@@ -29,7 +29,7 @@ import {
     useGetBookCount,
     useGetBooksForGrid
 } from "../../connection/LibraryQueryHooks";
-import { RouterContext } from "../../Router";
+
 import {
     FilteringState,
     SortingState,
@@ -39,10 +39,10 @@ import {
     Filter as GridFilter,
     RowDetailState
 } from "@devexpress/dx-react-grid";
+import { RouterContext } from "../../Router";
 import { TableCell } from "@material-ui/core";
 import { IFilter } from "../../IFilter";
-//import { useGetLoggedInUser } from "../../connection/LoggedInUser";
-import { getBookGridColumns, IGridColumn } from "./GridColumns";
+import { getBookGridColumnsDefinitions, IGridColumn } from "./GridColumns";
 import { Breadcrumbs } from "../Breadcrumbs";
 import { useStorageState } from "react-storage-hooks";
 import { Book } from "../../model/Book";
@@ -59,9 +59,8 @@ const GridPage: React.FunctionComponent<{}> = observer(() => {
     const [gridFilters, setGridFilters] = useState<GridFilter[]>([]);
     const [gridPage, setGridPage] = useState(0);
     const [columns, setColumns] = useState<ReadonlyArray<IGridColumn>>([]);
-    const bookGridColumnDefinitions = useMemo(
-        () => getBookGridColumns(router!),
-        [router]
+    const [bookGridColumnDefinitions] = useState(
+        getBookGridColumnsDefinitions()
     );
     const [expandedRowIds, setExpandedRowIds] = useState<ReactText[]>([]);
     const [
@@ -82,8 +81,6 @@ const GridPage: React.FunctionComponent<{}> = observer(() => {
     );
 
     // enhance: make the date nice (remove Hour/Minute/Seconds, show as YYYY-MM-DD)
-    // enhance: make changing checkboxes work
-    // enhance: expand details of a row to show staff panel
     // enhance: add "in circulation" column
 
     const defaultColumnWidths = useMemo(
@@ -118,20 +115,28 @@ const GridPage: React.FunctionComponent<{}> = observer(() => {
         //setColumnNamesInDisplayOrder(bookGridColumns.map(c => c.name));
     }, [router, user, bookGridColumnDefinitions]);
 
-    const FilteringComponentForOneColumn: React.FunctionComponent<TableFilterRow.CellProps> = fprops => {
-        const columnDef = bookGridColumnDefinitions.find(
-            c => c.name === fprops.column.name && c.addToFilter
-        );
-        if (columnDef) {
-            if (columnDef.getCustomFilterComponent) {
-                return columnDef.getCustomFilterComponent!(fprops);
+    // note: this is an embedded function as a way to get at bookGridColumnDefinitions. It's important
+    // that we don't reconstruct it on every render, or else we'll lose cursor focus on each key press.
+    // Alternatives to this useMemo would include a ContextProvider, a higher-order function, or just
+    // making bookGridColumnDefinitions static in this file. We're using this one at the moment because
+    // we eventually will reuse this for different grids, with different column definitions.
+    const FilteringComponentForOneColumn: React.FunctionComponent<TableFilterRow.CellProps> = useMemo(
+        () => fprops => {
+            const columnDef = bookGridColumnDefinitions.find(
+                c => c.name === fprops.column.name && c.addToFilter
+            );
+            if (columnDef) {
+                if (columnDef.getCustomFilterComponent) {
+                    return columnDef.getCustomFilterComponent!(fprops);
+                }
+                //return the default UI
+                return <TableFilterRow.Cell {...fprops} />;
             }
-            //return the default UI
-            return <TableFilterRow.Cell {...fprops} />;
-        }
-        //  hide filter UI if we don't support filtering; the default ui, inexplicably, just shows it greyed out
-        return <TableCell />;
-    };
+            //  hide filter UI if we don't support filtering; the default ui, inexplicably, just shows it greyed out
+            return <TableCell />;
+        },
+        [bookGridColumnDefinitions]
+    );
 
     return (
         <div>
@@ -141,7 +146,7 @@ const GridPage: React.FunctionComponent<{}> = observer(() => {
                 `}
             >
                 <Breadcrumbs />
-                {user && `user: ${user.email} moderator:${user.moderator}`}
+                {/* {user && `user: ${user.email} moderator:${user.moderator}`} */}
             </div>
 
             <Grid rows={books} columns={columns}>
@@ -214,7 +219,7 @@ function CombineGridAndSearchBoxFilter(
     gridFilters: GridFilter[],
     routerFilter: IFilter
 ): IFilter {
-    const f: IFilter = routerFilter || {};
+    const f: IFilter = { ...routerFilter };
     gridFilters.forEach(g => {
         // the business of contains vs. equals has not been worked out yet, on the grid ui side nor the actual query side
         if (g.operation !== "contains") {
