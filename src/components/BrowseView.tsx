@@ -37,6 +37,17 @@ export class BrowseView extends Component {
                 return (
                     <SearchResultsPage filter={this.router.current.filter} />
                 );
+            case "grid":
+                // This will split the code so that you only download/parse all the grid stuff if you go to the Grid page
+                // Note that it actually produces to *two* chunks, but I don't know why.
+                const GridPage = React.lazy(() =>
+                    import(/* webpackChunkName: "gridPage" */ "./Grid/GridPage")
+                );
+                return (
+                    <React.Suspense fallback={<div>Loading...</div>}>
+                        <GridPage />
+                    </React.Suspense>
+                );
             case "more":
                 return (
                     <AllResultsPage

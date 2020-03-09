@@ -29,7 +29,14 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
 }> = props => {
     const book = props.book;
     if (!book) return <></>;
-    if (!book.harvestState || book.harvestState !== "Done") return <></>;
+    if (!book.harvestState || book.harvestState !== "Done")
+        return (
+            <>
+                {`Harvest State: ${book.harvestState}`}
+                <br />
+                {`Harvest Log:${book.harvesterLog}`}
+            </>
+        );
 
     const handleChange = (artifactType: ArtifactType, showSetting: string) => {
         let userDecision: boolean | undefined;

@@ -19,7 +19,7 @@ interface IProps {
     setModified: (modified: boolean) => void;
     borderColor: string;
 }
-// This displays a list of a book's tags and lets you edit them using typeahead.
+// This displays a list of a book's tags and lets you edit them using type-ahead.
 // Any change (including an incompletely typed new tag) results
 // in a callback to setModified.
 export const TagsList: React.FunctionComponent<IProps> = observer(props => {
@@ -54,6 +54,7 @@ export const TagsList: React.FunctionComponent<IProps> = observer(props => {
             }
         }
         tags.current = Array.from(temp.values());
+        //console.log("tags.current=" + JSON.stringify(tags.current));
     }, [search]);
 
     // This is the original tag matching algorithm from BL1. Autocomplete seems to do pretty well without it,

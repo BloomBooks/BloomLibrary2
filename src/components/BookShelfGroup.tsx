@@ -4,7 +4,10 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import React from "react";
-import { useGetBookshelvesByCategory } from "../connection/LibraryQueryHooks";
+import {
+    useGetBookshelvesByCategory,
+    IBookshelfResult
+} from "../connection/LibraryQueryHooks";
 import CategoryCard from "./CategoryCard";
 import LazyLoad from "react-lazyload";
 
@@ -53,12 +56,14 @@ export const BookshelfGroupInner: React.FunctionComponent<IProps> = props => {
     const bookshelfResults = useGetBookshelvesByCategory(
         props.bookShelfCategory
     );
-
+    // const nameToImage = [
+    //     ["Ministerio de Educación de Guatemala", "guatemala-moe-logo.svg"]
+    // ];
     const parts =
         bookshelfResults &&
         bookshelfResults
             .filter(
-                (shelf: any) =>
+                (shelf: IBookshelfResult) =>
                     // allow if we weren't given a bookshelf to filter by
                     !props.parentBookshelf ||
                     props.parentBookshelf.length === 0 ||
@@ -66,7 +71,7 @@ export const BookshelfGroupInner: React.FunctionComponent<IProps> = props => {
                     // Art/Painting. So this is checking to see if "Art/Painting" starts with "Art"
                     shelf.englishName.startsWith(props.parentBookshelf)
             )
-            .map((shelf: any) => (
+            .map((shelf: IBookshelfResult) => (
                 <CategoryCard
                     key={shelf.key}
                     title={shelf.englishName}

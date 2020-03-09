@@ -40,7 +40,10 @@ export class Router {
     public waitingOnSaveOrCancel: boolean = false;
     public constructor() {
         const home = Router.home;
-        if (window.location.search === "") {
+        if (window.location.pathname === "/grid") {
+            this.push(home);
+            this.push({ title: "Grid", pageType: "grid" } as ILocation);
+        } else if (window.location.search === "") {
             // we're just at the root of the site
             this.push(home);
         } else {
@@ -130,7 +133,6 @@ export class Router {
         this.push(Router.home);
     }
 
-    // TODO: make this real
     public pushBook(bookId: string) {
         this.push({
             bookId,
@@ -179,6 +181,7 @@ export class Router {
             this.current.title,
             "?" + QueryString.stringify(location)
         );
+        //console.log("State=" + JSON.stringify(location));
     }
 }
 

@@ -75,8 +75,17 @@ export function useGetLanguageInfo(language: string): ILanguage[] {
     } else return [];
 }
 
-export function useGetBookCount(filter: IFilter) {
-    return useBookQuery({ limit: 0, count: 1 }, filter);
+export function useGetBookCountRaw(filter: IFilter) {
+    return useBookQueryInternal({ limit: 0, count: 1 }, filter);
+}
+
+export function useGetBookCount(filter: IFilter): number {
+    const answer = useBookQueryInternal({ limit: 0, count: 1 }, filter);
+    if (!answer.response) {
+        return 0;
+    }
+    const s = answer.response["data"]["count"];
+    return parseInt(s, 10);
 }
 
 export function useGetBookDetail(bookId: string): Book | undefined | null {
@@ -115,8 +124,7 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
     }
 
     const detail: Book = createBookFromParseServerData(
-        response["data"]["results"][0],
-        bookId
+        response["data"]["results"][0]
     );
 
     // const parts = detail.tags.split(":");
@@ -128,16 +136,68 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
     return detail;
 }
 
+export function useGetBooksForGrid(
+    filter: IFilter,
+    limit: number,
+    skip: number
+): Book[] {
+    const { tags } = useContext(CachedTablesContext);
+    const { response, loading, error } = useAxios({
+        url: `${getConnection().url}classes/books`,
+        method: "GET",
+        trigger: JSON.stringify(filter),
+
+        options: {
+            headers: getConnection().headers,
+            params: {
+                limit,
+                skip,
+
+                keys:
+                    "title,baseUrl,license,licenseNotes,summary,copyright,harvestState," +
+                    "tags,pageCount,show,credits,country,features,internetLimits," +
+                    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher",
+                // fluff up fields that reference other tables
+                include: "uploader,langPointers",
+                ...constructParseBookQuery({}, filter, tags)
+            }
+        }
+    });
+
+    if (
+        loading ||
+        !response ||
+        !response["data"] ||
+        !response["data"]["results"] ||
+        response["data"]["results"].length === 0 ||
+        error
+    ) {
+        return [];
+    }
+
+    return response["data"]["results"].map((r: object) =>
+        createBookFromParseServerData(r)
+    );
+
+    // const parts = detail.tags.split(":");
+    // const x = parts.map(p => {tags[(p[0]) as string] = ""});
+
+    // return parts[0] + "-" + parts[1];
+    // detail.topic =
+}
+
 // we just want a better name
 export interface IAxiosAnswer extends IReturns<any> {}
 
 // May set param.order to "titleOrScore" to indicate that books should be
 // sorted by title unless the search is a keyword search that makes a ranking
 // score available. For this to work, params must also specify keys.
-export function useBookQuery(
+function useBookQueryInternal(
     params: {}, // this is the order, which fields, limits, etc.
 
-    filter: IFilter // this is *which* records to return
+    filter: IFilter, // this is *which* records to return
+    limit?: number, //pagination
+    skip?: number //pagination
 ): IAxiosAnswer {
     const { tags } = useContext(CachedTablesContext);
 
@@ -150,18 +210,41 @@ export function useBookQuery(
         trigger:
             JSON.stringify(params) +
             JSON.stringify(filter) +
-            JSON.stringify(!!tags),
+            JSON.stringify(!!tags) +
+            JSON.stringify(limit) +
+            JSON.stringify(skip),
         options: {
             headers: getConnection().headers,
-            params: constructParseBookQuery(params, filter, tags)
+            params: constructParseBookQuery(params, filter, tags, limit, skip)
         }
     });
 }
 
+export function useBookQuery(
+    params: {},
+    filter: IFilter,
+    limit?: number, //pagination
+    skip?: number //pagination
+): IBasicBookInfo[] {
+    const bookResultsStatus: IAxiosAnswer = useBookQueryInternal(
+        params,
+        filter,
+        limit,
+        skip
+    );
+    const simplifiedResultStatus = processAxiosStatus(bookResultsStatus);
+
+    return simplifiedResultStatus.books.map((rawFromREST: any) => {
+        const b: IBasicBookInfo = { ...rawFromREST };
+        b.languages = rawFromREST.langPointers;
+        return b;
+    });
+}
+
 // Note that we also have a full-fledge "book" class, so why aren't we just using that?
-// The is because Book class is basically everything we might want to know about a book,
-// and it is used in the BookDetail screen. In contrast, this is just some type wrapping
-// around the raw REST result, used to quickly make book cards.
+// Book class, used in the BookDetail screen, is basically everything we might want to
+// know about a book, and is more expensive to get and prepare. In contrast, this is just some type wrapping
+// around the raw REST result, used to quickly make book cards & grid rows.
 export interface IBasicBookInfo {
     objectId: string;
     baseUrl: string;
@@ -173,6 +256,10 @@ export interface IBasicBookInfo {
     features: string[];
     tags: string[];
     updatedAt?: string;
+    license: string;
+    copyright: string;
+    pageCount: string;
+    createdAt: string;
 }
 
 export interface ISearchBooksResult {
@@ -205,7 +292,7 @@ export function useSearchBooks(
     filter: IFilter // this is *which* books to return
 ): ISearchBooksResult {
     const paramsWithCount = { ...params, count: 1 };
-    const bookResultsStatus: IAxiosAnswer = useBookQuery(
+    const bookResultsStatus: IAxiosAnswer = useBookQueryInternal(
         paramsWithCount,
         filter
     );
@@ -282,14 +369,17 @@ function processAxiosStatus(answer: IAxiosAnswer): ISimplifiedAxiosResult {
 // copyright:John.Smith would come pretty close.)
 export function splitString(
     input: string,
-    tagOptions1?: string[]
+    // these would be things like "system:Incoming"
+    tagsFoundInDatabase?: string[]
 ): { keywords: string; specialParts: string[] } {
-    if (!tagOptions1) {
+    if (!tagsFoundInDatabase) {
         // should only happen during an early render that happens before we get
         // the results of the tag query.
         return { keywords: input, specialParts: [] };
     }
-    const tagOptions = ["uploader:", "copyright:", ...tagOptions1];
+    const facets = ["uploader:", "copyright:", "harvestState:"];
+
+    const possibleParts = [...facets, ...tagsFoundInDatabase];
     // Start with the string with extra spaces (doubles and following colon) removed.
     let keywords = input
         .replace(/ {2}/g, " ")
@@ -300,27 +390,27 @@ export function splitString(
     for (;;) {
         let gotOne = false;
         const keywordsLc = keywords.toLowerCase();
-        for (const tag of tagOptions) {
-            const tagLc = tag.toLowerCase();
-            const index = keywordsLc.indexOf(tagLc);
+        for (const possiblePart of possibleParts) {
+            const possiblePartLowerCase = possiblePart.toLowerCase();
+            const index = keywordsLc.indexOf(possiblePartLowerCase);
             if (index < 0) continue;
             gotOne = true;
-            let end = index + tag.length;
-            const specialTag = tag === "uploader:" || tag === "copyright:";
-            if (specialTag) {
+            let end = index + possiblePart.length;
+            const isFacet = facets.includes(possiblePart);
+            if (isFacet) {
                 end = keywords.indexOf(" ", end);
                 if (end < 0) {
                     end = keywords.length;
                 }
             }
             let part = keywords.substring(index, end);
-            // If tagOptions contains an exact match for the part, we'll keep that case.
+            // If possibleParts contains an exact match for the part, we'll keep that case.
             // So for example if we have both system:Incoming and system:incoming, it's
             // possible to search for either. Otherwise, we want to switch to the case
             // that actually occurs in the database, because tag searches are case sensitive
             // and won't match otherwise.
-            if (!specialTag && tagOptions.indexOf(part) < 0) {
-                part = tag;
+            if (!isFacet && possibleParts.indexOf(part) < 0) {
+                part = possiblePart;
             }
             specialParts.push(part);
             keywords = (
@@ -343,10 +433,19 @@ export function splitString(
 export function constructParseBookQuery(
     params: any,
     filter: IFilter,
-    tagOptions?: string[]
+    tagOptions?: string[],
+    limit?: number, //pagination
+    skip?: number //pagination
 ): object {
-    // todo: I don't know why this is underfined
+    // todo: I don't know why this is undefined
     const f = filter ? filter : {};
+
+    if (limit) {
+        params.limit = limit;
+    }
+    if (skip) {
+        params.skip = skip;
+    }
 
     // language {"where":{"langPointers":{"$inQuery":{"where":{"isoCode":"en"},"className":"language"}},"inCirculation":{"$in":[true,null]}},"limit":0,"count":1
     // topic {"where":{"tags":{"$in":["topic:Agriculture","Agriculture"]},"license":{"$regex":"^\\Qcc\\E"},"inCirculation":{"$in":[true,null]}},"include":"langPointers,uploader","keys":"$score,title,tags,baseUrl,langPointers,uploader","limit":10,"order":"title",
@@ -394,6 +493,9 @@ export function constructParseBookQuery(
                         $options: "i"
                     };
                     break;
+                case "harvestState":
+                    params.where.harvestState = keyVal[1];
+                    break;
                 default:
                     tagParts.push(part);
                     break;
@@ -432,7 +534,7 @@ export function constructParseBookQuery(
             }
         };
     }
-    // topic is handled below. This older version is not compatible with the possiblity of other topics.
+    // topic is handled below. This older version is not compatible with the possibility of other topics.
     // Hopefully the old style really is gone. Certainly any update inserts topic:
     // if (f.topic != null) {
     // params.where.tags = {
