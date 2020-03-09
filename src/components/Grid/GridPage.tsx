@@ -71,6 +71,37 @@ const GridPage: React.FunctionComponent<{}> = observer(() => {
         "book-grid-column-order",
         bookGridColumnDefinitions.map(c => c.name)
     );
+    // when a new version adds a new column, the list of columns in order will not match
+    // the full list of columns. Instead of coping with this, the devexpress grid just locks down the new
+    // column as the first one. So here we detect added and removed columns, while preserving order.
+    useEffect(() => {
+        const newCompleteSetInDefaultOrder = bookGridColumnDefinitions.map(
+            c => c.name
+        );
+        const columnsThatNeedToBeAdded = newCompleteSetInDefaultOrder.filter(
+            x => !columnNamesInDisplayOrder.includes(x)
+        );
+        const columnsThatNeedToBeRemoved = columnNamesInDisplayOrder.filter(
+            x => !newCompleteSetInDefaultOrder.includes(x)
+        );
+        if (
+            columnsThatNeedToBeAdded.length ||
+            columnsThatNeedToBeRemoved.length
+        ) {
+            const oldOrderWithNewOnesAtEnd = columnNamesInDisplayOrder.concat(
+                columnsThatNeedToBeAdded
+            );
+            const columnsWithAnyOldOnesRemoved = oldOrderWithNewOnesAtEnd.filter(
+                n => !columnsThatNeedToBeRemoved.includes(n)
+            );
+            setColumnNamesInDisplayOrder(columnsWithAnyOldOnesRemoved);
+            console.log("order: " + columnsWithAnyOldOnesRemoved);
+        }
+    }, [
+        columnNamesInDisplayOrder,
+        setColumnNamesInDisplayOrder,
+        bookGridColumnDefinitions
+    ]);
 
     const [hiddenColumnNames, setHiddenColumnNames] = useStorageState<string[]>(
         localStorage,
