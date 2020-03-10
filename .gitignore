@@ -25,3 +25,5 @@ yarn-error.log*
 \.nyc_output/
 
 public/bloom-player/
+
+debug.log

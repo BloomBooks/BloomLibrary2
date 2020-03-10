@@ -164,7 +164,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                 </GridSearchLink>
             ),
             addToFilter: (filter: IFilter, value: string) => {
-                filter.search = `uploader:${value}`;
+                filter.search = `uploader:${value} ` + (filter.search || "");
             }
         }
     ];
@@ -228,12 +228,6 @@ const ChoicesFilterCell: React.FunctionComponent<TableFilterRow.CellProps & {
     choices: string[];
 }> = props => {
     const [value, setValue] = useState(props.filter?.value || "");
-    //const theme = useTheme();
-    // const displayValue =
-    //     props.filter?.value && props.filter?.value.length > 0
-    //         ? props.filter?.value
-    //         : "All";
-    // console.log(`displayValue:[${displayValue}]`);
     return (
         <TableCell>
             {/* <Checkbox

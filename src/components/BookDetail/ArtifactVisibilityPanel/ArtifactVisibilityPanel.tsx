@@ -35,7 +35,7 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
                 {`Harvest State: ${book.harvestState}`}
                 <br />
                 {`Harvest Log:${book.getHarvestLog()}`}
-            </>
+            </React.Fragment>
         );
 
     const handleChange = (artifactType: ArtifactType, newSetting: string) => {
