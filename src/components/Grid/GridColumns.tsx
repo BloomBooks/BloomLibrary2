@@ -143,6 +143,10 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                 />
             )
         },
+        {
+            name: "harvestLog",
+            defaultVisible: false
+        },
         { name: "license" },
         { name: "copyright" },
         { name: "pageCount" },
@@ -225,11 +229,11 @@ const ChoicesFilterCell: React.FunctionComponent<TableFilterRow.CellProps & {
 }> = props => {
     const [value, setValue] = useState(props.filter?.value || "");
     //const theme = useTheme();
-    const displayValue =
-        props.filter?.value && props.filter?.value.length > 0
-            ? props.filter?.value
-            : "All";
-    console.log(`displayValue:[${displayValue}]`);
+    // const displayValue =
+    //     props.filter?.value && props.filter?.value.length > 0
+    //         ? props.filter?.value
+    //         : "All";
+    // console.log(`displayValue:[${displayValue}]`);
     return (
         <TableCell>
             {/* <Checkbox
