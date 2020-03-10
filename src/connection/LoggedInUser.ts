@@ -8,14 +8,12 @@ export class User {
         this.sessionId = userRecord.sessionId;
         this.email = userRecord.email;
         this.username = userRecord.username;
-        this.administrator = userRecord.administrator;
         this.moderator = userRecord.moderator;
     }
     public objectId: string;
     public sessionId: string;
     public email: string;
     public username: string;
-    public administrator: boolean;
     @observable
     public moderator: boolean; // set by ParseServerConnection.checkIfUserIsModerator() after successful login; not a built-in field.
 }

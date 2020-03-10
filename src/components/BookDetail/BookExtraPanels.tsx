@@ -35,12 +35,13 @@ export const BookExtraPanels: React.FunctionComponent<{
             {(user?.moderator || userIsUploader) && (
                 <ExpansionPanel>
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                        Artifact Controls
+                        Which Format Buttons to Show for this Book
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
                         <HarvesterArtifactUserControl
                             book={props.book}
                             currentUserIsUploader={userIsUploader}
+                            currentUserIsModerator={user?.moderator}
                         />
                     </ExpansionPanelDetails>
                 </ExpansionPanel>

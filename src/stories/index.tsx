@@ -194,7 +194,7 @@ storiesOf("Harvester Artifact Control", module)
                                 </div>
                                 <ArtifactAndChoice
                                     type={ArtifactType["epub"]}
-                                    visibility={
+                                    visibilitySettings={
                                         new ArtifactVisibilitySettings(
                                             harvester,
                                             librarian,
@@ -203,6 +203,7 @@ storiesOf("Harvester Artifact Control", module)
                                     }
                                     url="https://google.com"
                                     onChange={() => {}}
+                                    currentUserIsUploader={false}
                                 />
                             </div>
                         );
