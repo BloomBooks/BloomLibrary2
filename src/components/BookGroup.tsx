@@ -139,7 +139,8 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
             <li
                 css={css`
                     margin-top: ${commonUI.bookGroupTopMarginPx}px;
-                    height: ${commonUI.bookCardHeightPx}px; // want height to be same even if no results yet
+                    height: ${commonUI.bookCardHeightPx +
+                        commonUI.bookGroupTopMarginPx}px; // want height to be same even if no results yet
                 `}
             >
                 <h1>
