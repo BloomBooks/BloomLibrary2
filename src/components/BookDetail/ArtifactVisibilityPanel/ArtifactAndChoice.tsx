@@ -16,6 +16,7 @@ import readIcon from "../read.svg";
 import translationIcon from "../translation.svg";
 import { ArtifactType } from "../ArtifactHelper";
 import { commonUI } from "../../../theme";
+import { useGetLoggedInUser } from "../../../connection/LoggedInUser";
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -52,20 +53,29 @@ const useStyles = makeStyles(() =>
 // hide or show it by default.
 export const ArtifactAndChoice: React.FunctionComponent<{
     type: ArtifactType;
-    visibility: ArtifactVisibilitySettings;
+    // the parent should give us the settings of the uploader if that is who is logged in,
+    // or the moderator otherwise (people who are neither never see this component)
+    visibilitySettings: ArtifactVisibilitySettings;
     url: string;
     onChange: (show: string) => void;
+    currentUserIsUploader: boolean;
 }> = props => {
     const classes = useStyles();
+    const user = useGetLoggedInUser();
 
-    const getInitialShowValue = (): string => {
-        if (!props.visibility || props.visibility.user === undefined) {
+    const getThisPersonsChoice = (): string => {
+        const decisionByThisPerson = props.currentUserIsUploader
+            ? props.visibilitySettings.user
+            : props.visibilitySettings.librarian;
+        if (decisionByThisPerson === undefined) {
             return "auto";
         }
-        return props.visibility.user ? "show" : "hide";
+        return decisionByThisPerson ? "show" : "hide";
     };
 
-    const [show, setShow] = React.useState(getInitialShowValue());
+    const [thisPersonsChoice, setThisPersonsChoice] = React.useState(
+        getThisPersonsChoice()
+    );
     const isFirstRun = useRef(true);
     useEffect(() => {
         // Do not call onChange during component mount
@@ -74,33 +84,52 @@ export const ArtifactAndChoice: React.FunctionComponent<{
             return;
         }
 
-        props.onChange(show);
-    }, [show, props]);
+        props.onChange(thisPersonsChoice);
+    }, [thisPersonsChoice, props]);
 
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        setShow(event.target.value as string);
+        setThisPersonsChoice(event.target.value as string);
     };
 
     const getAutoText = (): string => {
         let showOrNot = "Show";
-        if (props.visibility && !props.visibility.getDecisionSansUser()) {
+        if (
+            props.visibilitySettings &&
+            !props.visibilitySettings.getDecisionSansUser()
+        ) {
             showOrNot = "Hide";
         }
         return `Automatic (${showOrNot})`;
     };
 
     const getRationaleText = (): string => {
-        if (!props.visibility) {
+        console.log(
+            "ArtifactAndChoice from getRationalText():" + JSON.stringify(props)
+        );
+        console.log(
+            "getRationalText():" +
+                props.visibilitySettings.hasUserDecided().toString()
+        );
+        if (!props.visibilitySettings) {
             return "";
         }
-        if (props.visibility.hasLibrarianDecided()) {
+        //console.log("abc:" + props.visibility.hasUserDecided());
+        if (
+            !props.currentUserIsUploader &&
+            props.visibilitySettings.hasUserDecided()
+        ) {
+            return `The uploader has determined that this should be "${
+                props.visibilitySettings.isUserHide() ? "Hide" : "Show"
+            }" and currently staff cannot override that.`;
+        }
+        if (props.visibilitySettings.hasLibrarianDecided()) {
             return `Bloom staff has determined that this should be "${
-                props.visibility.isLibrarianHide() ? "Hide" : "Show"
+                props.visibilitySettings.isLibrarianHide() ? "Hide" : "Show"
             }"`;
         }
-        if (props.visibility.hasHarvesterDecided()) {
+        if (props.visibilitySettings.hasHarvesterDecided()) {
             return `Our system has guessed that this should be "${
-                props.visibility.isHarvesterHide() ? "Hide" : "Show"
+                props.visibilitySettings.isHarvesterHide() ? "Hide" : "Show"
             }"`;
         }
         return "";
@@ -179,17 +208,27 @@ export const ArtifactAndChoice: React.FunctionComponent<{
             </a>
             <FormControl className={classes.formControl}>
                 <Select
-                    value={show}
+                    value={thisPersonsChoice}
                     onChange={handleChange}
                     autoWidth
                     className={classes.select}
+                    disabled={
+                        // currently the user always wins, so disable these controls if we're seeing them because
+                        // we are a moderator.
+                        props.visibilitySettings.hasUserDecided() &&
+                        !props.currentUserIsUploader
+                    }
                 >
                     <MenuItem value="auto">{getAutoText()}</MenuItem>
                     <MenuItem value="show">Show</MenuItem>
                     <MenuItem value="hide">Hide</MenuItem>
                 </Select>
                 <FormHelperText>
-                    {show === "auto" && getRationaleText()}
+                    {(thisPersonsChoice === "auto" ||
+                        // we show this for moderators even if not on auto because a moderator can currently be
+                        // overridden by the uploader, and this can be confusing.
+                        user?.moderator) &&
+                        getRationaleText()}
                 </FormHelperText>
             </FormControl>
         </div>

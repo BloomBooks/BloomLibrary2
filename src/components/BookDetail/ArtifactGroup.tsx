@@ -11,7 +11,7 @@ import pdfIcon from "./PDF.svg";
 import ePUBIcon from "./ePUB.svg";
 import bloomReaderIcon from "./BloomPub.svg";
 
-import { IconButton } from "@material-ui/core";
+import { IconButton, Tooltip } from "@material-ui/core";
 import {
     getArtifactUrl,
     ArtifactType,
@@ -76,34 +76,62 @@ export const ArtifactGroup: React.FunctionComponent<{
                         icon: pdfIcon,
                         alt: "Download PDF",
                         type: ArtifactType.pdf,
+                        settings: pdfSettings,
                         visible: pdfSettings.decision
                     },
                     {
                         icon: ePUBIcon,
                         alt: "Download ePUB",
                         type: ArtifactType.epub,
+                        settings: epubSettings,
                         visible: epubSettings && epubSettings.decision
                     },
                     {
                         icon: bloomReaderIcon,
                         alt: "Download for Bloom Reader",
                         type: ArtifactType.bloomReader,
+                        settings: bloomReaderSettings,
                         visible: showBloomReaderButton
                     }
-                ].map(
-                    a =>
-                        a.visible && (
-                            <a
-                                href={getArtifactUrl(props.book, a.type)}
-                                key={a.alt}
-                                //target={isInternalUrl() ? undefined : "_blank"}
-                            >
-                                <IconButton>
+                ].map(a => {
+                    // console.log(
+                    //     `alt:${a.alt}  settings:${JSON.stringify(
+                    //         a.settings
+                    //     )} reason:${a.settings?.reasonForHiding(props.book)}`
+                    // );
+                    return (
+                        <Tooltip
+                            key={a.alt}
+                            aria-label={`${a.alt} is not available`}
+                            title={
+                                a.settings?.reasonForHiding(props.book) || ""
+                            }
+                            arrow={true}
+                            disableHoverListener={a.visible}
+                            disableFocusListener={a.visible}
+                            disableTouchListener={a.visible}
+                        >
+                            <IconButton>
+                                {!a.visible && (
+                                    <div
+                                        css={css`
+                                            background-color: #ffffffb5;
+                                            position: absolute;
+                                            height: 100%;
+                                            width: 100%;
+                                        `}
+                                    ></div>
+                                )}
+                                <a
+                                    href={getArtifactUrl(props.book, a.type)}
+                                    key={a.alt}
+                                >
                                     <img src={a.icon} alt={a.alt} />
-                                </IconButton>
-                            </a>
-                        )
-                )}
+                                </a>
+                            </IconButton>
+                        </Tooltip>
+                    );
+                })}
             </ul>
         </div>
     );

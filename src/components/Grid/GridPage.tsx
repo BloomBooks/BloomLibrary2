@@ -108,8 +108,7 @@ const GridPage: React.FunctionComponent<{}> = observer(() => {
         setColumns(
             bookGridColumnDefinitions.filter(
                 // some columns we only include if we are logged in with the right permissions
-                col =>
-                    !col.moderatorOnly || user?.moderator || user?.administrator
+                col => !col.moderatorOnly || user?.moderator
             )
         );
         //setColumnNamesInDisplayOrder(bookGridColumns.map(c => c.name));

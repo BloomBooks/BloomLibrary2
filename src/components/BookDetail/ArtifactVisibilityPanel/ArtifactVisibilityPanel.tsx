@@ -24,31 +24,38 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
     book: Book | null | undefined;
     currentSession?: string;
     currentUserIsUploader?: boolean;
-    currentUserIsAdmin?: boolean;
+    currentUserIsModerator?: boolean;
     onChange?: () => {};
 }> = props => {
     const book = props.book;
-    if (!book) return <></>;
+    if (!book) return <React.Fragment></React.Fragment>;
     if (!book.harvestState || book.harvestState !== "Done")
         return (
-            <>
+            <React.Fragment>
                 {`Harvest State: ${book.harvestState}`}
                 <br />
                 {`Harvest Log:${book.harvesterLog}`}
-            </>
+            </React.Fragment>
         );
 
-    const handleChange = (artifactType: ArtifactType, showSetting: string) => {
-        let userDecision: boolean | undefined;
-        if (showSetting === "auto") userDecision = undefined;
-        else userDecision = showSetting === "show";
-
-        // if the setting didn't exist, we wouldn't be showing a control for it.
+    const handleChange = (artifactType: ArtifactType, newSetting: string) => {
         const artifactSettings = getArtifactVisibilitySettings(
             book,
             artifactType
-        )!;
-        artifactSettings.user = userDecision;
+        )!; // note on the "!": we know it isn't undefined because if the setting didn't exist, we wouldn't be showing a control for it.
+
+        const decision: boolean | undefined =
+            // if it's auto, we encode that with "undefined"
+            newSetting === "auto"
+                ? undefined
+                : // otherwise it's true if we set it to show, false otherwise
+                  newSetting === "show";
+
+        if (props.currentUserIsUploader) {
+            artifactSettings.user = decision;
+        } else if (props.currentUserIsModerator) {
+            artifactSettings.librarian = decision;
+        }
 
         book.saveArtifactVisibilityToParseServer();
         if (props.onChange) props.onChange();
@@ -79,7 +86,7 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
 
     const artifactCount = getExistingArtifactTypeKeys().length;
     const msg = !!props.currentUserIsUploader
-        ? "As the uploader of this book, you can control what formats to offer to people"
+        ? "Our system takes your book and automatically formats it for use on phones and web browsers. But sometimes books don't look good in these formats. Because you are the uploader of this book, you can check over what our system created."
         : "Because you have STAFF permissions, you can control what formats to offer to people. The uploader can also do this.";
     return (
         <div
@@ -95,8 +102,7 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
                 {msg}
             </h4>
             <Box padding={1} border={1} borderRadius="borderRadius">
-                Sometimes books created for one format don't look good in
-                another. Use the following to hide any formats that look bad.
+                Use the following to hide any formats that look bad.
                 {getExistingArtifactTypeKeys().map((artifactTypeKey, i) => {
                     const artifactType: ArtifactType = getArtifactTypeFromKey(
                         artifactTypeKey
@@ -105,7 +111,7 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
                         <div key={artifactType}>
                             <ArtifactAndChoice
                                 type={artifactType}
-                                visibility={
+                                visibilitySettings={
                                     getArtifactVisibilitySettings(
                                         book,
                                         artifactType
@@ -114,6 +120,9 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
                                 url={getArtifactUrl(book, artifactType)}
                                 onChange={showSetting =>
                                     handleChange(artifactType, showSetting)
+                                }
+                                currentUserIsUploader={
+                                    !!props.currentUserIsUploader
                                 }
                             ></ArtifactAndChoice>
                             {/* This ugly logic is just preventing a Divider after the last element */}
@@ -134,11 +143,11 @@ export const StandAloneHarvesterArtifactUserControl: React.FunctionComponent<{
     bookId: string;
     currentSession?: string;
     currentUserIsUploader?: boolean;
-    currentUserIsAdmin?: boolean;
+    currentUserIsModerator?: boolean;
     onChange?: () => {};
 }> = props => {
     const book = useGetBookDetail(props.bookId);
-    if (!book) return <></>;
+    if (!book) return <React.Fragment></React.Fragment>;
     return (
         <HarvesterArtifactUserControl
             {...props}
@@ -146,18 +155,6 @@ export const StandAloneHarvesterArtifactUserControl: React.FunctionComponent<{
         ></HarvesterArtifactUserControl>
     );
 };
-
-// The legacy angular bloomlibrary.org calls this. The production version of that build uses the
-// the version of this library that is tagged as "legacyBlorgProduction" on TeamCity.
-export function connectHarvestArtifactUserControl(
-    attachmentPoint: HTMLElement,
-    props: any
-) {
-    ReactDOM.render(
-        React.createElement(StandAloneHarvesterArtifactUserControl, props),
-        attachmentPoint
-    );
-}
 
 // This is what we use if the show column is not populated in parse.
 // Before we started populating the show column, we only and always

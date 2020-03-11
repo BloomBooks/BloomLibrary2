@@ -21,8 +21,8 @@ import { TagsList } from "./TagsList";
 interface IProps {
     book: Book;
 }
-// This React functional component displays some administrator controls, shown (for example)
-// in the book detail page when the logged-in use is an administrator.
+// This React functional component displays some staff controls, shown (for example)
+// in the book detail page when the logged-in use is an moderator.
 export const StaffPanel: React.FunctionComponent<IProps> = observer(props => {
     const router = useContext(RouterContext);
 

@@ -138,7 +138,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             },
             getCustomFilterComponent: (props: TableFilterRow.CellProps) => (
                 <ChoicesFilterCell
-                    choices={["", "Done", "Failed"]}
+                    choices={["", "Done", "Failed", "New", "Updated"]}
                     {...props}
                 />
             )

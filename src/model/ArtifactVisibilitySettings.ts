@@ -1,4 +1,5 @@
 import { observable, computed } from "mobx";
+import { Book } from "../model/Book";
 
 // This is related to the "show" column on book in ParseServer
 export class ArtifactVisibilitySettings {
@@ -7,7 +8,7 @@ export class ArtifactVisibilitySettings {
     @observable public user: boolean | undefined;
     private id = ArtifactVisibilitySettings.idCounter++;
 
-    static idCounter = 0;
+    private static idCounter = 0;
 
     constructor(
         harvester?: boolean | undefined,
@@ -19,9 +20,9 @@ export class ArtifactVisibilitySettings {
         this.user = user;
     }
 
-    public getUserDecision = (): boolean | undefined => {
-        return this.user;
-    };
+    public isUserHide(): boolean {
+        return this.user === false;
+    }
 
     public hasHarvesterDecided = (): boolean => {
         return this.harvester !== undefined;
@@ -47,10 +48,35 @@ export class ArtifactVisibilitySettings {
     };
 
     public hasUserDecided = (): boolean => {
+        //console.log(JSON.stringify(this));
         return this.user !== undefined;
     };
 
-    // This duplciates some logic in other methods, but if we use them,
+    // returns undefined if it's not hidden and should be available
+    public reasonForHiding(book: Book): string | undefined {
+        switch (book.harvestState) {
+            case "Updated":
+            case "New":
+                return "Our system has not yet generated this format.";
+            case "Failed":
+                return "Our system ran into a problem while trying to generate this format.";
+
+            case "Done":
+                return (
+                    (this.isUserHide() &&
+                        "This format has been hidden by the person who uploaded this book.") ||
+                    (this.isLibrarianHide() &&
+                        "This format has been hidden by a site moderator.") ||
+                    (this.isHarvesterHide() &&
+                        "This format has been hidden by our automated 'harvester' system.") ||
+                    undefined
+                );
+            default:
+                return "Unknown";
+        }
+    }
+
+    // This duplicates some logic in other methods, but if we use them,
     // they probably have to be @computed too...
     @computed public get decision(): boolean {
         if (this.user !== undefined) {
