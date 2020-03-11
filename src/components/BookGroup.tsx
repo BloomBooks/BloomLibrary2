@@ -80,7 +80,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
         // pretty drastically, followed by a "Show More".
         const slideChanged = () => {
             // ENHANCE: This is where we need to trigger loading more books if they are getting towards the end
-            console.log("current slide: " + swiper!.realIndex);
+            //console.log("current slide: " + swiper!.realIndex);
         };
         if (swiper !== null) {
             swiper.on("slideChange", slideChanged);

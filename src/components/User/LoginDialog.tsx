@@ -47,7 +47,7 @@ const uiConfig = {
             // staticUser.set(authResult.user);
             //firebase.auth().updateCurrentUser(authResult.user);
             //alert("signInSuccessWithAuthResult");
-            console.log("signInSuccessWithAuthResult " + authResult.user);
+            //console.log("signInSuccessWithAuthResult " + authResult.user);
             staticShowLoginDialog(false);
             if (!authResult.user.emailVerified) {
                 authResult.user.sendEmailVerification().then(() => {

@@ -49,8 +49,8 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
         </React.Fragment>
     );
 
-    console.log(props.bookshelfInfo.key);
-    console.log("props.img=" + props.img);
+    // console.log(props.bookshelfInfo.key);
+    // console.log("props.img=" + props.img);
     return (
         <CheapCard
             css={css`

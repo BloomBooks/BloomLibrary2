@@ -109,7 +109,7 @@ export const ProjectPage: React.FunctionComponent<{
     title: string;
     filter: IFilter;
 }> = props => {
-    console.log("Project Page " + JSON.stringify(props));
+    //console.log("Project Page " + JSON.stringify(props));
     return (
         <React.Fragment>
             <CustomizableBanner
@@ -130,7 +130,7 @@ export const BookGroupForEachTopic: React.FunctionComponent<{
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { response, loading, error, reFetch } = useGetTopicList();
     if (response) {
-        console.log(response);
+        //console.log(response);
         return (
             <div key={props.filter.topic}>
                 {response.data["results"].map((tag: any, index: number) => {

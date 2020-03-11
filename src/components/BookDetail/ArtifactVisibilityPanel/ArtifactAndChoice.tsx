@@ -103,13 +103,13 @@ export const ArtifactAndChoice: React.FunctionComponent<{
     };
 
     const getRationaleText = (): string => {
-        console.log(
-            "ArtifactAndChoice from getRationalText():" + JSON.stringify(props)
-        );
-        console.log(
-            "getRationalText():" +
-                props.visibilitySettings.hasUserDecided().toString()
-        );
+        // console.log(
+        //     "ArtifactAndChoice from getRationalText():" + JSON.stringify(props)
+        // );
+        // console.log(
+        //     "getRationalText():" +
+        //         props.visibilitySettings.hasUserDecided().toString()
+        // );
         if (!props.visibilitySettings) {
             return "";
         }
