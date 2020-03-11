@@ -20,6 +20,7 @@ import {
     AsafeerPage
 } from "./PublisherPages";
 import { GuatemalaMOEPage } from "./banners/OrganizationCustomizations";
+import { forceCheck as forceCheckLazyLoadComponents } from "react-lazyload";
 
 /* This is the top level component that can be hosted on a website to view and interact with the bloom library */
 @observer
@@ -98,11 +99,25 @@ export class BrowseView extends Component {
 
     public render() {
         document.title = `Bloom Library: ${this.router.current.title}`;
+        this.followUpOnLazyLoads();
         return (
             <RouterContext.Provider value={this.router}>
                 <Header />
                 {this.currentPage()}
             </RouterContext.Provider>
         );
+    }
+    // We make life hard on <Lazy> components by thinking maybe we'll show, for example, a row of Level 1 books at
+    // the top of the screen. So the <Lazy> thing may think "well, no room for me then until they scroll". But
+    // then it turns out that we don't have any level 1 books, so we don't even have a scroll bar. But too late, the
+    // <Lazy> row at the bottom has decided it should not display.
+    // Fortunately that same library gives us an out with this forceCheck thing (renamed during the import here for clarity).
+    private followUpOnLazyLoads() {
+        // if all goes well, after a second we'll know which rows we're going to show.
+        window.setTimeout(() => forceCheckLazyLoadComponents(), 1000);
+        // But maybe things are really slow, so try again in seconds.
+        window.setTimeout(() => forceCheckLazyLoadComponents(), 5000);
+        // 20 seconds. Ok at this point we may have lost them, I dunno.
+        window.setTimeout(() => forceCheckLazyLoadComponents(), 20000);
     }
 }
