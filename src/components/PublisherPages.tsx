@@ -33,6 +33,34 @@ export const AfricanStorybookPage: React.FunctionComponent = () => {
         </div>
     );
 };
+export const AsafeerPage: React.FunctionComponent = () => {
+    const filter = { bookshelf: "3Asafeer" };
+    const description = (
+        <React.Fragment>
+            <ExternalLink href="https://3Asafeer.com/">3Asafeer</ExternalLink>
+            's generosity allows us to host many of their books. Some of these
+            books were translated using Bloom and then uploaded here. Others
+            were automatically converted from the{" "}
+            <ExternalLink href="https://www.digitallibrary.io/">
+                Global Digital Library
+            </ExternalLink>
+            . All of them can be translated into your language using Bloom.
+        </React.Fragment>
+    );
+    return (
+        <div>
+            <PublisherBanner
+                title="3Asafeer"
+                showTitle={false}
+                filter={filter}
+                logoUrl={`https://share.bloomlibrary.org/category-images/Asafeer.png`}
+                collectionDescription={description}
+            />
+
+            <StandardPublisherGroups filter={filter} />
+        </div>
+    );
+};
 
 export const PrathamPage: React.FunctionComponent = () => {
     const filter = { bookshelf: "Pratham" };

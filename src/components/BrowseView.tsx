@@ -16,7 +16,8 @@ import { ReadBookPage } from "./ReadBookPage";
 import {
     PrathamPage,
     AfricanStorybookPage,
-    BookDashPage
+    BookDashPage,
+    AsafeerPage
 } from "./PublisherPages";
 import { GuatemalaMOEPage } from "./banners/OrganizationCustomizations";
 
@@ -74,6 +75,8 @@ export class BrowseView extends Component {
                 switch (this.router.current.filter.bookshelf) {
                     case "Pratham":
                         return <PrathamPage />;
+                    case "3Asafeer":
+                        return <AsafeerPage />;
                     case "African Storybook":
                         return <AfricanStorybookPage />;
                     case "Book Dash":

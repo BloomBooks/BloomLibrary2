@@ -83,7 +83,10 @@ export const BookshelfGroupInner: React.FunctionComponent<IProps> = props => {
                     pageType={props.bookShelfCategory}
                     img={
                         "https://share.bloomlibrary.org/category-images/" +
-                        encodeUrl(shelf.key) +
+                        encodeUrl(
+                            // something in our pipeline won't deliver an image that starts with "3"
+                            shelf.key === "3Asafeer" ? "Asafeer" : shelf.key
+                        ) +
                         ".png"
                     }
                     bookshelfInfo={shelf}
