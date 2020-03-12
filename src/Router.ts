@@ -4,6 +4,10 @@ import * as QueryString from "qs";
 // tslint:disable-next-line: no-duplicate-imports
 import * as mobx from "mobx";
 import { IFilter } from "./IFilter";
+import {
+    restoreScrollPosition,
+    storeScrollPosition
+} from "./RestoreScrollPosition";
 
 export interface ILocation {
     // this is used only when the location is a book detail
@@ -105,8 +109,9 @@ export class Router {
                 this.breadcrumbStack.splice(
                     0,
                     this.breadcrumbStack.length,
-                    ...event.state
+                    ...event.state.breadcrumbs
                 );
+                restoreScrollPosition(event.state);
             }
         };
     }
@@ -175,13 +180,16 @@ export class Router {
         // This will be noticed by the observing view, causing us to move to this location.
         this.breadcrumbStack.push(location);
 
-        // Enter this location in the browser's history.
+        storeScrollPosition();
+
+        // Enter this new location in the browser's history.
         window.history.pushState(
-            mobx.toJS(this.breadcrumbStack),
+            {
+                breadcrumbs: mobx.toJS(this.breadcrumbStack)
+            },
             this.current.title,
             "?" + QueryString.stringify(location)
         );
-        //console.log("State=" + JSON.stringify(location));
     }
 }
 
