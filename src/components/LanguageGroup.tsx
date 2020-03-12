@@ -25,8 +25,8 @@ export const LanguageGroup: React.FunctionComponent = () => {
 
     const swiperConfig = {
         navigation: {
-            nextEl: ".swiper-button-next.swiper-button-black",
-            prevEl: ".swiper-button-prev.swiper-button-black"
+            nextEl: ".swiper-button-next.swiper-button",
+            prevEl: ".swiper-button-prev.swiper-button"
         },
         spaceBetween: 20,
         slidesPerView: "auto"
