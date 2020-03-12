@@ -48,7 +48,6 @@ export const BookGroup: React.FunctionComponent<IProps> = props => (
     </LazyLoad>
 );
 export const BookGroupInner: React.FunctionComponent<IProps> = props => {
-    const [swiper, updateSwiper] = useState<any | null>(null);
     // we have either a horizontally-scrolling list of 20, or several rows
     // of 5 each
     const maxCardsToRetrieve = props.rows ? props.rows * 5 : 20;
@@ -75,18 +74,6 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
         spaceBetween: 20,
         slidesPerView: "auto"
     };
-    useEffect(() => {
-        // Review: Is this still needed? At the moment we are capping the number of books we offer in the slider
-        // pretty drastically, followed by a "Show More".
-        const slideChanged = () => {
-            // ENHANCE: This is where we need to trigger loading more books if they are getting towards the end
-            //console.log("current slide: " + swiper!.realIndex);
-        };
-        if (swiper !== null) {
-            swiper.on("slideChange", slideChanged);
-        }
-    }, [swiper]);
-
     const showInOneRow = !props.rows || props.rows < 2;
 
     const cards = search.books.map((b: IBasicBookInfo) => (
@@ -110,9 +97,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
         );
     }
     const bookList = showInOneRow ? (
-        <ReactIdSwiper {...swiperConfig} getSwiper={updateSwiper}>
-            {cards}
-        </ReactIdSwiper>
+        <ReactIdSwiper {...swiperConfig}>{cards}</ReactIdSwiper>
     ) : (
         <div
             css={css`
