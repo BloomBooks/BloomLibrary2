@@ -5,7 +5,9 @@ import { ThemeProvider } from "@material-ui/core";
 import { LoginDialog } from "./components/User/LoginDialog";
 import {
     useGetTagList,
-    useGetCleanedAndOrderedLanguageList
+    useGetCleanedAndOrderedLanguageList,
+    IBookshelfResult,
+    useGetBookshelvesByCategory
 } from "./connection/LibraryQueryHooks";
 import { ILanguage } from "./model/Language";
 import {
@@ -18,15 +20,17 @@ import {
 export const CachedTablesContext = React.createContext<{
     tags: string[];
     languages: ILanguage[];
+    bookshelves: IBookshelfResult[];
 }>({
     tags: [],
-    languages: []
+    languages: [],
+    bookshelves: []
 });
 
 export const App: React.FunctionComponent<{}> = props => {
     const tags = useGetTagList();
-
     const languages = useGetCleanedAndOrderedLanguageList();
+    const bookshelves = useGetBookshelvesByCategory();
 
     return (
         <>
@@ -46,7 +50,9 @@ export const App: React.FunctionComponent<{}> = props => {
             */}
             <div className="App">
                 <ThemeProvider theme={theme}>
-                    <CachedTablesContext.Provider value={{ tags, languages }}>
+                    <CachedTablesContext.Provider
+                        value={{ tags, languages, bookshelves }}
+                    >
                         <OSFeaturesContext.Provider
                             value={{
                                 bloomDesktopAvailable,
