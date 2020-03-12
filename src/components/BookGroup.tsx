@@ -12,9 +12,9 @@ import {
     IBasicBookInfo
 } from "../connection/LibraryQueryHooks";
 import LazyLoad from "react-lazyload";
-import ReactIdSwiper from "react-id-swiper";
 import { MoreCard } from "./MoreCard";
 import { commonUI } from "../theme";
+import { Swiper } from "./Swiper";
 interface IProps {
     title: string;
     filter: IFilter; // becomes the "where" clause the query
@@ -63,17 +63,6 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
         props.filter
     );
 
-    const swiperConfig = {
-        preloadImages: false,
-        lazy: true,
-        watchSlidesVisibility: true,
-        navigation: {
-            nextEl: ".swiper-button-next.swiper-button",
-            prevEl: ".swiper-button-prev.swiper-button"
-        },
-        spaceBetween: 20,
-        slidesPerView: "auto"
-    };
     const showInOneRow = !props.rows || props.rows < 2;
 
     const cards = search.books.map((b: IBasicBookInfo) => (
@@ -97,7 +86,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
         );
     }
     const bookList = showInOneRow ? (
-        <ReactIdSwiper {...swiperConfig}>{cards}</ReactIdSwiper>
+        <Swiper>{cards}</Swiper>
     ) : (
         <div
             css={css`
