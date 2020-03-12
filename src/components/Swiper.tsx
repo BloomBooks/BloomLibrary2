@@ -4,12 +4,15 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import ReactIdSwiper, { ReactIdSwiperChildren } from "react-id-swiper";
-import React from "react";
+import ReactIdSwiper, {
+    ReactIdSwiperChildren,
+    SwiperInstance
+} from "react-id-swiper";
+import React, { useState, useEffect, ReactElement } from "react";
 
 const swiperConfig = {
     preloadImages: false,
-    //lazy: true,
+    lazy: true,
     watchSlidesVisibility: true,
     navigation: {
         nextEl: ".swiper-button-next.swiper-button",
@@ -20,7 +23,38 @@ const swiperConfig = {
 };
 
 export const Swiper: React.FunctionComponent<{
-    children?: ReactIdSwiperChildren;
+    children: ReactElement[];
 }> = props => {
-    return <ReactIdSwiper {...swiperConfig}>{props.children}</ReactIdSwiper>;
+    /* had no effect. Trying to work around a bug where swiper can't handle async adding of the elements
+    const [swiper, updateSwiper] = useState<SwiperInstance | undefined>(null);
+    useEffect(() => {
+        if (swiper) {
+            //console.log(`updating swiper id:${props.id}  ` + swiper);
+            swiper?.update();
+            if (props.onUpdate) {
+                props.onUpdate();
+            }
+        }
+    }, [swiper, props.children]);
+    */
+    return props.children?.length === 0 ? (
+        <span>{"Loading..."}</span>
+    ) : (
+        <ReactIdSwiper
+            shouldSwiperUpdate={true}
+            rebuildOnUpdate={true}
+            {...swiperConfig}
+            /* had no effect
+            getSwiper={(s: SwiperInstance) => {
+                window.setTimeout(() => {
+                    s.update();
+                    updateSwiper(s);
+                    console.log("updated swiper");
+                }, 1000);
+            }}
+            */
+        >
+            {props.children}
+        </ReactIdSwiper>
+    );
 };

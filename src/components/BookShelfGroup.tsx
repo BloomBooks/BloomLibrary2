@@ -3,13 +3,16 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React from "react";
+import React, { useEffect } from "react";
 import {
     useGetBookshelvesByCategory,
     IBookshelfResult
 } from "../connection/LibraryQueryHooks";
 import CategoryCard from "./CategoryCard";
 import LazyLoad from "react-lazyload";
+import { Swiper } from "./Swiper";
+import { CheapCard } from "./CheapCard";
+import { BookCard } from "./BookCard";
 
 const encodeUrl = require("encodeurl");
 interface IProps {
@@ -59,7 +62,7 @@ export const BookshelfGroupInner: React.FunctionComponent<IProps> = props => {
     // const nameToImage = [
     //     ["Ministerio de Educación de Guatemala", "guatemala-moe-logo.svg"]
     // ];
-    const parts =
+    const cards =
         bookshelfResults &&
         bookshelfResults
             .filter(
@@ -73,6 +76,9 @@ export const BookshelfGroupInner: React.FunctionComponent<IProps> = props => {
             )
             .map((shelf: IBookshelfResult) => (
                 <CategoryCard
+                    css={css`
+                        min-width: 340px;
+                    `}
                     key={shelf.key}
                     title={shelf.englishName}
                     bookCount="??"
@@ -132,15 +138,16 @@ export const BookshelfGroupInner: React.FunctionComponent<IProps> = props => {
             `}
         >
             <h1>{props.title}</h1>
-            <ul
+            <Swiper>{cards}</Swiper>
+            {/* <ul
                 css={css`
                     list-style: none;
                     display: flex;
                     padding-left: 0;
                 `}
-            >
-                {parts}
-            </ul>
+            > }
+                {cards}
+         </ul> */}
         </li>
     );
 };
