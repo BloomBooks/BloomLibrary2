@@ -15,6 +15,7 @@ import LazyLoad from "react-lazyload";
 import ReactIdSwiper from "react-id-swiper";
 import { MoreCard } from "./MoreCard";
 import { commonUI } from "../theme";
+import { forceCheck as forceCheckLazyLoadComponents } from "react-lazyload";
 interface IProps {
     title: string;
     filter: IFilter; // becomes the "where" clause the query
@@ -74,6 +75,28 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
         spaceBetween: 20,
         slidesPerView: "auto"
     };
+ 
+    // We make life hard on <Lazy> components by thinking maybe we'll show, for example, a row of Level 1 books at
+    // the top of the screen. So the <Lazy> thing may think "well, no room for me then until they scroll". But
+    // then it turns out that we don't have any level 1 books, so we don't even have a scroll bar. But too late, the
+    // <Lazy> row at the bottom has already decided it should not display.
+    // So here as soon as we find out how many books we have, we cause *all* <Lazy's> on the page to re-evaluate.
+    // NB: this is also done, on a timing basis, by BrowseView. Doing it here as well is a controversial addition,
+    // as it adds complexity and we don't know how expensive it is to do the check. But it might mean a bit faster
+    // display of the row at the bottom.
+    const [didReceiveResult, setDidReceiveResult] = useState(false);
+    useEffect(() => {
+        if (!didReceiveResult && search?.waiting === false) {
+            if (search?.books.length === 0) {
+                // We aren't going to show this row now, so other rows may have incorrectly determined
+                // that they should not load yet. But since we aren't going to show, they may be on
+                // screen after all.
+                forceCheckLazyLoadComponents();
+            }
+            setDidReceiveResult(true);
+        }
+    }, [search, didReceiveResult]);
+
     const showInOneRow = !props.rows || props.rows < 2;
 
     const cards = search.books.map((b: IBasicBookInfo) => (
@@ -124,7 +147,8 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
             <li
                 css={css`
                     margin-top: ${commonUI.bookGroupTopMarginPx}px;
-                    height: ${commonUI.bookCardHeightPx}px; // want height to be same even if no results yet
+                    height: ${commonUI.bookCardHeightPx +
+                        commonUI.bookGroupTopMarginPx}px; // want height to be same even if no results yet
                 `}
             >
                 <h1>
