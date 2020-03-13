@@ -15,6 +15,7 @@ import LazyLoad from "react-lazyload";
 import ReactIdSwiper from "react-id-swiper";
 import { MoreCard } from "./MoreCard";
 import { commonUI } from "../theme";
+import { forceCheck as forceCheckLazyLoadComponents } from "react-lazyload";
 interface IProps {
     title: string;
     filter: IFilter; // becomes the "where" clause the query
@@ -86,6 +87,20 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
             swiper.on("slideChange", slideChanged);
         }
     }, [swiper]);
+
+    // We make life hard on <Lazy> components by thinking maybe we'll show, for example, a row of Level 1 books at
+    // the top of the screen. So the <Lazy> thing may think "well, no room for me then until they scroll". But
+    // then it turns out that we don't have any level 1 books, so we don't even have a scroll bar. But too late, the
+    // <Lazy> row at the bottom has already decided it should not display.
+    // So here as soon as we find out how many books we have, we cause *all* <Lazy's> on the page to re-evalutate.
+    // This is a controversial addition, as we don't know how expensive it is.
+    const [didReceiveResult, setDidReceiveResult] = useState(false);
+    useEffect(() => {
+        if (!didReceiveResult && search?.waiting === false) {
+            forceCheckLazyLoadComponents();
+            setDidReceiveResult(true);
+        }
+    }, [search, didReceiveResult]);
 
     const showInOneRow = !props.rows || props.rows < 2;
 
