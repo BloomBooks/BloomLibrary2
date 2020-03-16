@@ -53,7 +53,9 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = props => (
 const nameToImageMap = new Map<string, string>([
     //  // something in our pipeline won't deliver an image that starts with "3"
     ["3Asafeer", "Asafeer"],
-    ["Room To Read", "Room to Read"]
+    ["Room To Read", "Room to Read"],
+    ["Ministerio de Educación de Guatemala", "Guatemala MOE"],
+    ["Resources for the Blind, Inc. (Philippines)", "Resources for the Blind"]
 ]);
 
 export const BookshelfGroupInner: React.FunctionComponent<IProps> = props => {
