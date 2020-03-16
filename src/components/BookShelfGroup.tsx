@@ -50,6 +50,12 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = props => (
     </LazyLoad>
 );
 
+const nameToImageMap = new Map<string, string>([
+    //  // something in our pipeline won't deliver an image that starts with "3"
+    ["3Asafeer", "Asafeer"],
+    ["Room To Read", "Room to Read"]
+]);
+
 export const BookshelfGroupInner: React.FunctionComponent<IProps> = props => {
     // At this point there are so few bookshelves that we just retrieve the whole list and then filter here.
     // Might be a good thing to cache.
@@ -59,6 +65,7 @@ export const BookshelfGroupInner: React.FunctionComponent<IProps> = props => {
     // const nameToImage = [
     //     ["Ministerio de Educación de Guatemala", "guatemala-moe-logo.svg"]
     // ];
+
     const parts =
         bookshelfResults &&
         bookshelfResults
@@ -71,27 +78,27 @@ export const BookshelfGroupInner: React.FunctionComponent<IProps> = props => {
                     // Art/Painting. So this is checking to see if "Art/Painting" starts with "Art"
                     shelf.englishName.startsWith(props.parentBookshelf)
             )
-            .map((shelf: IBookshelfResult) => (
-                <CategoryCard
-                    key={shelf.key}
-                    title={shelf.englishName}
-                    bookCount="??"
-                    filter={{
-                        bookshelf: shelf.key,
-                        bookShelfCategory: shelf.category
-                    }}
-                    pageType={props.bookShelfCategory}
-                    img={
-                        "https://share.bloomlibrary.org/category-images/" +
-                        encodeUrl(
-                            // something in our pipeline won't deliver an image that starts with "3"
-                            shelf.key === "3Asafeer" ? "Asafeer" : shelf.key
-                        ) +
-                        ".png"
-                    }
-                    bookshelfInfo={shelf}
-                />
-            ));
+            .map((shelf: IBookshelfResult) => {
+                const imageName = nameToImageMap.get(shelf.key) ?? shelf.key;
+                return (
+                    <CategoryCard
+                        key={shelf.key}
+                        title={shelf.englishName}
+                        bookCount="??"
+                        filter={{
+                            bookshelf: shelf.key,
+                            bookShelfCategory: shelf.category
+                        }}
+                        pageType={props.bookShelfCategory}
+                        img={
+                            "https://share.bloomlibrary.org/bookshelf-images/" +
+                            encodeUrl(imageName) +
+                            ".png"
+                        }
+                        bookshelfInfo={shelf}
+                    />
+                );
+            });
 
     // const parts = results
     //     ? results
@@ -109,7 +116,7 @@ export const BookshelfGroupInner: React.FunctionComponent<IProps> = props => {
     //                   filter={{ bookshelf: l.key }}
     //                   pageType={props.bookShelfCategory}
     //                   img={
-    //                       "https://share.bloomlibrary.org/category-images/" +
+    //                       "https://share.bloomlibrary.org/bookshelf-images/" +
     //                       l.key +
     //                       ".png"
     //                   }

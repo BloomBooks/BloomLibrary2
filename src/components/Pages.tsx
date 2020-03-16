@@ -62,7 +62,7 @@ export const DefaultOrganizationPage: React.FunctionComponent<{
             showTitle={true}
             filter={props.filter}
             collectionDescription={<div />}
-            // logoUrl={`https://share.bloomlibrary.org/category-images/African Storybook.png`}
+            // logoUrl={`https://share.bloomlibrary.org/bookshelf-images/African Storybook.png`}
         />
 
         <ul className={"pageResults"}>

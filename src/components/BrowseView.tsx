@@ -17,7 +17,9 @@ import {
     PrathamPage,
     AfricanStorybookPage,
     BookDashPage,
-    AsafeerPage
+    AsafeerPage,
+    RoomToReadPage,
+    AsiaFoundationPage
 } from "./PublisherPages";
 import { GuatemalaMOEPage } from "./banners/OrganizationCustomizations";
 import { forceCheck as forceCheckLazyLoadComponents } from "react-lazyload";
@@ -82,6 +84,10 @@ export class BrowseView extends Component {
                         return <AfricanStorybookPage />;
                     case "Book Dash":
                         return <BookDashPage />;
+                    case "The Asia Foundation":
+                        return <AsiaFoundationPage />;
+                    case "Room to Read":
+                        return <RoomToReadPage />;
                     case "Ministerio de Educación de Guatemala":
                         return <GuatemalaMOEPage />;
                     default:

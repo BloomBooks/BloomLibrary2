@@ -34,11 +34,11 @@ export const HomePage: React.FunctionComponent = () => {
                     title="Accessible to the Visually Impaired"
                     filter={{ feature: "visuallyImpaired" }}
                 />
-                <BookshelfGroup
+                {/* <BookshelfGroup
                     title="Enabling Writers"
                     bookShelfCategory="project"
                     parentBookshelf="Enabling Writers Workshops"
-                />
+                /> */}
                 <BookshelfGroup title="Projects" bookShelfCategory="project" />
                 <BookshelfGroup
                     title="Organizations & Governments"

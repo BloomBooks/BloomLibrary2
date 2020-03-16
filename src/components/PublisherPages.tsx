@@ -25,7 +25,7 @@ export const AfricanStorybookPage: React.FunctionComponent = () => {
                 title="African Storybook Project"
                 showTitle={false}
                 filter={filter}
-                logoUrl={`https://share.bloomlibrary.org/category-images/African Storybook.png`}
+                logoUrl={`https://share.bloomlibrary.org/bookshelf-images/African Storybook.png`}
                 collectionDescription={description}
             />
 
@@ -53,7 +53,7 @@ export const AsafeerPage: React.FunctionComponent = () => {
                 title="3Asafeer"
                 showTitle={false}
                 filter={filter}
-                logoUrl={`https://share.bloomlibrary.org/category-images/Asafeer.png`}
+                logoUrl={`https://share.bloomlibrary.org/bookshelf-images/Asafeer.png`}
                 collectionDescription={description}
             />
 
@@ -92,7 +92,7 @@ export const PrathamPage: React.FunctionComponent = () => {
                 title="Pratham - StoryWeaver"
                 showTitle={true}
                 filter={filter}
-                logoUrl={`https://share.bloomlibrary.org/category-images/Pratham-banner.jpg`}
+                logoUrl={`https://share.bloomlibrary.org/bookshelf-images/Pratham-banner.jpg`}
                 collectionDescription={description}
             />
             <StandardPublisherGroups filter={filter} />
@@ -124,7 +124,83 @@ export const BookDashPage: React.FunctionComponent = () => {
                 title="Book Dash"
                 showTitle={false}
                 filter={filter}
-                logoUrl={`https://share.bloomlibrary.org/category-images/Book Dash.png`}
+                logoUrl={`https://share.bloomlibrary.org/bookshelf-images/Book Dash.png`}
+                collectionDescription={description}
+            />
+
+            <StandardPublisherGroups filter={filter} />
+        </div>
+    );
+};
+export const AsiaFoundationPage: React.FunctionComponent = () => {
+    const filter = { bookshelf: "The Asia Foundation" };
+    const description = (
+        <React.Fragment>
+            <ExternalLink href="https://asiafoundation.org/">
+                The Asia Foundation
+            </ExternalLink>{" "}
+            is a nonprofit international development organization committed to
+            improving lives across a dynamic and developing Asia.
+            <p>
+                The Asia Foundation's generosity allows us to host many of their
+                books. Some of these books were translated using Bloom and then
+                uploaded here. Others were automatically converted from the{" "}
+                <ExternalLink href="https://www.digitallibrary.io/">
+                    Global Digital Library
+                </ExternalLink>
+                . All of them can be translated into your language using Bloom.
+            </p>
+        </React.Fragment>
+    );
+    return (
+        <div>
+            <PublisherBanner
+                title="The Asia Foundation"
+                showTitle={false}
+                filter={filter}
+                logoUrl={`https://share.bloomlibrary.org/bookshelf-images/The Asia Foundation.png`}
+                collectionDescription={description}
+            />
+
+            <StandardPublisherGroups filter={filter} />
+        </div>
+    );
+};
+
+export const RoomToReadPage: React.FunctionComponent = () => {
+    const filter = { bookshelf: "Room to Read" };
+    const description = (
+        <React.Fragment>
+            <i>
+                Founded in 2000 on the belief that World Change Starts with
+                Educated Children<sup>®</sup>,{" "}
+                <ExternalLink href="https://www.roomtoread.org/">
+                    Room to Read
+                </ExternalLink>{" "}
+                is creating a world free from illiteracy and gender inequality.
+                We are achieving this goal by helping children in low-income
+                communities develop literacy skills and a habit of reading, and
+                by supporting girls to build skills to succeed in school and
+                negotiate key life decisions.
+            </i>
+            <p>
+                Room to Read's generosity allows us to host many of their books.
+                Some of these books were translated using Bloom and then
+                uploaded here. Others were automatically converted from the{" "}
+                <ExternalLink href="https://www.digitallibrary.io/">
+                    Global Digital Library
+                </ExternalLink>
+                . All of them can be translated into your language using Bloom.
+            </p>
+        </React.Fragment>
+    );
+    return (
+        <div>
+            <PublisherBanner
+                title="Room to Read"
+                showTitle={false}
+                filter={filter}
+                logoUrl={`https://share.bloomlibrary.org/bookshelf-images/Room to Read.png`}
                 collectionDescription={description}
             />
 
