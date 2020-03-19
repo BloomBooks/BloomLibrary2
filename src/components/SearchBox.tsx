@@ -79,6 +79,15 @@ export const SearchBox: React.FunctionComponent<{
 
     const handleSearchInner = () => {
         const searchString = processSearchString(search);
+        // shortcut to grid
+        if (searchString.toLowerCase() === "grid") {
+            router!.push({
+                title: `Grid`,
+                pageType: "grid",
+                filter: {}
+            });
+            return;
+        }
         if (searchString.length > 0) {
             const location = {
                 title: `search for "${searchString}"`,

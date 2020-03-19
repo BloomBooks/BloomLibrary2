@@ -47,7 +47,7 @@ export const BookDetailInternal: React.FunctionComponent<{
         OSFeaturesContext
     );
     const showHarvesterWarning =
-        props.book.harvesterLog.indexOf("Warning") >= 0;
+        props.book.getHarvestLog().indexOf("Warning") >= 0;
     const divider = (
         <Divider
             css={css`
@@ -155,7 +155,7 @@ export const BookDetailInternal: React.FunctionComponent<{
                 {showHarvesterWarning && (
                     <IconButton
                         aria-label="harvester warning"
-                        onClick={() => setAlertText(props.book.harvesterLog)}
+                        onClick={() => setAlertText(props.book.getHarvestLog())}
                     >
                         <WarningIcon />
                     </IconButton>
