@@ -95,7 +95,6 @@ const GridPage: React.FunctionComponent<{}> = observer(() => {
                 n => !columnsThatNeedToBeRemoved.includes(n)
             );
             setColumnNamesInDisplayOrder(columnsWithAnyOldOnesRemoved);
-            console.log("order: " + columnsWithAnyOldOnesRemoved);
         }
     }, [
         columnNamesInDisplayOrder,
