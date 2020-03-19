@@ -105,14 +105,20 @@ export const SearchBox: React.FunctionComponent<{
     };
 
     const cancelSearch = () => {
-        const curFilter = router!.current.filter;
-        setSearch("");
+        const currentRouterFilter = router!.current.filter;
+
         // If the user previously pressed 'Enter' with this search text, we need to go back up the stack.
         if (router?.current.pageType === "grid") {
             router!.push({ title: "Grid", pageType: "grid", filter: {} });
-        } else if (curFilter?.search === processSearchString(search)) {
+        }
+        //        else if (curFilter?.search === processSearchString(search)) {
+        else if (
+            currentRouterFilter?.search &&
+            currentRouterFilter?.search.length > 0
+        ) {
             window.history.back(); // Observable router will handle breadcrumbs.
         }
+        setSearch("");
     };
 
     const searchTextField: JSX.Element = (
