@@ -54,16 +54,6 @@ a:hover {
     cursor: pointer;
 }
 
-.pageResults {
-    margin: 0;
-    padding-left: 20px;
-    /* Without this, as a list-item, I get an unwanted white border on top */
-    display: inline-block;
-    background-color: f2f2f2;
-
-    flex-grow: 1;
-}
-
 .banner {
     display: flex;
     flex-direction: column;

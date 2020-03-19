@@ -1,20 +1,11 @@
-import css from "@emotion/css/macro";
 import React from "react";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core"; // <---- CURRENTLY UNUSED, SEE "PROBLEM" ABOVE // <---- CURRENTLY UNUSED, SEE "PROBLEM" ABOVE
-/** @jsx jsx */
-
 import { BookGroup } from "./BookGroup";
 import { IFilter } from "../IFilter";
 
 export const StandardPublisherGroups: React.FunctionComponent<{
     filter: IFilter;
 }> = props => (
-    <ul
-        css={css`
-            padding-left: 20px;
-        `}
-    >
+    <React.Fragment>
         <BookGroup
             title="Level 1"
             filter={{ otherTags: "level:1", ...props.filter }}
@@ -32,6 +23,6 @@ export const StandardPublisherGroups: React.FunctionComponent<{
             filter={{ otherTags: "level:4", ...props.filter }}
         />
         {/* Enhance: how do we get all books that don't have a level? */}
-        <BookGroup title="Other books" filter={{ ...props.filter }} />
-    </ul>
+        <BookGroup title="All books" filter={{ ...props.filter }} />
+    </React.Fragment>
 );

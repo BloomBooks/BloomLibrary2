@@ -41,9 +41,9 @@ export const HomeBanner: React.FunctionComponent<{
                     title="Library Home"
                     about={
                         <div>
-                            "Welcome to our Crowdsourced library of free books
+                            Welcome to our Crowdsourced library of free books
                             that you can read, print, or adapt into your own
-                            language."
+                            language.
                         </div>
                     }
                     bookCountMessage="We currently have {0} books."

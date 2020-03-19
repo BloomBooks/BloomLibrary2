@@ -132,7 +132,7 @@ storiesOf("BookShelfGroup", module)
         <BookshelfGroup
             title="Enabling Writers"
             bookShelfCategory="project"
-            parentBookshelf="Enabling Writers Workshops"
+            pathToTheCurrentLevel="Enabling Writers Workshops/"
         />
     ))
     .add("Projects", () => (

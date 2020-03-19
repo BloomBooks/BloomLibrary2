@@ -31,6 +31,7 @@ export class Book {
     public bookOrder: string = "";
     public downloadCount: number = -1;
     public features: string[] = [];
+    public bookshelves: string[] = [];
     public harvesterLog: string = "";
     public harvestState: string = "";
 

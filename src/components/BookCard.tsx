@@ -9,7 +9,6 @@ import LazyLoad from "react-lazyload";
 import { RouterContext } from "../Router";
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
 import {
-    getHarvesterProducedThumbnailUrl,
     getLegacyThumbnailUrl,
     getThumbnailUrl
 } from "./BookDetail/ArtifactHelper";
