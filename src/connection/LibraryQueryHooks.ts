@@ -87,7 +87,43 @@ export function useGetBookCount(filter: IFilter): number {
     const s = answer.response["data"]["count"];
     return parseInt(s, 10);
 }
+export function useGetRelatedBooks(bookId: string): Book[] {
+    const { response, loading, error } = useAxios({
+        url: `${getConnection().url}classes/relatedBooks`,
+        method: "GET",
+        trigger: "true",
+        options: {
+            headers: getConnection().headers,
+            params: {
+                where: {
+                    books: {
+                        __type: "Pointer",
+                        className: "books",
+                        objectId: bookId
+                    }
+                },
+                // We don't really need all the fields of the related books, but I don't
+                // see a way to restrict to just the fields we want. It's surely faster
+                // to just get it all then get the bookids and then do separate queries to get their titles
+                include: "books"
+            }
+        }
+    });
 
+    if (
+        loading ||
+        !response ||
+        !response["data"] ||
+        !response["data"]["results"] ||
+        response["data"]["results"].length === 0 ||
+        error
+    ) {
+        return [];
+    }
+    return response["data"]["results"][0].books
+        .filter((r: any) => r.objectId !== bookId) // don't return the book for which we're looking for related books.
+        .map((r: any) => createBookFromParseServerData(r));
+}
 export function useGetBookDetail(bookId: string): Book | undefined | null {
     const { response, loading, error } = useAxios({
         url: `${getConnection().url}classes/books`,

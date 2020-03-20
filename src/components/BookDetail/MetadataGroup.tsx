@@ -10,19 +10,20 @@ import { observer } from "mobx-react";
 import { LicenseLink } from "./LicenseLink";
 //NB: v3.0 of title-case has a new API, but don't upgrade: it doesn't actually work like v2.x does, where it can take fooBar and give us "Foo Bar"
 import titleCase from "title-case";
-import { Link } from "@material-ui/core";
+import { Link, useTheme } from "@material-ui/core";
 import { commonUI } from "../../theme";
 import { BookAnalytics } from "./BookAnalytics";
 import { CachedTablesContext } from "../../App";
-import { getBookshelfDisplayName } from "../../model/Bookshelf";
 import { getTagDisplayName } from "../../model/Tag";
+import { useGetRelatedBooks } from "../../connection/LibraryQueryHooks";
 
 export const MetadataGroup: React.FunctionComponent<{
     book: Book;
     breakToColumn: string;
 }> = observer(props => {
     const { bookshelves } = useContext(CachedTablesContext);
-
+    const relatedBooks = useGetRelatedBooks(props.book.id);
+    const theme = useTheme();
     return (
         <div
             id={"details"}
@@ -104,6 +105,32 @@ export const MetadataGroup: React.FunctionComponent<{
                         })
                         .join(", ")}
                 </div>
+                {relatedBooks?.length > 0 && (
+                    <div>
+                        {"Related Books: "}
+                        <ul
+                            css={css`
+                                margin: 0;
+                            `}
+                        >
+                            {relatedBooks.map((b: Book) => {
+                                return (
+                                    <li>
+                                        <Link
+                                            css={css`
+                                                color: ${theme.palette.secondary
+                                                    .main} !important;
+                                            `}
+                                            href={`/?bookId=${b.id}&pageType=book-detail&title=${b.title}`}
+                                        >
+                                            {b.title}
+                                        </Link>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </div>
+                )}
             </div>
         </div>
     );
