@@ -34,6 +34,9 @@ export class Book {
     public harvestLog: string[] = [];
     public harvestState: string = "";
 
+    // review this is weird because it will normally not be filled in, unless we've been editing it.
+    public relatedBooksIds: string[] = [];
+
     // things that can be edited on the site are observable so that the rest of the UI will update if they are changed.
     @observable public summary: string = "";
     @observable public tags: string[] = [];

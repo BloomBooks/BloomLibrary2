@@ -24,7 +24,7 @@ import { commonUI } from "../../theme";
 interface IProps {
     id: string;
 }
-export const BookDetail: React.FunctionComponent<IProps> = props => {
+const BookDetail: React.FunctionComponent<IProps> = props => {
     const book = useGetBookDetail(props.id);
     if (book === undefined) {
         return <div>Loading...</div>;
@@ -173,3 +173,6 @@ export const BookDetailInternal: React.FunctionComponent<{
         </div>
     );
 });
+
+// though we normally don't like to export defaults, this is required for react.lazy (code splitting)
+export default BookDetail;

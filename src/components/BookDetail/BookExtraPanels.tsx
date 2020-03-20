@@ -48,7 +48,7 @@ export const BookExtraPanels: React.FunctionComponent<{
             )}
 
             {user?.moderator && (
-                <ExpansionPanel>
+                <ExpansionPanel expanded={true}>
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                         Staff Controls
                     </ExpansionPanelSummary>

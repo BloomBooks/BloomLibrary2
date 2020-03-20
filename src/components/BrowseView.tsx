@@ -11,7 +11,6 @@ import {
 } from "./Pages";
 import "typeface-roboto";
 import { Header } from "./header/Header";
-import { BookDetail } from "./BookDetail/BookDetail";
 import { ReadBookPage } from "./ReadBookPage";
 import {
     PrathamPage,
@@ -34,7 +33,19 @@ export class BrowseView extends Component {
             case "home":
                 return <HomePage />;
             case "book-detail":
-                return <BookDetail id={this.router.current.bookId!} />;
+                // This will split the code so that you only download/parse all the grid stuff if you go to the Grid page
+                // Note that it actually produces to *two* chunks, but I don't know why.
+                const BookDetail = React.lazy(() =>
+                    import(
+                        /* webpackChunkName: "bookDetail" */ "./BookDetail/BookDetail"
+                    )
+                );
+                return (
+                    <React.Suspense fallback={<div>Loading...</div>}>
+                        <BookDetail id={this.router.current.bookId!} />
+                    </React.Suspense>
+                );
+
             case "book-read":
                 return <ReadBookPage id={this.router.current.bookId!} />;
             case "search":

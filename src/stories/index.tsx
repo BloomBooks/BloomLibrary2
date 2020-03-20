@@ -15,7 +15,7 @@ import { ArtifactAndChoice } from "../components/BookDetail/ArtifactVisibilityPa
 import { ArtifactVisibilitySettings } from "../model/ArtifactVisibilitySettings";
 import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
 import { Router, RouterContext } from "../Router";
-import { BookDetail } from "../components/BookDetail/BookDetail";
+import BookDetail from "../components/BookDetail/BookDetail";
 import { ThemeProvider } from "@material-ui/styles";
 import theme from "../theme";
 import { ReadBookPage } from "../components/ReadBookPage";

@@ -264,4 +264,5 @@ function CombineGridAndSearchBoxFilter(
     return f;
 }
 
+// though we normally don't like to export defaults, this is required for react.lazy (code splitting)
 export default GridPage;

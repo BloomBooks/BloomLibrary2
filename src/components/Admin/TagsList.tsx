@@ -145,19 +145,7 @@ export const TagsList: React.FunctionComponent<IProps> = observer(props => {
     };
 
     return (
-        // review: is there some shade-of-grey constant we should use for the background color?
-        <div
-            id="tagsList"
-            css={css`
-                border: 2px solid ${props.borderColor};
-                border-radius: 4px;
-                margin-top: 10px;
-                padding: 10px;
-                line-height: 26px;
-                position: relative;
-                background-color: white;
-            `}
-        >
+        <React.Fragment>
             {props.book.tags
                 // a warning from observable says to use slice() like this if we don't want to modify the book object
                 // (and another trick if we do).
@@ -207,6 +195,6 @@ export const TagsList: React.FunctionComponent<IProps> = observer(props => {
             >
                 <AddCircleIcon />
             </IconButton>
-        </div>
+        </React.Fragment>
     );
 });
