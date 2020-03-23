@@ -104,12 +104,12 @@ export class Router {
             // So, the user did a browser BACK or FORWARD...something. The current url can tell us what to show, but not how
             // to show our breadcrumbs. We solve this by supplying the browser's History API with our location stack every time we go deeper.
             // So now, we can just retrieve that stack from this event and make it our new location stack.
-            // Since locationStack is a mobx observed object, don't just replace it, operate on it
+            // Since locationStack is a mobx observed object, don't just replace it, operate on it, then the UI will notice and update.
             if (event.state) {
                 this.breadcrumbStack.splice(
-                    0,
-                    this.breadcrumbStack.length,
-                    ...event.state.breadcrumbs
+                    0, // starting from beginning
+                    this.breadcrumbStack.length, // remove all of them
+                    ...event.state.breadcrumbs // replace with all the elements from the event
                 );
                 restoreScrollPosition(event.state);
             }
@@ -162,34 +162,39 @@ export class Router {
             alert("Please cancel or save your changes");
             return;
         }
-        // if we go here via a text search and are doing a new one,
+        // if we got here via a text search and are doing a new one,
         // we want to just replace the previous search term, rather
         // than pushing another search on the breadcrumb stack.
         if (
-            location &&
-            location.filter &&
-            location.filter.search &&
-            location.filter.search.length > 0 &&
-            this.current &&
-            this.current.filter &&
-            this.current.filter.search &&
-            this.current.filter.search.length > 0
+            this.current?.filter?.search?.length && // we're currently in a search
+            location?.filter?.search // we're trying to do a new search
         ) {
+            // replace the top of the breadcrumb stack with this new search
             this.breadcrumbStack.pop();
+            this.breadcrumbStack.push(location);
+            // replace our place in history with this new search, so that "back" will go back to before we started searching
+            window.history.replaceState(
+                {
+                    breadcrumbs: mobx.toJS(this.breadcrumbStack)
+                },
+                this.current.title,
+                "?" + QueryString.stringify(location)
+            );
         }
-        // This will be noticed by the observing view, causing us to move to this location.
-        this.breadcrumbStack.push(location);
-
-        storeScrollPosition();
-
-        // Enter this new location in the browser's history.
-        window.history.pushState(
-            {
-                breadcrumbs: mobx.toJS(this.breadcrumbStack)
-            },
-            this.current.title,
-            "?" + QueryString.stringify(location)
-        );
+        // normal change to a new page, not driven by a 2nd generation search
+        else {
+            // This will be noticed by the observing view, causing us to move to this location.
+            this.breadcrumbStack.push(location);
+            storeScrollPosition();
+            // Enter this new location in the browser's history.
+            window.history.pushState(
+                {
+                    breadcrumbs: mobx.toJS(this.breadcrumbStack)
+                },
+                this.current.title,
+                "?" + QueryString.stringify(location)
+            );
+        }
     }
 }
 

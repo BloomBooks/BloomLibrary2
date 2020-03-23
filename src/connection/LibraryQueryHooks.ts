@@ -101,7 +101,7 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
             params: {
                 where: { objectId: bookId },
                 keys:
-                    "title,baseUrl,license,licenseNotes,summary,copyright,harvestState," +
+                    "title,baseUrl,bookOrder,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
                     "tags,pageCount,show,credits,country,features,internetLimits," +
                     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount," +
                     "harvestStartedAt,bookshelves",
@@ -157,7 +157,7 @@ export function useGetBooksForGrid(
                 skip,
 
                 keys:
-                    "title,baseUrl,license,licenseNotes,summary,copyright,harvestState," +
+                    "title,baseUrl,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
                     "tags,pageCount,show,credits,country,features,internetLimits,bookshelves," +
                     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher",
                 // fluff up fields that reference other tables

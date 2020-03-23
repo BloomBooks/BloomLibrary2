@@ -68,7 +68,7 @@ export class ArtifactVisibilitySettings {
                     (this.isLibrarianHide() &&
                         "This format has been hidden by a site moderator.") ||
                     (this.isHarvesterHide() &&
-                        "This format has been hidden by our automated 'harvester' system.") ||
+                        "Our system was not confident about scaling the book to this format.") ||
                     undefined
                 );
             default:

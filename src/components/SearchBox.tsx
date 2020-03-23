@@ -43,10 +43,11 @@ export const SearchBox: React.FunctionComponent<{
     cssExtra?: string;
 }> = props => {
     const router = useContext(RouterContext);
-    const startSearch = router!.current.filter?.search
+    const initialSearchString = router!.current.filter?.search
         ? router!.current.filter.search
         : "";
-    const [search, setSearch] = useState(startSearch);
+    const [searchString, setSearchString] = useState(initialSearchString);
+    const [showTooltip, setShowTooltip] = useState(true);
 
     const searchTooltip: JSX.Element = (
         <Typography style={{ lineHeight: "1.25rem" }}>
@@ -71,14 +72,17 @@ export const SearchBox: React.FunctionComponent<{
         </Typography>
     );
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSearch(event.target.value);
-    };
-
-    const processSearchString = (searchInput: string) => searchInput.trim();
-
-    const handleSearchInner = () => {
-        const searchString = processSearchString(search);
+    const handleSearch = () => {
+        // shortcut to grid
+        if (searchString.toLowerCase() === "grid") {
+            router!.push({
+                title: `Grid`,
+                pageType: "grid",
+                filter: {}
+            });
+            setSearchString("");
+            return;
+        }
         if (searchString.length > 0) {
             const location = {
                 title: `search for "${searchString}"`,
@@ -99,24 +103,28 @@ export const SearchBox: React.FunctionComponent<{
     const handleEnter = (event: React.KeyboardEvent<HTMLDivElement>) => {
         // search on 'Enter' key
         if (event.key === "Enter") {
-            handleSearchInner();
+            handleSearch();
             event.preventDefault();
+            setShowTooltip(false);
         }
     };
 
     const cancelSearch = () => {
-        const curFilter = router!.current.filter;
-        setSearch("");
+        const currentRouterFilter = router!.current.filter;
+
         // If the user previously pressed 'Enter' with this search text, we need to go back up the stack.
-        if (router?.current.pageType === "grid") {
-            router!.push({ title: "Grid", pageType: "grid", filter: {} });
-        } else if (curFilter?.search === processSearchString(search)) {
+        if (
+            currentRouterFilter?.search &&
+            currentRouterFilter?.search.length > 0
+        ) {
             window.history.back(); // Observable router will handle breadcrumbs.
         }
+        setSearchString("");
     };
 
     const searchTextField: JSX.Element = (
         <Paper
+            key="searchField"
             css={css`
                 display: inline-flex;
                 height: 40px;
@@ -129,12 +137,13 @@ export const SearchBox: React.FunctionComponent<{
                 padding-left: 5px;
                 ${props.cssExtra || ""}
             `}
+            onFocus={() => setShowTooltip(true)}
             component="form"
             elevation={0}
         >
             <IconButton
                 aria-label="search with Enter"
-                onClick={handleSearchInner}
+                onClick={handleSearch}
                 css={css`
                     padding: 0px 8px 0px 0px !important;
                 `}
@@ -147,11 +156,16 @@ export const SearchBox: React.FunctionComponent<{
                 `}
                 placeholder="search for books"
                 inputProps={{ "aria-label": "search for books" }}
-                value={search}
-                onChange={handleChange}
+                value={searchString}
+                onChange={event =>
+                    setSearchString(
+                        event.target
+                            .value /* no, don't trim yet else can't type space .trim()*/
+                    )
+                }
                 onKeyPress={handleEnter}
             />
-            <Grow in={!!processSearchString(search)}>
+            <Grow in={!!searchString.trim()}>
                 <IconButton
                     aria-label="cancel search"
                     onClick={() => cancelSearch()}
@@ -166,8 +180,11 @@ export const SearchBox: React.FunctionComponent<{
     );
 
     return (
-        <HtmlTooltip title={searchTooltip} arrow disableHoverListener>
-            {searchTextField}
-        </HtmlTooltip>
+        (showTooltip && (
+            <HtmlTooltip title={searchTooltip} arrow /*disableHoverListener*/>
+                {searchTextField}
+            </HtmlTooltip>
+        )) ||
+        searchTextField
     );
 };

@@ -31,32 +31,51 @@ export const featureIconHeight = 12;
 export const featureOptions: IFeatureOption[] = [
     {
         featureKey: "talkingBook",
-        icon: props => <TalkingBookIcon {...props}></TalkingBookIcon>,
+        icon: props => (
+            <TalkingBookIcon title={"Taking Book"} {...props}></TalkingBookIcon>
+        ),
         languageDependent: true
     },
     {
         featureKey: "blind",
-        icon: props => <VisuallyImpairedIcon {...props}></VisuallyImpairedIcon>,
+        icon: props => (
+            <VisuallyImpairedIcon
+                title={"Features for the Visually Impaired"}
+                {...props}
+            ></VisuallyImpairedIcon>
+        ),
         languageDependent: true
     },
     {
         featureKey: "comic",
-        icon: props => <ComicIcon {...props}></ComicIcon>,
+        icon: props => <ComicIcon title={"Comic Book"} {...props}></ComicIcon>,
         languageDependent: false
     }, // todo: can't find this feature, is there another name?
     {
         featureKey: "motion",
-        icon: props => <MotionIcon {...props}></MotionIcon>,
+        icon: props => (
+            <MotionIcon title={"Motion Book"} {...props}></MotionIcon>
+        ),
         languageDependent: false
     },
     {
         featureKey: "signLanguage",
-        icon: props => <SignLanguageIcon {...props}></SignLanguageIcon>,
+        icon: props => (
+            <SignLanguageIcon
+                title={"Sign Language"}
+                {...props}
+            ></SignLanguageIcon>
+        ),
         languageDependent: true
     },
     {
         featureKey: "activity",
-        icon: props => <ActivityIcon {...props}></ActivityIcon>,
+        icon: props => (
+            <ActivityIcon
+                title={"Interactive Activity"}
+                {...props}
+            ></ActivityIcon>
+        ),
         languageDependent: false
     } // todo: can't find this feature, is there another name?
 ];

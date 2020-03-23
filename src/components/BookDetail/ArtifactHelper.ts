@@ -22,7 +22,6 @@ export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
             url = getDownloadUrl(book, "bloomd");
             break;
         case ArtifactType.shellbook:
-            //https://s3.amazonaws.com/bloomharvest-sandbox/hattonlists%40gmail.com%2fa7c32c37-a048-441d-aa12-707221c41b70/BloomBookOrder/Two+Brothers.BloomBookOrder
             url = book.bookOrder;
             break;
         case ArtifactType.pdf:
