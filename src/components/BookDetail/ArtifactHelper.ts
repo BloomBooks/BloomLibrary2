@@ -65,7 +65,7 @@ function isHarvested(book: Book | IBasicBookInfo) {
     return book && book.harvestState === "Done";
 }
 
-const cloudFlareSubstitutions = [
+/*const cloudFlareSubstitutions = [
     {
         from: "bloomlibrary.org/books/",
         to: "https://s3.amazonaws.com/BloomLibraryBooks/"
@@ -82,7 +82,7 @@ const cloudFlareSubstitutions = [
         from: "dev.bloomlibrary.org/harvested-books/",
         to: "https://s3.amazonaws.com/bloomharvest-sandbox/"
     }
-];
+];*/
 function getCloudFlareUrl(inputUrl: string): string {
     // typical input url:
     // https://s3.amazonaws.com/bloomharvest-sandbox/ken%40example.com%2faa647178-ed4d-4316-b8bf-0dc94536347d/

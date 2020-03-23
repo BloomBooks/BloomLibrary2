@@ -14,7 +14,6 @@ import { Link } from "@material-ui/core";
 import { commonUI } from "../../theme";
 import { BookAnalytics } from "./BookAnalytics";
 import { CachedTablesContext } from "../../App";
-import { getBookshelfDisplayName } from "../../model/Bookshelf";
 import { getTagDisplayName } from "../../model/Tag";
 
 export const MetadataGroup: React.FunctionComponent<{
@@ -103,6 +102,10 @@ export const MetadataGroup: React.FunctionComponent<{
                             return getTagDisplayName(t, bookshelves);
                         })
                         .join(", ")}
+                </div>
+                <div>
+                    {"Bookshelves: "}
+                    {props.book.bookshelves.join(", ")}
                 </div>
             </div>
         </div>

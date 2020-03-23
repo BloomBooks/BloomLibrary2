@@ -82,6 +82,15 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             name: "bookshelves",
             title: "Bookshelves",
             defaultVisible: true,
+            getCellValue: (b: Book) => b.bookshelves.join(","),
+            addToFilter: (filter: IFilter, value: string) => {
+                filter.bookshelf = value;
+            }
+        },
+        {
+            name: "bookshelf",
+            title: "Old Bookshelf",
+            defaultVisible: true,
             getCellValue: (b: Book) =>
                 b.tags
                     .filter(t => t.startsWith("bookshelf:"))

@@ -60,7 +60,10 @@ export function useGetBookshelvesByCategory(
         //,keys: "englishName,key"
     });
     if (axiosResult.response?.data?.results) {
-        return axiosResult.response.data.results as IBookshelfResult[];
+        const fullBookShelfDescriptions = axiosResult.response.data
+            .results as IBookshelfResult[];
+
+        return fullBookShelfDescriptions;
     } else return [];
 }
 
@@ -101,7 +104,7 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
                     "title,baseUrl,bookOrder,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
                     "tags,pageCount,show,credits,country,features,internetLimits," +
                     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount," +
-                    "harvestStartedAt",
+                    "harvestStartedAt,bookshelves",
                 // fluff up fields that reference other tables
                 include: "uploader,langPointers"
             }
@@ -155,7 +158,7 @@ export function useGetBooksForGrid(
 
                 keys:
                     "title,baseUrl,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
-                    "tags,pageCount,show,credits,country,features,internetLimits," +
+                    "tags,pageCount,show,credits,country,features,internetLimits,bookshelves," +
                     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher",
                 // fluff up fields that reference other tables
                 include: "uploader,langPointers",
@@ -201,6 +204,14 @@ function useBookQueryInternal(
 ): IAxiosAnswer {
     const { tags } = useContext(CachedTablesContext);
 
+    const finalParams = constructParseBookQuery(
+        params,
+        filter,
+        tags,
+        limit,
+        skip
+    );
+    //console.log("finalParams: " + JSON.stringify(finalParams));
     return useAxios({
         url: `${getConnection().url}classes/books`,
         method: "GET",
@@ -215,7 +226,7 @@ function useBookQueryInternal(
             JSON.stringify(skip),
         options: {
             headers: getConnection().headers,
-            params: constructParseBookQuery(params, filter, tags, limit, skip)
+            params: finalParams
         }
     });
 }
@@ -271,9 +282,9 @@ export interface ISearchBooksResult {
 export interface IBookshelfResult {
     objectId: string;
     englishName: string;
-    key: string;
     normallyVisible: boolean;
     category: string;
+    key: string;
 }
 interface ISimplifiedAxiosResult {
     waiting: boolean;
@@ -468,6 +479,7 @@ export function constructParseBookQuery(
 
     --------------------------------------------------*/
     const tagParts = [];
+    const caseInsensitive = { $options: "i" };
     if (!!f.search) {
         const { keywords, specialParts } = splitString(
             filter.search!,
@@ -475,13 +487,13 @@ export function constructParseBookQuery(
         );
 
         for (const part of specialParts) {
-            const keyVal = part.split(":").map(p => p.trim());
-            switch (keyVal[0]) {
+            const [tagLabel, tagValue] = part.split(":").map(p => p.trim());
+            switch (tagLabel) {
                 case "uploader":
                     params.where.uploader = {
                         $inQuery: {
                             where: {
-                                email: { $regex: keyVal[1], $options: "i" }
+                                email: { $regex: tagValue, ...caseInsensitive }
                             },
                             className: "_User"
                         }
@@ -489,12 +501,12 @@ export function constructParseBookQuery(
                     break;
                 case "copyright":
                     params.where.copyright = {
-                        $regex: keyVal[1],
-                        $options: "i"
+                        $regex: tagValue,
+                        ...caseInsensitive
                     };
                     break;
                 case "harvestState":
-                    params.where.harvestState = keyVal[1];
+                    params.where.harvestState = tagValue;
                     break;
                 default:
                     tagParts.push(part);
@@ -520,6 +532,7 @@ export function constructParseBookQuery(
             delete params.where.search;
         }
     }
+
     if (params.order === "titleOrScore") {
         // We've passed the point where a Score search might be indicated. Use title
         params.order = "title";
@@ -554,16 +567,6 @@ export function constructParseBookQuery(
         delete params.where.bookShelfCategory;
     }
 
-    /* In  our Parse DB Bookshelves are just another kind of tag. So convert any bookshelf parameter into the right tag query */
-
-    //tags: {$all: ["bookshelf:Enabling Writers Workshops/Bangladesh_Dhaka Ahsania Mission",
-    if (f.bookshelf != null) {
-        delete params.where.bookshelf;
-    }
-
-    if (f.bookshelf) {
-        tagParts.push("bookshelf:" + f.bookshelf);
-    }
     if (f.topic) {
         tagParts.push("topic:" + f.topic);
         delete params.where.topic;
@@ -571,6 +574,15 @@ export function constructParseBookQuery(
     if (tagParts.length > 0) {
         params.where.tags = {
             $all: tagParts
+        };
+    }
+    // allow regex searches on bookshelf. Handing for counting up, for example, all the books with bookshelf tags
+    // that start with "Enabling Writers" (and then go on to list country and sub-project).
+    if (filter.bookshelf) {
+        delete params.where.bookshelf;
+        params.where.bookshelves = {
+            $regex: filter.bookshelf,
+            ...caseInsensitive
         };
     }
 

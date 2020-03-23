@@ -10,7 +10,6 @@ import { RouterContext } from "../Router";
 import { IFilter } from "../IFilter";
 import Img from "react-image";
 import { BookCount } from "./BookCount";
-import { IBookshelfResult } from "../connection/LibraryQueryHooks";
 import teamIcon from "../assets/team.svg";
 interface IProps {
     title: string;
@@ -18,15 +17,26 @@ interface IProps {
     filter: IFilter;
     pageType: string;
     img: string;
-    bookshelfInfo: IBookshelfResult;
 }
 
+// CategoryCards are things like publisher, projects, organizations. "CollectionCard" might be a better name.
 const CategoryCard: React.FunctionComponent<IProps> = props => {
     const router = useContext(RouterContext);
-    // some bookshelves have multiple levels, separated by "/". For now,
-    // just use the last part.
-    const parts = props.title.split("/");
+    // For Enabling Writers, we had bookshelf names like "Nepal_World Education". Here we parse out the country.
+    const parts = props.title.split("_");
     const title = parts[parts.length - 1];
+    const country =
+        parts.length > 1 ? (
+            <div
+                css={css`
+                    font-size: 9pt;
+                `}
+            >
+                {parts[0]}
+            </div>
+        ) : (
+            undefined
+        );
 
     const titleElementIfNoImage = (
         <React.Fragment>
@@ -36,6 +46,7 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
                     flex-grow: 1; // push the rest to the bottom5
                 `}
             >
+                {country}
                 {title}
             </h2>
             <img
@@ -58,12 +69,10 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
                 padding: 10px;
             `}
             onClick={() => {
-                //alert("click " + this.props.title);
                 router!.push({
                     title: props.title,
                     pageType: props.pageType ? props.pageType : "category",
                     filter: props.filter
-                    // pageInfoAlreadyInHand: props.bookshelfInfo
                 });
             }}
         >

@@ -4,10 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import React from "react";
-import {
-    useGetBookshelvesByCategory,
-    IBookshelfResult
-} from "../connection/LibraryQueryHooks";
+import { useGetBookshelvesByCategory } from "../connection/LibraryQueryHooks";
 import CategoryCard from "./CategoryCard";
 import LazyLoad from "react-lazyload";
 
@@ -15,7 +12,8 @@ const encodeUrl = require("encodeurl");
 interface IProps {
     title: string;
     bookShelfCategory: string; // project, org, publisher, custom
-    parentBookshelf?: string;
+    // The part of the bookshelf "path" leading up to the current page. E.g. "Enabling Writers Workshops/"
+    pathToTheCurrentLevel?: string;
 }
 /* This lets us show bookshelves. Not the books in them, but the list of shelves, themselves.
     It's not obvious that we want/need the current system with bookshelves which live in the database.
@@ -29,13 +27,10 @@ interface IProps {
     So for the moment, I'm just leaving things as they are. We can query for all bookshelves, but the
     home page will also choose to feature Enabling writers, from code. So it's a mix of approaches
     for now.
-
-    If parentBookShelf is supplied, it will show only bookshelves whose englishName starts with that;
-    otherwise, all bookshelves in the database.
 */
 
 export const BookshelfGroup: React.FunctionComponent<IProps> = props => (
-    // Enhance: this has parameters, height and offset, that should help
+    // Enhance: LazyLoad has parameters (height and offset) that should help
     // but so far I haven't got them to work well. It has many other
     // parameters too that someone should look into. Make sure to test
     // with the phone sizes in the browser debugger, and have the network
@@ -50,6 +45,7 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = props => (
     </LazyLoad>
 );
 
+// Normally the bookshelf name matches the image name, but if not we change it here:
 const nameToImageMap = new Map<string, string>([
     //  // something in our pipeline won't deliver an image that starts with "3"
     ["3Asafeer", "Asafeer"],
@@ -64,75 +60,54 @@ export const BookshelfGroupInner: React.FunctionComponent<IProps> = props => {
     const bookshelfResults = useGetBookshelvesByCategory(
         props.bookShelfCategory
     );
-    // const nameToImage = [
-    //     ["Ministerio de Educación de Guatemala", "guatemala-moe-logo.svg"]
-    // ];
 
-    const parts =
+    // Bookshelves are hierarchical, and use slashes to convey the full path.
+    // We only display one level at a time. At each level, we want to show cards
+    // for all the "children" of the current level.
+    // E.g. if we are at art/ we might have [art/painting/impressionists, art/painting/cubists, art/sculpture].
+    // From that we need to determine that on this level, we should be showing [painting, sculpture].
+
+    const bookshelfPathsAtThisLevel = props.pathToTheCurrentLevel
+        ? bookshelfResults.filter(b =>
+              b.key.startsWith(props.pathToTheCurrentLevel!)
+          )
+        : bookshelfResults;
+
+    const prefix: string = props.pathToTheCurrentLevel || "";
+    const allNamesAtThisLevel = bookshelfPathsAtThisLevel
+        .map(b => b.key.replace(prefix, ""))
+        .map(name => {
+            const i = name.indexOf("/");
+            return i < 0 ? name : name.substr(0, i);
+        });
+
+    const uniqueNamesAtThisLevel = [
+        ...Array.from(new Set(allNamesAtThisLevel))
+    ];
+
+    const cards =
         bookshelfResults &&
-        bookshelfResults
-            .filter(
-                (shelf: IBookshelfResult) =>
-                    // allow if we weren't given a bookshelf to filter by
-                    !props.parentBookshelf ||
-                    props.parentBookshelf.length === 0 ||
-                    // currently we only allow 2 levels of bookshelf, and a child bookshelf will look like
-                    // Art/Painting. So this is checking to see if "Art/Painting" starts with "Art"
-                    shelf.englishName.startsWith(props.parentBookshelf)
-            )
-            .map((shelf: IBookshelfResult) => {
-                const imageName = nameToImageMap.get(shelf.key) ?? shelf.key;
-                return (
-                    <CategoryCard
-                        key={shelf.key}
-                        title={shelf.englishName}
-                        bookCount="??"
-                        filter={{
-                            bookshelf: shelf.key,
-                            bookShelfCategory: shelf.category
-                        }}
-                        pageType={props.bookShelfCategory}
-                        img={
-                            "https://share.bloomlibrary.org/bookshelf-images/" +
-                            encodeUrl(imageName) +
-                            ".png"
-                        }
-                        bookshelfInfo={shelf}
-                    />
-                );
-            });
-
-    // const parts = results
-    //     ? results
-    //           .filter(
-    //               (shelf: any) =>
-    //                   !props.parentBookshelf ||
-    //                   props.parentBookshelf.length == 0 ||
-    //                   shelf.englishName.indexOf(props.parentBookshelf) == 0
-    //           )
-    //           .map((l: any) => (
-    //               <CategoryCard
-    //                   key={l.key}
-    //                   title={l.englishName}
-    //                   bookCount="??"
-    //                   filter={{ bookshelf: l.key }}
-    //                   pageType={props.bookShelfCategory}
-    //                   img={
-    //                       "https://share.bloomlibrary.org/bookshelf-images/" +
-    //                       l.key +
-    //                       ".png"
-    //                   }
-    //               />
-    //           ))
-    //     : skeletonCards.map(c => (
-    //           <CheapCard
-    //               css={css`
-    //                   width: 100px;
-
-    //                   background-color: lightgray;
-    //               `}
-    //           />
-    //       ));
+        uniqueNamesAtThisLevel.map((nextLevel: string) => {
+            const imageName = nameToImageMap.get(nextLevel) ?? nextLevel;
+            return (
+                <CategoryCard
+                    key={nextLevel}
+                    title={nextLevel}
+                    bookCount="??"
+                    filter={{
+                        // note, this will often be the *start* of an actual bookshelf path, e.g. "Enabling Writers Workshops/"
+                        bookshelf:
+                            (props.pathToTheCurrentLevel || "") + nextLevel
+                    }}
+                    pageType={props.bookShelfCategory}
+                    img={
+                        "https://share.bloomlibrary.org/bookshelf-images/" +
+                        encodeUrl(imageName) +
+                        ".png"
+                    }
+                />
+            );
+        });
 
     return (
         <li
@@ -148,7 +123,7 @@ export const BookshelfGroupInner: React.FunctionComponent<IProps> = props => {
                     padding-left: 0;
                 `}
             >
-                {parts}
+                {cards}
             </ul>
         </li>
     );

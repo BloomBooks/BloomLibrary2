@@ -2,6 +2,7 @@ import React from "react";
 import { PublisherBanner } from "./banners/PublisherBanner";
 import { StandardPublisherGroups } from "./StandardPublisherGroups";
 import { ExternalLink } from "./banners/ExternalLink";
+import { ListOfBookGroups } from "./ListOfBookGroups";
 
 export const AfricanStorybookPage: React.FunctionComponent = () => {
     const filter = { bookshelf: "African Storybook" };
@@ -28,8 +29,9 @@ export const AfricanStorybookPage: React.FunctionComponent = () => {
                 logoUrl={`https://share.bloomlibrary.org/bookshelf-images/African Storybook.png`}
                 collectionDescription={description}
             />
-
-            <StandardPublisherGroups filter={filter} />
+            <ListOfBookGroups>
+                <StandardPublisherGroups filter={filter} />
+            </ListOfBookGroups>
         </div>
     );
 };
@@ -57,7 +59,9 @@ export const AsafeerPage: React.FunctionComponent = () => {
                 collectionDescription={description}
             />
 
-            <StandardPublisherGroups filter={filter} />
+            <ListOfBookGroups>
+                <StandardPublisherGroups filter={filter} />
+            </ListOfBookGroups>
         </div>
     );
 };
@@ -95,7 +99,9 @@ export const PrathamPage: React.FunctionComponent = () => {
                 logoUrl={`https://share.bloomlibrary.org/bookshelf-images/Pratham-banner.jpg`}
                 collectionDescription={description}
             />
-            <StandardPublisherGroups filter={filter} />
+            <ListOfBookGroups>
+                <StandardPublisherGroups filter={filter} />
+            </ListOfBookGroups>
         </div>
     );
 };
@@ -128,7 +134,9 @@ export const BookDashPage: React.FunctionComponent = () => {
                 collectionDescription={description}
             />
 
-            <StandardPublisherGroups filter={filter} />
+            <ListOfBookGroups>
+                <StandardPublisherGroups filter={filter} />
+            </ListOfBookGroups>
         </div>
     );
 };
@@ -162,7 +170,9 @@ export const AsiaFoundationPage: React.FunctionComponent = () => {
                 collectionDescription={description}
             />
 
-            <StandardPublisherGroups filter={filter} />
+            <ListOfBookGroups>
+                <StandardPublisherGroups filter={filter} />
+            </ListOfBookGroups>
         </div>
     );
 };
@@ -204,7 +214,9 @@ export const RoomToReadPage: React.FunctionComponent = () => {
                 collectionDescription={description}
             />
 
-            <StandardPublisherGroups filter={filter} />
+            <ListOfBookGroups>
+                <StandardPublisherGroups filter={filter} />
+            </ListOfBookGroups>
         </div>
     );
 };
