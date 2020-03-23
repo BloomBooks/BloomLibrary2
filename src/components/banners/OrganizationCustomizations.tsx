@@ -7,6 +7,7 @@ import { jsx } from "@emotion/core";
 import { PublisherBanner } from "./PublisherBanner";
 import { StandardPublisherGroups } from "../StandardPublisherGroups";
 import { ExternalLink } from "./ExternalLink";
+import { ListOfBookGroups } from "../ListOfBookGroups";
 
 const imageBase = "https://share.bloomlibrary.org/bookshelf-images/";
 
@@ -77,7 +78,9 @@ export const GuatemalaMOEPage: React.FunctionComponent = () => {
                 collectionDescription={description}
             />
 
-            <StandardPublisherGroups filter={filter} />
+            <ListOfBookGroups>
+                <StandardPublisherGroups filter={filter} />
+            </ListOfBookGroups>
         </div>
     );
 };

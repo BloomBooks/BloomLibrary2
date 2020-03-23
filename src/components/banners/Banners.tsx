@@ -8,7 +8,7 @@ import { BookCount } from "../BookCount";
 import { Breadcrumbs } from "../Breadcrumbs";
 import { IFilter } from "../../IFilter";
 import { ImageCreditsTooltip } from "./ImageCreditsTooltip";
-
+import { commonUI } from "../../theme";
 export interface IBannerSpec {
     key: string; // language tag, bookshelf key, etc.
     bannerCss?: SerializedStyles;
@@ -130,7 +130,7 @@ export const SearchBanner: React.FunctionComponent<{
     return (
         <div
             css={css`
-                background-color: #1c1c1c;
+                background-color: ${commonUI.colors.bloomRed};
                 color: whitesmoke;
                 padding-bottom: 10px;
                 padding-left: 20px;

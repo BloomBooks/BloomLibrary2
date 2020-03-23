@@ -13,19 +13,20 @@ import { getLanguageBannerSpec } from "./banners/LanguageCustomizations";
 import { getProjectBannerSpec } from "./banners/ProjectCustomizations";
 import { PublisherBanner } from "./banners/PublisherBanner";
 import { SearchBanner } from "./banners/Banners";
+import { ListOfBookGroups } from "./ListOfBookGroups";
 
 export const SearchResultsPage: React.FunctionComponent<{
     filter: IFilter;
 }> = props => (
     <React.Fragment>
         <SearchBanner filter={props.filter} />
-        <ul className={"pageResults"}>
+        <ListOfBookGroups>
             <BookGroup
                 title={`Books matching "${props.filter.search!}"`}
                 filter={props.filter}
                 rows={20}
             />
-        </ul>
+        </ListOfBookGroups>
     </React.Fragment>
 );
 
@@ -45,10 +46,10 @@ export const AllResultsPage: React.FunctionComponent<{
             <Breadcrumbs />
         </div>
         {/* <SearchBanner filter={props.filter} /> */}
-        <ul className={"pageResults"}>
+        <ListOfBookGroups>
             <BookGroup title={props.title} filter={props.filter} rows={20} />
             {/* TODO: we need a way to say "OK, more rows, and more rows" etc. */}
-        </ul>
+        </ListOfBookGroups>
     </React.Fragment>
 );
 
@@ -65,9 +66,9 @@ export const DefaultOrganizationPage: React.FunctionComponent<{
             // logoUrl={`https://share.bloomlibrary.org/bookshelf-images/African Storybook.png`}
         />
 
-        <ul className={"pageResults"}>
+        <ListOfBookGroups>
             <BookGroup title={`All books`} filter={props.filter} />
-        </ul>
+        </ListOfBookGroups>
     </React.Fragment>
 );
 
@@ -81,7 +82,7 @@ export const LanguagePage: React.FunctionComponent<{
             title={props.title}
             spec={getLanguageBannerSpec(props.filter.language!)}
         />
-        <ul className={"pageResults"}>
+        <ListOfBookGroups>
             <BookGroup
                 title={`Featured ${props.filter.language} books.`}
                 filter={{
@@ -102,10 +103,10 @@ export const LanguagePage: React.FunctionComponent<{
                 filter={props.filter}
                 key={"all filtered"}
             />
-        </ul>
+        </ListOfBookGroups>
     </div>
 );
-export const ProjectPage: React.FunctionComponent<{
+export const ProjectPageWithDefaultLayout: React.FunctionComponent<{
     title: string;
     filter: IFilter;
 }> = props => {
@@ -117,10 +118,10 @@ export const ProjectPage: React.FunctionComponent<{
                 title={props.title}
                 spec={getProjectBannerSpec(props.filter.bookshelf!)}
             />
-            <ul className={"pageResults"}>
+            <ListOfBookGroups>
                 <BookGroup filter={props.filter} title={"All books"} />
                 {/* <BookGroupForEachTopic filter={props.filter} /> */}
-            </ul>
+            </ListOfBookGroups>
         </React.Fragment>
     );
 };

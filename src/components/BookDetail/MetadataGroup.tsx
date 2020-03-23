@@ -105,6 +105,10 @@ export const MetadataGroup: React.FunctionComponent<{
                         })
                         .join(", ")}
                 </div>
+                <div>
+                    {"Bookshelves: "}
+                    {props.book.bookshelves.join(", ")}
+                </div>
                 {relatedBooks?.length > 0 && (
                     <div>
                         {"Related Books: "}

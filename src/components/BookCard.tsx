@@ -9,7 +9,6 @@ import LazyLoad from "react-lazyload";
 import { RouterContext } from "../Router";
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
 import {
-    getHarvesterProducedThumbnailUrl,
     getLegacyThumbnailUrl,
     getThumbnailUrl
 } from "./BookDetail/ArtifactHelper";
@@ -47,6 +46,7 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
                 css={css`
                     height: 100px;
                     object-fit: cover; //cover will crop, but fill up nicely
+                    object-position: top;
                 `}
                 alt={"book thumbnail"}
                 // NB: if you're not getting an image, e.g. in Storybook, it might be because it's not inside of a swiper,

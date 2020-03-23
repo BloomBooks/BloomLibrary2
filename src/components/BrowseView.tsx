@@ -5,7 +5,7 @@ import { HomePage } from "./HomePage";
 import {
     LanguagePage,
     DefaultOrganizationPage,
-    ProjectPage,
+    ProjectPageWithDefaultLayout,
     SearchResultsPage,
     AllResultsPage
 } from "./Pages";
@@ -23,6 +23,9 @@ import {
 } from "./PublisherPages";
 import { GuatemalaMOEPage } from "./banners/OrganizationCustomizations";
 import { forceCheck as forceCheckLazyLoadComponents } from "react-lazyload";
+import { EnablingWritersPage } from "./EnablingWritersPage";
+import { WycliffePage } from "./WycliffePage";
+import { SILLEADPage } from "./SILLEADPage";
 
 /* This is the top level component that can be hosted on a website to view and interact with the bloom library */
 @observer
@@ -67,12 +70,17 @@ export class BrowseView extends Component {
                     />
                 );
             case "project":
-                return (
-                    <ProjectPage
-                        title={this.router.current.title}
-                        filter={this.router.current.filter}
-                    />
-                );
+                switch (this.router.current.filter.bookshelf) {
+                    case "Enabling Writers Workshops":
+                        return <EnablingWritersPage />;
+                    default:
+                        return (
+                            <ProjectPageWithDefaultLayout
+                                title={this.router.current.title}
+                                filter={this.router.current.filter}
+                            />
+                        );
+                }
             case "publisher":
             case "org":
                 switch (this.router.current.filter.bookshelf) {
@@ -90,6 +98,10 @@ export class BrowseView extends Component {
                         return <RoomToReadPage />;
                     case "Ministerio de Educación de Guatemala":
                         return <GuatemalaMOEPage />;
+                    case "SIL LEAD":
+                        return <SILLEADPage />;
+                    case "Wycliffe":
+                        return <WycliffePage />;
                     default:
                         return (
                             <DefaultOrganizationPage
