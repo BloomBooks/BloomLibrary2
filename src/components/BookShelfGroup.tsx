@@ -3,10 +3,12 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React from "react";
+import React, { useContext } from "react";
 import { useGetBookshelvesByCategory } from "../connection/LibraryQueryHooks";
 import CategoryCard from "./CategoryCard";
 import LazyLoad from "react-lazyload";
+import { Bookshelf } from "../model/Bookshelf";
+import { CachedTablesContext } from "../App";
 
 const encodeUrl = require("encodeurl");
 interface IProps {
@@ -85,19 +87,27 @@ export const BookshelfGroupInner: React.FunctionComponent<IProps> = props => {
         ...Array.from(new Set(allNamesAtThisLevel))
     ];
 
+    const { bookshelves } = useContext(CachedTablesContext);
+
     const cards =
         bookshelfResults &&
         uniqueNamesAtThisLevel.map((nextLevel: string) => {
             const imageName = nameToImageMap.get(nextLevel) ?? nextLevel;
+            // note, this will often be the *start* of an actual bookshelf path, e.g. "Enabling Writers Workshops/"
+            const fullBookshelfKey =
+                (props.pathToTheCurrentLevel || "") + nextLevel;
+            const bookshelf = Bookshelf.parseBookshelfKey(
+                fullBookshelfKey,
+                bookshelves
+            );
             return (
                 <CategoryCard
-                    key={nextLevel}
-                    title={nextLevel}
+                    key={fullBookshelfKey}
+                    preTitle={bookshelf.countryDisplayName}
+                    title={bookshelf.displayName || ""}
                     bookCount="??"
                     filter={{
-                        // note, this will often be the *start* of an actual bookshelf path, e.g. "Enabling Writers Workshops/"
-                        bookshelf:
-                            (props.pathToTheCurrentLevel || "") + nextLevel
+                        bookshelf: fullBookshelfKey
                     }}
                     pageType={props.bookShelfCategory}
                     img={
