@@ -37,7 +37,8 @@ import {
     PagingState,
     CustomPaging,
     Filter as GridFilter,
-    RowDetailState
+    RowDetailState,
+    Sorting
 } from "@devexpress/dx-react-grid";
 import { RouterContext } from "../../Router";
 import { TableCell } from "@material-ui/core";
@@ -49,16 +50,17 @@ import { Book } from "../../model/Book";
 import { StaffPanel } from "../Admin/StaffPanel";
 import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 import { observer } from "mobx-react";
+import { commonUI } from "../../theme";
 
 // we need the observer in order to get the logged in user, which may not be immediately available
 const GridPage: React.FunctionComponent<{}> = observer(() => {
     const user = useGetLoggedInUser();
-
     const kBooksPerGridPage = 20;
     const router = useContext(RouterContext);
     const [gridFilters, setGridFilters] = useState<GridFilter[]>([]);
     const [gridPage, setGridPage] = useState(0);
     const [columns, setColumns] = useState<ReadonlyArray<IGridColumn>>([]);
+    const [sortings, setSortings] = useState<ReadonlyArray<Sorting>>([]);
     const [bookGridColumnDefinitions] = useState(
         getBookGridColumnsDefinitions()
     );
@@ -132,7 +134,11 @@ const GridPage: React.FunctionComponent<{}> = observer(() => {
     const books = useGetBooksForGrid(
         filterMadeFromPageSearchPlusColumnFilters,
         kBooksPerGridPage,
-        gridPage * kBooksPerGridPage
+        gridPage * kBooksPerGridPage,
+        sortings.map(s => ({
+            columnName: s.columnName,
+            descending: s.direction === "asc"
+        }))
     );
     useEffect(() => {
         setColumns(
@@ -142,7 +148,7 @@ const GridPage: React.FunctionComponent<{}> = observer(() => {
             )
         );
         //setColumnNamesInDisplayOrder(bookGridColumns.map(c => c.name));
-    }, [router, user, bookGridColumnDefinitions]);
+    }, [router, user, user?.moderator, bookGridColumnDefinitions]);
 
     // note: this is an embedded function as a way to get at bookGridColumnDefinitions. It's important
     // that we don't reconstruct it on every render, or else we'll lose cursor focus on each key press.
@@ -172,10 +178,19 @@ const GridPage: React.FunctionComponent<{}> = observer(() => {
             <div
                 css={css`
                     margin-left: 22px;
+                    display: flex;
                 `}
             >
                 <Breadcrumbs />
-                {/* {user && `user: ${user.email} moderator:${user.moderator}`} */}
+                <span
+                    css={css`
+                        margin-left: auto;
+                        margin-right: 5px;
+                        color: ${commonUI.colors.bloomRed};
+                    `}
+                >
+                    {user && `${user.moderator ? "Moderator" : ""}`}
+                </span>
             </div>
 
             <Grid rows={books} columns={columns}>
@@ -190,8 +205,20 @@ const GridPage: React.FunctionComponent<{}> = observer(() => {
                     onFiltersChange={setGridFilters}
                 />
 
-                <SortingState defaultSorting={[]} />
-                <IntegratedSorting />
+                <SortingState
+                    defaultSorting={[]}
+                    onSortingChange={sortings => {
+                        console.log(JSON.stringify(sortings));
+                        setSortings(sortings);
+                    }}
+                    columnExtensions={bookGridColumnDefinitions.map(
+                        (c: IGridColumn) => ({
+                            columnName: c.name,
+                            sortingEnabled: !!c.sortingEnabled
+                        })
+                    )}
+                />
+                {/* <IntegratedSorting /> */}
                 <CustomPaging totalCount={totalBookMatchingFilter} />
                 <DragDropProvider />
                 <RowDetailState

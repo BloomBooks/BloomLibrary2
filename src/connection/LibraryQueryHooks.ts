@@ -178,19 +178,38 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
 export function useGetBooksForGrid(
     filter: IFilter,
     limit: number,
-    skip: number
+    skip: number,
+    // We only pay attention to the first one at this point, as that's all I figured out
+    sortingArray: Array<{ columnName: string; descending: boolean }>
 ): Book[] {
+    //console.log("Sorts: " + sortingArray.map(s => s.columnName).join(","));
     const { tags } = useContext(CachedTablesContext);
+
+    // Enhance: this only pays attention to the first one at this point, as that's all I figured out how to do
+    let order = "";
+    if (sortingArray?.length > 0) {
+        order = sortingArray[0].columnName;
+        if (sortingArray[0].descending) {
+            order = "-" + order; // a preceding minus sign means descending order
+        }
+    }
+
+    //console.log("order: " + order);
     const { response, loading, error } = useAxios({
         url: `${getConnection().url}classes/books`,
         method: "GET",
-        trigger: JSON.stringify(filter) + limit.toString() + skip.toString(),
+        trigger:
+            JSON.stringify(filter) +
+            limit.toString() +
+            skip.toString() +
+            order.toString(),
 
         options: {
             headers: getConnection().headers,
             params: {
                 limit,
                 skip,
+                order,
 
                 keys:
                     "title,baseUrl,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
