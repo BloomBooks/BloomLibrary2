@@ -12,6 +12,7 @@ import Img from "react-image";
 import { BookCount } from "./BookCount";
 import teamIcon from "../assets/team.svg";
 interface IProps {
+    preTitle?: string;
     title: string;
     bookCount?: string;
     filter: IFilter;
@@ -22,21 +23,18 @@ interface IProps {
 // CategoryCards are things like publisher, projects, organizations. "CollectionCard" might be a better name.
 const CategoryCard: React.FunctionComponent<IProps> = props => {
     const router = useContext(RouterContext);
-    // For Enabling Writers, we had bookshelf names like "Nepal_World Education". Here we parse out the country.
-    const parts = props.title.split("_");
-    const title = parts[parts.length - 1];
-    const country =
-        parts.length > 1 ? (
-            <div
-                css={css`
-                    font-size: 9pt;
-                `}
-            >
-                {parts[0]}
-            </div>
-        ) : (
-            undefined
-        );
+
+    const preTitleUI = props.preTitle ? (
+        <div
+            css={css`
+                font-size: 9pt;
+            `}
+        >
+            {props.preTitle}
+        </div>
+    ) : (
+        undefined
+    );
 
     const titleElementIfNoImage = (
         <React.Fragment>
@@ -46,8 +44,8 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
                     flex-grow: 1; // push the rest to the bottom5
                 `}
             >
-                {country}
-                {title}
+                {preTitleUI}
+                {props.title}
             </h2>
             <img
                 src={teamIcon}

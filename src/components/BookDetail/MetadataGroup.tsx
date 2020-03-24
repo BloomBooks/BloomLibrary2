@@ -16,6 +16,7 @@ import { BookAnalytics } from "./BookAnalytics";
 import { CachedTablesContext } from "../../App";
 import { getTagDisplayName } from "../../model/Tag";
 import { useGetRelatedBooks } from "../../connection/LibraryQueryHooks";
+import { Bookshelf } from "../../model/Bookshelf";
 
 export const MetadataGroup: React.FunctionComponent<{
     book: Book;
@@ -99,15 +100,28 @@ export const MetadataGroup: React.FunctionComponent<{
                 <div>
                     {"Tags: "}
                     {props.book.tags
-                        .filter(t => !t.startsWith("system"))
+                        .filter(
+                            t =>
+                                !t.startsWith("system") &&
+                                // In Mar 2020, we copied bookshelf tags to the new bookshelves column (see below)
+                                !t.startsWith("bookshelf")
+                        )
                         .map(t => {
-                            return getTagDisplayName(t, bookshelves);
+                            return getTagDisplayName(t);
                         })
                         .join(", ")}
                 </div>
                 <div>
                     {"Bookshelves: "}
-                    {props.book.bookshelves.join(", ")}
+                    {props.book.bookshelves
+                        .map(
+                            shelfKey =>
+                                Bookshelf.parseBookshelfKey(
+                                    shelfKey,
+                                    bookshelves
+                                ).displayNameWithParent
+                        )
+                        .join(", ")}
                 </div>
                 {relatedBooks?.length > 0 && (
                     <div>
