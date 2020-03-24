@@ -119,7 +119,7 @@ export const MetadataGroup: React.FunctionComponent<{
                         >
                             {relatedBooks.map((b: Book) => {
                                 return (
-                                    <li>
+                                    <li key={b.id}>
                                         <Link
                                             css={css`
                                                 color: ${theme.palette.secondary
