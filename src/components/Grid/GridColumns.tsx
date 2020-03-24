@@ -24,6 +24,7 @@ export interface IGridColumn extends DevExpressColumn {
     // Given a BloomLibrary filter, modify it to include the value the user has set while using this column's filter control.
     // This happens regardless of whether the column uses a default (text box) filter or a custom filter control.
     addToFilter?: (filter: IFilter, value: string) => void;
+    sortingEnabled?: boolean;
 }
 
 // For some tags, we want to give them their own column. So we don't want to show them in the tags column.
@@ -36,6 +37,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             name: "title",
             title: "Title",
             defaultVisible: true,
+            sortingEnabled: true,
             getCellValue: (b: Book) => (
                 <Link
                     href={`/?bookId=${b.id}&pageType=book-detail&title=${b.title}`}
@@ -88,22 +90,6 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             }
         },
         {
-            name: "bookshelf",
-            title: "Old Bookshelf",
-            defaultVisible: true,
-            getCellValue: (b: Book) =>
-                b.tags
-                    .filter(t => t.startsWith("bookshelf:"))
-                    .map(t => (
-                        <GridSearchLink key={t} search={t}>
-                            {t.replace(/bookshelf:/, "")}
-                        </GridSearchLink>
-                    )),
-            addToFilter: (filter: IFilter, value: string) => {
-                filter.bookshelf = value;
-            }
-        },
-        {
             name: "incoming",
             moderatorOnly: true,
             defaultVisible: true,
@@ -142,6 +128,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
         },
         {
             name: "harvestState",
+            sortingEnabled: true,
             addToFilter: (filter: IFilter, value: string) => {
                 filter.search = `harvestState:${value}`;
             },
@@ -156,12 +143,15 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             name: "harvestLog",
             defaultVisible: false
         },
-        { name: "license" },
-        { name: "copyright" },
-        { name: "pageCount" },
-        { name: "createdAt" },
+        { name: "license", sortingEnabled: true },
+        { name: "copyright", sortingEnabled: true },
+        { name: "pageCount", sortingEnabled: true },
+        { name: "createdAt", sortingEnabled: true },
+        { name: "publisher", sortingEnabled: true },
+        { name: "originalPublisher", sortingEnabled: true },
         {
             name: "uploader",
+            sortingEnabled: true,
             defaultVisible: true,
             moderatorOnly: true,
             getCellValue: (b: Book) => (
