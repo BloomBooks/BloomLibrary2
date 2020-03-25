@@ -95,7 +95,12 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             defaultVisible: true,
             getCellValue: (b: Book) => (
                 <TagCheckbox book={b} tag={"system:Incoming"} />
-            )
+            ),
+            getCustomFilterComponent: (props: TableFilterRow.CellProps) => (
+                <TagExistsFilterCell {...props} />
+            ),
+            addToFilter: (filter: IFilter, value: string) =>
+                updateFilterForExistenceOfTag("system:Incoming", filter, value)
         },
         {
             name: "level",
@@ -107,6 +112,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                     {...props}
                 />
             ),
+            // TODO: we need a way to query to for a missing level indicator
             addToFilter: (filter: IFilter, value: string) => {
                 filter.search += ` level:${titleCase(value)}`;
             }
@@ -271,3 +277,40 @@ const ChoicesFilterCell: React.FunctionComponent<TableFilterRow.CellProps & {
         </TableCell>
     );
 };
+
+// shows a checkbox in the filter row; ticking the box leads to a call to the gridColumn definition `addToFilter()`
+const TagExistsFilterCell: React.FunctionComponent<TableFilterRow.CellProps> = props => {
+    const [checked, setChecked] = useState(
+        props.filter?.value === "true" || false
+    );
+    return (
+        <TableCell padding="checkbox">
+            <Checkbox
+                css={css`
+                    padding-left: 0;
+                `}
+                checked={checked}
+                onChange={e => {
+                    props.onFilter({
+                        columnName: props.column.name,
+                        operation: "contains",
+                        // we're switching to the opposite of what `checked` was
+                        value: !checked ? "true" : "false"
+                    });
+                    setChecked(!checked);
+                }}
+            />
+        </TableCell>
+    );
+};
+
+function updateFilterForExistenceOfTag(
+    tag: string,
+    filter: IFilter,
+    value: string
+) {
+    // note, this can't search for *not* incoming, but that seems ok for the actual task for which this is used
+    if (value === "true") {
+        filter.search = ((filter.search || "") + ` ${tag}`).trim();
+    }
+}
