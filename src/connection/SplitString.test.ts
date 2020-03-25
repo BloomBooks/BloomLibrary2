@@ -1,13 +1,18 @@
-import { splitString, correctCase } from "./LibraryQueryHooks";
+import { splitString } from "./LibraryQueryHooks";
 
 it("simple keywords", () => {
-    const { keywords, specialParts } = splitString("dogs cats");
+    const { otherSearchTerms: keywords, specialParts } = splitString(
+        "dogs cats"
+    );
     expect(keywords).toBe("dogs cats");
     expect(specialParts.length).toBe(0);
 });
 
 it("a mixture of keywords and special parts", () => {
-    const { keywords, specialParts } = splitString("dogs topic:Animals cats", [
+    const {
+        otherSearchTerms: keywords,
+        specialParts
+    } = splitString("dogs topic:Animals cats", [
         "topic:Animals",
         "bookshelf:rubbish"
     ]);
@@ -17,7 +22,10 @@ it("a mixture of keywords and special parts", () => {
 });
 
 it("topic at start", () => {
-    const { keywords, specialParts } = splitString("topic:animals dogs cats", [
+    const {
+        otherSearchTerms: keywords,
+        specialParts
+    } = splitString("topic:animals dogs cats", [
         "system:Incoming",
         "topic:Animals",
         "bookshelf:rubbish"
@@ -28,7 +36,10 @@ it("topic at start", () => {
 });
 
 it("topic at end", () => {
-    const { keywords, specialParts } = splitString("dogs cats topic:Animals", [
+    const {
+        otherSearchTerms: keywords,
+        specialParts
+    } = splitString("dogs cats topic:Animals", [
         "system:Incoming",
         "topic:Animals",
         "bookshelf:rubbish"
@@ -40,7 +51,7 @@ it("topic at end", () => {
 
 it("topic and bookshelf name and keywords in quotes", () => {
     const {
-        keywords,
+        otherSearchTerms: keywords,
         specialParts
     } = splitString(
         'dogs bookshelf:enabling writers workshop "black birds" topic:Animal stories',
@@ -58,7 +69,7 @@ it("topic and bookshelf name and keywords in quotes", () => {
 
 it("ignores various unhelpful spaces", () => {
     const {
-        keywords,
+        otherSearchTerms: keywords,
         specialParts
     } = splitString(
         ' dogs  bookshelf: enabling writers  workshop "black birds" topic: Math ',
@@ -74,7 +85,7 @@ it("ignores various unhelpful spaces", () => {
 
 it("finds uploader and copyright", () => {
     const {
-        keywords,
+        otherSearchTerms: keywords,
         specialParts
     } = splitString("uploader:fred@example dogs copyright:sil.org", [
         "system:Incoming",
@@ -91,7 +102,7 @@ it("finds uploader and copyright", () => {
 
 it("corrects case, but not if both cases are valid", () => {
     const {
-        keywords,
+        otherSearchTerms: keywords,
         specialParts
     } = splitString("topic:health cats topic:math topic:Math", [
         "topic:Health",
