@@ -181,7 +181,7 @@ export function useGetBooksForGrid(
     skip: number,
     // We only pay attention to the first one at this point, as that's all I figured out
     sortingArray: Array<{ columnName: string; descending: boolean }>
-): Book[] {
+): { onePageOfMatchingBooks: Book[]; totalMatchingBooksCount: number } {
     //console.log("Sorts: " + sortingArray.map(s => s.columnName).join(","));
     const { tags } = useContext(CachedTablesContext);
 
@@ -193,7 +193,7 @@ export function useGetBooksForGrid(
             order = "-" + order; // a preceding minus sign means descending order
         }
     }
-
+    const query = constructParseBookQuery({}, filter, tags);
     //console.log("order: " + order);
     const { response, loading, error } = useAxios({
         url: `${getConnection().url}classes/books`,
@@ -210,6 +210,7 @@ export function useGetBooksForGrid(
                 limit,
                 skip,
                 order,
+                count: 1, // causes it to return the count
 
                 keys:
                     "title,baseUrl,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
@@ -217,7 +218,7 @@ export function useGetBooksForGrid(
                     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher",
                 // fluff up fields that reference other tables
                 include: "uploader,langPointers",
-                ...constructParseBookQuery({}, filter, tags)
+                ...query
             }
         }
     });
@@ -230,18 +231,14 @@ export function useGetBooksForGrid(
         response["data"]["results"].length === 0 ||
         error
     ) {
-        return [];
+        return { onePageOfMatchingBooks: [], totalMatchingBooksCount: 0 };
     }
 
-    return response["data"]["results"].map((r: object) =>
+    const books = response["data"]["results"].map((r: object) =>
         createBookFromParseServerData(r)
     );
-
-    // const parts = detail.tags.split(":");
-    // const x = parts.map(p => {tags[(p[0]) as string] = ""});
-
-    // return parts[0] + "-" + parts[1];
-    // detail.topic =
+    const count = response["data"]["count"];
+    return { onePageOfMatchingBooks: books, totalMatchingBooksCount: count };
 }
 
 // we just want a better name
@@ -406,7 +403,9 @@ function processAxiosStatus(answer: IAxiosAnswer): ISimplifiedAxiosResult {
 
 // Given strings such as might be typed into the search box, split them into bits that
 // should be treated as individual keywords to search for, and bits that should be
-// treated as additional search facets, usually tags. Known possible tags are
+// treated as additional search facets,
+// for example tags (system:Incoming), uploader:___, harvestState:___, etc.
+// Known possible tags are
 // passed as tagOptions1.
 // In a typical string, "topic:Health dogs cats" we would get back keywords
 // "dogs cats" and specialPart topic:Health. Items are delimited by spaces
@@ -437,17 +436,17 @@ export function splitString(
     input: string,
     // these would be things like "system:Incoming"
     tagsFoundInDatabase?: string[]
-): { keywords: string; specialParts: string[] } {
+): { otherSearchTerms: string; specialParts: string[] } {
     if (!tagsFoundInDatabase) {
         // should only happen during an early render that happens before we get
         // the results of the tag query.
-        return { keywords: input, specialParts: [] };
+        return { otherSearchTerms: input, specialParts: [] };
     }
     const facets = ["uploader:", "copyright:", "harvestState:"];
 
     const possibleParts = [...facets, ...tagsFoundInDatabase];
     // Start with the string with extra spaces (doubles and following colon) removed.
-    let keywords = input
+    let otherSearchTerms = input
         .replace(/ {2}/g, " ")
         .trim()
         .replace(/: /g, ":");
@@ -455,21 +454,21 @@ export function splitString(
     // Each iteration attempts to find and remove a special part.
     for (;;) {
         let gotOne = false;
-        const keywordsLc = keywords.toLowerCase();
+        const otherSearchTermsLc = otherSearchTerms.toLowerCase();
         for (const possiblePart of possibleParts) {
             const possiblePartLowerCase = possiblePart.toLowerCase();
-            const index = keywordsLc.indexOf(possiblePartLowerCase);
+            const index = otherSearchTermsLc.indexOf(possiblePartLowerCase);
             if (index < 0) continue;
             gotOne = true;
             let end = index + possiblePart.length;
             const isFacet = facets.includes(possiblePart);
             if (isFacet) {
-                end = keywords.indexOf(" ", end);
+                end = otherSearchTerms.indexOf(" ", end);
                 if (end < 0) {
-                    end = keywords.length;
+                    end = otherSearchTerms.length;
                 }
             }
-            let part = keywords.substring(index, end);
+            let part = otherSearchTerms.substring(index, end);
             // If possibleParts contains an exact match for the part, we'll keep that case.
             // So for example if we have both system:Incoming and system:incoming, it's
             // possible to search for either. Otherwise, we want to switch to the case
@@ -479,10 +478,10 @@ export function splitString(
                 part = possiblePart;
             }
             specialParts.push(part);
-            keywords = (
-                keywords.substring(0, index) +
+            otherSearchTerms = (
+                otherSearchTerms.substring(0, index) +
                 " " +
-                keywords.substring(end, keywords.length)
+                otherSearchTerms.substring(end, otherSearchTerms.length)
             )
                 // I'm not sure this cleanup matters to the mongo search engine, but
                 // it makes results more natural and predictable for testing
@@ -493,7 +492,7 @@ export function splitString(
         if (!gotOne) break;
     }
 
-    return { keywords, specialParts };
+    return { otherSearchTerms, specialParts };
 }
 
 export function constructParseBookQuery(
@@ -528,27 +527,25 @@ export function constructParseBookQuery(
         params.keys = params.keys.replace(/ /g, "");
     }
 
-    /* ----------------- TODO ---------------------
-
-            This needs to be rewritten so that we can combine  things like topic and bookshelf and language
-
-    --------------------------------------------------*/
     const tagParts = [];
     const caseInsensitive = { $options: "i" };
     if (!!f.search) {
-        const { keywords, specialParts } = splitString(
+        const { otherSearchTerms, specialParts } = splitString(
             filter.search!,
             tagOptions
         );
 
         for (const part of specialParts) {
-            const [tagLabel, tagValue] = part.split(":").map(p => p.trim());
-            switch (tagLabel) {
+            const [facetLabel, facetValue] = part.split(":").map(p => p.trim());
+            switch (facetLabel) {
                 case "uploader":
                     params.where.uploader = {
                         $inQuery: {
                             where: {
-                                email: { $regex: tagValue, ...caseInsensitive }
+                                email: {
+                                    $regex: facetValue,
+                                    ...caseInsensitive
+                                }
                             },
                             className: "_User"
                         }
@@ -556,21 +553,21 @@ export function constructParseBookQuery(
                     break;
                 case "copyright":
                     params.where.copyright = {
-                        $regex: tagValue,
+                        $regex: facetValue,
                         ...caseInsensitive
                     };
                     break;
                 case "harvestState":
-                    params.where.harvestState = tagValue;
+                    params.where.harvestState = facetValue;
                     break;
                 default:
                     tagParts.push(part);
                     break;
             }
         }
-        if (keywords.length > 0) {
+        if (otherSearchTerms.length > 0) {
             params.where.search = {
-                $text: { $search: { $term: keywords } }
+                $text: { $search: { $term: otherSearchTerms } }
             };
             if (params.order === "titleOrScore") {
                 params.order = "$score";

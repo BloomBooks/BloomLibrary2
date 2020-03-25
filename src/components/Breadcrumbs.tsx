@@ -41,6 +41,7 @@ export const Breadcrumbs: React.FunctionComponent = () => {
 const breadcrumbsStyle = css`
     display: flex;
     padding: 0;
+    margin: 0; // better to let the consumer decide our margin
     //padding-left: 20px;
     li {
         margin-right: 3px;

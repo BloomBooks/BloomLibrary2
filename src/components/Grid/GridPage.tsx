@@ -131,7 +131,10 @@ const GridPage: React.FunctionComponent<{}> = observer(() => {
     const totalBookMatchingFilter = useGetBookCount(
         filterMadeFromPageSearchPlusColumnFilters || {}
     );
-    const books = useGetBooksForGrid(
+    const {
+        onePageOfMatchingBooks,
+        totalMatchingBooksCount
+    } = useGetBooksForGrid(
         filterMadeFromPageSearchPlusColumnFilters,
         kBooksPerGridPage,
         gridPage * kBooksPerGridPage,
@@ -177,14 +180,16 @@ const GridPage: React.FunctionComponent<{}> = observer(() => {
         <div>
             <div
                 css={css`
+                    margin-top: 5px;
                     margin-left: 22px;
                     display: flex;
+                    justify-content: space-between;
                 `}
             >
                 <Breadcrumbs />
+                <span>{`${totalMatchingBooksCount} Matching Books`}</span>
                 <span
                     css={css`
-                        margin-left: auto;
                         margin-right: 5px;
                         color: ${commonUI.colors.bloomRed};
                     `}
@@ -193,7 +198,7 @@ const GridPage: React.FunctionComponent<{}> = observer(() => {
                 </span>
             </div>
 
-            <Grid rows={books} columns={columns}>
+            <Grid rows={onePageOfMatchingBooks} columns={columns}>
                 <PagingState
                     currentPage={gridPage}
                     onCurrentPageChange={setGridPage}
