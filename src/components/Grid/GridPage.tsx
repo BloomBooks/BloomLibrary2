@@ -46,7 +46,7 @@ import { getBookGridColumnsDefinitions, IGridColumn } from "./GridColumns";
 import { Breadcrumbs } from "../Breadcrumbs";
 import { useStorageState } from "react-storage-hooks";
 import { Book } from "../../model/Book";
-import { StaffPanel } from "../Admin/StaffPanel";
+import StaffPanel from "../Admin/StaffPanel";
 import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 import { observer } from "mobx-react";
 import { commonUI } from "../../theme";

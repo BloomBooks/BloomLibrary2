@@ -36,8 +36,8 @@ export class BrowseView extends Component {
             case "home":
                 return <HomePage />;
             case "book-detail":
-                // This will split the code so that you only download/parse all the grid stuff if you go to the Grid page
-                // Note that it actually produces to *two* chunks, but I don't know why.
+                // This will split the code so that you only download/parse all the book detail stuff if you go to
+                // the Book Detail page.
                 const BookDetail = React.lazy(() =>
                     import(
                         /* webpackChunkName: "bookDetail" */ "./BookDetail/BookDetail"

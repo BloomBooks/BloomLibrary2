@@ -26,7 +26,7 @@ const borderColor = "#b0e1e8"; // or perhaps border color ${theme.palette.second
 
 // This React functional component displays some staff controls, shown (for example)
 // in the book detail page when the logged-in use is an moderator.
-export const StaffPanel: React.FunctionComponent<IProps> = observer(props => {
+const StaffPanel: React.FunctionComponent<IProps> = observer(props => {
     const router = useContext(RouterContext);
 
     // Whether anything has been edited and not yet saved.
@@ -274,3 +274,6 @@ const Box: React.FunctionComponent = props => (
         {props.children}
     </div>
 );
+
+// though we normally don't like to export defaults, this is required for react.lazy (code splitting)
+export default StaffPanel;
