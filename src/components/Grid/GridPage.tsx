@@ -33,7 +33,6 @@ import {
 import {
     FilteringState,
     SortingState,
-    IntegratedSorting,
     PagingState,
     CustomPaging,
     Filter as GridFilter,
@@ -296,4 +295,5 @@ function CombineGridAndSearchBoxFilter(
     return f;
 }
 
+// though we normally don't like to export defaults, this is required for react.lazy (code splitting)
 export default GridPage;

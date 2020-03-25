@@ -120,7 +120,8 @@ export class Book {
         updateBook(this.id, {
             tags,
             summary: this.summary,
-            librarianNote: this.librarianNote
+            librarianNote: this.librarianNote,
+            bookshelves: this.bookshelves
         });
     }
 
