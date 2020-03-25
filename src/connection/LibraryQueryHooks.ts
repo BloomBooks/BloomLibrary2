@@ -210,6 +210,7 @@ export function useGetBooksForGrid(
                 limit,
                 skip,
                 order,
+                count: 1, // causes it to return the count
 
                 keys:
                     "title,baseUrl,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
@@ -217,20 +218,6 @@ export function useGetBooksForGrid(
                     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher",
                 // fluff up fields that reference other tables
                 include: "uploader,langPointers",
-                ...query
-            }
-        }
-    });
-    const { response: countResponse } = useAxios({
-        url: `${getConnection().url}classes/books`,
-        method: "GET",
-        trigger: JSON.stringify(filter),
-
-        options: {
-            headers: getConnection().headers,
-            params: {
-                limit: 0,
-                count: 1,
                 ...query
             }
         }
@@ -250,7 +237,7 @@ export function useGetBooksForGrid(
     const books = response["data"]["results"].map((r: object) =>
         createBookFromParseServerData(r)
     );
-    const count = countResponse ? countResponse["data"]["count"] : -1;
+    const count = response["data"]["count"];
     return { onePageOfMatchingBooks: books, totalMatchingBooksCount: count };
 }
 
