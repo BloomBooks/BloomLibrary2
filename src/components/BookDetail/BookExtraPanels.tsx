@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import { Suspense, lazy } from "react";
+import React from "react";
 import { Book } from "../../model/Book";
 import { observer } from "mobx-react";
 import {
@@ -14,7 +14,7 @@ import {
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { HarvesterArtifactUserControl } from "./ArtifactVisibilityPanel/ArtifactVisibilityPanel";
-import { StaffPanel } from "../Admin/StaffPanel";
+//import { StaffPanel } from "../Admin/StaffPanel";
 import { LoggedInUser } from "../../connection/LoggedInUser";
 export const BookExtraPanels: React.FunctionComponent<{
     book: Book;
@@ -23,8 +23,14 @@ export const BookExtraPanels: React.FunctionComponent<{
     const userIsUploader = user?.username === props.book.uploader?.username;
 
     // causes webpack to create a chunk for this which we only download as needed.
-    const ReactJsonView = lazy(() =>
+    const ReactJsonView = React.lazy(() =>
         user?.moderator ? import("react-json-view") : new Promise(() => {})
+    );
+
+    const StaffPanel = React.lazy(() =>
+        user?.moderator
+            ? import(/* webpackChunkName: "staffPanel" */ "../Admin/StaffPanel")
+            : new Promise(() => {})
     );
     return (
         <div
@@ -48,12 +54,20 @@ export const BookExtraPanels: React.FunctionComponent<{
             )}
 
             {user?.moderator && (
-                <ExpansionPanel>
+                <ExpansionPanel expanded={true}>
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                         Staff Controls
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
-                        <StaffPanel book={props.book!}></StaffPanel>
+                        <React.Suspense
+                            fallback={
+                                <div>
+                                    Loading chunk for showing staff panel...
+                                </div>
+                            }
+                        >
+                            <StaffPanel book={props.book!}></StaffPanel>
+                        </React.Suspense>
                     </ExpansionPanelDetails>
                 </ExpansionPanel>
             )}
@@ -84,7 +98,7 @@ export const BookExtraPanels: React.FunctionComponent<{
                                 width: calc(95vw - 4em);
                             `}
                         >
-                            <Suspense
+                            <React.Suspense
                                 fallback={
                                     <div>Loading chunk for showing json...</div>
                                 }
@@ -93,7 +107,7 @@ export const BookExtraPanels: React.FunctionComponent<{
                                     src={props.book}
                                     theme="monokai"
                                 />
-                            </Suspense>
+                            </React.Suspense>
                             {/* {JSON.stringify(props.book)} */}
                         </div>
                     </ExpansionPanelDetails>

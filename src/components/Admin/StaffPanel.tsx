@@ -17,13 +17,16 @@ import {
 import { observer } from "mobx-react";
 import { RouterContext } from "../../Router";
 import { TagsList } from "./TagsList";
+import { BookshelfChooser } from "./BookshelfChooser";
 
 interface IProps {
     book: Book;
 }
+const borderColor = "#b0e1e8"; // or perhaps border color ${theme.palette.secondary.light}? The value here came from note in BL-8046
+
 // This React functional component displays some staff controls, shown (for example)
 // in the book detail page when the logged-in use is an moderator.
-export const StaffPanel: React.FunctionComponent<IProps> = observer(props => {
+const StaffPanel: React.FunctionComponent<IProps> = observer(props => {
     const router = useContext(RouterContext);
 
     // Whether anything has been edited and not yet saved.
@@ -47,6 +50,11 @@ export const StaffPanel: React.FunctionComponent<IProps> = observer(props => {
         props.book.librarianNote = event.target.value;
         setModified(true);
     };
+
+    // const handleRelatedBooksChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     props.book.librarianNote = event.target.value;
+    //     setModified(true);
+    // };
 
     const saveBook = () => {
         props.book.saveAdminDataToParse();
@@ -82,8 +90,6 @@ export const StaffPanel: React.FunctionComponent<IProps> = observer(props => {
         router!.waitingOnSaveOrCancel = false;
         document.location.reload();
     };
-
-    const borderColor = "#b0e1e8"; // or perhaps border color ${theme.palette.secondary.light}? The value here came from note in BL-8046
 
     return (
         // review: is there some shade-of-grey constant we should use for the background color?
@@ -200,11 +206,21 @@ export const StaffPanel: React.FunctionComponent<IProps> = observer(props => {
                 </div>
             </div>
 
-            <TagsList
-                book={props.book}
-                setModified={setModified}
-                borderColor={borderColor}
-            ></TagsList>
+            <Box>
+                <FormLabel component="legend">Tags</FormLabel>
+                <TagsList
+                    book={props.book}
+                    setModified={setModified}
+                    borderColor={borderColor}
+                ></TagsList>
+            </Box>
+
+            <Box>
+                <BookshelfChooser
+                    setModified={setModified}
+                    book={props.book}
+                ></BookshelfChooser>
+            </Box>
 
             <div
                 id="apControls"
@@ -242,3 +258,22 @@ export const StaffPanel: React.FunctionComponent<IProps> = observer(props => {
         </div>
     );
 });
+
+const Box: React.FunctionComponent = props => (
+    <div
+        css={css`
+            border: 2px solid ${borderColor};
+            border-radius: 4px;
+            margin-top: 10px;
+            padding: 10px;
+            line-height: 26px;
+            position: relative;
+            background-color: white;
+        `}
+    >
+        {props.children}
+    </div>
+);
+
+// though we normally don't like to export defaults, this is required for react.lazy (code splitting)
+export default StaffPanel;

@@ -33,7 +33,6 @@ import {
 import {
     FilteringState,
     SortingState,
-    IntegratedSorting,
     PagingState,
     CustomPaging,
     Filter as GridFilter,
@@ -47,7 +46,7 @@ import { getBookGridColumnsDefinitions, IGridColumn } from "./GridColumns";
 import { Breadcrumbs } from "../Breadcrumbs";
 import { useStorageState } from "react-storage-hooks";
 import { Book } from "../../model/Book";
-import { StaffPanel } from "../Admin/StaffPanel";
+import StaffPanel from "../Admin/StaffPanel";
 import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 import { observer } from "mobx-react";
 import { commonUI } from "../../theme";
@@ -296,4 +295,5 @@ function CombineGridAndSearchBoxFilter(
     return f;
 }
 
+// though we normally don't like to export defaults, this is required for react.lazy (code splitting)
 export default GridPage;
