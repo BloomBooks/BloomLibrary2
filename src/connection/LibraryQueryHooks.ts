@@ -181,7 +181,7 @@ export function useGetBooksForGrid(
     skip: number,
     // We only pay attention to the first one at this point, as that's all I figured out
     sortingArray: Array<{ columnName: string; descending: boolean }>
-): Book[] {
+): { onePageOfMatchingBooks: Book[]; totalMatchingBooksCount: number } {
     //console.log("Sorts: " + sortingArray.map(s => s.columnName).join(","));
     const { tags } = useContext(CachedTablesContext);
 
@@ -193,7 +193,7 @@ export function useGetBooksForGrid(
             order = "-" + order; // a preceding minus sign means descending order
         }
     }
-
+    const query = constructParseBookQuery({}, filter, tags);
     //console.log("order: " + order);
     const { response, loading, error } = useAxios({
         url: `${getConnection().url}classes/books`,
@@ -217,7 +217,21 @@ export function useGetBooksForGrid(
                     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher",
                 // fluff up fields that reference other tables
                 include: "uploader,langPointers",
-                ...constructParseBookQuery({}, filter, tags)
+                ...query
+            }
+        }
+    });
+    const { response: countResponse } = useAxios({
+        url: `${getConnection().url}classes/books`,
+        method: "GET",
+        trigger: JSON.stringify(filter),
+
+        options: {
+            headers: getConnection().headers,
+            params: {
+                limit: 0,
+                count: 1,
+                ...query
             }
         }
     });
@@ -230,18 +244,14 @@ export function useGetBooksForGrid(
         response["data"]["results"].length === 0 ||
         error
     ) {
-        return [];
+        return { onePageOfMatchingBooks: [], totalMatchingBooksCount: 0 };
     }
 
-    return response["data"]["results"].map((r: object) =>
+    const books = response["data"]["results"].map((r: object) =>
         createBookFromParseServerData(r)
     );
-
-    // const parts = detail.tags.split(":");
-    // const x = parts.map(p => {tags[(p[0]) as string] = ""});
-
-    // return parts[0] + "-" + parts[1];
-    // detail.topic =
+    const count = countResponse ? countResponse["data"]["count"] : -1;
+    return { onePageOfMatchingBooks: books, totalMatchingBooksCount: count };
 }
 
 // we just want a better name
