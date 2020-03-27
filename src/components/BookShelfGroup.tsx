@@ -1,14 +1,9 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
 import React, { useContext } from "react";
 import { useGetBookshelvesByCategory } from "../connection/LibraryQueryHooks";
 import CategoryCard from "./CategoryCard";
-import LazyLoad from "react-lazyload";
 import { Bookshelf } from "../model/Bookshelf";
 import { CachedTablesContext } from "../App";
+import { CategoryCardGroup } from "./CategoryCardGroup";
 
 const encodeUrl = require("encodeurl");
 interface IProps {
@@ -31,22 +26,6 @@ interface IProps {
     for now.
 */
 
-export const BookshelfGroup: React.FunctionComponent<IProps> = props => (
-    // Enhance: LazyLoad has parameters (height and offset) that should help
-    // but so far I haven't got them to work well. It has many other
-    // parameters too that someone should look into. Make sure to test
-    // with the phone sizes in the browser debugger, and have the network
-    // tab open, set to "XHR". That will show you when a new query happens
-    // because this has loaded a new BookGroupInner.
-    // If the params are good, this list will grow as you scroll.
-    // If the params are bad, some groups at the end will NEVER show.
-
-    /* Note, this currently breaks strict mode. See app.tsx */
-    <LazyLoad height={258 /* todo derive from commonui.something */}>
-        <BookshelfGroupInner {...props} />
-    </LazyLoad>
-);
-
 // Normally the bookshelf name matches the image name, but if not we change it here:
 const nameToImageMap = new Map<string, string>([
     //  // something in our pipeline won't deliver an image that starts with "3"
@@ -56,7 +35,7 @@ const nameToImageMap = new Map<string, string>([
     ["Resources for the Blind, Inc. (Philippines)", "Resources for the Blind"]
 ]);
 
-export const BookshelfGroupInner: React.FunctionComponent<IProps> = props => {
+export const BookshelfGroup: React.FunctionComponent<IProps> = props => {
     // At this point there are so few bookshelves that we just retrieve the whole list and then filter here.
     // Might be a good thing to cache.
     const bookshelfResults = useGetBookshelvesByCategory(
@@ -119,22 +98,5 @@ export const BookshelfGroupInner: React.FunctionComponent<IProps> = props => {
             );
         });
 
-    return (
-        <li
-            css={css`
-                margin-top: 30px;
-            `}
-        >
-            <h1>{props.title}</h1>
-            <ul
-                css={css`
-                    list-style: none;
-                    display: flex;
-                    padding-left: 0;
-                `}
-            >
-                {cards}
-            </ul>
-        </li>
-    );
+    return <CategoryCardGroup {...props}>{cards}</CategoryCardGroup>;
 };
