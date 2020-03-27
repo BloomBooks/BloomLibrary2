@@ -14,7 +14,7 @@ import { Checkbox, Link, TableCell, Select, MenuItem } from "@material-ui/core";
 import { Book } from "../../model/Book";
 import QueryString from "qs";
 import titleCase from "title-case";
-import { IFilter } from "../../IFilter";
+import { IFilter, InCirculationOptions } from "../../IFilter";
 
 export interface IGridColumn extends DevExpressColumn {
     moderatorOnly?: boolean;
@@ -148,6 +148,21 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
         {
             name: "harvestLog",
             defaultVisible: false
+        },
+        {
+            name: "inCirculation",
+            sortingEnabled: false, // parse server doesn't seem to be able to sort on booleans?
+            getCellValue: (b: Book) => (b.inCirculation ? "Yes" : "No"),
+            getCustomFilterComponent: (props: TableFilterRow.CellProps) => (
+                <ChoicesFilterCell choices={["All", "Yes", "No"]} {...props} />
+            ),
+            addToFilter: (filter: IFilter, value: string) => {
+                if (value === "No")
+                    filter.inCirculation = InCirculationOptions.No;
+                if (value === "Yes")
+                    filter.inCirculation = InCirculationOptions.Yes;
+                // otherwise don't mention it
+            }
         },
         { name: "license", sortingEnabled: true },
         { name: "copyright", sortingEnabled: true },

@@ -2,12 +2,14 @@ import React from "react";
 import { BookGroup } from "./BookGroup";
 import { LanguageGroup } from "./LanguageGroup";
 import { BookshelfGroup } from "./BookShelfGroup";
-import { IFilter } from "../IFilter";
+import { IFilter, InCirculationOptions } from "../IFilter";
 import { HomeBanner } from "./banners/HomeBanner";
 import { ListOfBookGroups } from "./ListOfBookGroups";
 
 export const HomePage: React.FunctionComponent = () => {
-    const almostAllBooksFilter: IFilter = { inCirculation: true };
+    const almostAllBooksFilter: IFilter = {
+        inCirculation: InCirculationOptions.Yes
+    };
     return (
         <>
             <HomeBanner filter={almostAllBooksFilter} />

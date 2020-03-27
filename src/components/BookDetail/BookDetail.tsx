@@ -80,6 +80,24 @@ export const BookDetailInternal: React.FunctionComponent<{
                     book={props.book}
                     breakToColumn={breakToColumn}
                 />
+                {props.book.inCirculation || (
+                    <div
+                        css={css`
+                            background-color: orange;
+                        `}
+                    >
+                        <h1>
+                            BLOOM STAFF HAVE REMOVED THIS BOOK FROM CIRCULATION
+                            IN THE LIBRARY
+                        </h1>
+                        <p>
+                            For more information, write to{" "}
+                            <a href="mailto:librarian@bloomlibrary.org">
+                                librarian@bloomlibrary.org
+                            </a>
+                        </p>
+                    </div>
+                )}
                 {divider}
                 <MetadataGroup
                     book={props.book}

@@ -1,5 +1,5 @@
 import useAxios, { IReturns } from "@use-hooks/axios";
-import { IFilter } from "../IFilter";
+import { IFilter, InCirculationOptions } from "../IFilter";
 import { getConnection } from "./ParseServerConnection";
 import { Book, createBookFromParseServerData } from "../model/Book";
 import { useContext } from "react";
@@ -137,7 +137,7 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
             params: {
                 where: { objectId: bookId },
                 keys:
-                    "title,baseUrl,bookOrder,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
+                    "title,baseUrl,bookOrder,inCirculation,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
                     "tags,pageCount,show,credits,country,features,internetLimits," +
                     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount," +
                     "harvestStartedAt,bookshelves",
@@ -213,7 +213,7 @@ export function useGetBooksForGrid(
                 count: 1, // causes it to return the count
 
                 keys:
-                    "title,baseUrl,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
+                    "title,baseUrl,license,licenseNotes,inCirculation,summary,copyright,harvestState,harvestLog," +
                     "tags,pageCount,show,credits,country,features,internetLimits,bookshelves," +
                     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher",
                 // fluff up fields that reference other tables
@@ -642,11 +642,18 @@ export function constructParseBookQuery(
         delete params.where.feature;
         params.where.features = f.feature; //my understanding is that this means it just has to contain this, could have others
     }
-    if (f.inCirculation != null) {
-        delete params.where.inCirculation;
-        params.where.inCirculation = { $in: [f.inCirculation, null] };
-    } else {
-        params.where.inCirculation = { $in: [true, null] };
+    delete params.where.inCirculation;
+    switch (f.inCirculation) {
+        case undefined:
+        case InCirculationOptions.Yes:
+            params.where.inCirculation = { $in: [true, null] };
+            break;
+        case InCirculationOptions.No:
+            params.where.inCirculation = false;
+            break;
+        case InCirculationOptions.All:
+            // just don't include it in the query
+            break;
     }
     return params;
 }
