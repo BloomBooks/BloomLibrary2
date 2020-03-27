@@ -18,6 +18,7 @@ import { observer } from "mobx-react";
 import { RouterContext } from "../../Router";
 import { TagsList } from "./TagsList";
 import { BookshelfChooser } from "./BookshelfChooser";
+import { HideBookControl } from "./HideBookControl";
 
 interface IProps {
     book: Book;
@@ -205,7 +206,6 @@ const StaffPanel: React.FunctionComponent<IProps> = observer(props => {
                     </RadioGroup>
                 </div>
             </div>
-
             <Box>
                 <FormLabel component="legend">Tags</FormLabel>
                 <TagsList
@@ -214,14 +214,13 @@ const StaffPanel: React.FunctionComponent<IProps> = observer(props => {
                     borderColor={borderColor}
                 ></TagsList>
             </Box>
-
             <Box>
                 <BookshelfChooser
                     setModified={setModified}
                     book={props.book}
                 ></BookshelfChooser>
             </Box>
-
+            <HideBookControl book={props.book} setModified={setModified} />
             <div
                 id="apControls"
                 css={css`

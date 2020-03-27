@@ -40,6 +40,7 @@ export class Book {
     @observable public tags: string[] = [];
     @observable public level: string = "";
     @observable public librarianNote: string = "";
+    @observable public inCirculation: boolean = true;
     @observable
     public artifactsToOfferToUsers: ArtifactVisibilitySettingsGroup = new ArtifactVisibilitySettingsGroup();
     public uploader: { username: string } | undefined;
@@ -119,6 +120,7 @@ export class Book {
 
         updateBook(this.id, {
             tags,
+            inCirculation: this.inCirculation,
             summary: this.summary,
             librarianNote: this.librarianNote,
             bookshelves: this.bookshelves
