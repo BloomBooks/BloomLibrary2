@@ -7,6 +7,7 @@ import React from "react";
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
 import { getLanguageFeatures, featureIconHeight } from "./FeatureHelper";
 import { getUniqueLanguages, getNameDisplay } from "./LanguageLink";
+import { useTheme } from "@material-ui/core";
 
 interface IProps {
     onBasicBookInfo: IBasicBookInfo;
@@ -19,6 +20,8 @@ interface IProps {
 // Enhance: consider truncating more cleanly after the last language name that fits,
 // and showing some indication that there are more (ideally, a count of how many more).
 export const LanguageFeatureList: React.FunctionComponent<IProps> = props => {
+    const theme = useTheme();
+
     // Now figure out what to show in the language list area. It's a mix
     // of simple text nodes and possibly feature icons.
     const languageElements = [];
@@ -38,7 +41,7 @@ export const LanguageFeatureList: React.FunctionComponent<IProps> = props => {
             languageElements.push(
                 feature.icon({
                     key: language.isoCode + feature.featureKey,
-                    fill: "rgb(86,166,177)",
+                    fill: theme.palette.secondary.main,
                     style: {
                         height: featureIconHeight + "px",
                         width: featureIconHeight + "px",

@@ -4,6 +4,7 @@ export const commonUI = {
     colors: {
         bloomRed: "#D65649",
         bloomBlue: "#1d94a4",
+        bloomBlueTransparent: "#1d94a438",
         dialogTopBottomGray: "#F1F3F4"
     },
 
@@ -23,7 +24,10 @@ export const commonUI = {
 const theme = createMuiTheme({
     palette: {
         primary: { main: commonUI.colors.bloomRed },
-        secondary: { main: commonUI.colors.bloomBlue },
+        secondary: {
+            main: commonUI.colors.bloomBlue,
+            light: commonUI.colors.bloomBlueTransparent
+        },
         warning: { main: "#F3AA18" }
     },
     // typography: {
