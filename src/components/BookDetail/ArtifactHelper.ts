@@ -161,7 +161,7 @@ function getBookNameFromUrl(baseUrl: string): string | undefined {
 // Get the URL where we find book thumbnails if they have not been harvested recently
 // enough tohave a harvester-produced thumbnail. Includes a fake query designed to defeat
 // caching of the thumbnail if the book might have been modified since last cached.
-export function getLegacyThumbnailUrl(book: Book | IBasicBookInfo) {
+export function getLegacyThumbnailUrl(book: Book | IBasicBookInfo): string {
     return (
         getCloudFlareUrl(book.baseUrl) +
         "thumbnail-256.png?version=" +
@@ -197,10 +197,15 @@ export function getHarvesterProducedThumbnailUrl(
 }
 
 // Get the place we should look for a book thumbnail.
-export function getThumbnailUrl(book: Book | IBasicBookInfo) {
-    return (
-        getHarvesterProducedThumbnailUrl(book) || getLegacyThumbnailUrl(book)
-    );
+export function getThumbnailUrl(
+    book: Book | IBasicBookInfo
+): { thumbnailUrl: string; isModernThumbnail: boolean } {
+    const h = getHarvesterProducedThumbnailUrl(book);
+    if (h) return { thumbnailUrl: h, isModernThumbnail: true };
+    return {
+        thumbnailUrl: getLegacyThumbnailUrl(book),
+        isModernThumbnail: false
+    };
 }
 
 function getDownloadUrl(book: Book, fileType: string): string | undefined {
