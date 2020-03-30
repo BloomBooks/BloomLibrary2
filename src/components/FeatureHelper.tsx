@@ -59,8 +59,20 @@ export const featureSpecs: IFeatureSpec[] = [
         featureTitle: "Talking Books",
         description: (
             <div>
-                Talking Books play audio recordings while highlighting the
-                corresponding text.
+                <div>
+                    We all love to hear a story, and listening while reading
+                    along may help learners to improve their own reading skills.
+                </div>
+                <br />
+                <div>
+                    Bloom's unique approach makes it easy to make Talking Books
+                    for the web &amp; phones. You can record by sentence, by
+                    text box, or by importing existing audio.&nbsp;
+                    <a href="https://vimeo.com/channels/bloomlibrary/181840473">
+                        Learn More
+                    </a>
+                    .
+                </div>
             </div>
         ),
         icon: props => (
