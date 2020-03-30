@@ -4,17 +4,26 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { useGetBookDetail } from "../connection/LibraryQueryHooks";
 import { Book } from "../model/Book";
+import { RouterContext } from "../Router";
+
 export const ReadBookPage: React.FunctionComponent<{ id: string }> = props => {
+    const router = useContext(RouterContext);
+
     const handleMessageFromBloomPlayer = (event: MessageEvent) => {
         //        console.log(JSON.stringify(event.data));
 
         try {
             const r = JSON.parse(event.data);
             if (r.messageType === "backButtonClicked") {
-                window.history.back();
+                router!.push({
+                    bookId: router!.current.bookId,
+                    title: "Book Detail",
+                    pageType: "book-detail",
+                    filter: {}
+                });
             }
         } catch (err) {
             console.log(`Got error with message: ${err}`);
