@@ -28,7 +28,9 @@ interface IProps {
 export const BookCard: React.FunctionComponent<IProps> = props => {
     const router = useContext(RouterContext);
     const legacyStyleThumbnail = getLegacyThumbnailUrl(props.onBasicBookInfo);
-    const thumbnailUrl = getThumbnailUrl(props.onBasicBookInfo);
+    const { thumbnailUrl, isModernThumbnail } = getThumbnailUrl(
+        props.onBasicBookInfo
+    );
 
     const card = (
         <CheapCard
@@ -45,8 +47,11 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
                 className={"swiper-lazy"}
                 css={css`
                     height: 100px;
-                    object-fit: cover; //cover will crop, but fill up nicely
-                    object-position: top;
+                    /*cover will crop, but fill up nicely*/
+                    object-fit: cover;
+                    /* new thumbnails are just the image, and they look better if we see the top and lose some of the bottom
+                     legacy thumbnails have title at top, so better to center them*/
+                    object-position: ${isModernThumbnail ? "top" : ""};
                 `}
                 alt={"book thumbnail"}
                 // NB: if you're not getting an image, e.g. in Storybook, it might be because it's not inside of a swiper,
@@ -61,7 +66,7 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
                     if ((ev.target as any).src !== legacyStyleThumbnail) {
                         (ev.target as any).src = legacyStyleThumbnail;
                     } else {
-                        console.log("ugh! no thumbnail in either place");
+                        console.error("ugh! no thumbnail in either place");
                     }
                 }}
             />

@@ -58,7 +58,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
         `(max-width:${props.breakToColumn})`
     );
 
-    const thumbnailUrl = getThumbnailUrl(props.book);
+    const { thumbnailUrl } = getThumbnailUrl(props.book);
     const legacyStyleThumbnail = getLegacyThumbnailUrl(props.book);
 
     return (
