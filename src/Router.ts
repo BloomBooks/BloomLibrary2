@@ -20,6 +20,10 @@ export interface ILocation {
     filter: IFilter;
     rows?: number;
 
+    // This isn't really part of the location, but it is other information we get from
+    // the url, all of which is currently parsed into an ILocation object.
+    bookLang?: string;
+
     // Often the card that we click on to go to a page, well it already has information
     // about the page that the page will just have to re-query. For example a card that
     // represents a bookshelf has to already have done the query on the bookshelf table

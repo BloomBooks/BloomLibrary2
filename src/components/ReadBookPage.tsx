@@ -37,18 +37,18 @@ export const ReadBookPage: React.FunctionComponent<{ id: string }> = props => {
     }, []);
 
     const book = useGetBookDetail(props.id);
-    const url = book ? getUrlOfHtmlOfDigitalVersion(book) : "working";
+    const url = book ? getUrlOfHtmlOfDigitalVersion(book) : "working"; // url=working shows a loading icon
 
     // use the bloomplayer.htm we copy into our public/ folder, where CRA serves from
     const bloomPlayerUrl = "bloom-player/bloomplayer.htm";
 
-    const iframeSrc = `${bloomPlayerUrl}?url=${url}&showBackButton=true`;
-    //console.log("iframe src = " + iframeSrc);
+    const langParam = router?.current.bookLang
+        ? `&lang=${router.current.bookLang}`
+        : "";
 
-    // note that bloom-player is *supposed* to handle url="waiting" by just showing a loading
-    // icon, but at the moment that isn't working or hasn't reached the server so I'm just
-    // not showing it until we have something.
-    return book ? (
+    const iframeSrc = `${bloomPlayerUrl}?url=${url}&showBackButton=true${langParam}`;
+
+    return (
         <iframe
             title="bloom player"
             css={css`
@@ -58,8 +58,6 @@ export const ReadBookPage: React.FunctionComponent<{ id: string }> = props => {
             `}
             src={iframeSrc}
         ></iframe>
-    ) : (
-        <div></div>
     );
 };
 
