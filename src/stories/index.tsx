@@ -92,7 +92,7 @@ storiesOf("BookGroup", module)
     .add("Featured", () => (
         <BookGroup
             title="Featured Shell Books You Can Translate"
-            filter={{ otherTags: "bookshelf:Featured" }}
+            filter={{ bookshelf: "Featured" }}
         />
     ))
     .add("All Topics", () => (
