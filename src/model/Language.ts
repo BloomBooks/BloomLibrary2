@@ -6,18 +6,40 @@ export interface ILanguage {
     bannerImageUrl?: string;
 }
 
+export function getLanguageNamesFromCode(
+    languageCode: string,
+    languages: ILanguage[]
+):
+    | {
+          displayName: string;
+          autonym: string | undefined;
+          displayNameWithAutonym: string;
+      }
+    | undefined {
+    const language = languages.find(l => l.isoCode === languageCode);
+    if (language) return getLanguageNames(language);
+    return undefined;
+}
+
 export function getLanguageNames(
     language: ILanguage
-): { displayName: string; autonym: string | undefined } {
+): {
+    displayName: string;
+    autonym: string | undefined;
+    displayNameWithAutonym: string;
+} {
     let displayName: string;
     let autonym: string | undefined;
+    let displayNameWithAutonym: string;
     if (language.englishName && language.englishName !== language.name) {
         autonym = language.name;
         displayName = language.englishName;
+        displayNameWithAutonym = `${autonym} (${displayName})`;
     } else {
         displayName = language.name;
+        displayNameWithAutonym = displayName;
     }
-    return { displayName, autonym };
+    return { displayName, autonym, displayNameWithAutonym };
 }
 
 export function getCleanedAndOrderedLanguageList(
