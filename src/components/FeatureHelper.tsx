@@ -1,3 +1,8 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
 import React from "react";
 import { ReactComponent as ActivityIcon } from "../assets/Activity.svg";
 import { ReactComponent as ComicIcon } from "../assets/Comic.svg";
@@ -6,9 +11,15 @@ import { ReactComponent as SignLanguageIcon } from "../assets/Sign Language.svg"
 import { ReactComponent as TalkingBookIcon } from "../assets/Talking Book.svg";
 import { ReactComponent as VisuallyImpairedIcon } from "../assets/Visually Impaired.svg";
 
-export interface IFeatureOption {
+export interface IFeatureSpec {
     featureKey: string;
+    featureTitle: string;
+    description: JSX.Element;
     icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
+    // Some icons "look" bigger than others, so we can scale them to make them look more similar.
+    // The number is a percentage less than (scale down) or greater than (scale up) 100.
+    // This is only used in some contexts (e.g. CategoryCard).
+    iconScale?: number;
     languageDependent: boolean;
 }
 
@@ -28,16 +39,60 @@ export const featureIconHeight = 12;
 // in different places. So icon can't just be a fixed react component.
 // Thus, I ended up making icon a function that takes the props and builds the
 // appropriate react component containing the right icon and using the supplied props.
-export const featureOptions: IFeatureOption[] = [
+const activityFeatureSpec: IFeatureSpec = {
+    featureKey: "activity",
+    featureTitle: "Books with Interactive Activities",
+    description: (
+        <div>
+            These books contain one or more activities, such as multiple-choice
+            quizzes, usually designed to assess comprehension.
+        </div>
+    ),
+    icon: props => (
+        <ActivityIcon title={"Interactive Activity"} {...props}></ActivityIcon>
+    ),
+    languageDependent: false
+};
+export const featureSpecs: IFeatureSpec[] = [
     {
         featureKey: "talkingBook",
-        icon: props => (
-            <TalkingBookIcon title={"Taking Book"} {...props}></TalkingBookIcon>
+        featureTitle: "Talking Books",
+        description: (
+            <div>
+                <div>
+                    We all love to hear a story, and listening while reading
+                    along may help learners to improve their own reading skills.
+                </div>
+                <br />
+                <div>
+                    Bloom's unique approach makes it easy to make Talking Books
+                    for the web &amp; phones. You can record by sentence, by
+                    text box, or by importing existing audio.&nbsp;
+                    <a href="https://vimeo.com/channels/bloomlibrary/181840473">
+                        Learn More
+                    </a>
+                    .
+                </div>
+            </div>
         ),
+        icon: props => (
+            <TalkingBookIcon
+                title={"Talking Book"}
+                {...props}
+            ></TalkingBookIcon>
+        ),
+        iconScale: 85,
         languageDependent: true
     },
     {
         featureKey: "blind",
+        featureTitle: "Books for the Visually Impaired",
+        description: (
+            <div>
+                These books include narrated image descriptions to help the
+                visually impaired.
+            </div>
+        ),
         icon: props => (
             <VisuallyImpairedIcon
                 title={"Features for the Visually Impaired"}
@@ -48,18 +103,62 @@ export const featureOptions: IFeatureOption[] = [
     },
     {
         featureKey: "comic",
+        featureTitle: "Comic Books",
+        description: (
+            <div>
+                Comic Books contain comic speech bubbles, captions, and/or other
+                text which appears over images.
+            </div>
+        ),
         icon: props => <ComicIcon title={"Comic Book"} {...props}></ComicIcon>,
         languageDependent: false
-    }, // todo: can't find this feature, is there another name?
+    },
     {
         featureKey: "motion",
+        featureTitle: "Motion Books",
+        description: (
+            <div>
+                Motion Books are books in which otherwise still pictures appear
+                to have motion. Normally, they are Talking Books to which you
+                add motion.
+                <br />
+                <br />
+                Motion books have two modes:
+                <ul
+                    css={css`
+                        list-style: unset;
+                        padding-inline-start: 20px;
+                    `}
+                >
+                    <li>
+                        Portrait - When you look at your book in a portrait
+                        view, you do not see motion, but you do see the text
+                        highlighted with the audio.
+                    </li>
+                    <li>
+                        Landscape - When you turn the device sideways for a
+                        landscape view, pictures fill the screen and you see the
+                        motion.
+                    </li>
+                </ul>
+            </div>
+        ),
         icon: props => (
             <MotionIcon title={"Motion Book"} {...props}></MotionIcon>
         ),
+        iconScale: 125,
         languageDependent: false
     },
     {
         featureKey: "signLanguage",
+        featureTitle: "Sign Language Books",
+        description: (
+            <div>
+                Sign Language Books contains videos of signed languages. They
+                are often multilingual, including the text in another, written
+                language.
+            </div>
+        ),
         icon: props => (
             <SignLanguageIcon
                 title={"Sign Language"}
@@ -68,26 +167,23 @@ export const featureOptions: IFeatureOption[] = [
         ),
         languageDependent: true
     },
+    // It appears we would like to have "activity" as the feature key, but in actuality, we only have "quiz" so far.
+    // So, currently these two keys are functionally the same.
+    activityFeatureSpec,
     {
-        featureKey: "activity",
-        icon: props => (
-            <ActivityIcon
-                title={"Interactive Activity"}
-                {...props}
-            ></ActivityIcon>
-        ),
-        languageDependent: false
-    } // todo: can't find this feature, is there another name?
+        ...activityFeatureSpec,
+        featureKey: "quiz"
+    }
 ];
 
 export const getNonLanguageFeatures = (
     features: string[] | undefined
-): IFeatureOption[] => {
+): IFeatureSpec[] => {
     if (!features) return [];
     return features
         .map(
             f =>
-                featureOptions.filter(
+                featureSpecs.filter(
                     x => x.featureKey === f && !x.languageDependent
                 )[0]
         )
@@ -100,7 +196,7 @@ export const getNonLanguageFeatures = (
 export const getLanguageFeatures = (
     features: string[] | undefined,
     lang: string
-): IFeatureOption[] => {
+): IFeatureSpec[] => {
     if (!features) return [];
     return features
         .map(
@@ -112,7 +208,7 @@ export const getLanguageFeatures = (
             // we will find a matching feature icon for
             // things like talkingBook:en and blind:en.
             f =>
-                featureOptions.filter(
+                featureSpecs.filter(
                     x =>
                         f.startsWith(x.featureKey + ":") &&
                         f.split(":")[1] === lang

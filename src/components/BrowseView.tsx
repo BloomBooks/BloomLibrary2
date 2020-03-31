@@ -25,6 +25,7 @@ import { forceCheck as forceCheckLazyLoadComponents } from "react-lazyload";
 import { EnablingWritersPage } from "./EnablingWritersPage";
 import { WycliffePage } from "./WycliffePage";
 import { SILLEADPage } from "./SILLEADPage";
+import { FeaturePage } from "./FeaturePage";
 
 /* This is the top level component that can be hosted on a website to view and interact with the bloom library */
 @observer
@@ -121,6 +122,14 @@ export class BrowseView extends Component {
                             />
                         );
                 }
+            case "feature":
+                return (
+                    <FeaturePage
+                        title={this.router.current.title}
+                        filter={this.router.current.filter}
+                    />
+                );
+
             default:
                 return "Unknown page type " + this.router.current.pageType;
         }

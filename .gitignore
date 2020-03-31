@@ -27,3 +27,4 @@ yarn-error.log*
 public/bloom-player/
 
 debug.log
+*.orig

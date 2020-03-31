@@ -5,6 +5,7 @@ import { BookshelfGroup } from "./BookShelfGroup";
 import { IFilter, InCirculationOptions } from "../IFilter";
 import { HomeBanner } from "./banners/HomeBanner";
 import { ListOfBookGroups } from "./ListOfBookGroups";
+import { FeatureGroup } from "./FeatureGroup";
 
 export const HomePage: React.FunctionComponent = () => {
     const almostAllBooksFilter: IFilter = {
@@ -28,14 +29,8 @@ export const HomePage: React.FunctionComponent = () => {
                     title="Publishers"
                     bookShelfCategory="publisher"
                 />
-                <BookGroup
-                    title="Sign Language Books"
-                    filter={{ feature: "signLanguage" }}
-                />
-                <BookGroup
-                    title="Accessible to the Visually Impaired"
-                    filter={{ feature: "visuallyImpaired" }}
-                />
+
+                <FeatureGroup title="Book Features" />
 
                 <BookshelfGroup title="Projects" bookShelfCategory="project" />
 

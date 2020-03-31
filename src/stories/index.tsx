@@ -19,7 +19,9 @@ import BookDetail from "../components/BookDetail/BookDetail";
 import { ThemeProvider } from "@material-ui/styles";
 import theme from "../theme";
 import { ReadBookPage } from "../components/ReadBookPage";
-import { Book } from "../model/Book";
+import { FeaturePage } from "../components/FeaturePage";
+import { FeatureGroup } from "../components/FeatureGroup";
+import { ListOfBookGroups } from "../components/ListOfBookGroups";
 
 // Provide all stories with a router in their context:
 const router = new Router();
@@ -145,10 +147,25 @@ storiesOf("BookShelfGroup", module)
         />
     ));
 
+storiesOf("FeatureGroup", module).add("Feature Group", () => (
+    <ListOfBookGroups>
+        <FeatureGroup title="Book Features" />
+    </ListOfBookGroups>
+));
+
 storiesOf("Pages", module)
     .add("Home Page", () => <HomePage />)
     .add("Thai Book Page", () => (
         <LanguagePage title="some title" filter={{ language: "th" }} />
+    ))
+    .add("Talking Book Feature Page", () => (
+        <FeaturePage
+            title={"Talking Books"}
+            filter={{ feature: "talkingBook" }}
+        />
+    ))
+    .add("Motion Book Feature Page", () => (
+        <FeaturePage title={"Motion Books"} filter={{ feature: "motion" }} />
     ));
 
 storiesOf("Components", module).add("SearchBox", () => {

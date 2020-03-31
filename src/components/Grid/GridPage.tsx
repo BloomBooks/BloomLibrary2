@@ -40,7 +40,7 @@ import {
     Sorting
 } from "@devexpress/dx-react-grid";
 import { RouterContext } from "../../Router";
-import { TableCell } from "@material-ui/core";
+import { TableCell, useTheme } from "@material-ui/core";
 import { IFilter, InCirculationOptions } from "../../IFilter";
 import { getBookGridColumnsDefinitions, IGridColumn } from "./GridColumns";
 import { Breadcrumbs } from "../Breadcrumbs";
@@ -49,10 +49,10 @@ import { Book } from "../../model/Book";
 import StaffPanel from "../Admin/StaffPanel";
 import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 import { observer } from "mobx-react";
-import { commonUI } from "../../theme";
 
 // we need the observer in order to get the logged in user, which may not be immediately available
 const GridPage: React.FunctionComponent<{}> = observer(() => {
+    const theme = useTheme();
     const user = useGetLoggedInUser();
     const kBooksPerGridPage = 20;
     const router = useContext(RouterContext);
@@ -190,7 +190,7 @@ const GridPage: React.FunctionComponent<{}> = observer(() => {
                 <span
                     css={css`
                         margin-right: 5px;
-                        color: ${commonUI.colors.bloomRed};
+                        color: ${theme.palette.primary.main};
                     `}
                 >
                     {user && `${user.moderator ? "Moderator" : ""}`}
@@ -247,7 +247,8 @@ const GridPage: React.FunctionComponent<{}> = observer(() => {
                             return (
                                 <div
                                     css={css`
-                                        background-color: #1d94a438;
+                                        background-color: ${theme.palette
+                                            .secondary.light};
                                     `}
                                 >
                                     <StaffPanel book={book}></StaffPanel>

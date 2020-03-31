@@ -9,6 +9,7 @@ import { CheapCard } from "./CheapCard";
 import { RouterContext, Router } from "../Router";
 import { ILanguage, getLanguageNames } from "../model/Language";
 import { commonUI } from "../theme";
+import { useTheme } from "@material-ui/core";
 
 export function routeToLanguage(language: ILanguage, router: Router) {
     const { displayName } = getLanguageNames(language);
@@ -22,6 +23,7 @@ export function routeToLanguage(language: ILanguage, router: Router) {
 
 export const LanguageCard: React.FunctionComponent<ILanguage> = props => {
     const router = useContext(RouterContext);
+    const theme = useTheme();
     const { displayName: languageName, autonym } = getLanguageNames(props);
 
     const {
@@ -78,7 +80,7 @@ export const LanguageCard: React.FunctionComponent<ILanguage> = props => {
             <div
                 css={css`
                     font-size: 0.8rem;
-                    color: #1d94a4;
+                    color: ${theme.palette.secondary.main};
                     margin-top: auto;
                 `}
             >
