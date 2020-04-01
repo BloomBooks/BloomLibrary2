@@ -17,7 +17,7 @@ export const HomePage: React.FunctionComponent = () => {
             <ListOfBookGroups>
                 <BookGroup
                     title="Featured Shell Books You Can Translate"
-                    filter={{ otherTags: "bookshelf:Featured" }}
+                    filter={{ bookshelf: "Featured" }}
                 />
                 <LanguageGroup />
                 <BookGroup

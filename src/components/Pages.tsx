@@ -3,7 +3,7 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React from "react";
+import React, { useContext } from "react";
 import { useGetTopicList } from "../connection/LibraryQueryHooks";
 import { IFilter } from "../IFilter";
 import { BookGroup } from "./BookGroup";
@@ -14,6 +14,8 @@ import { getProjectBannerSpec } from "./banners/ProjectCustomizations";
 import { PublisherBanner } from "./banners/PublisherBanner";
 import { SearchBanner } from "./banners/Banners";
 import { ListOfBookGroups } from "./ListOfBookGroups";
+import { CachedTablesContext } from "../App";
+import { getLanguageNamesFromCode } from "../model/Language";
 
 export const SearchResultsPage: React.FunctionComponent<{
     filter: IFilter;
@@ -75,37 +77,51 @@ export const DefaultOrganizationPage: React.FunctionComponent<{
 export const LanguagePage: React.FunctionComponent<{
     title: string;
     filter: IFilter;
-}> = props => (
-    <div>
-        <CustomizableBanner
-            filter={props.filter}
-            title={props.title}
-            spec={getLanguageBannerSpec(props.filter.language!)}
-        />
-        <ListOfBookGroups>
-            <BookGroup
-                title={`Featured ${props.filter.language} books.`}
-                filter={{
-                    ...props.filter,
-                    ...{ otherTags: "bookshelf:Featured" }
-                }}
-                key={"featured"}
-            />
-            <BookGroup
-                title="Most Recent"
+}> = props => {
+    console.assert(
+        props.filter.language,
+        "LanguagePage must have language set in the filter"
+    );
+
+    const { languages } = useContext(CachedTablesContext);
+    let languageDisplayName = getLanguageNamesFromCode(
+        props.filter.language!,
+        languages
+    )?.displayNameWithAutonym;
+    if (!languageDisplayName) languageDisplayName = props.filter.language;
+
+    return (
+        <div>
+            <CustomizableBanner
                 filter={props.filter}
-                order={"-createdAt"}
-                key={"recent"}
+                title={props.title}
+                spec={getLanguageBannerSpec(props.filter.language!)}
             />
-            <BookGroupForEachTopic filter={props.filter} />
-            <BookGroup
-                title={`All ${props.filter.language} books.`}
-                filter={props.filter}
-                key={"all filtered"}
-            />
-        </ListOfBookGroups>
-    </div>
-);
+            <ListOfBookGroups>
+                <BookGroup
+                    title={`Featured ${languageDisplayName} books.`}
+                    filter={{
+                        ...props.filter,
+                        ...{ bookshelf: "Featured" }
+                    }}
+                    key={"featured"}
+                />
+                <BookGroup
+                    title="Most Recent"
+                    filter={props.filter}
+                    order={"-createdAt"}
+                    key={"recent"}
+                />
+                <BookGroupForEachTopic filter={props.filter} />
+                <BookGroup
+                    title={`All ${props.filter.language} books.`}
+                    filter={props.filter}
+                    key={"all filtered"}
+                />
+            </ListOfBookGroups>
+        </div>
+    );
+};
 export const ProjectPageWithDefaultLayout: React.FunctionComponent<{
     title: string;
     filter: IFilter;

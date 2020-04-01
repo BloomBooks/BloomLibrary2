@@ -2,7 +2,10 @@ import React, { useContext } from "react";
 
 import { Link } from "@material-ui/core";
 import { RouterContext } from "../Router";
-import { ILanguage } from "../model/Language";
+import {
+    ILanguage,
+    getLanguageNames as getLanguageDisplayNames
+} from "../model/Language";
 
 export const LanguageLink: React.FunctionComponent<{
     language: ILanguage;
@@ -51,10 +54,5 @@ export function getLanguageNames(languages: ILanguage[]): string[] {
 // For languages where the name differs in English, we are currently
 // showing the autonym followed by English in parentheses.
 export function getNameDisplay(l: ILanguage) {
-    // Intentionally not making these a link, for now
-    return `${l.name}${
-        l.englishName && l.englishName !== l.name
-            ? " (" + l.englishName + ")"
-            : ""
-    }`;
+    return getLanguageDisplayNames(l).displayNameWithAutonym;
 }
