@@ -46,7 +46,7 @@ export const ReadBookPage: React.FunctionComponent<{ id: string }> = props => {
         ? `&lang=${router.current.bookLang}`
         : "";
 
-    const iframeSrc = `${bloomPlayerUrl}?url=${url}&showBackButton=true${langParam}`;
+    const iframeSrc = `${bloomPlayerUrl}?url=${url}&showBackButton=true&useOriginalPageSize=true${langParam}`;
 
     return (
         <iframe
