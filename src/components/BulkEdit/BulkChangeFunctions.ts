@@ -17,7 +17,7 @@ export async function ChangeColumnValueForAllBooksInFilter(
         params: { keys: "objectId,title", ...finalParams }
     });
     const putData: any = {};
-    putData.updateSource = "libraryUserControl";
+    putData.updateSource = "bloom-library-bulk-edit";
     putData[columnName] = newValue;
 
     const promises: Array<Promise<any>> = [];

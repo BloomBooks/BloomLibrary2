@@ -46,7 +46,7 @@ import {
     Sorting
 } from "@devexpress/dx-react-grid";
 import { RouterContext } from "../../Router";
-import { TableCell } from "@material-ui/core";
+import { TableCell, useTheme } from "@material-ui/core";
 import { IFilter, InCirculationOptions } from "../../IFilter";
 import { getBookGridColumnsDefinitions, IGridColumn } from "./GridColumns";
 
@@ -55,12 +55,12 @@ import { Book } from "../../model/Book";
 import StaffPanel from "../Admin/StaffPanel";
 import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 import { observer } from "mobx-react";
-import { commonUI } from "../../theme";
 import { IGridControlProps } from "./GridControl";
 
 // we need the observer in order to get the logged in user, which may not be immediately available
 const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer(
     props => {
+        const theme = useTheme();
         const user = useGetLoggedInUser();
         const kBooksPerGridPage = 20;
         const router = useContext(RouterContext);
@@ -216,7 +216,7 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                         css={css`
                             margin-left: 20px;
                             margin-right: 5px;
-                            color: ${commonUI.colors.bloomRed};
+                            color: ${theme.palette.primary.main};
                         `}
                     >
                         {user && `${user.moderator ? "Moderator" : ""}`}
