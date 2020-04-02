@@ -36,8 +36,8 @@ export const BookshelfChooser: React.FunctionComponent<{
                 backspaceRemovesValue={false}
                 isClearable={false} // don't need the extra "x"
                 options={matchingBookshelves.map(b => ({
-                    value: b.englishName,
-                    label: b.key
+                    value: b.key,
+                    label: b.englishName
                 }))}
                 value={chosenBookshelfKeys.map(b => ({
                     value: b,
