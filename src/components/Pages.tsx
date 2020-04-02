@@ -141,6 +141,24 @@ export const ProjectPageWithDefaultLayout: React.FunctionComponent<{
         </React.Fragment>
     );
 };
+export const CategoryPageWithDefaultLayout: React.FunctionComponent<{
+    title: string;
+    filter: IFilter;
+}> = props => {
+    return (
+        <React.Fragment>
+            <PublisherBanner
+                filter={props.filter}
+                title={props.title}
+                showTitle={true}
+                collectionDescription={<React.Fragment />}
+            />
+            <ListOfBookGroups>
+                <BookGroup filter={props.filter} title={"All"} rows={20} />
+            </ListOfBookGroups>
+        </React.Fragment>
+    );
+};
 export const BookGroupForEachTopic: React.FunctionComponent<{
     filter: IFilter;
 }> = props => {
