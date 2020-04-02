@@ -7,7 +7,8 @@ import {
     DefaultOrganizationPage,
     ProjectPageWithDefaultLayout,
     SearchResultsPage,
-    AllResultsPage
+    AllResultsPage,
+    CategoryPageWithDefaultLayout
 } from "./Pages";
 import "typeface-roboto";
 import { Header } from "./header/Header";
@@ -26,6 +27,8 @@ import { EnablingWritersPage } from "./EnablingWritersPage";
 import { WycliffePage } from "./WycliffePage";
 import { SILLEADPage } from "./SILLEADPage";
 import { FeaturePage } from "./FeaturePage";
+import { BiblePage } from "./BiblePage";
+import { Covid19Page } from "./Covid19Page";
 
 /* This is the top level component that can be hosted on a website to view and interact with the bloom library */
 @observer
@@ -85,6 +88,8 @@ export class BrowseView extends Component {
                 switch (this.router.current.filter.bookshelf) {
                     case "Enabling Writers Workshops":
                         return <EnablingWritersPage />;
+                    case "Bible":
+                        return <BiblePage />;
                     default:
                         return (
                             <ProjectPageWithDefaultLayout
@@ -121,6 +126,23 @@ export class BrowseView extends Component {
                                 filter={this.router.current.filter}
                             />
                         );
+                }
+            case "category":
+                switch (this.router.current.filter.bookshelf) {
+                    case "Bible":
+                        return <BiblePage />;
+                    default:
+                        switch (this.router.current.filter.topic) {
+                            case "Health":
+                                return <Covid19Page />;
+                            default:
+                                return (
+                                    <CategoryPageWithDefaultLayout
+                                        title={this.router.current.title}
+                                        filter={this.router.current.filter}
+                                    />
+                                );
+                        }
                 }
             case "feature":
                 return (

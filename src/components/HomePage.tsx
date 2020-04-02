@@ -6,6 +6,7 @@ import { IFilter, InCirculationOptions } from "../IFilter";
 import { HomeBanner } from "./banners/HomeBanner";
 import { ListOfBookGroups } from "./ListOfBookGroups";
 import { FeatureGroup } from "./FeatureGroup";
+import { SpecialInterestGroup } from "./SpecialInterestsGroup";
 
 export const HomePage: React.FunctionComponent = () => {
     const almostAllBooksFilter: IFilter = {
@@ -19,12 +20,17 @@ export const HomePage: React.FunctionComponent = () => {
                     title="Featured Shell Books You Can Translate"
                     filter={{ bookshelf: "Featured" }}
                 />
+
                 <LanguageGroup />
+
+                <SpecialInterestGroup title="Special Interests" />
+
                 <BookGroup
                     title="New Arrivals"
                     filter={{}}
                     order={"-createdAt"}
                 />
+
                 <BookshelfGroup
                     title="Publishers"
                     bookShelfCategory="publisher"
@@ -38,6 +44,7 @@ export const HomePage: React.FunctionComponent = () => {
                     title="Organizations & Governments"
                     bookShelfCategory="org"
                 />
+
                 <BookGroup title="Math Books" filter={{ topic: "Math" }} />
             </ListOfBookGroups>
         </>

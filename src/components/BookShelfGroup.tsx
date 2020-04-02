@@ -70,7 +70,7 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = props => {
 
     const cards =
         bookshelfResults &&
-        uniqueNamesAtThisLevel.map((nextLevel: string) => {
+        uniqueNamesAtThisLevel.sort().map((nextLevel: string) => {
             const imageName = nameToImageMap.get(nextLevel) ?? nextLevel;
             // note, this will often be the *start* of an actual bookshelf path, e.g. "Enabling Writers Workshops/"
             const fullBookshelfKey =
