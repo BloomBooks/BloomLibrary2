@@ -557,6 +557,18 @@ export function constructParseBookQuery(
                         ...caseInsensitive
                     };
                     break;
+                case "publisher":
+                    params.where.publisher = {
+                        $regex: facetValue,
+                        ...caseInsensitive
+                    };
+                    break;
+                case "originalPublisher":
+                    params.where.originalPublisher = {
+                        $regex: facetValue,
+                        ...caseInsensitive
+                    };
+                    break;
                 case "harvestState":
                     params.where.harvestState = facetValue;
                     break;

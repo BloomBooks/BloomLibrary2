@@ -48,9 +48,17 @@ export class Router {
     public waitingOnSaveOrCancel: boolean = false;
     public constructor() {
         const home = Router.home;
-        if (window.location.pathname === "/grid") {
+        const specialPages = ["grid", "bulk"];
+        const specialPage = specialPages.find(
+            s => "/" + s === window.location.pathname
+        );
+        if (specialPage) {
             this.push(home);
-            this.push({ title: "Grid", pageType: "grid" } as ILocation);
+            this.push({
+                title: specialPage,
+                pageType: specialPage,
+                filter: {}
+            });
         } else if (window.location.search === "") {
             // we're just at the root of the site
             this.push(home);

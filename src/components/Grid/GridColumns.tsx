@@ -165,7 +165,14 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             }
         },
         { name: "license", sortingEnabled: true },
-        { name: "copyright", sortingEnabled: true },
+        {
+            name: "copyright",
+            sortingEnabled: true,
+
+            addToFilter: (filter: IFilter, value: string) => {
+                filter.search = `copyright:${value} ` + (filter.search || "");
+            }
+        },
         { name: "pageCount", sortingEnabled: true },
         { name: "createdAt", sortingEnabled: true },
         { name: "publisher", sortingEnabled: true },
