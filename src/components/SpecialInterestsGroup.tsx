@@ -1,6 +1,9 @@
 import React from "react";
 import { CategoryCardGroup } from "./CategoryCardGroup";
 import CategoryCard from "./CategoryCard";
+import { ReactComponent as COVID19Icon } from "../assets/COVID-19.svg";
+import { ReactComponent as BibleIcon } from "../assets/Bible.svg";
+import { ReactComponent as STEMIcon } from "../assets/STEM.svg";
 
 interface IProps {
     title: string;
@@ -10,10 +13,6 @@ export const SpecialInterestGroup: React.FunctionComponent<IProps> = props => {
     return (
         <CategoryCardGroup {...props}>
             <CategoryCard
-                // TODO Andrew,
-                // 1) I've added svgs to assets for these
-                // 2) can we get these credits into the `title` attribute of the images
-                // credits Created by dDara from the Noun Project
                 key={"Health"}
                 title={"COVID-19 & Health Books"}
                 filter={{
@@ -21,9 +20,15 @@ export const SpecialInterestGroup: React.FunctionComponent<IProps> = props => {
                 }}
                 pageType={""}
                 img={""}
+                icon={p => (
+                    <COVID19Icon
+                        {...p}
+                        title={"Created by dDara from the Noun Project"}
+                    ></COVID19Icon>
+                )}
+                iconScale={130}
             />
             <CategoryCard
-                // credits Created by Andrew Doane from the Noun Project
                 key={"Bible"}
                 title={"Bible Books"}
                 filter={{
@@ -31,9 +36,15 @@ export const SpecialInterestGroup: React.FunctionComponent<IProps> = props => {
                 }}
                 pageType={""}
                 img={""}
+                icon={p => (
+                    <BibleIcon
+                        {...p}
+                        title={"Created by Andrew Doane from the Noun Project"}
+                    ></BibleIcon>
+                )}
+                iconScale={130}
             />
             <CategoryCard
-                // CC0 from the Noun Project
                 key={"STEM"}
                 title={"STEM Books"}
                 filter={{
@@ -41,6 +52,14 @@ export const SpecialInterestGroup: React.FunctionComponent<IProps> = props => {
                 }}
                 pageType={""}
                 img={""}
+                icon={p => (
+                    <STEMIcon
+                        {...p}
+                        title={"CC0 from the Noun Project"}
+                        fill={"none"}
+                    ></STEMIcon>
+                )}
+                iconScale={130}
             />
         </CategoryCardGroup>
     );
