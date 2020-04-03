@@ -75,7 +75,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
         spaceBetween: 20,
         slidesPerView: "auto"
     };
- 
+
     // We make life hard on <Lazy> components by thinking maybe we'll show, for example, a row of Level 1 books at
     // the top of the screen. So the <Lazy> thing may think "well, no room for me then until they scroll". But
     // then it turns out that we don't have any level 1 books, so we don't even have a scroll bar. But too late, the
@@ -147,8 +147,9 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
             <li
                 css={css`
                     margin-top: ${commonUI.bookGroupTopMarginPx}px;
-                    height: ${commonUI.bookCardHeightPx +
-                        commonUI.bookGroupTopMarginPx}px; // want height to be same even if no results yet
+                    // we don't know yet how many rows we might get if rows>1, but at least leave room for one
+                    min-height: ${commonUI.bookCardHeightPx +
+                        commonUI.bookGroupTopMarginPx}px;
                 `}
             >
                 <h1>

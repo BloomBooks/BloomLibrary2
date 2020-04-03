@@ -23,6 +23,6 @@ export const StandardPublisherGroups: React.FunctionComponent<{
             filter={{ otherTags: "level:4", ...props.filter }}
         />
         {/* Enhance: how do we get all books that don't have a level? */}
-        <BookGroup title="All books" filter={{ ...props.filter }} />
+        <BookGroup title="All books" rows={99} filter={{ ...props.filter }} />
     </React.Fragment>
 );

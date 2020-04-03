@@ -41,8 +41,6 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
             key={props.onBasicBookInfo.baseUrl}
             onClick={() => router!.pushBook(props.onBasicBookInfo.objectId)}
         >
-            {/* For (39a) Lara the Yellow Ladybird I placed a file named "test-cover" in the bucket
-        in order to play with how the cards can look once we have access to their actual cover images. */}
             <img
                 className={"swiper-lazy"}
                 css={css`

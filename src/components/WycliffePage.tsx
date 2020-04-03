@@ -39,7 +39,7 @@ export const WycliffePage: React.FunctionComponent = () => {
                     title="Level 2"
                     filter={{ otherTags: "level:2", ...filter }}
                 />
-                <BookGroup title="All books" filter={{ ...filter }} />
+                <BookGroup title="All books" rows={99} filter={{ ...filter }} />
             </ListOfBookGroups>
         </div>
     );

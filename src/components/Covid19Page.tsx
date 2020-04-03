@@ -20,10 +20,15 @@ export const Covid19Page: React.FunctionComponent = () => {
             />
             <ListOfBookGroups>
                 <BookGroup
+                    rows={99}
                     title="COVID-19 books"
                     filter={{ topic: "COVID-19" }}
                 />
-                <BookGroup title="All Health books" filter={{ ...filter }} />
+                <BookGroup
+                    rows={99}
+                    title="All Health books"
+                    filter={{ ...filter }}
+                />
             </ListOfBookGroups>
         </div>
     );

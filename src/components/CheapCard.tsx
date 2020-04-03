@@ -29,6 +29,7 @@ export const CheapCard: React.FunctionComponent<IProps> = props => (
 );
 
 const cardStyle = css`
+    overflow-wrap: break-word; /* helps with titles that have super long words, else they scroll */
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
