@@ -16,6 +16,7 @@ export const BulkEditPanel: React.FunctionComponent<{
     panelLabel: string;
     newValueLabel: string;
     actionButtonLabel: string;
+    backgroundColor: string;
     performChangesToAllMatchingBooks: (
         filter: IFilter,
         value: string,
@@ -42,7 +43,7 @@ export const BulkEditPanel: React.FunctionComponent<{
         (user?.moderator && (
             <div
                 css={css`
-                    background-color: #daffb6;
+                    background-color: ${props.backgroundColor};
                     border: solid thin;
                     border-radius: 5px;
                     padding: 10px;

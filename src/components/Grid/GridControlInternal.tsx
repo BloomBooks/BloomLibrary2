@@ -236,7 +236,7 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                     />
 
                     <FilteringState
-                        defaultFilters={[]}
+                        defaultFilters={gridFilters}
                         onFiltersChange={x => {
                             // if (props.setCurrentFilter) {
                             //     props.setCurrentFilter(

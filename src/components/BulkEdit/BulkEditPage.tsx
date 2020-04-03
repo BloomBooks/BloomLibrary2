@@ -10,6 +10,7 @@ import { IFilter } from "../../IFilter";
 import { observable } from "mobx";
 import { AssignPublisherPanel } from "./AssignPublisherPanel";
 import { Filter as GridFilter } from "@devexpress/dx-react-grid";
+import { AddTagPanel } from "./AddTagPanel";
 
 // The Bulk Edit page is for moderators; it has a series of panels for making changes, followed by a grid
 // for selecting what books will be changed.
@@ -23,6 +24,12 @@ export const BulkEditPage: React.FunctionComponent<{}> = () => {
         >
             <h1>Bulk Edit Page</h1>
             <AssignPublisherPanel
+                backgroundColor="#daffb6"
+                filterHolder={staticCurrentFilter}
+                refresh={() => setRefreshIndex(refreshIndex + 1)}
+            />
+            <AddTagPanel
+                backgroundColor="lightblue"
                 filterHolder={staticCurrentFilter}
                 refresh={() => setRefreshIndex(refreshIndex + 1)}
             />
