@@ -6,7 +6,14 @@ import { jsx } from "@emotion/core";
 
 import React, { useState } from "react";
 import TextField from "@material-ui/core/TextField";
-import { Button, Checkbox, FormControlLabel } from "@material-ui/core";
+import {
+    Button,
+    Checkbox,
+    FormControlLabel,
+    Select,
+    MenuItem
+} from "@material-ui/core";
+
 import { IFilter } from "../../IFilter";
 import { observer } from "mobx-react";
 import { useGetLoggedInUser } from "../../connection/LoggedInUser";
@@ -16,6 +23,9 @@ export const BulkEditPanel: React.FunctionComponent<{
     panelLabel: string;
     newValueLabel: string;
     actionButtonLabel: string;
+    backgroundColor: string;
+    // provide choices for a multiple choice panel
+    choices?: string[];
     performChangesToAllMatchingBooks: (
         filter: IFilter,
         value: string,
@@ -42,7 +52,7 @@ export const BulkEditPanel: React.FunctionComponent<{
         (user?.moderator && (
             <div
                 css={css`
-                    background-color: #daffb6;
+                    background-color: ${props.backgroundColor};
                     border: solid thin;
                     border-radius: 5px;
                     padding: 10px;
@@ -83,18 +93,40 @@ export const BulkEditPanel: React.FunctionComponent<{
                         justify-content: space-between;
                     `}
                 >
-                    <TextField
-                        variant="outlined"
-                        label={props.newValueLabel}
-                        css={css`
-                            width: 600px;
-                        `}
-                        defaultValue={valueToSet}
-                        onChange={evt => {
-                            const v = evt.target.value.trim();
-                            setValueToSet(v.length ? v : undefined);
-                        }}
-                    />
+                    {/* MULTIPLE CHOICE */}
+                    {props.choices && (
+                        <Select
+                            displayEmpty={true}
+                            value={valueToSet}
+                            css={css`
+                                width: 400px;
+                            `}
+                            onChange={e => {
+                                setValueToSet(e.target.value as string);
+                            }}
+                        >
+                            {props.choices.map(c => (
+                                <MenuItem key={c} value={c}>
+                                    {c}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    )}
+                    {/* TEXT FIELD */}
+                    {!props.choices && (
+                        <TextField
+                            variant="outlined"
+                            label={props.newValueLabel}
+                            css={css`
+                                width: 600px;
+                            `}
+                            defaultValue={valueToSet}
+                            onChange={evt => {
+                                const v = evt.target.value.trim();
+                                setValueToSet(v.length ? v : undefined);
+                            }}
+                        />
+                    )}
                     {notFilteredYet && (
                         <span
                             css={css`

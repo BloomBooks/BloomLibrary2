@@ -9,33 +9,24 @@ import { IFilter } from "../../IFilter";
 import { observer } from "mobx-react";
 import { FilterHolder } from "./BulkEditPage";
 import { BulkEditPanel } from "./BulkEditPanel";
-import { ChangeColumnValueForAllBooksInFilter } from "./BulkChangeFunctions";
+import { AddTagAllBooksInFilter } from "./BulkChangeFunctions";
 
-export const AssignPublisherPanel: React.FunctionComponent<{
+export const AddTagPanel: React.FunctionComponent<{
     filterHolder: FilterHolder;
-    backgroundColor: string;
     refresh: () => void;
+    backgroundColor: string;
 }> = observer(props => {
     return (
         <BulkEditPanel
-            panelLabel="Change Publisher"
-            newValueLabel="New Publisher"
-            actionButtonLabel="Change Publisher"
-            performChangesToAllMatchingBooks={ChangePublisher}
+            panelLabel="Add Tag"
+            newValueLabel="New Tag"
+            actionButtonLabel="Add Tag"
+            performChangesToAllMatchingBooks={AddTag}
             {...props}
         />
     );
 });
 
-async function ChangePublisher(
-    filter: IFilter,
-    publisher: string,
-    refresh: () => void
-) {
-    ChangeColumnValueForAllBooksInFilter(
-        filter,
-        publisher,
-        "publisher",
-        refresh
-    );
+async function AddTag(filter: IFilter, tag: string, refresh: () => void) {
+    AddTagAllBooksInFilter(filter, tag, refresh);
 }
