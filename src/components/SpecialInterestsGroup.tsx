@@ -37,7 +37,7 @@ export const SpecialInterestGroup: React.FunctionComponent<IProps> = props => {
                 key={"STEM"}
                 title={"STEM Books"}
                 filter={{
-                    topic: "Math"
+                    topic: "Math,Science,Environment"
                 }}
                 pageType={""}
                 img={""}

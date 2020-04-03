@@ -631,10 +631,11 @@ export function constructParseBookQuery(
         delete params.where.bookShelfCategory;
     }
 
-    if (f.topic) {
-        tagParts.push("topic:" + f.topic);
-        delete params.where.topic;
-    }
+    // if (f.topic) {
+    //     tagParts.push("topic:" + f.topic);
+    //     delete params.where.topic;
+
+    // }
     if (tagParts.length > 0) {
         params.where.tags = {
             $all: tagParts
@@ -646,6 +647,19 @@ export function constructParseBookQuery(
         delete params.where.bookshelf;
         params.where.bookshelves = {
             $regex: filter.bookshelf,
+            ...caseInsensitive
+        };
+    }
+    // I think you can also do topic via search, but I need a way to do an "OR" in order to combine several topics for STEM
+    // take `f.topic` to be a comma-separated list
+    if (f.topic) {
+        delete params.where.topic;
+        const regex = f.topic
+            .split(",")
+            .map(s => "topic:" + s)
+            .join("|");
+        params.where.tags = {
+            $regex: regex,
             ...caseInsensitive
         };
     }
