@@ -40,10 +40,28 @@ export const HomeBanner: React.FunctionComponent<{
                 <BannerContents
                     title="Library Home"
                     about={
-                        <div>
-                            Welcome to our Crowdsourced library of free books
-                            that you can read, print, or adapt into your own
-                            language.
+                        // <div>
+                        //     Welcome to our Crowdsourced library of free books
+                        //     that you can read, print, or adapt into your own
+                        //     language.
+                        // </div>
+                        <div
+                            css={css`
+                                font-size: 24pt;
+                                color: red;
+                            `}
+                        >
+                            What you see here is a messy construction site,
+                            where we are building a new home for{" "}
+                            <a
+                                css={css`
+                                    color: black !important;
+                                `}
+                                href="https://bloomlibrary.org"
+                            >
+                                BloomLibrary.org
+                            </a>
+                            .
                         </div>
                     }
                     bookCountMessage="We currently have {0} books."
