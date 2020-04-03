@@ -29,6 +29,8 @@ import { SILLEADPage } from "./SILLEADPage";
 import { FeaturePage } from "./FeaturePage";
 import { BiblePage } from "./BiblePage";
 import { Covid19Page } from "./Covid19Page";
+import { BulkEditPage } from "./BulkEdit/BulkEditPage";
+import { GridPage } from "./Grid/GridPage";
 
 /* This is the top level component that can be hosted on a website to view and interact with the bloom library */
 @observer
@@ -59,17 +61,11 @@ export class BrowseView extends Component {
                 return (
                     <SearchResultsPage filter={this.router.current.filter} />
                 );
+            case "bulk":
+                return <BulkEditPage />;
             case "grid":
-                // This will split the code so that you only download/parse all the grid stuff if you go to the Grid page
-                // Note that it actually produces to *two* chunks, but I don't know why.
-                const GridPage = React.lazy(() =>
-                    import(/* webpackChunkName: "gridPage" */ "./Grid/GridPage")
-                );
-                return (
-                    <React.Suspense fallback={<div>Loading...</div>}>
-                        <GridPage />
-                    </React.Suspense>
-                );
+                return <GridPage />;
+
             case "more":
                 return (
                     <AllResultsPage
