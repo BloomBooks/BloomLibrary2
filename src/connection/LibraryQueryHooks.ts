@@ -14,15 +14,15 @@ function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
         trigger: "true",
         options: {
             headers: getConnection().headers,
-            params
-        }
+            params,
+        },
     });
 }
 function useGetLanguagesList() {
     return useLibraryQuery("language", {
         keys: "name,englishName,usageCount,isoCode",
         limit: 10000,
-        order: "-usageCount"
+        order: "-usageCount",
     });
 }
 export function useGetCleanedAndOrderedLanguageList(): ILanguage[] {
@@ -56,7 +56,7 @@ export function useGetBookshelvesByCategory(
     category?: string
 ): IBookshelfResult[] {
     const axiosResult = useLibraryQuery("bookshelf", {
-        where: category ? { category } : null
+        where: category ? { category } : null,
         //,keys: "englishName,key"
     });
     if (axiosResult.response?.data?.results) {
@@ -70,7 +70,7 @@ export function useGetBookshelvesByCategory(
 export function useGetLanguageInfo(language: string): ILanguage[] {
     const axiosResult = useLibraryQuery("language", {
         where: { isoCode: language },
-        keys: "isoCode,name,usageCount,bannerImageUrl"
+        keys: "isoCode,name,usageCount,bannerImageUrl",
     });
 
     if (axiosResult.response?.data?.results) {
@@ -102,15 +102,15 @@ export function useGetRelatedBooks(bookId: string): Book[] {
                     books: {
                         __type: "Pointer",
                         className: "books",
-                        objectId: bookId
-                    }
+                        objectId: bookId,
+                    },
                 },
                 // We don't really need all the fields of the related books, but I don't
                 // see a way to restrict to just the fields we want. It's surely faster
                 // to just get it all then get the bookids and then do separate queries to get their titles
-                include: "books"
-            }
-        }
+                include: "books",
+            },
+        },
     });
 
     if (
@@ -142,9 +142,9 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
                     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount," +
                     "harvestStartedAt,bookshelves",
                 // fluff up fields that reference other tables
-                include: "uploader,langPointers"
-            }
-        }
+                include: "uploader,langPointers",
+            },
+        },
     });
 
     if (
@@ -218,9 +218,9 @@ export function useGetBooksForGrid(
                     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher",
                 // fluff up fields that reference other tables
                 include: "uploader,langPointers",
-                ...query
-            }
-        }
+                ...query,
+            },
+        },
     });
 
     if (
@@ -278,8 +278,8 @@ function useBookQueryInternal(
             JSON.stringify(skip),
         options: {
             headers: getConnection().headers,
-            params: finalParams
-        }
+            params: finalParams,
+        },
     });
 }
 
@@ -375,7 +375,7 @@ export function useSearchBooks(
             ? simplifiedResultStatus.error.message
             : null,
         books: typeSafeBookRecords,
-        waiting: simplifiedResultStatus.waiting
+        waiting: simplifiedResultStatus.waiting,
     };
 }
 
@@ -385,7 +385,7 @@ function processAxiosStatus(answer: IAxiosAnswer): ISimplifiedAxiosResult {
             count: -2,
             books: [],
             error: answer.error,
-            waiting: false
+            waiting: false,
         };
     return {
         books:
@@ -397,7 +397,7 @@ function processAxiosStatus(answer: IAxiosAnswer): ISimplifiedAxiosResult {
                 ? -1
                 : answer.response["data"]["count"],
         error: null,
-        waiting: answer.loading
+        waiting: answer.loading,
     };
 }
 
@@ -435,16 +435,20 @@ function processAxiosStatus(answer: IAxiosAnswer): ISimplifiedAxiosResult {
 export function splitString(
     input: string,
     // these would be things like "system:Incoming"
-    tagsFoundInDatabase?: string[]
+    allTagsInDatabase: string[]
 ): { otherSearchTerms: string; specialParts: string[] } {
-    if (!tagsFoundInDatabase) {
+    /*  JH/AP removed April 6 202 because tags was optional (fine),
+    but then this method would essentially bail out if you didn't provide tags.
+
+    if (!allTagsInDatabase) {
         // should only happen during an early render that happens before we get
         // the results of the tag query.
         return { otherSearchTerms: input, specialParts: [] };
     }
+    */
     const facets = ["uploader:", "copyright:", "harvestState:"];
 
-    const possibleParts = [...facets, ...tagsFoundInDatabase];
+    const possibleParts = [...facets, ...allTagsInDatabase];
     // Start with the string with extra spaces (doubles and following colon) removed.
     let otherSearchTerms = input
         .replace(/ {2}/g, " ")
@@ -498,7 +502,7 @@ export function splitString(
 export function constructParseBookQuery(
     params: any,
     filter: IFilter,
-    tagOptions?: string[],
+    allTagsFromDatabase: string[],
     limit?: number, //pagination
     skip?: number //pagination
 ): object {
@@ -532,11 +536,13 @@ export function constructParseBookQuery(
     if (!!f.search) {
         const { otherSearchTerms, specialParts } = splitString(
             filter.search!,
-            tagOptions
+            allTagsFromDatabase
         );
 
         for (const part of specialParts) {
-            const [facetLabel, facetValue] = part.split(":").map(p => p.trim());
+            const [facetLabel, facetValue] = part
+                .split(":")
+                .map((p) => p.trim());
             switch (facetLabel) {
                 case "uploader":
                     params.where.uploader = {
@@ -544,29 +550,29 @@ export function constructParseBookQuery(
                             where: {
                                 email: {
                                     $regex: facetValue,
-                                    ...caseInsensitive
-                                }
+                                    ...caseInsensitive,
+                                },
                             },
-                            className: "_User"
-                        }
+                            className: "_User",
+                        },
                     };
                     break;
                 case "copyright":
                     params.where.copyright = {
                         $regex: ".*" + facetValue,
-                        ...caseInsensitive
+                        ...caseInsensitive,
                     };
                     break;
                 case "publisher":
                     params.where.publisher = {
                         $regex: facetValue,
-                        ...caseInsensitive
+                        ...caseInsensitive,
                     };
                     break;
                 case "originalPublisher":
                     params.where.originalPublisher = {
                         $regex: facetValue,
-                        ...caseInsensitive
+                        ...caseInsensitive,
                     };
                     break;
                 case "harvestState":
@@ -579,7 +585,7 @@ export function constructParseBookQuery(
         }
         if (otherSearchTerms.length > 0) {
             params.where.search = {
-                $text: { $search: { $term: otherSearchTerms } }
+                $text: { $search: { $term: otherSearchTerms } },
             };
             if (params.order === "titleOrScore") {
                 params.order = "$score";
@@ -607,8 +613,8 @@ export function constructParseBookQuery(
         params.where.langPointers = {
             $inQuery: {
                 where: { isoCode: f.language },
-                className: "language"
-            }
+                className: "language",
+            },
         };
     }
     // topic is handled below. This older version is not compatible with the possibility of other topics.
@@ -623,7 +629,7 @@ export function constructParseBookQuery(
     // }
     if (f.otherTags != null) {
         delete params.where.otherTags;
-        f.otherTags.split(",").forEach(t => tagParts.push(t));
+        f.otherTags.split(",").forEach((t) => tagParts.push(t));
     }
     // we can search for bookshelves by category (org, project, etc) using useGetBookshelves(). But
     // we cannot, here, filter books by category. We cannot say "give me all the books that are listed in all project bookshelves"
@@ -638,7 +644,7 @@ export function constructParseBookQuery(
     // }
     if (tagParts.length > 0) {
         params.where.tags = {
-            $all: tagParts
+            $all: tagParts,
         };
     }
     // allow regex searches on bookshelf. Handing for counting up, for example, all the books with bookshelf tags
@@ -647,7 +653,7 @@ export function constructParseBookQuery(
         delete params.where.bookshelf;
         params.where.bookshelves = {
             $regex: filter.bookshelf,
-            ...caseInsensitive
+            ...caseInsensitive,
         };
     }
     // I think you can also do topic via search, but I need a way to do an "OR" in order to combine several topics for STEM
@@ -656,11 +662,11 @@ export function constructParseBookQuery(
         delete params.where.topic;
         const regex = f.topic
             .split(",")
-            .map(s => "topic:" + s)
+            .map((s) => "topic:" + s)
             .join("|");
         params.where.tags = {
             $regex: regex,
-            ...caseInsensitive
+            ...caseInsensitive,
         };
     }
 

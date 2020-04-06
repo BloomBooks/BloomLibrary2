@@ -2,6 +2,7 @@ import { IFilter } from "../../IFilter";
 import { getConnection } from "../../connection/ParseServerConnection";
 import { axios } from "@use-hooks/axios";
 import { constructParseBookQuery } from "../../connection/LibraryQueryHooks";
+import { CachedTables } from "../../App";
 
 export async function ChangeColumnValueForAllBooksInFilter(
     filter: IFilter,
@@ -9,12 +10,12 @@ export async function ChangeColumnValueForAllBooksInFilter(
     columnName: string,
     refresh: () => void
 ) {
-    const finalParams = constructParseBookQuery({}, filter);
+    const finalParams = constructParseBookQuery({}, filter, CachedTables.tags);
     const headers = getConnection().headers;
     const books = await axios.get(`${getConnection().url}classes/books`, {
         headers,
 
-        params: { keys: "objectId,title", ...finalParams }
+        params: { keys: "objectId,title", ...finalParams },
     });
     const putData: any = {};
     putData.updateSource = "bloom-library-bulk-edit";
@@ -27,7 +28,7 @@ export async function ChangeColumnValueForAllBooksInFilter(
             axios.put(
                 `${getConnection().url}classes/books/${book.objectId}`,
                 {
-                    ...putData
+                    ...putData,
                 },
                 { headers }
             )
@@ -35,7 +36,7 @@ export async function ChangeColumnValueForAllBooksInFilter(
     }
     Promise.all(promises)
         .then(() => refresh())
-        .catch(error => {
+        .catch((error) => {
             alert(error);
         });
 }
@@ -45,12 +46,12 @@ export async function AddTagAllBooksInFilter(
     newTag: string,
     refresh: () => void
 ) {
-    const finalParams = constructParseBookQuery({}, filter);
+    const finalParams = constructParseBookQuery({}, filter, CachedTables.tags);
     const headers = getConnection().headers;
     const books = await axios.get(`${getConnection().url}classes/books`, {
         headers,
 
-        params: { keys: "objectId,title,tags", ...finalParams }
+        params: { keys: "objectId,title,tags", ...finalParams },
     });
     const putData: any = {};
     putData.updateSource = "bloom-library-bulk-edit";
@@ -65,7 +66,7 @@ export async function AddTagAllBooksInFilter(
                 axios.put(
                     `${getConnection().url}classes/books/${book.objectId}`,
                     {
-                        ...putData
+                        ...putData,
                     },
                     { headers }
                 )
@@ -74,7 +75,7 @@ export async function AddTagAllBooksInFilter(
     }
     Promise.all(promises)
         .then(() => refresh())
-        .catch(error => {
+        .catch((error) => {
             alert(error);
         });
 }
@@ -83,19 +84,19 @@ export async function AddBookshelfToAllBooksInFilter(
     newBookshelf: string,
     refresh: () => void
 ) {
-    const finalParams = constructParseBookQuery({}, filter);
+    const finalParams = constructParseBookQuery({}, filter, CachedTables.tags);
     const headers = getConnection().headers;
     const books = await axios.get(`${getConnection().url}classes/books`, {
         headers,
 
-        params: { keys: "objectId,title,bookshelves", ...finalParams }
+        params: { keys: "objectId,title,bookshelves", ...finalParams },
     });
     const putData: any = {};
     putData.updateSource = "bloom-library-bulk-edit";
 
     const promises: Array<Promise<any>> = [];
     for (const book of books.data.results) {
-        console.log(book.title);
+        //console.log(book.title);
         putData.bookshelves = book.bookshelves || [];
         if (putData.bookshelves.indexOf(newBookshelf) < 0) {
             putData.bookshelves.push(newBookshelf);
@@ -103,7 +104,7 @@ export async function AddBookshelfToAllBooksInFilter(
                 axios.put(
                     `${getConnection().url}classes/books/${book.objectId}`,
                     {
-                        ...putData
+                        ...putData,
                     },
                     { headers }
                 )
@@ -112,7 +113,7 @@ export async function AddBookshelfToAllBooksInFilter(
     }
     Promise.all(promises)
         .then(() => refresh())
-        .catch(error => {
+        .catch((error) => {
             alert(error);
         });
 }

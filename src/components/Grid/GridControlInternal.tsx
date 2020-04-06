@@ -8,13 +8,13 @@ import React, {
     useState,
     useEffect,
     useMemo,
-    ReactText
+    ReactText,
 } from "react";
 
 import {
     Plugin,
     Template,
-    TemplatePlaceholder
+    TemplatePlaceholder,
 } from "@devexpress/dx-react-core";
 
 import {
@@ -29,11 +29,11 @@ import {
     TableColumnResizing,
     DragDropProvider,
     TableColumnReordering,
-    TableRowDetail
+    TableRowDetail,
 } from "@devexpress/dx-react-grid-material-ui";
 import {
     useGetBookCount,
-    useGetBooksForGrid
+    useGetBooksForGrid,
 } from "../../connection/LibraryQueryHooks";
 
 import {
@@ -43,7 +43,7 @@ import {
     CustomPaging,
     Filter as GridFilter,
     RowDetailState,
-    Sorting
+    Sorting,
 } from "@devexpress/dx-react-grid";
 import { RouterContext } from "../../Router";
 import { TableCell, useTheme } from "@material-ui/core";
@@ -59,7 +59,7 @@ import { IGridControlProps } from "./GridControl";
 
 // we need the observer in order to get the logged in user, which may not be immediately available
 const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer(
-    props => {
+    (props) => {
         const theme = useTheme();
         const user = useGetLoggedInUser();
         const kBooksPerGridPage = 20;
@@ -76,24 +76,24 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
         const [expandedRowIds, setExpandedRowIds] = useState<ReactText[]>([]);
         const [
             columnNamesInDisplayOrder,
-            setColumnNamesInDisplayOrder
+            setColumnNamesInDisplayOrder,
         ] = useStorageState<string[]>(
             localStorage,
             "book-grid-column-order",
-            bookGridColumnDefinitions.map(c => c.name)
+            bookGridColumnDefinitions.map((c) => c.name)
         );
         // when a new version adds a new column, the list of columns in order will not match
         // the full list of columns. Instead of coping with this, the devexpress grid just locks down the new
         // column as the first one. So here we detect added and removed columns, while preserving order.
         useEffect(() => {
             const newCompleteSetInDefaultOrder = bookGridColumnDefinitions.map(
-                c => c.name
+                (c) => c.name
             );
             const columnsThatNeedToBeAdded = newCompleteSetInDefaultOrder.filter(
-                x => !columnNamesInDisplayOrder.includes(x)
+                (x) => !columnNamesInDisplayOrder.includes(x)
             );
             const columnsThatNeedToBeRemoved = columnNamesInDisplayOrder.filter(
-                x => !newCompleteSetInDefaultOrder.includes(x)
+                (x) => !newCompleteSetInDefaultOrder.includes(x)
             );
             if (
                 columnsThatNeedToBeAdded.length ||
@@ -103,14 +103,14 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                     columnsThatNeedToBeAdded
                 );
                 const columnsWithAnyOldOnesRemoved = oldOrderWithNewOnesAtEnd.filter(
-                    n => !columnsThatNeedToBeRemoved.includes(n)
+                    (n) => !columnsThatNeedToBeRemoved.includes(n)
                 );
                 setColumnNamesInDisplayOrder(columnsWithAnyOldOnesRemoved);
             }
         }, [
             columnNamesInDisplayOrder,
             setColumnNamesInDisplayOrder,
-            bookGridColumnDefinitions
+            bookGridColumnDefinitions,
         ]);
 
         const [hiddenColumnNames, setHiddenColumnNames] = useStorageState<
@@ -119,8 +119,8 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
             localStorage,
             "book-grid-column-hidden",
             bookGridColumnDefinitions
-                .filter(c => !c.defaultVisible)
-                .map(c => c.name)
+                .filter((c) => !c.defaultVisible)
+                .map((c) => c.name)
         );
 
         // enhance: make the date nice (remove Hour/Minute/Seconds, show as YYYY-MM-DD)
@@ -128,9 +128,9 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
 
         const defaultColumnWidths = useMemo(
             () =>
-                bookGridColumnDefinitions.map(c => ({
+                bookGridColumnDefinitions.map((c) => ({
                     columnName: c.name,
-                    width: "auto"
+                    width: "auto",
                 })),
             [bookGridColumnDefinitions]
         );
@@ -150,23 +150,24 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
         const totalBookMatchingFilter = useGetBookCount(
             filterMadeFromPageSearchPlusColumnFilters || {}
         );
+
         const {
             onePageOfMatchingBooks,
-            totalMatchingBooksCount
+            totalMatchingBooksCount,
         } = useGetBooksForGrid(
             filterMadeFromPageSearchPlusColumnFilters,
             kBooksPerGridPage,
             gridPage * kBooksPerGridPage,
-            sortings.map(s => ({
+            sortings.map((s) => ({
                 columnName: s.columnName,
-                descending: s.direction === "asc"
+                descending: s.direction === "asc",
             }))
         );
         useEffect(() => {
             setColumns(
                 bookGridColumnDefinitions.filter(
                     // some columns we only include if we are logged in with the right permissions
-                    col => !col.moderatorOnly || user?.moderator
+                    (col) => !col.moderatorOnly || user?.moderator
                 )
             );
             //setColumnNamesInDisplayOrder(bookGridColumns.map(c => c.name));
@@ -178,9 +179,9 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
         // making bookGridColumnDefinitions static in this file. We're using this one at the moment because
         // we eventually will reuse this for different grids, with different column definitions.
         const FilteringComponentForOneColumn: React.FunctionComponent<TableFilterRow.CellProps> = useMemo(
-            () => fprops => {
+            () => (fprops) => {
                 const columnDef = bookGridColumnDefinitions.find(
-                    c => c.name === fprops.column.name && c.addToFilter
+                    (c) => c.name === fprops.column.name && c.addToFilter
                 );
                 if (columnDef) {
                     if (columnDef.getCustomFilterComponent) {
@@ -237,7 +238,7 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
 
                     <FilteringState
                         defaultFilters={gridFilters}
-                        onFiltersChange={x => {
+                        onFiltersChange={(x) => {
                             // if (props.setCurrentFilter) {
                             //     props.setCurrentFilter(
                             //         CombineGridAndSearchBoxFilter(
@@ -253,14 +254,14 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
 
                     <SortingState
                         defaultSorting={[]}
-                        onSortingChange={sortings => {
+                        onSortingChange={(sortings) => {
                             console.log(JSON.stringify(sortings));
                             setSortings(sortings);
                         }}
                         columnExtensions={bookGridColumnDefinitions.map(
                             (c: IGridColumn) => ({
                                 columnName: c.name,
-                                sortingEnabled: !!c.sortingEnabled
+                                sortingEnabled: !!c.sortingEnabled,
                             })
                         )}
                     />
@@ -284,7 +285,7 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
 
                     {user && user.moderator && (
                         <TableRowDetail
-                            contentComponent={row => {
+                            contentComponent={(row) => {
                                 const book: Book = row.row;
                                 return (
                                     <div
@@ -300,7 +301,7 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                     )}
                     <TableColumnVisibility
                         defaultHiddenColumnNames={hiddenColumnNames}
-                        onHiddenColumnNamesChange={names =>
+                        onHiddenColumnNamesChange={(names) =>
                             setHiddenColumnNames(names)
                         }
                     />
@@ -325,16 +326,16 @@ function CombineGridAndSearchBoxFilter(
 ): IFilter {
     const f: IFilter = {
         ...routerFilter,
-        inCirculation: InCirculationOptions.All
+        inCirculation: InCirculationOptions.All,
     };
-    gridFilters.forEach(g => {
+    gridFilters.forEach((g) => {
         // the business of contains vs. equals has not been worked out yet, on the grid ui side nor the actual query side
         if (g.operation !== "contains") {
             console.error(`Cannot yet filter using ${g.operation}`);
         }
         if (g.value) {
             const gridColumnDefinition = bookGridColumns.find(
-                c => c.name === g.columnName
+                (c) => c.name === g.columnName
             );
             gridColumnDefinition!.addToFilter!(f, g.value);
         }

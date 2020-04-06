@@ -7,30 +7,40 @@ import {
     useGetTagList,
     useGetCleanedAndOrderedLanguageList,
     IBookshelfResult,
-    useGetBookshelvesByCategory
+    useGetBookshelvesByCategory,
 } from "./connection/LibraryQueryHooks";
 import { ILanguage } from "./model/Language";
 import {
     OSFeaturesContext,
     bloomDesktopAvailable,
     bloomReaderAvailable,
-    cantUseBloomD
+    cantUseBloomD,
 } from "./components/OSFeaturesContext";
-
-export const CachedTablesContext = React.createContext<{
+interface ICachedTables {
     tags: string[];
     languages: ILanguage[];
     bookshelves: IBookshelfResult[];
-}>({
+}
+// for use when we aren't in a react context with hooks
+export const CachedTables: ICachedTables = {
     tags: [],
     languages: [],
-    bookshelves: []
+    bookshelves: [],
+};
+
+export const CachedTablesContext = React.createContext<ICachedTables>({
+    tags: [],
+    languages: [],
+    bookshelves: [],
 });
 
-export const App: React.FunctionComponent<{}> = props => {
+export const App: React.FunctionComponent<{}> = (props) => {
     const tags = useGetTagList();
     const languages = useGetCleanedAndOrderedLanguageList();
     const bookshelves = useGetBookshelvesByCategory();
+    CachedTables.bookshelves = bookshelves;
+    CachedTables.tags = tags;
+    CachedTables.languages = languages;
 
     return (
         <>
@@ -57,7 +67,7 @@ export const App: React.FunctionComponent<{}> = props => {
                             value={{
                                 bloomDesktopAvailable,
                                 bloomReaderAvailable,
-                                cantUseBloomD
+                                cantUseBloomD,
                             }}
                         >
                             <BrowseView />
