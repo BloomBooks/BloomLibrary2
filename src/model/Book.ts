@@ -41,6 +41,9 @@ export class Book {
     @observable public level: string = "";
     @observable public librarianNote: string = "";
     @observable public inCirculation: boolean = true;
+    @observable public publisher: string = "";
+    @observable public originalPublisher: string = "";
+
     @observable
     public artifactsToOfferToUsers: ArtifactVisibilitySettingsGroup = new ArtifactVisibilitySettingsGroup();
     public uploader: { username: string } | undefined;
@@ -123,7 +126,9 @@ export class Book {
             inCirculation: this.inCirculation,
             summary: this.summary,
             librarianNote: this.librarianNote,
-            bookshelves: this.bookshelves
+            bookshelves: this.bookshelves,
+            publisher: this.publisher,
+            originalPublisher: this.originalPublisher,
         });
     }
 
