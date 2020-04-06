@@ -553,7 +553,7 @@ export function constructParseBookQuery(
                     break;
                 case "copyright":
                     params.where.copyright = {
-                        $regex: facetValue,
+                        $regex: ".*" + facetValue,
                         ...caseInsensitive
                     };
                     break;
