@@ -13,10 +13,10 @@ export const SpecialInterestGroup: React.FunctionComponent<IProps> = props => {
     return (
         <CategoryCardGroup {...props}>
             <CategoryCard
-                key={"Health"}
-                title={"COVID-19 & Health Books"}
+                key={"COVID-19"}
+                title={"COVID-19 Books"}
                 filter={{
-                    topic: "Health"
+                    bookshelf: "COVID-19"
                 }}
                 pageType={""}
                 img={""}

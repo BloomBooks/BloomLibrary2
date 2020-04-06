@@ -25,7 +25,7 @@ export const BiblePage: React.FunctionComponent = () => {
                     bookShelfCategory=""
                     pathToTheCurrentLevel="Bible/"
                 />
-                <BookGroup title="All Bible books" filter={{ ...filter }} />
+                <BookGroup title="All" filter={{ ...filter }} rows={99} />
             </ListOfBookGroups>
         </div>
     );
