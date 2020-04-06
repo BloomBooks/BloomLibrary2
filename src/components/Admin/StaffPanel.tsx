@@ -12,7 +12,7 @@ import {
     RadioGroup,
     FormControlLabel,
     Radio,
-    Button
+    Button,
 } from "@material-ui/core";
 import { observer } from "mobx-react";
 import { RouterContext } from "../../Router";
@@ -27,7 +27,7 @@ const borderColor = "#b0e1e8"; // or perhaps border color ${theme.palette.second
 
 // This React functional component displays some staff controls, shown (for example)
 // in the book detail page when the logged-in use is an moderator.
-const StaffPanel: React.FunctionComponent<IProps> = observer(props => {
+const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
     const router = useContext(RouterContext);
 
     // Whether anything has been edited and not yet saved.
@@ -220,6 +220,26 @@ const StaffPanel: React.FunctionComponent<IProps> = observer(props => {
                     book={props.book}
                 ></BookshelfChooser>
             </Box>
+            <Box>
+                <TextField
+                    label="Publisher"
+                    variant="outlined"
+                    value={props.book.publisher}
+                    onChange={(event) => {
+                        props.book.publisher = event.target.value;
+                        setModified(true);
+                    }}
+                ></TextField>
+                <TextField
+                    label="Original Publisher"
+                    variant="outlined"
+                    value={props.book.originalPublisher}
+                    onChange={(event) => {
+                        props.book.originalPublisher = event.target.value;
+                        setModified(true);
+                    }}
+                ></TextField>
+            </Box>
             <HideBookControl book={props.book} setModified={setModified} />
             <div
                 id="apControls"
@@ -258,7 +278,7 @@ const StaffPanel: React.FunctionComponent<IProps> = observer(props => {
     );
 });
 
-const Box: React.FunctionComponent = props => (
+const Box: React.FunctionComponent = (props) => (
     <div
         css={css`
             border: 2px solid ${borderColor};

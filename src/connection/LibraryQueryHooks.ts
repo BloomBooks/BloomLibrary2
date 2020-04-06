@@ -140,7 +140,7 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
                     "title,baseUrl,bookOrder,inCirculation,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
                     "tags,pageCount,show,credits,country,features,internetLimits," +
                     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount," +
-                    "harvestStartedAt,bookshelves",
+                    "harvestStartedAt,bookshelves,publisher,originalPublisher",
                 // fluff up fields that reference other tables
                 include: "uploader,langPointers",
             },
@@ -215,7 +215,7 @@ export function useGetBooksForGrid(
                 keys:
                     "title,baseUrl,license,licenseNotes,inCirculation,summary,copyright,harvestState,harvestLog," +
                     "tags,pageCount,show,credits,country,features,internetLimits,bookshelves," +
-                    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher",
+                    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher,originalPublisher",
                 // fluff up fields that reference other tables
                 include: "uploader,langPointers",
                 ...query,
