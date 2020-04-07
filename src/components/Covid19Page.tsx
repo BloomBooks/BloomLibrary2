@@ -4,7 +4,7 @@ import { ListOfBookGroups } from "./ListOfBookGroups";
 import { BookGroup } from "./BookGroup";
 
 export const Covid19Page: React.FunctionComponent = () => {
-    const filter = { topic: "Health" };
+    const filter = { bookshelf: "COVID-19" };
     const description = (
         <React.Fragment>
             <p></p>
@@ -13,22 +13,13 @@ export const Covid19Page: React.FunctionComponent = () => {
     return (
         <div>
             <PublisherBanner
-                title="COVID-19 and Other Health Books"
+                title="COVID-19"
                 showTitle={true}
                 filter={filter}
                 collectionDescription={description}
             />
             <ListOfBookGroups>
-                <BookGroup
-                    rows={99}
-                    title="COVID-19 books"
-                    filter={{ topic: "COVID-19" }}
-                />
-                <BookGroup
-                    rows={99}
-                    title="All Health books"
-                    filter={{ ...filter }}
-                />
+                <BookGroup title="All" filter={filter} rows={99} />
             </ListOfBookGroups>
         </div>
     );
