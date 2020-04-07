@@ -674,6 +674,14 @@ export function constructParseBookQuery(
         delete params.where.feature;
         params.where.features = f.feature; //my understanding is that this means it just has to contain this, could have others
     }
+    if (f.publisher) {
+        delete params.where.publisher;
+        params.where.publisher = f.publisher;
+    }
+    if (f.originalPublisher) {
+        delete params.where.originalPublisher;
+        params.where.publisher = f.originalPublisher;
+    }
     delete params.where.inCirculation;
     switch (f.inCirculation) {
         case undefined:

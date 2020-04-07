@@ -11,7 +11,7 @@ import {
     Checkbox,
     FormControlLabel,
     Select,
-    MenuItem
+    MenuItem,
 } from "@material-ui/core";
 
 import { IFilter } from "../../IFilter";
@@ -33,7 +33,7 @@ export const BulkEditPanel: React.FunctionComponent<{
     ) => void;
     filterHolder: FilterHolder;
     refresh: () => void;
-}> = observer(props => {
+}> = observer((props) => {
     const [valueToSet, setValueToSet] = useState<string | undefined>("");
     const [armed, setArmed] = useState(false);
     const user = useGetLoggedInUser();
@@ -44,6 +44,8 @@ export const BulkEditPanel: React.FunctionComponent<{
     const notFilteredYet = !(
         !!props.filterHolder.completeFilter.bookshelf ||
         !!props.filterHolder.completeFilter.language ||
+        !!props.filterHolder.completeFilter.publisher ||
+        !!props.filterHolder.completeFilter.originalPublisher ||
         // lots of other fields, e.g. copyright, end up as part of search (e.g. search:"copyright:foo")
         !!props.filterHolder.completeFilter.search
     );
@@ -78,7 +80,7 @@ export const BulkEditPanel: React.FunctionComponent<{
                         control={
                             <Checkbox
                                 checked={armed}
-                                onChange={e => {
+                                onChange={(e) => {
                                     setArmed(e.target.checked);
                                 }}
                             />
@@ -101,11 +103,11 @@ export const BulkEditPanel: React.FunctionComponent<{
                             css={css`
                                 width: 400px;
                             `}
-                            onChange={e => {
+                            onChange={(e) => {
                                 setValueToSet(e.target.value as string);
                             }}
                         >
-                            {props.choices.map(c => (
+                            {props.choices.map((c) => (
                                 <MenuItem key={c} value={c}>
                                     {c}
                                 </MenuItem>
@@ -121,7 +123,7 @@ export const BulkEditPanel: React.FunctionComponent<{
                                 width: 600px;
                             `}
                             defaultValue={valueToSet}
-                            onChange={evt => {
+                            onChange={(evt) => {
                                 const v = evt.target.value.trim();
                                 setValueToSet(v.length ? v : undefined);
                             }}

@@ -66,6 +66,34 @@ export const AsafeerPage: React.FunctionComponent = () => {
     );
 };
 
+export const LittleZebraPage: React.FunctionComponent = () => {
+    const filter = { publisher: "Little Zebra" };
+    const description = (
+        <React.Fragment>
+            <ExternalLink href="https://www.littlezebrabooks.com/">
+                Little Zebra Books{" "}
+            </ExternalLink>
+            &nbsp;is a Christian non-profit organization that exists to serve
+            African communities through the development, production, and
+            distribution of African-language books.
+        </React.Fragment>
+    );
+    return (
+        <div>
+            <PublisherBanner
+                title="Little Zebra"
+                showTitle={false}
+                filter={filter}
+                logoUrl={`https://share.bloomlibrary.org/bookshelf-images/LittleZebra.png`}
+                collectionDescription={description}
+            />
+
+            <ListOfBookGroups>
+                <StandardPublisherGroups filter={filter} />
+            </ListOfBookGroups>
+        </div>
+    );
+};
 export const PrathamPage: React.FunctionComponent = () => {
     const filter = { bookshelf: "Pratham" };
     const description = (

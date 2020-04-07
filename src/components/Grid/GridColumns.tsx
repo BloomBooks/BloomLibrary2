@@ -7,7 +7,7 @@ import { jsx } from "@emotion/core";
 import React, { useState, FunctionComponent } from "react";
 import {
     Column as DevExpressColumn,
-    TableFilterRow
+    TableFilterRow,
 } from "@devexpress/dx-react-grid";
 
 import { Checkbox, Link, TableCell, Select, MenuItem } from "@material-ui/core";
@@ -52,17 +52,18 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             addToFilter: (filter: IFilter, value: string) => {
                 // enhance: at the moment we don't have a "title:" search axis, so this will search other fields as well
                 filter.search = value;
-            }
+            },
         },
         {
             name: "languages",
             title: "Languages",
             defaultVisible: true,
-            getCellValue: (b: Book) => b.languages.map(l => l.name).join(", "),
+            getCellValue: (b: Book) =>
+                b.languages.map((l) => l.name).join(", "),
             addToFilter: (filter: IFilter, value: string) => {
                 // enhance: at the moment we don't have a "language:" search axis, so this will search other fields as well
                 filter.search = value;
-            }
+            },
         },
         {
             name: "tags",
@@ -70,15 +71,15 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             getCellValue: (b: Book) =>
                 b.tags
                     .filter(
-                        t =>
-                            !kTagsToFilterOutOfTagsList.find(tagToFilterOut =>
+                        (t) =>
+                            !kTagsToFilterOutOfTagsList.find((tagToFilterOut) =>
                                 t.startsWith(tagToFilterOut)
                             )
                     )
                     .join(", "),
             addToFilter: (filter: IFilter, value: string) => {
                 filter.otherTags = value;
-            }
+            },
         },
         {
             name: "bookshelves",
@@ -87,7 +88,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             getCellValue: (b: Book) => b.bookshelves.join(","),
             addToFilter: (filter: IFilter, value: string) => {
                 filter.bookshelf = value;
-            }
+            },
         },
         {
             name: "incoming",
@@ -100,7 +101,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                 <TagExistsFilterCell {...props} />
             ),
             addToFilter: (filter: IFilter, value: string) =>
-                updateFilterForExistenceOfTag("system:Incoming", filter, value)
+                updateFilterForExistenceOfTag("system:Incoming", filter, value),
         },
         {
             name: "level",
@@ -115,22 +116,22 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             // TODO: we need a way to query to for a missing level indicator
             addToFilter: (filter: IFilter, value: string) => {
                 filter.search += ` level:${titleCase(value)}`;
-            }
+            },
         },
         {
             name: "topic",
             defaultVisible: true,
             getCellValue: (b: Book) =>
                 b.tags
-                    .filter(t => t.startsWith("topic:"))
-                    .map(t => (
+                    .filter((t) => t.startsWith("topic:"))
+                    .map((t) => (
                         <GridSearchLink key={t} search={t}>
                             {t.replace(/topic:/, "")}
                         </GridSearchLink>
                     )),
             addToFilter: (filter: IFilter, value: string) => {
                 filter.topic = titleCase(value);
-            }
+            },
         },
         {
             name: "harvestState",
@@ -143,11 +144,11 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                     choices={["", "Done", "Failed", "New", "Updated"]}
                     {...props}
                 />
-            )
+            ),
         },
         {
             name: "harvestLog",
-            defaultVisible: false
+            defaultVisible: false,
         },
         {
             name: "inCirculation",
@@ -162,7 +163,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                 if (value === "Yes")
                     filter.inCirculation = InCirculationOptions.Yes;
                 // otherwise don't mention it
-            }
+            },
         },
         { name: "license", sortingEnabled: true },
         {
@@ -171,12 +172,24 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
 
             addToFilter: (filter: IFilter, value: string) => {
                 filter.search = `copyright:${value} ` + (filter.search || "");
-            }
+            },
         },
         { name: "pageCount", sortingEnabled: true },
         { name: "createdAt", sortingEnabled: true },
-        { name: "publisher", sortingEnabled: true },
-        { name: "originalPublisher", sortingEnabled: true },
+        {
+            name: "publisher",
+            sortingEnabled: true,
+            addToFilter: (filter: IFilter, value: string) => {
+                filter.publisher = value;
+            },
+        },
+        {
+            name: "originalPublisher",
+            sortingEnabled: true,
+            addToFilter: (filter: IFilter, value: string) => {
+                filter.originalPublisher = value;
+            },
+        },
         {
             name: "uploader",
             sortingEnabled: true,
@@ -192,15 +205,15 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             ),
             addToFilter: (filter: IFilter, value: string) => {
                 filter.search = `uploader:${value} ` + (filter.search || "");
-            }
-        }
+            },
+        },
     ];
 
     // generate the capitalized column names since the grid doesn't do that.
     return (
         definitions
             //.sort((a, b) => a.name.localeCompare(b.name))
-            .map(c => {
+            .map((c) => {
                 const x = { ...c };
                 if (c.title === undefined) {
                     x.title = titleCase(c.name);
@@ -212,13 +225,13 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
 
 export const GridSearchLink: React.FunctionComponent<{
     search: string;
-}> = props => {
+}> = (props) => {
     const location = {
         title: props.search,
         pageType: "grid",
         filter: {
-            search: props.search
-        }
+            search: props.search,
+        },
     };
     const url = "/grid/?" + QueryString.stringify(location);
     return (
@@ -236,12 +249,12 @@ export const GridSearchLink: React.FunctionComponent<{
 const TagCheckbox: React.FunctionComponent<{
     book: Book;
     tag: string;
-}> = props => {
+}> = (props) => {
     const [present, setPresent] = useState(props.book.tags.includes(props.tag));
     return (
         <Checkbox
             checked={present}
-            onChange={e => {
+            onChange={(e) => {
                 props.book.setBooleanTag(props.tag, e.target.checked);
                 props.book.saveAdminDataToParse();
                 setPresent(e.target.checked);
@@ -251,9 +264,11 @@ const TagCheckbox: React.FunctionComponent<{
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const ChoicesFilterCell: React.FunctionComponent<TableFilterRow.CellProps & {
-    choices: string[];
-}> = props => {
+const ChoicesFilterCell: React.FunctionComponent<
+    TableFilterRow.CellProps & {
+        choices: string[];
+    }
+> = (props) => {
     const [value, setValue] = useState(props.filter?.value || "");
     return (
         <TableCell>
@@ -273,7 +288,7 @@ const ChoicesFilterCell: React.FunctionComponent<TableFilterRow.CellProps & {
                 id="demo-simple-select"
                 color="secondary" //<--- doesn't work
                 displayEmpty={true}
-                renderValue={v => {
+                renderValue={(v) => {
                     const x = v as string;
                     return <div>{x ? x : "All"}</div>;
                 }}
@@ -281,16 +296,16 @@ const ChoicesFilterCell: React.FunctionComponent<TableFilterRow.CellProps & {
                 css={css`
                     font-size: 0.875rem !important;
                 `}
-                onChange={e => {
+                onChange={(e) => {
                     setValue(e.target.value as string);
                     props.onFilter({
                         columnName: props.column.name,
                         operation: "contains",
-                        value: e.target.value as string
+                        value: e.target.value as string,
                     });
                 }}
             >
-                {props.choices.map(c => (
+                {props.choices.map((c) => (
                     <MenuItem key={c} value={c}>
                         {c.length === 0 ? "All" : c}
                     </MenuItem>
@@ -301,7 +316,9 @@ const ChoicesFilterCell: React.FunctionComponent<TableFilterRow.CellProps & {
 };
 
 // shows a checkbox in the filter row; ticking the box leads to a call to the gridColumn definition `addToFilter()`
-const TagExistsFilterCell: React.FunctionComponent<TableFilterRow.CellProps> = props => {
+const TagExistsFilterCell: React.FunctionComponent<TableFilterRow.CellProps> = (
+    props
+) => {
     const [checked, setChecked] = useState(
         props.filter?.value === "true" || false
     );
@@ -312,12 +329,12 @@ const TagExistsFilterCell: React.FunctionComponent<TableFilterRow.CellProps> = p
                     padding-left: 0;
                 `}
                 checked={checked}
-                onChange={e => {
+                onChange={(e) => {
                     props.onFilter({
                         columnName: props.column.name,
                         operation: "contains",
                         // we're switching to the opposite of what `checked` was
-                        value: !checked ? "true" : "false"
+                        value: !checked ? "true" : "false",
                     });
                     setChecked(!checked);
                 }}
