@@ -9,7 +9,7 @@ export const AssignPublisherPanel: React.FunctionComponent<{
     filterHolder: FilterHolder;
     backgroundColor: string;
     refresh: () => void;
-}> = observer(props => {
+}> = observer((props) => {
     return (
         <BulkEditPanel
             panelLabel="Change Publisher"

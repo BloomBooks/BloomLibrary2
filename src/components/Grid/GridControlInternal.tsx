@@ -171,7 +171,7 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                 )
             );
             //setColumnNamesInDisplayOrder(bookGridColumns.map(c => c.name));
-        }, [router, user, user?.moderator, bookGridColumnDefinitions]);
+        }, [router, user, bookGridColumnDefinitions]);
 
         // note: this is an embedded function as a way to get at bookGridColumnDefinitions. It's important
         // that we don't reconstruct it on every render, or else we'll lose cursor focus on each key press.

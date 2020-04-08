@@ -7,10 +7,11 @@ import { HomeBanner } from "./banners/HomeBanner";
 import { ListOfBookGroups } from "./ListOfBookGroups";
 import { FeatureGroup } from "./FeatureGroup";
 import { SpecialInterestGroup } from "./SpecialInterestsGroup";
+import { PublisherGroup } from "./PublisherGroup";
 
 export const HomePage: React.FunctionComponent = () => {
     const almostAllBooksFilter: IFilter = {
-        inCirculation: InCirculationOptions.Yes
+        inCirculation: InCirculationOptions.Yes,
     };
     return (
         <>
@@ -31,10 +32,7 @@ export const HomePage: React.FunctionComponent = () => {
                     order={"-createdAt"}
                 />
 
-                <BookshelfGroup
-                    title="Publishers"
-                    bookShelfCategory="publisher"
-                />
+                <PublisherGroup />
 
                 <FeatureGroup title="Book Features" />
 
