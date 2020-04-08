@@ -8,7 +8,7 @@ import {
     ProjectPageWithDefaultLayout,
     SearchResultsPage,
     AllResultsPage,
-    CategoryPageWithDefaultLayout
+    CategoryPageWithDefaultLayout,
 } from "./Pages";
 import "typeface-roboto";
 import { Header } from "./header/Header";
@@ -19,7 +19,7 @@ import {
     BookDashPage,
     AsafeerPage,
     RoomToReadPage,
-    AsiaFoundationPage
+    AsiaFoundationPage,
 } from "./PublisherPages";
 import { GuatemalaMOEPage } from "./banners/OrganizationCustomizations";
 import { forceCheck as forceCheckLazyLoadComponents } from "react-lazyload";
@@ -39,6 +39,8 @@ export class BrowseView extends Component {
 
     private currentPage() {
         switch (this.router.current.pageType) {
+            case "Covid19":
+                return <Covid19Page />;
             case "home":
                 return <HomePage />;
             case "book-detail":
@@ -129,8 +131,8 @@ export class BrowseView extends Component {
                         return <BiblePage />;
                     default:
                         switch (this.router.current.filter.topic) {
-                            case "Health":
-                                return <Covid19Page />;
+                            // case "Health":
+                            //     return <Covid19Page />;
                             default:
                                 return (
                                     <CategoryPageWithDefaultLayout

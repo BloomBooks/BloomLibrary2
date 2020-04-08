@@ -17,7 +17,7 @@ export const Breadcrumbs: React.FunctionComponent = () => {
     }
     return (
         <ul css={breadcrumbsStyle}>
-            {router!.breadcrumbStack.map(l => (
+            {router!.breadcrumbStack.map((l) => (
                 <li key={l.title}>
                     <a
                         css={css`
@@ -43,6 +43,7 @@ const breadcrumbsStyle = css`
     padding: 0;
     margin: 0; // better to let the consumer decide our margin
     //padding-left: 20px;
+    margin-top: 5px;
     li {
         margin-right: 3px;
         //color: whitesmoke;

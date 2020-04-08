@@ -9,18 +9,20 @@ interface IProps {
     title: string;
 }
 
-export const SpecialInterestGroup: React.FunctionComponent<IProps> = props => {
+export const SpecialInterestGroup: React.FunctionComponent<IProps> = (
+    props
+) => {
     return (
         <CategoryCardGroup {...props}>
             <CategoryCard
                 key={"COVID-19"}
                 title={"COVID-19 Books"}
                 filter={{
-                    bookshelf: "COVID-19"
+                    bookshelf: "COVID-19",
                 }}
-                pageType={""}
+                pageType={"Covid19"}
                 img={""}
-                icon={p => (
+                icon={(p) => (
                     <COVID19Icon
                         {...p}
                         title={"Created by dDara from the Noun Project"}
@@ -32,11 +34,11 @@ export const SpecialInterestGroup: React.FunctionComponent<IProps> = props => {
                 key={"Bible"}
                 title={"Bible Books"}
                 filter={{
-                    bookshelf: "Bible"
+                    bookshelf: "Bible",
                 }}
                 pageType={""}
                 img={""}
-                icon={p => (
+                icon={(p) => (
                     <BibleIcon
                         {...p}
                         title={"Created by Andrew Doane from the Noun Project"}
@@ -48,11 +50,11 @@ export const SpecialInterestGroup: React.FunctionComponent<IProps> = props => {
                 key={"STEM"}
                 title={"STEM Books"}
                 filter={{
-                    topic: "Math,Science,Environment"
+                    topic: "Math,Science,Environment",
                 }}
                 pageType={""}
                 img={""}
-                icon={p => (
+                icon={(p) => (
                     <STEMIcon
                         {...p}
                         title={"CC0 from the Noun Project"}
