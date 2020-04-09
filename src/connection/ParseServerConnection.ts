@@ -17,24 +17,24 @@ interface IConnection {
 const prod: IConnection = {
     headers: {
         "Content-Type": "text/json",
-        "X-Parse-Application-Id": "R6qNTeumQXjJCMutAJYAwPtip1qBulkFyLefkCE5"
+        "X-Parse-Application-Id": "R6qNTeumQXjJCMutAJYAwPtip1qBulkFyLefkCE5",
     },
-    url: "https://bloom-parse-server-production.azurewebsites.net/parse/"
+    url: "https://bloom-parse-server-production.azurewebsites.net/parse/",
 };
 const dev: IConnection = {
     headers: {
         "Content-Type": "text/json",
-        "X-Parse-Application-Id": "yrXftBF6mbAuVu3fO6LnhCJiHxZPIdE7gl1DUVGR"
+        "X-Parse-Application-Id": "yrXftBF6mbAuVu3fO6LnhCJiHxZPIdE7gl1DUVGR",
     },
-    url: "https://bloom-parse-server-develop.azurewebsites.net/parse/"
+    url: "https://bloom-parse-server-develop.azurewebsites.net/parse/",
 };
 
 const local: IConnection = {
     headers: {
         "Content-Type": "text/json",
-        "X-Parse-Application-Id": "myAppId"
+        "X-Parse-Application-Id": "myAppId",
     },
-    url: "http://localhost:1337/parse/"
+    url: "http://localhost:1337/parse/",
 };
 
 export function getConnection(): IConnection {
@@ -78,12 +78,12 @@ function checkIfUserIsModerator() {
                     users: {
                         __type: "Pointer",
                         className: "_User",
-                        objectId: userId
-                    }
-                }
-            }
+                        objectId: userId,
+                    },
+                },
+            },
         })
-        .then(result => {
+        .then((result) => {
             if (result.data.results.length > 0) {
                 LoggedInUser.current!.moderator = true;
                 /*
@@ -115,11 +115,11 @@ export async function connectParseServer(
                 `${connection.url}functions/bloomLink`,
                 {
                     token: jwtToken,
-                    id: userId
+                    id: userId,
                 },
 
                 {
-                    headers: connection.headers
+                    headers: connection.headers,
                 }
             )
             .then(() => {
@@ -129,17 +129,17 @@ export async function connectParseServer(
                         `${connection.url}users`,
                         {
                             authData: {
-                                bloom: { token: jwtToken, id: userId }
+                                bloom: { token: jwtToken, id: userId },
                             },
                             username: userId,
-                            email: userId // needed in case we are creating a new user
+                            email: userId, // needed in case we are creating a new user
                         },
 
                         {
-                            headers: connection.headers
+                            headers: connection.headers,
                         }
                     )
-                    .then(usersResult => {
+                    .then((usersResult) => {
                         if (usersResult.data.sessionToken) {
                             LoggedInUser.current = new User(usersResult.data);
                             //Object.assign(CurrentUser, usersResult.data);
@@ -151,12 +151,12 @@ export async function connectParseServer(
                             checkIfUserIsModerator();
                         } else failedToLoginInToParseServer();
                     })
-                    .catch(err => {
+                    .catch((err) => {
                         failedToLoginInToParseServer();
                         reject(err);
                     });
             })
-            .catch(err => {
+            .catch((err) => {
                 console.log(
                     "The `Bloom Link` call failed:" + JSON.stringify(err)
                 );
@@ -177,12 +177,12 @@ export function logout() {
     const connection = getConnection();
     axios
         .post(`${connection.url}logout`, {
-            headers: connection.headers
+            headers: connection.headers,
         })
-        .then(response => {
+        .then((response) => {
             console.log("ParseServer logged out.");
         })
-        .catch(error => console.error("While logging out, got" + error))
+        .catch((error) => console.error("While logging out, got" + error))
         .finally(() => {
             delete connection.headers["X-Parse-Session-Token"];
             LoggedInUser.current = undefined;

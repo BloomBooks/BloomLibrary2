@@ -61,7 +61,7 @@ export function getArtifactTypeFromKey(artifactTypeKey: string): ArtifactType {
 }
 
 // The following functions were basically copied as-is from BloomLibrary's services.js
-function isHarvested(book: Book | IBasicBookInfo) {
+export function isHarvested(book: Book | IBasicBookInfo) {
     return book && book.harvestState === "Done";
 }
 
@@ -223,4 +223,10 @@ function getDownloadUrl(book: Book, fileType: string): string | undefined {
         return harvesterBaseUrl + fileType + "/" + bookName + "." + fileType;
     }
     return undefined;
+}
+export function getUrlOfHtmlOfDigitalVersion(book: Book) {
+    const harvesterBaseUrl = getHarvesterBaseUrl(book);
+    // use this if you are are working on bloom-player and are using the bloom-player npm script tobloomlibrary
+    // bloomPlayerUrl = "http://localhost:3000/bloomplayer-for-developing.htm";
+    return harvesterBaseUrl + "bloomdigital%2findex.htm";
 }

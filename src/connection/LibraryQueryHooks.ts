@@ -324,6 +324,7 @@ export interface IBasicBookInfo {
     pageCount: string;
     createdAt: string;
     country?: string;
+    phashOfFirstContentImage?: string;
 }
 
 export interface ISearchBooksResult {

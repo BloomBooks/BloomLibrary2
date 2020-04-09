@@ -13,6 +13,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import CancelIcon from "@material-ui/icons/Cancel";
 import { RouterContext } from "../Router";
 import { withStyles } from "@material-ui/styles";
+import { giveFreeLearningCsv } from "../export/freeLearningIO";
 
 // NB: I tried a bunch of iterations over 2 days with forwardRefs and stuff trying to get this search box
 // to have both the html tooltip AND stop losing focus every time a letter was typed. The upshot was this
@@ -73,7 +74,13 @@ export const SearchBox: React.FunctionComponent<{
     );
 
     const handleSearch = () => {
-        // shortcut to grid
+        if (
+            searchString.toLowerCase() === "freelearningiocsv" ||
+            searchString.toLowerCase() === "csv"
+        ) {
+            giveFreeLearningCsv();
+            return;
+        } // shortcut to grid
         if (searchString.toLowerCase() === "grid") {
             router!.push({
                 title: `Grid`,
@@ -181,11 +188,11 @@ export const SearchBox: React.FunctionComponent<{
     );
 
     return (
-        (showTooltip && (
-            <HtmlTooltip title={searchTooltip} arrow /*disableHoverListener*/>
-                {searchTextField}
-            </HtmlTooltip>
-        )) ||
+        // (showTooltip && (
+        //     <HtmlTooltip title={searchTooltip} arrow /*disableHoverListener*/>
+        //         {searchTextField}
+        //     </HtmlTooltip>
+        // )) ||
         searchTextField
     );
 };

@@ -15,7 +15,7 @@ export async function ChangeColumnValueForAllBooksInFilter(
     const books = await axios.get(`${getConnection().url}classes/books`, {
         headers,
 
-        params: { keys: "objectId,title", ...finalParams },
+        params: { limit: 10000, keys: "objectId,title", ...finalParams },
     });
     const putData: any = {};
     putData.updateSource = "bloom-library-bulk-edit";
