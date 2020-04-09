@@ -323,6 +323,7 @@ export interface IBasicBookInfo {
     copyright: string;
     pageCount: string;
     createdAt: string;
+    country?: string;
 }
 
 export interface ISearchBooksResult {
@@ -446,7 +447,7 @@ export function splitString(
         return { otherSearchTerms: input, specialParts: [] };
     }
     */
-    const facets = ["uploader:", "copyright:", "harvestState:"];
+    const facets = ["uploader:", "copyright:", "harvestState:", "country:"];
 
     const possibleParts = [...facets, ...allTagsInDatabase];
     // Start with the string with extra spaces (doubles and following colon) removed.
@@ -559,6 +560,12 @@ export function constructParseBookQuery(
                     break;
                 case "copyright":
                     params.where.copyright = {
+                        $regex: ".*" + facetValue,
+                        ...caseInsensitive,
+                    };
+                    break;
+                case "country":
+                    params.where.country = {
                         $regex: ".*" + facetValue,
                         ...caseInsensitive,
                     };
