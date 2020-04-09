@@ -337,6 +337,7 @@ function CombineGridAndSearchBoxFilter(
             const gridColumnDefinition = bookGridColumns.find(
                 (c) => c.name === g.columnName
             );
+            f.search = f.search || ""; // avoid getting an undefined if the filter tries to add to the existing search
             gridColumnDefinition!.addToFilter!(f, g.value);
         }
     });

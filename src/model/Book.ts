@@ -26,6 +26,7 @@ export class Book {
     public license: string = "";
     public baseUrl: string = "";
     public copyright: string = "";
+    public country: string = "";
     public credits: string = "";
     public pageCount: string = "";
     public bookOrder: string = "";
