@@ -109,12 +109,23 @@ function fields(book: Book, isoCode: string): Array<string | undefined> {
                 `Missing alltitle. Using ${book.title} for language ${isoCode}`
             );
         }
+        /*     title : Title of the book
+    coverpicture: URL to cover picture
+    description: Description of the book
+    language: A BCP47 compliant language tag (RFC5646)
+    Level: Level between 1 – 5
+    date: The publication date of the document
+    publisher: Name of the publisher of the document
+    rights: The license specified as an SPDX License identifier (SPDX Licenses)
+    resourceURL: Link to book on partner platform(link to “read mode”, not book details)*/
 
         return [
             title,
             `https://api.bloomlibrary.org/v1/fs/harvest/${book.id}/thumbnails/thumbnail-256.png?version=${book.updatedAt}`,
             book.summary || "", // description
             isoCode || "", // dc:language
+            book.getTagValue("computedLevel") || "", //book.getBestLevel() || "",
+            book.uploadDate?.toISOString() || "",
             book.publisher || "",
             book.license || "Unknown License",
             `https://bloomlibrary.org/readBook/${book.id}?bookLang=${isoCode}`,

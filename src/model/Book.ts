@@ -95,6 +95,16 @@ export class Book {
         // enhance: what does it mean if there are multiple items? Is only the last still true?
         return this.harvestLog.join(" / ");
     }
+    public getBestLevel(): string | undefined {
+        if (this.level) return this.level;
+        return this.getTagValue("computedLevel");
+    }
+    public getTagValue(tag: string): string | undefined {
+        const axisAndValue = this.tags.find((t) => t.startsWith(tag + ":"));
+        if (axisAndValue) {
+            return axisAndValue.split(":")[1].trim();
+        } else return undefined;
+    }
     // Make various changes to the object we get from parse server to make it more
     // convenient for various BloomLibrary uses.
     public finishCreationFromParseServerData(bookId: string): void {
