@@ -15,7 +15,7 @@ export async function ChangeColumnValueForAllBooksInFilter(
     const books = await axios.get(`${getConnection().url}classes/books`, {
         headers,
 
-        params: { limit: 10000, keys: "objectId,title", ...finalParams },
+        params: { limit: 100000, keys: "objectId,title", ...finalParams },
     });
     const putData: any = {};
     putData.updateSource = "bloom-library-bulk-edit";
@@ -51,17 +51,26 @@ export async function AddTagAllBooksInFilter(
     const books = await axios.get(`${getConnection().url}classes/books`, {
         headers,
 
-        params: { keys: "objectId,title,tags", ...finalParams },
+        params: { limit: 100000, keys: "objectId,title,tags", ...finalParams },
     });
     const putData: any = {};
     putData.updateSource = "bloom-library-bulk-edit";
 
     const promises: Array<Promise<any>> = [];
+    let changeCount = 0;
     for (const book of books.data.results) {
-        console.log(book.title);
-        putData.tags = book.tags || [];
-        if (putData.tags.indexOf(newTag) < 0) {
+        putData.tags = [...book.tags];
+        // a tag that starts with "-" means that we want to remove it
+        if (newTag[0] === "-") {
+            const tagToRemove = newTag.substr(1, newTag.length - 1);
+            putData.tags = putData.tags.filter(
+                (t: string) => t !== tagToRemove
+            );
+        } else if (putData.tags.indexOf(newTag) < 0) {
             putData.tags.push(newTag);
+        }
+        if (putData.tags.length !== book.tags.length) {
+            ++changeCount;
             promises.push(
                 axios.put(
                     `${getConnection().url}classes/books/${book.objectId}`,
@@ -73,6 +82,7 @@ export async function AddTagAllBooksInFilter(
             );
         }
     }
+    console.log(`Changing tags on ${changeCount} books...`);
     Promise.all(promises)
         .then(() => refresh())
         .catch((error) => {
@@ -89,7 +99,11 @@ export async function AddBookshelfToAllBooksInFilter(
     const books = await axios.get(`${getConnection().url}classes/books`, {
         headers,
 
-        params: { keys: "objectId,title,bookshelves", ...finalParams },
+        params: {
+            limit: 100000,
+            keys: "objectId,title,bookshelves",
+            ...finalParams,
+        },
     });
     const putData: any = {};
     putData.updateSource = "bloom-library-bulk-edit";

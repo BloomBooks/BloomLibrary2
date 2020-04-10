@@ -137,7 +137,7 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
             params: {
                 where: { objectId: bookId },
                 keys:
-                    "title,baseUrl,bookOrder,inCirculation,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
+                    "title,allTitles,baseUrl,bookOrder,inCirculation,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
                     "tags,pageCount,show,credits,country,features,internetLimits," +
                     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount," +
                     "harvestStartedAt,bookshelves,publisher,originalPublisher",
@@ -610,6 +610,9 @@ export function constructParseBookQuery(
             delete params.where.search;
         }
     }
+    if (params.where.search?.length === 0) {
+        delete params.where.search;
+    }
 
     if (params.order === "titleOrScore") {
         // We've passed the point where a Score search might be indicated. Use title
@@ -650,11 +653,7 @@ export function constructParseBookQuery(
     //     delete params.where.topic;
 
     // }
-    if (tagParts.length > 0) {
-        params.where.tags = {
-            $all: tagParts,
-        };
-    }
+
     // allow regex searches on bookshelf. Handing for counting up, for example, all the books with bookshelf tags
     // that start with "Enabling Writers" (and then go on to list country and sub-project).
     if (filter.bookshelf) {
@@ -675,6 +674,15 @@ export function constructParseBookQuery(
         params.where.tags = {
             $regex: regex,
             ...caseInsensitive,
+        };
+        // This will only be used if there are "otherTags". It means that if both are specified, then we loose the
+        // above regex for partial matching, but we gain the
+        // ability to filter on both the Topic and OtherTags columns in the grid.
+        tagParts.push("topic:" + f.topic);
+    }
+    if (tagParts.length > 0) {
+        params.where.tags = {
+            $all: tagParts,
         };
     }
 

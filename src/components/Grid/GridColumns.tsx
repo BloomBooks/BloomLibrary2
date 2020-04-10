@@ -28,7 +28,12 @@ export interface IGridColumn extends DevExpressColumn {
 }
 
 // For some tags, we want to give them their own column. So we don't want to show them in the tags column.
-const kTagsToFilterOutOfTagsList = ["bookshelf:", "system:Incoming", "level:"];
+const kTagsToFilterOutOfTagsList = [
+    "bookshelf:",
+    "topic:",
+    "system:Incoming",
+    "level:",
+];
 
 export function getBookGridColumnsDefinitions(): IGridColumn[] {
     // Note, the order here is also the default order in the table

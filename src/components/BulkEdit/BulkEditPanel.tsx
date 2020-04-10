@@ -11,7 +11,7 @@ import {
     Checkbox,
     FormControlLabel,
     Select,
-    MenuItem
+    MenuItem,
 } from "@material-ui/core";
 
 import { IFilter } from "../../IFilter";
@@ -33,8 +33,9 @@ export const BulkEditPanel: React.FunctionComponent<{
     ) => void;
     filterHolder: FilterHolder;
     refresh: () => void;
-}> = observer(props => {
+}> = observer((props) => {
     const [valueToSet, setValueToSet] = useState<string | undefined>("");
+    const [working, setWorking] = useState(false);
     const [armed, setArmed] = useState(false);
     const user = useGetLoggedInUser();
 
@@ -43,6 +44,7 @@ export const BulkEditPanel: React.FunctionComponent<{
     // instead I'm just listing some likely filters; if I miss one, that's fine, we can add them.
     const notFilteredYet = !(
         !!props.filterHolder.completeFilter.bookshelf ||
+        !!props.filterHolder.completeFilter.otherTags ||
         !!props.filterHolder.completeFilter.language ||
         // lots of other fields, e.g. copyright, end up as part of search (e.g. search:"copyright:foo")
         !!props.filterHolder.completeFilter.search
@@ -52,7 +54,9 @@ export const BulkEditPanel: React.FunctionComponent<{
         (user?.moderator && (
             <div
                 css={css`
-                    background-color: ${props.backgroundColor};
+                    background-color: ${working
+                        ? "lightGrey"
+                        : props.backgroundColor};
                     border: solid thin;
                     border-radius: 5px;
                     padding: 10px;
@@ -78,7 +82,7 @@ export const BulkEditPanel: React.FunctionComponent<{
                         control={
                             <Checkbox
                                 checked={armed}
-                                onChange={e => {
+                                onChange={(e) => {
                                     setArmed(e.target.checked);
                                 }}
                             />
@@ -101,11 +105,11 @@ export const BulkEditPanel: React.FunctionComponent<{
                             css={css`
                                 width: 400px;
                             `}
-                            onChange={e => {
+                            onChange={(e) => {
                                 setValueToSet(e.target.value as string);
                             }}
                         >
-                            {props.choices.map(c => (
+                            {props.choices.map((c) => (
                                 <MenuItem key={c} value={c}>
                                     {c}
                                 </MenuItem>
@@ -121,7 +125,7 @@ export const BulkEditPanel: React.FunctionComponent<{
                                 width: 600px;
                             `}
                             defaultValue={valueToSet}
-                            onChange={evt => {
+                            onChange={(evt) => {
                                 const v = evt.target.value.trim();
                                 setValueToSet(v.length ? v : undefined);
                             }}
@@ -144,21 +148,27 @@ export const BulkEditPanel: React.FunctionComponent<{
                         `}
                         disabled={
                             !armed ||
+                            working ||
                             // We currently do not allow setting every single book; it's too likely that this is a mistake.
                             // We currently do not all setting a value to "", but we could change that if we need to set empty values.
                             !valueToSet ||
                             notFilteredYet
                         }
                         onClick={() => {
-                            if (valueToSet)
+                            if (valueToSet) {
+                                setWorking(true);
                                 props.performChangesToAllMatchingBooks(
                                     props.filterHolder.completeFilter,
                                     valueToSet,
-                                    props.refresh
+                                    () => {
+                                        setWorking(false);
+                                        props.refresh();
+                                    }
                                 );
+                            }
                         }}
                     >
-                        {props.actionButtonLabel}
+                        {working ? "Working..." : props.actionButtonLabel}
                     </Button>
                 </div>
             </div>

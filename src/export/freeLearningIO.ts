@@ -1,39 +1,92 @@
 import { Book, createBookFromParseServerData } from "../model/Book";
 import { axios } from "@use-hooks/axios";
-import { stringify } from "querystring";
 const FileSaver = require("file-saver");
 
 export async function giveFreeLearningCsv() {
     const rawbooks = await getHarvestedBooks();
     let books = rawbooks.map((b) => createBookFromParseServerData(b));
     // they only want open licensed books
+    console.log(
+        `Before filtering for license, there are ${books.length} books `
+    );
     books = books.filter((b) => b.license.toLowerCase().startsWith("cc-"));
+    console.log(
+        `After filtering for license, there are ${books.length} books for FreeLearningIO`
+    );
 
     const haveAlreadyOutputThisBookInThisLanguage = new Set<string>();
-    const csv = books
-        .map((b) =>
-            // for each language in the book
-            b.languages
+    let booksWithEmptyLanguagesField = 0;
+    let booksWithMissingPhash = 0;
+
+    const lines = books
+        .map((b) => {
+            if (b.languages.length === 0) {
+                console.log(`Languages empty: ${b.title}`);
+                ++booksWithEmptyLanguagesField;
+                return [];
+            }
+            if (!b.phashOfFirstContentImage) {
+                ++booksWithMissingPhash;
+            }
+
+            return b.languages
                 .map((l) => {
-                    const key = b.phashOfFirstContentImage + l.isoCode;
+                    let key = "";
+                    // as of April 10,2020, this phash is still missing from a lot of books, so just give those a pass
+                    if (!b.phashOfFirstContentImage) {
+                        // just use the book's id in place of the phash. This will mean that all langs (except English, see below)
+                        // will get output.
+                        key = b.id + l.isoCode;
+                        // if there is no phash and there are languages other than english, skip the English because
+                        // so many books have English still hanging around. This will mean less English books, but that
+                        // doesn't matter for freelearning.io, I would think.
+                        if (l.isoCode === "en" && b.languages.length > 0) {
+                            return null;
+                        }
+                    } else {
+                        key = b.phashOfFirstContentImage + l.isoCode;
+                    }
                     // Many books will have the same English content, so we only output
                     // if this is the first time we've output this book in this language.
                     // This means we could lose some legitimately unique books, e.g. if
                     // there were two different Spanish translations, we're only going to emit
                     // the first one.
-                    if (!haveAlreadyOutputThisBookInThisLanguage.has(key)) {
-                        haveAlreadyOutputThisBookInThisLanguage.add(key);
-                        //output a line pointing to this book in this language
-                        return oneLine(b, l.isoCode);
+                    if (haveAlreadyOutputThisBookInThisLanguage.has(key)) {
+                        console.log(
+                            `Already have ${l.isoCode} for phash of ${
+                                b.title
+                            } (${b.phashOfFirstContentImage.substring(
+                                0,
+                                5
+                            )}...)`
+                        );
+                        return null;
                     }
-                    return null;
+                    if (!b.artifactsToOfferToUsers.readOnline?.decision) {
+                        console.log(
+                            `ReadOnline artifact is hidden: ${b.title}`
+                        );
+                        return null;
+                    }
+
+                    haveAlreadyOutputThisBookInThisLanguage.add(key);
+                    //output a line pointing to this book in this language
+                    return oneLine(b, l.isoCode);
                 })
-                .join("\n")
-        )
-        .join("\n");
+                .filter((x) => x && x.length > 1)
+                .join("\n");
+        })
+        .filter((y) => y && y.length > 1);
+
+    console.log(`Exporting ${lines.length} lines`);
+    const csv = lines.join("\n");
     const blob = new Blob([csv], {
         type: "text/csv;charset=utf-8",
     });
+    console.log(
+        `Books without languages field: ${booksWithEmptyLanguagesField}`
+    );
+    console.log(`Books with missing phash: ${booksWithMissingPhash}`);
     FileSaver.saveAs(blob, "bloom-for-freelearning-io.csv");
 }
 function oneLine(book: any, isoCode: string): string {
@@ -49,11 +102,19 @@ function oneLine(book: any, isoCode: string): string {
 }
 function fields(book: Book, isoCode: string): Array<string | undefined> {
     try {
+        let title = book.allTitles.get(isoCode);
+        if (!title) {
+            title = book.title;
+            console.log(
+                `Missing alltitle. Using ${book.title} for language ${isoCode}`
+            );
+        }
+
         return [
-            book.title.trim(), // dc:title
+            title,
             `https://api.bloomlibrary.org/v1/fs/harvest/${book.id}/thumbnails/thumbnail-256.png?version=${book.updatedAt}`,
             book.summary || "", // description
-            book.languages[0]?.isoCode || "", // dc:language  <-- just the first one
+            isoCode || "", // dc:language
             book.publisher || "",
             book.license || "Unknown License",
             `https://bloomlibrary.org/readBook/${book.id}?bookLang=${isoCode}`,
@@ -75,13 +136,11 @@ function getHarvestedBooks(): Promise<any[]> {
                             "R6qNTeumQXjJCMutAJYAwPtip1qBulkFyLefkCE5",
                     },
                     params: {
-                        limit: 500,
+                        limit: 10000,
                         where: {
                             harvestState: "Done",
                             inCirculation: { $in: [true, null] },
-                            bookshelves: {
-                                $regex: "COVID-19",
-                            },
+                            tags: { $all: ["system:FreeLearningIO"] },
                         },
                         include: "langPointers",
                     },
