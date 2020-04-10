@@ -204,6 +204,9 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                             label="4: longer paragraphs"
                         />
                     </RadioGroup>
+                    <div>
+                        Computed: {props.book.getTagValue("computedLevel")}
+                    </div>
                 </div>
             </div>
             <Box>
