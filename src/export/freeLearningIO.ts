@@ -120,7 +120,7 @@ function fields(book: Book, isoCode: string): Array<string | undefined> {
     resourceURL: Link to book on partner platform(link to “read mode”, not book details)*/
 
         return [
-            title,
+            title.trim(),
             `https://api.bloomlibrary.org/v1/fs/harvest/${book.id}/thumbnails/thumbnail-256.png?version=${book.updatedAt}`,
             book.summary || "", // description
             isoCode || "", // dc:language
