@@ -58,7 +58,7 @@ export function getConnection(): IConnection {
     // ) {
     //     return prod;
     // }
-   
+    return prod;
     return dev;
 }
 

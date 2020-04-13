@@ -131,7 +131,7 @@ export function useGetRelatedBooks(bookId: string): Book[] {
         .filter((r: any) => r.objectId !== bookId) // don't return the book for which we're looking for related books.
         .map((r: any) => createBookFromParseServerData(r));
 }
-
+/*
 export function useGetPhashMatchingRelatedBooks(
     bookId: string,
     phashOfFirstContentImage: string
@@ -169,7 +169,7 @@ export function useGetPhashMatchingRelatedBooks(
         .filter((r: any) => r.objectId !== bookId) // don't return the book for which we're looking for related books.
         .map((r: any) => createBookFromParseServerData(r));
 }
-
+*/
 export function useGetBookDetail(bookId: string): Book | undefined | null {
     const { response, loading, error } = useAxios({
         url: `${getConnection().url}classes/books`,

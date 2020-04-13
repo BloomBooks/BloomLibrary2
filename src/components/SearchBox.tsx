@@ -30,11 +30,11 @@ const HtmlTooltip = withStyles((theme: Theme) => ({
         paddingRight: "20px",
         paddingTop: "14px",
         paddingBottom: "14px",
-        marginTop: "6px"
+        marginTop: "6px",
     },
     arrow: {
-        color: theme.palette.background.default
-    }
+        color: theme.palette.background.default,
+    },
 }))(Tooltip);
 
 export const SearchBox: React.FunctionComponent<{
@@ -42,11 +42,14 @@ export const SearchBox: React.FunctionComponent<{
     // to be able to use Emotion css both in the implementation of the component and
     // where it is invoked.)
     cssExtra?: string;
-}> = props => {
+}> = (props) => {
     const router = useContext(RouterContext);
-    const initialSearchString = router!.current.filter?.search
+    let initialSearchString = router!.current.filter?.search
         ? router!.current.filter.search
         : "";
+    if (initialSearchString.startsWith("phash")) {
+        initialSearchString = "";
+    }
     const [searchString, setSearchString] = useState(initialSearchString);
     const [showTooltip, setShowTooltip] = useState(true);
 
@@ -85,7 +88,7 @@ export const SearchBox: React.FunctionComponent<{
             router!.push({
                 title: `Grid`,
                 pageType: "grid",
-                filter: {}
+                filter: {},
             });
             setSearchString("");
             return;
@@ -98,8 +101,8 @@ export const SearchBox: React.FunctionComponent<{
                     : "search",
                 filter: {
                     ...router!.current.filter,
-                    search: searchString
-                }
+                    search: searchString,
+                },
             };
             router!.push(location);
         } else {
@@ -165,7 +168,7 @@ export const SearchBox: React.FunctionComponent<{
                 placeholder="search for books"
                 inputProps={{ "aria-label": "search for books" }}
                 value={searchString}
-                onChange={event =>
+                onChange={(event) =>
                     setSearchString(
                         event.target
                             .value /* no, don't trim yet else can't type space .trim()*/

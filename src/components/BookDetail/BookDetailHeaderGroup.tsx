@@ -21,7 +21,8 @@ import { ReadOfflineButton } from "./ReadOfflineButton";
 import { useMediaQuery, Link } from "@material-ui/core";
 import { OSFeaturesContext } from "../../components/OSFeaturesContext";
 import { commonUI } from "../../theme";
-import { useGetPhashMatchingRelatedBooks } from "../../connection/LibraryQueryHooks";
+import { useGetBookCountRaw } from "../../connection/LibraryQueryHooks";
+import { getResultsOrMessageElement } from "../../connection/GetQueryResultsUI";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{
     book: Book;
@@ -37,10 +38,15 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
         props.book,
         ArtifactType.readOnline
     );
-    const booksMatchingPHash = useGetPhashMatchingRelatedBooks(
-        props.book.id,
-        props.book.phashOfFirstContentImage
-    );
+
+    const answer = useGetBookCountRaw({
+        search:
+            "phash:" +
+            (props.book.phashOfFirstContentImage ??
+                "don't really want to search"),
+    });
+    const countOfBooksWithMatchingPhash =
+        getResultsOrMessageElement(answer).count - 1;
 
     // Show this button if the harvester made an artifact we can read online,
     // and no one decided it was not fit to use.
@@ -162,7 +168,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                                     </li>
                                 ))}
 
-                                {booksMatchingPHash?.length > 0 && (
+                                {countOfBooksWithMatchingPhash > 0 && (
                                     <li>
                                         <Link
                                             css={css`
@@ -170,7 +176,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                                             `}
                                             color={"secondary"}
                                             href={`?title=Matching Books&pageType=search&filter[search]=phash:${props.book.phashOfFirstContentImage}`}
-                                        >{`${booksMatchingPHash.length} books that may be translations`}</Link>
+                                        >{`${countOfBooksWithMatchingPhash} books that may be translations`}</Link>
                                     </li>
                                 )}
                             </ul>

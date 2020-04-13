@@ -15,10 +15,7 @@ import { commonUI } from "../../theme";
 import { BookAnalytics } from "./BookAnalytics";
 import { CachedTablesContext } from "../../App";
 import { getTagDisplayName } from "../../model/Tag";
-import {
-    useGetRelatedBooks,
-    useGetPhashMatchingRelatedBooks,
-} from "../../connection/LibraryQueryHooks";
+import { useGetRelatedBooks } from "../../connection/LibraryQueryHooks";
 import { Bookshelf } from "../../model/Bookshelf";
 
 export const MetadataGroup: React.FunctionComponent<{
