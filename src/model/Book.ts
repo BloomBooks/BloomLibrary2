@@ -15,6 +15,7 @@ export function createBookFromParseServerData(pojo: any): Book {
     b.allTitles = parseAllTitles(pojo.allTitles);
     b.languages = pojo.langPointers;
     b.finishCreationFromParseServerData(pojo.objectId);
+
     return b;
 }
 
@@ -37,6 +38,7 @@ export class Book {
     public bookshelves: string[] = [];
     public harvestLog: string[] = [];
     public harvestState: string = "";
+    public phashOfFirstContentImage: string = "";
 
     // things that can be edited on the site are observable so that the rest of the UI will update if they are changed.
     @observable public summary: string = "";
@@ -70,6 +72,16 @@ export class Book {
         // enhance: what does it mean if there are multiple items? Is only the last still true?
         return this.harvestLog.join(" / ");
     }
+    public getBestLevel(): string | undefined {
+        if (this.level) return this.level;
+        return this.getTagValue("computedLevel");
+    }
+    public getTagValue(tag: string): string | undefined {
+        const axisAndValue = this.tags.find((t) => t.startsWith(tag + ":"));
+        if (axisAndValue) {
+            return axisAndValue.split(":")[1].trim();
+        } else return undefined;
+    }
     // Make various changes to the object we get from parse server to make it more
     // convenient for various BloomLibrary uses.
     public finishCreationFromParseServerData(bookId: string): void {
@@ -90,6 +102,9 @@ export class Book {
                 }
             }
         }
+        // work around https://issues.bloomlibrary.org/youtrack/issue/BL-8327 until it is fixed
+        if (this.phashOfFirstContentImage.indexOf("null") > -1)
+            this.phashOfFirstContentImage = "";
 
         // todo: parse out the dates, in this YYYY-MM-DD format (e.g. with )
         this.uploadDate = new Date(Date.parse(this.createdAt));

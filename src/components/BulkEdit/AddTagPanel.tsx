@@ -9,11 +9,11 @@ export const AddTagPanel: React.FunctionComponent<{
     filterHolder: FilterHolder;
     refresh: () => void;
     backgroundColor: string;
-}> = observer(props => {
+}> = observer((props) => {
     return (
         <BulkEditPanel
             panelLabel="Add Tag"
-            newValueLabel="New Tag"
+            newValueLabel="New Tag (start with '-' to remove tag)"
             actionButtonLabel="Add Tag"
             performChangesToAllMatchingBooks={AddTag}
             {...props}

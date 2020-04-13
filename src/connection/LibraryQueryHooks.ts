@@ -131,6 +131,45 @@ export function useGetRelatedBooks(bookId: string): Book[] {
         .filter((r: any) => r.objectId !== bookId) // don't return the book for which we're looking for related books.
         .map((r: any) => createBookFromParseServerData(r));
 }
+
+export function useGetPhashMatchingRelatedBooks(
+    bookId: string,
+    phashOfFirstContentImage: string
+): Book[] {
+    const { response, loading, error } = useAxios({
+        url: `${getConnection().url}classes/books`,
+        method: "GET",
+        trigger: !phashOfFirstContentImage
+            ? "false"
+            : bookId + phashOfFirstContentImage,
+
+        options: {
+            headers: getConnection().headers,
+            params: {
+                where: { phashOfFirstContentImage },
+                // We don't really need all the fields of the related books, but I don't
+                // see a way to restrict to just the fields we want. It's surely faster
+                // to just get it all then get the bookids and then do separate queries to get their titles
+                include: "books",
+            },
+        },
+    });
+
+    if (
+        loading ||
+        !response ||
+        !response["data"] ||
+        !response["data"]["results"] ||
+        response["data"]["results"].length === 0 ||
+        error
+    ) {
+        return [];
+    }
+    return response["data"]["results"]
+        .filter((r: any) => r.objectId !== bookId) // don't return the book for which we're looking for related books.
+        .map((r: any) => createBookFromParseServerData(r));
+}
+
 export function useGetBookDetail(bookId: string): Book | undefined | null {
     const { response, loading, error } = useAxios({
         url: `${getConnection().url}classes/books`,
@@ -496,7 +535,13 @@ export function splitString(
         return { otherSearchTerms: input, specialParts: [] };
     }
     */
-    const facets = ["uploader:", "copyright:", "harvestState:", "country:"];
+    const facets = [
+        "uploader:",
+        "copyright:",
+        "harvestState:",
+        "country:",
+        "phash:",
+    ];
 
     const possibleParts = [...facets, ...allTagsInDatabase];
     // Start with the string with extra spaces (doubles and following colon) removed.
@@ -619,6 +664,16 @@ export function constructParseBookQuery(
                         ...caseInsensitive,
                     };
                     break;
+                case "phash":
+                    // work around https://issues.bloomlibrary.org/youtrack/issue/BL-8327 until it is fixed
+                    // This would be correct
+                    //params.where.phashOfFirstContentImage = facetValue;
+                    // But something is introducing "/r/n" at the end of phashes, so we're doing this for now
+                    params.where.phashOfFirstContentImage = {
+                        $regex: facetValue + ".*",
+                    };
+                    break;
+
                 case "publisher":
                     params.where.publisher = {
                         $regex: facetValue,
@@ -657,6 +712,9 @@ export function constructParseBookQuery(
         } else {
             delete params.where.search;
         }
+    }
+    if (params.where.search?.length === 0) {
+        delete params.where.search;
     }
 
     if (params.order === "titleOrScore") {
@@ -698,11 +756,7 @@ export function constructParseBookQuery(
     //     delete params.where.topic;
 
     // }
-    if (tagParts.length > 0) {
-        params.where.tags = {
-            $all: tagParts,
-        };
-    }
+
     // allow regex searches on bookshelf. Handing for counting up, for example, all the books with bookshelf tags
     // that start with "Enabling Writers" (and then go on to list country and sub-project).
     if (filter.bookshelf) {
@@ -723,6 +777,15 @@ export function constructParseBookQuery(
         params.where.tags = {
             $regex: regex,
             ...caseInsensitive,
+        };
+        // This will only be used if there are "otherTags". It means that if both are specified, then we loose the
+        // above regex for partial matching, but we gain the
+        // ability to filter on both the Topic and OtherTags columns in the grid.
+        tagParts.push("topic:" + f.topic);
+    }
+    if (tagParts.length > 0) {
+        params.where.tags = {
+            $all: tagParts,
         };
     }
 
