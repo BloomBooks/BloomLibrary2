@@ -15,13 +15,16 @@ import { commonUI } from "../../theme";
 import { BookAnalytics } from "./BookAnalytics";
 import { CachedTablesContext } from "../../App";
 import { getTagDisplayName } from "../../model/Tag";
-import { useGetRelatedBooks } from "../../connection/LibraryQueryHooks";
+import {
+    useGetRelatedBooks,
+    useGetPhashMatchingRelatedBooks,
+} from "../../connection/LibraryQueryHooks";
 import { Bookshelf } from "../../model/Bookshelf";
 
 export const MetadataGroup: React.FunctionComponent<{
     book: Book;
     breakToColumn: string;
-}> = observer(props => {
+}> = observer((props) => {
     const { bookshelves } = useContext(CachedTablesContext);
     const relatedBooks = useGetRelatedBooks(props.book.id);
     const theme = useTheme();
@@ -91,7 +94,7 @@ export const MetadataGroup: React.FunctionComponent<{
                     {"Features: "}
                     {props.book.features
                         ? props.book.features
-                              .map(f => {
+                              .map((f) => {
                                   return titleCase(f);
                               })
                               .join(", ")
@@ -101,12 +104,12 @@ export const MetadataGroup: React.FunctionComponent<{
                     {"Tags: "}
                     {props.book.tags
                         .filter(
-                            t =>
+                            (t) =>
                                 !t.startsWith("system") &&
                                 // In Mar 2020, we copied bookshelf tags to the new bookshelves column (see below)
                                 !t.startsWith("bookshelf")
                         )
-                        .map(t => {
+                        .map((t) => {
                             return getTagDisplayName(t);
                         })
                         .join(", ")}
@@ -115,7 +118,7 @@ export const MetadataGroup: React.FunctionComponent<{
                     {"Bookshelves: "}
                     {props.book.bookshelves
                         .map(
-                            shelfKey =>
+                            (shelfKey) =>
                                 Bookshelf.parseBookshelfKey(
                                     shelfKey,
                                     bookshelves

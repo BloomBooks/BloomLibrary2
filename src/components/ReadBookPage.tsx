@@ -8,8 +8,11 @@ import React, { useContext, useEffect, useCallback } from "react";
 import { useGetBookDetail } from "../connection/LibraryQueryHooks";
 import { Book } from "../model/Book";
 import { RouterContext } from "../Router";
+import { getUrlOfHtmlOfDigitalVersion } from "./BookDetail/ArtifactHelper";
 
-export const ReadBookPage: React.FunctionComponent<{ id: string }> = props => {
+export const ReadBookPage: React.FunctionComponent<{ id: string }> = (
+    props
+) => {
     const router = useContext(RouterContext);
 
     const handleMessageFromBloomPlayer = useCallback(
@@ -22,7 +25,7 @@ export const ReadBookPage: React.FunctionComponent<{ id: string }> = props => {
                         bookId: router!.current.bookId,
                         title: "Book Detail",
                         pageType: "book-detail",
-                        filter: {}
+                        filter: {},
                     });
                 }
             } catch (err) {
@@ -88,10 +91,4 @@ function getHarvesterBaseUrl(book: Book) {
     );
     // Using slash rather than %2f at the end helps us download as the filename we want.
     // Otherwise, the filename can be something like ken@example.com_007b3c03-52b7-4689-80bd-06fd4b6f9f28_Fox+and+Frog.bloomd
-}
-function getUrlOfHtmlOfDigitalVersion(book: Book) {
-    const harvesterBaseUrl = getHarvesterBaseUrl(book);
-    // use this if you are are working on bloom-player and are using the bloom-player npm script tobloomlibrary
-    // bloomPlayerUrl = "http://localhost:3000/bloomplayer-for-developing.htm";
-    return harvesterBaseUrl + "bloomdigital%2findex.htm";
 }

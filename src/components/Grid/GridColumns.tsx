@@ -28,7 +28,12 @@ export interface IGridColumn extends DevExpressColumn {
 }
 
 // For some tags, we want to give them their own column. So we don't want to show them in the tags column.
-const kTagsToFilterOutOfTagsList = ["bookshelf:", "system:Incoming", "level:"];
+const kTagsToFilterOutOfTagsList = [
+    "bookshelf:",
+    "topic:",
+    "system:Incoming",
+    "level:",
+];
 
 export function getBookGridColumnsDefinitions(): IGridColumn[] {
     // Note, the order here is also the default order in the table
@@ -160,6 +165,11 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             defaultVisible: false,
         },
         {
+            name: "summary",
+            defaultVisible: false,
+            sortingEnabled: true,
+        },
+        {
             name: "inCirculation",
             sortingEnabled: false, // parse server doesn't seem to be able to sort on booleans?
             getCellValue: (b: Book) => (b.inCirculation ? "Yes" : "No"),
@@ -184,6 +194,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             },
         },
         { name: "pageCount", sortingEnabled: true },
+        { name: "phashOfFirstContentImage", sortingEnabled: true },
         { name: "createdAt", sortingEnabled: true },
         { name: "publisher", sortingEnabled: true },
         { name: "originalPublisher", sortingEnabled: true },

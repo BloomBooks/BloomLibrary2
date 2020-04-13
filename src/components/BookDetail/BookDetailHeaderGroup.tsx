@@ -14,18 +14,19 @@ import {
     getArtifactVisibilitySettings,
     ArtifactType,
     getThumbnailUrl,
-    getLegacyThumbnailUrl
+    getLegacyThumbnailUrl,
 } from "./ArtifactHelper";
 import { ILanguage } from "../../model/Language";
 import { ReadOfflineButton } from "./ReadOfflineButton";
-import { useMediaQuery } from "@material-ui/core";
+import { useMediaQuery, Link } from "@material-ui/core";
 import { OSFeaturesContext } from "../../components/OSFeaturesContext";
 import { commonUI } from "../../theme";
+import { useGetPhashMatchingRelatedBooks } from "../../connection/LibraryQueryHooks";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{
     book: Book;
     breakToColumn: string;
-}> = observer(props => {
+}> = observer((props) => {
     const { bloomDesktopAvailable, bloomReaderAvailable } = useContext(
         OSFeaturesContext
     );
@@ -33,6 +34,11 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
         props.book,
         ArtifactType.readOnline
     );
+    const booksMatchingPHash = useGetPhashMatchingRelatedBooks(
+        props.book.id,
+        props.book.phashOfFirstContentImage
+    );
+
     // Show this button if the harvester made an artifact we can read online,
     // and no one decided it was not fit to use.
     const showReadOnLine = readOnlineSettings && readOnlineSettings.decision;
@@ -100,7 +106,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                     <img
                         alt="book thumbnail"
                         src={thumbnailUrl}
-                        onError={ev => {
+                        onError={(ev) => {
                             // This is unlikely to be necessary now, as we have what we think is a reliable
                             // way to know whether the harvester has created a thumbnail.
                             // And eventually all books should simply have harvester thumbnails.
@@ -152,6 +158,18 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                                         <LanguageLink language={l} />
                                     </li>
                                 ))}
+
+                                {booksMatchingPHash?.length > 0 && (
+                                    <li>
+                                        <Link
+                                            css={css`
+                                                font-size: 9pt;
+                                            `}
+                                            color={"secondary"}
+                                            href={`?title=Matching Books&pageType=search&filter[search]=phash:${props.book.phashOfFirstContentImage}`}
+                                        >{`${booksMatchingPHash.length} books that may be translations`}</Link>
+                                    </li>
+                                )}
                             </ul>
                         )) ||
                             "Picture Book (no text)"}

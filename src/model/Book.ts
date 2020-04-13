@@ -5,14 +5,39 @@ import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
 import { ILanguage } from "./Language";
 
 export function createBookFromParseServerData(pojo: any): Book {
-    const b = Object.assign(new Book(), pojo);
+    const b: Book = Object.assign(new Book(), pojo);
+    b.allTitles = new Map<string, string>();
+    //console.log("createBookFromParseServerData: " + JSON.stringify(pojo));
     // change to a more transparent name internally, and make an observable object
     b.artifactsToOfferToUsers = ArtifactVisibilitySettingsGroup.createFromParseServerData(
         pojo.show
     );
-
+    try {
+        //console.log(`allTitles=${pojo.allTitles}  [${b.id}]`);
+        if (!pojo.allTitles) {
+            //console.error(`allTitles is empty for ${b.id} ${b.title}`);
+        }
+        const allTitles =
+            (pojo.allTitles &&
+                JSON.parse(
+                    pojo.allTitles
+                        // replace illegal characters that we have in allTitles with spaces
+                        .replace(/[\n\r]/g, " ")
+                        // now remove any extra spaces
+                        .replace(/\s\s/g, " ")
+                )) ||
+            {};
+        Object.keys(allTitles).forEach((lang) => {
+            b.allTitles.set(lang, allTitles[lang]);
+            //console.log(`allTitle ${lang}, ${allTitles[lang]}`);
+        });
+    } catch (error) {
+        console.error(error);
+        console.error(`While parsing allTitles ${pojo.allTitles}`);
+    }
     b.languages = pojo.langPointers;
     b.finishCreationFromParseServerData(pojo.objectId);
+
     return b;
 }
 
@@ -22,6 +47,7 @@ export function createBookFromParseServerData(pojo: any): Book {
 export class Book {
     public id: string = "";
     public title: string = "";
+    public allTitles = new Map<string, string>();
 
     public license: string = "";
     public baseUrl: string = "";
@@ -35,6 +61,7 @@ export class Book {
     public bookshelves: string[] = [];
     public harvestLog: string[] = [];
     public harvestState: string = "";
+    public phashOfFirstContentImage: string = "";
 
     // things that can be edited on the site are observable so that the rest of the UI will update if they are changed.
     @observable public summary: string = "";
@@ -68,6 +95,16 @@ export class Book {
         // enhance: what does it mean if there are multiple items? Is only the last still true?
         return this.harvestLog.join(" / ");
     }
+    public getBestLevel(): string | undefined {
+        if (this.level) return this.level;
+        return this.getTagValue("computedLevel");
+    }
+    public getTagValue(tag: string): string | undefined {
+        const axisAndValue = this.tags.find((t) => t.startsWith(tag + ":"));
+        if (axisAndValue) {
+            return axisAndValue.split(":")[1].trim();
+        } else return undefined;
+    }
     // Make various changes to the object we get from parse server to make it more
     // convenient for various BloomLibrary uses.
     public finishCreationFromParseServerData(bookId: string): void {
@@ -88,6 +125,9 @@ export class Book {
                 }
             }
         }
+        // work around https://issues.bloomlibrary.org/youtrack/issue/BL-8327 until it is fixed
+        if (this.phashOfFirstContentImage.indexOf("null") > -1)
+            this.phashOfFirstContentImage = "";
 
         // todo: parse out the dates, in this YYYY-MM-DD format (e.g. with )
         this.uploadDate = new Date(Date.parse(this.createdAt));

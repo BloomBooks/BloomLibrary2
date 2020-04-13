@@ -19,18 +19,20 @@ import { getLanguageNamesFromCode } from "../model/Language";
 
 export const SearchResultsPage: React.FunctionComponent<{
     filter: IFilter;
-}> = props => (
-    <React.Fragment>
-        <SearchBanner filter={props.filter} />
-        <ListOfBookGroups>
-            <BookGroup
-                title={`Books matching "${props.filter.search!}"`}
-                filter={props.filter}
-                rows={20}
-            />
-        </ListOfBookGroups>
-    </React.Fragment>
-);
+}> = (props) => {
+    let title = `Books matching "${props.filter.search!}"`;
+    if (props.filter.search!.indexOf("phash") > -1) {
+        title = "Matching Books";
+    }
+    return (
+        <React.Fragment>
+            <SearchBanner filter={props.filter} />
+            <ListOfBookGroups>
+                <BookGroup title={title} filter={props.filter} rows={20} />
+            </ListOfBookGroups>
+        </React.Fragment>
+    );
+};
 
 // I don't know if we'll stick with this... but for now this is what you get
 // if there are lots of books and you scroll to the end of the 20 or so that
@@ -38,7 +40,7 @@ export const SearchResultsPage: React.FunctionComponent<{
 export const AllResultsPage: React.FunctionComponent<{
     filter: IFilter;
     title: string;
-}> = props => (
+}> = (props) => (
     <React.Fragment>
         <div
             css={css`
@@ -58,7 +60,7 @@ export const AllResultsPage: React.FunctionComponent<{
 export const DefaultOrganizationPage: React.FunctionComponent<{
     title: string;
     filter: IFilter;
-}> = props => (
+}> = (props) => (
     <React.Fragment>
         <PublisherBanner
             title={props.title}
@@ -77,7 +79,7 @@ export const DefaultOrganizationPage: React.FunctionComponent<{
 export const LanguagePage: React.FunctionComponent<{
     title: string;
     filter: IFilter;
-}> = props => {
+}> = (props) => {
     console.assert(
         props.filter.language,
         "LanguagePage must have language set in the filter"
@@ -102,7 +104,7 @@ export const LanguagePage: React.FunctionComponent<{
                     title={`Featured ${languageDisplayName} books.`}
                     filter={{
                         ...props.filter,
-                        ...{ bookshelf: "Featured" }
+                        ...{ bookshelf: "Featured" },
                     }}
                     key={"featured"}
                 />
@@ -125,7 +127,7 @@ export const LanguagePage: React.FunctionComponent<{
 export const ProjectPageWithDefaultLayout: React.FunctionComponent<{
     title: string;
     filter: IFilter;
-}> = props => {
+}> = (props) => {
     //console.log("Project Page " + JSON.stringify(props));
     return (
         <React.Fragment>
@@ -144,7 +146,7 @@ export const ProjectPageWithDefaultLayout: React.FunctionComponent<{
 export const CategoryPageWithDefaultLayout: React.FunctionComponent<{
     title: string;
     filter: IFilter;
-}> = props => {
+}> = (props) => {
     return (
         <React.Fragment>
             <PublisherBanner
@@ -161,7 +163,7 @@ export const CategoryPageWithDefaultLayout: React.FunctionComponent<{
 };
 export const BookGroupForEachTopic: React.FunctionComponent<{
     filter: IFilter;
-}> = props => {
+}> = (props) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { response, loading, error, reFetch } = useGetTopicList();
     if (response) {
@@ -177,7 +179,7 @@ export const BookGroupForEachTopic: React.FunctionComponent<{
                                 title={`${topic} books`}
                                 filter={{
                                     ...props.filter,
-                                    ...{ topic }
+                                    ...{ topic },
                                 }}
                             />
                         );
