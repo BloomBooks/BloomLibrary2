@@ -184,6 +184,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             },
         },
         { name: "pageCount", sortingEnabled: true },
+        { name: "phashOfFirstContentImage", sortingEnabled: true },
         { name: "createdAt", sortingEnabled: true },
         { name: "publisher", sortingEnabled: true },
         { name: "originalPublisher", sortingEnabled: true },

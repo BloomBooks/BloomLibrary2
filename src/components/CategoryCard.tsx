@@ -19,10 +19,12 @@ interface IProps {
     filter: IFilter;
     pageType: string;
     img: string;
+
     icon?: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
     // Some icons "look" bigger than others, so we can scale them to make them look more similar.
     // The number is a percentage less than (scale down) or greater than (scale up) 100.
     iconScale?: number;
+    iconAltText?: string;
 }
 
 // CategoryCards are things like publisher, projects, organizations. "CollectionCard" might be a better name.
@@ -82,6 +84,8 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
                 `}
             >
                 {props.icon({
+                    // TODO: how to get alt text on this mysterious thing?
+                    //props.iconAltText,
                     fill: theme.palette.secondary.main,
                     style: {
                         margin: "auto",

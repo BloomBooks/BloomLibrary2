@@ -23,8 +23,9 @@ import { commonUI } from "../../theme";
 
 interface IProps {
     id: string;
+    contextLangIso?: string;
 }
-const BookDetail: React.FunctionComponent<IProps> = props => {
+const BookDetail: React.FunctionComponent<IProps> = (props) => {
     const book = useGetBookDetail(props.id);
     if (book === undefined) {
         return <div>Loading...</div>;
@@ -33,7 +34,10 @@ const BookDetail: React.FunctionComponent<IProps> = props => {
     } else {
         return (
             <React.StrictMode>
-                <BookDetailInternal book={book}></BookDetailInternal>
+                <BookDetailInternal
+                    book={book}
+                    contextLangIso={props.contextLangIso}
+                ></BookDetailInternal>
             </React.StrictMode>
         );
     }
@@ -41,7 +45,8 @@ const BookDetail: React.FunctionComponent<IProps> = props => {
 
 export const BookDetailInternal: React.FunctionComponent<{
     book: Book;
-}> = observer(props => {
+    contextLangIso?: string;
+}> = observer((props) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { bloomDesktopAvailable, bloomReaderAvailable } = useContext(
         OSFeaturesContext
@@ -79,6 +84,7 @@ export const BookDetailInternal: React.FunctionComponent<{
                 <BookDetailHeaderGroup
                     book={props.book}
                     breakToColumn={breakToColumn}
+                    contextLangIso={props.contextLangIso}
                 />
                 {props.book.inCirculation || (
                     <div

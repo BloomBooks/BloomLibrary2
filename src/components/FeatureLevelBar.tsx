@@ -27,15 +27,15 @@ const getFeatureBarColor = (level: string, featureCount: number): string => {
 };
 
 interface IProps {
-    onBasicBookInfo: IBasicBookInfo;
+    basicBookInfo: IBasicBookInfo;
 }
 
 // This bar (which appears under the picture in a BookCard) shows any reading level
 // we know for the book, and any features that are language-independent.
-export const FeatureLevelBar: React.FunctionComponent<IProps> = props => {
+export const FeatureLevelBar: React.FunctionComponent<IProps> = (props) => {
     // Figure out what level, if any, to show in the feature bar.
-    const levelTag = props.onBasicBookInfo.tags
-        ? props.onBasicBookInfo.tags.filter(t =>
+    const levelTag = props.basicBookInfo.tags
+        ? props.basicBookInfo.tags.filter((t) =>
               t.toLowerCase().startsWith("level:")
           )[0]
         : undefined;
@@ -47,9 +47,9 @@ export const FeatureLevelBar: React.FunctionComponent<IProps> = props => {
     // Now figure out what features will show in the feature bar.
     // They have to occur in the book and not be language-dependent.
     const featureBarFeatures = getNonLanguageFeatures(
-        props.onBasicBookInfo.features
+        props.basicBookInfo.features
     );
-    const featureElements = featureBarFeatures.map(feature =>
+    const featureElements = featureBarFeatures.map((feature) =>
         feature.icon({
             key: feature.featureKey,
             fill: "black", // They must have a color specified or will be transparent
@@ -63,8 +63,8 @@ export const FeatureLevelBar: React.FunctionComponent<IProps> = props => {
                 height: featureIconHeight + "px",
                 width: featureIconHeight + "px",
                 marginLeft: "2px",
-                marginTop: "2px"
-            }
+                marginTop: "2px",
+            },
         })
     );
 

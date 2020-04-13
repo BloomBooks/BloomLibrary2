@@ -14,7 +14,7 @@ import {
     getArtifactVisibilitySettings,
     ArtifactType,
     getThumbnailUrl,
-    getLegacyThumbnailUrl
+    getLegacyThumbnailUrl,
 } from "./ArtifactHelper";
 import { ILanguage } from "../../model/Language";
 import { ReadOfflineButton } from "./ReadOfflineButton";
@@ -25,7 +25,10 @@ import { commonUI } from "../../theme";
 export const BookDetailHeaderGroup: React.FunctionComponent<{
     book: Book;
     breakToColumn: string;
-}> = observer(props => {
+    // sometimes in the UI, we know what language the user is interested in,
+    //so where possible we're going to preference that if this is a multilingual book
+    contextLangIso?: string;
+}> = observer((props) => {
     const { bloomDesktopAvailable, bloomReaderAvailable } = useContext(
         OSFeaturesContext
     );
@@ -100,7 +103,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                     <img
                         alt="book thumbnail"
                         src={thumbnailUrl}
-                        onError={ev => {
+                        onError={(ev) => {
                             // This is unlikely to be necessary now, as we have what we think is a reliable
                             // way to know whether the harvester has created a thumbnail.
                             // And eventually all books should simply have harvester thumbnails.
@@ -131,7 +134,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                                 margin-bottom: 12px;
                             `}
                         >
-                            {props.book.title}
+                            {props.book.getBestTitle(props.contextLangIso)}
                         </h1>
                         {/* These are the original credits, which aren't enough. See BL-7990
     <div>{props.book.credits}</div> */}
@@ -182,6 +185,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                     <ReadButton
                         id={props.book.id}
                         fullWidth={fullWidthButtons}
+                        preferredLanguageIso={props.contextLangIso}
                     />
                 )}
                 {showTranslateButton && (

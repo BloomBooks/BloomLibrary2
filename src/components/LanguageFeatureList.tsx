@@ -10,7 +10,7 @@ import { getUniqueLanguages, getNameDisplay } from "./LanguageLink";
 import { useTheme } from "@material-ui/core";
 
 interface IProps {
-    onBasicBookInfo: IBasicBookInfo;
+    basicBookInfo: IBasicBookInfo;
 }
 // Displays a list of the languages of the book. For each language it shows its autonym,
 // and if that is different from its English name it shows the English name, too.
@@ -19,20 +19,18 @@ interface IProps {
 // Currently the list is truncated at about two lines high. We may want to make that configurable.
 // Enhance: consider truncating more cleanly after the last language name that fits,
 // and showing some indication that there are more (ideally, a count of how many more).
-export const LanguageFeatureList: React.FunctionComponent<IProps> = props => {
+export const LanguageFeatureList: React.FunctionComponent<IProps> = (props) => {
     const theme = useTheme();
 
     // Now figure out what to show in the language list area. It's a mix
     // of simple text nodes and possibly feature icons.
     const languageElements = [];
-    for (const language of getUniqueLanguages(
-        props.onBasicBookInfo.languages
-    )) {
+    for (const language of getUniqueLanguages(props.basicBookInfo.languages)) {
         languageElements.push(getNameDisplay(language));
         // Looking for features that the book has with this language code attached,
         // such as talkingBook:en
         const langFeatures = getLanguageFeatures(
-            props.onBasicBookInfo.features,
+            props.basicBookInfo.features,
             language.isoCode
         );
         // Now make the actual icons, one for each langFeature that occurs for
@@ -45,8 +43,8 @@ export const LanguageFeatureList: React.FunctionComponent<IProps> = props => {
                     style: {
                         height: featureIconHeight + "px",
                         width: featureIconHeight + "px",
-                        marginLeft: "2px"
-                    }
+                        marginLeft: "2px",
+                    },
                 })
             );
         }

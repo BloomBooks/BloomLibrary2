@@ -10,36 +10,50 @@ import { RouterContext } from "../Router";
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
 import {
     getLegacyThumbnailUrl,
-    getThumbnailUrl
+    getThumbnailUrl,
 } from "./BookDetail/ArtifactHelper";
 import { FeatureLevelBar } from "./FeatureLevelBar";
 import { LanguageFeatureList } from "./LanguageFeatureList";
+import { getBestBookTitle } from "../model/Book";
+
+import Truncate from "react-truncate";
 
 const BookCardWidth = 140;
 
 interface IProps {
-    onBasicBookInfo: IBasicBookInfo;
+    basicBookInfo: IBasicBookInfo;
     className?: string;
     // if we're showing in one row, then we'll let swiper handle the laziness, otherwise
     // we tell the card to try and be lazy itself.
     handleYourOwnLaziness: boolean;
+    contextLangIso?: string;
 }
 
-export const BookCard: React.FunctionComponent<IProps> = props => {
+export const BookCard: React.FunctionComponent<IProps> = (props) => {
     const router = useContext(RouterContext);
-    const legacyStyleThumbnail = getLegacyThumbnailUrl(props.onBasicBookInfo);
+    const legacyStyleThumbnail = getLegacyThumbnailUrl(props.basicBookInfo);
     const { thumbnailUrl, isModernThumbnail } = getThumbnailUrl(
-        props.onBasicBookInfo
+        props.basicBookInfo
     );
-
+    const title = getBestBookTitle(
+        props.basicBookInfo.title,
+        props.basicBookInfo.allTitles,
+        props.contextLangIso
+    );
+    const titlePadding = 3;
     const card = (
         <CheapCard
             className={props.className}
             css={css`
                 width: ${BookCardWidth}px;
             `}
-            key={props.onBasicBookInfo.baseUrl}
-            onClick={() => router!.pushBook(props.onBasicBookInfo.objectId)}
+            key={props.basicBookInfo.baseUrl}
+            onClick={() =>
+                router!.pushBook(
+                    props.basicBookInfo.objectId,
+                    props.contextLangIso
+                )
+            }
         >
             <img
                 className={"swiper-lazy"}
@@ -56,7 +70,7 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
                 // but wasn't told to 'handle its own laziness'.
                 src={props.handleYourOwnLaziness ? thumbnailUrl : undefined}
                 data-src={thumbnailUrl}
-                onError={ev => {
+                onError={(ev) => {
                     // This is unlikely to be necessary now, as we have what we think is a reliable
                     // way to know whether the harvester has created a thumbnail.
                     // And eventually all books should simply have harvester thumbnails.
@@ -79,11 +93,12 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
                 `
             }
         /> */}
-            <FeatureLevelBar onBasicBookInfo={props.onBasicBookInfo} />
+            <FeatureLevelBar basicBookInfo={props.basicBookInfo} />
             <div
                 css={css`
                     font-weight: normal;
-                    padding-left: 3px;
+                    padding-left: ${titlePadding}px;
+                    padding-right: ${titlePadding}px;
                     max-height: 40px;
                     overflow-y: hidden;
                     margin-top: 3px;
@@ -91,9 +106,22 @@ export const BookCard: React.FunctionComponent<IProps> = props => {
                     font-size: 10pt;
                 `}
             >
-                {props.onBasicBookInfo.title}
+                {/* For most titles, we don't want to pay the cost of checking the length and using this
+                truncation component. By experiment, we found that 30 characters causes some false positives
+                but not many, and no false negatives so far. */}
+                {title.length < 30 ? (
+                    title
+                ) : (
+                    <Truncate
+                        // test false positives css={css`color: red;`}
+                        width={BookCardWidth - 2 * titlePadding}
+                        lines={2}
+                    >
+                        {title}
+                    </Truncate>
+                )}
             </div>
-            <LanguageFeatureList onBasicBookInfo={props.onBasicBookInfo} />
+            <LanguageFeatureList basicBookInfo={props.basicBookInfo} />
         </CheapCard>
     );
     /* Note, LazyLoad currently breaks strict mode. See app.tsx */

@@ -19,7 +19,7 @@ import { getLanguageNamesFromCode } from "../model/Language";
 
 export const SearchResultsPage: React.FunctionComponent<{
     filter: IFilter;
-}> = props => (
+}> = (props) => (
     <React.Fragment>
         <SearchBanner filter={props.filter} />
         <ListOfBookGroups>
@@ -38,7 +38,7 @@ export const SearchResultsPage: React.FunctionComponent<{
 export const AllResultsPage: React.FunctionComponent<{
     filter: IFilter;
     title: string;
-}> = props => (
+}> = (props) => (
     <React.Fragment>
         <div
             css={css`
@@ -58,7 +58,7 @@ export const AllResultsPage: React.FunctionComponent<{
 export const DefaultOrganizationPage: React.FunctionComponent<{
     title: string;
     filter: IFilter;
-}> = props => (
+}> = (props) => (
     <React.Fragment>
         <PublisherBanner
             title={props.title}
@@ -77,13 +77,13 @@ export const DefaultOrganizationPage: React.FunctionComponent<{
 export const LanguagePage: React.FunctionComponent<{
     title: string;
     filter: IFilter;
-}> = props => {
+}> = (props) => {
     console.assert(
         props.filter.language,
         "LanguagePage must have language set in the filter"
     );
 
-    const { languages } = useContext(CachedTablesContext);
+    const { languagesByBookCount: languages } = useContext(CachedTablesContext);
     let languageDisplayName = getLanguageNamesFromCode(
         props.filter.language!,
         languages
@@ -102,7 +102,7 @@ export const LanguagePage: React.FunctionComponent<{
                     title={`Featured ${languageDisplayName} books.`}
                     filter={{
                         ...props.filter,
-                        ...{ bookshelf: "Featured" }
+                        ...{ bookshelf: "Featured" },
                     }}
                     key={"featured"}
                 />
@@ -125,7 +125,7 @@ export const LanguagePage: React.FunctionComponent<{
 export const ProjectPageWithDefaultLayout: React.FunctionComponent<{
     title: string;
     filter: IFilter;
-}> = props => {
+}> = (props) => {
     //console.log("Project Page " + JSON.stringify(props));
     return (
         <React.Fragment>
@@ -144,7 +144,7 @@ export const ProjectPageWithDefaultLayout: React.FunctionComponent<{
 export const CategoryPageWithDefaultLayout: React.FunctionComponent<{
     title: string;
     filter: IFilter;
-}> = props => {
+}> = (props) => {
     return (
         <React.Fragment>
             <PublisherBanner
@@ -161,7 +161,7 @@ export const CategoryPageWithDefaultLayout: React.FunctionComponent<{
 };
 export const BookGroupForEachTopic: React.FunctionComponent<{
     filter: IFilter;
-}> = props => {
+}> = (props) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { response, loading, error, reFetch } = useGetTopicList();
     if (response) {
@@ -177,7 +177,7 @@ export const BookGroupForEachTopic: React.FunctionComponent<{
                                 title={`${topic} books`}
                                 filter={{
                                     ...props.filter,
-                                    ...{ topic }
+                                    ...{ topic },
                                 }}
                             />
                         );

@@ -9,7 +9,9 @@ import { useGetBookDetail } from "../connection/LibraryQueryHooks";
 import { Book } from "../model/Book";
 import { RouterContext } from "../Router";
 
-export const ReadBookPage: React.FunctionComponent<{ id: string }> = props => {
+export const ReadBookPage: React.FunctionComponent<{ id: string }> = (
+    props
+) => {
     const router = useContext(RouterContext);
 
     const handleMessageFromBloomPlayer = useCallback(
@@ -22,7 +24,7 @@ export const ReadBookPage: React.FunctionComponent<{ id: string }> = props => {
                         bookId: router!.current.bookId,
                         title: "Book Detail",
                         pageType: "book-detail",
-                        filter: {}
+                        filter: {},
                     });
                 }
             } catch (err) {
@@ -45,8 +47,8 @@ export const ReadBookPage: React.FunctionComponent<{ id: string }> = props => {
     // use the bloomplayer.htm we copy into our public/ folder, where CRA serves from
     const bloomPlayerUrl = "bloom-player/bloomplayer.htm";
 
-    const langParam = router?.current.bookLang
-        ? `&lang=${router.current.bookLang}`
+    const langParam = router?.current.contextLangIso
+        ? `&lang=${router.current.contextLangIso}`
         : "";
 
     const iframeSrc = `${bloomPlayerUrl}?url=${url}&showBackButton=true&useOriginalPageSize=true${langParam}`;

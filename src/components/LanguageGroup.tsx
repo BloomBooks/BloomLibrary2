@@ -19,22 +19,22 @@ export const LanguageGroup: React.FunctionComponent = () => {
     const router = useContext(RouterContext);
 
     const [swiper, updateSwiper] = useState<any | null>(null);
-    const { languages } = useContext(CachedTablesContext);
+    const { languagesByBookCount: languages } = useContext(CachedTablesContext);
 
     let filteredLanguages: ILanguage[] = [];
 
     const swiperConfig = {
         navigation: {
             nextEl: ".swiper-button-next.swiper-button",
-            prevEl: ".swiper-button-prev.swiper-button"
+            prevEl: ".swiper-button-prev.swiper-button",
         },
         spaceBetween: 20,
-        slidesPerView: "auto"
+        slidesPerView: "auto",
     };
     const getFilteredLanguages = (filter: string | null): ILanguage[] => {
         // MatchSorter is an npm module that does smart autocomplete over a list of values.
         return matchSorter(languages, filter || "", {
-            keys: ["englishName", "name", "isoCode"]
+            keys: ["englishName", "name", "isoCode"],
         });
     };
     const getFilterLanguagesUI = (
@@ -64,8 +64,8 @@ export const LanguageGroup: React.FunctionComponent = () => {
                 <div
                     css={css`
                         height: ${commonUI.languageCardHeightInPx +
-                            commonUI.cheapCardMarginBottomInPx -
-                            10}px; // 10 matches the padding-top
+                        commonUI.cheapCardMarginBottomInPx -
+                        10}px; // 10 matches the padding-top
                         padding-top: 10px;
                         font-size: 0.8rem;
                     `}
@@ -98,7 +98,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                     {({
                         getInputProps,
                         getItemProps,
-                        inputValue: currentInputBoxText
+                        inputValue: currentInputBoxText,
                     }) => (
                         <div>
                             <div
@@ -132,7 +132,8 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                                     swiper.slideTo(0);
                                                 }
                                             },
-                                            onKeyPress: e => handleKeyPress(e)
+                                            onKeyPress: (e) =>
+                                                handleKeyPress(e),
                                         })}
                                         onBlur={() => {
                                             // Overridden.

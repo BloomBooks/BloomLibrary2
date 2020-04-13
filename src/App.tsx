@@ -18,29 +18,29 @@ import {
 } from "./components/OSFeaturesContext";
 interface ICachedTables {
     tags: string[];
-    languages: ILanguage[];
+    languagesByBookCount: ILanguage[];
     bookshelves: IBookshelfResult[];
 }
 // for use when we aren't in a react context with hooks
 export const CachedTables: ICachedTables = {
     tags: [],
-    languages: [],
+    languagesByBookCount: [],
     bookshelves: [],
 };
 
 export const CachedTablesContext = React.createContext<ICachedTables>({
     tags: [],
-    languages: [],
+    languagesByBookCount: [],
     bookshelves: [],
 });
 
 export const App: React.FunctionComponent<{}> = (props) => {
     const tags = useGetTagList();
-    const languages = useGetCleanedAndOrderedLanguageList();
+    const languagesByBookCount = useGetCleanedAndOrderedLanguageList();
     const bookshelves = useGetBookshelvesByCategory();
     CachedTables.bookshelves = bookshelves;
     CachedTables.tags = tags;
-    CachedTables.languages = languages;
+    CachedTables.languagesByBookCount = languagesByBookCount;
 
     return (
         <>
@@ -61,7 +61,11 @@ export const App: React.FunctionComponent<{}> = (props) => {
             <div className="App">
                 <ThemeProvider theme={theme}>
                     <CachedTablesContext.Provider
-                        value={{ tags, languages, bookshelves }}
+                        value={{
+                            tags,
+                            languagesByBookCount: languagesByBookCount,
+                            bookshelves,
+                        }}
                     >
                         <OSFeaturesContext.Provider
                             value={{

@@ -3,16 +3,16 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import { useSearchBooks } from "../../connection/LibraryQueryHooks";
 import { Book } from "../../model/Book";
 
-import React, { useState, useEffect, useRef, ChangeEvent } from "react";
+import React, { useState, ChangeEvent, useContext } from "react";
 import { TextField, IconButton } from "@material-ui/core";
 import { observer } from "mobx-react";
 import { useTheme } from "@material-ui/core/styles";
 import { Tag } from "./Tag";
 import { Autocomplete } from "@material-ui/lab";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
+import { CachedTablesContext } from "../../App";
 
 interface IProps {
     book: Book;
@@ -22,40 +22,15 @@ interface IProps {
 // This displays a list of a book's tags and lets you edit them using type-ahead.
 // Any change (including an incompletely typed new tag) results
 // in a callback to setModified.
-export const TagsList: React.FunctionComponent<IProps> = observer(props => {
+export const TagsList: React.FunctionComponent<IProps> = observer((props) => {
     const theme = useTheme();
     // Whether to show the box used to type a new tag
     const [newTagBoxVisible, setNewTagBoxVisible] = useState(false);
-
+    const { tags } = useContext(CachedTablesContext);
     // Tracks the content of the new tag box, so Save can go ahead and
     // make a new tag from it. We could try to get a reference to the
     // actual input element, but this is simpler.
     const [newTagContent, setNewTagContent] = useState("");
-    const search = useSearchBooks(
-        {
-            keys: "tags"
-            // Currently we're getting ALL the books to accumulate the list of existing tags.
-            // We may need a cloud code function to just retrieve the unique tags without transmitting
-            // all the books with their duplicate tags to the client. Or a sample of some reasonable
-            // number of books may be good enough.
-            //limit: maxCardsToRetrieve,
-        },
-        {}
-    );
-    // The combination of useRef and useEffect allows us to run the search once
-    // and keep using the resulting tag list.
-    const tags = useRef<string[]>([]);
-    useEffect(() => {
-        const temp = new Set<string>();
-        for (const book of search.books) {
-            for (const tag1 of (book as any).tags) {
-                const tag = tag1 as string;
-                temp.add(tag);
-            }
-        }
-        tags.current = Array.from(temp.values());
-        //console.log("tags.current=" + JSON.stringify(tags.current));
-    }, [search]);
 
     // This is the original tag matching algorithm from BL1. Autocomplete seems to do pretty well without it,
     // and it's not obvious from the documentation how to control it.
@@ -156,7 +131,7 @@ export const TagsList: React.FunctionComponent<IProps> = observer(props => {
                 .sort((x, y) =>
                     x.replace(": ", ":").localeCompare(y.replace(": ", ":"))
                 )
-                .map(t => (
+                .map((t) => (
                     <Tag key={t} content={t} delete={handleDelete}></Tag>
                 ))}
             {newTagBoxVisible && (
@@ -169,8 +144,8 @@ export const TagsList: React.FunctionComponent<IProps> = observer(props => {
                     `}
                     id="apNewTag"
                     freeSolo // user can create new tags not in options
-                    options={tags.current}
-                    renderInput={params => (
+                    options={tags}
+                    renderInput={(params) => (
                         <TextField
                             {...params}
                             margin="none"

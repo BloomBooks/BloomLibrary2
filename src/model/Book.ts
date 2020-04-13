@@ -6,11 +6,13 @@ import { ILanguage } from "./Language";
 
 export function createBookFromParseServerData(pojo: any): Book {
     const b = Object.assign(new Book(), pojo);
+
     // change to a more transparent name internally, and make an observable object
     b.artifactsToOfferToUsers = ArtifactVisibilitySettingsGroup.createFromParseServerData(
         pojo.show
     );
 
+    b.allTitles = parseAllTitles(pojo.allTitles);
     b.languages = pojo.langPointers;
     b.finishCreationFromParseServerData(pojo.objectId);
     return b;
@@ -22,7 +24,7 @@ export function createBookFromParseServerData(pojo: any): Book {
 export class Book {
     public id: string = "";
     public title: string = "";
-
+    public allTitles = new Map<string, string>();
     public license: string = "";
     public baseUrl: string = "";
     public copyright: string = "";
@@ -147,4 +149,45 @@ export class Book {
             this.tags.push(name);
         }
     }
+
+    public getBestTitle(langISO?: string): string {
+        const t = langISO ? this.allTitles.get(langISO) : this.title;
+        return t || this.title; // if we couldn't get this lang out of allTitles, use the official title
+    }
+}
+
+// This is used where we only have an IBasicBookInfo, not a full book, but need to get a language-specific title for the book
+export function getBestBookTitle(
+    defaultTitle: string,
+    rawAllTitlesJson: string,
+    contextLangIso?: string
+): string {
+    if (!contextLangIso) return defaultTitle;
+
+    const map = parseAllTitles(rawAllTitlesJson);
+    return map.get(contextLangIso) || defaultTitle;
+}
+
+function parseAllTitles(allTitlesString: string): Map<string, string> {
+    const map = new Map<string, string>();
+    try {
+        const allTitles =
+            (allTitlesString &&
+                JSON.parse(
+                    allTitlesString
+                        // replace illegal characters that we have in allTitles with spaces
+                        .replace(/[\n\r]/g, " ")
+                        // now remove any extra spaces
+                        .replace(/\s\s/g, " ")
+                )) ||
+            {};
+        Object.keys(allTitles).forEach((lang) => {
+            map.set(lang, allTitles[lang]);
+            console.log(`allTitle ${lang}, ${allTitles[lang]}`);
+        });
+    } catch (error) {
+        console.error(error);
+        console.error(`While parsing allTitles ${allTitlesString}`);
+    }
+    return map;
 }

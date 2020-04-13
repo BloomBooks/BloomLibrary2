@@ -9,7 +9,7 @@ import { BookCard } from "./BookCard";
 import { IFilter } from "../IFilter";
 import {
     useSearchBooks,
-    IBasicBookInfo
+    IBasicBookInfo,
 } from "../connection/LibraryQueryHooks";
 import LazyLoad from "react-lazyload";
 import ReactIdSwiper from "react-id-swiper";
@@ -18,14 +18,20 @@ import { commonUI } from "../theme";
 import { forceCheck as forceCheckLazyLoadComponents } from "react-lazyload";
 interface IProps {
     title: string;
-    filter: IFilter; // becomes the "where" clause the query
     order?: string;
     // I don't know... this could be "bookLimit" instead "rows". Have to think in terms
     // of mobile versus big screen.... hmmm...
     rows?: number;
+
+    contextLangIso?: string;
+
+    // Either we should have this filter:
+    filter?: IFilter; // becomes the "where" clause the query
+    // ..or we should have a list of predeterminedBooks that the client already chose
+    predeterminedBooks?: IBasicBookInfo[];
 }
 
-export const BookGroup: React.FunctionComponent<IProps> = props => (
+export const BookGroup: React.FunctionComponent<IProps> = (props) => (
     // Enhance: this has parameters, height and offset, that should help
     // but so far I haven't got them to work well. It has many other
     // parameters too that someone should look into. Make sure to test
@@ -48,33 +54,20 @@ export const BookGroup: React.FunctionComponent<IProps> = props => (
         <BookGroupInner {...props} />
     </LazyLoad>
 );
-export const BookGroupInner: React.FunctionComponent<IProps> = props => {
+export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
     // we have either a horizontally-scrolling list of 20, or several rows
     // of 5 each
     const maxCardsToRetrieve = props.rows ? props.rows * 5 : 20;
     const search = useSearchBooks(
         {
             include: "langPointers",
-            keys:
-                "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt",
             // the following is arbitrary. I don't even yet no what the ux is that we want.
             limit: maxCardsToRetrieve,
-            order: props.order || "titleOrScore"
+            order: props.order || "titleOrScore",
         },
-        props.filter
+        props.filter || { language: "not going to find me" }, /// REVIEW: what happens when this is intentionally undefined
+        !!props.predeterminedBooks // skip this if we already have books
     );
-
-    const swiperConfig = {
-        preloadImages: false,
-        lazy: true,
-        watchSlidesVisibility: true,
-        navigation: {
-            nextEl: ".swiper-button-next.swiper-button",
-            prevEl: ".swiper-button-prev.swiper-button"
-        },
-        spaceBetween: 20,
-        slidesPerView: "auto"
-    };
 
     // We make life hard on <Lazy> components by thinking maybe we'll show, for example, a row of Level 1 books at
     // the top of the screen. So the <Lazy> thing may think "well, no room for me then until they scroll". But
@@ -99,16 +92,21 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
 
     const showInOneRow = !props.rows || props.rows < 2;
 
-    const cards = search.books.map((b: IBasicBookInfo) => (
-        // if we're showing in one row, then we'll let swiper handle the laziness, otherwise
-        // we tell the card to try and be lazy itself.
-        <BookCard
-            handleYourOwnLaziness={!showInOneRow}
-            key={b.baseUrl}
-            onBasicBookInfo={b}
-        />
-    ));
-    if (search.totalMatchingRecords > maxCardsToRetrieve) {
+    const cards = (props.predeterminedBooks || search.books).map(
+        (b: IBasicBookInfo) => (
+            // if we're showing in one row, then we'll let swiper handle the laziness, otherwise
+            // we tell the card to try and be lazy itself.
+            <BookCard
+                handleYourOwnLaziness={!showInOneRow}
+                key={b.baseUrl}
+                basicBookInfo={b}
+                contextLangIso={props.contextLangIso}
+            />
+        )
+    );
+
+    // Enhance: allow using a MoreCard even with a fixed set of known books, rather than only if we're using a filter.
+    if (props.filter && search.totalMatchingRecords > maxCardsToRetrieve) {
         cards.push(
             <MoreCard
                 key={"more"}
@@ -119,6 +117,19 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
             />
         );
     }
+
+    const swiperConfig = {
+        preloadImages: false,
+        lazy: true,
+        watchSlidesVisibility: true,
+        navigation: {
+            nextEl: ".swiper-button-next.swiper-button",
+            prevEl: ".swiper-button-prev.swiper-button",
+        },
+        spaceBetween: 20,
+        slidesPerView: "auto",
+    };
+
     const bookList = showInOneRow ? (
         <ReactIdSwiper {...swiperConfig}>{cards}</ReactIdSwiper>
     ) : (
@@ -133,7 +144,8 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
     );
 
     const zeroBooksMatchedElement =
-        search.books && search.books.length > 0 ? null : (
+        (props.predeterminedBooks && props.predeterminedBooks.length > 0) ||
+        (search.books && search.books.length > 0) ? null : (
             // <p>{`No Books for "${
             //     props.title
             // }". Should not see this in production`}</p>
@@ -149,7 +161,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
                     margin-top: ${commonUI.bookGroupTopMarginPx}px;
                     // we don't know yet how many rows we might get if rows>1, but at least leave room for one
                     min-height: ${commonUI.bookCardHeightPx +
-                        commonUI.bookGroupTopMarginPx}px;
+                    commonUI.bookGroupTopMarginPx}px;
                 `}
             >
                 <h1>
@@ -161,7 +173,9 @@ export const BookGroupInner: React.FunctionComponent<IProps> = props => {
                             margin-left: 1em;
                         `}
                     >
-                        {search.totalMatchingRecords}
+                        {props.predeterminedBooks
+                            ? props.predeterminedBooks.length
+                            : search.totalMatchingRecords}
                     </span>
                 </h1>
                 {search.waiting || bookList}

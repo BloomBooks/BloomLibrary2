@@ -53,7 +53,10 @@ export class BrowseView extends Component {
                 );
                 return (
                     <React.Suspense fallback={<div>Loading...</div>}>
-                        <BookDetail id={this.router.current.bookId!} />
+                        <BookDetail
+                            id={this.router.current.bookId!}
+                            contextLangIso={this.router.current.contextLangIso}
+                        />
                     </React.Suspense>
                 );
 

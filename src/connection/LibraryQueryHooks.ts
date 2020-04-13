@@ -36,7 +36,11 @@ export function useGetCleanedAndOrderedLanguageList(): ILanguage[] {
     return [];
 }
 export function useGetTagList(): string[] {
-    const axiosResult = useLibraryQuery("tag", { limit: 1000, count: 1000 });
+    const axiosResult = useLibraryQuery("tag", {
+        limit: 1000,
+        count: 1000,
+        order: "name",
+    });
 
     if (axiosResult.response?.data?.results) {
         return axiosResult.response.data.results.map(
@@ -137,8 +141,8 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
             params: {
                 where: { objectId: bookId },
                 keys:
-                    "title,baseUrl,bookOrder,inCirculation,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
-                    "tags,pageCount,show,credits,country,features,internetLimits," +
+                    "title,allTitles,baseUrl,bookOrder,inCirculation,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
+                    "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits," +
                     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount," +
                     "harvestStartedAt,bookshelves,publisher,originalPublisher",
                 // fluff up fields that reference other tables
@@ -214,7 +218,7 @@ export function useGetBooksForGrid(
 
                 keys:
                     "title,baseUrl,license,licenseNotes,inCirculation,summary,copyright,harvestState,harvestLog," +
-                    "tags,pageCount,show,credits,country,features,internetLimits,bookshelves," +
+                    "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits,bookshelves," +
                     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher,originalPublisher",
                 // fluff up fields that reference other tables
                 include: "uploader,langPointers",
@@ -252,7 +256,8 @@ function useBookQueryInternal(
 
     filter: IFilter, // this is *which* records to return
     limit?: number, //pagination
-    skip?: number //pagination
+    skip?: number, //pagination
+    doNotRunActuallyQuery?: boolean
 ): IAxiosAnswer {
     const { tags } = useContext(CachedTablesContext);
 
@@ -266,6 +271,10 @@ function useBookQueryInternal(
     //console.log("finalParams: " + JSON.stringify(finalParams));
     return useAxios({
         url: `${getConnection().url}classes/books`,
+        // The "rules of hooks" require that if we're ever going to run a useEffect, we have to *always* run it
+        // So we can't conditionally run this useBookQueryInternal(). But useAxios does give this way to run its
+        // internal useEffect() but not actually run the query.
+        forceDispatchEffect: () => !doNotRunActuallyQuery,
         method: "GET",
         // there is an inner useEffect, and it looks at this. We want to rerun whenever the query changes (duh).
         // Also, the very first time this runs, we will need to run again once we get
@@ -283,26 +292,26 @@ function useBookQueryInternal(
     });
 }
 
-export function useBookQuery(
-    params: {},
-    filter: IFilter,
-    limit?: number, //pagination
-    skip?: number //pagination
-): IBasicBookInfo[] {
-    const bookResultsStatus: IAxiosAnswer = useBookQueryInternal(
-        params,
-        filter,
-        limit,
-        skip
-    );
-    const simplifiedResultStatus = processAxiosStatus(bookResultsStatus);
+// export function useBookQuery(
+//     params: {},
+//     filter: IFilter,
+//     limit?: number, //pagination
+//     skip?: number //pagination
+// ): IBasicBookInfo[] {
+//     const bookResultsStatus: IAxiosAnswer = useBookQueryInternal(
+//         params,
+//         filter,
+//         limit,
+//         skip
+//     );
+//     const simplifiedResultStatus = processAxiosStatus(bookResultsStatus);
 
-    return simplifiedResultStatus.books.map((rawFromREST: any) => {
-        const b: IBasicBookInfo = { ...rawFromREST };
-        b.languages = rawFromREST.langPointers;
-        return b;
-    });
-}
+//     return simplifiedResultStatus.books.map((rawFromREST: any) => {
+//         const b: IBasicBookInfo = { ...rawFromREST };
+//         b.languages = rawFromREST.langPointers;
+//         return b;
+//     });
+// }
 
 // Note that we also have a full-fledge "book" class, so why aren't we just using that?
 // Book class, used in the BookDetail screen, is basically everything we might want to
@@ -312,6 +321,8 @@ export interface IBasicBookInfo {
     objectId: string;
     baseUrl: string;
     harvestState?: string;
+    //note, here in a "BasicBookInfo", this is just JSON, intentionally not parsed yet, as we normally don't need it.
+    allTitles: string;
     // conceptually a date, but uploaded from parse server this is what it has.
     harvestStartedAt?: { iso: string } | undefined;
     title: string;
@@ -324,6 +335,7 @@ export interface IBasicBookInfo {
     pageCount: string;
     createdAt: string;
     country?: string;
+    phashOfFirstContentImage?: string;
 }
 
 export interface ISearchBooksResult {
@@ -351,14 +363,30 @@ interface ISimplifiedAxiosResult {
 // May set param.order to "titleOrScore" to indicate that books should be
 // sorted by title unless the search is a keyword search that makes a ranking
 // score available. For this to work, params must also specify keys.
+//
+// NOTE: callers are welcome to include `keys` in the `params`, which will
+// override what we have here, if they really
+// only want a subset of IBasicBookInfo, but realize that this is usually not
+// worth the added complexity. By default, this function should just fully
+// populate the IBasicBookInfo.
 export function useSearchBooks(
     params: {}, // this is the order, which fields, limits, etc.
-    filter: IFilter // this is *which* books to return
+    filter: IFilter, // this is *which* books to return
+    doNotRunActuallyQuery?: boolean
 ): ISearchBooksResult {
-    const paramsWithCount = { ...params, count: 1 };
+    const fullParams = {
+        count: 1,
+        keys:
+            // this should be all the fields of IBasicBookInfo
+            "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,phashOfFirstContentImage,allTitles",
+        ...params,
+    };
     const bookResultsStatus: IAxiosAnswer = useBookQueryInternal(
-        paramsWithCount,
-        filter
+        fullParams,
+        filter,
+        undefined,
+        undefined,
+        doNotRunActuallyQuery
     );
     const simplifiedResultStatus = processAxiosStatus(bookResultsStatus);
 

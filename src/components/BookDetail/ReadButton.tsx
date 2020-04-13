@@ -13,8 +13,9 @@ import { commonUI } from "../../theme";
 interface IProps {
     id: string;
     fullWidth?: boolean;
+    preferredLanguageIso?: string;
 }
-export const ReadButton: React.FunctionComponent<IProps> = props => {
+export const ReadButton: React.FunctionComponent<IProps> = (props) => {
     const router = useContext(RouterContext);
     return (
         <Button
@@ -39,7 +40,9 @@ export const ReadButton: React.FunctionComponent<IProps> = props => {
                 margin-bottom: 10px !important;
                 float: right;
             `}
-            onClick={() => router!.pushBookRead(props.id)}
+            onClick={() =>
+                router!.pushBookRead(props.id, props.preferredLanguageIso)
+            }
         >
             <h1
                 css={css`

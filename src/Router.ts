@@ -6,7 +6,7 @@ import * as mobx from "mobx";
 import { IFilter } from "./IFilter";
 import {
     restoreScrollPosition,
-    storeScrollPosition
+    storeScrollPosition,
 } from "./RestoreScrollPosition";
 
 export interface ILocation {
@@ -22,7 +22,7 @@ export interface ILocation {
 
     // This isn't really part of the location, but it is other information we get from
     // the url, all of which is currently parsed into an ILocation object.
-    bookLang?: string;
+    contextLangIso?: string;
 
     // Often the card that we click on to go to a page, well it already has information
     // about the page that the page will just have to re-query. For example a card that
@@ -43,21 +43,21 @@ export class Router {
     public static home: ILocation = {
         title: "Home",
         pageType: "home",
-        filter: {}
+        filter: {},
     };
     public waitingOnSaveOrCancel: boolean = false;
     public constructor() {
         const home = Router.home;
         const specialPages = ["grid", "bulk"];
         const specialPage = specialPages.find(
-            s => "/" + s === window.location.pathname
+            (s) => "/" + s === window.location.pathname
         );
         if (specialPage) {
             this.push(home);
             this.push({
                 title: specialPage,
                 pageType: specialPage,
-                filter: {}
+                filter: {},
             });
         } else if (window.location.search === "") {
             // we're just at the root of the site
@@ -150,21 +150,29 @@ export class Router {
         this.push(Router.home);
     }
 
-    public pushBook(bookId: string) {
-        this.push({
+    public pushBook(bookId: string, contextLangIso?: string) {
+        const location: ILocation = {
             bookId,
             pageType: "book-detail",
             filter: {},
-            title: "Book Detail"
-        });
+            title: "Book Detail",
+        };
+        if (contextLangIso) {
+            location.contextLangIso = contextLangIso;
+        }
+        this.push(location);
     }
-    public pushBookRead(bookId: string) {
-        this.push({
+    public pushBookRead(bookId: string, contextLangIso?: string) {
+        const location: ILocation = {
             bookId,
             pageType: "book-read",
             filter: {},
-            title: "Book Read"
-        });
+            title: "Book Read",
+        };
+        if (contextLangIso) {
+            location.contextLangIso = contextLangIso;
+        }
+        this.push(location);
     }
     public push(location: ILocation) {
         if (this.waitingOnSaveOrCancel) {
@@ -187,7 +195,7 @@ export class Router {
             // replace our place in history with this new search, so that "back" will go back to before we started searching
             window.history.replaceState(
                 {
-                    breadcrumbs: mobx.toJS(this.breadcrumbStack)
+                    breadcrumbs: mobx.toJS(this.breadcrumbStack),
                 },
                 this.current.title,
                 "?" + QueryString.stringify(location)
@@ -201,7 +209,7 @@ export class Router {
             // Enter this new location in the browser's history.
             window.history.pushState(
                 {
-                    breadcrumbs: mobx.toJS(this.breadcrumbStack)
+                    breadcrumbs: mobx.toJS(this.breadcrumbStack),
                 },
                 this.current.title,
                 "?" + QueryString.stringify(location)

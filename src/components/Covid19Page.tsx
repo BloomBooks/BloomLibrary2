@@ -1,21 +1,22 @@
 import css from "@emotion/css/macro";
-import React from "react"; // see https://github.com/emotion-js/emotion/issues/1156
+import React, { useState } from "react"; // see https://github.com/emotion-js/emotion/issues/1156
 // these two lines make the css prop work on react elements
-import { jsx, SerializedStyles } from "@emotion/core";
+import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import { CustomizableBanner } from "./banners/CustomizableBanner";
 import { ListOfBookGroups } from "./ListOfBookGroups";
-import { BookGroup } from "./BookGroup";
 
-const imageBase = "https://share.bloomlibrary.org/bookshelf-images/";
+import { ByLanguageGroups } from "./ByLanguageGroups";
 
 export const Covid19Page: React.FunctionComponent = () => {
     const filter = { bookshelf: "COVID-19" };
+    const [counts, setCounts] = useState("");
     return (
         <div>
             <CustomizableBanner
                 title="COVID-19"
                 filter={filter}
+                bookCountMessage={counts}
                 spec={{
                     key: "COVID-19",
                     bannerCss: css`
@@ -41,7 +42,23 @@ export const Covid19Page: React.FunctionComponent = () => {
                 }}
             />
             <ListOfBookGroups>
-                <BookGroup title="All" filter={filter} rows={99} />
+                <ByLanguageGroups
+                    titlePrefix={""} //"COVID-19 books in"}
+                    filter={filter}
+                    reportBooksAndLanguages={(books, langs) =>
+                        setCounts(`${books} books in ${langs} languages`)
+                    }
+                />
+                {/* <BookGroup
+                    rows={99}
+                    title="COVID-19 books"
+                    filter={{ topic: "COVID-19" }}
+                /> */}
+                {/* <BookGroup
+                    rows={99}
+                    title="All COVID-19 books"
+                    filter={{ ...filter }}
+                /> */}
             </ListOfBookGroups>
         </div>
     );

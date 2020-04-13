@@ -25,10 +25,10 @@ import { ListOfBookGroups } from "../components/ListOfBookGroups";
 
 // Provide all stories with a router in their context:
 const router = new Router();
-addDecorator(storyFn => (
+addDecorator((storyFn) => (
     <RouterContext.Provider value={router}>{storyFn()}</RouterContext.Provider>
 ));
-addDecorator(storyFn => (
+addDecorator((storyFn) => (
     <ThemeProvider theme={theme}>{storyFn()}</ThemeProvider>
 ));
 const sampleUrl =
@@ -47,6 +47,7 @@ storiesOf("BookDetail", module)
 storiesOf("BookCard", module).add("simple", () => {
     const book = {
         title: "Grandpa Fish and the Radio",
+        allTitles: "",
         objectId: "6rvW9OSAe9",
         baseUrl: sampleUrl,
         languages: [
@@ -54,20 +55,20 @@ storiesOf("BookCard", module).add("simple", () => {
                 name: "English",
                 englishName: "English",
                 isoCode: "en",
-                usageCount: 3
+                usageCount: 3,
             },
             {
                 name: "Francais",
                 englishName: "French",
                 isoCode: "fr",
-                usageCount: 3
+                usageCount: 3,
             },
             {
                 name: "Deutsch",
                 englishName: "German",
                 isoCode: "de",
-                usageCount: 3
-            }
+                usageCount: 3,
+            },
         ],
         tags: ["level:2"],
         features: [
@@ -78,15 +79,15 @@ storiesOf("BookCard", module).add("simple", () => {
             "blind",
             "blind:en",
             "activity",
-            "comic"
+            "comic",
         ],
         license: "",
         copyright: "",
         pageCount: "",
-        createdAt: ""
+        createdAt: "",
     };
 
-    return <BookCard handleYourOwnLaziness={false} onBasicBookInfo={book} />;
+    return <BookCard handleYourOwnLaziness={false} basicBookInfo={book} />;
 });
 storiesOf("BookGroup", module)
     .add("Featured", () => (
@@ -174,7 +175,7 @@ storiesOf("Components", module).add("SearchBox", () => {
         <div
             style={{
                 height: "48px",
-                backgroundColor: bloomRed
+                backgroundColor: bloomRed,
             }}
         >
             <SearchBox />
@@ -197,9 +198,9 @@ storiesOf("Harvester Artifact Control", module)
     ))
     .add("ArtifactAndChoice", () => (
         <>
-            {triStateBooleanOptions.map(user => {
-                return triStateBooleanOptions.map(librarian => {
-                    return triStateBooleanOptions.map(harvester => {
+            {triStateBooleanOptions.map((user) => {
+                return triStateBooleanOptions.map((librarian) => {
+                    return triStateBooleanOptions.map((harvester) => {
                         return (
                             <div key={i++} style={{ marginBottom: 15 }}>
                                 <div>
