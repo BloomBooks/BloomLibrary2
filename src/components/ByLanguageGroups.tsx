@@ -22,7 +22,9 @@ export const ByLanguageGroups: React.FunctionComponent<{
     // The combination of useRef and useEffect allows us to run the search once
     //    const rows = useRef<Map<string, { phash: string; book: IBasicBookInfo }>>(
     const [rows, setRows] = useState(new Map<string, IBasicBookInfo[]>());
+    const [totalBookCount, setTotalBookCount] = useState(0);
     const arbitraryMaxLangsPerBook = 20;
+    const reportBooksAndLanguages = props.reportBooksAndLanguages; // to avoid useEffect depending on props.
     useEffect(() => {
         const newRows = new Map<string, IBasicBookInfo[]>();
         let totalCount = 0;
@@ -60,10 +62,18 @@ export const ByLanguageGroups: React.FunctionComponent<{
             });
         }
         setRows(newRows);
-        if (props.reportBooksAndLanguages) {
-            props.reportBooksAndLanguages(totalCount, newRows.size);
+        setTotalBookCount(totalCount);
+    }, [
+        searchResults.books,
+        searchResults.books.length,
+        reportBooksAndLanguages,
+    ]);
+    const langCount = rows.size;
+    useEffect(() => {
+        if (reportBooksAndLanguages) {
+            reportBooksAndLanguages(totalBookCount, langCount);
         }
-    }, [searchResults.books, searchResults.books.length, props]);
+    }, [totalBookCount, langCount, reportBooksAndLanguages]);
     const { languagesByBookCount } = useContext(CachedTablesContext);
     const languages = useMemo(
         () =>

@@ -2,7 +2,7 @@ import useAxios, { IReturns } from "@use-hooks/axios";
 import { IFilter, InCirculationOptions } from "../IFilter";
 import { getConnection } from "./ParseServerConnection";
 import { Book, createBookFromParseServerData } from "../model/Book";
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { CachedTablesContext } from "../App";
 import { getCleanedAndOrderedLanguageList, ILanguage } from "../model/Language";
 
@@ -390,12 +390,33 @@ export function useSearchBooks(
     );
     const simplifiedResultStatus = processAxiosStatus(bookResultsStatus);
 
-    const typeSafeBookRecords: IBasicBookInfo[] = simplifiedResultStatus.books.map(
-        (rawFromREST: any) => {
-            const b: IBasicBookInfo = { ...rawFromREST };
-            b.languages = rawFromREST.langPointers;
-            return b;
-        }
+    // This useMemo is more important than it looks. It can prevent essentially endless loops that
+    // arise like this:
+    // A client sets some state in a useEffect that depends on the 'books' returned as part of
+    // the result of this function.
+    // So, initially, the client renders. The useEffect runs once. It sets the state.
+    // This is a change, so render runs again. It calls this function again, as render always will.
+    // Each such call returns a NEW object, not equal to the previous object, even though
+    // it is equivalent, since nothing has changed that would cause useBookQueryInternal
+    // to return different results or run the parse query again. That's OK, we just depended on
+    // the books.
+    // But, without this memo, we get a NEW typeSafeBooksRecord on each call, not equal to
+    // the books we returned last time. The client's useEffect sees a different book list.
+    // It runs the useEffect again. It calls setState, which causes another render,...
+    // and so it continues!
+    // With the memo, unless something significant changes, the books value that this function
+    // returns is the actual same object on every call.
+    // (Actually this isn't guaranteed by the useMemo contract...occasionally it might
+    // discard and rebuild the memo cache...but it will be true enough of the time to prevent
+    // significant wasted work.)
+    const typeSafeBookRecords: IBasicBookInfo[] = useMemo(
+        () =>
+            simplifiedResultStatus.books.map((rawFromREST: any) => {
+                const b: IBasicBookInfo = { ...rawFromREST };
+                b.languages = rawFromREST.langPointers;
+                return b;
+            }),
+        [simplifiedResultStatus.books]
     );
 
     return {
