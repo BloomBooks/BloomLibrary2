@@ -12,6 +12,7 @@ export function createBookFromParseServerData(pojo: any): Book {
         pojo.show
     );
 
+    b.allTitlesRaw = pojo.allTitles;
     b.allTitles = parseAllTitles(pojo.allTitles);
     b.languages = pojo.langPointers;
     b.finishCreationFromParseServerData(pojo.objectId);
@@ -26,6 +27,7 @@ export class Book {
     public id: string = "";
     public title: string = "";
     public allTitles = new Map<string, string>();
+    public allTitlesRaw = "";
     public license: string = "";
     public baseUrl: string = "";
     public copyright: string = "";
