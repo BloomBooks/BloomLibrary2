@@ -67,6 +67,7 @@ export const ReadBookPage: React.FunctionComponent<{ id: string }> = (
     );
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getHarvesterBaseUrl(book: Book) {
     // typical input url:
     // https://s3.amazonaws.com/BloomLibraryBooks-Sandbox/ken%40example.com%2faa647178-ed4d-4316-b8bf-0dc94536347d%2fsign+language+test%2f

@@ -19,6 +19,7 @@ import { giveFreeLearningCsv } from "../export/freeLearningIO";
 // to have both the html tooltip AND stop losing focus every time a letter was typed. The upshot was this
 // HtmlTooltip declaration was INSIDE of the SearchBox declaration. Moving it outside kept it from being
 // rerendered every time a character was typed.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const HtmlTooltip = withStyles((theme: Theme) => ({
     tooltip: {
         backgroundColor: theme.palette.background.default,
@@ -51,8 +52,10 @@ export const SearchBox: React.FunctionComponent<{
         initialSearchString = "";
     }
     const [searchString, setSearchString] = useState(initialSearchString);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [showTooltip, setShowTooltip] = useState(true);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const searchTooltip: JSX.Element = (
         <Typography style={{ lineHeight: "1.25rem" }}>
             {"Press <Enter> to search"}

@@ -1,6 +1,5 @@
 import axios from "axios";
 import { LoggedInUser, User } from "./LoggedInUser";
-import { RowDetailState } from "@devexpress/dx-react-grid";
 
 // This file exports a function getConnection(), which returns the headers
 // needed to talk to our Parse Server backend db.

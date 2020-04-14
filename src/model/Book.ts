@@ -200,7 +200,7 @@ function parseAllTitles(allTitlesString: string): Map<string, string> {
             {};
         Object.keys(allTitles).forEach((lang) => {
             map.set(lang, allTitles[lang]);
-            console.log(`allTitle ${lang}, ${allTitles[lang]}`);
+            //console.log(`allTitles ${lang}, ${allTitles[lang]}`);
         });
     } catch (error) {
         console.error(error);
