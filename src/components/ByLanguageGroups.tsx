@@ -64,7 +64,11 @@ export const ByLanguageGroups: React.FunctionComponent<{
         setRows(newRows);
         setTotalBookCount(totalCount);
     }, [
-        searchResults.books,
+        // Including this:
+        //   searchResults.books,
+        // leads to an infinite loop that I haven't been able to figure out
+        // You get it by typing "covid" into search, which then redirect to this page.
+        // We can get away without it because the books.length will change when the query comes back
         searchResults.books.length,
         reportBooksAndLanguages,
     ]);
