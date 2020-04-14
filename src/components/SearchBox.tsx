@@ -86,11 +86,23 @@ export const SearchBox: React.FunctionComponent<{
         ) {
             giveFreeLearningCsv();
             return;
-        } // shortcut to grid
+        }
+        // enhance: we should just have a set of these keyword-->special page searches, not code for each.
+
+        // shortcut to grid
         if (searchString.toLowerCase() === "grid") {
             router!.push({
                 title: `Grid`,
                 pageType: "grid",
+                filter: {},
+            });
+            setSearchString("");
+            return;
+        }
+        if (CheckForCovidSearch(searchString)) {
+            router!.push({
+                title: "",
+                pageType: "Covid19",
                 filter: {},
             });
             setSearchString("");
@@ -202,3 +214,11 @@ export const SearchBox: React.FunctionComponent<{
         searchTextField
     );
 };
+
+export function CheckForCovidSearch(search?: string) {
+    if (!search) return false;
+    const searchTerms = search.toLowerCase();
+    return (
+        searchTerms.indexOf("covid") > -1 || searchTerms.indexOf("corona") > -1
+    );
+}

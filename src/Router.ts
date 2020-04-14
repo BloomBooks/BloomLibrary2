@@ -8,6 +8,7 @@ import {
     restoreScrollPosition,
     storeScrollPosition,
 } from "./RestoreScrollPosition";
+import { CheckForCovidSearch } from "./components/SearchBox";
 
 export interface ILocation {
     // this is used only when the location is a book detail
@@ -52,7 +53,13 @@ export class Router {
         const specialPage = specialPages.find(
             (s) => "/" + s === window.location.pathname
         );
-        if (specialPage) {
+        if (CheckForCovidSearch(window.location.search)) {
+            this.push({
+                title: "",
+                pageType: "Covid19",
+                filter: {},
+            });
+        } else if (specialPage) {
             this.push(home);
             this.push({
                 title: specialPage,
