@@ -39,11 +39,13 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
         ArtifactType.readOnline
     );
 
+    const phash = props.book.phashOfFirstContentImage;
+    const sanitizedPhashOfFirstContentImage =
+        phash && phash.trim() && phash.trim() !== "null"
+            ? phash.trim()
+            : "Not A Valid Phash";
     const answer = useGetBookCountRaw({
-        search:
-            "phash:" +
-            (props.book.phashOfFirstContentImage ??
-                "don't really want to search"),
+        search: "phash:" + sanitizedPhashOfFirstContentImage,
     });
     const countOfBooksWithMatchingPhash =
         getResultsOrMessageElement(answer).count - 1;
@@ -175,7 +177,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                                                 font-size: 9pt;
                                             `}
                                             color={"secondary"}
-                                            href={`?title=Matching Books&pageType=search&filter[search]=phash:${props.book.phashOfFirstContentImage}`}
+                                            href={`?title=Matching Books&pageType=search&filter[search]=phash:${sanitizedPhashOfFirstContentImage}`}
                                         >{`${countOfBooksWithMatchingPhash} books that may be translations`}</Link>
                                     </li>
                                 )}
