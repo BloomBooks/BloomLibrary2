@@ -14,7 +14,7 @@ import { commonUI } from "../../theme";
 export const TranslateButton: React.FunctionComponent<{
     book: Book;
     fullWidth?: boolean;
-}> = props => {
+}> = (props) => {
     return (
         <Button
             variant="outlined"
@@ -27,7 +27,7 @@ export const TranslateButton: React.FunctionComponent<{
                     ? "100%"
                     : commonUI.detailViewMainButtonWidth};
                 height: ${commonUI.detailViewMainButtonHeight};
-                display: block;
+                display: flex;
                 padding-top: 0px; /* shift it all up*/
                 float: right;
                 box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),

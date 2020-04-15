@@ -50,7 +50,7 @@ export const SpecialInterestGroup: React.FunctionComponent<IProps> = (
                 key={"STEM"}
                 title={"STEM Books"}
                 filter={{
-                    topic: "Math,Science,Environment",
+                    topic: "Math", //TODO:,Science,Environment", but I haven't taken the time to figure out that query
                 }}
                 pageType={""}
                 img={""}
