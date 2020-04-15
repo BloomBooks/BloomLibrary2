@@ -10,7 +10,7 @@ import bloomgirls from "../../assets/banners/bloomgirls.jpg";
 
 export const HomeBanner: React.FunctionComponent<{
     filter: IFilter;
-}> = props => {
+}> = (props) => {
     //const backgroundColor = "rgba(210, 227, 254,.2)";
     return (
         <div
@@ -38,7 +38,7 @@ export const HomeBanner: React.FunctionComponent<{
                 `}
             >
                 <BannerContents
-                    title="Library Home"
+                    title="Let's Grow a Library"
                     about={
                         // <div>
                         //     Welcome to our Crowdsourced library of free books
@@ -50,21 +50,9 @@ export const HomeBanner: React.FunctionComponent<{
                                 font-size: 24pt;
                                 color: red;
                             `}
-                        >
-                            What you see here is a messy construction site,
-                            where we are building a new home for{" "}
-                            <a
-                                css={css`
-                                    color: black !important;
-                                `}
-                                href="https://bloomlibrary.org"
-                            >
-                                BloomLibrary.org
-                            </a>
-                            .
-                        </div>
+                        ></div>
                     }
-                    bookCountMessage="We currently have {0} books."
+                    bookCountMessage="{0} books"
                     filter={props.filter} // all books in circulation
                     bannerCss={css`
                         * {

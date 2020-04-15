@@ -5,7 +5,7 @@ export const commonUI = {
         bloomRed: "#D65649",
         bloomBlue: "#1d94a4",
         bloomBlueTransparent: "#1d94a438",
-        dialogTopBottomGray: "#F1F3F4"
+        dialogTopBottomGray: "#F1F3F4",
     },
 
     // Some of these aren't very global, but this is a convenient place to put
@@ -17,7 +17,7 @@ export const commonUI = {
 
     detailViewMargin: "1em",
     detailViewMainButtonWidth: "250px",
-    detailViewMainButtonHeight: "80px"
+    detailViewMainButtonHeight: "80px",
 };
 
 // lots of examples: https://github.com/search?q=createMuiTheme&type=Code
@@ -26,9 +26,10 @@ const theme = createMuiTheme({
         primary: { main: commonUI.colors.bloomRed },
         secondary: {
             main: commonUI.colors.bloomBlue,
-            light: commonUI.colors.bloomBlueTransparent
+            light: commonUI.colors.bloomBlueTransparent,
         },
-        warning: { main: "#F3AA18" }
+        warning: { main: "#F3AA18" },
+        info: { main: "#1d94a4" },
     },
     // typography: {
     //     fontSize: 12,
@@ -53,20 +54,20 @@ const theme = createMuiTheme({
         MuiDialogTitle: {
             root: {
                 backgroundColor: commonUI.colors.dialogTopBottomGray,
-                "& h6": { fontWeight: "bold" }
-            }
+                "& h6": { fontWeight: "bold" },
+            },
         },
         MuiDialogActions: {
             root: {
-                backgroundColor: commonUI.colors.dialogTopBottomGray
-            }
-        }
+                backgroundColor: commonUI.colors.dialogTopBottomGray,
+            },
+        },
         // MuiTypography: {
         //     h6: {
         //         fontSize: "1rem"
         //     }
         // }
-    }
+    },
 });
 
 export default theme;
