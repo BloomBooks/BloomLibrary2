@@ -123,6 +123,14 @@ function fields(book: Book, isoCode: string): Array<string | undefined> {
     rights: The license specified as an SPDX License identifier (SPDX Licenses)
     resourceURL: Link to book on partner platform(link to “read mode”, not book details)*/
 
+        // book o0OtJgb2dC, "Cellphone" is actually on S3 without the quotation markes, so I
+        // presume somewhere bloom code (harvester?) removes them.
+        const titleWithoutQuotes = book.title.replace(/"/g, "").trim();
+        const urlEncodedName = encodeURIComponent(titleWithoutQuotes);
+        const valueForEpubLine = book.artifactsToOfferToUsers.epub?.decision
+            ? `https://api.bloomlibrary.org/v1/fs/harvest/${book.id}/epub/${urlEncodedName}.epub`
+            : "";
+
         return [
             title.trim(),
             `https://api.bloomlibrary.org/v1/fs/harvest/${book.id}/thumbnails/thumbnail-256.png?version=${book.updatedAt}`,
@@ -133,6 +141,7 @@ function fields(book: Book, isoCode: string): Array<string | undefined> {
             book.publisher || "",
             book.license || "Unknown License",
             `https://bloomlibrary.org/readBook/${book.id}?bookLang=${isoCode}`,
+            valueForEpubLine,
         ];
     } catch (error) {
         console.error(error);
