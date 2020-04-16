@@ -4,20 +4,21 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import { IFilter } from "../IFilter";
 import { ListOfBookGroups } from "./ListOfBookGroups";
-import { BookGroup } from "./BookGroup";
 import { featureSpecs } from "./FeatureHelper";
 import { useTheme, Breadcrumbs } from "@material-ui/core";
-import { BookCount } from "./BookCount";
+import { ByLanguageGroups } from "./ByLanguageGroups";
 
 export const FeaturePage: React.FunctionComponent<{
     title: string;
     filter: IFilter;
-}> = props => {
+}> = (props) => {
     const featureKey: string = props.filter.feature || "default";
-    const featureSpec = featureSpecs.find(s => s.featureKey === featureKey);
+    const featureSpec = featureSpecs.find((s) => s.featureKey === featureKey);
+
+    const [counts, setCounts] = useState("");
 
     return (
         <React.Fragment>
@@ -26,10 +27,18 @@ export const FeaturePage: React.FunctionComponent<{
                 filter={props.filter}
                 icon={featureSpec?.icon}
                 description={featureSpec?.description || <Fragment />}
+                bookCountMessage={counts}
             />
 
             <ListOfBookGroups>
-                <BookGroup title={`All`} filter={props.filter} rows={20} />
+                <ByLanguageGroups
+                    titlePrefix={""}
+                    filter={props.filter}
+                    reportBooksAndLanguages={(books, langs) =>
+                        setCounts(`${books} books in ${langs} languages`)
+                    }
+                    rowsPerLanguage={1}
+                />
             </ListOfBookGroups>
         </React.Fragment>
     );
@@ -40,7 +49,8 @@ const FeatureBanner: React.FunctionComponent<{
     filter: IFilter;
     icon?: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
     description: JSX.Element;
-}> = props => {
+    bookCountMessage: string;
+}> = (props) => {
     const theme = useTheme();
     return (
         <div
@@ -73,8 +83,8 @@ const FeatureBanner: React.FunctionComponent<{
                                 fill: theme.palette.secondary.main,
                                 style: {
                                     height: "80px",
-                                    width: "80px"
-                                }
+                                    width: "80px",
+                                },
                             })}
                     </div>
                 )}
@@ -88,7 +98,7 @@ const FeatureBanner: React.FunctionComponent<{
             </div>
 
             <br />
-            <BookCount filter={props.filter} />
+            {props.bookCountMessage}
         </div>
     );
 };

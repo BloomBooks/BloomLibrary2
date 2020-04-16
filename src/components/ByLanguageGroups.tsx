@@ -12,6 +12,7 @@ export const ByLanguageGroups: React.FunctionComponent<{
     titlePrefix: string;
     filter: IFilter;
     reportBooksAndLanguages?: (bookCount: number, langCount: number) => void;
+    rowsPerLanguage?: number;
 }> = (props) => {
     const searchResults = useSearchBooks(
         {
@@ -63,6 +64,7 @@ export const ByLanguageGroups: React.FunctionComponent<{
         }
         setRows(newRows);
         setTotalBookCount(totalCount);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         // Including this:
         //   searchResults.books,
@@ -104,7 +106,7 @@ export const ByLanguageGroups: React.FunctionComponent<{
                         }`}
                         predeterminedBooks={books}
                         contextLangIso={l.isoCode}
-                        rows={999}
+                        rows={props.rowsPerLanguage ?? 999}
                     />
                 );
             })}
