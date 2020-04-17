@@ -1,5 +1,9 @@
 import { Book, createBookFromParseServerData } from "../model/Book";
 import { axios } from "@use-hooks/axios";
+import {
+    getArtifactUrl,
+    ArtifactType,
+} from "../components/BookDetail/ArtifactHelper";
 const FileSaver = require("file-saver");
 
 export async function giveFreeLearningCsv() {
@@ -121,14 +125,12 @@ function fields(book: Book, isoCode: string): Array<string | undefined> {
     date: The publication date of the document
     publisher: Name of the publisher of the document
     rights: The license specified as an SPDX License identifier (SPDX Licenses)
-    resourceURL: Link to book on partner platform(link to “read mode”, not book details)*/
+    resourceURL: Link to book on partner platform(link to “read mode”, not book details)
+    epubURL (not in original spec, but requested later)
+    */
 
-        // book o0OtJgb2dC, "Cellphone" is actually on S3 without the quotation markes, so I
-        // presume somewhere bloom code (harvester?) removes them.
-        const titleWithoutQuotes = book.title.replace(/"/g, "").trim();
-        const urlEncodedName = encodeURIComponent(titleWithoutQuotes);
         const valueForEpubLine = book.artifactsToOfferToUsers.epub?.decision
-            ? `https://api.bloomlibrary.org/v1/fs/harvest/${book.id}/epub/${urlEncodedName}.epub`
+            ? getArtifactUrl(book, ArtifactType.epub)
             : "";
 
         return [
