@@ -17,11 +17,11 @@ export function routeToLanguage(language: ILanguage, router: Router) {
     router.push({
         title: displayName,
         pageType: "language",
-        filter: { language: language.isoCode }
+        filter: { language: language.isoCode },
     });
 }
 
-export const LanguageCard: React.FunctionComponent<ILanguage> = props => {
+export const LanguageCard: React.FunctionComponent<ILanguage> = (props) => {
     const router = useContext(RouterContext);
     const theme = useTheme();
     const { displayName: languageName, autonym } = getLanguageNames(props);
@@ -36,7 +36,7 @@ export const LanguageCard: React.FunctionComponent<ILanguage> = props => {
 
     return (
         <CheapCard
-            {...propsToPassDown}
+            {...propsToPassDown} // makes swiper work
             css={css`
                 text-align: center;
                 width: 120px;

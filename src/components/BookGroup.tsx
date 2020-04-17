@@ -5,17 +5,20 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React, { useEffect, useState } from "react";
-import { BookCard } from "./BookCard";
+import LazyLoad, {
+    forceCheck as forceCheckLazyLoadComponents,
+} from "react-lazyload";
+
+import { commonUI } from "../theme";
 import { IFilter } from "../IFilter";
 import {
     useSearchBooks,
     IBasicBookInfo,
 } from "../connection/LibraryQueryHooks";
-import LazyLoad from "react-lazyload";
-import ReactIdSwiper from "react-id-swiper";
+import { BookCard } from "./BookCard";
 import { MoreCard } from "./MoreCard";
-import { commonUI } from "../theme";
-import { forceCheck as forceCheckLazyLoadComponents } from "react-lazyload";
+import { CardSwiper } from "./CardSwiper";
+
 interface IProps {
     title: string;
     order?: string;
@@ -118,20 +121,8 @@ export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
         );
     }
 
-    const swiperConfig = {
-        preloadImages: false,
-        lazy: true,
-        watchSlidesVisibility: true,
-        navigation: {
-            nextEl: ".swiper-button-next.swiper-button",
-            prevEl: ".swiper-button-prev.swiper-button",
-        },
-        spaceBetween: 20,
-        slidesPerView: "auto",
-    };
-
     const bookList = showInOneRow ? (
-        <ReactIdSwiper {...swiperConfig}>{cards}</ReactIdSwiper>
+        <CardSwiper>{cards}</CardSwiper>
     ) : (
         <div
             css={css`

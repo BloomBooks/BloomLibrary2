@@ -4,33 +4,23 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { LanguageCard, routeToLanguage } from "./LanguageCard";
 import Downshift, { GetItemPropsOptions } from "downshift";
 import matchSorter from "match-sorter";
 import searchIcon from "../search.png";
 import { CachedTablesContext } from "../App";
-import Swiper from "react-id-swiper";
 import { ILanguage } from "../model/Language";
 import { commonUI } from "../theme";
 import { RouterContext } from "../Router";
+import { CardSwiper } from "./CardSwiper";
 
 export const LanguageGroup: React.FunctionComponent = () => {
     const router = useContext(RouterContext);
-
-    const [swiper, updateSwiper] = useState<any | null>(null);
     const { languagesByBookCount: languages } = useContext(CachedTablesContext);
 
     let filteredLanguages: ILanguage[] = [];
 
-    const swiperConfig = {
-        navigation: {
-            nextEl: ".swiper-button-next.swiper-button",
-            prevEl: ".swiper-button-prev.swiper-button",
-        },
-        spaceBetween: 20,
-        slidesPerView: "auto",
-    };
     const getFilteredLanguages = (filter: string | null): ILanguage[] => {
         // MatchSorter is an npm module that does smart autocomplete over a list of values.
         return matchSorter(languages, filter || "", {
@@ -44,7 +34,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
         filteredLanguages = getFilteredLanguages(filter);
         if (filteredLanguages.length) {
             return (
-                <Swiper {...swiperConfig} getSwiper={updateSwiper}>
+                <CardSwiper>
                     {filteredLanguages.map((l: any, index: number) => (
                         // TODO: to complete the accessibility, we need to pass the Downshift getLabelProps into LanguageCard
                         // and apply it to the actual label.
@@ -57,7 +47,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                             isoCode={l.isoCode}
                         />
                     ))}
-                </Swiper>
+                </CardSwiper>
             );
         } else {
             return (
@@ -124,14 +114,6 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                             border: 0;
                                         `}
                                         {...getInputProps({
-                                            onChange: () => {
-                                                if (filteredLanguages.length) {
-                                                    // Need to slide back to the beginning.
-                                                    // This prevents a UI issue when user has slid over to the right and the
-                                                    // filtered items would then be off the left side of the screen.
-                                                    swiper.slideTo(0);
-                                                }
-                                            },
                                             onKeyPress: (e) =>
                                                 handleKeyPress(e),
                                         })}
