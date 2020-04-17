@@ -10,27 +10,19 @@ import Downshift, { GetItemPropsOptions } from "downshift";
 import matchSorter from "match-sorter";
 import searchIcon from "../search.png";
 import { CachedTablesContext } from "../App";
-import Swiper from "react-id-swiper";
 import { ILanguage } from "../model/Language";
 import { commonUI } from "../theme";
 import { RouterContext } from "../Router";
+import { CardSwiper } from "./CardSwiper";
 
 export const LanguageGroup: React.FunctionComponent = () => {
     const router = useContext(RouterContext);
 
-    const [swiper, updateSwiper] = useState<any | null>(null);
+    const [swiper, setSwiper] = useState<any | null>(null);
     const { languagesByBookCount: languages } = useContext(CachedTablesContext);
 
     let filteredLanguages: ILanguage[] = [];
 
-    const swiperConfig = {
-        navigation: {
-            nextEl: ".swiper-button-next.swiper-button",
-            prevEl: ".swiper-button-prev.swiper-button",
-        },
-        spaceBetween: 20,
-        slidesPerView: "auto",
-    };
     const getFilteredLanguages = (filter: string | null): ILanguage[] => {
         // MatchSorter is an npm module that does smart autocomplete over a list of values.
         return matchSorter(languages, filter || "", {
@@ -44,8 +36,9 @@ export const LanguageGroup: React.FunctionComponent = () => {
         filteredLanguages = getFilteredLanguages(filter);
         if (filteredLanguages.length) {
             return (
-                <Swiper {...swiperConfig} getSwiper={updateSwiper}>
-                    {filteredLanguages.map((l: any, index: number) => (
+                <CardSwiper
+                    getSwiper={setSwiper}
+                    cards={filteredLanguages.map((l: any, index: number) => (
                         // TODO: to complete the accessibility, we need to pass the Downshift getLabelProps into LanguageCard
                         // and apply it to the actual label.
                         <LanguageCard
@@ -57,7 +50,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                             isoCode={l.isoCode}
                         />
                     ))}
-                </Swiper>
+                />
             );
         } else {
             return (

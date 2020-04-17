@@ -5,12 +5,14 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import React from "react";
 import LazyLoad from "react-lazyload";
+import { CardSwiper } from "./CardSwiper";
 
 interface IProps {
     title: string;
+    cards: JSX.Element[];
 }
 
-export const CategoryCardGroup: React.FunctionComponent<IProps> = props => {
+export const CategoryCardGroup: React.FunctionComponent<IProps> = (props) => {
     return (
         // Enhance: LazyLoad has parameters (height and offset) that should help
         // but so far I haven't got them to work well. It has many other
@@ -32,11 +34,10 @@ export const CategoryCardGroup: React.FunctionComponent<IProps> = props => {
                 <ul
                     css={css`
                         list-style: none;
-                        display: flex;
                         padding-left: 0;
                     `}
                 >
-                    {props.children}
+                    <CardSwiper cards={props.cards} />
                 </ul>
             </li>
         </LazyLoad>

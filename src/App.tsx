@@ -7,7 +7,7 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import { BrowseView } from "./components/BrowseView";
 import theme from "./theme";
-import { ThemeProvider, Snackbar, Link } from "@material-ui/core";
+import { ThemeProvider, Snackbar } from "@material-ui/core";
 import { LoginDialog } from "./components/User/LoginDialog";
 import {
     useGetTagList,
