@@ -7,7 +7,7 @@ interface IProps {
     title: string;
 }
 
-export const FeatureGroup: React.FunctionComponent<IProps> = props => {
+export const FeatureGroup: React.FunctionComponent<IProps> = (props) => {
     // We don't necessesarily want to display all features from featureSpecs or in that order,
     // so this array lets us customize which ones and in which order.
     const featureKeysToDisplayInOrder = [
@@ -16,11 +16,11 @@ export const FeatureGroup: React.FunctionComponent<IProps> = props => {
         "quiz",
         "signLanguage",
         "blind",
-        "motion"
+        "motion",
     ];
 
     const featureSpecsFilteredAndOrdered = featureSpecs
-        .filter(f => featureKeysToDisplayInOrder.includes(f.featureKey))
+        .filter((f) => featureKeysToDisplayInOrder.includes(f.featureKey))
         .sort((a, b) => {
             return (
                 featureKeysToDisplayInOrder.indexOf(a.featureKey) -
@@ -28,7 +28,7 @@ export const FeatureGroup: React.FunctionComponent<IProps> = props => {
             );
         });
 
-    const cards = featureSpecsFilteredAndOrdered.map(featureSpec => {
+    const cards = featureSpecsFilteredAndOrdered.map((featureSpec) => {
         const featureKey = featureSpec.featureKey;
 
         return (
@@ -37,7 +37,7 @@ export const FeatureGroup: React.FunctionComponent<IProps> = props => {
                 title={featureSpec.featureTitle}
                 bookCount=""
                 filter={{
-                    feature: featureKey
+                    feature: featureKey,
                 }}
                 pageType={"feature"}
                 icon={featureSpec.icon}

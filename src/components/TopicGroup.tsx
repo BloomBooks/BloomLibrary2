@@ -5,7 +5,6 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React, { useContext } from "react";
-import CategoryCard from "./CategoryCard";
 
 import { CategoryCardGroup } from "./CategoryCardGroup";
 import { CheapCard } from "./CheapCard";
@@ -53,6 +52,7 @@ const TopicCard: React.FunctionComponent<{ title: string; filter: IFilter }> = (
 
     return (
         <CheapCard
+            {...props} // needed for swiper to work
             css={css`
                 width: 220px;
                 padding: 10px;

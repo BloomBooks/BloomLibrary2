@@ -28,7 +28,7 @@ interface IProps {
 }
 
 // CategoryCards are things like publisher, projects, organizations. "CollectionCard" might be a better name.
-const CategoryCard: React.FunctionComponent<IProps> = props => {
+const CategoryCard: React.FunctionComponent<IProps> = (props) => {
     const router = useContext(RouterContext);
     const theme = useTheme();
 
@@ -40,9 +40,7 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
         >
             {props.preTitle}
         </div>
-    ) : (
-        undefined
-    );
+    ) : undefined;
 
     function getTitleAndImageElement(imageElement: JSX.Element) {
         return (
@@ -72,7 +70,7 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
         ></img>
     );
 
-    const iconScale = props.iconScale ? props.iconScale / 100 : 1;
+    const iconScaleAsDecimal = props.iconScale ? props.iconScale / 100 : 1;
     const titleAndIconIfIconDefined =
         props.icon &&
         getTitleAndImageElement(
@@ -90,14 +88,23 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
                     style: {
                         margin: "auto",
                         height: "70px",
-                        width: `${60 * iconScale}px`
-                    }
+                        width: `${60 * iconScaleAsDecimal}px`,
+                    },
                 })}
             </div>
         );
 
+    const {
+        bookCount,
+        icon,
+        iconScale,
+        pageType,
+        preTitle,
+        ...propsToPassDown
+    } = props; // prevent react warnings
     return (
         <CheapCard
+            {...propsToPassDown} // needed for swiper to work
             css={css`
                 width: 220px;
                 padding: 10px;
@@ -106,7 +113,7 @@ const CategoryCard: React.FunctionComponent<IProps> = props => {
                 router!.push({
                     title: props.title,
                     pageType: props.pageType ? props.pageType : "category",
-                    filter: props.filter
+                    filter: props.filter,
                 });
             }}
         >

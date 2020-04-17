@@ -32,10 +32,10 @@ const nameToImageMap = new Map<string, string>([
     ["3Asafeer", "Asafeer"],
     ["Room To Read", "Room to Read"],
     ["Ministerio de Educación de Guatemala", "Guatemala MOE"],
-    ["Resources for the Blind, Inc. (Philippines)", "Resources for the Blind"]
+    ["Resources for the Blind, Inc. (Philippines)", "Resources for the Blind"],
 ]);
 
-export const BookshelfGroup: React.FunctionComponent<IProps> = props => {
+export const BookshelfGroup: React.FunctionComponent<IProps> = (props) => {
     // At this point there are so few bookshelves that we just retrieve the whole list and then filter here.
     // Might be a good thing to cache.
     const bookshelfResults = useGetBookshelvesByCategory(
@@ -49,21 +49,21 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = props => {
     // From that we need to determine that on this level, we should be showing [painting, sculpture].
 
     const bookshelfPathsAtThisLevel = props.pathToTheCurrentLevel
-        ? bookshelfResults.filter(b =>
+        ? bookshelfResults.filter((b) =>
               b.key.startsWith(props.pathToTheCurrentLevel!)
           )
         : bookshelfResults;
 
     const prefix: string = props.pathToTheCurrentLevel || "";
     const allNamesAtThisLevel = bookshelfPathsAtThisLevel
-        .map(b => b.key.replace(prefix, ""))
-        .map(name => {
+        .map((b) => b.key.replace(prefix, ""))
+        .map((name) => {
             const i = name.indexOf("/");
             return i < 0 ? name : name.substr(0, i);
         });
 
     const uniqueNamesAtThisLevel = [
-        ...Array.from(new Set(allNamesAtThisLevel))
+        ...Array.from(new Set(allNamesAtThisLevel)),
     ];
 
     const { bookshelves } = useContext(CachedTablesContext);
@@ -86,7 +86,7 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = props => {
                     title={bookshelf.displayName || ""}
                     bookCount="??"
                     filter={{
-                        bookshelf: fullBookshelfKey
+                        bookshelf: fullBookshelfKey,
                     }}
                     pageType={props.bookShelfCategory}
                     img={
