@@ -2,7 +2,7 @@ import { Book } from "../../model/Book";
 import { IBasicBookInfo } from "../../connection/LibraryQueryHooks";
 import {
     ArtifactVisibilitySettings,
-    ArtifactVisibilitySettingsGroup
+    ArtifactVisibilitySettingsGroup,
 } from "../../model/ArtifactVisibilitySettings";
 
 export enum ArtifactType {
@@ -10,7 +10,7 @@ export enum ArtifactType {
     epub = "epub",
     bloomReader = "bloomReader",
     readOnline = "readOnline",
-    shellbook = "shellbook"
+    shellbook = "shellbook",
 }
 
 export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
@@ -28,6 +28,13 @@ export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
             url = `${book.baseUrl}${getBookNameFromUrl(
                 book.baseUrl
             )}.pdf`.replace(/%2f/g, "/");
+            break;
+        case ArtifactType.epub:
+            // book o0OtJgb2dC, "Cellphone" is actually on S3 without the quotation marks, so I
+            // presume somewhere bloom code (harvester?) removes them.
+            const titleWithoutQuotes = book.title.replace(/"/g, "").trim();
+            const urlEncodedName = encodeURIComponent(titleWithoutQuotes);
+            url = `https://api.bloomlibrary.org/v1/fs/harvest/${book.id}/epub/${urlEncodedName}.epub`;
             break;
         default:
             url = getDownloadUrl(book, artifactType);
@@ -204,7 +211,7 @@ export function getThumbnailUrl(
     if (h) return { thumbnailUrl: h, isModernThumbnail: true };
     return {
         thumbnailUrl: getLegacyThumbnailUrl(book),
-        isModernThumbnail: false
+        isModernThumbnail: false,
     };
 }
 
