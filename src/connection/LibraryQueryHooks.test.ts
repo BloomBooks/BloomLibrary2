@@ -5,12 +5,11 @@ import { constructParseBookQuery } from "./LibraryQueryHooks";
 // for unit test database.
 const headers = {
     "Content-Type": "application/json",
-    "X-Parse-Application-Id": "r1H3zle1Iopm1IB30S4qEtycvM4xYjZ85kRChjkM"
+    "X-Parse-Application-Id": "r1H3zle1Iopm1IB30S4qEtycvM4xYjZ85kRChjkM",
 };
 
 const unitTestBaseUrl =
     "https://bloom-parse-server-unittest.azurewebsites.net/parse/";
-//"https://bloom-parse-server-develop.azurewebsites.net/parse/";
 
 async function getBook(filter: IFilter) {
     return axios.get(`${unitTestBaseUrl}classes/books`, {
@@ -18,13 +17,13 @@ async function getBook(filter: IFilter) {
         params: constructParseBookQuery({ count: 5 }, filter, [
             "region:Pacific",
             "topic:Math",
-            "bookshelf:Enabling writers workshops"
-        ])
+            "bookshelf:Enabling writers workshops",
+        ]),
     });
 }
 async function createBook(book: object) {
     const result = await axios.post(`${unitTestBaseUrl}classes/books`, book, {
-        headers
+        headers,
     });
     return result.data.objectId;
 }
@@ -34,7 +33,7 @@ async function createUser(username: string, password: string) {
         `${unitTestBaseUrl}users`,
         { username, password, email: username },
         {
-            headers
+            headers,
         }
     );
     return [result.data.objectId, result.data.sessionToken];
@@ -44,7 +43,7 @@ async function loginUser(username: string, password: string) {
     try {
         const result = await axios.get(`${unitTestBaseUrl}login`, {
             headers,
-            params: { username, password }
+            params: { username, password },
         });
         return [result.data.objectId, result.data.sessionToken];
     } catch (error) {
@@ -54,7 +53,7 @@ async function loginUser(username: string, password: string) {
 
 async function deleteBook(id: string) {
     return axios.delete(`${unitTestBaseUrl}classes/books/${id}`, {
-        headers
+        headers,
     });
 }
 
@@ -62,7 +61,7 @@ async function deleteBook(id: string) {
 // parse only allows us to delete a user if logged in as that user.
 async function deleteUser(id: string, sessionToken: string) {
     return axios.delete(`${unitTestBaseUrl}users/${id}`, {
-        headers: { ...headers, "X-Parse-Session-Token": sessionToken }
+        headers: { ...headers, "X-Parse-Session-Token": sessionToken },
     });
 }
 
@@ -97,10 +96,10 @@ async function cleanup() {
                 uploader: {
                     __type: "Pointer",
                     className: "_User",
-                    objectId: fredId
-                }
-            }
-        }
+                    objectId: fredId,
+                },
+            },
+        },
     });
     for (const book of books.data.results) {
         await deleteBook(book.objectId);
@@ -116,6 +115,10 @@ const title3 = "Another book with anunlikelykeyword";
 beforeAll(async () => {
     // In case of anything left over from a previous failed run
     try {
+        // This appears to set the timeout for all tests globally,
+        // but I don't see any way to set it for just a particular suite.
+        jest.setTimeout(20000);
+
         await cleanup();
         const fredData = await getFred();
         const [fredId] = fredData!;
@@ -125,14 +128,14 @@ beforeAll(async () => {
             uploader: {
                 __type: "Pointer",
                 className: "_User",
-                objectId: fredId
+                objectId: fredId,
             },
             tags: [
                 "topic:Math",
                 "region:Pacific",
-                "bookshelf:Enabling writers workshops"
+                "bookshelf:Enabling writers workshops",
             ],
-            copyright: "Copyright © 2014, Nicole and bookdash.org"
+            copyright: "Copyright © 2014, Nicole and bookdash.org",
         });
         // This is there specifically to NOT be found by tag searches or the copyright search
         // It SHOULD be found by the uploader search, however.
@@ -143,9 +146,9 @@ beforeAll(async () => {
             uploader: {
                 __type: "Pointer",
                 className: "_User",
-                objectId: fredId
+                objectId: fredId,
             },
-            tags: ["bookshelf:Enabling writers workshops"]
+            tags: ["bookshelf:Enabling writers workshops"],
         });
         // This one has the unlikely keyword but not the bookshelf tag.
         await createBook({
@@ -154,25 +157,19 @@ beforeAll(async () => {
             uploader: {
                 __type: "Pointer",
                 className: "_User",
-                objectId: fredId
-            }
+                objectId: fredId,
+            },
         });
     } catch (error) {
         console.log(JSON.stringify(error));
         throw error;
     }
-}, 10000); // This function can take a while to run, give it up to 10s
+}, 20000); // This function can take a while to run, give it up to 20s
 
 afterAll(async () => {
     await cleanup();
-});
+}, 20000); // This function can take a while to run, give it up to 20s
 
-// test disabled because mysteriously not passing. The three tests that depend on
-// full-text search stopped passing around 20 Feb 2020. Our only current theory is
-// that something is wrong with the full-text index on the unit test DB, which was
-// replaced around that time to match the fuller set of fields on the real and dev
-// databases. Full-text search is working on the other two and the indexes appear
-// identical, so this may well not be the problem.
 it("retrieves a parse book using full-text search", async () => {
     try {
         const result = await getBook({ search: "anunlikelykeyword" });
@@ -212,7 +209,6 @@ it("retrieves a book with topic:Math in tags, but not one with that string in ti
     expect(result.data.results[0].title).toBe(title1);
 });
 
-// tests disabled because mysteriously not passing, see note above.
 it("retrieves a book with a quoted string, but not one with the two words separately", async () => {
     const result = await getBook({ search: '"test book"' });
     expect(result.data.results.length).toBe(1);
@@ -221,7 +217,7 @@ it("retrieves a book with a quoted string, but not one with the two words separa
 
 it("retrieves a book with quoted tag value", async () => {
     const result = await getBook({
-        search: "bookshelf:Enabling writers workshops anunlikelykeyword"
+        search: "bookshelf:Enabling writers workshops anunlikelykeyword",
     });
     expect(result.data.results.length).toBe(1);
     expect(result.data.results[0].title).toBe(title1);

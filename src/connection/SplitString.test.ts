@@ -1,7 +1,7 @@
 import { splitString } from "./LibraryQueryHooks";
 
 it("simple otherSearchTerms", () => {
-    const { otherSearchTerms, specialParts } = splitString("dogs cats");
+    const { otherSearchTerms, specialParts } = splitString("dogs cats", []);
     expect(otherSearchTerms).toBe("dogs cats");
     expect(specialParts.length).toBe(0);
 });
@@ -9,10 +9,10 @@ it("simple otherSearchTerms", () => {
 it("a mixture of otherSearchTerms and special parts", () => {
     const {
         otherSearchTerms,
-        specialParts
+        specialParts,
     } = splitString("dogs topic:Animals cats", [
         "topic:Animals",
-        "bookshelf:rubbish"
+        "bookshelf:rubbish",
     ]);
     expect(otherSearchTerms).toEqual("dogs cats");
     expect(specialParts.length).toBe(1);
@@ -22,11 +22,11 @@ it("a mixture of otherSearchTerms and special parts", () => {
 it("topic at start", () => {
     const {
         otherSearchTerms,
-        specialParts
+        specialParts,
     } = splitString("topic:animals dogs cats", [
         "system:Incoming",
         "topic:Animals",
-        "bookshelf:rubbish"
+        "bookshelf:rubbish",
     ]);
     expect(otherSearchTerms).toEqual("dogs cats");
     expect(specialParts.length).toBe(1);
@@ -36,11 +36,11 @@ it("topic at start", () => {
 it("topic at end", () => {
     const {
         otherSearchTerms,
-        specialParts
+        specialParts,
     } = splitString("dogs cats topic:Animals", [
         "system:Incoming",
         "topic:Animals",
-        "bookshelf:rubbish"
+        "bookshelf:rubbish",
     ]);
     expect(otherSearchTerms).toEqual("dogs cats");
     expect(specialParts.length).toBe(1);
@@ -50,13 +50,13 @@ it("topic at end", () => {
 it("topic and bookshelf name and otherSearchTerms in quotes", () => {
     const {
         otherSearchTerms,
-        specialParts
+        specialParts,
     } = splitString(
         'dogs bookshelf:enabling writers workshop "black birds" topic:Animal stories',
         [
             "system:Incoming",
             "topic:Animal stories",
-            "bookshelf:enabling writers workshop"
+            "bookshelf:enabling writers workshop",
         ]
     );
     expect(otherSearchTerms).toEqual('dogs "black birds"');
@@ -68,7 +68,7 @@ it("topic and bookshelf name and otherSearchTerms in quotes", () => {
 it("ignores various unhelpful spaces", () => {
     const {
         otherSearchTerms,
-        specialParts
+        specialParts,
     } = splitString(
         ' dogs  bookshelf: enabling writers  workshop "black birds" topic: Math ',
         ["system:Incoming", "topic:Math", "bookshelf:enabling writers workshop"]
@@ -84,11 +84,11 @@ it("ignores various unhelpful spaces", () => {
 it("finds uploader and copyright", () => {
     const {
         otherSearchTerms,
-        specialParts
+        specialParts,
     } = splitString("uploader:fred@example dogs copyright:sil.org", [
         "system:Incoming",
         "topic:Math",
-        "bookshelf:enabling writers workshop"
+        "bookshelf:enabling writers workshop",
     ]);
     expect(otherSearchTerms).toEqual("dogs");
     expect(specialParts.length).toBe(2);
@@ -101,13 +101,13 @@ it("finds uploader and copyright", () => {
 it("corrects case, but not if both cases are valid", () => {
     const {
         otherSearchTerms,
-        specialParts
+        specialParts,
     } = splitString("topic:health cats topic:math topic:Math", [
         "topic:Health",
         "something irrelevant",
         "topic:Math",
         "topic:math",
-        "something else"
+        "something else",
     ]);
     expect(otherSearchTerms).toEqual("cats");
     expect(specialParts.length).toBe(3);

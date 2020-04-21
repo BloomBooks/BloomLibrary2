@@ -9,8 +9,6 @@ export const LevelGroups: React.FunctionComponent<{
 }> = (props) => (
     <React.Fragment>
         {["1", "2", "3", "4"].map((level) => (
-            //  Enhance: this is going to show a book with a computedLevel even if it is over-ridden by `level`.
-
             <BookGroup
                 title={"Level " + level}
                 filter={{ search: `level:${level}`, ...props.filter }}
