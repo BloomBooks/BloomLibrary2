@@ -30,6 +30,9 @@ interface IProps {
 
     // Either we should have this filter:
     filter?: IFilter; // becomes the "where" clause the query
+    // After the query returns a set of books, you can run a code filter
+    // to further reduce the list books in this group.
+    secondaryFilter?: (book: IBasicBookInfo) => boolean;
     // ..or we should have a list of predeterminedBooks that the client already chose
     predeterminedBooks?: IBasicBookInfo[];
 }
