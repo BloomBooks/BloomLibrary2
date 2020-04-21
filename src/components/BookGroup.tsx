@@ -97,19 +97,20 @@ export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
     }, [search, didReceiveResult]);
 
     const showInOneRow = !props.rows || props.rows < 2;
-
-    const cards = (props.predeterminedBooks || search.books).map(
-        (b: IBasicBookInfo) => (
-            // if we're showing in one row, then we'll let swiper handle the laziness, otherwise
-            // we tell the card to try and be lazy itself.
-            <BookCard
-                handleYourOwnLaziness={!showInOneRow}
-                key={b.baseUrl}
-                basicBookInfo={b}
-                contextLangIso={props.contextLangIso}
-            />
-        )
-    );
+    let books = props.predeterminedBooks || search.books;
+    if (props.secondaryFilter) {
+        books = books.filter((b) => props.secondaryFilter!(b));
+    }
+    const cards = books.map((b: IBasicBookInfo) => (
+        // if we're showing in one row, then we'll let swiper handle the laziness, otherwise
+        // we tell the card to try and be lazy itself.
+        <BookCard
+            handleYourOwnLaziness={!showInOneRow}
+            key={b.baseUrl}
+            basicBookInfo={b}
+            contextLangIso={props.contextLangIso}
+        />
+    ));
 
     // Enhance: allow using a MoreCard even with a fixed set of known books, rather than only if we're using a filter.
     if (props.filter && search.totalMatchingRecords > maxCardsToRetrieve) {
