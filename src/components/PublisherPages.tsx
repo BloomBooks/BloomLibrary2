@@ -1,6 +1,6 @@
 import React from "react";
 import { PublisherBanner } from "./banners/PublisherBanner";
-import { StandardPublisherGroups } from "./StandardPublisherGroups";
+import { LevelGroups } from "./LevelGroups";
 import { ExternalLink } from "./banners/ExternalLink";
 import { ListOfBookGroups } from "./ListOfBookGroups";
 
@@ -30,7 +30,7 @@ export const AfricanStorybookPage: React.FunctionComponent = () => {
                 collectionDescription={description}
             />
             <ListOfBookGroups>
-                <StandardPublisherGroups filter={filter} />
+                <LevelGroups filter={filter} />
             </ListOfBookGroups>
         </div>
     );
@@ -60,7 +60,7 @@ export const AsafeerPage: React.FunctionComponent = () => {
             />
 
             <ListOfBookGroups>
-                <StandardPublisherGroups filter={filter} />
+                <LevelGroups filter={filter} />
             </ListOfBookGroups>
         </div>
     );
@@ -100,7 +100,7 @@ export const PrathamPage: React.FunctionComponent = () => {
                 collectionDescription={description}
             />
             <ListOfBookGroups>
-                <StandardPublisherGroups filter={filter} />
+                <LevelGroups filter={filter} />
             </ListOfBookGroups>
         </div>
     );
@@ -135,7 +135,7 @@ export const BookDashPage: React.FunctionComponent = () => {
             />
 
             <ListOfBookGroups>
-                <StandardPublisherGroups filter={filter} />
+                <LevelGroups filter={filter} />
             </ListOfBookGroups>
         </div>
     );
@@ -171,7 +171,7 @@ export const AsiaFoundationPage: React.FunctionComponent = () => {
             />
 
             <ListOfBookGroups>
-                <StandardPublisherGroups filter={filter} />
+                <LevelGroups filter={filter} />
             </ListOfBookGroups>
         </div>
     );
@@ -215,7 +215,7 @@ export const RoomToReadPage: React.FunctionComponent = () => {
             />
 
             <ListOfBookGroups>
-                <StandardPublisherGroups filter={filter} />
+                <LevelGroups filter={filter} />
             </ListOfBookGroups>
         </div>
     );
