@@ -11,6 +11,7 @@ interface IProps {
     bookShelfCategory: string; // project, org, publisher, custom
     // The part of the bookshelf "path" leading up to the current page. E.g. "Enabling Writers Workshops/"
     pathToTheCurrentLevel?: string;
+    excludeTheseChildBookshelves?: string[];
 }
 /* This lets us show bookshelves. Not the books in them, but the list of shelves, themselves.
     It's not obvious that we want/need the current system with bookshelves which live in the database.
@@ -48,11 +49,19 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = (props) => {
     // E.g. if we are at art/ we might have [art/painting/impressionists, art/painting/cubists, art/sculpture].
     // From that we need to determine that on this level, we should be showing [painting, sculpture].
 
-    const bookshelfPathsAtThisLevel = props.pathToTheCurrentLevel
+    let bookshelfPathsAtThisLevel = props.pathToTheCurrentLevel
         ? bookshelfResults.filter((b) =>
               b.key.startsWith(props.pathToTheCurrentLevel!)
           )
         : bookshelfResults;
+    if (props.excludeTheseChildBookshelves) {
+        bookshelfPathsAtThisLevel = bookshelfPathsAtThisLevel.filter(
+            (b) =>
+                !props.excludeTheseChildBookshelves?.some(
+                    (ex) => b.key.indexOf(ex) > -1
+                )
+        );
+    }
 
     const prefix: string = props.pathToTheCurrentLevel || "";
     const allNamesAtThisLevel = bookshelfPathsAtThisLevel

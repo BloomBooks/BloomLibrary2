@@ -10,7 +10,9 @@ import { RouterContext } from "../Router";
 import { IFilter } from "../IFilter";
 import Img from "react-image";
 import { BookCount } from "./BookCount";
-import teamIcon from "../assets/team.svg";
+//import teamIcon from "../assets/team.svg";
+import booksIcon from "../assets/books.svg";
+
 import { useTheme } from "@material-ui/core";
 interface IProps {
     preTitle?: string;
@@ -61,12 +63,12 @@ const CategoryCard: React.FunctionComponent<IProps> = (props) => {
 
     const titleElementIfNoImage = getTitleAndImageElement(
         <img
-            src={teamIcon}
+            src={booksIcon}
             css={css`
                 height: 40px;
                 margin-bottom: 10px;
             `}
-            alt="team"
+            alt="A stack of generic books"
         ></img>
     );
 

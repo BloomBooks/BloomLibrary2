@@ -13,6 +13,8 @@ export const ByLanguageGroups: React.FunctionComponent<{
     filter: IFilter;
     reportBooksAndLanguages?: (bookCount: number, langCount: number) => void;
     rowsPerLanguage?: number;
+    // Sometimes it's nice to drop English, in particular.
+    excludeLanguages?: string[];
 }> = (props) => {
     const searchResults = useSearchBooks(
         {
@@ -83,12 +85,18 @@ export const ByLanguageGroups: React.FunctionComponent<{
     const { languagesByBookCount } = useContext(CachedTablesContext);
     const languages = useMemo(
         () =>
-            languagesByBookCount.sort((x, y) =>
-                getLanguageNames(x).displayNameWithAutonym.localeCompare(
-                    getLanguageNames(y).displayNameWithAutonym
-                )
-            ),
-        [languagesByBookCount]
+            languagesByBookCount
+                .filter((l) => {
+                    if (props.excludeLanguages) {
+                        return !props.excludeLanguages.includes(l.isoCode);
+                    } else return true;
+                })
+                .sort((x, y) =>
+                    getLanguageNames(x).displayNameWithAutonym.localeCompare(
+                        getLanguageNames(y).displayNameWithAutonym
+                    )
+                ),
+        [languagesByBookCount, props.excludeLanguages]
     );
     const languagesWithTheseBooks = useMemo(
         () => languages.filter((l) => rows.get(l.isoCode)),
