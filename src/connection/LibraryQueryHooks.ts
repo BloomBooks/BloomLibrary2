@@ -5,6 +5,7 @@ import { Book, createBookFromParseServerData } from "../model/Book";
 import { useContext, useMemo } from "react";
 import { CachedTablesContext } from "../App";
 import { getCleanedAndOrderedLanguageList, ILanguage } from "../model/Language";
+import { escapeRegExp } from "../Utilities";
 
 // For things other than books, which should use `useBookQuery()`
 function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
@@ -644,7 +645,7 @@ export function constructParseBookQuery(
                         $inQuery: {
                             where: {
                                 email: {
-                                    $regex: facetValue,
+                                    $regex: escapeRegExp(facetValue),
                                     ...caseInsensitive,
                                 },
                             },
@@ -654,13 +655,13 @@ export function constructParseBookQuery(
                     break;
                 case "copyright":
                     params.where.copyright = {
-                        $regex: ".*" + facetValue,
+                        $regex: ".*" + escapeRegExp(facetValue),
                         ...caseInsensitive,
                     };
                     break;
                 case "country":
                     params.where.country = {
-                        $regex: ".*" + facetValue,
+                        $regex: ".*" + escapeRegExp(facetValue),
                         ...caseInsensitive,
                     };
                     break;
@@ -670,19 +671,19 @@ export function constructParseBookQuery(
                     //params.where.phashOfFirstContentImage = facetValue;
                     // But something is introducing "/r/n" at the end of phashes, so we're doing this for now
                     params.where.phashOfFirstContentImage = {
-                        $regex: facetValue + ".*",
+                        $regex: escapeRegExp(facetValue) + ".*",
                     };
                     break;
 
                 case "publisher":
                     params.where.publisher = {
-                        $regex: facetValue,
+                        $regex: escapeRegExp(facetValue),
                         ...caseInsensitive,
                     };
                     break;
                 case "originalPublisher":
                     params.where.originalPublisher = {
-                        $regex: facetValue,
+                        $regex: escapeRegExp(facetValue),
                         ...caseInsensitive,
                     };
                     break;
@@ -762,7 +763,7 @@ export function constructParseBookQuery(
     if (filter.bookshelf) {
         delete params.where.bookshelf;
         params.where.bookshelves = {
-            $regex: filter.bookshelf,
+            $regex: escapeRegExp(filter.bookshelf),
             ...caseInsensitive,
         };
     }
@@ -775,7 +776,7 @@ export function constructParseBookQuery(
             .map((s) => "topic:" + s)
             .join("|");
         params.where.tags = {
-            $regex: regex,
+            $regex: escapeRegExp(regex),
             ...caseInsensitive,
         };
         // This will only be used if there are "otherTags". It means that if both are specified, then we loose the
