@@ -387,9 +387,7 @@ export function getTagStringOrEmpty(
     tag: string
 ): string {
     const tagWithValue = basicBookInfo.tags
-        ? basicBookInfo.tags.filter((t) =>
-              t.toLowerCase().startsWith(tag + ":")
-          )[0]
+        ? basicBookInfo.tags.filter((t) => t.startsWith(tag + ":"))[0]
         : undefined;
     return tagWithValue ? tagWithValue.split(":")[1]?.trim() : "";
 }
