@@ -5,9 +5,10 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import { PublisherBanner } from "./PublisherBanner";
-import { StandardPublisherGroups } from "../StandardPublisherGroups";
+//import { StandardPublisherGroups } from "../StandardPublisherGroups";
 import { ExternalLink } from "./ExternalLink";
 import { ListOfBookGroups } from "../ListOfBookGroups";
+import { LevelGroups } from "../LevelGroups";
 
 const imageBase = "https://share.bloomlibrary.org/bookshelf-images/";
 
@@ -79,7 +80,7 @@ export const GuatemalaMOEPage: React.FunctionComponent = () => {
             />
 
             <ListOfBookGroups>
-                <StandardPublisherGroups filter={filter} />
+                <LevelGroups filter={filter} />
             </ListOfBookGroups>
         </div>
     );

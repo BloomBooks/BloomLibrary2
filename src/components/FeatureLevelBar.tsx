@@ -4,7 +4,10 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import React from "react";
-import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
+import {
+    IBasicBookInfo,
+    getBestLevelStringOrEmpty,
+} from "../connection/LibraryQueryHooks";
 import { getNonLanguageFeatures, featureIconHeight } from "./FeatureHelper";
 
 // The color of the feature bar is determined by the level, if it's a known one
@@ -34,15 +37,8 @@ interface IProps {
 // we know for the book, and any features that are language-independent.
 export const FeatureLevelBar: React.FunctionComponent<IProps> = (props) => {
     // Figure out what level, if any, to show in the feature bar.
-    const levelTag = props.basicBookInfo.tags
-        ? props.basicBookInfo.tags.filter((t) =>
-              t.toLowerCase().startsWith("level:")
-          )[0]
-        : undefined;
-    const level = levelTag ? levelTag.split(":")[1]?.trim() : "";
-    const levelLabel = levelTag
-        ? levelTag[0].toUpperCase() + levelTag.substring(1)
-        : "";
+    const level = getBestLevelStringOrEmpty(props.basicBookInfo);
+    const levelLabel = level ? `Level: ${level}` : "";
 
     // Now figure out what features will show in the feature bar.
     // They have to occur in the book and not be language-dependent.

@@ -1,6 +1,6 @@
 import React from "react";
 import { PublisherBanner } from "./banners/PublisherBanner";
-import { StandardPublisherGroups } from "./StandardPublisherGroups";
+import { LevelGroups } from "./LevelGroups";
 import { ExternalLink } from "./banners/ExternalLink";
 import { BookshelfGroup } from "./BookShelfGroup";
 import { ListOfBookGroups } from "./ListOfBookGroups";
@@ -48,7 +48,7 @@ export const EnablingWritersPage: React.FunctionComponent = () => {
                     bookShelfCategory="project"
                     pathToTheCurrentLevel="Enabling Writers Workshops/"
                 />
-                <StandardPublisherGroups filter={filter} />
+                <LevelGroups filter={filter} />
             </ListOfBookGroups>
         </div>
     );
