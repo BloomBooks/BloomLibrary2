@@ -5,10 +5,9 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import { PublisherBanner } from "./PublisherBanner";
-//import { StandardPublisherGroups } from "../StandardPublisherGroups";
 import { ExternalLink } from "./ExternalLink";
 import { ListOfBookGroups } from "../ListOfBookGroups";
-import { LevelGroups } from "../LevelGroups";
+import { ByLanguageGroups } from "../ByLanguageGroups";
 
 const imageBase = "https://share.bloomlibrary.org/bookshelf-images/";
 
@@ -80,7 +79,11 @@ export const GuatemalaMOEPage: React.FunctionComponent = () => {
             />
 
             <ListOfBookGroups>
-                <LevelGroups filter={filter} />
+                <ByLanguageGroups
+                    titlePrefix=""
+                    filter={filter}
+                    excludeLanguages={["en"]}
+                />
             </ListOfBookGroups>
         </div>
     );
