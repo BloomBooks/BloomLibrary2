@@ -115,6 +115,10 @@ const title3 = "Another book with anunlikelykeyword";
 beforeAll(async () => {
     // In case of anything left over from a previous failed run
     try {
+        // This appears to set the timeout for all tests globally,
+        // but I don't see any way to set it for just a particular suite.
+        jest.setTimeout(20000);
+
         await cleanup();
         const fredData = await getFred();
         const [fredId] = fredData!;
@@ -205,7 +209,6 @@ it("retrieves a book with topic:Math in tags, but not one with that string in ti
     expect(result.data.results[0].title).toBe(title1);
 });
 
-// tests disabled because mysteriously not passing, see note above.
 it("retrieves a book with a quoted string, but not one with the two words separately", async () => {
     const result = await getBook({ search: '"test book"' });
     expect(result.data.results.length).toBe(1);
