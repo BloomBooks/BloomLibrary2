@@ -185,6 +185,8 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
                     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount," +
                     "harvestStartedAt,bookshelves,publisher,originalPublisher",
                 // fluff up fields that reference other tables
+                // Note that what we're going to get in langPointers is actually the data from the rows of language,
+                // because of this statement:
                 include: "uploader,langPointers",
             },
         },

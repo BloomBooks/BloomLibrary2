@@ -45,6 +45,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                             englishName={l.englishName}
                             usageCount={l.usageCount}
                             isoCode={l.isoCode}
+                            objectId={l.objectId}
                         />
                     ))}
                 </CardSwiper>

@@ -3,7 +3,6 @@ import { PublisherBanner } from "./banners/PublisherBanner";
 import { LevelGroups } from "./LevelGroups";
 import { ExternalLink } from "./banners/ExternalLink";
 import { ListOfBookGroups } from "./ListOfBookGroups";
-import { BookGroup } from "./BookGroup";
 
 export const SILLEADPage: React.FunctionComponent = () => {
     const filter = { bookshelf: "SIL LEAD" };

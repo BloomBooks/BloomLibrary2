@@ -141,6 +141,14 @@ export class Book {
             tags.push("level:" + this.level);
         }
 
+        const reconstructedLanguagePointers = this.languages.map((l) => {
+            return {
+                __type: "Pointer",
+                className: "language",
+                objectId: l.objectId,
+            };
+        });
+
         updateBook(this.id, {
             tags,
             inCirculation: this.inCirculation,
@@ -149,6 +157,7 @@ export class Book {
             bookshelves: this.bookshelves,
             publisher: this.publisher,
             originalPublisher: this.originalPublisher,
+            langPointers: reconstructedLanguagePointers,
         });
     }
 

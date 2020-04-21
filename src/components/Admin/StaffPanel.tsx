@@ -19,6 +19,7 @@ import { RouterContext } from "../../Router";
 import { TagsList } from "./TagsList";
 import { BookshelfChooser } from "./BookshelfChooser";
 import { HideBookControl } from "./HideBookControl";
+import { BookLanguagesControl } from "./BookLanguagesControl";
 
 interface IProps {
     book: Book;
@@ -222,6 +223,12 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                     setModified={setModified}
                     book={props.book}
                 ></BookshelfChooser>
+            </Box>
+            <Box>
+                <BookLanguagesControl
+                    setModified={setModified}
+                    book={props.book}
+                ></BookLanguagesControl>
             </Box>
             <Box>
                 <TextField

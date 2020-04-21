@@ -4,6 +4,7 @@ export interface ILanguage {
     usageCount: number;
     englishName?: string;
     bannerImageUrl?: string;
+    objectId: string;
 }
 
 export function getLanguageNamesFromCode(
@@ -16,7 +17,7 @@ export function getLanguageNamesFromCode(
           displayNameWithAutonym: string;
       }
     | undefined {
-    const language = languages.find(l => l.isoCode === languageCode);
+    const language = languages.find((l) => l.isoCode === languageCode);
     if (language) return getLanguageNames(language);
     return undefined;
 }
@@ -49,19 +50,14 @@ export function getCleanedAndOrderedLanguageList(
         string,
         number
     >();
-    const codeToNameMap: Map<string, string> = new Map<string, string>();
-    const codeToEnglishNameMap: Map<string, string | undefined> = new Map<
-        string,
-        string | undefined
-    >();
+    const codeToLanguageMap = new Map<string, ILanguage>();
     languages.forEach((languageResult: ILanguage) => {
         const languageCode = languageResult.isoCode;
         if (!distinctCodeToCountMap.has(languageCode)) {
             distinctCodeToCountMap.set(languageCode, languageResult.usageCount);
 
             // For now, use the name of the one with the most books
-            codeToNameMap.set(languageCode, languageResult.name);
-            codeToEnglishNameMap.set(languageCode, languageResult.englishName);
+            codeToLanguageMap.set(languageCode, languageResult);
         } else {
             const sumSoFar = distinctCodeToCountMap.get(languageCode)!;
             distinctCodeToCountMap.set(
@@ -75,10 +71,11 @@ export function getCleanedAndOrderedLanguageList(
         distinctCodeToCountMap,
         ([languageCode, usageCount]) => {
             return {
-                name: codeToNameMap.get(languageCode)!,
-                englishName: codeToEnglishNameMap.get(languageCode),
+                name: codeToLanguageMap.get(languageCode)!.name,
+                englishName: codeToLanguageMap.get(languageCode)?.englishName,
                 isoCode: languageCode,
-                usageCount
+                usageCount,
+                objectId: codeToLanguageMap.get(languageCode)!.objectId,
             };
         }
     );
