@@ -1,6 +1,6 @@
 import React from "react";
 import { PublisherBanner } from "./banners/PublisherBanner";
-import { StandardPublisherGroups } from "./StandardPublisherGroups";
+import { LevelGroups } from "./LevelGroups";
 import { ExternalLink } from "./banners/ExternalLink";
 import { ListOfBookGroups } from "./ListOfBookGroups";
 import { BookGroup } from "./BookGroup";
@@ -29,8 +29,7 @@ export const SILLEADPage: React.FunctionComponent = () => {
                 collectionDescription={description}
             />
             <ListOfBookGroups>
-                <StandardPublisherGroups filter={filter} />
-                <BookGroup title="All books" filter={{ ...filter }} />
+                <LevelGroups filter={filter} />
             </ListOfBookGroups>
         </div>
     );

@@ -137,7 +137,11 @@ export const ProjectPageWithDefaultLayout: React.FunctionComponent<{
                 spec={getProjectBannerSpec(props.filter.bookshelf!)}
             />
             <ListOfBookGroups>
-                <BookGroup filter={props.filter} title={"All books"} />
+                <BookGroup
+                    filter={props.filter}
+                    title={"All books"}
+                    rows={999}
+                />
                 {/* <BookGroupForEachTopic filter={props.filter} /> */}
             </ListOfBookGroups>
         </React.Fragment>

@@ -376,6 +376,23 @@ export interface IBasicBookInfo {
     country?: string;
     phashOfFirstContentImage?: string;
 }
+// uses the human "level:" tag if present, otherwise falls back to computedLevel
+export function getBestLevelStringOrEmpty(basicBookInfo: IBasicBookInfo) {
+    const levelValue = getTagStringOrEmpty(basicBookInfo, "level");
+    if (levelValue) return levelValue;
+    return getTagStringOrEmpty(basicBookInfo, "computedLevel");
+}
+export function getTagStringOrEmpty(
+    basicBookInfo: IBasicBookInfo,
+    tag: string
+): string {
+    const tagWithValue = basicBookInfo.tags
+        ? basicBookInfo.tags.filter((t) =>
+              t.toLowerCase().startsWith(tag + ":")
+          )[0]
+        : undefined;
+    return tagWithValue ? tagWithValue.split(":")[1]?.trim() : "";
+}
 
 export interface ISearchBooksResult {
     waiting: boolean;
@@ -541,6 +558,7 @@ export function splitString(
         "harvestState:",
         "country:",
         "phash:",
+        "level:",
     ];
 
     const possibleParts = [...facets, ...allTagsInDatabase];
@@ -688,6 +706,29 @@ export function constructParseBookQuery(
                     break;
                 case "harvestState":
                     params.where.harvestState = facetValue;
+                    break;
+                case "level":
+                    if (facetValue === "empty") {
+                        params.where.tags = {
+                            $nin: [
+                                "level:1",
+                                "level:2",
+                                "level:3",
+                                "level:4",
+                                "computedLevel:1",
+                                "computedLevel:2",
+                                "computedLevel:3",
+                                "computedLevel:4",
+                            ],
+                        };
+                    } else {
+                        params.where.tags = {
+                            $in: [
+                                "computedLevel:" + facetValue,
+                                "level:" + facetValue,
+                            ],
+                        };
+                    }
                     break;
                 default:
                     tagParts.push(part);
