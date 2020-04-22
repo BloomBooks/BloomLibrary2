@@ -434,7 +434,7 @@ export function useSearchBooks(
         count: 1,
         keys:
             // this should be all the fields of IBasicBookInfo
-            "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,phashOfFirstContentImage,allTitles",
+            "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles",
         ...params,
     };
     const bookResultsStatus: IAxiosAnswer = useBookQueryInternal(
