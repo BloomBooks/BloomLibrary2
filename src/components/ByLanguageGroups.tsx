@@ -41,23 +41,23 @@ export const ByLanguageGroups: React.FunctionComponent<{
             langIndex++
         ) {
             // eslint-disable-next-line no-loop-func
-            searchResults.books.forEach((b) => {
-                const l = b.languages[langIndex]?.isoCode;
-                if (l) {
-                    const rowForLang = newRows.get(l);
+            searchResults.books.forEach((book) => {
+                const key = ComparisonKey(book);
+                const langCode = book.languages[langIndex]?.isoCode;
+                if (langCode) {
+                    const rowForLang = newRows.get(langCode);
                     if (!rowForLang) {
-                        newRows.set(l, [b]);
+                        newRows.set(langCode, [book]);
                         totalCount++;
                     } else {
                         if (
+                            key === undefined || // if we can't come up with a key, just add this book to the row
                             !rowForLang.find(
-                                (y) =>
-                                    y.phashOfFirstContentImage ===
-                                        b.phashOfFirstContentImage ||
-                                    !y.phashOfFirstContentImage
+                                (bookAlreadyInRow) =>
+                                    key === ComparisonKey(bookAlreadyInRow)
                             )
                         ) {
-                            rowForLang.push(b);
+                            rowForLang.push(book);
                             totalCount++;
                         }
                     }
@@ -121,3 +121,10 @@ export const ByLanguageGroups: React.FunctionComponent<{
         </React.Fragment>
     );
 };
+
+function ComparisonKey(book: IBasicBookInfo): string | undefined {
+    return book.phashOfFirstContentImage
+        ? book.phashOfFirstContentImage + book.pageCount
+        : // undefined indicates that we can't reliably do a comparison
+          undefined;
+}
