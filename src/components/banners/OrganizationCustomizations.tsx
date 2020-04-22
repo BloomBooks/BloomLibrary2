@@ -76,6 +76,7 @@ export const GuatemalaMOEPage: React.FunctionComponent = () => {
                 showTitle={false}
                 filter={filter}
                 logoUrl={`${imageBase}guatemala-moe-logo.svg`}
+                logoCss={"height:230px"} // it has to be really big to be legible
                 collectionDescription={description}
             />
 

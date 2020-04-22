@@ -32,7 +32,7 @@ const nameToImageMap = new Map<string, string>([
     //  // something in our pipeline won't deliver an image that starts with "3"
     ["3Asafeer", "Asafeer"],
     ["Room To Read", "Room to Read"],
-    ["Ministerio de Educación de Guatemala", "Guatemala MOE"],
+    ["Ministerio de Educación de Guatemala", "guatemala-moe-logo.svg"],
     ["Resources for the Blind, Inc. (Philippines)", "Resources for the Blind"],
 ]);
 
@@ -80,7 +80,9 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = (props) => {
     const cards =
         bookshelfResults &&
         uniqueNamesAtThisLevel.sort().map((nextLevel: string) => {
-            const imageName = nameToImageMap.get(nextLevel) ?? nextLevel;
+            let imageName = nameToImageMap.get(nextLevel) ?? nextLevel;
+            // there is (was?) a convention of naming the shelf image after the shelf, with png
+            if (imageName.indexOf(".") < 0) imageName += ".png";
             // note, this will often be the *start* of an actual bookshelf path, e.g. "Enabling Writers Workshops/"
             const fullBookshelfKey =
                 (props.pathToTheCurrentLevel || "") + nextLevel;
@@ -100,8 +102,7 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = (props) => {
                     pageType={props.bookShelfCategory}
                     img={
                         "https://share.bloomlibrary.org/bookshelf-images/" +
-                        encodeUrl(imageName) +
-                        ".png"
+                        imageName
                     }
                 />
             );

@@ -15,8 +15,9 @@ export const PublisherBanner: React.FunctionComponent<{
     showTitle: boolean;
     filter: IFilter;
     logoUrl?: string;
+    logoCss?: string;
     collectionDescription: JSX.Element;
-}> = props => (
+}> = (props) => (
     <div
         css={css`
             margin-left: 20px;
@@ -43,6 +44,7 @@ export const PublisherBanner: React.FunctionComponent<{
                     alt={props.title}
                     css={css`
                         height: 150px;
+                        ${props.logoCss}; // comes after so will override if present
                         margin-right: 50px;
                     `}
                 />
