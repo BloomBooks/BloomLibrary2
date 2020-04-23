@@ -16,6 +16,7 @@ import { SearchBanner } from "./banners/Banners";
 import { ListOfBookGroups } from "./ListOfBookGroups";
 import { CachedTablesContext } from "../App";
 import { getLanguageNamesFromCode } from "../model/Language";
+import { LevelGroups } from "./LevelGroups";
 
 export const SearchResultsPage: React.FunctionComponent<{
     filter: IFilter;
@@ -99,27 +100,9 @@ export const LanguagePage: React.FunctionComponent<{
                 title={props.title}
                 spec={getLanguageBannerSpec(props.filter.language!)}
             />
+
             <ListOfBookGroups>
-                <BookGroup
-                    title={`Featured ${languageDisplayName} books.`}
-                    filter={{
-                        ...props.filter,
-                        ...{ bookshelf: "Featured" },
-                    }}
-                    key={"featured"}
-                />
-                <BookGroup
-                    title="Most Recent"
-                    filter={props.filter}
-                    order={"-createdAt"}
-                    key={"recent"}
-                />
-                <BookGroupForEachTopic filter={props.filter} />
-                <BookGroup
-                    title={`All ${props.filter.language} books.`}
-                    filter={props.filter}
-                    key={"all filtered"}
-                />
+                <LevelGroups filter={props.filter} />
             </ListOfBookGroups>
         </div>
     );

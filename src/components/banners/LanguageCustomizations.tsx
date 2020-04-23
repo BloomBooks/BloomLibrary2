@@ -11,8 +11,8 @@ const imageBase = "https://share.bloomlibrary.org/language-banner-images/";
 
 export function getLanguageBannerSpec(key: string): IBannerSpec {
     return (
-        languageBannerCustomizations.find(s => s.key === key) ||
-        languageBannerCustomizations.find(s => s.key === "default")!
+        languageBannerCustomizations.find((s) => s.key === key) ||
+        languageBannerCustomizations.find((s) => s.key === "default")!
     );
 }
 
@@ -27,7 +27,7 @@ const languageBannerCustomizations: IBannerSpec[] = [
             #contrast-overlay {
                 background-color: transparent;
             }
-        `
+        `,
     },
 
     {
@@ -37,7 +37,7 @@ const languageBannerCustomizations: IBannerSpec[] = [
             #contrast-overlay {
                 background-color: transparent;
             }
-        `
+        `,
     },
     {
         key: "en",
@@ -61,7 +61,7 @@ const languageBannerCustomizations: IBannerSpec[] = [
                 We offer these English books for you to translate into your own
                 language.
             </div>
-        )
+        ),
     },
     //Hausa
     {
@@ -83,7 +83,19 @@ const languageBannerCustomizations: IBannerSpec[] = [
                 Hausa is mostly spoken throughout southern Niger and northern
                 Nigeria.
             </div>
-        )
+        ),
+    }, //Kwakum
+    {
+        key: "kwu",
+        imageCredits: <div>Stacey Hare</div>,
+        pageBackground: "#f3d5b8",
+        bannerCss: css`
+            background-image: url(${imageBase}Kwakum-Cameroon.jpg);
+            #contrast-overlay {
+                background-color: rgba(0, 0, 0, 0.3);
+            }
+        `,
+        about: <div>Kwakum is spoken by 10,000 people in Cameroon.</div>,
     },
     {
         key: "tuz",
@@ -107,6 +119,6 @@ const languageBannerCustomizations: IBannerSpec[] = [
                 by the <WikipediaLink query="turka_people" text="Turka" />{" "}
                 people in <WikipediaLink text="Burkina Faso" />.
             </div>
-        )
-    }
+        ),
+    },
 ];
