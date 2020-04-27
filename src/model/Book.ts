@@ -105,7 +105,10 @@ export class Book {
             }
         }
         // work around https://issues.bloomlibrary.org/youtrack/issue/BL-8327 until it is fixed
-        if (this.phashOfFirstContentImage.indexOf("null") > -1)
+        if (
+            !this.phashOfFirstContentImage ||
+            this.phashOfFirstContentImage.indexOf("null") > -1
+        )
             this.phashOfFirstContentImage = "";
 
         // todo: parse out the dates, in this YYYY-MM-DD format (e.g. with )
