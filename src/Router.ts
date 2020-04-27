@@ -53,13 +53,19 @@ export class Router {
         const specialPage = specialPages.find(
             (s) => "/" + s === window.location.pathname
         );
-        if (CheckForCovidSearch(window.location.search)) {
+        /*   this check is broken... I tried fixing it with URLSearchParams but it can't
+            parse the query string correctly, so our book url must be encoded wrong
+            const search = new URLSearchParams(window.location.search).get("search");
+
+        if (CheckForCovidSearch(search)) {
             this.push({
                 title: "",
                 pageType: "Covid19",
                 filter: {},
             });
-        } else if (specialPage) {
+        } else
+        */
+        if (specialPage) {
             this.push(home);
             this.push({
                 title: specialPage,
