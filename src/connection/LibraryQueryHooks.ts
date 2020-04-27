@@ -2,7 +2,7 @@ import useAxios, { IReturns } from "@use-hooks/axios";
 import { IFilter, InCirculationOptions } from "../IFilter";
 import { getConnection } from "./ParseServerConnection";
 import { Book, createBookFromParseServerData } from "../model/Book";
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useEffect, useRef } from "react";
 import { CachedTablesContext } from "../App";
 import { getCleanedAndOrderedLanguageList, ILanguage } from "../model/Language";
 
@@ -268,22 +268,37 @@ export function useGetBooksForGrid(
         },
     });
 
-    if (
-        loading ||
-        !response ||
-        !response["data"] ||
-        !response["data"]["results"] ||
-        response["data"]["results"].length === 0 ||
-        error
-    ) {
+    // Before we had this useEffect, we would get a new instance of each book, each time the grid re-rendered.
+    // Besides being inefficient, it led to a very difficult bug in the embedded staff panel where we would
+    // change the tags list, only to have the old value of tags overwrite the change we just made when the
+    // grid re-rendered.
+    const booksRef = useRef<Book[]>();
+    useEffect(() => {
+        if (
+            loading ||
+            !response ||
+            !response["data"] ||
+            !response["data"]["results"] ||
+            response["data"]["results"].length === 0 ||
+            error
+        ) {
+            booksRef.current = undefined;
+        } else {
+            booksRef.current = response["data"]["results"].map((r: object) =>
+                createBookFromParseServerData(r)
+            );
+        }
+    }, [loading, error, response]);
+
+    if (!booksRef.current) {
         return { onePageOfMatchingBooks: [], totalMatchingBooksCount: 0 };
     }
 
-    const books = response["data"]["results"].map((r: object) =>
-        createBookFromParseServerData(r)
-    );
-    const count = response["data"]["count"];
-    return { onePageOfMatchingBooks: books, totalMatchingBooksCount: count };
+    const count = response!["data"]["count"];
+    return {
+        onePageOfMatchingBooks: booksRef.current,
+        totalMatchingBooksCount: count,
+    };
 }
 
 // we just want a better name
