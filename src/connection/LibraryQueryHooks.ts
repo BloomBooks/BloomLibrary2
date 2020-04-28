@@ -5,6 +5,7 @@ import { Book, createBookFromParseServerData } from "../model/Book";
 import { useContext, useMemo, useEffect, useState } from "react";
 import { CachedTablesContext } from "../App";
 import { getCleanedAndOrderedLanguageList, ILanguage } from "../model/Language";
+import { processRegExp } from "../Utilities";
 
 // For things other than books, which should use `useBookQuery()`
 function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
@@ -633,6 +634,19 @@ export function splitString(
     return { otherSearchTerms, specialParts };
 }
 
+function regexCaseSensitive(value: string) {
+    return {
+        $regex: processRegExp(value),
+    };
+}
+const caseInsensitive = { $options: "i" };
+function regex(value: string) {
+    return {
+        $regex: processRegExp(value),
+        ...caseInsensitive,
+    };
+}
+
 export function constructParseBookQuery(
     params: any,
     filter: IFilter,
@@ -666,7 +680,6 @@ export function constructParseBookQuery(
     }
 
     const tagParts = [];
-    const caseInsensitive = { $options: "i" };
     if (!!f.search) {
         const { otherSearchTerms, specialParts } = splitString(
             filter.search!,
@@ -678,29 +691,20 @@ export function constructParseBookQuery(
                 .split(":")
                 .map((p) => p.trim());
             switch (facetLabel) {
+                case "copyright":
+                case "country":
+                case "publisher":
+                case "originalPublisher":
+                    params.where[facetLabel] = regex(facetValue);
+                    break;
                 case "uploader":
                     params.where.uploader = {
                         $inQuery: {
                             where: {
-                                email: {
-                                    $regex: facetValue,
-                                    ...caseInsensitive,
-                                },
+                                email: regex(facetValue),
                             },
                             className: "_User",
                         },
-                    };
-                    break;
-                case "copyright":
-                    params.where.copyright = {
-                        $regex: ".*" + facetValue,
-                        ...caseInsensitive,
-                    };
-                    break;
-                case "country":
-                    params.where.country = {
-                        $regex: ".*" + facetValue,
-                        ...caseInsensitive,
                     };
                     break;
                 case "phash":
@@ -708,22 +712,9 @@ export function constructParseBookQuery(
                     // This would be correct
                     //params.where.phashOfFirstContentImage = facetValue;
                     // But something is introducing "/r/n" at the end of phashes, so we're doing this for now
-                    params.where.phashOfFirstContentImage = {
-                        $regex: facetValue + ".*",
-                    };
-                    break;
-
-                case "publisher":
-                    params.where.publisher = {
-                        $regex: facetValue,
-                        ...caseInsensitive,
-                    };
-                    break;
-                case "originalPublisher":
-                    params.where.originalPublisher = {
-                        $regex: facetValue,
-                        ...caseInsensitive,
-                    };
+                    params.where.phashOfFirstContentImage = regexCaseSensitive(
+                        facetValue
+                    );
                     break;
                 case "harvestState":
                     params.where.harvestState = facetValue;
@@ -823,21 +814,18 @@ export function constructParseBookQuery(
     // that start with "Enabling Writers" (and then go on to list country and sub-project).
     if (filter.bookshelf) {
         delete params.where.bookshelf;
-        params.where.bookshelves = {
-            $regex: filter.bookshelf,
-            ...caseInsensitive,
-        };
+        params.where.bookshelves = regex(filter.bookshelf);
     }
     // I think you can also do topic via search, but I need a way to do an "OR" in order to combine several topics for STEM
     // take `f.topic` to be a comma-separated list
     if (f.topic) {
         delete params.where.topic;
-        const regex = f.topic
+        const topicsRegex = f.topic
             .split(",")
-            .map((s) => "topic:" + s)
+            .map((s) => "topic:" + processRegExp(s))
             .join("|");
         params.where.tags = {
-            $regex: regex,
+            $regex: topicsRegex,
             ...caseInsensitive,
         };
         // This will only be used if there are "otherTags". It means that if both are specified, then we loose the
