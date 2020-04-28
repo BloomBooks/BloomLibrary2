@@ -162,14 +162,14 @@ export class Book {
         updateBook(this.id, {
             tags,
             inCirculation: this.inCirculation,
-            summary: this.summary,
+            summary: this.summary?.trim(),
             librarianNote: this.librarianNote,
             bookshelves: this.bookshelves,
             publisher: this.publisher,
             originalPublisher: this.originalPublisher,
             langPointers: reconstructedLanguagePointers,
             features: this.features,
-            title: this.title,
+            title: this.title?.trim(),
         });
     }
 

@@ -56,7 +56,7 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
         setModified(true);
     };
     const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const t = event.target.value.trim();
+        const t = event.target.value;
         if (t) props.book.title = t;
         setModified(true);
     };
