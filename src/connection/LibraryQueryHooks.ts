@@ -2,7 +2,7 @@ import useAxios, { IReturns } from "@use-hooks/axios";
 import { IFilter, InCirculationOptions } from "../IFilter";
 import { getConnection } from "./ParseServerConnection";
 import { Book, createBookFromParseServerData } from "../model/Book";
-import { useContext, useMemo, useEffect, useRef } from "react";
+import { useContext, useMemo, useEffect, useRef, useState } from "react";
 import { CachedTablesContext } from "../App";
 import { getCleanedAndOrderedLanguageList, ILanguage } from "../model/Language";
 
@@ -220,15 +220,23 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
     return detail;
 }
 
+interface IGridResult {
+    onePageOfMatchingBooks: Book[];
+    totalMatchingBooksCount: number;
+}
 export function useGetBooksForGrid(
     filter: IFilter,
     limit: number,
     skip: number,
     // We only pay attention to the first one at this point, as that's all I figured out
     sortingArray: Array<{ columnName: string; descending: boolean }>
-): { onePageOfMatchingBooks: Book[]; totalMatchingBooksCount: number } {
+): IGridResult {
     //console.log("Sorts: " + sortingArray.map(s => s.columnName).join(","));
     const { tags } = useContext(CachedTablesContext);
+    const [result, setResult] = useState<IGridResult>({
+        onePageOfMatchingBooks: [],
+        totalMatchingBooksCount: 0,
+    });
 
     // Enhance: this only pays attention to the first one at this point, as that's all I figured out how to do
     let order = "";
@@ -272,7 +280,6 @@ export function useGetBooksForGrid(
     // Besides being inefficient, it led to a very difficult bug in the embedded staff panel where we would
     // change the tags list, only to have the old value of tags overwrite the change we just made when the
     // grid re-rendered.
-    const booksRef = useRef<Book[]>();
     useEffect(() => {
         if (
             loading ||
@@ -282,23 +289,22 @@ export function useGetBooksForGrid(
             response["data"]["results"].length === 0 ||
             error
         ) {
-            booksRef.current = undefined;
+            setResult({
+                onePageOfMatchingBooks: [],
+                totalMatchingBooksCount: 0,
+            });
         } else {
-            booksRef.current = response["data"]["results"].map((r: object) =>
-                createBookFromParseServerData(r)
-            );
+            const onePageOfBooks = response["data"][
+                "results"
+            ].map((r: object) => createBookFromParseServerData(r));
+
+            setResult({
+                onePageOfMatchingBooks: onePageOfBooks,
+                totalMatchingBooksCount: response["data"]["count"],
+            });
         }
     }, [loading, error, response]);
-
-    if (!booksRef.current) {
-        return { onePageOfMatchingBooks: [], totalMatchingBooksCount: 0 };
-    }
-
-    const count = response!["data"]["count"];
-    return {
-        onePageOfMatchingBooks: booksRef.current,
-        totalMatchingBooksCount: count,
-    };
+    return result;
 }
 
 // we just want a better name
