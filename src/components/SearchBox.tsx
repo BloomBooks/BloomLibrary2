@@ -217,6 +217,7 @@ export const SearchBox: React.FunctionComponent<{
 
 export function CheckForCovidSearch(search?: string) {
     if (!search) return false;
+
     const searchTerms = search.toLowerCase();
     return (
         searchTerms.indexOf("covid") > -1 || searchTerms.indexOf("corona") > -1

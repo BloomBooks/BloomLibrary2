@@ -8,7 +8,7 @@ interface IProps {
 }
 
 export const FeatureGroup: React.FunctionComponent<IProps> = (props) => {
-    // We don't necessesarily want to display all features from featureSpecs or in that order,
+    // We don't necessarily want to display all features from featureSpecs or in that order,
     // so this array lets us customize which ones and in which order.
     const featureKeysToDisplayInOrder = [
         "talkingBook",

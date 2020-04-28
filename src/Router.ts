@@ -8,7 +8,6 @@ import {
     restoreScrollPosition,
     storeScrollPosition,
 } from "./RestoreScrollPosition";
-import { CheckForCovidSearch } from "./components/SearchBox";
 
 export interface ILocation {
     // this is used only when the location is a book detail

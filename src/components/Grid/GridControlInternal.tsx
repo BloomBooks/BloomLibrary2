@@ -163,6 +163,7 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                 descending: s.direction === "asc",
             }))
         );
+        const thisIsAModerator = user?.moderator;
         useEffect(() => {
             setColumns(
                 bookGridColumnDefinitions.filter(
@@ -171,7 +172,7 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                 )
             );
             //setColumnNamesInDisplayOrder(bookGridColumns.map(c => c.name));
-        }, [router, user, user?.moderator, bookGridColumnDefinitions]);
+        }, [router, user, thisIsAModerator, bookGridColumnDefinitions]);
 
         // note: this is an embedded function as a way to get at bookGridColumnDefinitions. It's important
         // that we don't reconstruct it on every render, or else we'll lose cursor focus on each key press.
@@ -290,7 +291,7 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                                 return (
                                     <div
                                         css={css`
-                                            background-color: #1d94a438;
+                                            //background-color: #1d94a438;
                                         `}
                                     >
                                         <StaffPanel book={book}></StaffPanel>

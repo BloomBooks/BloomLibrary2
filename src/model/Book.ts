@@ -1,4 +1,4 @@
-import { observable } from "mobx";
+import { observable, observe } from "mobx";
 import { updateBook } from "../connection/LibraryUpdates";
 import { ArtifactVisibilitySettingsGroup } from "./ArtifactVisibilitySettings";
 import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
@@ -25,7 +25,7 @@ export function createBookFromParseServerData(pojo: any): Book {
 // various ways as we construct this object from the Parse Server data.
 export class Book {
     public id: string = "";
-    public title: string = "";
+    //public debugInstance: number = Math.random();
     public allTitles = new Map<string, string>();
     public allTitlesRaw = "";
     public license: string = "";
@@ -36,13 +36,12 @@ export class Book {
     public pageCount: string = "";
     public bookOrder: string = "";
     public downloadCount: number = -1;
-    public features: string[] = [];
-    public bookshelves: string[] = [];
     public harvestLog: string[] = [];
     public harvestState: string = "";
     public phashOfFirstContentImage: string = "";
 
     // things that can be edited on the site are observable so that the rest of the UI will update if they are changed.
+    @observable public title: string = "";
     @observable public summary: string = "";
     @observable public tags: string[] = [];
     @observable public level: string = "";
@@ -50,6 +49,8 @@ export class Book {
     @observable public inCirculation: boolean = true;
     @observable public publisher: string = "";
     @observable public originalPublisher: string = "";
+    @observable public features: string[] = [];
+    @observable public bookshelves: string[] = [];
 
     @observable
     public artifactsToOfferToUsers: ArtifactVisibilitySettingsGroup = new ArtifactVisibilitySettingsGroup();
@@ -134,6 +135,12 @@ export class Book {
                 this.ePUBVisible = x.harvester;
             } else this.ePUBVisible = true;
         }
+
+        // Keeping this around as an example, becuase it is helpful in debugging because you
+        // can see what in the callstack changed the value.
+        // observe(this, "tags", (change: any) => {
+        //     console.log("Changed tags: " + change.newValue);
+        // });
     }
 
     public saveAdminDataToParse() {
@@ -161,6 +168,8 @@ export class Book {
             publisher: this.publisher,
             originalPublisher: this.originalPublisher,
             langPointers: reconstructedLanguagePointers,
+            features: this.features,
+            title: this.title,
         });
     }
 

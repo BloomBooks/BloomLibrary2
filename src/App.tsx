@@ -81,7 +81,9 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                 cantUseBloomD,
                             }}
                         >
-                            <UnderConstruction />
+                            {window.location.hostname === "localhost" || (
+                                <UnderConstruction />
+                            )}
                             <BrowseView />
                         </OSFeaturesContext.Provider>
                     </CachedTablesContext.Provider>

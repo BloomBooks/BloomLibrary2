@@ -16,10 +16,13 @@ import {
 } from "@material-ui/core";
 import { observer } from "mobx-react";
 import { RouterContext } from "../../Router";
-import { TagsList } from "./TagsList";
-import { BookshelfChooser } from "./BookshelfChooser";
 import { HideBookControl } from "./HideBookControl";
-import { BookLanguagesControl } from "./BookLanguagesControl";
+import {
+    TagsChooser,
+    BookLanguagesChooser,
+    BookshelvesChooser,
+    FeaturesChooser,
+} from "./StaffMultiChoosers";
 
 interface IProps {
     book: Book;
@@ -52,7 +55,11 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
         props.book.librarianNote = event.target.value;
         setModified(true);
     };
-
+    const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const t = event.target.value.trim();
+        if (t) props.book.title = t;
+        setModified(true);
+    };
     // const handleRelatedBooksChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     //     props.book.librarianNote = event.target.value;
     //     setModified(true);
@@ -117,6 +124,30 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                     `}
                 >
                     <TextField
+                        css={css`
+                            .MuiOutlinedInput-notchedOutline {
+                                border-color: ${borderColor} !important;
+                                border-width: 2px !important;
+                            }
+                            .MuiInputLabel-root {
+                                color: darkGrey;
+                            }
+                            .MuiInputBase-root {
+                                margin-bottom: 1em;
+                            }
+                            .MuiInputLabel-root.Mui-focused {
+                                color: black;
+                            }
+                            background-color: white;
+                        `}
+                        label="Title"
+                        variant="outlined"
+                        multiline
+                        rows={2}
+                        value={props.book.title || ""}
+                        onChange={handleTitleChange}
+                    ></TextField>
+                    <TextField
                         id="apSummary"
                         css={css`
                             .MuiOutlinedInput-notchedOutline {
@@ -151,6 +182,10 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                             .MuiInputBase-input {
                                 height: 87px;
                             }
+                            .MuiInputBase-root {
+                                margin-bottom: 1em;
+                            }
+
                             .MuiInputLabel-root {
                                 color: darkGrey;
                             }
@@ -175,6 +210,7 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                         margin-left: 10px;
                         padding: 10px;
                         background-color: white;
+                        margin-bottom: 1em;
                     `}
                 >
                     <FormLabel component="legend">Level</FormLabel>
@@ -210,30 +246,47 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                     </div>
                 </div>
             </div>
-            <Box>
-                <FormLabel component="legend">Tags</FormLabel>
-                <TagsList
-                    book={props.book}
-                    setModified={setModified}
-                    borderColor={borderColor}
-                ></TagsList>
-            </Box>
-            <Box>
-                <BookshelfChooser
-                    setModified={setModified}
-                    book={props.book}
-                ></BookshelfChooser>
-            </Box>
-            <Box>
-                <BookLanguagesControl
+            <BookshelvesChooser
+                setModified={setModified}
+                book={props.book}
+            ></BookshelvesChooser>
+            <div
+                css={css`
+                    margin-top: 1em;
+                    display: flex;
+                    & > div {
+                        margin-right: 10px;
+                    }
+                `}
+            >
+                <TagsChooser
                     setModified={setModified}
                     book={props.book}
-                ></BookLanguagesControl>
-            </Box>
-            <Box>
+                ></TagsChooser>
+                <BookLanguagesChooser
+                    setModified={setModified}
+                    book={props.book}
+                ></BookLanguagesChooser>
+
+                <FeaturesChooser
+                    setModified={setModified}
+                    book={props.book}
+                ></FeaturesChooser>
+            </div>
+            <div
+                css={css`
+                    margin-top: 1em;
+                    & > div {
+                        margin-right: 1em;
+                    }
+                `}
+            >
                 <TextField
                     label="Publisher"
                     variant="outlined"
+                    css={css`
+                        background-color: white;
+                    `}
                     value={props.book.publisher}
                     onChange={(event) => {
                         props.book.publisher = event.target.value;
@@ -243,13 +296,16 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                 <TextField
                     label="Original Publisher"
                     variant="outlined"
+                    css={css`
+                        background-color: white;
+                    `}
                     value={props.book.originalPublisher}
                     onChange={(event) => {
                         props.book.originalPublisher = event.target.value;
                         setModified(true);
                     }}
                 ></TextField>
-            </Box>
+            </div>
             <HideBookControl book={props.book} setModified={setModified} />
             <div
                 id="apControls"
@@ -288,21 +344,22 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
     );
 });
 
-const Box: React.FunctionComponent = (props) => (
-    <div
-        css={css`
-            border: 2px solid ${borderColor};
-            border-radius: 4px;
-            margin-top: 10px;
-            padding: 10px;
-            line-height: 26px;
-            position: relative;
-            background-color: white;
-        `}
-    >
-        {props.children}
-    </div>
-);
+// const Box: React.FunctionComponent = (props) => (
+//     <div
+//         css={css`
+//             border: 2px solid ${borderColor};
+//             border-radius: 4px;
+//             margin-top: 10px;
+//             padding: 10px;
+//             line-height: 26px;
+//             position: relative;
+//             background-color: white;
+//         `}
+//         {...props}
+//     >
+//         {props.children}
+//     </div>
+// );
 
 // though we normally don't like to export defaults, this is required for react.lazy (code splitting)
 export default StaffPanel;

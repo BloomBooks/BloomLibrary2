@@ -2,7 +2,6 @@ import React from "react";
 import { PublisherBanner } from "./banners/PublisherBanner";
 import { BookshelfGroup } from "./BookShelfGroup";
 import { ListOfBookGroups } from "./ListOfBookGroups";
-import { BookGroup } from "./BookGroup";
 import CategoryCard from "./CategoryCard";
 import { CategoryCardGroup } from "./CategoryCardGroup";
 import { ByLanguageGroups } from "./ByLanguageGroups";
