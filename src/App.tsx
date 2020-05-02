@@ -5,6 +5,15 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React from "react";
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link,
+    useRouteMatch,
+    useParams,
+} from "react-router-dom";
+
 import { BrowseView } from "./components/BrowseView";
 import theme from "./theme";
 import { ThemeProvider, Snackbar } from "@material-ui/core";
@@ -23,6 +32,10 @@ import {
     cantUseBloomD,
 } from "./components/OSFeaturesContext";
 import { Alert, AlertTitle } from "@material-ui/lab";
+import { GridPage } from "./components/Grid/GridPage";
+import { BulkEditPage } from "./components/BulkEdit/BulkEditPage";
+import { HomeGrownRouter, RouterContext } from "./Router";
+import { Header } from "./components/header/Header";
 interface ICachedTables {
     tags: string[];
     languagesByBookCount: ILanguage[];
@@ -40,6 +53,8 @@ export const CachedTablesContext = React.createContext<ICachedTables>({
     languagesByBookCount: [],
     bookshelves: [],
 });
+
+const homeGrownRouter = new HomeGrownRouter();
 
 export const App: React.FunctionComponent<{}> = (props) => {
     const tags = useGetTagList();
@@ -84,7 +99,27 @@ export const App: React.FunctionComponent<{}> = (props) => {
                             {window.location.hostname === "localhost" || (
                                 <UnderConstruction />
                             )}
-                            <BrowseView />
+
+                            <RouterContext.Provider value={homeGrownRouter}>
+                                <Header />
+                                <Router>
+                                    <Switch>
+                                        <Route path="/about">
+                                            <div>This is About</div>
+                                        </Route>
+                                        <Route path="/grid">
+                                            <GridPage />
+                                        </Route>
+                                        <Route path="/bulk">
+                                            <BulkEditPage />
+                                        </Route>{" "}
+                                        <Route path="/">
+                                            <BrowseView />
+                                            {/* <div>root</div> */}
+                                        </Route>
+                                    </Switch>
+                                </Router>
+                            </RouterContext.Provider>
                         </OSFeaturesContext.Provider>
                     </CachedTablesContext.Provider>
                 </ThemeProvider>

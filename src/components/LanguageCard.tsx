@@ -6,12 +6,12 @@ import { jsx } from "@emotion/core";
 
 import React, { useContext } from "react";
 import { CheapCard } from "./CheapCard";
-import { RouterContext, Router } from "../Router";
+import { RouterContext, HomeGrownRouter } from "../Router";
 import { ILanguage, getLanguageNames } from "../model/Language";
 import { commonUI } from "../theme";
 import { useTheme } from "@material-ui/core";
 
-export function routeToLanguage(language: ILanguage, router: Router) {
+export function routeToLanguage(language: ILanguage, router: HomeGrownRouter) {
     const { displayName } = getLanguageNames(language);
 
     router.push({

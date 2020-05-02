@@ -9,6 +9,8 @@ import { RouterContext } from "../Router";
 import React, { useContext } from "react";
 
 export const Breadcrumbs: React.FunctionComponent = () => {
+    return <div>TODO breadcrumbs</div>;
+
     const router = useContext(RouterContext);
     if (!router) {
         throw new Error(

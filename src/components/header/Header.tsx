@@ -13,8 +13,8 @@ import Link from "@material-ui/core/Link/Link";
 import { useMediaQuery } from "@material-ui/core";
 import { RouterContext } from "../../Router";
 
-export const Header: React.FunctionComponent = props => {
-    const router = useContext(RouterContext);
+export const Header: React.FunctionComponent = (props) => {
+    const homeGrownRouter = useContext(RouterContext);
 
     const searchBelow = !useMediaQuery("(min-width:500px)");
     const normalToobarHeight = "48px";
@@ -34,11 +34,44 @@ export const Header: React.FunctionComponent = props => {
                 flex-direction: ${searchBelow ? "column" : "row"};
             `}
         >
+            <Link
+                css={css`
+                    margin-top: auto !important;
+                `}
+                href="/"
+                title="Home"
+            >
+                <img src={logo} alt={"Bloom Logo"} />
+            </Link>
+            <div
+                css={css`
+                    margin-left: 30px;
+                    margin-top: auto;
+                    & > * {
+                        color: white !important;
+                    }
+                `}
+            >
+                <Link href="/">Read</Link>
+                <Link
+                    css={css`
+                        margin-left: 15px !important;
+                    `}
+                    href="/create"
+                >
+                    Create
+                </Link>
+                <Link
+                    css={css`
+                        margin-left: 15px !important;
+                    `}
+                    href="/about"
+                >
+                    About
+                </Link>
+            </div>
             {searchBelow || (
                 <React.Fragment>
-                    <Link title="Home" onClick={() => router!.goHome()}>
-                        <img src={logo} alt={"Bloom Logo"} />
-                    </Link>
                     <div
                         css={css`
                             display: flex;
@@ -60,9 +93,6 @@ export const Header: React.FunctionComponent = props => {
                             display: flex;
                         `}
                     >
-                        <Link href="/" title="Home">
-                            <img src={logo} alt={"Bloom Logo"} />
-                        </Link>
                         <UserMenu
                             buttonHeight={normalToobarHeight}
                             css={css`

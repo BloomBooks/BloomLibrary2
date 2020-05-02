@@ -38,7 +38,7 @@ export interface ILocation {
 }
 // This is a super simple router based on a stack of "locations" (page descriptors)
 // That stack is a mobx observable, so that the UI can redraw when the top of the stack changes.
-export class Router {
+export class HomeGrownRouter {
     @observable public breadcrumbStack: ILocation[] = new Array<ILocation>();
     public static home: ILocation = {
         title: "Home",
@@ -47,7 +47,7 @@ export class Router {
     };
     public waitingOnSaveOrCancel: boolean = false;
     public constructor() {
-        const home = Router.home;
+        const home = HomeGrownRouter.home;
         const specialPages = ["grid", "bulk"];
         const specialPage = specialPages.find(
             (s) => "/" + s === window.location.pathname
@@ -89,55 +89,55 @@ export class Router {
             }
             this.push(location);
         }
-        window.onbeforeunload = (event: BeforeUnloadEvent) => {
-            if (this.waitingOnSaveOrCancel) {
-                console.log("waitingOnSaveOrCancel preventing onbeforeunload");
-                event.preventDefault();
-                window.history.go(1);
-                event.returnValue = true;
-            }
-        };
+        // window.onbeforeunload = (event: BeforeUnloadEvent) => {
+        //     if (this.waitingOnSaveOrCancel) {
+        //         console.log("waitingOnSaveOrCancel preventing onbeforeunload");
+        //         event.preventDefault();
+        //         window.history.go(1);
+        //         event.returnValue = true;
+        //     }
+        // };
         // When we do window.history.go(1) to suppress 'back', this will once again raise
         // popState. We don't want that to trigger yet another go(1).
         // This variable keeps track of whether we're in the state of expecting
         // that extra event.
         let secondPopState = false;
-        window.onpopstate = (event: PopStateEvent) => {
-            // Unfortunately, going 'back' within an SPA does NOT raise the beforeunload event,
-            // nor any other event that will let us display an error and prevent going back.
-            // This trick simulates it: it is triggered near the end of going back,
-            // so if we should not have gone back we "go forward" to get back to where
-            // we started.
-            // Review: this will also trigger if the user goes 'forward'. So far, I haven't
-            // found a place from where you can go back to the book details page, then do
-            // some edits, and then try to go forward. I suspect that in that case the
-            // proper recovery is to go(-1). But I don't know how to tell the difference.
-            if (this.waitingOnSaveOrCancel) {
-                console.log("waitingOnSaveOrCancel preventing onpopstate");
-                event.preventDefault();
-                if (secondPopState) {
-                    secondPopState = false;
-                } else {
-                    secondPopState = true;
-                    window.history.go(1);
-                    alert("Please cancel or save your changes");
-                }
-                return;
-            }
+        // window.onpopstate = (event: PopStateEvent) => {
+        //     // Unfortunately, going 'back' within an SPA does NOT raise the beforeunload event,
+        //     // nor any other event that will let us display an error and prevent going back.
+        //     // This trick simulates it: it is triggered near the end of going back,
+        //     // so if we should not have gone back we "go forward" to get back to where
+        //     // we started.
+        //     // Review: this will also trigger if the user goes 'forward'. So far, I haven't
+        //     // found a place from where you can go back to the book details page, then do
+        //     // some edits, and then try to go forward. I suspect that in that case the
+        //     // proper recovery is to go(-1). But I don't know how to tell the difference.
+        //     if (this.waitingOnSaveOrCancel) {
+        //         console.log("waitingOnSaveOrCancel preventing onpopstate");
+        //         event.preventDefault();
+        //         if (secondPopState) {
+        //             secondPopState = false;
+        //         } else {
+        //             secondPopState = true;
+        //             window.history.go(1);
+        //             alert("Please cancel or save your changes");
+        //         }
+        //         return;
+        //     }
 
-            // So, the user did a browser BACK or FORWARD...something. The current url can tell us what to show, but not how
-            // to show our breadcrumbs. We solve this by supplying the browser's History API with our location stack every time we go deeper.
-            // So now, we can just retrieve that stack from this event and make it our new location stack.
-            // Since locationStack is a mobx observed object, don't just replace it, operate on it, then the UI will notice and update.
-            if (event.state) {
-                this.breadcrumbStack.splice(
-                    0, // starting from beginning
-                    this.breadcrumbStack.length, // remove all of them
-                    ...event.state.breadcrumbs // replace with all the elements from the event
-                );
-                restoreScrollPosition(event.state);
-            }
-        };
+        //     // So, the user did a browser BACK or FORWARD...something. The current url can tell us what to show, but not how
+        //     // to show our breadcrumbs. We solve this by supplying the browser's History API with our location stack every time we go deeper.
+        //     // So now, we can just retrieve that stack from this event and make it our new location stack.
+        //     // Since locationStack is a mobx observed object, don't just replace it, operate on it, then the UI will notice and update.
+        //     if (event.state) {
+        //         this.breadcrumbStack.splice(
+        //             0, // starting from beginning
+        //             this.breadcrumbStack.length, // remove all of them
+        //             ...event.state.breadcrumbs // replace with all the elements from the event
+        //         );
+        //         restoreScrollPosition(event.state);
+        //     }
+        // };
     }
 
     public get current(): ILocation {
@@ -159,7 +159,7 @@ export class Router {
 
     public goHome(): void {
         this.breadcrumbStack = new Array<ILocation>();
-        this.push(Router.home);
+        this.push(HomeGrownRouter.home);
     }
 
     public pushBook(bookId: string, contextLangIso?: string) {
@@ -230,4 +230,4 @@ export class Router {
     }
 }
 
-export const RouterContext = React.createContext<Router | null>(null);
+export const RouterContext = React.createContext<HomeGrownRouter | null>(null);

@@ -14,7 +14,7 @@ import { StandAloneHarvesterArtifactUserControl } from "../components/BookDetail
 import { ArtifactAndChoice } from "../components/BookDetail/ArtifactVisibilityPanel/ArtifactAndChoice";
 import { ArtifactVisibilitySettings } from "../model/ArtifactVisibilitySettings";
 import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
-import { Router, RouterContext } from "../Router";
+import { HomeGrownRouter, RouterContext } from "../Router";
 import BookDetail from "../components/BookDetail/BookDetail";
 import { ThemeProvider } from "@material-ui/styles";
 import theme from "../theme";
@@ -24,7 +24,7 @@ import { FeatureGroup } from "../components/FeatureGroup";
 import { ListOfBookGroups } from "../components/ListOfBookGroups";
 
 // Provide all stories with a router in their context:
-const router = new Router();
+const router = new HomeGrownRouter();
 addDecorator((storyFn) => (
     <RouterContext.Provider value={router}>{storyFn()}</RouterContext.Provider>
 ));

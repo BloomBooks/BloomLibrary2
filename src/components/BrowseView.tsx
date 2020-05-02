@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { observer } from "mobx-react";
-import { Router, RouterContext } from "../Router";
+import { HomeGrownRouter, RouterContext } from "../Router";
 import { HomePage } from "./HomePage";
 import {
     LanguagePage,
@@ -35,7 +35,7 @@ import { GridPage } from "./Grid/GridPage";
 /* This is the top level component that can be hosted on a website to view and interact with the bloom library */
 @observer
 export class BrowseView extends Component {
-    private router = new Router();
+    private router = new HomeGrownRouter();
 
     private currentPage() {
         switch (this.router.current.pageType) {
@@ -162,10 +162,11 @@ export class BrowseView extends Component {
         document.title = `Bloom Library: ${this.router.current.title}`;
         this.followUpOnLazyLoads();
         return (
-            <RouterContext.Provider value={this.router}>
-                <Header />
-                {this.currentPage()}
-            </RouterContext.Provider>
+            // <RouterContext.Provider value={this.router}>
+            //     <Header />
+            //     {this.currentPage()}
+            // </RouterContext.Provider>
+            this.currentPage()
         );
     }
     // We make life hard on <Lazy> components by thinking maybe we'll show, for example, a row of Level 1 books at
