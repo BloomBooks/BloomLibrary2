@@ -9,10 +9,10 @@ import { useGetBookDetail } from "../connection/LibraryQueryHooks";
 import { Book } from "../model/Book";
 import { RouterContext } from "../Router";
 import { getUrlOfHtmlOfDigitalVersion } from "./BookDetail/ArtifactHelper";
+import { useParams, useLocation } from "react-router-dom";
 
-export const ReadBookPage: React.FunctionComponent<{ id: string }> = (
-    props
-) => {
+export const ReadBookPage: React.FunctionComponent<{}> = (props) => {
+    const { id } = useParams();
     const router = useContext(RouterContext);
 
     const handleMessageFromBloomPlayer = useCallback(
@@ -42,15 +42,16 @@ export const ReadBookPage: React.FunctionComponent<{ id: string }> = (
         };
     }, [handleMessageFromBloomPlayer]);
 
-    const book = useGetBookDetail(props.id);
+    const book = useGetBookDetail(id);
+    const query = new URLSearchParams(useLocation().search);
     const url = book ? getUrlOfHtmlOfDigitalVersion(book) : "working"; // url=working shows a loading icon
 
     // use the bloomplayer.htm we copy into our public/ folder, where CRA serves from
-    const bloomPlayerUrl = "bloom-player/bloomplayer.htm";
+    // TODO: this isn't working with react-router, but I don't know how RR even gets run inside of this iframe
+    const bloomPlayerUrl = "/bloom-player/bloomplayer.htm";
 
-    const langParam = router?.current.contextLangIso
-        ? `&lang=${router.current.contextLangIso}`
-        : "";
+    const lang = query.get("lang") || "";
+    const langParam = lang ? `&lang=${lang}` : "";
 
     const iframeSrc = `${bloomPlayerUrl}?url=${url}&showBackButton=true&useOriginalPageSize=true${langParam}`;
 
@@ -63,7 +64,9 @@ export const ReadBookPage: React.FunctionComponent<{ id: string }> = (
                 height: 100%;
             `}
             src={iframeSrc}
+            //src={"https://google.com"}
         ></iframe>
+        // <div>I am groot</div>
     );
 };
 

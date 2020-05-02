@@ -9,18 +9,23 @@ import { commonUI } from "../theme";
 interface IProps extends React.HTMLProps<HTMLDivElement> {
     onClick?: () => void;
     className?: string;
+    href?: string;
 }
 
 // just a wrapper around the children you provide, made to look like a card and responsive to a click.
-export const CheapCard: React.FunctionComponent<IProps> = props => (
+export const CheapCard: React.FunctionComponent<IProps> = (props) => (
     <div
         {...props}
         className={`cheapCard ${props.className}`}
         css={cardStyle}
         onClick={() => {
+            if (props.href) {
+                window.location.href = props.href;
+            }
             if (props.onClick) {
                 props.onClick();
             }
+
             //   this.props.browseState.push(this.props.target);
         }}
     >

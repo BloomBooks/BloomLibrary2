@@ -48,12 +48,13 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                 width: ${BookCardWidth}px;
             `}
             key={props.basicBookInfo.baseUrl}
-            onClick={() =>
-                router!.pushBook(
-                    props.basicBookInfo.objectId,
-                    props.contextLangIso
-                )
-            }
+            href={`/book/${props.basicBookInfo.objectId}`}
+            // onClick={() =>
+            //     router!.pushBook(
+            //         props.basicBookInfo.objectId,
+            //         props.contextLangIso
+            //     )
+            // }
         >
             <img
                 className={"swiper-lazy"}

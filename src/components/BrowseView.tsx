@@ -38,7 +38,7 @@ export class BrowseView extends Component {
     private router = new HomeGrownRouter();
 
     private currentPage() {
-        switch (this.router.current.pageType) {
+        switch (this.router.current?.pageType) {
             case "Covid19":
                 return <Covid19Page />;
             case "home":
@@ -54,14 +54,14 @@ export class BrowseView extends Component {
                 return (
                     <React.Suspense fallback={<div>Loading...</div>}>
                         <BookDetail
-                            id={this.router.current.bookId!}
-                            contextLangIso={this.router.current.contextLangIso}
+                            //id={this.router.current.bookId!}
+                            contextLangIso={this.router.current?.contextLangIso}
                         />
                     </React.Suspense>
                 );
 
-            case "book-read":
-                return <ReadBookPage id={this.router.current.bookId!} />;
+            // case "book-read":
+            //     return <ReadBookPage id={this.router.current.bookId!} />;
             case "search":
                 return (
                     <SearchResultsPage filter={this.router.current.filter} />
@@ -154,12 +154,12 @@ export class BrowseView extends Component {
                 );
 
             default:
-                return "Unknown page type " + this.router.current.pageType;
+                return "Unknown page type " + this.router.current?.pageType;
         }
     }
 
     public render() {
-        document.title = `Bloom Library: ${this.router.current.title}`;
+        document.title = `Bloom Library: ${this.router.current?.title}`;
         this.followUpOnLazyLoads();
         return (
             // <RouterContext.Provider value={this.router}>

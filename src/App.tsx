@@ -36,6 +36,9 @@ import { GridPage } from "./components/Grid/GridPage";
 import { BulkEditPage } from "./components/BulkEdit/BulkEditPage";
 import { HomeGrownRouter, RouterContext } from "./Router";
 import { Header } from "./components/header/Header";
+import BookDetail from "./components/BookDetail/BookDetail";
+import { HomePage } from "./components/HomePage";
+import { ReadBookPage } from "./components/ReadBookPage";
 interface ICachedTables {
     tags: string[];
     languagesByBookCount: ILanguage[];
@@ -104,6 +107,12 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                 <Header />
                                 <Router>
                                     <Switch>
+                                        <Route path="/book/:id">
+                                            <BookDetail />
+                                        </Route>
+                                        <Route path="/read/:id">
+                                            <ReadBookPage />
+                                        </Route>
                                         <Route path="/about">
                                             <div>This is About</div>
                                         </Route>
@@ -113,9 +122,8 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                         <Route path="/bulk">
                                             <BulkEditPage />
                                         </Route>{" "}
-                                        <Route path="/">
-                                            <BrowseView />
-                                            {/* <div>root</div> */}
+                                        <Route exact={true} path="/">
+                                            <HomePage />
                                         </Route>
                                     </Switch>
                                 </Router>

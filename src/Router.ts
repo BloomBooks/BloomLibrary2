@@ -64,31 +64,31 @@ export class HomeGrownRouter {
             });
         } else
         */
-        if (specialPage) {
-            this.push(home);
-            this.push({
-                title: specialPage,
-                pageType: specialPage,
-                filter: {},
-            });
-        } else if (window.location.search === "") {
-            // we're just at the root of the site
-            this.push(home);
-        } else {
-            // we've been given a url describing something beyond the home page
-            const queryWithoutQuestionMark = window.location.search.substr(
-                1,
-                99999
-            );
-            const location = QueryString.parse(
-                queryWithoutQuestionMark
-            ) as ILocation; // Enhance: do something if parsing the URL doesn't give all the info we need.
+        // if (specialPage) {
+        //     this.push(home);
+        //     this.push({
+        //         title: specialPage,
+        //         pageType: specialPage,
+        //         filter: {},
+        //     });
+        // } else if (window.location.search === "") {
+        //     // we're just at the root of the site
+        //     this.push(home);
+        // } else {
+        //     // we've been given a url describing something beyond the home page
+        //     const queryWithoutQuestionMark = window.location.search.substr(
+        //         1,
+        //         99999
+        //     );
+        //     const location = QueryString.parse(
+        //         queryWithoutQuestionMark
+        //     ) as ILocation; // Enhance: do something if parsing the URL doesn't give all the info we need.
 
-            if (location && location.pageType !== "home") {
-                this.push(home);
-            }
-            this.push(location);
-        }
+        //     if (location && location.pageType !== "home") {
+        //         this.push(home);
+        //     }
+        //     this.push(location);
+        // }
         // window.onbeforeunload = (event: BeforeUnloadEvent) => {
         //     if (this.waitingOnSaveOrCancel) {
         //         console.log("waitingOnSaveOrCancel preventing onbeforeunload");

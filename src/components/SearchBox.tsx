@@ -45,7 +45,7 @@ export const SearchBox: React.FunctionComponent<{
     cssExtra?: string;
 }> = (props) => {
     const router = useContext(RouterContext);
-    let initialSearchString = router!.current.filter?.search
+    let initialSearchString = router!.current?.filter?.search
         ? router!.current.filter.search
         : "";
     if (initialSearchString.startsWith("phash")) {

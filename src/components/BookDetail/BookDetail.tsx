@@ -20,13 +20,14 @@ import { BookDetailHeaderGroup } from "./BookDetailHeaderGroup";
 import { ReportButton } from "./ReportButton";
 import { OSFeaturesContext } from "../../components/OSFeaturesContext";
 import { commonUI } from "../../theme";
+import { useParams } from "react-router-dom";
 
 interface IProps {
-    id: string;
     contextLangIso?: string;
 }
 const BookDetail: React.FunctionComponent<IProps> = (props) => {
-    const book = useGetBookDetail(props.id);
+    const { id } = useParams();
+    const book = useGetBookDetail(id);
     if (book === undefined) {
         return <div>Loading...</div>;
     } else if (book === null) {
