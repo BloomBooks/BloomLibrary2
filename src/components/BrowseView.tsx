@@ -78,13 +78,13 @@ export class BrowseView extends Component {
                         filter={this.router.current.filter}
                     />
                 );
-            case "language":
-                return (
-                    <LanguagePage
-                        title={this.router.current.title}
-                        filter={this.router.current.filter}
-                    />
-                );
+            // case "language":
+            //     return (
+            //         <LanguagePage
+            //             title={this.router.current.title}
+            //             filter={this.router.current.filter}
+            //         />
+            //     );
             case "project":
                 switch (this.router.current.filter.bookshelf) {
                     case "Enabling Writers Workshops":

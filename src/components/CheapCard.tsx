@@ -14,14 +14,12 @@ interface IProps extends React.HTMLProps<HTMLDivElement> {
 
 // just a wrapper around the children you provide, made to look like a card and responsive to a click.
 export const CheapCard: React.FunctionComponent<IProps> = (props) => (
-    <div
-        {...props}
+    <a
+        //{...props}
         className={`cheapCard ${props.className}`}
         css={cardStyle}
+        href={props.href}
         onClick={() => {
-            if (props.href) {
-                window.location.href = props.href;
-            }
             if (props.onClick) {
                 props.onClick();
             }
@@ -30,7 +28,7 @@ export const CheapCard: React.FunctionComponent<IProps> = (props) => (
         }}
     >
         {props.children}
-    </div>
+    </a>
 );
 
 const cardStyle = css`
@@ -61,4 +59,10 @@ const cardStyle = css`
     left: 1px;
 
     overflow: hidden;
+
+    text-decoration: none;
+    &,
+    &:visited {
+        color: black;
+    }
 `;

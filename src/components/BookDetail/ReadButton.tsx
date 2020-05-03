@@ -42,7 +42,7 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
             `}
             onClick={() =>
                 //router!.pushBookRead(props.id, props.preferredLanguageIso)
-                (window.location.href = `/read/${props.id}`)
+                (window.location.href = `/player/${props.id}`)
             }
         >
             <h1

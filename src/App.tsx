@@ -39,6 +39,11 @@ import { Header } from "./components/header/Header";
 import BookDetail from "./components/BookDetail/BookDetail";
 import { HomePage } from "./components/HomePage";
 import { ReadBookPage } from "./components/ReadBookPage";
+import {
+    LanguagePage,
+    CategoryPageWithDefaultLayout,
+} from "./components/Pages";
+import { BiblePage } from "./components/BiblePage";
 interface ICachedTables {
     tags: string[];
     languagesByBookCount: ILanguage[];
@@ -110,7 +115,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                         <Route path="/book/:id">
                                             <BookDetail />
                                         </Route>
-                                        <Route path="/read/:id">
+                                        <Route path="/player/:id">
                                             <ReadBookPage />
                                         </Route>
                                         <Route path="/about">
@@ -121,8 +126,24 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                         </Route>
                                         <Route path="/bulk">
                                             <BulkEditPage />
-                                        </Route>{" "}
-                                        <Route exact={true} path="/">
+                                        </Route>
+                                        <Route
+                                            path="/language/:langCode"
+                                            render={({ match }) => (
+                                                <LanguagePage
+                                                    langCode={
+                                                        match.params.langCode
+                                                    }
+                                                />
+                                            )}
+                                        ></Route>
+                                        <Route path="/bible">
+                                            <BiblePage />
+                                        </Route>
+                                        <Route
+                                            exact={true}
+                                            path={["/", "/read"]}
+                                        >
                                             <HomePage />
                                         </Route>
                                     </Switch>

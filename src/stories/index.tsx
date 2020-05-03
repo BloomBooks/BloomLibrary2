@@ -159,9 +159,7 @@ storiesOf("FeatureGroup", module).add("Feature Group", () => (
 
 storiesOf("Pages", module)
     .add("Home Page", () => <HomePage />)
-    .add("Thai Book Page", () => (
-        <LanguagePage title="some title" filter={{ language: "th" }} />
-    ))
+    .add("Thai Book Page", () => <LanguagePage langCode="th" />)
     .add("Talking Book Feature Page", () => (
         <FeaturePage
             title={"Talking Books"}

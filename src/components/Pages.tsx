@@ -78,31 +78,30 @@ export const DefaultOrganizationPage: React.FunctionComponent<{
 );
 
 export const LanguagePage: React.FunctionComponent<{
-    title: string;
-    filter: IFilter;
+    langCode: string;
 }> = (props) => {
-    console.assert(
-        props.filter.language,
-        "LanguagePage must have language set in the filter"
-    );
+    // console.assert(
+    //     props.filter.language,
+    //     "LanguagePage must have language set in the filter"
+    // );
 
     const { languagesByBookCount: languages } = useContext(CachedTablesContext);
     let languageDisplayName = getLanguageNamesFromCode(
-        props.filter.language!,
+        props.langCode!,
         languages
     )?.displayNameWithAutonym;
-    if (!languageDisplayName) languageDisplayName = props.filter.language;
-
+    if (!languageDisplayName) languageDisplayName = props.langCode;
+    const filter = { language: props.langCode };
     return (
         <div>
             <CustomizableBanner
-                filter={props.filter}
-                title={props.title}
-                spec={getLanguageBannerSpec(props.filter.language!)}
+                filter={filter}
+                title={languageDisplayName}
+                spec={getLanguageBannerSpec(props.langCode!)}
             />
 
             <ListOfBookGroups>
-                <LevelGroups filter={props.filter} />
+                <LevelGroups filter={filter} />
             </ListOfBookGroups>
         </div>
     );

@@ -43,9 +43,10 @@ export const LanguageCard: React.FunctionComponent<ILanguage> = (props) => {
                 height: ${commonUI.languageCardHeightInPx}px;
                 padding-bottom: 3px;
             `}
-            onClick={() => {
-                routeToLanguage(props, router!);
-            }}
+            href={`language/${props.isoCode}`}
+            // onClick={() => {
+            //     routeToLanguage(props, router!);
+            // }}
         >
             <h2
                 css={css`

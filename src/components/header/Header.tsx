@@ -52,7 +52,7 @@ export const Header: React.FunctionComponent = (props) => {
                     }
                 `}
             >
-                <Link href="/">Read</Link>
+                <Link href="/read">Read</Link>
                 <Link
                     css={css`
                         margin-left: 15px !important;
