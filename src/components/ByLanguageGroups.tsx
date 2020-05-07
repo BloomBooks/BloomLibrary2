@@ -19,6 +19,7 @@ export const ByLanguageGroups: React.FunctionComponent<{
     const searchResults = useSearchBooks(
         {
             include: "langPointers",
+            limit: 10000, // we want them all! If we get more than 10000 books in a single filter we may need to redesign, though.
         },
         props.filter
     );
