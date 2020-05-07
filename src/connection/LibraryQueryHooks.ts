@@ -447,6 +447,7 @@ interface ISimplifiedAxiosResult {
 // only want a subset of IBasicBookInfo, but realize that this is usually not
 // worth the added complexity. By default, this function should just fully
 // populate the IBasicBookInfo.
+// Remember to specify limit if you don't want the default first 100 matching books!
 export function useSearchBooks(
     params: {}, // this is the order, which fields, limits, etc.
     filter: IFilter, // this is *which* books to return
