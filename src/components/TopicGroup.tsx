@@ -9,8 +9,6 @@ import React, { useContext } from "react";
 import { CategoryCardGroup } from "./CategoryCardGroup";
 import { CheapCard } from "./CheapCard";
 import { BookCount } from "./BookCount";
-import { RouterContext } from "../Router";
-import { IFilter } from "../IFilter";
 
 export const TopicGroup: React.FunctionComponent<{}> = () => {
     const cards = [
@@ -31,25 +29,13 @@ export const TopicGroup: React.FunctionComponent<{}> = () => {
     ]
         .sort()
         .map((t) => {
-            return (
-                <TopicCard
-                    key={t}
-                    title={t}
-                    filter={{
-                        topic: t,
-                    }}
-                />
-            );
+            return <TopicCard topic={t} />;
         });
 
     return <CategoryCardGroup title={"Topics"}>{cards}</CategoryCardGroup>;
 };
 
-const TopicCard: React.FunctionComponent<{ title: string; filter: IFilter }> = (
-    props
-) => {
-    const router = useContext(RouterContext);
-
+const TopicCard: React.FunctionComponent<{ topic: string }> = (props) => {
     return (
         <CheapCard
             {...props} // needed for swiper to work
@@ -58,13 +44,7 @@ const TopicCard: React.FunctionComponent<{ title: string; filter: IFilter }> = (
                 padding: 10px;
                 height: 100px;
             `}
-            onClick={() => {
-                router!.push({
-                    title: props.title,
-                    pageType: "category",
-                    filter: props.filter,
-                });
-            }}
+            href={"/topic/" + props.topic}
         >
             <h2
                 css={css`
@@ -72,7 +52,7 @@ const TopicCard: React.FunctionComponent<{ title: string; filter: IFilter }> = (
                     flex-grow: 1; // push the rest to the bottom
                 `}
             >
-                {props.title}
+                {props.topic}
             </h2>
 
             <div
@@ -80,7 +60,10 @@ const TopicCard: React.FunctionComponent<{ title: string; filter: IFilter }> = (
                     text-align: center;
                 `}
             >
-                <BookCount message={`{0} Books`} filter={props.filter} />
+                <BookCount
+                    message={`{0} Books`}
+                    filter={{ topic: props.topic }}
+                />
             </div>
         </CheapCard>
     );

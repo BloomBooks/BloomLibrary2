@@ -6,7 +6,6 @@ import { jsx } from "@emotion/core";
 import React, { useContext } from "react";
 import { CheapCard } from "./CheapCard";
 import LazyLoad from "react-lazyload";
-import { RouterContext } from "../Router";
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
 import {
     getLegacyThumbnailUrl,
@@ -30,7 +29,6 @@ interface IProps {
 }
 
 export const BookCard: React.FunctionComponent<IProps> = (props) => {
-    const router = useContext(RouterContext);
     const legacyStyleThumbnail = getLegacyThumbnailUrl(props.basicBookInfo);
     const { thumbnailUrl, isModernThumbnail } = getThumbnailUrl(
         props.basicBookInfo

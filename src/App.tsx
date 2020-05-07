@@ -141,6 +141,22 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                             <BiblePage />
                                         </Route>
                                         <Route
+                                            path="/topic/:topicName"
+                                            render={({ match }) => (
+                                                <CategoryPageWithDefaultLayout
+                                                    title={
+                                                        match.params.topicName
+                                                    }
+                                                    filter={{
+                                                        topic:
+                                                            match.params
+                                                                .topicName,
+                                                    }}
+                                                />
+                                            )}
+                                        />
+
+                                        <Route
                                             exact={true}
                                             path={["/", "/read"]}
                                         >
