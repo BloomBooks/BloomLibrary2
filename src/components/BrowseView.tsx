@@ -12,7 +12,6 @@ import {
 } from "./Pages";
 import "typeface-roboto";
 import { Header } from "./header/Header";
-import { ReadBookPage } from "./ReadBookPage";
 import {
     PrathamPage,
     AfricanStorybookPage,
@@ -39,8 +38,8 @@ export class BrowseView extends Component {
 
     private currentPage() {
         switch (this.router.current?.pageType) {
-            case "Covid19":
-                return <Covid19Page />;
+            // case "Covid19":
+            //     return <Covid19Page />;
             case "home":
                 return <HomePage />;
             case "book-detail":
@@ -85,73 +84,73 @@ export class BrowseView extends Component {
             //             filter={this.router.current.filter}
             //         />
             //     );
-            case "project":
-                switch (this.router.current.filter.bookshelf) {
-                    case "Enabling Writers Workshops":
-                        return <EnablingWritersPage />;
-                    case "Bible":
-                        return <BiblePage />;
-                    default:
-                        return (
-                            <ProjectPageWithDefaultLayout
-                                title={this.router.current.title}
-                                filter={this.router.current.filter}
-                            />
-                        );
-                }
-            case "publisher":
-            case "org":
-                switch (this.router.current.filter.bookshelf) {
-                    case "Pratham":
-                        return <PrathamPage />;
-                    case "3Asafeer":
-                        return <AsafeerPage />;
-                    case "African Storybook":
-                        return <AfricanStorybookPage />;
-                    case "Book Dash":
-                        return <BookDashPage />;
-                    case "The Asia Foundation":
-                        return <AsiaFoundationPage />;
-                    case "Room to Read":
-                        return <RoomToReadPage />;
-                    case "Ministerio de Educación de Guatemala":
-                        return <GuatemalaMOEPage />;
-                    case "SIL LEAD":
-                        return <SILLEADPage />;
-                    case "Wycliffe":
-                        return <WycliffePage />;
-                    default:
-                        return (
-                            <DefaultOrganizationPage
-                                title={this.router.current.title}
-                                filter={this.router.current.filter}
-                            />
-                        );
-                }
-            case "category":
-                switch (this.router.current.filter.bookshelf) {
-                    case "Bible":
-                        return <BiblePage />;
-                    default:
-                        switch (this.router.current.filter.topic) {
-                            // case "Health":
-                            //     return <Covid19Page />;
-                            default:
-                                return (
-                                    <CategoryPageWithDefaultLayout
-                                        title={this.router.current.title}
-                                        filter={this.router.current.filter}
-                                    />
-                                );
-                        }
-                }
-            case "feature":
-                return (
-                    <FeaturePage
-                        title={this.router.current.title}
-                        filter={this.router.current.filter}
-                    />
-                );
+            // case "project":
+            //     switch (this.router.current.filter.bookshelf) {
+            //         case "Enabling Writers Workshops":
+            //             return <EnablingWritersPage />;
+            //         case "Bible":
+            //             return <BiblePage />;
+            //         default:
+            //             return (
+            //                 <ProjectPageWithDefaultLayout
+            //                     title={this.router.current.title}
+            //                     filter={this.router.current.filter}
+            //                 />
+            //             );
+            //     }
+            // case "publisher":
+            // case "org":
+            //     switch (this.router.current.filter.bookshelf) {
+            //         case "Pratham":
+            //             return <PrathamPage />;
+            //         case "3Asafeer":
+            //             return <AsafeerPage />;
+            //         case "African Storybook":
+            //             return <AfricanStorybookPage />;
+            //         case "Book Dash":
+            //             return <BookDashPage />;
+            //         case "The Asia Foundation":
+            //             return <AsiaFoundationPage />;
+            //         case "Room to Read":
+            //             return <RoomToReadPage />;
+            //         case "Ministerio de Educación de Guatemala":
+            //             return <GuatemalaMOEPage />;
+            //         case "SIL LEAD":
+            //             return <SILLEADPage />;
+            //         case "Wycliffe":
+            //             return <WycliffePage />;
+            //         default:
+            //             return (
+            //                 <DefaultOrganizationPage
+            //                     title={this.router.current.title}
+            //                     filter={this.router.current.filter}
+            //                 />
+            //             );
+            //     }
+            // case "category":
+            //     switch (this.router.current.filter.bookshelf) {
+            //         case "Bible":
+            //             return <BiblePage />;
+            //         default:
+            //             switch (this.router.current.filter.topic) {
+            //                 // case "Health":
+            //                 //     return <Covid19Page />;
+            //                 default:
+            //                     return (
+            //                         <CategoryPageWithDefaultLayout
+            //                             title={this.router.current.title}
+            //                             filter={this.router.current.filter}
+            //                         />
+            //                     );
+            //             }
+            //     }
+            // case "feature":
+            //     return (
+            //         <FeaturePage
+            //             title={this.router.current.title}
+            //             filter={this.router.current.filter}
+            //         />
+            //     );
 
             default:
                 return "Unknown page type " + this.router.current?.pageType;

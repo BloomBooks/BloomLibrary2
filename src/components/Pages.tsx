@@ -17,6 +17,7 @@ import { ListOfBookGroups } from "./ListOfBookGroups";
 import { CachedTablesContext } from "../App";
 import { getLanguageNamesFromCode } from "../model/Language";
 import { LevelGroups } from "./LevelGroups";
+import { Bookshelf } from "../model/Bookshelf";
 
 export const SearchResultsPage: React.FunctionComponent<{
     filter: IFilter;
@@ -59,23 +60,29 @@ export const AllResultsPage: React.FunctionComponent<{
 );
 
 export const DefaultOrganizationPage: React.FunctionComponent<{
-    title: string;
-    filter: IFilter;
-}> = (props) => (
-    <React.Fragment>
-        <PublisherBanner
-            title={props.title}
-            showTitle={true}
-            filter={props.filter}
-            collectionDescription={<div />}
-            // logoUrl={`https://share.bloomlibrary.org/bookshelf-images/African Storybook.png`}
-        />
+    fullBookshelfKey: string;
+}> = (props) => {
+    const { bookshelves } = useContext(CachedTablesContext);
+    const filter = { bookshelf: props.fullBookshelfKey };
+    const title =
+        Bookshelf.parseBookshelfKey(props.fullBookshelfKey, bookshelves)
+            .displayName || "";
+    return (
+        <React.Fragment>
+            <PublisherBanner
+                title={title}
+                showTitle={true}
+                filter={filter}
+                collectionDescription={<div />}
+                // logoUrl={`https://share.bloomlibrary.org/bookshelf-images/African Storybook.png`}
+            />
 
-        <ListOfBookGroups>
-            <BookGroup title={`All books`} filter={props.filter} />
-        </ListOfBookGroups>
-    </React.Fragment>
-);
+            <ListOfBookGroups>
+                <BookGroup title={`All books`} filter={filter} />
+            </ListOfBookGroups>
+        </React.Fragment>
+    );
+};
 
 export const LanguagePage: React.FunctionComponent<{
     langCode: string;
@@ -107,23 +114,23 @@ export const LanguagePage: React.FunctionComponent<{
     );
 };
 export const ProjectPageWithDefaultLayout: React.FunctionComponent<{
-    title: string;
-    filter: IFilter;
+    fullBookshelfKey: string;
 }> = (props) => {
     //console.log("Project Page " + JSON.stringify(props));
+    const { bookshelves } = useContext(CachedTablesContext);
+    const filter = { bookshelf: props.fullBookshelfKey };
+    const title =
+        Bookshelf.parseBookshelfKey(props.fullBookshelfKey, bookshelves)
+            .displayName || "";
     return (
         <React.Fragment>
             <CustomizableBanner
-                filter={props.filter}
-                title={props.title}
-                spec={getProjectBannerSpec(props.filter.bookshelf!)}
+                filter={filter}
+                title={title}
+                spec={getProjectBannerSpec(props.fullBookshelfKey)}
             />
             <ListOfBookGroups>
-                <BookGroup
-                    filter={props.filter}
-                    title={"All books"}
-                    rows={999}
-                />
+                <BookGroup filter={filter} title={"All books"} rows={999} />
                 {/* <BookGroupForEachTopic filter={props.filter} /> */}
             </ListOfBookGroups>
         </React.Fragment>
@@ -146,6 +153,17 @@ export const CategoryPageWithDefaultLayout: React.FunctionComponent<{
             </ListOfBookGroups>
         </React.Fragment>
     );
+};
+
+export const CategoryPageForBookshelf: React.FunctionComponent<{
+    fullBookshelfKey: string;
+}> = (props) => {
+    const { bookshelves } = useContext(CachedTablesContext);
+    const filter = { bookshelf: props.fullBookshelfKey };
+    const title =
+        Bookshelf.parseBookshelfKey(props.fullBookshelfKey, bookshelves)
+            .displayName || "";
+    return <CategoryPageWithDefaultLayout title={title} filter={filter} />;
 };
 export const BookGroupForEachTopic: React.FunctionComponent<{
     filter: IFilter;

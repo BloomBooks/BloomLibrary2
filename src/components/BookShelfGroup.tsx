@@ -99,7 +99,13 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = (props) => {
                     filter={{
                         bookshelf: fullBookshelfKey,
                     }}
-                    pageType={props.bookShelfCategory}
+                    href={
+                        "/" +
+                        (props.bookShelfCategory || "category") +
+                        "/" +
+                        fullBookshelfKey
+                    }
+                    //pageType={props.bookShelfCategory}
                     img={
                         "https://share.bloomlibrary.org/bookshelf-images/" +
                         imageName

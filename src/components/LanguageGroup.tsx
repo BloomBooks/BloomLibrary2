@@ -4,20 +4,22 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useContext } from "react";
-import { LanguageCard, routeToLanguage } from "./LanguageCard";
+import React, { useContext, useState } from "react";
+import { LanguageCard } from "./LanguageCard";
 import Downshift, { GetItemPropsOptions } from "downshift";
 import matchSorter from "match-sorter";
 import searchIcon from "../search.png";
 import { CachedTablesContext } from "../App";
 import { ILanguage } from "../model/Language";
 import { commonUI } from "../theme";
-import { RouterContext } from "../Router";
 import { CardSwiper } from "./CardSwiper";
+import { Redirect } from "react-router-dom";
 
 export const LanguageGroup: React.FunctionComponent = () => {
-    const router = useContext(RouterContext);
     const { languagesByBookCount: languages } = useContext(CachedTablesContext);
+    // setting this to a language code causes a <Redirect> to render and open the page
+    // for that code (currently when the user has selected a language by typing and pressing Enter)
+    const [langChosen, setLangChosen] = useState("");
 
     let filteredLanguages: ILanguage[] = [];
 
@@ -68,11 +70,13 @@ export const LanguageGroup: React.FunctionComponent = () => {
     const handleKeyPress = (e: React.KeyboardEvent) => {
         if (e.key === "Enter") {
             if (filteredLanguages.length) {
-                routeToLanguage(filteredLanguages[0], router!);
+                setLangChosen(filteredLanguages[0].isoCode);
             }
         }
     };
-    return (
+    return langChosen ? (
+        <Redirect to={"/language/" + langChosen} />
+    ) : (
         <li
             css={css`
                 margin-top: 30px;

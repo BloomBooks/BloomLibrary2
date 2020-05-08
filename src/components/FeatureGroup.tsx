@@ -39,7 +39,7 @@ export const FeatureGroup: React.FunctionComponent<IProps> = (props) => {
                 filter={{
                     feature: featureKey,
                 }}
-                pageType={"feature"}
+                href={"feature/" + featureKey}
                 icon={featureSpec.icon}
                 iconScale={featureSpec.iconScale}
                 img={""}

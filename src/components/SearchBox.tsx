@@ -14,6 +14,8 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import { RouterContext } from "../Router";
 import { withStyles } from "@material-ui/styles";
 import { giveFreeLearningCsv } from "../export/freeLearningIO";
+import { Redirect, useLocation, useHistory } from "react-router-dom";
+import * as QueryString from "qs";
 
 // NB: I tried a bunch of iterations over 2 days with forwardRefs and stuff trying to get this search box
 // to have both the html tooltip AND stop losing focus every time a letter was typed. The upshot was this
@@ -45,6 +47,8 @@ export const SearchBox: React.FunctionComponent<{
     cssExtra?: string;
 }> = (props) => {
     const router = useContext(RouterContext);
+    const location = useLocation();
+    const history = useHistory();
     let initialSearchString = router!.current?.filter?.search
         ? router!.current.filter.search
         : "";
@@ -52,6 +56,8 @@ export const SearchBox: React.FunctionComponent<{
         initialSearchString = "";
     }
     const [searchString, setSearchString] = useState(initialSearchString);
+    // search string when user clicks Enter.
+    const [enteredSearch, setEnteredSearch] = useState("");
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [showTooltip, setShowTooltip] = useState(true);
 
@@ -80,6 +86,7 @@ export const SearchBox: React.FunctionComponent<{
     );
 
     const handleSearch = () => {
+        // These 'magic' strings cause a file to be written without changing the state of the page.
         if (
             searchString.toLowerCase() === "freelearningiocsv" ||
             searchString.toLowerCase() === "csv"
@@ -87,39 +94,10 @@ export const SearchBox: React.FunctionComponent<{
             giveFreeLearningCsv();
             return;
         }
-        // enhance: we should just have a set of these keyword-->special page searches, not code for each.
 
-        // shortcut to grid
-        if (searchString.toLowerCase() === "grid") {
-            router!.push({
-                title: `Grid`,
-                pageType: "grid",
-                filter: {},
-            });
-            setSearchString("");
-            return;
-        }
-        if (CheckForCovidSearch(searchString)) {
-            router!.push({
-                title: "",
-                pageType: "Covid19",
-                filter: {},
-            });
-            setSearchString("");
-            return;
-        }
         if (searchString.length > 0) {
-            const location = {
-                title: `search for "${searchString}"`,
-                pageType: ["grid", "bulk"].includes(router!.current.pageType)
-                    ? router!.current.pageType
-                    : "search",
-                filter: {
-                    ...router!.current.filter,
-                    search: searchString,
-                },
-            };
-            router!.push(location);
+            setSearchString("");
+            setEnteredSearch(searchString);
         } else {
             // delete everything and press enter is the same as "cancel"
             cancelSearch();
@@ -136,18 +114,36 @@ export const SearchBox: React.FunctionComponent<{
     };
 
     const cancelSearch = () => {
-        const currentRouterFilter = router!.current.filter;
-
-        // If the user previously pressed 'Enter' with this search text, we need to go back up the stack.
-        if (
-            currentRouterFilter?.search &&
-            currentRouterFilter?.search.length > 0
-        ) {
-            window.history.back(); // Observable router will handle breadcrumbs.
-        }
         setSearchString("");
+        if (location.search) {
+            history.goBack();
+        }
     };
 
+    // enhance: we should just have a set of these keyword-->special page searches, not code for each.
+    if (enteredSearch === "grid") {
+        setEnteredSearch(""); // otherwise we get no search box when rendered in new page
+        // review: this replaces current history element...should we push instead? (Also below)
+        history.push("/grid");
+    } else if (enteredSearch === "covid19") {
+        setEnteredSearch(""); // otherwise we get no search box when rendered in new page
+        history.push("/covid19");
+    } else if (enteredSearch) {
+        const urlParams =
+            location.search.length > 0
+                ? QueryString.parse(location.search.substring(1))
+                : {};
+        const oldSearch = urlParams.search;
+        urlParams.search = enteredSearch;
+        const newUrl =
+            location.pathname + "?" + QueryString.stringify(urlParams);
+        setEnteredSearch(""); // otherwise we get an infinite loop when rendered as part of the new page
+        if (oldSearch) {
+            history.replace(newUrl);
+        } else {
+            history.push(newUrl);
+        }
+    }
     const searchTextField: JSX.Element = (
         <Paper
             key="searchField"

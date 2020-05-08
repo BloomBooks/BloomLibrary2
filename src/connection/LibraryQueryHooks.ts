@@ -6,6 +6,8 @@ import { useContext, useMemo, useEffect, useState } from "react";
 import { CachedTablesContext } from "../App";
 import { getCleanedAndOrderedLanguageList, ILanguage } from "../model/Language";
 import { processRegExp } from "../Utilities";
+import { useLocation } from "react-router-dom";
+import * as QueryString from "qs";
 
 // For things other than books, which should use `useBookQuery()`
 function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
@@ -452,6 +454,17 @@ export function useSearchBooks(
     filter: IFilter, // this is *which* books to return
     doNotRunActuallyQuery?: boolean
 ): ISearchBooksResult {
+    const location = useLocation();
+    const locationSearch = location.search;
+    const realFilter = useMemo(() => {
+        if (location.search && location.search.length > 1) {
+            const queryParams = QueryString.parse(locationSearch.substring(1));
+            if (queryParams.search) {
+                return { ...filter, search: queryParams.search };
+            }
+        }
+        return filter;
+    }, [filter]);
     const fullParams = {
         count: 1,
         keys:
@@ -461,7 +474,7 @@ export function useSearchBooks(
     };
     const bookResultsStatus: IAxiosAnswer = useBookQueryInternal(
         fullParams,
-        filter,
+        realFilter,
         undefined,
         undefined,
         doNotRunActuallyQuery

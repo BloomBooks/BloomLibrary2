@@ -7,13 +7,12 @@ import { jsx } from "@emotion/core";
 import React, { useContext, useEffect, useCallback } from "react";
 import { useGetBookDetail } from "../connection/LibraryQueryHooks";
 import { Book } from "../model/Book";
-import { RouterContext } from "../Router";
 import { getUrlOfHtmlOfDigitalVersion } from "./BookDetail/ArtifactHelper";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useHistory } from "react-router-dom";
 
 export const ReadBookPage: React.FunctionComponent<{}> = (props) => {
     const { id } = useParams();
-    const router = useContext(RouterContext);
+    const history = useHistory();
 
     const handleMessageFromBloomPlayer = useCallback(
         (event: MessageEvent) => {
@@ -21,18 +20,13 @@ export const ReadBookPage: React.FunctionComponent<{}> = (props) => {
             try {
                 const r = JSON.parse(event.data);
                 if (r.messageType === "backButtonClicked") {
-                    router!.push({
-                        bookId: router!.current.bookId,
-                        title: "Book Detail",
-                        pageType: "book-detail",
-                        filter: {},
-                    });
+                    history.goBack();
                 }
             } catch (err) {
                 console.log(`Got error with message: ${err}`);
             }
         },
-        [router]
+        [history]
     );
 
     useEffect(() => {

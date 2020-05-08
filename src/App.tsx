@@ -42,8 +42,27 @@ import { ReadBookPage } from "./components/ReadBookPage";
 import {
     LanguagePage,
     CategoryPageWithDefaultLayout,
+    CategoryPageForBookshelf,
+    DefaultOrganizationPage,
+    ProjectPageWithDefaultLayout,
 } from "./components/Pages";
 import { BiblePage } from "./components/BiblePage";
+import { FeaturePage } from "./components/FeaturePage";
+import { Covid19Page } from "./components/Covid19Page";
+import {
+    PrathamPage,
+    AfricanStorybookPage,
+    BookDashPage,
+    AsafeerPage,
+    RoomToReadPage,
+    AsiaFoundationPage,
+} from "./components/PublisherPages";
+import { GuatemalaMOEPage } from "./components/banners/OrganizationCustomizations";
+import { forceCheck as forceCheckLazyLoadComponents } from "react-lazyload";
+import { EnablingWritersPage } from "./components/EnablingWritersPage";
+import { WycliffePage } from "./components/WycliffePage";
+import { SILLEADPage } from "./components/SILLEADPage";
+
 interface ICachedTables {
     tags: string[];
     languagesByBookCount: ILanguage[];
@@ -109,8 +128,8 @@ export const App: React.FunctionComponent<{}> = (props) => {
                             )}
 
                             <RouterContext.Provider value={homeGrownRouter}>
-                                <Header />
                                 <Router>
+                                    <Header />
                                     <Switch>
                                         <Route path="/book/:id">
                                             <BookDetail />
@@ -141,10 +160,11 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                             <BiblePage />
                                         </Route>
                                         <Route
-                                            path="/topic/:topicName"
+                                            path="/topic/:topicName/:title?"
                                             render={({ match }) => (
                                                 <CategoryPageWithDefaultLayout
                                                     title={
+                                                        match.params.title ||
                                                         match.params.topicName
                                                     }
                                                     filter={{
@@ -155,7 +175,113 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                 />
                                             )}
                                         />
-
+                                        <Route
+                                            path="/publisher/:name"
+                                            render={({ match }) => {
+                                                switch (match.params.name) {
+                                                    case "Pratham":
+                                                        return <PrathamPage />;
+                                                    case "3Asafeer":
+                                                        return <AsafeerPage />;
+                                                    case "African Storybook":
+                                                        return (
+                                                            <AfricanStorybookPage />
+                                                        );
+                                                    case "Book Dash":
+                                                        return <BookDashPage />;
+                                                    case "The Asia Foundation":
+                                                        return (
+                                                            <AsiaFoundationPage />
+                                                        );
+                                                    case "Room to Read":
+                                                        return (
+                                                            <RoomToReadPage />
+                                                        );
+                                                    default:
+                                                        return (
+                                                            <DefaultOrganizationPage
+                                                                fullBookshelfKey={
+                                                                    match.params
+                                                                        .name
+                                                                }
+                                                            />
+                                                        );
+                                                }
+                                            }}
+                                        />
+                                        <Route
+                                            path="/project/:fullBookshelfKey*"
+                                            render={({ match }) => {
+                                                switch (
+                                                    match.params
+                                                        .fullBookshelfKey
+                                                ) {
+                                                    case "Enabling Writers Workshops":
+                                                        return (
+                                                            <EnablingWritersPage />
+                                                        );
+                                                    case "Bible":
+                                                        return <BiblePage />;
+                                                    default:
+                                                        return (
+                                                            <ProjectPageWithDefaultLayout
+                                                                fullBookshelfKey={
+                                                                    match.params
+                                                                        .fullBookshelfKey
+                                                                }
+                                                            />
+                                                        );
+                                                }
+                                            }}
+                                        />
+                                        <Route
+                                            path="/org/:name*"
+                                            render={({ match }) => {
+                                                switch (match.params.name) {
+                                                    case "Ministerio de Educación de Guatemala":
+                                                        return (
+                                                            <GuatemalaMOEPage />
+                                                        );
+                                                    case "SIL LEAD":
+                                                        return <SILLEADPage />;
+                                                    case "Wycliffe":
+                                                        return <WycliffePage />;
+                                                    default:
+                                                        return (
+                                                            <DefaultOrganizationPage
+                                                                fullBookshelfKey={
+                                                                    match.params
+                                                                        .name
+                                                                }
+                                                            />
+                                                        );
+                                                }
+                                            }}
+                                        />
+                                        <Route
+                                            path="/category/:fullBookshelfKey*"
+                                            render={({ match }) => (
+                                                <CategoryPageForBookshelf
+                                                    fullBookshelfKey={
+                                                        match.params
+                                                            .fullBookshelfKey
+                                                    }
+                                                />
+                                            )}
+                                        />
+                                        <Route
+                                            path="/feature/:featureKey"
+                                            render={({ match }) => (
+                                                <FeaturePage
+                                                    featureKey={
+                                                        match.params.featureKey
+                                                    }
+                                                />
+                                            )}
+                                        />
+                                        <Route path="/covid19">
+                                            <Covid19Page />
+                                        </Route>
                                         <Route
                                             exact={true}
                                             path={["/", "/read"]}

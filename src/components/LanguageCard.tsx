@@ -6,23 +6,11 @@ import { jsx } from "@emotion/core";
 
 import React, { useContext } from "react";
 import { CheapCard } from "./CheapCard";
-import { RouterContext, HomeGrownRouter } from "../Router";
 import { ILanguage, getLanguageNames } from "../model/Language";
 import { commonUI } from "../theme";
 import { useTheme } from "@material-ui/core";
 
-export function routeToLanguage(language: ILanguage, router: HomeGrownRouter) {
-    const { displayName } = getLanguageNames(language);
-
-    router.push({
-        title: displayName,
-        pageType: "language",
-        filter: { language: language.isoCode },
-    });
-}
-
 export const LanguageCard: React.FunctionComponent<ILanguage> = (props) => {
-    const router = useContext(RouterContext);
     const theme = useTheme();
     const { displayName: languageName, autonym } = getLanguageNames(props);
 
@@ -44,9 +32,6 @@ export const LanguageCard: React.FunctionComponent<ILanguage> = (props) => {
                 padding-bottom: 3px;
             `}
             href={`language/${props.isoCode}`}
-            // onClick={() => {
-            //     routeToLanguage(props, router!);
-            // }}
         >
             <h2
                 css={css`

@@ -161,14 +161,9 @@ storiesOf("Pages", module)
     .add("Home Page", () => <HomePage />)
     .add("Thai Book Page", () => <LanguagePage langCode="th" />)
     .add("Talking Book Feature Page", () => (
-        <FeaturePage
-            title={"Talking Books"}
-            filter={{ feature: "talkingBook" }}
-        />
+        <FeaturePage featureKey="talkingBook" />
     ))
-    .add("Motion Book Feature Page", () => (
-        <FeaturePage title={"Motion Books"} filter={{ feature: "motion" }} />
-    ));
+    .add("Motion Book Feature Page", () => <FeaturePage featureKey="motion" />);
 
 storiesOf("Components", module).add("SearchBox", () => {
     const bloomRed: string = theme.palette.primary.main;

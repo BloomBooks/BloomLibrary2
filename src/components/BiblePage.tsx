@@ -25,7 +25,7 @@ export const BiblePage: React.FunctionComponent = () => {
         <CategoryCard
             title={d}
             img="books.svg"
-            pageType=""
+            href={"/category/" + d}
             filter={{ bookshelf: "Bible/" + d }}
         />
     ));
@@ -39,7 +39,7 @@ export const BiblePage: React.FunctionComponent = () => {
         <CategoryCard
             title={d}
             img=""
-            pageType=""
+            href={"/category/" + d}
             filter={{ bookshelf: "Bible/" + d }}
         />
     ));

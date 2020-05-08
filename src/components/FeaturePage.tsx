@@ -12,10 +12,10 @@ import { useTheme, Breadcrumbs } from "@material-ui/core";
 import { ByLanguageGroups } from "./ByLanguageGroups";
 
 export const FeaturePage: React.FunctionComponent<{
-    title: string;
-    filter: IFilter;
+    featureKey: string;
 }> = (props) => {
-    const featureKey: string = props.filter.feature || "default";
+    const featureKey: string = props.featureKey || "default";
+    const filter = { feature: featureKey };
     const featureSpec = featureSpecs.find((s) => s.featureKey === featureKey);
 
     const [counts, setCounts] = useState("");
@@ -23,8 +23,8 @@ export const FeaturePage: React.FunctionComponent<{
     return (
         <React.Fragment>
             <FeatureBanner
-                title={props.title}
-                filter={props.filter}
+                title={featureSpec ? featureSpec.featureTitle : featureKey}
+                filter={filter}
                 icon={featureSpec?.icon}
                 description={featureSpec?.description || <Fragment />}
                 bookCountMessage={counts}
@@ -33,7 +33,7 @@ export const FeaturePage: React.FunctionComponent<{
             <ListOfBookGroups>
                 <ByLanguageGroups
                     titlePrefix={""}
-                    filter={props.filter}
+                    filter={filter}
                     reportBooksAndLanguages={(books, langs) =>
                         setCounts(`${books} books in ${langs} languages`)
                     }

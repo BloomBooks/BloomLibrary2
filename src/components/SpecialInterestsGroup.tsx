@@ -20,7 +20,7 @@ export const SpecialInterestGroup: React.FunctionComponent<IProps> = (
                 filter={{
                     bookshelf: "COVID-19",
                 }}
-                pageType={"Covid19"}
+                href="/covid19"
                 img={""}
                 icon={(p) => (
                     <COVID19Icon
@@ -36,7 +36,7 @@ export const SpecialInterestGroup: React.FunctionComponent<IProps> = (
                 filter={{
                     bookshelf: "Bible",
                 }}
-                pageType={""}
+                href={"/bible"}
                 img={""}
                 icon={(p) => (
                     <BibleIcon
@@ -52,7 +52,7 @@ export const SpecialInterestGroup: React.FunctionComponent<IProps> = (
                 filter={{
                     topic: "Math", //TODO:,Science,Environment", but I haven't taken the time to figure out that query
                 }}
-                pageType={""}
+                href="/topic/Math/STEM Books"
                 img={""}
                 icon={(p) => (
                     <STEMIcon

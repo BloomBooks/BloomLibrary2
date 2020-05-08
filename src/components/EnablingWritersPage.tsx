@@ -28,8 +28,7 @@ export const EnablingWritersPage: React.FunctionComponent = () => {
                 grade reading programs. The competition was supported by United
                 States Agency for International Development, World Vision and
                 the Australian government. This competition spurred us to add
-                major new capabilities being added to Bloom, and we won the
-                competition.
+                major new capabilities to Bloom, and we won the competition.
             </p>
         </React.Fragment>
     );

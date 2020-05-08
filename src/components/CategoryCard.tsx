@@ -6,7 +6,6 @@ import { jsx } from "@emotion/core";
 
 import React, { useContext, Fragment } from "react";
 import { CheapCard } from "./CheapCard";
-import { RouterContext } from "../Router";
 import { IFilter } from "../IFilter";
 import Img from "react-image";
 import { BookCount } from "./BookCount";
@@ -18,8 +17,9 @@ interface IProps {
     preTitle?: string;
     title: string;
     bookCount?: string;
-    filter: IFilter;
-    pageType: string;
+    href?: string; // todo: not optional
+    filter: IFilter; // obsolete
+    pageType?: string; // obsolete
     img: string;
 
     icon?: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
@@ -31,7 +31,6 @@ interface IProps {
 
 // CategoryCards are things like publisher, projects, organizations. "CollectionCard" might be a better name.
 const CategoryCard: React.FunctionComponent<IProps> = (props) => {
-    const router = useContext(RouterContext);
     const theme = useTheme();
 
     const preTitleUI = props.preTitle ? (
@@ -111,13 +110,14 @@ const CategoryCard: React.FunctionComponent<IProps> = (props) => {
                 width: 220px;
                 padding: 10px;
             `}
-            onClick={() => {
-                router!.push({
-                    title: props.title,
-                    pageType: props.pageType ? props.pageType : "category",
-                    filter: props.filter,
-                });
-            }}
+            href={props.href}
+            // onClick={() => {
+            //     router!.push({
+            //         title: props.title,
+            //         pageType: props.pageType ? props.pageType : "category",
+            //         filter: props.filter,
+            //     });
+            // }}
         >
             {titleAndIconIfIconDefined}
 
