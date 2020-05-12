@@ -6,7 +6,7 @@ import {
     LanguagePage,
     DefaultOrganizationPage,
     ProjectPageWithDefaultLayout,
-    SearchResultsPage,
+    //SearchResultsPage,
     AllResultsPage,
     CategoryPageWithDefaultLayout,
 } from "./Pages";
@@ -61,10 +61,10 @@ export class BrowseView extends Component {
 
             // case "book-read":
             //     return <ReadBookPage id={this.router.current.bookId!} />;
-            case "search":
-                return (
-                    <SearchResultsPage filter={this.router.current.filter} />
-                );
+            // case "search":
+            //     return (
+            //         <SearchResultsPage filter={this.router.current.filter} />
+            //     );
             case "bulk":
                 return <BulkEditPage />;
             case "grid":

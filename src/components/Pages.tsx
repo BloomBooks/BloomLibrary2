@@ -12,29 +12,29 @@ import { CustomizableBanner } from "./banners/CustomizableBanner";
 import { getLanguageBannerSpec } from "./banners/LanguageCustomizations";
 import { getProjectBannerSpec } from "./banners/ProjectCustomizations";
 import { PublisherBanner } from "./banners/PublisherBanner";
-import { SearchBanner } from "./banners/Banners";
+// import { SearchBanner } from "./banners/Banners";
 import { ListOfBookGroups } from "./ListOfBookGroups";
 import { CachedTablesContext } from "../App";
 import { getLanguageNamesFromCode } from "../model/Language";
 import { LevelGroups } from "./LevelGroups";
 import { Bookshelf } from "../model/Bookshelf";
 
-export const SearchResultsPage: React.FunctionComponent<{
-    filter: IFilter;
-}> = (props) => {
-    let title = `Books matching "${props.filter.search!}"`;
-    if (props.filter.search!.indexOf("phash") > -1) {
-        title = "Matching Books";
-    }
-    return (
-        <React.Fragment>
-            <SearchBanner filter={props.filter} />
-            <ListOfBookGroups>
-                <BookGroup title={title} filter={props.filter} rows={20} />
-            </ListOfBookGroups>
-        </React.Fragment>
-    );
-};
+// export const SearchResultsPage: React.FunctionComponent<{
+//     filter: IFilter;
+// }> = (props) => {
+//     let title = `Books matching "${props.filter.search!}"`;
+//     if (props.filter.search!.indexOf("phash") > -1) {
+//         title = "Matching Books";
+//     }
+//     return (
+//         <React.Fragment>
+//             <SearchBanner filter={props.filter} />
+//             <ListOfBookGroups>
+//                 <BookGroup title={title} filter={props.filter} rows={20} />
+//             </ListOfBookGroups>
+//         </React.Fragment>
+//     );
+// };
 
 // I don't know if we'll stick with this... but for now this is what you get
 // if there are lots of books and you scroll to the end of the 20 or so that

@@ -26,7 +26,7 @@ export const BannerContents: React.FunctionComponent<{
     about?: JSX.Element;
     imageCredits?: JSX.Element;
     bannerCss?: SerializedStyles;
-}> = props => {
+}> = (props) => {
     const titleLines = props.title.split("/");
     console.assert(
         titleLines.length < 3,
@@ -124,20 +124,20 @@ export const BannerContents: React.FunctionComponent<{
     );
 };
 
-export const SearchBanner: React.FunctionComponent<{
-    filter: IFilter;
-}> = props => {
-    return (
-        <div
-            css={css`
-                background-color: ${commonUI.colors.bloomRed};
-                color: whitesmoke;
-                padding-bottom: 10px;
-                padding-left: 20px;
-            `}
-        >
-            <Breadcrumbs />
-            <BookCount filter={props.filter} />
-        </div>
-    );
-};
+// export const SearchBanner: React.FunctionComponent<{
+//     filter: IFilter;
+// }> = props => {
+//     return (
+//         <div
+//             css={css`
+//                 background-color: ${commonUI.colors.bloomRed};
+//                 color: whitesmoke;
+//                 padding-bottom: 10px;
+//                 padding-left: 20px;
+//             `}
+//         >
+//             <Breadcrumbs />
+//             <BookCount filter={props.filter} />
+//         </div>
+//     );
+// };

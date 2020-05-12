@@ -14,7 +14,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import { RouterContext } from "../Router";
 import { withStyles } from "@material-ui/styles";
 import { giveFreeLearningCsv } from "../export/freeLearningIO";
-import { Redirect, useLocation, useHistory } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
 import * as QueryString from "qs";
 
 // NB: I tried a bunch of iterations over 2 days with forwardRefs and stuff trying to get this search box
