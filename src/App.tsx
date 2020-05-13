@@ -57,6 +57,7 @@ import { EnablingWritersPage } from "./components/EnablingWritersPage";
 import { WycliffePage } from "./components/WycliffePage";
 import { SILLEADPage } from "./components/SILLEADPage";
 import { collections } from "./model/Collections";
+import { makeCollectionForLevel } from "./components/LevelGroups";
 
 interface ICachedTables {
     tags: string[];
@@ -270,23 +271,24 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                                 .collection
                                                         )!
                                                     }
-                                                    aspectName={
-                                                        match.params.aspectName
-                                                    }
-                                                    aspectValue={
-                                                        match.params.aspectValue
-                                                    }
-                                                    subtitle={
-                                                        match.params.subtitle
-                                                    }
                                                 />
                                             )}
                                         ></Route>
                                         <Route
-                                            path="/:collection"
+                                            path="/:collection/:filter*"
                                             render={({ match }) => {
-                                                const collection = collections.get(
-                                                    match.params.collection
+                                                const collectionNames = (match
+                                                    .params
+                                                    .collection as string).split(
+                                                    "|"
+                                                );
+                                                const collectionName =
+                                                    collectionNames[
+                                                        collectionNames.length -
+                                                            1
+                                                    ];
+                                                let collection = collections.get(
+                                                    collectionName
                                                 );
                                                 if (!collection) {
                                                     return (
@@ -295,8 +297,28 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                         </div>
                                                     );
                                                 }
+                                                const filters:
+                                                    | string[]
+                                                    | undefined =
+                                                    match.params.filter;
+                                                if (filters) {
+                                                    for (const filter of filters) {
+                                                        const parts = filter.split(
+                                                            ":"
+                                                        );
+                                                        switch (parts[0]) {
+                                                            case "level":
+                                                                collection = makeCollectionForLevel(
+                                                                    collection,
+                                                                    parts[1]
+                                                                );
+                                                                break;
+                                                            // ignore any filter we don't recognize
+                                                        }
+                                                    }
+                                                }
                                                 switch (collection.pageType) {
-                                                    default: // We'll let the CollectionPage do the best it can
+                                                    default: // We'll let the ByLevelPage do the best it can
                                                     case "bylevel":
                                                         return (
                                                             <ByLevelPage

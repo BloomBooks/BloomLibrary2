@@ -28,7 +28,7 @@ export interface ICollection {
     title: string;
     hideTitle?: boolean;
     filter: IFilter;
-    secondaryFilter?: string;
+    secondaryFilter?: (basicBookInfo: IBasicBookInfo) => boolean;
     pageType: string;
     homePage?: string;
     homePageText?: string; // defaults to title if needed

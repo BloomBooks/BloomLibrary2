@@ -43,14 +43,8 @@ import { CollectionGroup } from "./CollectionGroup";
 // we put in a row, and then you click on the MoreCard there to see the rest
 export const AllResultsPage: React.FunctionComponent<{
     collection: ICollection;
-    aspectName?: string;
-    aspectValue?: string;
-    subtitle?: string;
 }> = (props) => {
-    let title = props.collection.title;
-    if (props.subtitle && props.subtitle !== props.collection.title) {
-        title += " - " + props.subtitle;
-    }
+    const title = props.collection.title;
     return (
         <React.Fragment>
             <div
@@ -66,8 +60,6 @@ export const AllResultsPage: React.FunctionComponent<{
                     title={title}
                     collection={props.collection}
                     rows={20}
-                    aspectName={props.aspectName}
-                    aspectValue={props.aspectValue}
                 />
                 {/* TODO: we need a way to say "OK, more rows, and more rows" etc. */}
             </ListOfBookGroups>

@@ -38,7 +38,6 @@ const local: IConnection = {
 };
 
 export function getConnection(): IConnection {
-    return prod;
     if (false) {
         // change to true when testing with local database
         return local;

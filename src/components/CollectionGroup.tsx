@@ -29,8 +29,6 @@ interface IProps {
     rows?: number;
 
     contextLangIso?: string;
-    aspectName?: string; // e.g., "level", "language"
-    aspectValue?: string; // e.g., "1", "es"
 }
 
 export const CollectionGroup: React.FunctionComponent<IProps> = (props) => (
@@ -63,14 +61,7 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
     // of 5 each
     const maxCardsToRetrieve = props.rows ? props.rows * 5 : 20;
     const collectionFilter = props.collection.filter;
-    const filter = useMemo(() => {
-        if (props.aspectName) {
-            const result = { ...collectionFilter };
-            (result as any)[props.aspectName] = props.aspectValue;
-            return result;
-        }
-        return collectionFilter;
-    }, [props.aspectName, props.aspectValue, collectionFilter]);
+
     const search = useSearchBooks(
         {
             include: "langPointers",
@@ -78,7 +69,7 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
             limit: maxCardsToRetrieve,
             order: props.collection.order || "titleOrScore",
         },
-        filter
+        collectionFilter
     );
 
     // We make life hard on <Lazy> components by thinking maybe we'll show, for example, a row of Level 1 books at
@@ -104,25 +95,9 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
 
     const showInOneRow = !props.rows || props.rows < 2;
     let books = search.books;
-    let secondaryFilter:
-        | ((basicBookInfo: IBasicBookInfo) => boolean)
-        | undefined;
+
     if (props.collection.secondaryFilter) {
-        secondaryFilter = getSecondaryFilterFunction(
-            props.collection.secondaryFilter,
-            props.aspectValue
-        );
-    } else if (props.aspectValue && props.aspectValue.startsWith("level=")) {
-        // This special case is needed for LevelGroups. When we're looking for a particular level,
-        // we can't make the query return just what we want, nor is it obviously a property of the
-        // collection that we want this secondary filtering.
-        secondaryFilter = getSecondaryFilterFunction(
-            "getBestLevelStringOrEmpty",
-            props.aspectValue
-        );
-    }
-    if (secondaryFilter) {
-        books = books.filter((b) => secondaryFilter!(b));
+        books = books.filter((b) => props.collection.secondaryFilter!(b));
     }
 
     const cards = books.map((b: IBasicBookInfo) => (
@@ -138,18 +113,7 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
 
     // Enhance: allow using a MoreCard even with a fixed set of known books, rather than only if we're using a filter.
     if (search.totalMatchingRecords > maxCardsToRetrieve) {
-        let subtitle = "";
-        if (props.title && props.title !== props.collection.title) {
-            subtitle = props.title;
-        }
-        cards.push(
-            <MoreCard
-                collectionName={props.collection.key ?? props.collection.title}
-                aspectName={props.aspectName}
-                aspectValue={props.aspectValue}
-                subtitle={subtitle}
-            />
-        );
+        cards.push(<MoreCard collection={props.collection} />);
     }
 
     const bookList = showInOneRow ? (

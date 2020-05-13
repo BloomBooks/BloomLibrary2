@@ -6,6 +6,7 @@ import { jsx } from "@emotion/core";
 
 import React, { useContext } from "react";
 import { CheapCard } from "./CheapCard";
+import { ICollection } from "../model/Collections";
 
 // const image = css`
 //     height: 100px;
@@ -18,19 +19,11 @@ import { CheapCard } from "./CheapCard";
 export const cardWidth = 120;
 
 interface IProps {
-    collectionName: string;
-    aspectName?: string; // e.g., "search", "language"
-    aspectValue?: string; // e.g., "level:1", "es"
-    subtitle?: string; // e.g., "Level 1", "Spanish"
+    collection: ICollection;
 }
 export const MoreCard: React.FunctionComponent<IProps> = (props) => {
-    let href = "/more/" + props.collectionName;
-    if (props.aspectName && props.aspectValue) {
-        href += "/" + props.aspectName + "/" + props.aspectValue;
-        if (props.subtitle) {
-            href += "/" + props.subtitle;
-        }
-    }
+    const href = "/more/" + props.collection.key ?? props.collection.title;
+
     return (
         <CheapCard
             css={css`
