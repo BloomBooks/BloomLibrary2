@@ -1,0 +1,204 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
+import React, { useEffect, useState, useMemo } from "react";
+import LazyLoad, {
+    forceCheck as forceCheckLazyLoadComponents,
+} from "react-lazyload";
+
+import { commonUI } from "../theme";
+import { IFilter } from "../IFilter";
+import {
+    useSearchBooks,
+    IBasicBookInfo,
+} from "../connection/LibraryQueryHooks";
+import { BookCard } from "./BookCard";
+import { MoreCard } from "./MoreCard";
+import { CardSwiper } from "./CardSwiper";
+import { ICollection, getSecondaryFilterFunction } from "../model/Collections";
+
+interface IProps {
+    title?: string;
+    collection: ICollection;
+    //order?: string; another collection prop?
+    // I don't know... this could be "bookLimit" instead "rows". Have to think in terms
+    // of mobile versus big screen.... hmmm...
+    rows?: number;
+
+    contextLangIso?: string;
+    aspectName?: string; // e.g., "level", "language"
+    aspectValue?: string; // e.g., "1", "es"
+}
+
+export const CollectionGroup: React.FunctionComponent<IProps> = (props) => (
+    // Enhance: this has parameters, height and offset, that should help
+    // but so far I haven't got them to work well. It has many other
+    // parameters too that someone should look into. Make sure to test
+    // with the phone sizes in the browser debugger, and have the network
+    // tab open, set to "XHR". That will show you when a new query happens
+    // because this has loaded a new BookGroupInner.
+    // If the params are good, this list will grow as you scroll.
+    // If the params are bad, some groups at the end will NEVER show.
+
+    /* Note, this currently breaks strict mode. See app.tsx */
+    <LazyLoad
+        height={
+            /* note, if the number of cards is too small to fill up those rows, this will expect
+                    to be taller than it is, but then when it is replaced by the actual content, the
+                    scrollbar will adjust, so no big deal?*/
+            (props.rows ?? 1) * commonUI.bookCardHeightPx +
+            commonUI.bookGroupTopMarginPx
+        }
+    >
+        <CollectionGroupInner {...props} />
+    </LazyLoad>
+);
+export const CollectionGroupInner: React.FunctionComponent<IProps> = (
+    props
+) => {
+    // we have either a horizontally-scrolling list of 20, or several rows
+    // of 5 each
+    const maxCardsToRetrieve = props.rows ? props.rows * 5 : 20;
+    const collectionFilter = props.collection.filter;
+    const filter = useMemo(() => {
+        if (props.aspectName) {
+            const result = { ...collectionFilter };
+            (result as any)[props.aspectName] = props.aspectValue;
+            return result;
+        }
+        return collectionFilter;
+    }, [props.aspectName, props.aspectValue, collectionFilter]);
+    const search = useSearchBooks(
+        {
+            include: "langPointers",
+            // the following is arbitrary. I don't even yet no what the ux is that we want.
+            limit: maxCardsToRetrieve,
+            order: props.collection.order || "titleOrScore",
+        },
+        filter
+    );
+
+    // We make life hard on <Lazy> components by thinking maybe we'll show, for example, a row of Level 1 books at
+    // the top of the screen. So the <Lazy> thing may think "well, no room for me then until they scroll". But
+    // then it turns out that we don't have any level 1 books, so we don't even have a scroll bar. But too late, the
+    // <Lazy> row at the bottom has already decided it should not display.
+    // So here as soon as we find out how many books we have, we cause *all* <Lazy's> on the page to re-evaluate.
+    // NB: this is also done, on a timing basis, by BrowseView. Doing it here as well is a controversial addition,
+    // as it adds complexity and we don't know how expensive it is to do the check. But it might mean a bit faster
+    // display of the row at the bottom.
+    const [didReceiveResult, setDidReceiveResult] = useState(false);
+    useEffect(() => {
+        if (!didReceiveResult && search?.waiting === false) {
+            if (search?.books.length === 0) {
+                // We aren't going to show this row now, so other rows may have incorrectly determined
+                // that they should not load yet. But since we aren't going to show, they may be on
+                // screen after all.
+                forceCheckLazyLoadComponents();
+            }
+            setDidReceiveResult(true);
+        }
+    }, [search, didReceiveResult]);
+
+    const showInOneRow = !props.rows || props.rows < 2;
+    let books = search.books;
+    let secondaryFilter:
+        | ((basicBookInfo: IBasicBookInfo) => boolean)
+        | undefined;
+    if (props.collection.secondaryFilter) {
+        secondaryFilter = getSecondaryFilterFunction(
+            props.collection.secondaryFilter,
+            props.aspectValue
+        );
+    } else if (props.aspectValue && props.aspectValue.startsWith("level=")) {
+        // This special case is needed for LevelGroups. When we're looking for a particular level,
+        // we can't make the query return just what we want, nor is it obviously a property of the
+        // collection that we want this secondary filtering.
+        secondaryFilter = getSecondaryFilterFunction(
+            "getBestLevelStringOrEmpty",
+            props.aspectValue
+        );
+    }
+    if (secondaryFilter) {
+        books = books.filter((b) => secondaryFilter!(b));
+    }
+
+    const cards = books.map((b: IBasicBookInfo) => (
+        // if we're showing in one row, then we'll let swiper handle the laziness, otherwise
+        // we tell the card to try and be lazy itself.
+        <BookCard
+            handleYourOwnLaziness={!showInOneRow}
+            key={b.baseUrl}
+            basicBookInfo={b}
+            contextLangIso={props.contextLangIso}
+        />
+    ));
+
+    // Enhance: allow using a MoreCard even with a fixed set of known books, rather than only if we're using a filter.
+    if (search.totalMatchingRecords > maxCardsToRetrieve) {
+        let subtitle = "";
+        if (props.title && props.title !== props.collection.title) {
+            subtitle = props.title;
+        }
+        cards.push(
+            <MoreCard
+                collectionName={props.collection.key ?? props.collection.title}
+                aspectName={props.aspectName}
+                aspectValue={props.aspectValue}
+                subtitle={subtitle}
+            />
+        );
+    }
+
+    const bookList = showInOneRow ? (
+        <CardSwiper>{cards}</CardSwiper>
+    ) : (
+        <div
+            css={css`
+                display: flex;
+                flex-wrap: wrap;
+            `}
+        >
+            {cards}
+        </div>
+    );
+
+    const zeroBooksMatchedElement =
+        search.books && search.books.length > 0 ? null : (
+            // <p>{`No Books for "${
+            //     props.title
+            // }". Should not see this in production`}</p>
+            <React.Fragment></React.Fragment>
+        );
+
+    return (
+        //We just don't show the row if there are no matches, e.g., no Health books for this project
+        // (ZeroBooksMatchedElement will be an empty pseudo-element that satisfies the 'or' but shows nothing)
+        zeroBooksMatchedElement || (
+            <li
+                css={css`
+                    margin-top: ${commonUI.bookGroupTopMarginPx}px;
+                    // we don't know yet how many rows we might get if rows>1, but at least leave room for one
+                    min-height: ${commonUI.bookCardHeightPx +
+                    commonUI.bookGroupTopMarginPx}px;
+                `}
+            >
+                <h1>
+                    {props.title ?? props.collection.title}
+                    <span
+                        css={css`
+                            font-size: 9pt;
+                            color: gray;
+                            margin-left: 1em;
+                        `}
+                    >
+                        {search.totalMatchingRecords}
+                    </span>
+                </h1>
+                {search.waiting || bookList}
+            </li>
+        )
+    );
+};

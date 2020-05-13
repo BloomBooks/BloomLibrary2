@@ -90,6 +90,17 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = (props) => {
                 fullBookshelfKey,
                 bookshelves
             );
+            let href = "/" + fullBookshelfKey;
+            if (fullBookshelfKey.indexOf("/") > 0) {
+                // Todo: this is reverting to the old scheme.
+                // Eventually, we just want the key of the collection that is
+                // the child bookshelf
+                href =
+                    "/" +
+                    (props.bookShelfCategory || "category") +
+                    "/" +
+                    fullBookshelfKey;
+            }
             return (
                 <CategoryCard
                     key={fullBookshelfKey}
@@ -99,12 +110,7 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = (props) => {
                     filter={{
                         bookshelf: fullBookshelfKey,
                     }}
-                    href={
-                        "/" +
-                        (props.bookShelfCategory || "category") +
-                        "/" +
-                        fullBookshelfKey
-                    }
+                    href={href}
                     //pageType={props.bookShelfCategory}
                     img={
                         "https://share.bloomlibrary.org/bookshelf-images/" +

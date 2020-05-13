@@ -45,23 +45,18 @@ import {
     CategoryPageForBookshelf,
     DefaultOrganizationPage,
     ProjectPageWithDefaultLayout,
+    AllResultsPage,
 } from "./components/Pages";
 import { BiblePage } from "./components/BiblePage";
 import { FeaturePage } from "./components/FeaturePage";
 import { Covid19Page } from "./components/Covid19Page";
-import {
-    PrathamPage,
-    AfricanStorybookPage,
-    BookDashPage,
-    AsafeerPage,
-    RoomToReadPage,
-    AsiaFoundationPage,
-} from "./components/PublisherPages";
+import { ByLevelPage } from "./components/PublisherPages";
 import { GuatemalaMOEPage } from "./components/banners/OrganizationCustomizations";
 import { forceCheck as forceCheckLazyLoadComponents } from "react-lazyload";
 import { EnablingWritersPage } from "./components/EnablingWritersPage";
 import { WycliffePage } from "./components/WycliffePage";
 import { SILLEADPage } from "./components/SILLEADPage";
+import { collections } from "./model/Collections";
 
 interface ICachedTables {
     tags: string[];
@@ -179,24 +174,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                             path="/publisher/:name"
                                             render={({ match }) => {
                                                 switch (match.params.name) {
-                                                    case "Pratham":
-                                                        return <PrathamPage />;
-                                                    case "3Asafeer":
-                                                        return <AsafeerPage />;
-                                                    case "African Storybook":
-                                                        return (
-                                                            <AfricanStorybookPage />
-                                                        );
-                                                    case "Book Dash":
-                                                        return <BookDashPage />;
-                                                    case "The Asia Foundation":
-                                                        return (
-                                                            <AsiaFoundationPage />
-                                                        );
-                                                    case "Room to Read":
-                                                        return (
-                                                            <RoomToReadPage />
-                                                        );
+                                                    // review: is this used, or can we get rid of this whole route?
                                                     default:
                                                         return (
                                                             <DefaultOrganizationPage
@@ -282,6 +260,58 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                         <Route path="/covid19">
                                             <Covid19Page />
                                         </Route>
+                                        <Route
+                                            path="/more/:collection/:aspectName?/:aspectValue?/:subtitle?"
+                                            render={({ match }) => (
+                                                <AllResultsPage
+                                                    collection={
+                                                        collections.get(
+                                                            match.params
+                                                                .collection
+                                                        )!
+                                                    }
+                                                    aspectName={
+                                                        match.params.aspectName
+                                                    }
+                                                    aspectValue={
+                                                        match.params.aspectValue
+                                                    }
+                                                    subtitle={
+                                                        match.params.subtitle
+                                                    }
+                                                />
+                                            )}
+                                        ></Route>
+                                        <Route
+                                            path="/:collection"
+                                            render={({ match }) => {
+                                                const collection = collections.get(
+                                                    match.params.collection
+                                                );
+                                                if (!collection) {
+                                                    return (
+                                                        <div>
+                                                            Unknown collection
+                                                        </div>
+                                                    );
+                                                }
+                                                switch (collection.pageType) {
+                                                    default: // We'll let the CollectionPage do the best it can
+                                                    case "bylevel":
+                                                        return (
+                                                            <ByLevelPage
+                                                                collection={
+                                                                    collection!
+                                                                }
+                                                            />
+                                                        );
+                                                    case "EnablingWritersPage":
+                                                        return (
+                                                            <EnablingWritersPage />
+                                                        );
+                                                }
+                                            }}
+                                        />
                                         <Route
                                             exact={true}
                                             path={["/", "/read"]}

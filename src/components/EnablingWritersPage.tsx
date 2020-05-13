@@ -4,6 +4,7 @@ import { LevelGroups } from "./LevelGroups";
 import { ExternalLink } from "./banners/ExternalLink";
 import { BookshelfGroup } from "./BookShelfGroup";
 import { ListOfBookGroups } from "./ListOfBookGroups";
+import { collections } from "../model/Collections";
 
 export const EnablingWritersPage: React.FunctionComponent = () => {
     const filter = { bookshelf: "Enabling Writers Workshops" };
@@ -47,7 +48,9 @@ export const EnablingWritersPage: React.FunctionComponent = () => {
                     bookShelfCategory="project"
                     pathToTheCurrentLevel="Enabling Writers Workshops/"
                 />
-                <LevelGroups filter={filter} />
+                <LevelGroups
+                    collection={collections.get("Enabling Writers Workshops")!}
+                />
             </ListOfBookGroups>
         </div>
     );

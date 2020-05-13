@@ -18,6 +18,8 @@ import { CachedTablesContext } from "../App";
 import { getLanguageNamesFromCode } from "../model/Language";
 import { LevelGroups } from "./LevelGroups";
 import { Bookshelf } from "../model/Bookshelf";
+import { collections, ICollection } from "../model/Collections";
+import { CollectionGroup } from "./CollectionGroup";
 
 // export const SearchResultsPage: React.FunctionComponent<{
 //     filter: IFilter;
@@ -40,24 +42,38 @@ import { Bookshelf } from "../model/Bookshelf";
 // if there are lots of books and you scroll to the end of the 20 or so that
 // we put in a row, and then you click on the MoreCard there to see the rest
 export const AllResultsPage: React.FunctionComponent<{
-    filter: IFilter;
-    title: string;
-}> = (props) => (
-    <React.Fragment>
-        <div
-            css={css`
-                background-color: black;
-            `}
-        >
-            <Breadcrumbs />
-        </div>
-        {/* <SearchBanner filter={props.filter} /> */}
-        <ListOfBookGroups>
-            <BookGroup title={props.title} filter={props.filter} rows={20} />
-            {/* TODO: we need a way to say "OK, more rows, and more rows" etc. */}
-        </ListOfBookGroups>
-    </React.Fragment>
-);
+    collection: ICollection;
+    aspectName?: string;
+    aspectValue?: string;
+    subtitle?: string;
+}> = (props) => {
+    let title = props.collection.title;
+    if (props.subtitle && props.subtitle !== props.collection.title) {
+        title += " - " + props.subtitle;
+    }
+    return (
+        <React.Fragment>
+            <div
+                css={css`
+                    background-color: black;
+                `}
+            >
+                <Breadcrumbs />
+            </div>
+            {/* <SearchBanner filter={props.filter} /> */}
+            <ListOfBookGroups>
+                <CollectionGroup
+                    title={title}
+                    collection={props.collection}
+                    rows={20}
+                    aspectName={props.aspectName}
+                    aspectValue={props.aspectValue}
+                />
+                {/* TODO: we need a way to say "OK, more rows, and more rows" etc. */}
+            </ListOfBookGroups>
+        </React.Fragment>
+    );
+};
 
 export const DefaultOrganizationPage: React.FunctionComponent<{
     fullBookshelfKey: string;
@@ -108,7 +124,7 @@ export const LanguagePage: React.FunctionComponent<{
             />
 
             <ListOfBookGroups>
-                <LevelGroups filter={filter} />
+                <LevelGroups collection={collections.get("all")!} />
             </ListOfBookGroups>
         </div>
     );

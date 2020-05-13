@@ -6,8 +6,6 @@ import { jsx } from "@emotion/core";
 
 import React, { useContext } from "react";
 import { CheapCard } from "./CheapCard";
-import { RouterContext } from "../Router";
-import { IFilter } from "../IFilter";
 
 // const image = css`
 //     height: 100px;
@@ -20,29 +18,25 @@ import { IFilter } from "../IFilter";
 export const cardWidth = 120;
 
 interface IProps {
-    title: string;
-    className?: string;
-    count: number;
-    filter: IFilter;
-    rows: number;
+    collectionName: string;
+    aspectName?: string; // e.g., "search", "language"
+    aspectValue?: string; // e.g., "level:1", "es"
+    subtitle?: string; // e.g., "Level 1", "Spanish"
 }
-export const MoreCard: React.FunctionComponent<IProps> = props => {
-    const router = useContext(RouterContext);
+export const MoreCard: React.FunctionComponent<IProps> = (props) => {
+    let href = "/more/" + props.collectionName;
+    if (props.aspectName && props.aspectValue) {
+        href += "/" + props.aspectName + "/" + props.aspectValue;
+        if (props.subtitle) {
+            href += "/" + props.subtitle;
+        }
+    }
     return (
         <CheapCard
-            className={props.className}
             css={css`
                 width: ${cardWidth}px;
             `}
-            onClick={() => {
-                //alert("click " + this.props.title);
-                router!.push({
-                    title: props.title,
-                    pageType: "more",
-                    filter: props.filter,
-                    rows: props.rows * 2
-                });
-            }}
+            href={href}
         >
             {`See more of these books.`}
         </CheapCard>

@@ -113,17 +113,19 @@ export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
     ));
 
     // Enhance: allow using a MoreCard even with a fixed set of known books, rather than only if we're using a filter.
-    if (props.filter && search.totalMatchingRecords > maxCardsToRetrieve) {
-        cards.push(
-            <MoreCard
-                key={"more"}
-                title={props.title}
-                filter={props.filter}
-                count={search.totalMatchingRecords}
-                rows={props.rows ? props.rows * 2 : 2}
-            />
-        );
-    }
+    // BookGroups, especially those that need MoreCards, are being progressively replaced
+    // with CollectionGroups.
+    // if (props.filter && search.totalMatchingRecords > maxCardsToRetrieve) {
+    //     cards.push(
+    //         <MoreCard
+    //             key={"more"}
+    //             title={props.title}
+    //             filter={props.filter}
+    //             count={search.totalMatchingRecords}
+    //             rows={props.rows ? props.rows * 2 : 2}
+    //         />
+    //     );
+    // }
 
     const bookList = showInOneRow ? (
         <CardSwiper>{cards}</CardSwiper>

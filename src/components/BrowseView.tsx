@@ -11,15 +11,6 @@ import {
     CategoryPageWithDefaultLayout,
 } from "./Pages";
 import "typeface-roboto";
-import { Header } from "./header/Header";
-import {
-    PrathamPage,
-    AfricanStorybookPage,
-    BookDashPage,
-    AsafeerPage,
-    RoomToReadPage,
-    AsiaFoundationPage,
-} from "./PublisherPages";
 import { GuatemalaMOEPage } from "./banners/OrganizationCustomizations";
 import { forceCheck as forceCheckLazyLoadComponents } from "react-lazyload";
 import { EnablingWritersPage } from "./EnablingWritersPage";
@@ -70,13 +61,13 @@ export class BrowseView extends Component {
             case "grid":
                 return <GridPage />;
 
-            case "more":
-                return (
-                    <AllResultsPage
-                        title={this.router.current.title}
-                        filter={this.router.current.filter}
-                    />
-                );
+            // case "more":
+            //     return (
+            //         <AllResultsPage
+            //             title={this.router.current.title}
+            //             filter={this.router.current.filter}
+            //         />
+            //     );
             // case "language":
             //     return (
             //         <LanguagePage

@@ -3,6 +3,7 @@ import { PublisherBanner } from "./banners/PublisherBanner";
 import { LevelGroups } from "./LevelGroups";
 import { ExternalLink } from "./banners/ExternalLink";
 import { ListOfBookGroups } from "./ListOfBookGroups";
+import { collections } from "../model/Collections";
 
 export const SILLEADPage: React.FunctionComponent = () => {
     const filter = { bookshelf: "SIL LEAD" };
@@ -28,7 +29,7 @@ export const SILLEADPage: React.FunctionComponent = () => {
                 collectionDescription={description}
             />
             <ListOfBookGroups>
-                <LevelGroups filter={filter} />
+                <LevelGroups collection={collections.get("SIL LEAD")!} />
             </ListOfBookGroups>
         </div>
     );
