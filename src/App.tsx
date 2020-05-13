@@ -262,20 +262,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                             <Covid19Page />
                                         </Route>
                                         <Route
-                                            path="/more/:collection/:aspectName?/:aspectValue?/:subtitle?"
-                                            render={({ match }) => (
-                                                <AllResultsPage
-                                                    collection={
-                                                        collections.get(
-                                                            match.params
-                                                                .collection
-                                                        )!
-                                                    }
-                                                />
-                                            )}
-                                        ></Route>
-                                        <Route
-                                            path="/:collection/:filter*"
+                                            path="/more/:collection/:filter*"
                                             render={({ match }) => {
                                                 const collectionNames = (match
                                                     .params
@@ -298,11 +285,13 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                     );
                                                 }
                                                 const filters:
-                                                    | string[]
+                                                    | string
                                                     | undefined =
                                                     match.params.filter;
                                                 if (filters) {
-                                                    for (const filter of filters) {
+                                                    for (const filter of filters.split(
+                                                        "/"
+                                                    )) {
                                                         const parts = filter.split(
                                                             ":"
                                                         );
@@ -317,6 +306,37 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                         }
                                                     }
                                                 }
+                                                return (
+                                                    <AllResultsPage
+                                                        collection={collection}
+                                                    />
+                                                );
+                                            }}
+                                        ></Route>
+                                        <Route
+                                            path="/:collection/"
+                                            render={({ match }) => {
+                                                const collectionNames = (match
+                                                    .params
+                                                    .collection as string).split(
+                                                    "|"
+                                                );
+                                                const collectionName =
+                                                    collectionNames[
+                                                        collectionNames.length -
+                                                            1
+                                                    ];
+                                                const collection = collections.get(
+                                                    collectionName
+                                                );
+                                                if (!collection) {
+                                                    return (
+                                                        <div>
+                                                            Unknown collection
+                                                        </div>
+                                                    );
+                                                }
+
                                                 switch (collection.pageType) {
                                                     default: // We'll let the ByLevelPage do the best it can
                                                     case "bylevel":
