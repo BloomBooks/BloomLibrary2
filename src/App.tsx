@@ -32,6 +32,13 @@ import {
     cantUseBloomD,
 } from "./components/OSFeaturesContext";
 import { Alert, AlertTitle } from "@material-ui/lab";
+import {
+    ContentfulClient,
+    ContentfulProvider,
+    ContentfulClientInterface,
+    ContentfulClientParams,
+} from "react-contentful";
+
 import { GridPage } from "./components/Grid/GridPage";
 import { BulkEditPage } from "./components/BulkEdit/BulkEditPage";
 import { HomeGrownRouter, RouterContext } from "./Router";
@@ -86,7 +93,15 @@ export const App: React.FunctionComponent<{}> = (props) => {
     CachedTables.bookshelves = bookshelves;
     CachedTables.tags = tags;
     CachedTables.languagesByBookCount = languagesByBookCount;
-
+    // tslint:disable-next-line: no-object-literal-type-assertion
+    const contentfulOptions: ContentfulClientParams = {
+        accessToken: "XPudkny5JX74w0dxrwqS_WY3GUBA5xO_AzFR7fwO2aE",
+        space: "72i7e2mqidxz",
+    };
+    // there's a problem with the TS types in the Contentful library, hence this "any"
+    const contentfulClient = new (ContentfulClient as any)(
+        contentfulOptions
+    ) as ContentfulClientInterface;
     return (
         <>
             {/* <React.StrictMode>
