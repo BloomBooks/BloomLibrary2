@@ -8,7 +8,7 @@ import InfoIcon from "@material-ui/icons/InfoOutlined";
 
 export const ImageCreditsTooltip: React.FunctionComponent<{
     imageCredits: JSX.Element;
-}> = props => (
+}> = (props) => (
     <Tooltip
         // didn't work: classes={{ popper: "popper", tooltip: "tooltip" }}
         title={props.imageCredits}
@@ -17,6 +17,7 @@ export const ImageCreditsTooltip: React.FunctionComponent<{
                             border: solid blue !important;
                             background-color: black;
                         } */
+            color: white;
         `}
         placement="left-end"
     >
@@ -26,7 +27,12 @@ export const ImageCreditsTooltip: React.FunctionComponent<{
                 padding: 0;
             `}
         >
-            <InfoIcon fontSize="small" />
+            <InfoIcon
+                css={css`
+                    color: white;
+                `}
+                fontSize="small"
+            />
         </Button>
     </Tooltip>
 );

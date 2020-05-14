@@ -32,12 +32,6 @@ import {
     cantUseBloomD,
 } from "./components/OSFeaturesContext";
 import { Alert, AlertTitle } from "@material-ui/lab";
-import {
-    ContentfulClient,
-    ContentfulProvider,
-    ContentfulClientInterface,
-    ContentfulClientParams,
-} from "react-contentful";
 
 import { GridPage } from "./components/Grid/GridPage";
 import { BulkEditPage } from "./components/BulkEdit/BulkEditPage";
@@ -65,6 +59,8 @@ import { WycliffePage } from "./components/WycliffePage";
 import { SILLEADPage } from "./components/SILLEADPage";
 import { collections } from "./model/Collections";
 import { makeCollectionForLevel } from "./components/LevelGroups";
+import { ContentfulBanner } from "./components/banners/ContentfulBanner";
+import { ContentfulContext } from "./ContentfulContext";
 
 interface ICachedTables {
     tags: string[];
@@ -94,14 +90,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
     CachedTables.tags = tags;
     CachedTables.languagesByBookCount = languagesByBookCount;
     // tslint:disable-next-line: no-object-literal-type-assertion
-    const contentfulOptions: ContentfulClientParams = {
-        accessToken: "XPudkny5JX74w0dxrwqS_WY3GUBA5xO_AzFR7fwO2aE",
-        space: "72i7e2mqidxz",
-    };
-    // there's a problem with the TS types in the Contentful library, hence this "any"
-    const contentfulClient = new (ContentfulClient as any)(
-        contentfulOptions
-    ) as ContentfulClientInterface;
+
     return (
         <>
             {/* <React.StrictMode>
@@ -137,247 +126,276 @@ export const App: React.FunctionComponent<{}> = (props) => {
                             {window.location.hostname === "localhost" || (
                                 <UnderConstruction />
                             )}
-
-                            <RouterContext.Provider value={homeGrownRouter}>
-                                <Router>
-                                    <Header />
-                                    <Switch>
-                                        <Route path="/book/:id">
-                                            <BookDetail />
-                                        </Route>
-                                        <Route path="/player/:id">
-                                            <ReadBookPage />
-                                        </Route>
-                                        <Route path="/about">
-                                            <div>This is About</div>
-                                        </Route>
-                                        <Route path="/grid">
-                                            <GridPage />
-                                        </Route>
-                                        <Route path="/bulk">
-                                            <BulkEditPage />
-                                        </Route>
-                                        <Route
-                                            path="/language/:langCode"
-                                            render={({ match }) => (
-                                                <LanguagePage
-                                                    langCode={
-                                                        match.params.langCode
-                                                    }
-                                                />
-                                            )}
-                                        ></Route>
-                                        <Route path="/bible">
-                                            <BiblePage />
-                                        </Route>
-                                        <Route
-                                            path="/topic/:topicName/:title?"
-                                            render={({ match }) => (
-                                                <CategoryPageWithDefaultLayout
-                                                    title={
-                                                        match.params.title ||
-                                                        match.params.topicName
-                                                    }
-                                                    filter={{
-                                                        topic:
+                            <ContentfulContext>
+                                <RouterContext.Provider value={homeGrownRouter}>
+                                    <Router>
+                                        <Header />
+                                        <Switch>
+                                            {" "}
+                                            <Route
+                                                path="/_previewBanner/:id"
+                                                render={({ match }) => (
+                                                    <ContentfulBanner
+                                                        id={match.params.id}
+                                                    />
+                                                )}
+                                            ></Route>
+                                            <Route path="/book/:id">
+                                                <BookDetail />
+                                            </Route>
+                                            <Route path="/player/:id">
+                                                <ReadBookPage />
+                                            </Route>
+                                            <Route path="/about">
+                                                <div>This is About</div>
+                                            </Route>
+                                            <Route path="/grid">
+                                                <GridPage />
+                                            </Route>
+                                            <Route path="/bulk">
+                                                <BulkEditPage />
+                                            </Route>
+                                            <Route
+                                                path="/language/:langCode"
+                                                render={({ match }) => (
+                                                    <LanguagePage
+                                                        langCode={
                                                             match.params
-                                                                .topicName,
-                                                    }}
-                                                />
-                                            )}
-                                        />
-                                        <Route
-                                            path="/publisher/:name"
-                                            render={({ match }) => {
-                                                switch (match.params.name) {
-                                                    // review: is this used, or can we get rid of this whole route?
-                                                    default:
-                                                        return (
-                                                            <DefaultOrganizationPage
-                                                                fullBookshelfKey={
-                                                                    match.params
-                                                                        .name
-                                                                }
-                                                            />
-                                                        );
-                                                }
-                                            }}
-                                        />
-                                        <Route
-                                            path="/project/:fullBookshelfKey*"
-                                            render={({ match }) => {
-                                                switch (
-                                                    match.params
-                                                        .fullBookshelfKey
-                                                ) {
-                                                    case "Enabling Writers Workshops":
-                                                        return (
-                                                            <EnablingWritersPage />
-                                                        );
-                                                    case "Bible":
-                                                        return <BiblePage />;
-                                                    default:
-                                                        return (
-                                                            <ProjectPageWithDefaultLayout
-                                                                fullBookshelfKey={
-                                                                    match.params
-                                                                        .fullBookshelfKey
-                                                                }
-                                                            />
-                                                        );
-                                                }
-                                            }}
-                                        />
-                                        <Route
-                                            path="/org/:name*"
-                                            render={({ match }) => {
-                                                switch (match.params.name) {
-                                                    case "Ministerio de Educación de Guatemala":
-                                                        return (
-                                                            <GuatemalaMOEPage />
-                                                        );
-                                                    case "SIL LEAD":
-                                                        return <SILLEADPage />;
-                                                    case "Wycliffe":
-                                                        return <WycliffePage />;
-                                                    default:
-                                                        return (
-                                                            <DefaultOrganizationPage
-                                                                fullBookshelfKey={
-                                                                    match.params
-                                                                        .name
-                                                                }
-                                                            />
-                                                        );
-                                                }
-                                            }}
-                                        />
-                                        <Route
-                                            path="/category/:fullBookshelfKey*"
-                                            render={({ match }) => (
-                                                <CategoryPageForBookshelf
-                                                    fullBookshelfKey={
+                                                                .langCode
+                                                        }
+                                                    />
+                                                )}
+                                            ></Route>
+                                            <Route path="/bible">
+                                                <BiblePage />
+                                            </Route>
+                                            <Route
+                                                path="/topic/:topicName/:title?"
+                                                render={({ match }) => (
+                                                    <CategoryPageWithDefaultLayout
+                                                        title={
+                                                            match.params
+                                                                .title ||
+                                                            match.params
+                                                                .topicName
+                                                        }
+                                                        filter={{
+                                                            topic:
+                                                                match.params
+                                                                    .topicName,
+                                                        }}
+                                                    />
+                                                )}
+                                            />
+                                            <Route
+                                                path="/publisher/:name"
+                                                render={({ match }) => {
+                                                    switch (match.params.name) {
+                                                        // review: is this used, or can we get rid of this whole route?
+                                                        default:
+                                                            return (
+                                                                <DefaultOrganizationPage
+                                                                    fullBookshelfKey={
+                                                                        match
+                                                                            .params
+                                                                            .name
+                                                                    }
+                                                                />
+                                                            );
+                                                    }
+                                                }}
+                                            />
+                                            <Route
+                                                path="/project/:fullBookshelfKey*"
+                                                render={({ match }) => {
+                                                    switch (
                                                         match.params
                                                             .fullBookshelfKey
+                                                    ) {
+                                                        case "Enabling Writers Workshops":
+                                                            return (
+                                                                <EnablingWritersPage />
+                                                            );
+                                                        case "Bible":
+                                                            return (
+                                                                <BiblePage />
+                                                            );
+                                                        default:
+                                                            return (
+                                                                <ProjectPageWithDefaultLayout
+                                                                    fullBookshelfKey={
+                                                                        match
+                                                                            .params
+                                                                            .fullBookshelfKey
+                                                                    }
+                                                                />
+                                                            );
                                                     }
-                                                />
-                                            )}
-                                        />
-                                        <Route
-                                            path="/feature/:featureKey"
-                                            render={({ match }) => (
-                                                <FeaturePage
-                                                    featureKey={
-                                                        match.params.featureKey
+                                                }}
+                                            />
+                                            <Route
+                                                path="/org/:name*"
+                                                render={({ match }) => {
+                                                    switch (match.params.name) {
+                                                        case "Ministerio de Educación de Guatemala":
+                                                            return (
+                                                                <GuatemalaMOEPage />
+                                                            );
+                                                        case "SIL LEAD":
+                                                            return (
+                                                                <SILLEADPage />
+                                                            );
+                                                        case "Wycliffe":
+                                                            return (
+                                                                <WycliffePage />
+                                                            );
+                                                        default:
+                                                            return (
+                                                                <DefaultOrganizationPage
+                                                                    fullBookshelfKey={
+                                                                        match
+                                                                            .params
+                                                                            .name
+                                                                    }
+                                                                />
+                                                            );
                                                     }
-                                                />
-                                            )}
-                                        />
-                                        <Route path="/covid19">
-                                            <Covid19Page />
-                                        </Route>
-                                        <Route
-                                            path="/more/:collection/:filter*"
-                                            render={({ match }) => {
-                                                const collectionNames = (match
-                                                    .params
-                                                    .collection as string).split(
-                                                    "|"
-                                                );
-                                                const collectionName =
-                                                    collectionNames[
-                                                        collectionNames.length -
-                                                            1
-                                                    ];
-                                                let collection = collections.get(
-                                                    collectionName
-                                                );
-                                                if (!collection) {
-                                                    return (
-                                                        <div>
-                                                            Unknown collection
-                                                        </div>
+                                                }}
+                                            />
+                                            <Route
+                                                path="/category/:fullBookshelfKey*"
+                                                render={({ match }) => (
+                                                    <CategoryPageForBookshelf
+                                                        fullBookshelfKey={
+                                                            match.params
+                                                                .fullBookshelfKey
+                                                        }
+                                                    />
+                                                )}
+                                            />
+                                            <Route
+                                                path="/feature/:featureKey"
+                                                render={({ match }) => (
+                                                    <FeaturePage
+                                                        featureKey={
+                                                            match.params
+                                                                .featureKey
+                                                        }
+                                                    />
+                                                )}
+                                            />
+                                            <Route path="/covid19">
+                                                <Covid19Page />
+                                            </Route>
+                                            <Route
+                                                path="/more/:collection/:filter*"
+                                                render={({ match }) => {
+                                                    const collectionNames = (match
+                                                        .params
+                                                        .collection as string).split(
+                                                        "|"
                                                     );
-                                                }
-                                                const filters:
-                                                    | string
-                                                    | undefined =
-                                                    match.params.filter;
-                                                if (filters) {
-                                                    for (const filter of filters.split(
-                                                        "/"
-                                                    )) {
-                                                        const parts = filter.split(
-                                                            ":"
+                                                    const collectionName =
+                                                        collectionNames[
+                                                            collectionNames.length -
+                                                                1
+                                                        ];
+                                                    let collection = collections.get(
+                                                        collectionName
+                                                    );
+                                                    if (!collection) {
+                                                        return (
+                                                            <div>
+                                                                Unknown
+                                                                collection
+                                                            </div>
                                                         );
-                                                        switch (parts[0]) {
-                                                            case "level":
-                                                                collection = makeCollectionForLevel(
-                                                                    collection,
-                                                                    parts[1]
-                                                                );
-                                                                break;
-                                                            // ignore any filter we don't recognize
+                                                    }
+                                                    const filters:
+                                                        | string
+                                                        | undefined =
+                                                        match.params.filter;
+                                                    if (filters) {
+                                                        for (const filter of filters.split(
+                                                            "/"
+                                                        )) {
+                                                            const parts = filter.split(
+                                                                ":"
+                                                            );
+                                                            switch (parts[0]) {
+                                                                case "level":
+                                                                    collection = makeCollectionForLevel(
+                                                                        collection,
+                                                                        parts[1]
+                                                                    );
+                                                                    break;
+                                                                // ignore any filter we don't recognize
+                                                            }
                                                         }
                                                     }
-                                                }
-                                                return (
-                                                    <AllResultsPage
-                                                        collection={collection}
-                                                    />
-                                                );
-                                            }}
-                                        ></Route>
-                                        <Route
-                                            path="/:collection/"
-                                            render={({ match }) => {
-                                                const collectionNames = (match
-                                                    .params
-                                                    .collection as string).split(
-                                                    "|"
-                                                );
-                                                const collectionName =
-                                                    collectionNames[
-                                                        collectionNames.length -
-                                                            1
-                                                    ];
-                                                const collection = collections.get(
-                                                    collectionName
-                                                );
-                                                if (!collection) {
                                                     return (
-                                                        <div>
-                                                            Unknown collection
-                                                        </div>
+                                                        <AllResultsPage
+                                                            collection={
+                                                                collection
+                                                            }
+                                                        />
                                                     );
-                                                }
+                                                }}
+                                            ></Route>
+                                            <Route
+                                                path="/:collection/"
+                                                render={({ match }) => {
+                                                    const collectionNames = (match
+                                                        .params
+                                                        .collection as string).split(
+                                                        "|"
+                                                    );
+                                                    const collectionName =
+                                                        collectionNames[
+                                                            collectionNames.length -
+                                                                1
+                                                        ];
+                                                    const collection = collections.get(
+                                                        collectionName
+                                                    );
+                                                    if (!collection) {
+                                                        return (
+                                                            <div>
+                                                                Unknown
+                                                                collection
+                                                            </div>
+                                                        );
+                                                    }
 
-                                                switch (collection.pageType) {
-                                                    default: // We'll let the ByLevelPage do the best it can
-                                                    case "bylevel":
-                                                        return (
-                                                            <ByLevelPage
-                                                                collection={
-                                                                    collection!
-                                                                }
-                                                            />
-                                                        );
-                                                    case "EnablingWritersPage":
-                                                        return (
-                                                            <EnablingWritersPage />
-                                                        );
-                                                }
-                                            }}
-                                        />
-                                        <Route
-                                            exact={true}
-                                            path={["/", "/read"]}
-                                        >
-                                            <HomePage />
-                                        </Route>
-                                    </Switch>
-                                </Router>
-                            </RouterContext.Provider>
+                                                    switch (
+                                                        collection.pageType
+                                                    ) {
+                                                        default: // We'll let the ByLevelPage do the best it can
+                                                        case "bylevel":
+                                                            return (
+                                                                <ByLevelPage
+                                                                    collection={
+                                                                        collection!
+                                                                    }
+                                                                />
+                                                            );
+                                                        case "EnablingWritersPage":
+                                                            return (
+                                                                <EnablingWritersPage />
+                                                            );
+                                                    }
+                                                }}
+                                            />
+                                            <Route
+                                                exact={true}
+                                                path={["/", "/read"]}
+                                            >
+                                                <HomePage />
+                                            </Route>
+                                        </Switch>
+                                    </Router>
+                                </RouterContext.Provider>
+                            </ContentfulContext>
                         </OSFeaturesContext.Provider>
                     </CachedTablesContext.Provider>
                 </ThemeProvider>
