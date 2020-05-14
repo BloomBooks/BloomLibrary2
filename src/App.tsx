@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React from "react";
+import React, { useMemo } from "react";
 import {
     BrowserRouter as Router,
     Switch,
@@ -56,25 +56,28 @@ import { forceCheck as forceCheckLazyLoadComponents } from "react-lazyload";
 import { EnablingWritersPage } from "./components/EnablingWritersPage";
 import { WycliffePage } from "./components/WycliffePage";
 import { SILLEADPage } from "./components/SILLEADPage";
-import { collections } from "./model/Collections";
+import { ICollection, getCollections } from "./model/Collections";
 import { makeCollectionForLevel } from "./components/LevelGroups";
 
 interface ICachedTables {
     tags: string[];
     languagesByBookCount: ILanguage[];
     bookshelves: IBookshelfResult[];
+    collections: Map<string, ICollection>;
 }
 // for use when we aren't in a react context with hooks
 export const CachedTables: ICachedTables = {
     tags: [],
     languagesByBookCount: [],
     bookshelves: [],
+    collections: new Map<string, ICollection>(),
 };
 
 export const CachedTablesContext = React.createContext<ICachedTables>({
     tags: [],
     languagesByBookCount: [],
     bookshelves: [],
+    collections: new Map<string, ICollection>(),
 });
 
 const homeGrownRouter = new HomeGrownRouter();
@@ -86,6 +89,9 @@ export const App: React.FunctionComponent<{}> = (props) => {
     CachedTables.bookshelves = bookshelves;
     CachedTables.tags = tags;
     CachedTables.languagesByBookCount = languagesByBookCount;
+    const collections = useMemo(() => getCollections(bookshelves), [
+        bookshelves,
+    ]);
 
     return (
         <>
@@ -110,6 +116,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                             tags,
                             languagesByBookCount: languagesByBookCount,
                             bookshelves,
+                            collections: getCollections(bookshelves),
                         }}
                     >
                         <OSFeaturesContext.Provider
@@ -415,3 +422,23 @@ export const UnderConstruction: React.FunctionComponent<{}> = () => {
 };
 
 export default App;
+
+/*  TODO
+
+Hatton: move default card/row/banner display name to collection. Might need a "single-line label" override?
+Hatton : make banner use that (in future we could provide an override on banner)
+Hatton: change collection id-->key
+
+
+
+
+JohnT:
+Move collection name interptation into new CollectionPage.tsx
+- becomes async: first see if there's a contentful page, if so retrieve it and its children, recursively.
+- (later: if not use defaults, e.g. for language:ha)
+- if it's a contenful page use John's new contentful banner
+- (later: if not use some default banner)
+- pageType becomes contentType and determines only what's below the banner
+- RowOfPageCards no longer gets title, but uses title of the collection it's given. There will be a separate collection for each row, e.g., Sub-projects
+-
+*/

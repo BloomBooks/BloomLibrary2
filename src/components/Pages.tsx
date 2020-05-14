@@ -18,8 +18,8 @@ import { CachedTablesContext } from "../App";
 import { getLanguageNamesFromCode } from "../model/Language";
 import { LevelGroups } from "./LevelGroups";
 import { Bookshelf } from "../model/Bookshelf";
-import { collections, ICollection } from "../model/Collections";
 import { CollectionGroup } from "./CollectionGroup";
+import { ICollection } from "../model/Collections";
 
 // export const SearchResultsPage: React.FunctionComponent<{
 //     filter: IFilter;
@@ -99,6 +99,7 @@ export const LanguagePage: React.FunctionComponent<{
     //     props.filter.language,
     //     "LanguagePage must have language set in the filter"
     // );
+    const { collections } = useContext(CachedTablesContext);
 
     const { languagesByBookCount: languages } = useContext(CachedTablesContext);
     let languageDisplayName = getLanguageNamesFromCode(

@@ -5,7 +5,6 @@ import { HomePage } from "./HomePage";
 import {
     LanguagePage,
     DefaultOrganizationPage,
-    ProjectPageWithDefaultLayout,
     //SearchResultsPage,
     AllResultsPage,
     CategoryPageWithDefaultLayout,
