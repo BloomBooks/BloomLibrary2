@@ -20,6 +20,8 @@ import { BiblePage } from "./BiblePage";
 import { Covid19Page } from "./Covid19Page";
 import { BulkEditPage } from "./BulkEdit/BulkEditPage";
 import { GridPage } from "./Grid/GridPage";
+import { Footer } from "./Footer";
+import { ContentfulPage } from "./ContentfulPage";
 
 /* This is the top level component that can be hosted on a website to view and interact with the bloom library */
 @observer
@@ -142,6 +144,10 @@ export class BrowseView extends Component {
             //         />
             //     );
 
+            // TODO: just look for a matching contentful pages after we've exhausted other possibilities
+            case "about":
+                return <ContentfulPage slug="about" />;
+
             default:
                 return "Unknown page type " + this.router.current?.pageType;
         }
@@ -151,11 +157,11 @@ export class BrowseView extends Component {
         document.title = `Bloom Library: ${this.router.current?.title}`;
         this.followUpOnLazyLoads();
         return (
-            // <RouterContext.Provider value={this.router}>
-            //     <Header />
-            //     {this.currentPage()}
-            // </RouterContext.Provider>
-            this.currentPage()
+            <RouterContext.Provider value={this.router}>
+                {/* <Header /> */}
+                {this.currentPage()}
+                <Footer />
+            </RouterContext.Provider>
         );
     }
     // We make life hard on <Lazy> components by thinking maybe we'll show, for example, a row of Level 1 books at
