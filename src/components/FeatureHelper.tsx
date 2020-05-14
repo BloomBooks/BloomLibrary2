@@ -10,10 +10,12 @@ import { ReactComponent as MotionIcon } from "../assets/Motion.svg";
 import { ReactComponent as SignLanguageIcon } from "../assets/Sign Language.svg";
 import { ReactComponent as TalkingBookIcon } from "../assets/Talking Book.svg";
 import { ReactComponent as VisuallyImpairedIcon } from "../assets/Visually Impaired.svg";
+import { IFilter } from "../IFilter";
 
 export interface IFeatureSpec {
     featureKey: string;
     featureTitle: string;
+    filter: IFilter;
     description: JSX.Element;
     icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
     // Some icons "look" bigger than others, so we can scale them to make them look more similar.
@@ -39,24 +41,11 @@ export const featureIconHeight = 12;
 // in different places. So icon can't just be a fixed react component.
 // Thus, I ended up making icon a function that takes the props and builds the
 // appropriate react component containing the right icon and using the supplied props.
-const activityFeatureSpec: IFeatureSpec = {
-    featureKey: "activity",
-    featureTitle: "Books with Interactive Activities",
-    description: (
-        <div>
-            These books contain one or more activities, such as multiple-choice
-            quizzes, usually designed to assess comprehension.
-        </div>
-    ),
-    icon: props => (
-        <ActivityIcon title={"Interactive Activity"} {...props}></ActivityIcon>
-    ),
-    languageDependent: false
-};
 export const featureSpecs: IFeatureSpec[] = [
     {
         featureKey: "talkingBook",
         featureTitle: "Talking Books",
+        filter: { feature: "talkingBook" },
         description: (
             <div>
                 <div>
@@ -75,47 +64,52 @@ export const featureSpecs: IFeatureSpec[] = [
                 </div>
             </div>
         ),
-        icon: props => (
+        icon: (props) => (
             <TalkingBookIcon
                 title={"Talking Book"}
                 {...props}
             ></TalkingBookIcon>
         ),
         iconScale: 85,
-        languageDependent: true
+        languageDependent: true,
     },
     {
         featureKey: "blind",
         featureTitle: "Books for the Visually Impaired",
+        filter: { feature: "blind" },
         description: (
             <div>
                 These books include narrated image descriptions to help the
                 visually impaired.
             </div>
         ),
-        icon: props => (
+        icon: (props) => (
             <VisuallyImpairedIcon
                 title={"Features for the Visually Impaired"}
                 {...props}
             ></VisuallyImpairedIcon>
         ),
-        languageDependent: true
+        languageDependent: true,
     },
     {
         featureKey: "comic",
         featureTitle: "Comic Books",
+        filter: { feature: "comic" },
         description: (
             <div>
                 Comic Books contain comic speech bubbles, captions, and/or other
                 text which appears over images.
             </div>
         ),
-        icon: props => <ComicIcon title={"Comic Book"} {...props}></ComicIcon>,
-        languageDependent: false
+        icon: (props) => (
+            <ComicIcon title={"Comic Book"} {...props}></ComicIcon>
+        ),
+        languageDependent: false,
     },
     {
         featureKey: "motion",
         featureTitle: "Motion Books",
+        filter: { feature: "motion" },
         description: (
             <div>
                 Motion Books are books in which otherwise still pictures appear
@@ -143,15 +137,16 @@ export const featureSpecs: IFeatureSpec[] = [
                 </ul>
             </div>
         ),
-        icon: props => (
+        icon: (props) => (
             <MotionIcon title={"Motion Book"} {...props}></MotionIcon>
         ),
         iconScale: 125,
-        languageDependent: false
+        languageDependent: false,
     },
     {
         featureKey: "signLanguage",
         featureTitle: "Sign Language Books",
+        filter: { feature: "signLanguage" },
         description: (
             <div>
                 Sign Language Books contains videos of signed languages. They
@@ -159,21 +154,33 @@ export const featureSpecs: IFeatureSpec[] = [
                 language.
             </div>
         ),
-        icon: props => (
+        icon: (props) => (
             <SignLanguageIcon
                 title={"Sign Language"}
                 {...props}
             ></SignLanguageIcon>
         ),
-        languageDependent: true
+        languageDependent: true,
     },
-    // It appears we would like to have "activity" as the feature key, but in actuality, we only have "quiz" so far.
-    // So, currently these two keys are functionally the same.
-    activityFeatureSpec,
     {
-        ...activityFeatureSpec,
-        featureKey: "quiz"
-    }
+        featureKey: "activity",
+        featureTitle: "Books with Interactive Activities",
+        filter: { feature: "activity OR quiz" },
+        description: (
+            <div>
+                These books contain one or more activities, such as
+                multiple-choice quizzes, usually designed to assess
+                comprehension.
+            </div>
+        ),
+        icon: (props) => (
+            <ActivityIcon
+                title={"Interactive Activity"}
+                {...props}
+            ></ActivityIcon>
+        ),
+        languageDependent: false,
+    },
 ];
 
 export const getNonLanguageFeatures = (
@@ -182,12 +189,12 @@ export const getNonLanguageFeatures = (
     if (!features) return [];
     return features
         .map(
-            f =>
+            (f) =>
                 featureSpecs.filter(
-                    x => x.featureKey === f && !x.languageDependent
+                    (x) => x.featureKey === f && !x.languageDependent
                 )[0]
         )
-        .filter(f => !!f);
+        .filter((f) => !!f);
 };
 
 // Get a FeatureOption (and thus icon-creating function) for each
@@ -207,12 +214,12 @@ export const getLanguageFeatures = (
             // For example, if we've just inserted 'English',
             // we will find a matching feature icon for
             // things like talkingBook:en and blind:en.
-            f =>
+            (f) =>
                 featureSpecs.filter(
-                    x =>
+                    (x) =>
                         f.startsWith(x.featureKey + ":") &&
                         f.split(":")[1] === lang
                 )[0]
         )
-        .filter(f => !!f); // drop the features where there was no match
+        .filter((f) => !!f); // drop the features where there was no match
 };

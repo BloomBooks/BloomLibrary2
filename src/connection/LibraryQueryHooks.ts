@@ -842,7 +842,12 @@ export function constructParseBookQuery(
 
     if (f.feature != null) {
         delete params.where.feature;
-        params.where.features = f.feature; //my understanding is that this means it just has to contain this, could have others
+        const features = f.feature.split(" OR ");
+        if (features.length === 1) {
+            params.where.features = f.feature; //my understanding is that this means it just has to contain this, could have others
+        } else {
+            params.where.features = { $in: features };
+        }
     }
     delete params.where.inCirculation;
     switch (f.inCirculation) {

@@ -13,7 +13,7 @@ export const FeatureGroup: React.FunctionComponent<IProps> = (props) => {
     const featureKeysToDisplayInOrder = [
         "talkingBook",
         "comic",
-        "quiz",
+        "activity",
         "signLanguage",
         "blind",
         "motion",
@@ -36,9 +36,7 @@ export const FeatureGroup: React.FunctionComponent<IProps> = (props) => {
                 key={featureKey}
                 title={featureSpec.featureTitle}
                 bookCount=""
-                filter={{
-                    feature: featureKey,
-                }}
+                filter={featureSpec.filter}
                 pageType={"feature"}
                 icon={featureSpec.icon}
                 iconScale={featureSpec.iconScale}
