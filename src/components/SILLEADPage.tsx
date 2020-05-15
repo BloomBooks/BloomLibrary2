@@ -29,9 +29,9 @@ export const SILLEADPage: React.FunctionComponent = () => {
                 logoUrl={`https://share.bloomlibrary.org/bookshelf-images/SIL%20LEAD.png`}
                 collectionDescription={description}
             />
-            <ListOfBookGroups>
+            {/* <ListOfBookGroups>
                 <LevelGroups collection={collections.get("SIL LEAD")!} />
-            </ListOfBookGroups>
+            </ListOfBookGroups> */}
         </div>
     );
 };

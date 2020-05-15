@@ -296,61 +296,6 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                 <Covid19Page />
                                             </Route>
                                             <Route
-                                                path="/more/:collection/:filter*"
-                                                render={({ match }) => {
-                                                    const collectionNames = (match
-                                                        .params
-                                                        .collection as string).split(
-                                                        "|"
-                                                    );
-                                                    const collectionName =
-                                                        collectionNames[
-                                                            collectionNames.length -
-                                                                1
-                                                        ];
-                                                    let collection = collections.get(
-                                                        collectionName
-                                                    );
-                                                    if (!collection) {
-                                                        return (
-                                                            <div>
-                                                                Unknown
-                                                                collection
-                                                            </div>
-                                                        );
-                                                    }
-                                                    const filters:
-                                                        | string
-                                                        | undefined =
-                                                        match.params.filter;
-                                                    if (filters) {
-                                                        for (const filter of filters.split(
-                                                            "/"
-                                                        )) {
-                                                            const parts = filter.split(
-                                                                ":"
-                                                            );
-                                                            switch (parts[0]) {
-                                                                case "level":
-                                                                    collection = makeCollectionForLevel(
-                                                                        collection,
-                                                                        parts[1]
-                                                                    );
-                                                                    break;
-                                                                // ignore any filter we don't recognize
-                                                            }
-                                                        }
-                                                    }
-                                                    return (
-                                                        <AllResultsPage
-                                                            collection={
-                                                                collection
-                                                            }
-                                                        />
-                                                    );
-                                                }}
-                                            ></Route>
-                                            <Route
                                                 path="/:collectionNames/"
                                                 render={({ match }) => {
                                                     return (

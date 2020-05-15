@@ -24,9 +24,9 @@ export const ByLevelPage: React.FunctionComponent<{
                 collectionDescription={description}
             />
 
-            <ListOfBookGroups>
+            {/* <ListOfBookGroups>
                 <LevelGroups collection={props.collection} />
-            </ListOfBookGroups>
+            </ListOfBookGroups> */}
         </div>
     );
 };

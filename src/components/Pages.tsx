@@ -19,7 +19,7 @@ import { getLanguageNamesFromCode } from "../model/Language";
 import { LevelGroups } from "./LevelGroups";
 import { Bookshelf } from "../model/Bookshelf";
 import { CollectionGroup } from "./CollectionGroup";
-import { ICollection } from "../model/Collections";
+import { ICollection2 } from "../model/Collections";
 
 // export const SearchResultsPage: React.FunctionComponent<{
 //     filter: IFilter;
@@ -42,7 +42,7 @@ import { ICollection } from "../model/Collections";
 // if there are lots of books and you scroll to the end of the 20 or so that
 // we put in a row, and then you click on the MoreCard there to see the rest
 export const AllResultsPage: React.FunctionComponent<{
-    collection: ICollection;
+    collection: ICollection2;
 }> = (props) => {
     const title = props.collection.title;
     return (
@@ -116,9 +116,9 @@ export const LanguagePage: React.FunctionComponent<{
                 spec={getLanguageBannerSpec(props.langCode!)}
             />
 
-            <ListOfBookGroups>
+            {/* <ListOfBookGroups>
                 <LevelGroups collection={collections.get("all")!} />
-            </ListOfBookGroups>
+            </ListOfBookGroups> */}
         </div>
     );
 };

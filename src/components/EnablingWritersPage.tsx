@@ -52,9 +52,9 @@ export const EnablingWritersPage: React.FunctionComponent = () => {
                 logoUrl={`https://share.bloomlibrary.org/bookshelf-images/Enabling Writers Workshops.png`}
                 collectionDescription={description}
             />
-            <ListOfBookGroups>
+            {/* <ListOfBookGroups>
                 <LevelGroups collection={enablingWritersCollection} />
-            </ListOfBookGroups>
+            </ListOfBookGroups> */}
         </div>
     );
 };

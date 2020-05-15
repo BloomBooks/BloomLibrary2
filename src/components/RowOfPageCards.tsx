@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { ICollection2, getCollectionData } from "./CollectionPage";
+import { ICollection2, getCollectionData } from "../model/Collections";
 import { CategoryCardGroup } from "./CategoryCardGroup";
 import CategoryCard from "./CategoryCard";
 import { useContentful } from "react-contentful";

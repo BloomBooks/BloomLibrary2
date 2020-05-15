@@ -4,29 +4,15 @@ import { EnablingWritersPage } from "./EnablingWritersPage";
 //import { CachedTablesContext } from "../App";
 import { useContentful } from "react-contentful";
 import { ContentfulBanner } from "./banners/ContentfulBanner";
-import { IFilter } from "../IFilter";
+import {
+    ICollection2,
+    ISubCollection,
+    getCollectionData,
+} from "../model/Collections";
 import { RowOfPageCards, RowOfPageCardsForKey } from "./RowOfPageCards";
-
-// This is supposed to correspond to the (data as any).fields that we will actually get
-// back from a contenful query on "collection"
-export interface ICollection2 {
-    urlKey: string;
-    label: string;
-    title: any; // rich text, use how??
-    childCollections: ISubCollection[]; //
-    banner: string; // contentful ID of banner object. (fields.banner.id)
-    icon: string; // url
-    filter: IFilter;
-    layout: string; // from layout.fields.name
-}
-
-export interface ISubCollection {
-    urlKey: string; // used in react router urls; can be used to look up in contentful
-    label: string; // used in subheadings and cards
-    filter: IFilter;
-    icon: string; // url
-    childCollections: ISubCollection[]; // only the top level will have these
-}
+import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
+import { LevelGroups } from "./LevelGroups";
+import { ListOfBookGroups } from "./ListOfBookGroups";
 
 // export interface IBanner {
 //     name: string;
@@ -68,53 +54,24 @@ export const CollectionPage: React.FunctionComponent<{
     console.log(JSON.stringify(collection));
 
     let collectionRows = collection.childCollections.map((c) => (
-        <RowOfPageCardsForKey urlKey={c.urlKey} />
+        <RowOfPageCardsForKey key={c.urlKey} urlKey={c.urlKey} />
     ));
+
+    let booksComponent: React.ReactElement | null = null;
+    switch (collection.layout) {
+        default:
+            //"by-level": I'd like to have this case here for clarity, but link chokes
+            booksComponent = <LevelGroups collection={collection} />;
+            break;
+    }
 
     return (
         <div>
             <ContentfulBanner id={collection.banner} />
-            {collectionRows}
+            <ListOfBookGroups>
+                {collectionRows}
+                {booksComponent}
+            </ListOfBookGroups>
         </div>
     );
 };
-
-export function getCollectionData(fields: any): ICollection2 {
-    const result: ICollection2 = {
-        urlKey: fields.key as string,
-        label: fields.label,
-        title: fields.title,
-        filter: fields.filter,
-        childCollections: getSubCollections(fields.childCollections),
-        banner: fields.banner?.sys?.id,
-        icon: fields?.icon?.fields?.file?.url,
-        layout: fields.layout?.fields?.name || "by-level",
-    };
-    return result;
-}
-
-function getSubCollections(childCollections: any[]): ISubCollection[] {
-    if (!childCollections) {
-        return [];
-    }
-    // The final map here is a kludge to convince typescript that filtering out
-    // the undefined elements yields a collections without any undefineds.
-    return childCollections
-        .map((x: any) => getSubCollectionData(x.fields))
-        .filter((y) => y)
-        .map((z) => z!);
-}
-
-function getSubCollectionData(fields: any): ISubCollection | undefined {
-    if (!fields || !fields.key) {
-        return undefined;
-    }
-    const result: ISubCollection = {
-        urlKey: fields.key as string,
-        label: fields.label,
-        filter: fields.filter,
-        icon: fields?.icon?.fields?.file?.url,
-        childCollections: getSubCollections(fields.childCollections),
-    };
-    return result;
-}
