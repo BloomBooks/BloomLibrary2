@@ -27,6 +27,7 @@ interface IProps {
     // I don't know... this could be "bookLimit" instead "rows". Have to think in terms
     // of mobile versus big screen.... hmmm...
     rows?: number;
+    skip?: number; // of items in collection (used for paging through with More)
 
     contextLangIso?: string;
 }
@@ -68,6 +69,7 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
             // the following is arbitrary. I don't even yet no what the ux is that we want.
             limit: maxCardsToRetrieve,
             order: /*props.collection.order || */ "titleOrScore",
+            skip: props.skip,
         },
         collectionFilter
     );
@@ -111,9 +113,18 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
         />
     ));
 
+    // our more card, if clicked, will result in skipping more than this time.
+    let nextSkip: number | undefined;
+    if (props.skip === undefined) {
+        nextSkip = 0; // typically, displaying one row, more will display a lot starting from 0.
+    } else {
+        // typically, we're already showing the first N in a More view, and want the next group.
+        nextSkip = props.skip + maxCardsToRetrieve;
+    }
+
     // Enhance: allow using a MoreCard even with a fixed set of known books, rather than only if we're using a filter.
-    if (search.totalMatchingRecords > maxCardsToRetrieve) {
-        cards.push(<MoreCard collection={props.collection} />);
+    if (search.totalMatchingRecords > nextSkip) {
+        cards.push(<MoreCard collection={props.collection} skip={nextSkip} />);
     }
 
     const bookList = showInOneRow ? (

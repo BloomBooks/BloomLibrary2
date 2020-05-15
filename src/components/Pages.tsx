@@ -72,6 +72,7 @@ export const AllResultsPage: React.FunctionComponent<{
     const collection: ICollection2 = getCollectionData(
         (data as any).items[0].fields
     );
+    let skip = 0;
     let subcollection = collection;
     if (props.filters) {
         for (const filter of props.filters.split("/")) {
@@ -82,6 +83,9 @@ export const AllResultsPage: React.FunctionComponent<{
                         subcollection,
                         parts[1]
                     );
+                    break;
+                case "skip":
+                    skip = parseInt(parts[1]);
                     break;
             }
         }
@@ -102,6 +106,7 @@ export const AllResultsPage: React.FunctionComponent<{
                     title={title}
                     collection={subcollection}
                     rows={20}
+                    skip={skip}
                 />
                 {/* TODO: we need a way to say "OK, more rows, and more rows" etc. */}
             </ListOfBookGroups>
