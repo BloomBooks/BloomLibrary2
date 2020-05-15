@@ -63,6 +63,7 @@ import { ContentfulBanner } from "./components/banners/ContentfulBanner";
 import { ContentfulContext } from "./ContentfulContext";
 import { CollectionPage } from "./components/CollectionPage";
 import { Footer } from "./components/Footer";
+import { RowOfPageCardsForKey } from "./components/RowOfPageCards";
 
 interface ICachedTables {
     tags: string[];
@@ -343,7 +344,8 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                 exact={true}
                                                 path={["/", "/read"]}
                                             >
-                                                <HomePage />
+                                                <CollectionPage collectionNames="root.read" />
+                                                {/* <HomePage /> */}
                                             </Route>
                                         </Switch>
                                     </Router>

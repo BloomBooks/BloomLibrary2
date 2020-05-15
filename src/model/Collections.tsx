@@ -391,6 +391,9 @@ export function getCollections(bookshelves: IBookshelfResult[]) {
         const key = parts[parts.length - 1];
         const parentKey = parts[parts.length - 2];
         const parentShelf = collections.get(parentKey);
+        if (!parentShelf) {
+            continue; // should not happen, but in dev site somehow does.
+        }
         if (!parentShelf!.children) {
             parentShelf!.children = [];
         }

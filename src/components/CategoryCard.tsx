@@ -146,7 +146,9 @@ const CategoryCard: React.FunctionComponent<IProps> = (props) => {
                     text-align: center;
                 `}
             >
-                <BookCount message={`{0} Books`} filter={props.filter} />
+                {props.filter && (
+                    <BookCount message={`{0} Books`} filter={props.filter} />
+                )}
             </div>
         </CheapCard>
     );
