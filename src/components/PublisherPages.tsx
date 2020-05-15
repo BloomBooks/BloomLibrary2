@@ -3,7 +3,7 @@ import { PublisherBanner } from "./banners/PublisherBanner";
 import { LevelGroups } from "./LevelGroups";
 import { ExternalLink } from "./banners/ExternalLink";
 import { ListOfBookGroups } from "./ListOfBookGroups";
-import { collections, ICollection } from "../model/Collections";
+import { ICollection } from "../model/Collections";
 
 export const ByLevelPage: React.FunctionComponent<{
     collection: ICollection;
@@ -24,9 +24,9 @@ export const ByLevelPage: React.FunctionComponent<{
                 collectionDescription={description}
             />
 
-            <ListOfBookGroups>
+            {/* <ListOfBookGroups>
                 <LevelGroups collection={props.collection} />
-            </ListOfBookGroups>
+            </ListOfBookGroups> */}
         </div>
     );
 };

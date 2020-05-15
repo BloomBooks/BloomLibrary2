@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { PublisherBanner } from "./banners/PublisherBanner";
 import { LevelGroups } from "./LevelGroups";
 import { ExternalLink } from "./banners/ExternalLink";
 import { BookshelfGroup } from "./BookShelfGroup";
 import { ListOfBookGroups } from "./ListOfBookGroups";
-import { collections } from "../model/Collections";
+import { CachedTablesContext } from "../App";
+import { RowOfPageCards } from "./RowOfPageCards";
 
 export const EnablingWritersPage: React.FunctionComponent = () => {
+    const { collections } = useContext(CachedTablesContext);
     const filter = { bookshelf: "Enabling Writers Workshops" };
     const description = (
         <React.Fragment>
@@ -33,6 +35,14 @@ export const EnablingWritersPage: React.FunctionComponent = () => {
             </p>
         </React.Fragment>
     );
+    const enablingWritersCollection = collections.get(
+        "Enabling Writers Workshops"
+    )!;
+    //     <RowOfPageCards
+    //     title="Sub-projects"
+    //     collection={enablingWritersCollection}
+    //     parents=""
+    // />
     return (
         <div>
             <PublisherBanner
@@ -42,16 +52,9 @@ export const EnablingWritersPage: React.FunctionComponent = () => {
                 logoUrl={`https://share.bloomlibrary.org/bookshelf-images/Enabling Writers Workshops.png`}
                 collectionDescription={description}
             />
-            <ListOfBookGroups>
-                <BookshelfGroup
-                    title="Sub-projects"
-                    bookShelfCategory="project"
-                    pathToTheCurrentLevel="Enabling Writers Workshops/"
-                />
-                <LevelGroups
-                    collection={collections.get("Enabling Writers Workshops")!}
-                />
-            </ListOfBookGroups>
+            {/* <ListOfBookGroups>
+                <LevelGroups collection={enablingWritersCollection} />
+            </ListOfBookGroups> */}
         </div>
     );
 };

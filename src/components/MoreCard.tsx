@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 
 import React, { useContext } from "react";
 import { CheapCard } from "./CheapCard";
-import { ICollection } from "../model/Collections";
+import { ICollection2 } from "../model/Collections";
 
 // const image = css`
 //     height: 100px;
@@ -19,10 +19,10 @@ import { ICollection } from "../model/Collections";
 export const cardWidth = 120;
 
 interface IProps {
-    collection: ICollection;
+    collection: ICollection2;
 }
 export const MoreCard: React.FunctionComponent<IProps> = (props) => {
-    const href = "/more/" + props.collection.key ?? props.collection.title;
+    const href = "/more/" + props.collection.urlKey;
 
     return (
         <CheapCard

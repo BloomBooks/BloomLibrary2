@@ -18,11 +18,11 @@ import {
 import { BookCard } from "./BookCard";
 import { MoreCard } from "./MoreCard";
 import { CardSwiper } from "./CardSwiper";
-import { ICollection, getSecondaryFilterFunction } from "../model/Collections";
+import { ICollection2 } from "../model/Collections";
 
 interface IProps {
     title?: string;
-    collection: ICollection;
+    collection: ICollection2;
     //order?: string; another collection prop?
     // I don't know... this could be "bookLimit" instead "rows". Have to think in terms
     // of mobile versus big screen.... hmmm...
@@ -67,7 +67,7 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
             include: "langPointers",
             // the following is arbitrary. I don't even yet no what the ux is that we want.
             limit: maxCardsToRetrieve,
-            order: props.collection.order || "titleOrScore",
+            order: /*props.collection.order || */ "titleOrScore",
         },
         collectionFilter
     );

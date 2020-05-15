@@ -8,6 +8,7 @@ import { ListOfBookGroups } from "./ListOfBookGroups";
 import { FeatureGroup } from "./FeatureGroup";
 import { SpecialInterestGroup } from "./SpecialInterestsGroup";
 import { TopicGroup } from "./TopicGroup";
+import { RowOfPageCards, RowOfPageCardsForKey } from "./RowOfPageCards";
 
 export const HomePage: React.FunctionComponent = () => {
     const almostAllBooksFilter: IFilter = {
@@ -39,7 +40,8 @@ export const HomePage: React.FunctionComponent = () => {
 
                 <FeatureGroup title="Book Features" />
 
-                <BookshelfGroup title="Projects" bookShelfCategory="project" />
+                <RowOfPageCardsForKey urlKey="projects" />
+                {/* <BookshelfGroup title="Projects" bookShelfCategory="project" /> */}
 
                 <BookshelfGroup
                     title="Organizations & Governments"

@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import { PublisherBanner } from "./banners/PublisherBanner";
 import { LevelGroups } from "./LevelGroups";
 import { ExternalLink } from "./banners/ExternalLink";
 import { ListOfBookGroups } from "./ListOfBookGroups";
-import { collections } from "../model/Collections";
+import { CachedTablesContext } from "../App";
 
 export const SILLEADPage: React.FunctionComponent = () => {
+    const { collections } = useContext(CachedTablesContext);
     const filter = { bookshelf: "SIL LEAD" };
     const description = (
         <React.Fragment>
@@ -28,9 +29,9 @@ export const SILLEADPage: React.FunctionComponent = () => {
                 logoUrl={`https://share.bloomlibrary.org/bookshelf-images/SIL%20LEAD.png`}
                 collectionDescription={description}
             />
-            <ListOfBookGroups>
+            {/* <ListOfBookGroups>
                 <LevelGroups collection={collections.get("SIL LEAD")!} />
-            </ListOfBookGroups>
+            </ListOfBookGroups> */}
         </div>
     );
 };
