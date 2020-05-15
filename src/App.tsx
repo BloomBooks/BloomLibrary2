@@ -61,6 +61,7 @@ import { ICollection, getCollections } from "./model/Collections";
 import { makeCollectionForLevel } from "./components/LevelGroups";
 import { ContentfulBanner } from "./components/banners/ContentfulBanner";
 import { ContentfulContext } from "./ContentfulContext";
+import { CollectionPage } from "./components/CollectionPage";
 
 interface ICachedTables {
     tags: string[];
@@ -350,47 +351,16 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                 }}
                                             ></Route>
                                             <Route
-                                                path="/:collection/"
+                                                path="/:collectionNames/"
                                                 render={({ match }) => {
-                                                    const collectionNames = (match
-                                                        .params
-                                                        .collection as string).split(
-                                                        "|"
+                                                    return (
+                                                        <CollectionPage
+                                                            collectionNames={
+                                                                match.params
+                                                                    .collectionNames
+                                                            }
+                                                        />
                                                     );
-                                                    const collectionName =
-                                                        collectionNames[
-                                                            collectionNames.length -
-                                                                1
-                                                        ];
-                                                    const collection = collections.get(
-                                                        collectionName
-                                                    );
-                                                    if (!collection) {
-                                                        return (
-                                                            <div>
-                                                                Unknown
-                                                                collection
-                                                            </div>
-                                                        );
-                                                    }
-
-                                                    switch (
-                                                        collection.pageType
-                                                    ) {
-                                                        default: // We'll let the ByLevelPage do the best it can
-                                                        case "bylevel":
-                                                            return (
-                                                                <ByLevelPage
-                                                                    collection={
-                                                                        collection!
-                                                                    }
-                                                                />
-                                                            );
-                                                        case "EnablingWritersPage":
-                                                            return (
-                                                                <EnablingWritersPage />
-                                                            );
-                                                    }
                                                 }}
                                             />
                                             <Route

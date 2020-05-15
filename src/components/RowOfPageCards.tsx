@@ -1,57 +1,71 @@
 import React, { useContext } from "react";
-import { ICollection } from "../model/Collections";
+import { ICollection2, getCollectionData } from "./CollectionPage";
 import { CategoryCardGroup } from "./CategoryCardGroup";
 import CategoryCard from "./CategoryCard";
-import { CachedTablesContext } from "../App";
+import { useContentful } from "react-contentful";
 
-// Normally the bookshelf name matches the image name, but if not we change it here:
-// Todo: this is duplicated from BookshelfGroup. In the unlikely event that survives,
-// it should be shared.
-// Alternatively, possibly the image name should simply be a field in collection.
-// But for now I'm trying to make it give the same results as the old BookshelfGroup.
-const nameToImageMap = new Map<string, string>([
-    //  // something in our pipeline won't deliver an image that starts with "3"
-    ["3Asafeer", "Asafeer"],
-    ["Room To Read", "Room to Read"],
-    ["Ministerio de Educación de Guatemala", "guatemala-moe-logo.svg"],
-    ["Resources for the Blind, Inc. (Philippines)", "Resources for the Blind"],
-]);
-
-export const RowOfPageCards: React.FunctionComponent<{
-    title: string;
-    collection: ICollection;
+export const RowOfPageCardsForKey: React.FunctionComponent<{
+    urlKey: string;
     parents?: string;
 }> = (props) => {
-    const { collections } = useContext(CachedTablesContext);
-    if (!props.collection.children || props.collection.children.length == 0) {
+    const { data, error, fetched, loading } = useContentful({
+        contentType: "collection",
+        query: {
+            "fields.key": `${props.urlKey}`,
+        },
+    });
+    if (loading || !fetched) {
         return null;
     }
-    const childCollections = props.collection.children
-        .sort()
-        .map((childCollectionName) => collections.get(childCollectionName))
-        .filter((x) => x);
+
+    if (error) {
+        console.error(error);
+        return null;
+    }
+
+    console.log(JSON.stringify(data));
+    if (!data || (data as any).items.length === 0) {
+        return <p>Page does not exist.</p>;
+    }
+
+    //const collection = collections.get(collectionName);
+    const collection: ICollection2 = getCollectionData(
+        (data as any).items[0].fields
+    );
+    return <RowOfPageCards collection={collection} parents={props.parents} />;
+};
+
+export const RowOfPageCards: React.FunctionComponent<{
+    collection: ICollection2;
+    parents?: string;
+}> = (props) => {
+    if (
+        !props.collection.childCollections ||
+        props.collection.childCollections.length === 0
+    ) {
+        return null;
+    }
+    const childCollections = props.collection.childCollections.sort((x, y) =>
+        x.label.localeCompare(y.label)
+    );
     const cards: JSX.Element[] = childCollections.map((childCollection1) => {
         const childCollection = childCollection1!; // can't persuade typescript that this can't be null.
-        const key = childCollection!.key ?? childCollection!.title;
-        let imageName =
-            nameToImageMap.get(childCollection.title) ?? childCollection.title;
-        // there is (was?) a convention of naming the shelf image after the shelf, with png
-        if (imageName.indexOf(".") < 0) imageName += ".png";
+        const key = childCollection!.urlKey;
         return (
             <CategoryCard
                 key={key}
-                preTitle={childCollection.preTitle}
-                title={childCollection.title || ""}
+                title={childCollection.label || ""}
                 bookCount="??"
                 filter={childCollection.filter}
                 href={(props.parents ? props.parents + "|" : "") + key}
                 //pageType={props.bookShelfCategory}
-                img={
-                    "https://share.bloomlibrary.org/bookshelf-images/" +
-                    imageName
-                }
+                img={childCollection.icon}
             />
         );
     });
-    return <CategoryCardGroup {...props}>{cards}</CategoryCardGroup>;
+    return (
+        <CategoryCardGroup title={props.collection.label}>
+            {cards}
+        </CategoryCardGroup>
+    );
 };

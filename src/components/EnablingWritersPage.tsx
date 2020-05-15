@@ -38,6 +38,11 @@ export const EnablingWritersPage: React.FunctionComponent = () => {
     const enablingWritersCollection = collections.get(
         "Enabling Writers Workshops"
     )!;
+    //     <RowOfPageCards
+    //     title="Sub-projects"
+    //     collection={enablingWritersCollection}
+    //     parents=""
+    // />
     return (
         <div>
             <PublisherBanner
@@ -48,11 +53,6 @@ export const EnablingWritersPage: React.FunctionComponent = () => {
                 collectionDescription={description}
             />
             <ListOfBookGroups>
-                <RowOfPageCards
-                    title="Sub-projects"
-                    collection={enablingWritersCollection}
-                    parents=""
-                />
                 <LevelGroups collection={enablingWritersCollection} />
             </ListOfBookGroups>
         </div>
