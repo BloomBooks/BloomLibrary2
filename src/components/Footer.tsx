@@ -11,15 +11,33 @@ export const Footer: React.FunctionComponent = (props) => {
     const router = useContext(RouterContext);
 
     return (
-        <ul
+        <div
             css={css`
                 padding: 20px;
                 //height: 6em;
                 color: white;
                 background-color: black;
+                display: flex;
             `}
         >
-            <li>Support</li>
-        </ul>
+            <div>Support</div>
+            <a
+                href="https://www.contentful.com/"
+                rel="nofollow noopener noreferrer"
+                target="_blank"
+                css={css`
+                    margin-left: auto;
+                `}
+            >
+                <img
+                    src="https://images.ctfassets.net/fo9twyrwpveg/7Htleo27dKYua8gio8UEUy/0797152a2d2f8e41db49ecbf1ccffdaa/PoweredByContentful_DarkBackground_MonochromeLogo.svg"
+                    css={css`
+                        max-width: 100px;
+                        width: 100%;
+                    `}
+                    alt="Powered by Contentful"
+                />
+            </a>
+        </div>
     );
 };

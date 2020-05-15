@@ -62,6 +62,7 @@ import { makeCollectionForLevel } from "./components/LevelGroups";
 import { ContentfulBanner } from "./components/banners/ContentfulBanner";
 import { ContentfulContext } from "./ContentfulContext";
 import { CollectionPage } from "./components/CollectionPage";
+import { Footer } from "./components/Footer";
 
 interface ICachedTables {
     tags: string[];
@@ -143,9 +144,22 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                             <Route
                                                 path="/_previewBanner/:id"
                                                 render={({ match }) => (
-                                                    <ContentfulBanner
-                                                        id={match.params.id}
-                                                    />
+                                                    <React.Fragment>
+                                                        <div // simulate it being in a context that sets some margin
+                                                            css={css`
+                                                                margin: 20px;
+                                                                height: 500px;
+                                                            `}
+                                                        >
+                                                            <ContentfulBanner
+                                                                id={
+                                                                    match.params
+                                                                        .id
+                                                                }
+                                                            />
+                                                        </div>
+                                                        <Footer />
+                                                    </React.Fragment>
                                                 )}
                                             ></Route>
                                             <Route path="/book/:id">

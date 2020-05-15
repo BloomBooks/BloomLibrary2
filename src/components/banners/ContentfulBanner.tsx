@@ -7,6 +7,7 @@ import { jsx } from "@emotion/core";
 import { ImageCreditsTooltip } from "./ImageCreditsTooltip";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { useContentful } from "react-contentful";
+import { commonUI } from "../../theme";
 export const ContentfulBanner: React.FunctionComponent<{
     id: string;
 }> = (props) => {
@@ -33,14 +34,13 @@ export const ContentfulBanner: React.FunctionComponent<{
         return <p>Could not retrieve the banner id ${props.id}.</p>;
     }
 
-    // const { backgroundImageData, backgroundImageError, backgroundImageFetched, backgroundImageLoading } = useContentful({
-    //     contentType: "asset",
-    //     query: {
-    //         sys: { type: "pageBanner", id: `${props.id}` },
-    //     },
-    // })
-    //    const banner = (data as any).items[0].fields;
     const banner = (data as any).fields;
+    const backgroundImage = banner.bannerImage
+        ? banner.bannerImage.fields.file.url
+        : "";
+    const logoUrl = banner.logo ? banner.logo.fields.file.url : undefined;
+    const textColor = backgroundImage ? "white" : "black";
+
     //const titleLines = banner.Name;
     // const secondTitleLine =
     //     titleLines.length > 1 ? <div> {titleLines[1]}</div> : "";
@@ -49,12 +49,11 @@ export const ContentfulBanner: React.FunctionComponent<{
             css={css`
                 height: 300px;
                 display: flex;
-                flex-direction: column;
+                flex-direction: ${logoUrl ? "row" : "column"};
                 a {
-                    color:white;
+                    color: ${commonUI.colors.bloomBlue};
                     text-decoration: underline;
-                    &:visited{color:white}
-
+                    &:visited{color:${commonUI.colors.bloomBlue}}
                 }
                 /* https://www.nngroup.com/articles/text-over-images/ */
                 /* #contrast-overlay {
@@ -62,39 +61,51 @@ export const ContentfulBanner: React.FunctionComponent<{
                 } */
                 background-size: cover;
                 * {
-                    //color: white;
+                    color:${textColor}
                 }
-                background-image:url(${banner.bannerImage?.fields?.file?.url})
+                background-image:url(${backgroundImage})
                 // this can override any of the above
                 //${banner.css}
             `}
         >
+            {logoUrl && (
+                <img
+                    src={logoUrl}
+                    alt={"logo for " + banner.name}
+                    css={css`
+                        height: 150px;
+                        margin-right: 50px;
+                    `}
+                />
+            )}
             <div
                 css={css`
-                    margin-left: 20px;
                     flex-grow: 2;
                     display: flex;
                     flex-direction: column;
                     color: white;
                 `}
             >
-                <h1
-                    css={css`
-                        font-size: 36px;
-                        margin-top: 15px;
-                        /*flex-grow: 1; // push the rest to the bottom*/
-                    `}
-                >
-                    {banner.name}
-                    {/* {titleLines[0]}
+                {banner.hideTitle || (
+                    <h1
+                        css={css`
+                            font-size: 36px;
+                            margin-top: 0;
+                            /*flex-grow: 1; // push the rest to the bottom*/
+                        `}
+                    >
+                        {banner.name}
+                        {/* {titleLines[0]}
                         //{secondTitleLine} */}
-                </h1>
+                    </h1>
+                )}
 
                 <div
                     css={css`
                         font-weight: normal;
                         max-width: 600px;
                         margin-bottom: 10px;
+                        overflow: auto;
                     `}
                 >
                     {documentToReactComponents(banner.blurb)}
@@ -119,7 +130,9 @@ export const ContentfulBanner: React.FunctionComponent<{
                         have arrived yet */}
                     {banner.imageCredits && (
                         <ImageCreditsTooltip
-                            imageCredits={banner.imageCredits}
+                            imageCredits={documentToReactComponents(
+                                banner.imageCredits
+                            )}
                         />
                     )}
                 </div>
