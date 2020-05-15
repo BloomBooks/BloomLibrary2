@@ -493,6 +493,7 @@ export function useSearchBooks(
             simplifiedResultStatus.books.map((rawFromREST: any) => {
                 const b: IBasicBookInfo = { ...rawFromREST };
                 b.languages = rawFromREST.langPointers;
+                Book.sanitizeFeaturesArray(b.features);
                 return b;
             }),
         [simplifiedResultStatus.books]

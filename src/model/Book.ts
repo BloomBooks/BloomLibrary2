@@ -141,6 +141,21 @@ export class Book {
         // observe(this, "tags", (change: any) => {
         //     console.log("Changed tags: " + change.newValue);
         // });
+
+        Book.sanitizeFeaturesArray(this.features);
+    }
+
+    // Modifies the given array of features in place.
+    // Currently, replaces "quiz" with "activity" so we can treat them the same because
+    // we don't actually want a "quiz" feature. Just "activity."
+    public static sanitizeFeaturesArray(features: string[]) {
+        if (features?.length) {
+            const indexOfQuiz = features.indexOf("quiz");
+            if (indexOfQuiz > -1) {
+                features.splice(indexOfQuiz, 1);
+                if (!features.includes("activity")) features.push("activity");
+            }
+        }
     }
 
     public saveAdminDataToParse() {
