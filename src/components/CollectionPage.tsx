@@ -25,7 +25,7 @@ export const CollectionPage: React.FunctionComponent<{
     collectionNames: string;
 }> = (props) => {
     //const { collections } = useContext(CachedTablesContext);
-    const collectionNames = props.collectionNames.split("|");
+    const collectionNames = props.collectionNames.split("~");
     const collectionName = collectionNames[collectionNames.length - 1];
     const { data, error, fetched, loading } = useContentful({
         contentType: "collection",
@@ -54,7 +54,11 @@ export const CollectionPage: React.FunctionComponent<{
     console.log(JSON.stringify(collection));
 
     let collectionRows = collection.childCollections.map((c) => (
-        <RowOfPageCardsForKey key={c.urlKey} urlKey={c.urlKey} />
+        <RowOfPageCardsForKey
+            key={c.urlKey}
+            urlKey={c.urlKey}
+            parents={collection.urlKey}
+        />
     ));
 
     let booksComponent: React.ReactElement | null = null;

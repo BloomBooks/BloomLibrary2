@@ -296,6 +296,23 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                 <Covid19Page />
                                             </Route>
                                             <Route
+                                                path="/more/:collection/:filter*"
+                                                render={({ match }) => {
+                                                    return (
+                                                        <AllResultsPage
+                                                            collectionName={
+                                                                match.params
+                                                                    .collection
+                                                            }
+                                                            filters={
+                                                                match.params
+                                                                    .filter
+                                                            }
+                                                        />
+                                                    );
+                                                }}
+                                            ></Route>
+                                            <Route
                                                 path="/:collectionNames/"
                                                 render={({ match }) => {
                                                     return (

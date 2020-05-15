@@ -64,7 +64,7 @@ export const ContentfulBanner: React.FunctionComponent<{
                 * {
                     //color: white;
                 }
-                background-image:url(${banner.bannerImage.fields.file.url})
+                background-image:url(${banner.bannerImage?.fields?.file?.url})
                 // this can override any of the above
                 //${banner.css}
             `}

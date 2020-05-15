@@ -16,10 +16,11 @@ import { PublisherBanner } from "./banners/PublisherBanner";
 import { ListOfBookGroups } from "./ListOfBookGroups";
 import { CachedTablesContext } from "../App";
 import { getLanguageNamesFromCode } from "../model/Language";
-import { LevelGroups } from "./LevelGroups";
+import { LevelGroups, makeCollectionForLevel } from "./LevelGroups";
 import { Bookshelf } from "../model/Bookshelf";
 import { CollectionGroup } from "./CollectionGroup";
-import { ICollection2 } from "../model/Collections";
+import { ICollection2, getCollectionData } from "../model/Collections";
+import { useContentful } from "react-contentful";
 
 // export const SearchResultsPage: React.FunctionComponent<{
 //     filter: IFilter;
@@ -42,9 +43,50 @@ import { ICollection2 } from "../model/Collections";
 // if there are lots of books and you scroll to the end of the 20 or so that
 // we put in a row, and then you click on the MoreCard there to see the rest
 export const AllResultsPage: React.FunctionComponent<{
-    collection: ICollection2;
+    collectionName: string; // may have tilde's, after last tilde is a contentful collection urlKey
+    filters: string; // may result in automatically-created subcollections. Eventually might be multiple ones slash-delimited
 }> = (props) => {
-    const title = props.collection.title;
+    const collectionNames = props.collectionName.split("~");
+    const collectionName = collectionNames[collectionNames.length - 1];
+    const { data, error, fetched, loading } = useContentful({
+        contentType: "collection",
+        query: {
+            "fields.key": `${collectionName}`,
+        },
+    });
+    if (loading || !fetched) {
+        return null;
+    }
+
+    if (error) {
+        console.error(error);
+        return null;
+    }
+
+    console.log(JSON.stringify(data));
+    if (!data || (data as any).items.length === 0) {
+        return <p>Page does not exist.</p>;
+    }
+
+    //const collection = collections.get(collectionName);
+    const collection: ICollection2 = getCollectionData(
+        (data as any).items[0].fields
+    );
+    let subcollection = collection;
+    if (props.filters) {
+        for (const filter of props.filters.split("/")) {
+            const parts = filter.split(":");
+            switch (parts[0]) {
+                case "level":
+                    subcollection = makeCollectionForLevel(
+                        subcollection,
+                        parts[1]
+                    );
+                    break;
+            }
+        }
+    }
+    const title = subcollection.title;
     return (
         <React.Fragment>
             <div
@@ -58,7 +100,7 @@ export const AllResultsPage: React.FunctionComponent<{
             <ListOfBookGroups>
                 <CollectionGroup
                     title={title}
-                    collection={props.collection}
+                    collection={subcollection}
                     rows={20}
                 />
                 {/* TODO: we need a way to say "OK, more rows, and more rows" etc. */}

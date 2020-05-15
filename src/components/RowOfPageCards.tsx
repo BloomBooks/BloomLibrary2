@@ -57,7 +57,7 @@ export const RowOfPageCards: React.FunctionComponent<{
                 title={childCollection.label || ""}
                 bookCount="??"
                 filter={childCollection.filter}
-                href={(props.parents ? props.parents + "|" : "") + key}
+                href={(props.parents ? props.parents + "~" : "") + key}
                 //pageType={props.bookShelfCategory}
                 img={childCollection.icon}
             />

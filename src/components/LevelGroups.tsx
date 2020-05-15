@@ -33,12 +33,20 @@ export function makeCollectionForLevel(
     level: string
 ): ICollection2 {
     const filter = { ...baseCollection.filter, search: "level:" + level };
-    let title = baseCollection.title + "- Level " + level;
+    let label = baseCollection.label + " - Level " + level;
     const key = baseCollection.urlKey + "/level:" + level;
     if (level === "empty") {
-        title = baseCollection.title + "- (missing a level)";
+        label = baseCollection.label + "- (missing a level)";
     }
-    const result = { ...baseCollection, filter, title, key };
+    // Enhance: how can we append -Level:1 to title, given that it's some unknown
+    // contentful representation of a rich text?
+    const result = {
+        ...baseCollection,
+        filter,
+        label,
+        title: label,
+        urlKey: key,
+    };
     if (level !== "empty") {
         result.secondaryFilter = (bookInfo) =>
             getBestLevelStringOrEmpty(bookInfo) === level;
