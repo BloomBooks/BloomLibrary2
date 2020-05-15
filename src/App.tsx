@@ -139,7 +139,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                     <React.Fragment>
                                                         <div // simulate it being in a context that sets some margin
                                                             css={css`
-                                                                margin: 20px;
+                                                                //margin: 20px;
                                                                 height: 500px;
                                                             `}
                                                         >
