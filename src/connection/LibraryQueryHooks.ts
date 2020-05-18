@@ -449,6 +449,7 @@ interface ISimplifiedAxiosResult {
 // only want a subset of IBasicBookInfo, but realize that this is usually not
 // worth the added complexity. By default, this function should just fully
 // populate the IBasicBookInfo.
+// Remember to specify limit if you don't want the default first 100 matching books!
 export function useSearchBooks(
     params: {}, // this is the order, which fields, limits, etc.
     filter: IFilter, // this is *which* books to return
@@ -505,6 +506,7 @@ export function useSearchBooks(
             simplifiedResultStatus.books.map((rawFromREST: any) => {
                 const b: IBasicBookInfo = { ...rawFromREST };
                 b.languages = rawFromREST.langPointers;
+                Book.sanitizeFeaturesArray(b.features);
                 return b;
             }),
         [simplifiedResultStatus.books]
@@ -854,7 +856,12 @@ export function constructParseBookQuery(
 
     if (f.feature != null) {
         delete params.where.feature;
-        params.where.features = f.feature; //my understanding is that this means it just has to contain this, could have others
+        const features = f.feature.split(" OR ");
+        if (features.length === 1) {
+            params.where.features = f.feature; //my understanding is that this means it just has to contain this, could have others
+        } else {
+            params.where.features = { $in: features };
+        }
     }
     delete params.where.inCirculation;
     switch (f.inCirculation) {
