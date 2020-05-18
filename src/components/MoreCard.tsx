@@ -21,10 +21,12 @@ export const cardWidth = 120;
 interface IProps {
     collection: ICollection2;
     skip?: number;
+    parents?: string;
 }
 export const MoreCard: React.FunctionComponent<IProps> = (props) => {
     const href =
         "/more/" +
+        (props.parents ? props.parents + "~" : "") +
         props.collection.urlKey +
         (props.skip ? "/skip:" + props.skip : "");
 

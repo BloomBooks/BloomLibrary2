@@ -8,9 +8,11 @@ import { ImageCreditsTooltip } from "./ImageCreditsTooltip";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { useContentful } from "react-contentful";
 import { commonUI } from "../../theme";
+import { Breadcrumbs } from "../Breadcrumbs";
 export const ContentfulBanner: React.FunctionComponent<{
     id: string;
 }> = (props) => {
+    const [gotData, setGotData] = useState(false);
     const { data, error, fetched, loading } = useContentful({
         contentType: "pageBanner",
         id: `${props.id}`,
@@ -35,6 +37,19 @@ export const ContentfulBanner: React.FunctionComponent<{
     }
 
     const banner = (data as any).fields;
+    // I don't know why this happens, but sometimes data comes back as a promise instead of
+    // the actual data. Reproduction steps as of May 18 2020: Navigate from home page through
+    // Enabling Writers to American University of Nigeria, then to the More page for level 1,
+    // then click the Breadcrumb for American University of Nigeria. As the resulting page
+    // is drawn, we get data here being a promise.
+    // The gotData flag and calling setGotData here are  just a trick to re-render when the data
+    // is really available.
+    // This appears to be a bug in the useContentful code, and of course it could return a
+    // promise more than once; but so far this has proved a sufficient work-around.
+    if (!banner && (data as any).then) {
+        (data as any).then(() => setGotData(true));
+        return null;
+    }
     const backgroundImage = banner.bannerImage
         ? banner.bannerImage.fields.file.url
         : "";
@@ -47,6 +62,13 @@ export const ContentfulBanner: React.FunctionComponent<{
     return (
         <div
             css={css`
+                display: flex;
+                flex-direction: column;
+            `}
+        >
+            <Breadcrumbs />
+            <div
+                css={css`
                 height: 300px;
                 display: flex;
                 flex-direction: ${logoUrl ? "row" : "column"};
@@ -67,74 +89,75 @@ export const ContentfulBanner: React.FunctionComponent<{
                 // this can override any of the above
                 //${banner.css}
             `}
-        >
-            {logoUrl && (
-                <img
-                    src={logoUrl}
-                    alt={"logo for " + banner.name}
-                    css={css`
-                        height: 150px;
-                        margin-right: 50px;
-                    `}
-                />
-            )}
-            <div
-                css={css`
-                    flex-grow: 2;
-                    display: flex;
-                    flex-direction: column;
-                    color: white;
-                `}
             >
-                {banner.hideTitle || (
-                    <h1
+                {logoUrl && (
+                    <img
+                        src={logoUrl}
+                        alt={"logo for " + banner.name}
                         css={css`
-                            font-size: 36px;
-                            margin-top: 0;
-                            /*flex-grow: 1; // push the rest to the bottom*/
+                            height: 150px;
+                            margin-right: 50px;
+                        `}
+                    />
+                )}
+                <div
+                    css={css`
+                        flex-grow: 2;
+                        display: flex;
+                        flex-direction: column;
+                        color: white;
+                    `}
+                >
+                    {banner.hideTitle || (
+                        <h1
+                            css={css`
+                                font-size: 36px;
+                                margin-top: 0;
+                                /*flex-grow: 1; // push the rest to the bottom*/
+                            `}
+                        >
+                            {banner.name}
+                            {/* {titleLines[0]}
+                        //{secondTitleLine} */}
+                        </h1>
+                    )}
+
+                    <div
+                        css={css`
+                            font-weight: normal;
+                            max-width: 600px;
+                            margin-bottom: 10px;
+                            overflow: auto;
                         `}
                     >
-                        {banner.name}
-                        {/* {titleLines[0]}
-                        //{secondTitleLine} */}
-                    </h1>
-                )}
-
-                <div
-                    css={css`
-                        font-weight: normal;
-                        max-width: 600px;
-                        margin-bottom: 10px;
-                        overflow: auto;
-                    `}
-                >
-                    {documentToReactComponents(banner.blurb)}
-                </div>
-                <div
-                    css={css`
-                        margin-top: auto;
-                        margin-bottom: 5px;
-                        display: flex;
-                        justify-content: space-between;
-                        width: 100%;
-                    `}
-                >
-                    {/* <BookCount
+                        {documentToReactComponents(banner.blurb)}
+                    </div>
+                    <div
+                        css={css`
+                            margin-top: auto;
+                            margin-bottom: 5px;
+                            display: flex;
+                            justify-content: space-between;
+                            width: 100%;
+                        `}
+                    >
+                        {/* <BookCount
                             message={props.bookCountMessage}
                             filter={props.filter}
                         /> */}
-                    {/* just a placeholder to push the imagecredits to the right
-                     */}
-                    <div></div>
-                    {/* there should always be imageCredits, but they may not
+                        {/* just a placeholder to push the imagecredits to the right
+                         */}
+                        <div></div>
+                        {/* there should always be imageCredits, but they may not
                         have arrived yet */}
-                    {banner.imageCredits && (
-                        <ImageCreditsTooltip
-                            imageCredits={documentToReactComponents(
-                                banner.imageCredits
-                            )}
-                        />
-                    )}
+                        {banner.imageCredits && (
+                            <ImageCreditsTooltip
+                                imageCredits={documentToReactComponents(
+                                    banner.imageCredits
+                                )}
+                            />
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

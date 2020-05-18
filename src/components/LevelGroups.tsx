@@ -8,6 +8,7 @@ import { CollectionGroup } from "./CollectionGroup";
 // For each level (whether set by a human or just computed), show a row of books for that level.
 export const LevelGroups: React.FunctionComponent<{
     collection: ICollection2;
+    parents?: string;
 }> = (props) => {
     return (
         <React.Fragment>
@@ -15,6 +16,7 @@ export const LevelGroups: React.FunctionComponent<{
                 <CollectionGroup
                     title={"Level " + level}
                     collection={makeCollectionForLevel(props.collection, level)}
+                    parents={props.parents}
                 />
             ))}
 
@@ -23,6 +25,7 @@ export const LevelGroups: React.FunctionComponent<{
                 title="Books for which we are missing levels"
                 rows={99}
                 collection={makeCollectionForLevel(props.collection, "empty")}
+                parents={props.parents}
             />
         </React.Fragment>
     );

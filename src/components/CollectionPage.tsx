@@ -49,6 +49,16 @@ export const CollectionPage: React.FunctionComponent<{
         return <div>Collection not found</div>;
     }
 
+    const parents = [...collectionNames];
+    if (parents[0] === "root.read") {
+        parents.splice(0, 1);
+    }
+
+    const collectionParents = parents.join("~"); // parents for subcollection includes own key
+    parents.pop();
+
+    const bookParents = parents.join("~"); // parents for books collection does not include own key
+
     const collectionRows = collection.childCollections.map((c) => {
         if (c.urlKey === "language-chooser") {
             return <LanguageGroup />;
@@ -57,7 +67,7 @@ export const CollectionPage: React.FunctionComponent<{
             <RowOfPageCardsForKey
                 key={c.urlKey}
                 urlKey={c.urlKey}
-                parents={collection.urlKey}
+                parents={collectionParents}
             />
         );
     });
@@ -66,7 +76,9 @@ export const CollectionPage: React.FunctionComponent<{
     switch (collection.layout) {
         default:
             //"by-level": I'd like to have this case here for clarity, but link chokes
-            booksComponent = <LevelGroups collection={collection} />;
+            booksComponent = (
+                <LevelGroups collection={collection} parents={bookParents} />
+            );
             break;
     }
 

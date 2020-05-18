@@ -30,6 +30,7 @@ interface IProps {
     skip?: number; // of items in collection (used for paging through with More)
 
     contextLangIso?: string;
+    parents?: string;
 }
 
 export const CollectionGroup: React.FunctionComponent<IProps> = (props) => (
@@ -124,7 +125,13 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
 
     // Enhance: allow using a MoreCard even with a fixed set of known books, rather than only if we're using a filter.
     if (search.totalMatchingRecords > nextSkip) {
-        cards.push(<MoreCard collection={props.collection} skip={nextSkip} />);
+        cards.push(
+            <MoreCard
+                collection={props.collection}
+                skip={nextSkip}
+                parents={props.parents}
+            />
+        );
     }
 
     const bookList = showInOneRow ? (
