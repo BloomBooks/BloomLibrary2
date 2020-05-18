@@ -31,7 +31,8 @@ export const LanguageCard: React.FunctionComponent<ILanguage> = (props) => {
                 height: ${commonUI.languageCardHeightInPx}px;
                 padding-bottom: 3px;
             `}
-            href={`language/${props.isoCode}`}
+            href={`/language:${props.isoCode}`}
+            onClick={undefined} // we just want to follow the href, whatever might be in propsToPassDown
         >
             <h2
                 css={css`

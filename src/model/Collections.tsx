@@ -6,6 +6,7 @@ import {
     IBookshelfResult,
 } from "../connection/LibraryQueryHooks";
 import { ExternalLink } from "../components/banners/ExternalLink";
+import { getLanguageNamesFromCode, ILanguage } from "./Language";
 
 /* From original design: Each collection has
     id
@@ -84,6 +85,25 @@ function getSubCollectionData(fields: any): ISubCollection | undefined {
         childCollections: getSubCollections(fields.childCollections),
     };
     return result;
+}
+
+export function makeLanguageCollection(
+    langCode: string,
+    languages: ILanguage[]
+): ICollection2 {
+    let languageDisplayName = getLanguageNamesFromCode(langCode!, languages)
+        ?.displayNameWithAutonym;
+    if (!languageDisplayName) languageDisplayName = langCode;
+    return {
+        urlKey: "language:" + langCode,
+        label: languageDisplayName,
+        title: languageDisplayName,
+        childCollections: [],
+        banner: "", // some default?
+        icon: "", // I think this will be unused so can stay blank
+        filter: { language: langCode },
+        layout: "by-level",
+    };
 }
 export interface ICollection {
     key?: string; // used to look it up in router code in app; defaults to title
