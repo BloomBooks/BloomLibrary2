@@ -19,6 +19,7 @@ import { LanguageGroup } from "./LanguageGroup";
 import { CachedTablesContext } from "../App";
 import { CustomizableBanner } from "./banners/CustomizableBanner";
 import { getLanguageBannerSpec } from "./banners/LanguageCustomizations";
+import { PublisherBanner } from "./banners/PublisherBanner";
 
 // export interface IBanner {
 //     name: string;
@@ -69,19 +70,37 @@ export const CollectionPage: React.FunctionComponent<{
             break;
     }
 
-    return (
-        <div>
-            {generatorTag ? (
-                // Currently we use a special header for generated language collections.
-                // We should probaby generalize somehow if we get a second kind of generated collection.
+    let banner: React.ReactElement | null = null;
+    if (generatorTag) {
+        if (collection.urlKey.startsWith("language:")) {
+            // Currently we use a special header for generated language collections.
+            // We should probaby generalize somehow if we get a second kind of generated collection.
+            banner = (
                 <CustomizableBanner
                     filter={collection.filter}
                     title={collection.label}
                     spec={getLanguageBannerSpec(generatorTag)}
                 />
-            ) : (
-                <ContentfulBanner id={collection.banner} />
-            )}
+            );
+        } else if (collection.urlKey.startsWith("topic:")) {
+            // This is taken from the (obsolete?) CategoryPageWithDefaultLayout which we used to show for topics.
+            // Probably not our final answer.
+            banner = (
+                <PublisherBanner
+                    filter={collection.filter}
+                    title={collection.title}
+                    showTitle={true}
+                    collectionDescription={<React.Fragment />}
+                />
+            );
+        }
+    } else {
+        banner = <ContentfulBanner id={collection.banner} />;
+    }
+
+    return (
+        <div>
+            {banner}
             <ListOfBookGroups>
                 {collectionRows}
                 {booksComponent}

@@ -115,6 +115,40 @@ export interface useCollectionResponse {
     loading: boolean; // Hook response loading || !fetched, that is, we don't actually have a result yet
 }
 
+const topics = [
+    "Agriculture",
+    "Animal Stories",
+    "Business",
+    "Dictionary",
+    "Environment",
+    "Primer",
+    "Math",
+    "Culture",
+    "Science",
+    "Story Book",
+    "Traditional Story",
+    "Health",
+    "Personal Development",
+    "Spiritual",
+];
+
+function makeTopicCollection(topicName: string): ICollection2 {
+    return {
+        urlKey: "topic:" + topicName,
+        label: topicName,
+        title: topicName,
+        childCollections: [],
+        filter: { topic: topicName },
+        banner: "",
+        icon: "",
+        layout: "by-level",
+    };
+}
+
+function makeTopicSubcollections(): ISubCollection[] {
+    return topics.map((t) => makeTopicCollection(t));
+}
+
 export function useCollection(collectionName: string): useCollectionResponse {
     const { languagesByBookCount: languages } = useContext(CachedTablesContext);
     const { data, error, fetched, loading } = useContentful({
@@ -138,9 +172,23 @@ export function useCollection(collectionName: string): useCollectionResponse {
     //console.log(JSON.stringify(data));
     if (!data || (data as any).items.length === 0) {
         if (collectionName.startsWith("language:")) {
+            // language collections are optionally generated. We can make real cards if we
+            // want, to give a more interesting background image etc, but if we don't have
+            // one for a language, we generate a default here.
+            // We currently don't need to mess with the actual content of the languages
+            // collection because a special case in CollectionPage for the language-chooser urlKey
+            // creates a special LanguageGroup row, which determines the children directly
+            // from the main database.
             collectionIso = collectionName.substring("language:".length);
             collection = makeLanguageCollection(collectionIso, languages);
             return { collection, generatorTag: collectionIso, loading: false };
+        } else if (collectionName.startsWith("topic:")) {
+            // topic collections currently are generated from the fixed list above.
+            // the master "topics" collection is real (so it can be included at the
+            // right place in its parent) but its children are inserted by another special case.
+            const topicName = collectionName.substring("topic:".length);
+            collection = makeTopicCollection(topicName);
+            return { collection, generatorTag: topicName, loading: false };
         } else {
             return { loading: false };
         }
@@ -148,6 +196,10 @@ export function useCollection(collectionName: string): useCollectionResponse {
         // usual case, got collection from contentful
         //const collection = collections.get(collectionName);
         collection = getCollectionData((data as any).items[0].fields);
+        if (collection.urlKey === "topics") {
+            // we currently generate the subcollections for this.
+            collection.childCollections = makeTopicSubcollections();
+        }
         return { collection, loading: false };
         //console.log(JSON.stringify(collection));
     }
