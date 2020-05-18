@@ -9,6 +9,7 @@ import {
     ISubCollection,
     getCollectionData,
     makeLanguageCollection,
+    useCollection,
 } from "../model/Collections";
 import { RowOfPageCards, RowOfPageCardsForKey } from "./RowOfPageCards";
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
@@ -29,17 +30,12 @@ import { getLanguageBannerSpec } from "./banners/LanguageCustomizations";
 export const CollectionPage: React.FunctionComponent<{
     collectionNames: string;
 }> = (props) => {
-    //const { collections } = useContext(CachedTablesContext);
-    const { languagesByBookCount: languages } = useContext(CachedTablesContext);
     const collectionNames = props.collectionNames.split("~");
     const collectionName = collectionNames[collectionNames.length - 1];
-    const { data, error, fetched, loading } = useContentful({
-        contentType: "collection",
-        query: {
-            "fields.key": `${collectionName}`,
-        },
-    });
-    if (loading || !fetched) {
+    const { collection, error, generatorTag, loading } = useCollection(
+        collectionName
+    );
+    if (loading) {
         return null;
     }
 
@@ -48,22 +44,8 @@ export const CollectionPage: React.FunctionComponent<{
         return null;
     }
 
-    let collectionIso: string | undefined; // iso code if collection is a generated language collection
-
-    let collection: ICollection2;
-    console.log(JSON.stringify(data));
-    if (!data || (data as any).items.length === 0) {
-        if (collectionName.startsWith("language:")) {
-            collectionIso = collectionName.substring("language:".length);
-            collection = makeLanguageCollection(collectionIso, languages);
-        } else {
-            return <p>Page does not exist.</p>;
-        }
-    } else {
-        // usual case, got collection from contentful
-        //const collection = collections.get(collectionName);
-        collection = getCollectionData((data as any).items[0].fields);
-        console.log(JSON.stringify(collection));
+    if (!collection) {
+        return <div>Collection not found</div>;
     }
 
     const collectionRows = collection.childCollections.map((c) => {
@@ -89,13 +71,13 @@ export const CollectionPage: React.FunctionComponent<{
 
     return (
         <div>
-            {collectionIso ? (
+            {generatorTag ? (
                 // Currently we use a special header for generated language collections.
                 // We should probaby generalize somehow if we get a second kind of generated collection.
                 <CustomizableBanner
                     filter={collection.filter}
                     title={collection.label}
-                    spec={getLanguageBannerSpec(collectionIso)}
+                    spec={getLanguageBannerSpec(generatorTag)}
                 />
             ) : (
                 <ContentfulBanner id={collection.banner} />

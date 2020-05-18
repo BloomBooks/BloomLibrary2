@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useContext } from "react";
 import { IFilter } from "../IFilter";
 import {
     IBasicBookInfo,
@@ -7,6 +7,8 @@ import {
 } from "../connection/LibraryQueryHooks";
 import { ExternalLink } from "../components/banners/ExternalLink";
 import { getLanguageNamesFromCode, ILanguage } from "./Language";
+import { useContentful } from "react-contentful";
+import { CachedTablesContext } from "../App";
 
 /* From original design: Each collection has
     id
@@ -104,6 +106,51 @@ export function makeLanguageCollection(
         filter: { language: langCode },
         layout: "by-level",
     };
+}
+
+export interface useCollectionResponse {
+    collection?: ICollection2;
+    generatorTag?: string; // gets a value for generated collections, like isoCode for languages.
+    error?: object; // whatever useContentful gives us if something goes wrong.
+    loading: boolean; // Hook response loading || !fetched, that is, we don't actually have a result yet
+}
+
+export function useCollection(collectionName: string): useCollectionResponse {
+    const { languagesByBookCount: languages } = useContext(CachedTablesContext);
+    const { data, error, fetched, loading } = useContentful({
+        contentType: "collection",
+        query: {
+            "fields.key": `${collectionName}`,
+        },
+    });
+    if (loading || !fetched) {
+        return { collection: undefined, loading: true };
+    }
+
+    if (error) {
+        console.error(error);
+        return { collection: undefined, error, loading: false };
+    }
+
+    let collectionIso: string | undefined; // iso code if collection is a generated language collection
+
+    let collection: ICollection2;
+    //console.log(JSON.stringify(data));
+    if (!data || (data as any).items.length === 0) {
+        if (collectionName.startsWith("language:")) {
+            collectionIso = collectionName.substring("language:".length);
+            collection = makeLanguageCollection(collectionIso, languages);
+            return { collection, generatorTag: collectionIso, loading: false };
+        } else {
+            return { loading: false };
+        }
+    } else {
+        // usual case, got collection from contentful
+        //const collection = collections.get(collectionName);
+        collection = getCollectionData((data as any).items[0].fields);
+        return { collection, loading: false };
+        //console.log(JSON.stringify(collection));
+    }
 }
 export interface ICollection {
     key?: string; // used to look it up in router code in app; defaults to title
