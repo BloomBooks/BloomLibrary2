@@ -69,7 +69,7 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
             include: "langPointers",
             // the following is arbitrary. I don't even yet no what the ux is that we want.
             limit: maxCardsToRetrieve,
-            order: /*props.collection.order || */ "titleOrScore",
+            order: props.collection.order || "titleOrScore",
             skip: props.skip,
         },
         collectionFilter
@@ -168,7 +168,7 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
                 `}
             >
                 <h1>
-                    {props.title ?? props.collection.title}
+                    {props.title ?? props.collection.label}
                     <span
                         css={css`
                             font-size: 9pt;

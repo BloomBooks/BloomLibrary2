@@ -39,6 +39,7 @@ export interface ICollection2 {
     filter: IFilter;
     layout: string; // from layout.fields.name
     secondaryFilter?: (basicBookInfo: IBasicBookInfo) => boolean;
+    order?: string; // suitable for parse server order: param (e.g., -createdAt)
 }
 
 export interface ISubCollection {
@@ -50,6 +51,12 @@ export interface ISubCollection {
 }
 
 export function getCollectionData(fields: any): ICollection2 {
+    let order: string | undefined;
+    switch (fields.bookSortOrder) {
+        case "newest-first":
+            order = "-createdAt";
+            break;
+    }
     const result: ICollection2 = {
         urlKey: fields.key as string,
         label: fields.label,
@@ -59,6 +66,7 @@ export function getCollectionData(fields: any): ICollection2 {
         banner: fields.banner?.sys?.id,
         icon: fields?.icon?.fields?.file?.url,
         layout: fields.layout?.fields?.name || "by-level",
+        order,
     };
     return result;
 }

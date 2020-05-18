@@ -6,6 +6,7 @@ import {
 } from "../model/Collections";
 import { CategoryCardGroup } from "./CategoryCardGroup";
 import CategoryCard from "./CategoryCard";
+import { CollectionGroup } from "./CollectionGroup";
 
 export const RowOfPageCardsForKey: React.FunctionComponent<{
     urlKey: string;
@@ -30,7 +31,15 @@ export const RowOfPageCardsForKey: React.FunctionComponent<{
         return null;
     }
 
-    return <RowOfPageCards collection={collection} parents={props.parents} />;
+    if (collection.childCollections.length > 0) {
+        return (
+            <RowOfPageCards collection={collection} parents={props.parents} />
+        );
+    } else {
+        return (
+            <CollectionGroup collection={collection} parents={props.parents} />
+        );
+    }
 };
 
 export const RowOfPageCards: React.FunctionComponent<{
