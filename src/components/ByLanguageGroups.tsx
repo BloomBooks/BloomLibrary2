@@ -19,6 +19,7 @@ export const ByLanguageGroups: React.FunctionComponent<{
     const searchResults = useSearchBooks(
         {
             include: "langPointers",
+            limit: 10000,
         },
         props.filter
     );

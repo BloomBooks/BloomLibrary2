@@ -123,7 +123,7 @@ export interface useCollectionResponse {
     loading: boolean; // Hook response loading || !fetched, that is, we don't actually have a result yet
 }
 
-const topics = [
+export const topics = [
     "Agriculture",
     "Animal Stories",
     "Business",

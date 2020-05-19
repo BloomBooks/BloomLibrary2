@@ -49,6 +49,7 @@ export function makeCollectionForLevel(
         label,
         title: label,
         urlKey: key,
+        layout: "by-topic",
     };
     if (level !== "empty") {
         result.secondaryFilter = (bookInfo) =>

@@ -62,7 +62,7 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
     // we have either a horizontally-scrolling list of 20, or several rows
     // of 5 each
     const maxCardsToRetrieve = props.rows ? props.rows * 5 : 20;
-    const collectionFilter = props.collection.filter;
+    const collectionFilter = props.collection.filter ?? {};
 
     const search = useSearchBooks(
         {
@@ -119,12 +119,12 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
     if (props.skip === undefined) {
         nextSkip = 0; // typically, displaying one row, more will display a lot starting from 0.
     } else {
-        // typically, we're already showing the first N in a More view, and want the next group.
+        // typically, we're already showing the first props.skip cards in a More view, and want the next group if we click More.
         nextSkip = props.skip + maxCardsToRetrieve;
     }
 
     // Enhance: allow using a MoreCard even with a fixed set of known books, rather than only if we're using a filter.
-    if (search.totalMatchingRecords > nextSkip) {
+    if (search.totalMatchingRecords > (props.skip ?? 0) + maxCardsToRetrieve) {
         cards.push(
             <MoreCard
                 collection={props.collection}
