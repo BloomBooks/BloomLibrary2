@@ -50,10 +50,8 @@ export const ContentfulBanner: React.FunctionComponent<{
         (data as any).then(() => setGotData(true));
         return null;
     }
-    const backgroundImage = banner.bannerImage
-        ? banner.bannerImage.fields.file.url
-        : "";
-    const logoUrl = banner.logo ? banner.logo.fields.file.url : undefined;
+    const backgroundImage = banner?.bannerImage?.fields?.file?.url ?? "";
+    const logoUrl = banner?.logo?.fields?.file?.url ?? undefined;
     const textColor = backgroundImage ? "white" : "black";
     const darkenBackgroundImageFraction = backgroundImage ? 0.4 : 0;
     const linkColor = backgroundImage ? "white" : commonUI.colors.bloomBlue;

@@ -19,8 +19,13 @@ import { getLanguageNamesFromCode } from "../model/Language";
 import { LevelGroups, makeCollectionForLevel } from "./LevelGroups";
 import { Bookshelf } from "../model/Bookshelf";
 import { CollectionGroup } from "./CollectionGroup";
-import { ICollection2, getCollectionData } from "../model/Collections";
+import {
+    ICollection2,
+    getCollectionData,
+    useCollection,
+} from "../model/Collections";
 import { useContentful } from "react-contentful";
+import { makeCollectionForTopic, ByTopicsGroups } from "./ByTopicsGroups";
 
 // export const SearchResultsPage: React.FunctionComponent<{
 //     filter: IFilter;
@@ -48,13 +53,8 @@ export const AllResultsPage: React.FunctionComponent<{
 }> = (props) => {
     const collectionNames = props.collectionName.split("~");
     const collectionName = collectionNames[collectionNames.length - 1];
-    const { data, error, fetched, loading } = useContentful({
-        contentType: "collection",
-        query: {
-            "fields.key": `${collectionName}`,
-        },
-    });
-    if (loading || !fetched) {
+    const { collection, error, loading } = useCollection(collectionName);
+    if (loading) {
         return null;
     }
 
@@ -63,15 +63,10 @@ export const AllResultsPage: React.FunctionComponent<{
         return null;
     }
 
-    console.log(JSON.stringify(data));
-    if (!data || (data as any).items.length === 0) {
+    if (!collection) {
         return <p>Page does not exist.</p>;
     }
 
-    //const collection = collections.get(collectionName);
-    const collection: ICollection2 = getCollectionData(
-        (data as any).items[0].fields
-    );
     let skip = 0;
     let subcollection = collection;
     if (props.filters) {
@@ -84,8 +79,14 @@ export const AllResultsPage: React.FunctionComponent<{
                         parts[1]
                     );
                     break;
+                case "topic":
+                    subcollection = makeCollectionForTopic(
+                        subcollection,
+                        parts[1]
+                    );
+                    break;
                 case "skip":
-                    skip = parseInt(parts[1]);
+                    skip = parseInt(parts[1], 10);
                     break;
             }
         }
@@ -101,13 +102,21 @@ export const AllResultsPage: React.FunctionComponent<{
                 <Breadcrumbs />
             </div>
             {/* <SearchBanner filter={props.filter} /> */}
+            {/* If we're already in a topic collection or filtered by topic, breaking things up by topic again
+            is not going to do any good, and moreover it will fail, with the ByTopics filter
+            overriding the collection filter that already has a topic: field. */}
             <ListOfBookGroups>
-                <CollectionGroup
-                    title={title}
-                    collection={subcollection}
-                    rows={20}
-                    skip={skip}
-                />
+                {(props.collectionName + props.filters).indexOf("topic:") <
+                0 ? (
+                    <ByTopicsGroups collection={subcollection} />
+                ) : (
+                    <CollectionGroup
+                        title={title}
+                        collection={subcollection}
+                        rows={20}
+                        skip={skip}
+                    />
+                )}
                 {/* TODO: we need a way to say "OK, more rows, and more rows" etc. */}
             </ListOfBookGroups>
         </React.Fragment>

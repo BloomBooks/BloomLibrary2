@@ -8,6 +8,7 @@ import { getCleanedAndOrderedLanguageList, ILanguage } from "../model/Language";
 import { processRegExp } from "../Utilities";
 import { useLocation } from "react-router-dom";
 import * as QueryString from "qs";
+import { topics } from "../model/Collections";
 
 // For things other than books, which should use `useBookQuery()`
 function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
@@ -694,7 +695,13 @@ export function constructParseBookQuery(
         params.keys = params.keys.replace(/ /g, "");
     }
 
-    const tagParts = [];
+    // A list of tags. If it contains anything, tags must contain each item.
+    const tagsAll: string[] = [];
+    // A list of tag queries, such as {$in:["level:1", "computedLevel:1"]} or {$regex:"topic:Agriculture|topic:Math"}
+    // If it contains a single item and topicsAll is empty,
+    // we can use params.where.tags = tagParts[0]. If it contains more than one, we need
+    // params.where.$and:[{tags: tagParts[0]}, {tags: tagParts[1]}... {tags: {$all:topicsAll}}]
+    const tagParts: object[] = [];
     if (!!f.search) {
         const { otherSearchTerms, specialParts } = splitString(
             filter.search!,
@@ -736,7 +743,7 @@ export function constructParseBookQuery(
                     break;
                 case "level":
                     if (facetValue === "empty") {
-                        params.where.tags = {
+                        tagParts.push({
                             $nin: [
                                 "level:1",
                                 "level:2",
@@ -747,18 +754,18 @@ export function constructParseBookQuery(
                                 "computedLevel:3",
                                 "computedLevel:4",
                             ],
-                        };
+                        });
                     } else {
-                        params.where.tags = {
+                        tagParts.push({
                             $in: [
                                 "computedLevel:" + facetValue,
                                 "level:" + facetValue,
                             ],
-                        };
+                        });
                     }
                     break;
                 default:
-                    tagParts.push(part);
+                    tagsAll.push(part);
                     break;
             }
         }
@@ -811,7 +818,7 @@ export function constructParseBookQuery(
     // }
     if (f.otherTags != null) {
         delete params.where.otherTags;
-        f.otherTags.split(",").forEach((t) => tagParts.push(t));
+        f.otherTags.split(",").forEach((t) => tagsAll.push(t));
     }
     // we can search for bookshelves by category (org, project, etc) using useGetBookshelves(). But
     // we cannot, here, filter books by category. We cannot say "give me all the books that are listed in all project bookshelves"
@@ -835,23 +842,41 @@ export function constructParseBookQuery(
     // take `f.topic` to be a comma-separated list
     if (f.topic) {
         delete params.where.topic;
-        const topicsRegex = f.topic
-            .split(",")
-            .map((s) => "topic:" + processRegExp(s))
-            .join("|");
-        params.where.tags = {
-            $regex: topicsRegex,
-            ...caseInsensitive,
-        };
-        // This will only be used if there are "otherTags". It means that if both are specified, then we loose the
-        // above regex for partial matching, but we gain the
-        // ability to filter on both the Topic and OtherTags columns in the grid.
-        tagParts.push("topic:" + f.topic);
+        if (f.topic === "empty") {
+            // optimize: is it more efficient to try to come up with a regex that will
+            // fail if it finds topic:?
+            tagParts.push({
+                $nin: topics.map((t) => "topic:" + t),
+            });
+        } else if (f.topic.indexOf(",") >= 0) {
+            const topicsRegex = f.topic
+                .split(",")
+                .map((s) => "topic:" + processRegExp(s))
+                .join("|");
+            tagParts.push({
+                $regex: topicsRegex,
+                ...caseInsensitive,
+            });
+        } else {
+            // just one topic, more efficient not to use regex
+            tagsAll.push("topic:" + f.topic);
+        }
     }
-    if (tagParts.length > 0) {
-        params.where.tags = {
-            $all: tagParts,
-        };
+    // Now we need to assemble topicsAll and tagParts
+    if (tagsAll.length) {
+        // merge topicsAll into tagsAll
+        tagParts.push({
+            $all: tagsAll,
+        });
+    }
+    if (tagParts.length === 1) {
+        params.where.tags = tagParts[0];
+    } else if (tagParts.length > 1) {
+        params.where.$and = tagParts.map((p: any) => {
+            return {
+                tags: p,
+            };
+        });
     }
 
     if (f.feature != null) {
