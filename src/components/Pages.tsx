@@ -94,9 +94,9 @@ export const AllResultsPage: React.FunctionComponent<{
     return (
         <React.Fragment>
             <div
-                css={css`
-                    background-color: black;
-                `}
+            // css={css`
+            //     background-color: black;
+            // `}
             >
                 <Breadcrumbs />
             </div>

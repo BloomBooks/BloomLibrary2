@@ -1,20 +1,19 @@
 import React, { useContext } from "react";
-import { ICollection2, getCollectionData } from "../model/Collections";
+import {
+    ICollection2,
+    getCollectionData,
+    useCollection,
+} from "../model/Collections";
 import { CategoryCardGroup } from "./CategoryCardGroup";
 import CategoryCard from "./CategoryCard";
-import { useContentful } from "react-contentful";
+import { CollectionGroup } from "./CollectionGroup";
 
 export const RowOfPageCardsForKey: React.FunctionComponent<{
     urlKey: string;
     parents?: string;
 }> = (props) => {
-    const { data, error, fetched, loading } = useContentful({
-        contentType: "collection",
-        query: {
-            "fields.key": `${props.urlKey}`,
-        },
-    });
-    if (loading || !fetched) {
+    const { collection, error, loading } = useCollection(props.urlKey);
+    if (loading) {
         return null;
     }
 
@@ -23,16 +22,24 @@ export const RowOfPageCardsForKey: React.FunctionComponent<{
         return null;
     }
 
-    console.log(JSON.stringify(data));
-    if (!data || (data as any).items.length === 0) {
-        return <p>Page does not exist.</p>;
+    if (!collection) {
+        return <div>Collection not found</div>;
     }
 
-    //const collection = collections.get(collectionName);
-    const collection: ICollection2 = getCollectionData(
-        (data as any).items[0].fields
-    );
-    return <RowOfPageCards collection={collection} parents={props.parents} />;
+    if (error) {
+        console.error(error);
+        return null;
+    }
+
+    if (collection.childCollections.length > 0) {
+        return (
+            <RowOfPageCards collection={collection} parents={props.parents} />
+        );
+    } else {
+        return (
+            <CollectionGroup collection={collection} parents={props.parents} />
+        );
+    }
 };
 
 export const RowOfPageCards: React.FunctionComponent<{

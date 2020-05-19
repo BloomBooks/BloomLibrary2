@@ -75,7 +75,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
         }
     };
     return langChosen ? (
-        <Redirect to={"/language/" + langChosen} />
+        <Redirect to={"/language:" + langChosen} />
     ) : (
         <li
             css={css`

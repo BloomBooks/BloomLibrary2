@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useContext } from "react";
 import { IFilter } from "../IFilter";
 import {
     IBasicBookInfo,
@@ -6,6 +6,9 @@ import {
     IBookshelfResult,
 } from "../connection/LibraryQueryHooks";
 import { ExternalLink } from "../components/banners/ExternalLink";
+import { getLanguageNamesFromCode, ILanguage } from "./Language";
+import { useContentful } from "react-contentful";
+import { CachedTablesContext } from "../App";
 
 /* From original design: Each collection has
     id
@@ -36,6 +39,7 @@ export interface ICollection2 {
     filter: IFilter;
     layout: string; // from layout.fields.name
     secondaryFilter?: (basicBookInfo: IBasicBookInfo) => boolean;
+    order?: string; // suitable for parse server order: param (e.g., -createdAt)
 }
 
 export interface ISubCollection {
@@ -47,6 +51,12 @@ export interface ISubCollection {
 }
 
 export function getCollectionData(fields: any): ICollection2 {
+    let order: string | undefined;
+    switch (fields.bookSortOrder) {
+        case "newest-first":
+            order = "-createdAt";
+            break;
+    }
     const result: ICollection2 = {
         urlKey: fields.key as string,
         label: fields.label,
@@ -56,6 +66,7 @@ export function getCollectionData(fields: any): ICollection2 {
         banner: fields.banner?.sys?.id,
         icon: fields?.icon?.fields?.file?.url,
         layout: fields.layout?.fields?.name || "by-level",
+        order,
     };
     return result;
 }
@@ -84,6 +95,122 @@ function getSubCollectionData(fields: any): ISubCollection | undefined {
         childCollections: getSubCollections(fields.childCollections),
     };
     return result;
+}
+
+export function makeLanguageCollection(
+    langCode: string,
+    languages: ILanguage[]
+): ICollection2 {
+    let languageDisplayName = getLanguageNamesFromCode(langCode!, languages)
+        ?.displayNameWithAutonym;
+    if (!languageDisplayName) languageDisplayName = langCode;
+    return {
+        urlKey: "language:" + langCode,
+        label: languageDisplayName,
+        title: languageDisplayName,
+        childCollections: [],
+        banner: "", // some default?
+        icon: "", // I think this will be unused so can stay blank
+        filter: { language: langCode },
+        layout: "by-level",
+    };
+}
+
+export interface useCollectionResponse {
+    collection?: ICollection2;
+    generatorTag?: string; // gets a value for generated collections, like isoCode for languages.
+    error?: object; // whatever useContentful gives us if something goes wrong.
+    loading: boolean; // Hook response loading || !fetched, that is, we don't actually have a result yet
+}
+
+const topics = [
+    "Agriculture",
+    "Animal Stories",
+    "Business",
+    "Dictionary",
+    "Environment",
+    "Primer",
+    "Math",
+    "Culture",
+    "Science",
+    "Story Book",
+    "Traditional Story",
+    "Health",
+    "Personal Development",
+    "Spiritual",
+];
+
+function makeTopicCollection(topicName: string): ICollection2 {
+    return {
+        urlKey: "topic:" + topicName,
+        label: topicName,
+        title: topicName,
+        childCollections: [],
+        filter: { topic: topicName },
+        banner: "",
+        icon: "",
+        layout: "by-level",
+    };
+}
+
+function makeTopicSubcollections(): ISubCollection[] {
+    return topics.map((t) => makeTopicCollection(t));
+}
+
+export function useCollection(collectionName: string): useCollectionResponse {
+    const { languagesByBookCount: languages } = useContext(CachedTablesContext);
+    const { data, error, fetched, loading } = useContentful({
+        contentType: "collection",
+        query: {
+            "fields.key": `${collectionName}`,
+        },
+    });
+    if (loading || !fetched) {
+        return { collection: undefined, loading: true };
+    }
+
+    if (error) {
+        console.error(error);
+        return { collection: undefined, error, loading: false };
+    }
+
+    let collectionIso: string | undefined; // iso code if collection is a generated language collection
+
+    let collection: ICollection2;
+    //console.log(JSON.stringify(data));
+    if (!data || (data as any).items.length === 0) {
+        if (collectionName.startsWith("language:")) {
+            // language collections are optionally generated. We can make real cards if we
+            // want, to give a more interesting background image etc, but if we don't have
+            // one for a language, we generate a default here.
+            // We currently don't need to mess with the actual content of the languages
+            // collection because a special case in CollectionPage for the language-chooser urlKey
+            // creates a special LanguageGroup row, which determines the children directly
+            // from the main database.
+            collectionIso = collectionName.substring("language:".length);
+            collection = makeLanguageCollection(collectionIso, languages);
+            return { collection, generatorTag: collectionIso, loading: false };
+        } else if (collectionName.startsWith("topic:")) {
+            // topic collections currently are generated from the fixed list above.
+            // the master "topics" collection is real (so it can be included at the
+            // right place in its parent) but its children are inserted by another special case.
+            const topicName = collectionName.substring("topic:".length);
+            collection = makeTopicCollection(topicName);
+            return { collection, generatorTag: topicName, loading: false };
+        } else {
+            return { loading: false };
+        }
+    } else {
+        // usual case, got collection from contentful
+        //const collection = collections.get(collectionName);
+        collection = getCollectionData((data as any).items[0].fields);
+        if (collection.urlKey === "topics") {
+            // we currently generate the subcollections for this.
+            collection.childCollections = makeTopicSubcollections();
+        }
+        return { collection, loading: false };
+        //console.log(JSON.stringify(collection));
+    }
 }
 export interface ICollection {
     key?: string; // used to look it up in router code in app; defaults to title

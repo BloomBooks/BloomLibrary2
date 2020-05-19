@@ -8,11 +8,18 @@ import {
     ICollection2,
     ISubCollection,
     getCollectionData,
+    makeLanguageCollection,
+    useCollection,
 } from "../model/Collections";
 import { RowOfPageCards, RowOfPageCardsForKey } from "./RowOfPageCards";
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
 import { LevelGroups } from "./LevelGroups";
 import { ListOfBookGroups } from "./ListOfBookGroups";
+import { LanguageGroup } from "./LanguageGroup";
+import { CachedTablesContext } from "../App";
+import { CustomizableBanner } from "./banners/CustomizableBanner";
+import { getLanguageBannerSpec } from "./banners/LanguageCustomizations";
+import { PublisherBanner } from "./banners/PublisherBanner";
 
 // export interface IBanner {
 //     name: string;
@@ -24,16 +31,12 @@ import { ListOfBookGroups } from "./ListOfBookGroups";
 export const CollectionPage: React.FunctionComponent<{
     collectionNames: string;
 }> = (props) => {
-    //const { collections } = useContext(CachedTablesContext);
     const collectionNames = props.collectionNames.split("~");
     const collectionName = collectionNames[collectionNames.length - 1];
-    const { data, error, fetched, loading } = useContentful({
-        contentType: "collection",
-        query: {
-            "fields.key": `${collectionName}`,
-        },
-    });
-    if (loading || !fetched) {
+    const { collection, error, generatorTag, loading } = useCollection(
+        collectionName
+    );
+    if (loading) {
         return null;
     }
 
@@ -42,36 +45,74 @@ export const CollectionPage: React.FunctionComponent<{
         return null;
     }
 
-    console.log(JSON.stringify(data));
-    if (!data || (data as any).items.length === 0) {
-        return <p>Page does not exist.</p>;
+    if (!collection) {
+        return <div>Collection not found</div>;
     }
 
-    //const collection = collections.get(collectionName);
-    const collection: ICollection2 = getCollectionData(
-        (data as any).items[0].fields
-    );
-    console.log(JSON.stringify(collection));
+    const parents = [...collectionNames];
+    if (parents[0] === "root.read") {
+        parents.splice(0, 1);
+    }
 
-    let collectionRows = collection.childCollections.map((c) => (
-        <RowOfPageCardsForKey
-            key={c.urlKey}
-            urlKey={c.urlKey}
-            parents={collection.urlKey}
-        />
-    ));
+    const collectionParents = parents.join("~"); // parents for subcollection includes own key
+    parents.pop();
+
+    const bookParents = parents.join("~"); // parents for books collection does not include own key
+
+    const collectionRows = collection.childCollections.map((c) => {
+        if (c.urlKey === "language-chooser") {
+            return <LanguageGroup />;
+        }
+        return (
+            <RowOfPageCardsForKey
+                key={c.urlKey}
+                urlKey={c.urlKey}
+                parents={collectionParents}
+            />
+        );
+    });
 
     let booksComponent: React.ReactElement | null = null;
     switch (collection.layout) {
         default:
             //"by-level": I'd like to have this case here for clarity, but link chokes
-            booksComponent = <LevelGroups collection={collection} />;
+            booksComponent = (
+                <LevelGroups collection={collection} parents={bookParents} />
+            );
             break;
+    }
+
+    let banner: React.ReactElement | null = null;
+    if (generatorTag) {
+        if (collection.urlKey.startsWith("language:")) {
+            // Currently we use a special header for generated language collections.
+            // We should probaby generalize somehow if we get a second kind of generated collection.
+            banner = (
+                <CustomizableBanner
+                    filter={collection.filter}
+                    title={collection.label}
+                    spec={getLanguageBannerSpec(generatorTag)}
+                />
+            );
+        } else if (collection.urlKey.startsWith("topic:")) {
+            // This is taken from the (obsolete?) CategoryPageWithDefaultLayout which we used to show for topics.
+            // Probably not our final answer.
+            banner = (
+                <PublisherBanner
+                    filter={collection.filter}
+                    title={collection.title}
+                    showTitle={true}
+                    collectionDescription={<React.Fragment />}
+                />
+            );
+        }
+    } else {
+        banner = <ContentfulBanner id={collection.banner} />;
     }
 
     return (
         <div>
-            <ContentfulBanner id={collection.banner} />
+            {banner}
             <ListOfBookGroups>
                 {collectionRows}
                 {booksComponent}

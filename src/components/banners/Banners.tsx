@@ -85,12 +85,12 @@ export const BannerContents: React.FunctionComponent<{
                     >
                         {/* If there is "about" text, show that. Otherwise show a wikipedia link about the language. */}
                         {props.about ||
-                            (props.filter.language && (
+                            (props.filter?.language && (
                                 <Fragment>
                                     <a
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        href={`https://en.wikipedia.org/w/index.php?title=ISO_639:${props.filter.language}&redirect=yes`}
+                                        href={`https://en.wikipedia.org/w/index.php?title=ISO_639:${props.filter?.language}&redirect=yes`}
                                     >
                                         Wikipedia
                                     </a>

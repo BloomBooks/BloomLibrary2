@@ -30,6 +30,7 @@ interface IProps {
     skip?: number; // of items in collection (used for paging through with More)
 
     contextLangIso?: string;
+    parents?: string;
 }
 
 export const CollectionGroup: React.FunctionComponent<IProps> = (props) => (
@@ -61,14 +62,14 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
     // we have either a horizontally-scrolling list of 20, or several rows
     // of 5 each
     const maxCardsToRetrieve = props.rows ? props.rows * 5 : 20;
-    const collectionFilter = props.collection.filter;
+    const collectionFilter = props.collection.filter || {};
 
     const search = useSearchBooks(
         {
             include: "langPointers",
             // the following is arbitrary. I don't even yet no what the ux is that we want.
             limit: maxCardsToRetrieve,
-            order: /*props.collection.order || */ "titleOrScore",
+            order: props.collection.order || "titleOrScore",
             skip: props.skip,
         },
         collectionFilter
@@ -124,7 +125,13 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
 
     // Enhance: allow using a MoreCard even with a fixed set of known books, rather than only if we're using a filter.
     if (search.totalMatchingRecords > nextSkip) {
-        cards.push(<MoreCard collection={props.collection} skip={nextSkip} />);
+        cards.push(
+            <MoreCard
+                collection={props.collection}
+                skip={nextSkip}
+                parents={props.parents}
+            />
+        );
     }
 
     const bookList = showInOneRow ? (
@@ -161,7 +168,7 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
                 `}
             >
                 <h1>
-                    {props.title ?? props.collection.title}
+                    {props.title ?? props.collection.label}
                     <span
                         css={css`
                             font-size: 9pt;
