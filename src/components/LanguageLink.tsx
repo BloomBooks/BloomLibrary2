@@ -11,7 +11,7 @@ export const LanguageLink: React.FunctionComponent<{
 }> = (props) => {
     const displayName = getNameDisplay(props.language);
     return (
-        <Link color="secondary" href={"/language/" + props.language.isoCode}>
+        <Link color="secondary" href={"/language:" + props.language.isoCode}>
             {displayName}
         </Link>
     );
