@@ -32,6 +32,7 @@ import { LoggedInUser } from "../../connection/LoggedInUser";
 import { ReactComponent as DraftIcon } from "../../assets/DRAFT-Stamp.svg";
 import { useResponsiveChoice } from "../../responsiveUtilities";
 import { HarvesterProblemNotice } from "./HarvesterProblemNotice";
+import { SharingButtons } from "./SharingButtons";
 
 const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     const l10n = useIntl();
@@ -321,6 +322,7 @@ const BookDetailInternal: React.FunctionComponent<{
                     />
                 )}
 
+                <SharingButtons book={props.book} />
                 <BookExtraPanels book={props.book} />
             </div>
         </div>
