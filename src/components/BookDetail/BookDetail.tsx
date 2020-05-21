@@ -20,6 +20,7 @@ import { BookDetailHeaderGroup } from "./BookDetailHeaderGroup";
 import { ReportButton } from "./ReportButton";
 import { OSFeaturesContext } from "../../components/OSFeaturesContext";
 import { commonUI } from "../../theme";
+import { SharingButtons } from "./SharingButtons";
 
 interface IProps {
     id: string;
@@ -184,7 +185,7 @@ export const BookDetailInternal: React.FunctionComponent<{
                         <WarningIcon />
                     </IconButton>
                 )}
-
+                <SharingButtons book={props.book} />
                 <BookExtraPanels book={props.book} />
                 <Alert
                     open={alertText != null}

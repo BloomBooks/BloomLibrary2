@@ -2,7 +2,7 @@ import { Book } from "../../model/Book";
 import { IBasicBookInfo } from "../../connection/LibraryQueryHooks";
 import {
     ArtifactVisibilitySettings,
-    ArtifactVisibilitySettingsGroup
+    ArtifactVisibilitySettingsGroup,
 } from "../../model/ArtifactVisibilitySettings";
 
 export enum ArtifactType {
@@ -10,7 +10,7 @@ export enum ArtifactType {
     epub = "epub",
     bloomReader = "bloomReader",
     readOnline = "readOnline",
-    shellbook = "shellbook"
+    shellbook = "shellbook",
 }
 
 export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
@@ -173,7 +173,8 @@ export function getLegacyThumbnailUrl(book: Book | IBasicBookInfo): string {
 // enough tohave a harvester-produced thumbnail. Includes a fake query designed to defeat
 // caching of the thumbnail if the book might have been modified since last cached.
 export function getHarvesterProducedThumbnailUrl(
-    book: Book | IBasicBookInfo
+    book: Book | IBasicBookInfo,
+    size: number
 ): string | undefined {
     const harvestTime = book.harvestStartedAt;
     if (!harvestTime || new Date(harvestTime.iso) < new Date(2020, 1, 11, 11)) {
@@ -191,8 +192,7 @@ export function getHarvesterProducedThumbnailUrl(
     }
     return (
         getCloudFlareUrl(harvesterBaseUrl) +
-        "thumbnails/thumbnail-256.png?version=" +
-        book.updatedAt
+        `thumbnails/thumbnail-${size}.png?version=${book.updatedAt}`
     );
 }
 
@@ -200,11 +200,11 @@ export function getHarvesterProducedThumbnailUrl(
 export function getThumbnailUrl(
     book: Book | IBasicBookInfo
 ): { thumbnailUrl: string; isModernThumbnail: boolean } {
-    const h = getHarvesterProducedThumbnailUrl(book);
+    const h = getHarvesterProducedThumbnailUrl(book, 256);
     if (h) return { thumbnailUrl: h, isModernThumbnail: true };
     return {
         thumbnailUrl: getLegacyThumbnailUrl(book),
-        isModernThumbnail: false
+        isModernThumbnail: false,
     };
 }
 
