@@ -108,33 +108,12 @@ export const CollectionPage: React.FunctionComponent<{
             break;
     }
 
-    let banner: React.ReactElement | null = null;
-    if (generatorTag) {
-        if (collection.urlKey.startsWith("language:")) {
-            // Currently we use a special header for generated language collections.
-            // We should probaby generalize somehow if we get a second kind of generated collection.
-            banner = (
-                <CustomizableBanner
-                    filter={collection.filter}
-                    title={collection.label}
-                    spec={getLanguageBannerSpec(generatorTag)}
-                />
-            );
-        } else if (collection.urlKey.startsWith("topic:")) {
-            // This is taken from the (obsolete?) CategoryPageWithDefaultLayout which we used to show for topics.
-            // Probably not our final answer.
-            banner = (
-                <PublisherBanner
-                    filter={collection.filter}
-                    title={collection.title}
-                    showTitle={true}
-                    collectionDescription={<React.Fragment />}
-                />
-            );
-        }
-    } else {
-        banner = <ContentfulBanner id={collection.banner} />;
-    }
+    let banner = (
+        <ContentfulBanner
+            id={collection.banner}
+            collectionLabel={collection.label}
+        />
+    );
 
     return (
         <div>

@@ -57,13 +57,23 @@ export function getCollectionData(fields: any): ICollection2 {
             order = "-createdAt";
             break;
     }
+    let bannerId = fields.banner?.sys?.id;
+    if (!bannerId) {
+        if (fields.key.startsWith("language:")) {
+            bannerId = "7v95c68TL9uJBe4pP5KTN0"; // also in makeLanguageCollection
+        } else if (fields.key.startsWith("topic:")) {
+            bannerId = "7E1IHa5mYvLLSToJYh5vfW"; // also in makeTopicCollection
+        } else {
+            bannerId = "Qm03fkNd1PWGX3KGxaZ2v";
+        }
+    }
     const result: ICollection2 = {
         urlKey: fields.key as string,
         label: fields.label,
         title: fields.title,
         filter: fields.filter,
         childCollections: getSubCollections(fields.childCollections),
-        banner: fields.banner?.sys?.id,
+        banner: bannerId,
         icon: fields?.icon?.fields?.file?.url,
         layout: fields.layout?.fields?.name || "by-level",
         order,
@@ -109,7 +119,7 @@ export function makeLanguageCollection(
         label: languageDisplayName,
         title: languageDisplayName,
         childCollections: [],
-        banner: "", // some default?
+        banner: "7v95c68TL9uJBe4pP5KTN0", // default language banner
         icon: "", // I think this will be unused so can stay blank
         filter: { language: langCode },
         layout: "by-level",
@@ -147,7 +157,7 @@ function makeTopicCollection(topicName: string): ICollection2 {
         title: topicName,
         childCollections: [],
         filter: { topic: topicName },
-        banner: "",
+        banner: "7E1IHa5mYvLLSToJYh5vfW", // standard default for topics
         icon: "",
         layout: "by-level",
     };
