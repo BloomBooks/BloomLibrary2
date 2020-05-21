@@ -11,6 +11,8 @@ import { commonUI } from "../../theme";
 import { Breadcrumbs } from "../Breadcrumbs";
 export const ContentfulBanner: React.FunctionComponent<{
     id: string;
+    // Usually the banner's title prevails over this. But for default banners the collection label, if supplied, wins.
+    collectionLabel?: string;
 }> = (props) => {
     const [gotData, setGotData] = useState(false);
     const { data, error, fetched, loading } = useContentful({
@@ -53,6 +55,15 @@ export const ContentfulBanner: React.FunctionComponent<{
     const backgroundImage = banner?.bannerImage?.fields?.file?.url ?? "";
     const logoUrl = banner?.logo?.fields?.file?.url ?? undefined;
     const textColor = backgroundImage ? "white" : "black";
+    let bannerName = banner.name;
+    const defaultBannerIds = [
+        "Qm03fkNd1PWGX3KGxaZ2v",
+        "7v95c68TL9uJBe4pP5KTN0",
+        "7E1IHa5mYvLLSToJYh5vfW",
+    ];
+    if (defaultBannerIds.includes(props.id) && props.collectionLabel) {
+        bannerName = props.collectionLabel;
+    }
 
     //const titleLines = banner.Name;
     // const secondTitleLine =
@@ -114,7 +125,7 @@ export const ContentfulBanner: React.FunctionComponent<{
                                 /*flex-grow: 1; // push the rest to the bottom*/
                             `}
                         >
-                            {banner.name}
+                            {bannerName}
                             {/* {titleLines[0]}
                         //{secondTitleLine} */}
                         </h1>
