@@ -14,6 +14,13 @@ export const CardSwiper: React.FunctionComponent<{
         },
         spaceBetween: 20,
         slidesPerView: "auto",
+        // I'm not clear why this is needed now and wasn't in earlier versions.
+        // It allows scrolling a bit further with the right arrow than is possible by default,
+        // as if the row of cards we're scrolling through had an extra 100px of
+        // white space at the end that's included in the scroll area. Without this,
+        // we don't see the whole of the More card before the scroll arrow disappears,
+        // making it very easy to click the More card unintentionally.
+        slidesOffsetAfter: 100,
     };
 
     const [swiper, setSwiper] = useState<any | null>(null);
