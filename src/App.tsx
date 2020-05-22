@@ -64,6 +64,7 @@ import { ContentfulContext } from "./ContentfulContext";
 import { CollectionPage } from "./components/CollectionPage";
 import { Footer } from "./components/Footer";
 import { RowOfPageCardsForKey } from "./components/RowOfPageCards";
+import { ContentfulPage } from "./components/ContentfulPage";
 
 interface ICachedTables {
     tags: string[];
@@ -170,10 +171,22 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                 <ReadBookPage />
                                             </Route>
                                             <Route path="/about">
-                                                <div>This is About</div>
+                                                <ContentfulPage slug="about" />
                                             </Route>
                                             <Route path="/grid">
                                                 <GridPage />
+                                            </Route>
+                                            <Route
+                                                exact={true}
+                                                path={["/", "/read"]}
+                                            >
+                                                <CollectionPage collectionNames="root.read" />
+                                            </Route>
+                                            <Route
+                                                exact={true}
+                                                path={"/create"}
+                                            >
+                                                <CollectionPage collectionNames="root.create" />
                                             </Route>
                                             <Route path="/bulk">
                                                 <BulkEditPage />
@@ -340,13 +353,6 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                     );
                                                 }}
                                             />
-                                            <Route
-                                                exact={true}
-                                                path={["/", "/read"]}
-                                            >
-                                                <CollectionPage collectionNames="root.read" />
-                                                {/* <HomePage /> */}
-                                            </Route>
                                         </Switch>
                                     </Router>
                                 </RouterContext.Provider>
@@ -378,7 +384,6 @@ export const UnderConstruction: React.FunctionComponent<{}> = () => {
                 elevation={6}
                 onClose={handleClose}
             >
-                {" "}
                 <AlertTitle>Under Construction</AlertTitle>
                 <div
                     css={css`

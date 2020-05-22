@@ -5,6 +5,8 @@ import { jsx } from "@emotion/core";
 import { useContentful } from "react-contentful";
 /** @jsx jsx */
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
+import ReactMarkdown from "react-markdown";
+
 export const ContentfulPage: React.FunctionComponent<{ slug: string }> = (
     props
 ) => {
@@ -30,6 +32,10 @@ export const ContentfulPage: React.FunctionComponent<{ slug: string }> = (
 
     return (
         <div>
+            <ReactMarkdown
+                source={(data as any).items[0].fields.markdownBody}
+            />
+            {/* Maybe we're going to remove this Richtext option entirely? Depend if we can get people to work in Markdown */}
             {documentToReactComponents((data as any).items[0].fields.body)}
         </div>
     );

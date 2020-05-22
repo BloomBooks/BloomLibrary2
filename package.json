@@ -59,6 +59,7 @@
         "react-image": "^2.3.0",
         "react-json-view": "^1.19.1",
         "react-lazyload": "^2.6.5",
+        "react-markdown": "^4.3.1",
         "react-router-dom": "^5.1.2",
         "react-scripts": "3.4.0",
         "react-storage-hooks": "^4.0.0",
