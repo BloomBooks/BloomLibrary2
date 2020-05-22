@@ -459,14 +459,18 @@ export function useSearchBooks(
     const location = useLocation();
     const locationSearch = location.search;
     const realFilter = useMemo(() => {
-        if (location.search && location.search.length > 1) {
+        if (locationSearch && locationSearch.length > 1) {
             const queryParams = QueryString.parse(locationSearch.substring(1));
+
             if (queryParams.search) {
-                return { ...filter, search: queryParams.search };
+                return {
+                    ...filter,
+                    search: (filter.search + " " + queryParams.search).trim(),
+                };
             }
         }
         return filter;
-    }, [filter]);
+    }, [filter, locationSearch]);
     const fullParams = {
         count: 1,
         keys:
