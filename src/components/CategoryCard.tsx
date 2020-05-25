@@ -61,20 +61,27 @@ const CategoryCard: React.FunctionComponent<IProps> = (props) => {
     }
 
     const titleElementIfNoImage = getTitleAndImageElement(
-        <img
-            src={booksIcon}
-            css={css`
-                height: 40px;
-                margin-bottom: 10px;
-            `}
-            alt="A stack of generic books"
-        ></img>
+        props.img === "none" ? (
+            <React.Fragment />
+        ) : (
+            <img
+                src={booksIcon}
+                css={css`
+                    height: 40px;
+                    margin-bottom: 10px;
+                `}
+                alt="A stack of generic books"
+            ></img>
+        )
     );
 
     const iconScaleAsDecimal = props.iconScale ? props.iconScale / 100 : 1;
     const titleAndIconIfIconDefined =
         props.icon &&
         getTitleAndImageElement(
+            // Todo: possibly, we want a title here! That's what the method name
+            // indicates. But some images may already have the relevant text,
+            // in which case we don't...so we need some way to tell from the collection.
             <div
                 css={css`
                     height: 80px;
@@ -103,12 +110,16 @@ const CategoryCard: React.FunctionComponent<IProps> = (props) => {
         preTitle,
         ...propsToPassDown
     } = props; // prevent react warnings
+    // make the cards smaller vertically if they purposely have no image, not even
+    // the default one. Otherwise, let the default CheapCard height prevail.
+    const height = props.img === "none" ? "height: 100px" : "";
     return (
         <CheapCard
             {...propsToPassDown} // needed for swiper to work
             css={css`
                 width: 220px;
                 padding: 10px;
+                ${height}
             `}
             href={props.href}
             // onClick={() => {

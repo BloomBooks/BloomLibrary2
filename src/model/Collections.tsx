@@ -158,7 +158,7 @@ function makeTopicCollection(topicName: string): ICollection2 {
         childCollections: [],
         filter: { topic: topicName },
         banner: "7E1IHa5mYvLLSToJYh5vfW", // standard default for topics
-        icon: "",
+        icon: "none",
         layout: "by-level",
     };
 }
