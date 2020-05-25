@@ -9,10 +9,13 @@ import { documentToReactComponents } from "@contentful/rich-text-react-renderer"
 import { useContentful } from "react-contentful";
 import { commonUI } from "../../theme";
 import { Breadcrumbs } from "../Breadcrumbs";
+import { BookCount } from "../BookCount";
+import { IFilter } from "../../IFilter";
 export const ContentfulBanner: React.FunctionComponent<{
     id: string;
     // Usually the banner's title prevails over this. But for default banners the collection label, if supplied, wins.
     collectionLabel?: string;
+    filter?: IFilter;
 }> = (props) => {
     const [gotData, setGotData] = useState(false);
     const { data, error, fetched, loading } = useContentful({
@@ -126,15 +129,33 @@ export const ContentfulBanner: React.FunctionComponent<{
                     `}
                 >
                     {logoUrl && (
-                        <img
-                            src={logoUrl}
-                            alt={"logo for " + banner.name}
+                        <div
                             css={css`
-                                height: 150px;
-                                margin-right: 50px;
-                                margin-left: 20px;
+                                display: flex;
+                                flex-direction: column;
+                                max-height: 260px;
                             `}
-                        />
+                        >
+                            <img
+                                src={logoUrl}
+                                alt={"logo for " + banner.name}
+                                css={css`
+                                    height: 150px;
+                                    margin-right: 50px;
+                                `}
+                            />
+                            <div
+                                css={css`
+                                    height: 0;
+                                    flex-grow: 1;
+                                `}
+                            />
+                            {props.filter && (
+                                <div>
+                                    <BookCount filter={props.filter} />
+                                </div>
+                            )}
+                        </div>
                     )}
                     <div
                         css={css`
@@ -177,10 +198,9 @@ export const ContentfulBanner: React.FunctionComponent<{
                                 width: 100%;
                             `}
                         >
-                            {/* <BookCount
-                            message={props.bookCountMessage}
-                            filter={props.filter}
-                        /> */}
+                            {props.filter && !logoUrl && (
+                                <BookCount filter={props.filter} />
+                            )}
                             {/* just a placeholder to push the imagecredits to the right
                              */}
                             <div></div>
