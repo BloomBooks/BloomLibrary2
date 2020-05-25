@@ -27,6 +27,8 @@ import QueryString from "qs";
 import { useLocation } from "react-router-dom";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { TopLevelSearch } from "./TopLevelSearch";
+import { HomeBanner } from "./banners/HomeBanner";
+import { IFilter, InCirculationOptions } from "../IFilter";
 
 // export interface IBanner {
 //     name: string;
@@ -138,8 +140,15 @@ export const CollectionPage: React.FunctionComponent<{
         <ContentfulBanner
             id={collection.banner}
             collectionLabel={collection.label}
+            filter={collection.filter}
         />
     );
+    if (collection.urlKey === "root.read") {
+        const almostAllBooksFilter: IFilter = {
+            inCirculation: InCirculationOptions.Yes,
+        };
+        banner = <HomeBanner filter={almostAllBooksFilter} />;
+    }
 
     return (
         <div>
