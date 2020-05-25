@@ -23,6 +23,10 @@ import { PublisherBanner } from "./banners/PublisherBanner";
 import { CollectionGroup } from "./CollectionGroup";
 import { ByLanguageGroups } from "./ByLanguageGroups";
 import { ByTopicsGroups } from "./ByTopicsGroups";
+import QueryString from "qs";
+import { useLocation } from "react-router-dom";
+import { Breadcrumbs } from "./Breadcrumbs";
+import { TopLevelSearch } from "./TopLevelSearch";
 
 // export interface IBanner {
 //     name: string;
@@ -34,6 +38,7 @@ import { ByTopicsGroups } from "./ByTopicsGroups";
 export const CollectionPage: React.FunctionComponent<{
     collectionNames: string;
 }> = (props) => {
+    const location = useLocation();
     const collectionNames = props.collectionNames.split("~");
     const collectionName = collectionNames[collectionNames.length - 1];
     const { collection, error, generatorTag, loading } = useCollection(
@@ -50,6 +55,27 @@ export const CollectionPage: React.FunctionComponent<{
 
     if (!collection) {
         return <div>Collection not found</div>;
+    }
+
+    // This is a bizarre place to have the special case for search on the home page. Here's why:
+    // On most pages, a search param just modifies which books are shown (specifically in lists
+    // coming from the useSearchBooks function in LibraryQueryHooks.ts). We get all the filters
+    // and layout implied by the rest of the route, but results restricted by the search.
+    // But we don't want that when someone types a query on the home page, since so few things
+    // would be affected that users would not see a useful filtered list. So typing something in
+    // that box has to produce something different on the home page.
+    // Now, we could make the search box do something special and make a different route, something
+    // like /search:dogs instead of /?search=dogs. But as well as needing a new route for /search
+    // and a component to implement it and the special case in the search box code, we'd need
+    // another special case in useSearchBooks. Having special cases in all those places feels
+    // worse than this.
+    // It would seem logical to just make the router use a different route based on looking for the
+    // ?search param. But as far as I can discover, that simply isn't supported.
+    if (collection.urlKey === "root.read" && location.search) {
+        const queryParams = QueryString.parse(location.search.substring(1));
+        if (queryParams.search) {
+            return <TopLevelSearch collection={collection} />;
+        }
     }
 
     const parents = [...collectionNames];

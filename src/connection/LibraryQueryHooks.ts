@@ -463,6 +463,9 @@ export function useSearchBooks(
             const queryParams = QueryString.parse(locationSearch.substring(1));
 
             if (queryParams.search) {
+                if (!filter) {
+                    return { search: queryParams.search };
+                }
                 return {
                     ...filter,
                     search: (filter.search + " " + queryParams.search).trim(),
