@@ -169,15 +169,17 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
             >
                 <h1>
                     {props.title ?? props.collection.label}
-                    <span
-                        css={css`
-                            font-size: 9pt;
-                            color: gray;
-                            margin-left: 1em;
-                        `}
-                    >
-                        {search.totalMatchingRecords}
-                    </span>
+                    {props.collection.urlKey === "new-arrivals" || (
+                        <span
+                            css={css`
+                                font-size: 9pt;
+                                color: gray;
+                                margin-left: 1em;
+                            `}
+                        >
+                            {search.totalMatchingRecords}
+                        </span>
+                    )}
                 </h1>
                 {search.waiting || bookList}
             </li>
