@@ -128,8 +128,10 @@ export const SearchBox: React.FunctionComponent<{
         setEnteredSearch(""); // otherwise we get no search box when rendered in new page
         history.push("/covid19");
     } else if (enteredSearch) {
-        const pathParts = location.pathname.split("/");
-        pathParts.splice(0, 1); // delete the leading empty string; pathname always begins with a slash
+        // We always get one empty string from before the leading slash.
+        // We may get one at the end, too, if the path ends with a slash.
+        // In particular if the path is just a slash (at the root), we start out with two empty strings.
+        const pathParts = location.pathname.split("/").filter((x) => x);
         const existingSearchIndex = pathParts.findIndex((p) =>
             p.startsWith("search:")
         );
