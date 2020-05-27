@@ -306,6 +306,40 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                     }}
                 ></TextField>
             </div>
+            <div
+                css={css`
+                    margin-top: 1em;
+                    & > div {
+                        margin-right: 1em;
+                    }
+                `}
+            >
+                <TextField
+                    label="Keywords"
+                    variant="outlined"
+                    css={css`
+                        .MuiOutlinedInput-notchedOutline {
+                            border-color: ${borderColor} !important;
+                            border-width: 2px !important;
+                        }
+                        .MuiInputLabel-root {
+                            color: darkGrey;
+                        }
+                        .MuiInputBase-root {
+                            margin-bottom: 1em;
+                        }
+                        .MuiInputLabel-root.Mui-focused {
+                            color: black;
+                        }
+                        background-color: white;
+                    `}
+                    value={props.book.keywordsText || ""}
+                    onChange={(event) => {
+                        props.book.keywordsText = event.target.value;
+                        setModified(true);
+                    }}
+                ></TextField>
+            </div>
             <HideBookControl book={props.book} setModified={setModified} />
             <div
                 id="apControls"
