@@ -456,24 +456,6 @@ export function useSearchBooks(
     filter: IFilter, // this is *which* books to return
     doNotRunActuallyQuery?: boolean
 ): ISearchBooksResult {
-    const location = useLocation();
-    const locationSearch = location.search;
-    const realFilter = useMemo(() => {
-        if (locationSearch && locationSearch.length > 1) {
-            const queryParams = QueryString.parse(locationSearch.substring(1));
-
-            if (queryParams.search) {
-                if (!filter) {
-                    return { search: queryParams.search };
-                }
-                return {
-                    ...filter,
-                    search: (filter.search + " " + queryParams.search).trim(),
-                };
-            }
-        }
-        return filter;
-    }, [filter, locationSearch]);
     const fullParams = {
         count: 1,
         keys:
@@ -483,7 +465,7 @@ export function useSearchBooks(
     };
     const bookResultsStatus: IAxiosAnswer = useBookQueryInternal(
         fullParams,
-        realFilter,
+        filter,
         undefined,
         undefined,
         doNotRunActuallyQuery

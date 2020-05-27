@@ -35,7 +35,11 @@ export function makeCollectionForLevel(
     baseCollection: ICollection2,
     level: string
 ): ICollection2 {
-    const filter = { ...baseCollection.filter, search: "level:" + level };
+    let search = "level:" + level;
+    if (baseCollection.filter.search) {
+        search += " " + baseCollection.filter.search;
+    }
+    const filter = { ...baseCollection.filter, search };
     let label = baseCollection.label + " - Level " + level;
     const key = baseCollection.urlKey + "/level:" + level;
     if (level === "empty") {

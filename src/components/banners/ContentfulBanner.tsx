@@ -64,9 +64,9 @@ export const ContentfulBanner: React.FunctionComponent<{
 
     let bannerName = banner.name;
     const defaultBannerIds = [
-        "Qm03fkNd1PWGX3KGxaZ2v",
-        "7v95c68TL9uJBe4pP5KTN0",
-        "7E1IHa5mYvLLSToJYh5vfW",
+        "Qm03fkNd1PWGX3KGxaZ2v", // default banner for others that lack one and other generated collections like search.
+        "7v95c68TL9uJBe4pP5KTN0", // default language banner
+        "7E1IHa5mYvLLSToJYh5vfW", // default topic banner
     ];
     if (defaultBannerIds.includes(props.id) && props.collection?.label) {
         bannerName = props.collection.label;

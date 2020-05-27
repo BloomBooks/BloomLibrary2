@@ -23,6 +23,7 @@ import {
     ICollection2,
     getCollectionData,
     useCollection,
+    makeCollectionForSearch,
 } from "../model/Collections";
 import { useContentful } from "react-contentful";
 import { makeCollectionForTopic, ByTopicsGroups } from "./ByTopicsGroups";
@@ -49,7 +50,7 @@ import { makeCollectionForTopic, ByTopicsGroups } from "./ByTopicsGroups";
 // we put in a row, and then you click on the MoreCard there to see the rest
 export const AllResultsPage: React.FunctionComponent<{
     collectionName: string; // may have tilde's, after last tilde is a contentful collection urlKey
-    filters: string; // may result in automatically-created subcollections. Eventually might be multiple ones slash-delimited
+    filters: string; // may result in automatically-created subcollections. Might be multiple ones slash-delimited
 }> = (props) => {
     const collectionNames = props.collectionName.split("~");
     const collectionName = collectionNames[collectionNames.length - 1];
@@ -85,6 +86,12 @@ export const AllResultsPage: React.FunctionComponent<{
                         parts[1]
                     );
                     break;
+                case "search":
+                    subcollection = makeCollectionForSearch(
+                        parts[1],
+                        subcollection
+                    );
+                    break;
                 case "skip":
                     skip = parseInt(parts[1], 10);
                     break;
@@ -92,6 +99,29 @@ export const AllResultsPage: React.FunctionComponent<{
         }
     }
     const title = subcollection.title;
+    // The idea here is that by default we break things up by level. If we already did, divide by topic.
+    // If we already used both, make a flat list.
+    // This ignores any information in the collection itself about how it prefers to be broken up.
+    // Possibly, we could use that as a first choice, then apply this heuristic if we're filtering
+    // to a single aspect of that categorization already.
+    // The other issue is that sometimes there aren't enough results to be worth subdividing more.
+    // And it can be confusing if only one of the next-level categories has any content.
+    // But at this stage we don't have access to a count of items in the collection, or any way to
+    // know whether a particular way of subdividing them will actually break things up.
+    let subList = <LevelGroups collection={subcollection} />;
+    if ((props.collectionName + props.filters).indexOf("level:") >= 0) {
+        subList = <ByTopicsGroups collection={subcollection} />;
+        if ((props.collectionName + props.filters).indexOf("topic:") >= 0) {
+            subList = (
+                <CollectionGroup
+                    title={title}
+                    collection={subcollection}
+                    rows={20}
+                    skip={skip}
+                />
+            );
+        }
+    }
     return (
         <React.Fragment>
             <div
@@ -102,23 +132,7 @@ export const AllResultsPage: React.FunctionComponent<{
                 <Breadcrumbs />
             </div>
             {/* <SearchBanner filter={props.filter} /> */}
-            {/* If we're already in a topic collection or filtered by topic, breaking things up by topic again
-            is not going to do any good, and moreover it will fail, with the ByTopics filter
-            overriding the collection filter that already has a topic: field. */}
-            <ListOfBookGroups>
-                {(props.collectionName + props.filters).indexOf("topic:") <
-                0 ? (
-                    <ByTopicsGroups collection={subcollection} />
-                ) : (
-                    <CollectionGroup
-                        title={title}
-                        collection={subcollection}
-                        rows={20}
-                        skip={skip}
-                    />
-                )}
-                {/* TODO: we need a way to say "OK, more rows, and more rows" etc. */}
-            </ListOfBookGroups>
+            <ListOfBookGroups>{subList}</ListOfBookGroups>
         </React.Fragment>
     );
 };

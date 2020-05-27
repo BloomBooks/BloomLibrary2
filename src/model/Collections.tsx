@@ -163,6 +163,32 @@ function makeTopicCollection(topicName: string): ICollection2 {
     };
 }
 
+export function makeCollectionForSearch(
+    search: string,
+    baseCollection?: ICollection2
+): ICollection2 {
+    const filter = { ...baseCollection?.filter, search };
+    let label = 'Books matching "' + search + '"';
+    if (baseCollection?.label) {
+        label = baseCollection.label + " - " + label;
+    }
+    const key = (baseCollection?.urlKey ?? "") + "/search:" + search;
+    // Enhance: how can we modify title to indicate that it's restricted to books matching a search,
+    // given that it's some unknown contentful representation of a rich text?
+    const result = {
+        ...baseCollection,
+        filter,
+        label,
+        title: label,
+        urlKey: key,
+        childCollections: [],
+        banner: "Qm03fkNd1PWGX3KGxaZ2v",
+        icon: "",
+        layout: "by-level",
+    };
+    return result;
+}
+
 function makeTopicSubcollections(): ISubCollection[] {
     return topics.map((t) => makeTopicCollection(t));
 }
@@ -207,6 +233,11 @@ export function useCollection(collectionName: string): useCollectionResponse {
             const topicName = collectionName.substring("topic:".length);
             collection = makeTopicCollection(topicName);
             return { collection, generatorTag: topicName, loading: false };
+        } else if (collectionName.startsWith("search:")) {
+            // search collections are generated from a search string the user typed.
+            const searchFor = collectionName.substring("search:".length);
+            collection = makeCollectionForSearch(searchFor);
+            return { collection, generatorTag: searchFor, loading: false };
         } else {
             return { loading: false };
         }

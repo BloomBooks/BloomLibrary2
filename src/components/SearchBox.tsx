@@ -15,7 +15,6 @@ import { RouterContext } from "../Router";
 import { withStyles } from "@material-ui/styles";
 import { giveFreeLearningCsv } from "../export/freeLearningIO";
 import { useLocation, useHistory } from "react-router-dom";
-import * as QueryString from "qs";
 
 // NB: I tried a bunch of iterations over 2 days with forwardRefs and stuff trying to get this search box
 // to have both the html tooltip AND stop losing focus every time a letter was typed. The upshot was this
@@ -129,16 +128,24 @@ export const SearchBox: React.FunctionComponent<{
         setEnteredSearch(""); // otherwise we get no search box when rendered in new page
         history.push("/covid19");
     } else if (enteredSearch) {
-        const urlParams =
-            location.search.length > 0
-                ? QueryString.parse(location.search.substring(1))
-                : {};
-        const oldSearch = urlParams.search;
-        urlParams.search = enteredSearch;
-        const newUrl =
-            location.pathname + "?" + QueryString.stringify(urlParams);
+        const pathParts = location.pathname.split("/");
+        pathParts.splice(0, 1); // delete the leading empty string; pathname always begins with a slash
+        const existingSearchIndex = pathParts.findIndex((p) =>
+            p.startsWith("search:")
+        );
+        // we don't think it's useful to keep in history states that are just different searches.
+        const replaceInHistory = existingSearchIndex === pathParts.length - 1;
+        if (existingSearchIndex >= 0) {
+            // remove the existing one and everything after it.
+            pathParts.splice(
+                existingSearchIndex,
+                pathParts.length - existingSearchIndex
+            );
+        }
+        pathParts.push("search:" + encodeURIComponent(enteredSearch));
+        const newUrl = "/" + pathParts.join("/");
         setEnteredSearch(""); // otherwise we get an infinite loop when rendered as part of the new page
-        if (oldSearch) {
+        if (replaceInHistory) {
             history.replace(newUrl);
         } else {
             history.push(newUrl);

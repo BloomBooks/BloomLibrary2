@@ -158,6 +158,16 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
             <React.Fragment></React.Fragment>
         );
 
+    // This is a compromise. The problem is, search.totalMatchingRecords is not accurate,
+    // because it ignores the effect of the secondary filter. So if we always show that, we can get
+    // weird-looking results like a list that says it contains two results and obviously only shows one.
+    // But, we can only apply the secondary filter to the books we actually retrieved.
+    // So, if we retrieved all of them, we correct the number; otherwise, the best we can do is to
+    // let it stand.
+    let countToShow = search.totalMatchingRecords;
+    if (countToShow < maxCardsToRetrieve) {
+        countToShow = books.length;
+    }
     return (
         //We just don't show the row if there are no matches, e.g., no Health books for this project
         // (ZeroBooksMatchedElement will be an empty pseudo-element that satisfies the 'or' but shows nothing)
@@ -180,7 +190,7 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
                                 margin-left: 1em;
                             `}
                         >
-                            {search.totalMatchingRecords}
+                            {countToShow}
                         </span>
                     )}
                 </h1>
