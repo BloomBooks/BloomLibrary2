@@ -172,7 +172,10 @@ export function makeCollectionForSearch(
     if (baseCollection?.label) {
         label = baseCollection.label + " - " + label;
     }
-    const key = (baseCollection?.urlKey ?? "") + "/search:" + search;
+    let key = (baseCollection?.urlKey ?? "") + "search:" + search;
+    if (baseCollection?.urlKey) {
+        key = baseCollection.urlKey + "/" + key;
+    }
     // Enhance: how can we modify title to indicate that it's restricted to books matching a search,
     // given that it's some unknown contentful representation of a rich text?
     const result = {
