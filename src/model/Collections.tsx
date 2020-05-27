@@ -172,7 +172,7 @@ export function makeCollectionForSearch(
     if (baseCollection?.label) {
         label = baseCollection.label + " - " + label;
     }
-    let key = (baseCollection?.urlKey ?? "") + "search:" + search;
+    let key = "search:" + search;
     if (baseCollection?.urlKey) {
         key = baseCollection.urlKey + "/" + key;
     }
@@ -186,6 +186,27 @@ export function makeCollectionForSearch(
         urlKey: key,
         childCollections: [],
         banner: "Qm03fkNd1PWGX3KGxaZ2v",
+        icon: "",
+        layout: "by-level",
+    };
+    return result;
+}
+
+export function makeCollectionForPHash(phash: string): ICollection2 {
+    // review: would it be cleaner to make phash a top-level field in filter?
+    // Would require changes to the LibraryQueryHooks function for interpreting
+    // filter. It's also remotely possible that losing the ability to type
+    // a phash: into the search box would be missed.
+    const filter = { search: "phash:" + phash };
+    const label = "Matching books";
+    const key = "phash:" + phash;
+    const result = {
+        filter,
+        label,
+        title: label,
+        urlKey: key,
+        childCollections: [],
+        banner: "Qm03fkNd1PWGX3KGxaZ2v", // default
         icon: "",
         layout: "by-level",
     };
@@ -241,6 +262,11 @@ export function useCollection(collectionName: string): useCollectionResponse {
             const searchFor = collectionName.substring("search:".length);
             collection = makeCollectionForSearch(searchFor);
             return { collection, generatorTag: searchFor, loading: false };
+        } else if (collectionName.startsWith("phash:")) {
+            // search collections are generated from a search string the user typed.
+            const phash = collectionName.substring("phash:".length);
+            collection = makeCollectionForPHash(phash);
+            return { collection, generatorTag: phash, loading: false };
         } else {
             return { loading: false };
         }

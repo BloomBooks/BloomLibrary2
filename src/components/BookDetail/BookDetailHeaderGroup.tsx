@@ -177,7 +177,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                                                 font-size: 9pt;
                                             `}
                                             color={"secondary"}
-                                            href={`?title=Matching Books&pageType=search&filter[search]=phash:${sanitizedPhashOfFirstContentImage}`}
+                                            href={`/phash:${sanitizedPhashOfFirstContentImage}`}
                                         >{`${countOfBooksWithMatchingPhash} books that may be translations`}</Link>
                                     </li>
                                 )}
