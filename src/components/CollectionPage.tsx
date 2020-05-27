@@ -118,6 +118,7 @@ export const CollectionPage: React.FunctionComponent<{
                 <CollectionGroup
                     collection={collection}
                     parents={bookParents}
+                    rows={collection.urlKey === "new-arrivals" ? 10 : undefined}
                 />
             );
             break;
@@ -139,7 +140,7 @@ export const CollectionPage: React.FunctionComponent<{
     let banner = (
         <ContentfulBanner
             id={collection.banner}
-            collectionLabel={collection.label}
+            collection={collection}
             filter={collection.filter}
         />
     );

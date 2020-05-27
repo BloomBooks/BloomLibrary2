@@ -124,7 +124,10 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
     }
 
     // Enhance: allow using a MoreCard even with a fixed set of known books, rather than only if we're using a filter.
-    if (search.totalMatchingRecords > (props.skip ?? 0) + maxCardsToRetrieve) {
+    if (
+        search.totalMatchingRecords > (props.skip ?? 0) + maxCardsToRetrieve &&
+        props.collection.urlKey !== "new-arrivals"
+    ) {
         cards.push(
             <MoreCard
                 collection={props.collection}

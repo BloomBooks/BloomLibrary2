@@ -11,10 +11,10 @@ import { commonUI } from "../../theme";
 import { Breadcrumbs } from "../Breadcrumbs";
 import { BookCount } from "../BookCount";
 import { IFilter } from "../../IFilter";
+import { ICollection2 } from "../../model/Collections";
 export const ContentfulBanner: React.FunctionComponent<{
-    id: string;
-    // Usually the banner's title prevails over this. But for default banners the collection label, if supplied, wins.
-    collectionLabel?: string;
+    id: string; // of the banner object on contentful
+    collection?: ICollection2;
     filter?: IFilter;
 }> = (props) => {
     const [gotData, setGotData] = useState(false);
@@ -68,8 +68,8 @@ export const ContentfulBanner: React.FunctionComponent<{
         "7v95c68TL9uJBe4pP5KTN0",
         "7E1IHa5mYvLLSToJYh5vfW",
     ];
-    if (defaultBannerIds.includes(props.id) && props.collectionLabel) {
-        bannerName = props.collectionLabel;
+    if (defaultBannerIds.includes(props.id) && props.collection?.label) {
+        bannerName = props.collection.label;
     }
 
     //const titleLines = banner.Name;
@@ -198,9 +198,11 @@ export const ContentfulBanner: React.FunctionComponent<{
                                 width: 100%;
                             `}
                         >
-                            {props.filter && !logoUrl && (
-                                <BookCount filter={props.filter} />
-                            )}
+                            {props.filter &&
+                                !logoUrl &&
+                                props.collection?.urlKey !== "new-arrivals" && (
+                                    <BookCount filter={props.filter} />
+                                )}
                             {/* just a placeholder to push the imagecredits to the right
                              */}
                             <div></div>
