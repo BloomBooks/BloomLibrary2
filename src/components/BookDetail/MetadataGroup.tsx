@@ -17,6 +17,7 @@ import { CachedTablesContext } from "../../App";
 import { getTagDisplayName } from "../../model/Tag";
 import { useGetRelatedBooks } from "../../connection/LibraryQueryHooks";
 import { Bookshelf } from "../../model/Bookshelf";
+import { KeywordLinks } from "./KeywordLinks";
 
 export const MetadataGroup: React.FunctionComponent<{
     book: Book;
@@ -111,6 +112,10 @@ export const MetadataGroup: React.FunctionComponent<{
                             return getTagDisplayName(t);
                         })
                         .join(", ")}
+                </div>
+                <div>
+                    {"Keywords: "}
+                    <KeywordLinks book={props.book}></KeywordLinks>
                 </div>
                 <div>
                     {"Bookshelves: "}

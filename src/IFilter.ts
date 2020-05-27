@@ -14,4 +14,5 @@ export interface IFilter {
     // inCirculation:undefined will be treated as InCirculationOptions.Yes
     inCirculation?: InCirculationOptions;
     search?: string;
+    keywordsText?: string;
 }
