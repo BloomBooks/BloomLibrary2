@@ -21,6 +21,8 @@ export const CardSwiper: React.FunctionComponent<{
         // we don't see the whole of the More card before the scroll arrow disappears,
         // making it very easy to click the More card unintentionally.
         slidesOffsetAfter: 100,
+        threshold: 10, // drag of less than 10px not recognized, therefore acts as normal click.
+        //preventClicks: false, // Even a long drag activates the link
     };
 
     const [swiper, setSwiper] = useState<any | null>(null);
