@@ -3,6 +3,7 @@ import { updateBook } from "../connection/LibraryUpdates";
 import { ArtifactVisibilitySettingsGroup } from "./ArtifactVisibilitySettings";
 import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
 import { ILanguage } from "./Language";
+const stem = require("wink-porter2-stemmer");
 
 export function createBookFromParseServerData(pojo: any): Book {
     const b = Object.assign(new Book(), pojo);
@@ -51,6 +52,11 @@ export class Book {
     @observable public originalPublisher: string = "";
     @observable public features: string[] = [];
     @observable public bookshelves: string[] = [];
+
+    // This scalar string format is easier for the user/UI to modify, but in the database, we want to store it as an array of strings
+    @observable public keywordsText: string = "";
+    public keywords: string[] = [];
+    public keywordStems: string[] = [];
 
     @observable
     public artifactsToOfferToUsers: ArtifactVisibilitySettingsGroup = new ArtifactVisibilitySettingsGroup();
@@ -143,6 +149,8 @@ export class Book {
         // });
 
         Book.sanitizeFeaturesArray(this.features);
+
+        this.keywordsText = this.getKeywordsText();
     }
 
     // Modifies the given array of features in place.
@@ -174,6 +182,10 @@ export class Book {
             };
         });
 
+        [this.keywords, this.keywordStems] = Book.getKeywordsAndStems(
+            this.keywordsText
+        );
+
         updateBook(this.id, {
             tags,
             inCirculation: this.inCirculation,
@@ -185,7 +197,38 @@ export class Book {
             langPointers: reconstructedLanguagePointers,
             features: this.features,
             title: this.title?.trim(),
+            keywords: this.keywords,
+            keywordStems: this.keywordStems,
         });
+    }
+
+    private static readonly keywordDelimiter: string = " ";
+    public getKeywordsText(): string {
+        if (!this.keywords) {
+            return "";
+        }
+        return this.keywords.join(Book.keywordDelimiter);
+    }
+
+    // Returns a tuple containing first the raw keywords and then the stemmed versions of the keywords.
+    // These are both string arrays with the exact same length. (Thus,the stemmed array might contain duplicate values)
+    // Keywords preserve casing. keywordStems do not (they're always lowercase)
+    public static getKeywordsAndStems(
+        keywordsText: string
+    ): [string[], string[]] {
+        const keywords = this.splitKeywordsText(keywordsText);
+        const keywordStems = keywords.map(Book.stemKeyword);
+        return [keywords, keywordStems];
+    }
+
+    private static splitKeywordsText(keywordsText: string): string[] {
+        const tokens = keywordsText.split(Book.keywordDelimiter);
+        const keywords = tokens.filter((token) => token.length > 0); // Remove empty entries
+        return keywords;
+    }
+
+    public static stemKeyword(keyword: string): string {
+        return stem(keyword.toLowerCase());
     }
 
     public saveArtifactVisibilityToParseServer() {
