@@ -190,7 +190,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             sortingEnabled: true,
 
             addToFilter: (filter: IFilter, value: string) => {
-                filter.search += ` copyright:${value} ` + (filter.search || "");
+                filter.search += ` copyright:${value} `;
             },
         },
         { name: "pageCount", sortingEnabled: true },
@@ -212,7 +212,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                 </GridSearchLink>
             ),
             addToFilter: (filter: IFilter, value: string) => {
-                filter.search += ` uploader:${value} ` + (filter.search || "");
+                filter.search += ` uploader:${value} `;
             },
         },
     ];
