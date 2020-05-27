@@ -202,9 +202,6 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                     />
                                                 )}
                                             ></Route>
-                                            <Route path="/bible">
-                                                <BiblePage />
-                                            </Route>
                                             <Route
                                                 path="/topic/:topicName/:title?"
                                                 render={({ match }) => (

@@ -36,7 +36,7 @@ export function makeCollectionForLevel(
     level: string
 ): ICollection2 {
     let search = "level:" + level;
-    if (baseCollection.filter.search) {
+    if (baseCollection.filter?.search) {
         search += " " + baseCollection.filter.search;
     }
     const filter = { ...baseCollection.filter, search };

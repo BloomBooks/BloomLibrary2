@@ -104,37 +104,53 @@ export const CollectionPage: React.FunctionComponent<{
     });
 
     let booksComponent: React.ReactElement | null = null;
-    switch (collection.layout) {
-        default:
-            //"by-level": I'd like to have this case here for clarity, but lint chokes
-            booksComponent = (
-                <LevelGroups collection={collection} parents={bookParents} />
-            );
-            break;
-        case "no-books": // leave it null
-            break;
-        case "all-books": // untested
-            booksComponent = (
-                <CollectionGroup
-                    collection={collection}
-                    parents={bookParents}
-                    rows={collection.urlKey === "new-arrivals" ? 10 : undefined}
-                />
-            );
-            break;
-        case "by-language":
-            // enhance: may want to use reportBooksAndLanguages callback so we can insert
-            // a string like "X books in Y languages" into our banner. But as yet the
-            // ContentfulBanner has no way to do that.
-            booksComponent = (
-                <ByLanguageGroups titlePrefix="" filter={collection.filter} />
-            );
-            break;
-        case "by-topic": // untested on this path, though ByTopicsGroup is used in AllResultsPage
-            booksComponent = (
-                <ByTopicsGroups collection={collection} parents={bookParents} />
-            );
-            break;
+    if (collection.filter) {
+        switch (collection.layout) {
+            default:
+                //"by-level": I'd like to have this case here for clarity, but lint chokes
+                booksComponent = (
+                    <LevelGroups
+                        collection={collection}
+                        parents={bookParents}
+                    />
+                );
+                break;
+            case "no-books": // leave it null
+                break;
+            case "all-books": // untested
+                booksComponent = (
+                    <CollectionGroup
+                        collection={collection}
+                        parents={bookParents}
+                        rows={
+                            collection.urlKey === "new-arrivals"
+                                ? 10
+                                : undefined
+                        }
+                    />
+                );
+                break;
+            case "by-language":
+                // enhance: may want to use reportBooksAndLanguages callback so we can insert
+                // a string like "X books in Y languages" into our banner. But as yet the
+                // ContentfulBanner has no way to do that.
+                booksComponent = (
+                    <ByLanguageGroups
+                        titlePrefix=""
+                        filter={collection.filter}
+                    />
+                );
+                break;
+            case "by-topic": // untested on this path, though ByTopicsGroup is used in AllResultsPage
+                booksComponent = (
+                    <ByTopicsGroups
+                        collection={collection}
+                        parents={bookParents}
+                    />
+                );
+
+                break;
+        }
     }
 
     let banner = (
