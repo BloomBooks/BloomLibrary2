@@ -98,7 +98,7 @@ export const AllResultsPage: React.FunctionComponent<{
             }
         }
     }
-    const title = subcollection.title;
+    const title = subcollection.richTextLabel;
     // The idea here is that by default we break things up by level. If we already did, divide by topic.
     // If we already used both, make a flat list.
     // This ignores any information in the collection itself about how it prefers to be broken up.

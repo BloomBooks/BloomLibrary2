@@ -66,7 +66,7 @@ export const RowOfPageCards: React.FunctionComponent<{
                 filter={childCollection.filter}
                 href={"/" + (props.parents ? props.parents + "~" : "") + key}
                 //pageType={props.bookShelfCategory}
-                img={childCollection.icon}
+                img={childCollection.iconForCardAndDefaultBanner}
             />
         );
     });

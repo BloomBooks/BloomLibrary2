@@ -55,24 +55,24 @@ export const ContentfulBanner: React.FunctionComponent<{
         (data as any).then(() => setGotData(true));
         return null;
     }
-    const backgroundImage = banner?.bannerImage?.fields?.file?.url ?? "";
+    const backgroundImage = banner?.backgroundImage?.fields?.file?.url ?? "";
     const logoUrl = banner?.logo?.fields?.file?.url ?? undefined;
     const textColor = backgroundImage ? "white" : "black";
 
     const darkenBackgroundImageFraction = backgroundImage ? 0.4 : 0;
     const linkColor = backgroundImage ? "white" : commonUI.colors.bloomBlue;
 
-    let bannerName = banner.name;
+    let bannerTitle = banner.title;
     const defaultBannerIds = [
         "Qm03fkNd1PWGX3KGxaZ2v", // default banner for others that lack one and other generated collections like search.
         "7v95c68TL9uJBe4pP5KTN0", // default language banner
         "7E1IHa5mYvLLSToJYh5vfW", // default topic banner
     ];
     if (defaultBannerIds.includes(props.id) && props.collection?.label) {
-        bannerName = props.collection.label;
+        bannerTitle = props.collection.label;
     }
 
-    //const titleLines = banner.Name;
+    //const titleLines = banner.title;
     // const secondTitleLine =
     //     titleLines.length > 1 ? <div> {titleLines[1]}</div> : "";
     return (
@@ -138,7 +138,7 @@ export const ContentfulBanner: React.FunctionComponent<{
                         >
                             <img
                                 src={logoUrl}
-                                alt={"logo for " + banner.name}
+                                alt={"logo for " + banner.title}
                                 css={css`
                                     height: 150px;
                                     margin-right: 50px;
@@ -173,7 +173,7 @@ export const ContentfulBanner: React.FunctionComponent<{
                                     /*flex-grow: 1; // push the rest to the bottom*/
                                 `}
                             >
-                                {bannerName}
+                                {bannerTitle}
                                 {/* {titleLines[0]}
                         //{secondTitleLine} */}
                             </h1>

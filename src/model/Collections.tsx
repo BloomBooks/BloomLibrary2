@@ -32,10 +32,10 @@ import { CachedTablesContext } from "../App";
 export interface ICollection2 {
     urlKey: string;
     label: string;
-    title: any; // rich text, use how??
+    richTextLabel: any; // rich text, use how??
     childCollections: ISubCollection[]; //
     banner: string; // contentful ID of banner object. (fields.banner.id)
-    icon: string; // url
+    iconForCardAndDefaultBanner: string; // url
     filter: IFilter;
     layout: string; // from layout.fields.name
     secondaryFilter?: (basicBookInfo: IBasicBookInfo) => boolean;
@@ -46,7 +46,7 @@ export interface ISubCollection {
     urlKey: string; // used in react router urls; can be used to look up in contentful
     label: string; // used in subheadings and cards
     filter: IFilter;
-    icon: string; // url
+    iconForCardAndDefaultBanner: string; // url
     childCollections: ISubCollection[]; // only the top level will have these
 }
 
@@ -70,11 +70,12 @@ export function getCollectionData(fields: any): ICollection2 {
     const result: ICollection2 = {
         urlKey: fields.urlKey as string,
         label: fields.label,
-        title: fields.title,
+        richTextLabel: fields.richTextLabel,
         filter: fields.filter,
         childCollections: getSubCollections(fields.childCollections),
         banner: bannerId,
-        icon: fields?.icon?.fields?.file?.url,
+        iconForCardAndDefaultBanner:
+            fields?.iconForCardAndDefaultBanner?.fields?.file?.url,
         layout: fields.layout?.fields?.name || "by-level",
         order,
     };
@@ -101,7 +102,8 @@ function getSubCollectionData(fields: any): ISubCollection | undefined {
         urlKey: fields.urlKey as string,
         label: fields.label,
         filter: fields.filter,
-        icon: fields?.icon?.fields?.file?.url,
+        iconForCardAndDefaultBanner:
+            fields?.iconForCardAndDefaultBanner?.fields?.file?.url,
         childCollections: getSubCollections(fields.childCollections),
     };
     return result;
@@ -117,10 +119,10 @@ export function makeLanguageCollection(
     return {
         urlKey: "language:" + langCode,
         label: languageDisplayName,
-        title: languageDisplayName,
+        richTextLabel: languageDisplayName,
         childCollections: [],
         banner: "7v95c68TL9uJBe4pP5KTN0", // default language banner
-        icon: "", // I think this will be unused so can stay blank
+        iconForCardAndDefaultBanner: "", // I think this will be unused so can stay blank
         filter: { language: langCode },
         layout: "by-level",
     };
@@ -154,11 +156,11 @@ function makeTopicCollection(topicName: string): ICollection2 {
     return {
         urlKey: "topic:" + topicName,
         label: topicName,
-        title: topicName,
+        richTextLabel: topicName,
         childCollections: [],
         filter: { topic: topicName },
         banner: "7E1IHa5mYvLLSToJYh5vfW", // standard default for topics
-        icon: "none",
+        iconForCardAndDefaultBanner: "none",
         layout: "by-level",
     };
 }
@@ -178,15 +180,15 @@ export function makeCollectionForSearch(
     }
     // Enhance: how can we modify title to indicate that it's restricted to books matching a search,
     // given that it's some unknown contentful representation of a rich text?
-    const result = {
+    const result: ICollection2 = {
         ...baseCollection,
         filter,
         label,
-        title: label,
+        richTextLabel: label,
         urlKey,
         childCollections: [],
         banner: "Qm03fkNd1PWGX3KGxaZ2v",
-        icon: "",
+        iconForCardAndDefaultBanner: "",
         layout: "by-level",
     };
     return result;
@@ -200,14 +202,14 @@ export function makeCollectionForPHash(phash: string): ICollection2 {
     const filter = { search: "phash:" + phash };
     const label = "Matching books";
     const urlKey = "phash:" + phash;
-    const result = {
+    const result: ICollection2 = {
         filter,
         label,
-        title: label,
+        richTextLabel: label,
         urlKey,
         childCollections: [],
         banner: "Qm03fkNd1PWGX3KGxaZ2v", // default
-        icon: "",
+        iconForCardAndDefaultBanner: "",
         layout: "by-level",
     };
     return result;
