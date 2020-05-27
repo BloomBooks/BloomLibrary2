@@ -59,16 +59,16 @@ export function getCollectionData(fields: any): ICollection2 {
     }
     let bannerId = fields.banner?.sys?.id;
     if (!bannerId) {
-        if (fields.key.startsWith("language:")) {
+        if (fields.urlKey.startsWith("language:")) {
             bannerId = "7v95c68TL9uJBe4pP5KTN0"; // also in makeLanguageCollection
-        } else if (fields.key.startsWith("topic:")) {
+        } else if (fields.urlKey.startsWith("topic:")) {
             bannerId = "7E1IHa5mYvLLSToJYh5vfW"; // also in makeTopicCollection
         } else {
             bannerId = "Qm03fkNd1PWGX3KGxaZ2v";
         }
     }
     const result: ICollection2 = {
-        urlKey: fields.key as string,
+        urlKey: fields.urlKey as string,
         label: fields.label,
         title: fields.title,
         filter: fields.filter,
@@ -94,11 +94,11 @@ function getSubCollections(childCollections: any[]): ISubCollection[] {
 }
 
 function getSubCollectionData(fields: any): ISubCollection | undefined {
-    if (!fields || !fields.key) {
+    if (!fields || !fields.urlKey) {
         return undefined;
     }
     const result: ISubCollection = {
-        urlKey: fields.key as string,
+        urlKey: fields.urlKey as string,
         label: fields.label,
         filter: fields.filter,
         icon: fields?.icon?.fields?.file?.url,
@@ -172,9 +172,9 @@ export function makeCollectionForSearch(
     if (baseCollection?.label) {
         label = baseCollection.label + " - " + label;
     }
-    let key = "search:" + search;
+    let urlKey = "search:" + search;
     if (baseCollection?.urlKey) {
-        key = baseCollection.urlKey + "/" + key;
+        urlKey = baseCollection.urlKey + "/" + urlKey;
     }
     // Enhance: how can we modify title to indicate that it's restricted to books matching a search,
     // given that it's some unknown contentful representation of a rich text?
@@ -183,7 +183,7 @@ export function makeCollectionForSearch(
         filter,
         label,
         title: label,
-        urlKey: key,
+        urlKey,
         childCollections: [],
         banner: "Qm03fkNd1PWGX3KGxaZ2v",
         icon: "",
@@ -199,12 +199,12 @@ export function makeCollectionForPHash(phash: string): ICollection2 {
     // a phash: into the search box would be missed.
     const filter = { search: "phash:" + phash };
     const label = "Matching books";
-    const key = "phash:" + phash;
+    const urlKey = "phash:" + phash;
     const result = {
         filter,
         label,
         title: label,
-        urlKey: key,
+        urlKey,
         childCollections: [],
         banner: "Qm03fkNd1PWGX3KGxaZ2v", // default
         icon: "",
@@ -222,7 +222,7 @@ export function useCollection(collectionName: string): useCollectionResponse {
     const { data, error, fetched, loading } = useContentful({
         contentType: "collection",
         query: {
-            "fields.key": `${collectionName}`,
+            "fields.urlKey": `${collectionName}`,
         },
     });
     if (loading || !fetched) {

@@ -41,7 +41,7 @@ export function makeCollectionForLevel(
     }
     const filter = { ...baseCollection.filter, search };
     let label = baseCollection.label + " - Level " + level;
-    const key = baseCollection.urlKey + "/level:" + level;
+    const urlKey = baseCollection.urlKey + "/level:" + level;
     if (level === "empty") {
         label = baseCollection.label + "- (missing a level)";
     }
@@ -52,7 +52,7 @@ export function makeCollectionForLevel(
         filter,
         label,
         title: label,
-        urlKey: key,
+        urlKey,
         layout: "by-topic",
     };
     if (level !== "empty") {
