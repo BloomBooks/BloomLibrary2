@@ -91,6 +91,9 @@ export const MetadataGroup: React.FunctionComponent<{
                     {"Features: "}
                     {props.book.features
                         ? props.book.features
+                              // Don't display the language-specific ones since we always have a generic one to go with it.
+                              // e.g. We might have [blind, blind:en]. Only display "Blind."
+                              .filter((f) => f.indexOf(":") < 0)
                               .map((f) => {
                                   return titleCase(f);
                               })
@@ -100,11 +103,9 @@ export const MetadataGroup: React.FunctionComponent<{
                 <div>
                     {"Tags: "}
                     {props.book.tags
-                        .filter(
-                            (t) =>
-                                !t.startsWith("system") &&
-                                // In Mar 2020, we copied bookshelf tags to the new bookshelves column (see below)
-                                !t.startsWith("bookshelf")
+                        .filter((t) =>
+                            // Whitelist only these tags. So that removes system, bookshelf, level, computedLevel, etc.
+                            ["topic", "region"].includes(t.split(":")[0])
                         )
                         .map((t) => {
                             return getTagDisplayName(t);
