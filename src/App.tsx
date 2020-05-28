@@ -12,6 +12,7 @@ import {
     Link,
     useRouteMatch,
     useParams,
+    Redirect,
 } from "react-router-dom";
 
 import { BrowseView } from "./components/BrowseView";
@@ -142,7 +143,18 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                     <Router>
                                         <Header />
                                         <Switch>
-                                            {" "}
+                                            {/* Alias from legacy blorg */}
+                                            <Route path={"/browse"}>
+                                                <Redirect to="/page/create~downloads" />
+                                            </Route>
+                                            <Route
+                                                path={[
+                                                    "/downloads", // Alias for convenience when telling people where to get Bloom
+                                                    "/installers", // Alias from legacy blorg
+                                                ]}
+                                            >
+                                                <Redirect to="/page/create~downloads" />
+                                            </Route>
                                             <Route
                                                 path="/_previewBanner/:id"
                                                 render={({ match }) => (
@@ -171,7 +183,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                 <ReadBookPage />
                                             </Route>
                                             <Route path="/about">
-                                                <ContentfulPage slug="about" />
+                                                <ContentfulPage urlKey="about" />
                                             </Route>
                                             <Route path="/grid">
                                                 <GridPage />
@@ -186,7 +198,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                 exact={true}
                                                 path={"/create"}
                                             >
-                                                <CollectionPage collectionNames="root.create" />
+                                                <CollectionPage collectionNames="create" />
                                             </Route>
                                             <Route path="/bulk">
                                                 <BulkEditPage />
@@ -296,17 +308,6 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                 }}
                                             />
                                             <Route
-                                                path="/category/:fullBookshelfKey*"
-                                                render={({ match }) => (
-                                                    <CategoryPageForBookshelf
-                                                        fullBookshelfKey={
-                                                            match.params
-                                                                .fullBookshelfKey
-                                                        }
-                                                    />
-                                                )}
-                                            />
-                                            <Route
                                                 path="/feature/:featureKey"
                                                 render={({ match }) => (
                                                     <FeaturePage
@@ -317,9 +318,25 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                     />
                                                 )}
                                             />
-                                            <Route path="/covid19">
+                                            {/* <Route path="/covid19">
                                                 <Covid19Page />
-                                            </Route>
+                                            </Route> */}
+                                            <Route
+                                                path="/page/:lineage/"
+                                                render={({ match }) => {
+                                                    const parts = match.params.lineage.split(
+                                                        "~"
+                                                    );
+                                                    const last =
+                                                        parts[parts.length - 1];
+
+                                                    return (
+                                                        <ContentfulPage
+                                                            urlKey={last}
+                                                        />
+                                                    );
+                                                }}
+                                            />
                                             <Route
                                                 path="/:collection/:filter+"
                                                 render={({ match }) => {

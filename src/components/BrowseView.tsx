@@ -146,7 +146,7 @@ export class BrowseView extends Component {
 
             // TODO: just look for a matching contentful pages after we've exhausted other possibilities
             case "about":
-                return <ContentfulPage slug="about" />;
+                return <ContentfulPage urlKey="about" />;
 
             default:
                 return "Unknown page type " + this.router.current?.pageType;

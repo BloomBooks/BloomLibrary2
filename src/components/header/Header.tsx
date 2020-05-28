@@ -12,16 +12,20 @@ import { commonUI } from "../../theme";
 import Link from "@material-ui/core/Link/Link";
 import { useMediaQuery } from "@material-ui/core";
 
-export const Header: React.FunctionComponent = (props) => {
+export const Header: React.FunctionComponent = () => {
     const searchBelow = !useMediaQuery("(min-width:500px)");
     const normalToobarHeight = "48px";
     const toolbarHeight = searchBelow ? "90px" : normalToobarHeight;
-
+    const s: string = window.location.pathname;
+    const inCreate = s.indexOf("/create") > -1;
+    const backgroundColor = inCreate
+        ? commonUI.colors.createArea
+        : commonUI.colors.bloomRed;
     return (
         <div
             css={css`
                 display: flex;
-                background-color: ${commonUI.colors.bloomRed};
+                background-color: ${backgroundColor};
                 height: ${toolbarHeight};
                 flex-shrink: 0;
                 padding: 10px;
@@ -40,6 +44,7 @@ export const Header: React.FunctionComponent = (props) => {
             >
                 <img src={logo} alt={"Bloom Logo"} />
             </Link>
+            {/* TODO: change this to a material UI <Tabs> control, with the area (read or create) selected by looking at the current url */}
             <div
                 css={css`
                     margin-left: 30px;
@@ -58,14 +63,14 @@ export const Header: React.FunctionComponent = (props) => {
                 >
                     Create
                 </Link>
-                <Link
+                {/* <Link
                     css={css`
                         margin-left: 15px !important;
                     `}
                     href="/about"
                 >
                     About
-                </Link>
+                </Link> */}
             </div>
             {searchBelow || (
                 <React.Fragment>

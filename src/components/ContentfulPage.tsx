@@ -7,13 +7,13 @@ import { useContentful } from "react-contentful";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import ReactMarkdown from "react-markdown";
 
-export const ContentfulPage: React.FunctionComponent<{ slug: string }> = (
+export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
     props
 ) => {
     const { data, error, fetched, loading } = useContentful({
         contentType: "page",
         query: {
-            "fields.slug": `${props.slug}`,
+            "fields.urlKey": `${props.urlKey}`,
         },
     });
     if (loading || !fetched) {
@@ -31,8 +31,20 @@ export const ContentfulPage: React.FunctionComponent<{ slug: string }> = (
     console.debug(data);
 
     return (
-        <div>
+        <div
+            css={css`
+                margin-left: 30px;
+                margin-right: 30px;
+                h1 {
+                    font-size: 2rem;
+                }
+                img {
+                    width: 200px;
+                }
+            `}
+        >
             <ReactMarkdown
+                escapeHtml={false}
                 source={(data as any).items[0].fields.markdownBody}
             />
             {/* Maybe we're going to remove this Richtext option entirely? Depend if we can get people to work in Markdown */}

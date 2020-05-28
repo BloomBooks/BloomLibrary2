@@ -13,6 +13,7 @@ import { BookCount } from "../BookCount";
 import { IFilter } from "../../IFilter";
 import { ICollection2, splitMedia } from "../../model/Collections";
 import { ImgWithCredits } from "../../ImgWithCredits";
+import { ButtonRow } from "../ButtonRow";
 export const ContentfulBanner: React.FunctionComponent<{
     id: string; // of the banner object on contentful
     collection?: ICollection2;
@@ -250,6 +251,12 @@ export const ContentfulBanner: React.FunctionComponent<{
                             {/* just a placeholder to push the imagecredits to the right
                              */}
                             <div></div>
+                            {banner.buttonRow && (
+                                <ButtonRow
+                                    parents={"create"}
+                                    collection={banner.buttonRow.fields}
+                                />
+                            )}
                             {/* there should always be imageCredits, but they may not
                         have arrived yet */}
                             {banner.imageCredits && (

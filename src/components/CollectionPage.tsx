@@ -29,6 +29,7 @@ import { Breadcrumbs } from "./Breadcrumbs";
 import { TopLevelSearch } from "./TopLevelSearch";
 import { HomeBanner } from "./banners/HomeBanner";
 import { IFilter, InCirculationOptions } from "../IFilter";
+import { ButtonRow } from "./ButtonRow";
 
 // export interface IBanner {
 //     name: string;
