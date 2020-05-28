@@ -11,3 +11,9 @@ export function processRegExp(stringToEscape: string) {
         ? matches[1] // first matching group is second element in array
         : stringToEscape.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
 }
+
+// Removes punctuation from a string
+export function removePunctuation(text: string): string {
+    const punctuationRegEx = /[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-./:;<=>?@[\]^_`{|}~]/g;
+    return text.replace(punctuationRegEx, "");
+}
