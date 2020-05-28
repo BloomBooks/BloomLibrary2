@@ -4,17 +4,15 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useContext, Fragment } from "react";
+import React, { Fragment } from "react";
 import { CheapCard } from "./CheapCard";
 import { IFilter } from "../IFilter";
-import Img from "react-image";
 import { BookCount } from "./BookCount";
 //import teamIcon from "../assets/team.svg";
 import booksIcon from "../assets/books.svg";
-
-import { useTheme } from "@material-ui/core";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { Document } from "@contentful/rich-text-types";
+import { ImgWithCredits } from "../ImgWithCredits";
 interface IProps {
     title: string;
     richTextLabel?: Document;
@@ -23,12 +21,12 @@ interface IProps {
     href: string;
     filter: IFilter;
     img: string;
+    credits?: string;
+    altText?: string;
 }
 
 // CategoryCards are things like publisher, projects, organizations. "CollectionCard" might be a better name.
 const CategoryCard: React.FunctionComponent<IProps> = (props) => {
-    const theme = useTheme();
-
     let titleElement = <React.Fragment />;
     let titleElementIfNoImage = <div>{props.title}</div>;
     if (!props.hideTitle) {
@@ -85,11 +83,12 @@ const CategoryCard: React.FunctionComponent<IProps> = (props) => {
                 alt="A stack of generic books"
             ></img>
         );
-    } else if (props.img != "none") {
+    } else if (props.img !== "none") {
         const maxHeight = props.hideTitle ? 129 : 100;
         // Usual case, show the image defined in the collection
         imgElement = (
-            <Img
+            <ImgWithCredits
+                credits={props.credits}
                 src={props.img}
                 css={css`
                     max-height: ${maxHeight}px;
@@ -103,10 +102,11 @@ const CategoryCard: React.FunctionComponent<IProps> = (props) => {
                 loader={titleElementIfNoImage}
                 // If we could not get an image, show the text title
                 unloader={titleElementIfNoImage}
-                // If we're hiding the title, we'd better have it as alt-text.
-                // If we're showing it anyway, the image adds no useful content,
+                // If we have an explicit altText, use it. Otherwise,
+                // if we're hiding the title, we'd better have it as alt-text.
+                // If we're showing the title anyway, the image adds no useful content,
                 // so display an explicit empty alt text to indicate it is only decorative.
-                alt={props.hideTitle ? props.title : ""}
+                alt={props.altText || (props.hideTitle ? props.title : "")}
             />
         );
     }

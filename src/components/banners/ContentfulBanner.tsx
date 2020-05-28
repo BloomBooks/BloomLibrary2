@@ -11,7 +11,8 @@ import { commonUI } from "../../theme";
 import { Breadcrumbs } from "../Breadcrumbs";
 import { BookCount } from "../BookCount";
 import { IFilter } from "../../IFilter";
-import { ICollection2 } from "../../model/Collections";
+import { ICollection2, splitMedia } from "../../model/Collections";
+import { ImgWithCredits } from "../../ImgWithCredits";
 export const ContentfulBanner: React.FunctionComponent<{
     id: string; // of the banner object on contentful
     collection?: ICollection2;
@@ -57,6 +58,9 @@ export const ContentfulBanner: React.FunctionComponent<{
     }
     const backgroundImage = banner?.backgroundImage?.fields?.file?.url ?? "";
     let logoUrl = banner?.logo?.fields?.file?.url ?? undefined;
+    let { credits: logoCredits, altText: logoAltText } = splitMedia(
+        banner?.logo
+    );
     const textColor = backgroundImage ? "white" : "black";
 
     const darkenBackgroundImageFraction = backgroundImage ? 0.4 : 0;
@@ -84,6 +88,8 @@ export const ContentfulBanner: React.FunctionComponent<{
         }
         if (props.collection?.iconForCardAndDefaultBanner) {
             logoUrl = props.collection.iconForCardAndDefaultBanner;
+            logoAltText = props.collection.iconAltText ?? "";
+            logoCredits = props.collection.iconCredits ?? "";
         }
         hideTitle = props.collection?.hideLabelOnCardAndDefaultBanner;
     }
@@ -152,9 +158,14 @@ export const ContentfulBanner: React.FunctionComponent<{
                                 max-height: 260px;
                             `}
                         >
-                            <img
+                            <ImgWithCredits
+                                credits={logoCredits}
                                 src={logoUrl}
-                                alt={"logo for " + banner.title}
+                                alt={
+                                    logoAltText
+                                        ? logoAltText
+                                        : "logo for " + banner.title
+                                }
                                 css={css`
                                     height: 150px;
                                     margin-right: 50px;

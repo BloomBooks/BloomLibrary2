@@ -34,6 +34,8 @@ export interface ISubCollection {
     richTextLabel?: Document; // rich text
     filter: IFilter;
     iconForCardAndDefaultBanner: string; // url
+    iconCredits?: string;
+    iconAltText?: string;
     hideLabelOnCardAndDefaultBanner?: boolean;
     childCollections: ISubCollection[]; // only the top level will have these
 }
@@ -64,19 +66,43 @@ export function getCollectionData(fields: any): ICollection2 {
         }
     }
     const result: ICollection2 = {
+        ...getSubCollectionData(fields)!,
+        banner: bannerId,
+        layout: fields.layout?.fields?.name || "by-level",
+        order,
+    };
+
+    return result;
+}
+
+function getSubCollectionData(fields: any): ISubCollection | undefined {
+    if (!fields || !fields.urlKey) {
+        return undefined;
+    }
+    const { credits: iconCredits, altText: iconAltText } = splitMedia(
+        fields?.iconForCardAndDefaultBanner
+    );
+    const result: ISubCollection = {
         urlKey: fields.urlKey as string,
         label: fields.label,
         richTextLabel: fields.richTextLabel,
         filter: fields.filter,
-        childCollections: getSubCollections(fields.childCollections),
-        hideLabelOnCardAndDefaultBanner: fields.hideLabelOnCardAndDefaultBanner,
-        banner: bannerId,
         iconForCardAndDefaultBanner:
             fields?.iconForCardAndDefaultBanner?.fields?.file?.url,
-        layout: fields.layout?.fields?.name || "by-level",
-        order,
+        iconCredits,
+        iconAltText,
+        hideLabelOnCardAndDefaultBanner: fields.hideLabelOnCardAndDefaultBanner,
+        childCollections: getSubCollections(fields.childCollections),
     };
     return result;
+}
+
+export function splitMedia(media: any): { credits: string; altText: string } {
+    if (!media?.fields?.description) {
+        return { credits: "", altText: "" };
+    }
+    const parts = (media.fields.description as string).split("Credits:");
+    return { altText: parts[0].trim(), credits: (parts[1] ?? "").trim() };
 }
 
 function getSubCollections(childCollections: any[]): ISubCollection[] {
@@ -89,23 +115,6 @@ function getSubCollections(childCollections: any[]): ISubCollection[] {
         .map((x: any) => getSubCollectionData(x.fields))
         .filter((y) => y)
         .map((z) => z!);
-}
-
-function getSubCollectionData(fields: any): ISubCollection | undefined {
-    if (!fields || !fields.urlKey) {
-        return undefined;
-    }
-    const result: ISubCollection = {
-        urlKey: fields.urlKey as string,
-        label: fields.label,
-        richTextLabel: fields.richTextLabel,
-        filter: fields.filter,
-        iconForCardAndDefaultBanner:
-            fields?.iconForCardAndDefaultBanner?.fields?.file?.url,
-        hideLabelOnCardAndDefaultBanner: fields.hideLabelOnCardAndDefaultBanner,
-        childCollections: getSubCollections(fields.childCollections),
-    };
-    return result;
 }
 
 export function makeLanguageCollection(
