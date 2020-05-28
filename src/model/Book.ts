@@ -3,6 +3,7 @@ import { updateBook } from "../connection/LibraryUpdates";
 import { ArtifactVisibilitySettingsGroup } from "./ArtifactVisibilitySettings";
 import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
 import { ILanguage } from "./Language";
+import { removePunctuation } from "../Utilities";
 const stem = require("wink-porter2-stemmer");
 
 export function createBookFromParseServerData(pojo: any): Book {
@@ -228,7 +229,7 @@ export class Book {
     }
 
     public static stemKeyword(keyword: string): string {
-        return stem(keyword.toLowerCase());
+        return stem(removePunctuation(keyword.toLowerCase()));
     }
 
     public saveArtifactVisibilityToParseServer() {

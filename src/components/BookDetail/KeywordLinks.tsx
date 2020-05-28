@@ -9,7 +9,15 @@ export const KeywordLinks: React.FunctionComponent<{
             <span>
                 {props.book.keywords.map(
                     (keyword: string, index: number, arr: string[]) => {
-                        const includeDelimiter = index < arr.length - 1;
+                        let delimiter = ", ";
+
+                        if (keyword.endsWith(",")) {
+                            // It already ends with a comma, so no need to insert a duplicate comma. Just a space.
+                            delimiter = " ";
+                        } else if (index === arr.length - 1) {
+                            // The very last tag. No need for any delimiter.
+                            delimiter = "";
+                        }
 
                         return (
                             <span>
@@ -19,7 +27,7 @@ export const KeywordLinks: React.FunctionComponent<{
                                 >
                                     {keyword}
                                 </Link>
-                                {includeDelimiter ? ", " : ""}
+                                {delimiter}
                             </span>
                         );
                     }
