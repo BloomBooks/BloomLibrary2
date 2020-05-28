@@ -62,15 +62,26 @@ export const ContentfulBanner: React.FunctionComponent<{
     const darkenBackgroundImageFraction = backgroundImage ? 0.4 : 0;
     const linkColor = backgroundImage ? "white" : commonUI.colors.bloomBlue;
 
-    let bannerTitle = banner.title;
+    let bannerTitle: React.ReactNode = (
+        <React.Fragment>{banner.title}</React.Fragment>
+    );
     let hideTitle = banner.hideTitle;
     const defaultBannerIds = [
         "Qm03fkNd1PWGX3KGxaZ2v", // default banner for others that lack one and other generated collections like search.
         "7v95c68TL9uJBe4pP5KTN0", // default language banner
         "7E1IHa5mYvLLSToJYh5vfW", // default topic banner
     ];
-    if (defaultBannerIds.includes(props.id) && props.collection?.label) {
-        bannerTitle = props.collection.label;
+    if (defaultBannerIds.includes(props.id)) {
+        if (props.collection?.label) {
+            bannerTitle = (
+                <React.Fragment>{props.collection.label}</React.Fragment>
+            );
+        }
+        if (props.collection?.richTextLabel) {
+            bannerTitle = documentToReactComponents(
+                props.collection.richTextLabel
+            );
+        }
         if (props.collection?.iconForCardAndDefaultBanner) {
             logoUrl = props.collection.iconForCardAndDefaultBanner;
         }
@@ -133,7 +144,7 @@ export const ContentfulBanner: React.FunctionComponent<{
                         flex-direction: ${logoUrl ? "row" : "column"};
                     `}
                 >
-                    {logoUrl && (
+                    {logoUrl && logoUrl !== "none" && (
                         <div
                             css={css`
                                 display: flex;
@@ -176,6 +187,23 @@ export const ContentfulBanner: React.FunctionComponent<{
                                     font-size: 36px;
                                     margin-top: 0;
                                     /*flex-grow: 1; // push the rest to the bottom*/
+                                    // For the sake of uniformity, the only styling we allow in richTextLabel is normal, h1, h2, and h3.
+                                    // Here we define what they will look like. H1 continues to get the default
+                                    // 36px we use for plain labels. (Review: or, make H2 that, and let H1 be a way to get bigger?)
+                                    h1 {
+                                        font-size: 36px; // rich text will produce an h1 nested inside the h1 above.
+                                    }
+                                    h2 {
+                                        font-size: 32px;
+                                        font-weight: 500; // our master style sheet makes H1 this, don't want h2 bolder
+                                    }
+                                    h3 {
+                                        font-size: 28px;
+                                        font-weight: 500;
+                                    }
+                                    p {
+                                        font-size: 24px;
+                                    }
                                 `}
                             >
                                 {bannerTitle}
