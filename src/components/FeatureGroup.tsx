@@ -1,5 +1,4 @@
 import React from "react";
-import CategoryCard from "./CategoryCard";
 import { featureSpecs } from "./FeatureHelper";
 import { CategoryCardGroup } from "./CategoryCardGroup";
 
@@ -32,16 +31,17 @@ export const FeatureGroup: React.FunctionComponent<IProps> = (props) => {
         const featureKey = featureSpec.featureKey;
 
         return (
-            <CategoryCard
-                key={featureKey}
-                title={featureSpec.featureTitle}
-                bookCount=""
-                filter={featureSpec.filter}
-                href={"feature/" + featureKey}
-                icon={featureSpec.icon}
-                iconScale={featureSpec.iconScale}
-                img={""}
-            />
+            <div>Needs to be reimplemented</div>
+            // <CategoryCard
+            //     key={featureKey}
+            //     title={featureSpec.featureTitle}
+            //     bookCount=""
+            //     filter={featureSpec.filter}
+            //     href={"feature/" + featureKey}
+            //     icon={featureSpec.icon}
+            //     iconScale={featureSpec.iconScale}
+            //     img={""}
+            // />
         );
     });
 

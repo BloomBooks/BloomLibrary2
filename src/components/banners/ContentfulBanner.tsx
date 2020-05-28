@@ -56,13 +56,14 @@ export const ContentfulBanner: React.FunctionComponent<{
         return null;
     }
     const backgroundImage = banner?.backgroundImage?.fields?.file?.url ?? "";
-    const logoUrl = banner?.logo?.fields?.file?.url ?? undefined;
+    let logoUrl = banner?.logo?.fields?.file?.url ?? undefined;
     const textColor = backgroundImage ? "white" : "black";
 
     const darkenBackgroundImageFraction = backgroundImage ? 0.4 : 0;
     const linkColor = backgroundImage ? "white" : commonUI.colors.bloomBlue;
 
     let bannerTitle = banner.title;
+    let hideTitle = banner.hideTitle;
     const defaultBannerIds = [
         "Qm03fkNd1PWGX3KGxaZ2v", // default banner for others that lack one and other generated collections like search.
         "7v95c68TL9uJBe4pP5KTN0", // default language banner
@@ -70,6 +71,10 @@ export const ContentfulBanner: React.FunctionComponent<{
     ];
     if (defaultBannerIds.includes(props.id) && props.collection?.label) {
         bannerTitle = props.collection.label;
+        if (props.collection?.iconForCardAndDefaultBanner) {
+            logoUrl = props.collection.iconForCardAndDefaultBanner;
+        }
+        hideTitle = props.collection?.hideLabelOnCardAndDefaultBanner;
     }
 
     //const titleLines = banner.title;
@@ -165,7 +170,7 @@ export const ContentfulBanner: React.FunctionComponent<{
                             color: white;
                         `}
                     >
-                        {banner.hideTitle || (
+                        {hideTitle || (
                             <h1
                                 css={css`
                                     font-size: 36px;

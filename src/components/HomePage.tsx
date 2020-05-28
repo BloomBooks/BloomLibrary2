@@ -6,7 +6,6 @@ import { IFilter, InCirculationOptions } from "../IFilter";
 import { HomeBanner } from "./banners/HomeBanner";
 import { ListOfBookGroups } from "./ListOfBookGroups";
 import { FeatureGroup } from "./FeatureGroup";
-import { SpecialInterestGroup } from "./SpecialInterestsGroup";
 import { TopicGroup } from "./TopicGroup";
 import { RowOfPageCards, RowOfPageCardsForKey } from "./RowOfPageCards";
 
@@ -30,7 +29,7 @@ export const HomePage: React.FunctionComponent = () => {
                     filter={{}}
                     order={"-createdAt"}
                 />
-                <SpecialInterestGroup title="Special Interests" />
+                {/* <SpecialInterestGroup title="Special Interests" /> */}
 
                 <TopicGroup />
                 <BookshelfGroup

@@ -62,6 +62,8 @@ export const RowOfPageCards: React.FunctionComponent<{
             <CategoryCard
                 key={key}
                 title={childCollection.label || ""}
+                richTextLabel={childCollection.richTextLabel}
+                hideTitle={childCollection.hideLabelOnCardAndDefaultBanner}
                 bookCount="??"
                 filter={childCollection.filter}
                 href={"/" + (props.parents ? props.parents + "~" : "") + key}

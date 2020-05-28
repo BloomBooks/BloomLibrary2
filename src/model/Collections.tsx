@@ -9,6 +9,7 @@ import { ExternalLink } from "../components/banners/ExternalLink";
 import { getLanguageNamesFromCode, ILanguage } from "./Language";
 import { useContentful } from "react-contentful";
 import { CachedTablesContext } from "../App";
+import { Document } from "@contentful/rich-text-types";
 
 /* From original design: Each collection has
     id
@@ -27,27 +28,22 @@ import { CachedTablesContext } from "../App";
         Blurb
 */
 
-// This is supposed to correspond to the (data as any).fields that we will actually get
-// back from a contenful query on "collection", with a few tweaks
-export interface ICollection2 {
-    urlKey: string;
-    label: string;
-    richTextLabel: any; // rich text, use how??
-    childCollections: ISubCollection[]; //
-    banner: string; // contentful ID of banner object. (fields.banner.id)
-    iconForCardAndDefaultBanner: string; // url
-    filter: IFilter;
-    layout: string; // from layout.fields.name
-    secondaryFilter?: (basicBookInfo: IBasicBookInfo) => boolean;
-    order?: string; // suitable for parse server order: param (e.g., -createdAt)
-}
-
 export interface ISubCollection {
     urlKey: string; // used in react router urls; can be used to look up in contentful
     label: string; // used in subheadings and cards
+    richTextLabel?: Document; // rich text
     filter: IFilter;
     iconForCardAndDefaultBanner: string; // url
+    hideLabelOnCardAndDefaultBanner?: boolean;
     childCollections: ISubCollection[]; // only the top level will have these
+}
+// This is supposed to correspond to the (data as any).fields that we will actually get
+// back from a contenful query on "collection", with a few tweaks
+export interface ICollection2 extends ISubCollection {
+    banner: string; // contentful ID of banner object. (fields.banner.id)
+    layout: string; // from layout.fields.name
+    secondaryFilter?: (basicBookInfo: IBasicBookInfo) => boolean;
+    order?: string; // suitable for parse server order: param (e.g., -createdAt)
 }
 
 export function getCollectionData(fields: any): ICollection2 {
@@ -73,6 +69,7 @@ export function getCollectionData(fields: any): ICollection2 {
         richTextLabel: fields.richTextLabel,
         filter: fields.filter,
         childCollections: getSubCollections(fields.childCollections),
+        hideLabelOnCardAndDefaultBanner: fields.hideLabelOnCardAndDefaultBanner,
         banner: bannerId,
         iconForCardAndDefaultBanner:
             fields?.iconForCardAndDefaultBanner?.fields?.file?.url,
@@ -101,9 +98,11 @@ function getSubCollectionData(fields: any): ISubCollection | undefined {
     const result: ISubCollection = {
         urlKey: fields.urlKey as string,
         label: fields.label,
+        richTextLabel: fields.richTextLabel,
         filter: fields.filter,
         iconForCardAndDefaultBanner:
             fields?.iconForCardAndDefaultBanner?.fields?.file?.url,
+        hideLabelOnCardAndDefaultBanner: fields.hideLabelOnCardAndDefaultBanner,
         childCollections: getSubCollections(fields.childCollections),
     };
     return result;
@@ -119,7 +118,6 @@ export function makeLanguageCollection(
     return {
         urlKey: "language:" + langCode,
         label: languageDisplayName,
-        richTextLabel: languageDisplayName,
         childCollections: [],
         banner: "7v95c68TL9uJBe4pP5KTN0", // default language banner
         iconForCardAndDefaultBanner: "", // I think this will be unused so can stay blank
@@ -156,7 +154,6 @@ function makeTopicCollection(topicName: string): ICollection2 {
     return {
         urlKey: "topic:" + topicName,
         label: topicName,
-        richTextLabel: topicName,
         childCollections: [],
         filter: { topic: topicName },
         banner: "7E1IHa5mYvLLSToJYh5vfW", // standard default for topics
@@ -184,7 +181,6 @@ export function makeCollectionForSearch(
         ...baseCollection,
         filter,
         label,
-        richTextLabel: label,
         urlKey,
         childCollections: [],
         banner: "Qm03fkNd1PWGX3KGxaZ2v",
@@ -205,7 +201,6 @@ export function makeCollectionForPHash(phash: string): ICollection2 {
     const result: ICollection2 = {
         filter,
         label,
-        richTextLabel: label,
         urlKey,
         childCollections: [],
         banner: "Qm03fkNd1PWGX3KGxaZ2v", // default

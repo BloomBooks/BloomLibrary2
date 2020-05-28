@@ -13,57 +13,69 @@ import { BookCount } from "./BookCount";
 import booksIcon from "../assets/books.svg";
 
 import { useTheme } from "@material-ui/core";
+import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
+import { Document } from "@contentful/rich-text-types";
 interface IProps {
-    preTitle?: string;
     title: string;
+    richTextLabel?: Document;
+    hideTitle?: boolean;
     bookCount?: string;
-    href?: string; // todo: not optional
-    filter: IFilter; // obsolete
-    pageType?: string; // obsolete
+    href: string;
+    filter: IFilter;
     img: string;
-
-    icon?: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
-    // Some icons "look" bigger than others, so we can scale them to make them look more similar.
-    // The number is a percentage less than (scale down) or greater than (scale up) 100.
-    iconScale?: number;
-    iconAltText?: string;
 }
 
 // CategoryCards are things like publisher, projects, organizations. "CollectionCard" might be a better name.
 const CategoryCard: React.FunctionComponent<IProps> = (props) => {
     const theme = useTheme();
 
-    const preTitleUI = props.preTitle ? (
-        <div
-            css={css`
-                font-size: 9pt;
-            `}
-        >
-            {props.preTitle}
-        </div>
-    ) : undefined;
-
-    function getTitleAndImageElement(imageElement: JSX.Element) {
-        return (
+    let titleElement = <React.Fragment />;
+    let titleElementIfNoImage = <div>{props.title}</div>;
+    if (!props.hideTitle) {
+        titleElementIfNoImage = <React.Fragment />; // showing title anyway, don't need it in place of image
+        titleElement = (
             <Fragment>
                 <h2
                     css={css`
                         text-align: center;
-                        flex-grow: 1; // push the rest to the bottom5
+                        flex-grow: 1; // push the rest to the bottom
+                        margin-bottom: 5px;
+                        // For the sake of uniformity, the only styling we allow in richTextLabel is normal, h1, h2, and h3.
+                        // Here we define what they will look like.
+                        h1,
+                        h2,
+                        h3,
+                        p {
+                            text-align: center;
+                            margin-bottom: 0;
+                            margin-top: 0;
+                            font-weight: bold;
+                        }
+                        h1 {
+                            font-size: 16px;
+                        }
+                        h2 {
+                            font-size: 14px;
+                        }
+                        h3 {
+                            font-size: 12px;
+                        }
+                        p {
+                            font-size: 10px;
+                        }
                     `}
                 >
-                    {preTitleUI}
-                    {props.title}
+                    {props.richTextLabel
+                        ? documentToReactComponents(props.richTextLabel)
+                        : props.title}
                 </h2>
-                {imageElement}
             </Fragment>
         );
     }
 
-    const titleElementIfNoImage = getTitleAndImageElement(
-        props.img === "none" ? (
-            <React.Fragment />
-        ) : (
+    let imgElement = <React.Fragment />;
+    if (!props.img) {
+        imgElement = (
             <img
                 src={booksIcon}
                 css={css`
@@ -72,44 +84,34 @@ const CategoryCard: React.FunctionComponent<IProps> = (props) => {
                 `}
                 alt="A stack of generic books"
             ></img>
-        )
-    );
-
-    const iconScaleAsDecimal = props.iconScale ? props.iconScale / 100 : 1;
-    const titleAndIconIfIconDefined =
-        props.icon &&
-        getTitleAndImageElement(
-            // Todo: possibly, we want a title here! That's what the method name
-            // indicates. But some images may already have the relevant text,
-            // in which case we don't...so we need some way to tell from the collection.
-            <div
-                css={css`
-                    height: 80px;
-                    margin: auto;
-                    margin-bottom: 10px;
-                `}
-            >
-                {props.icon({
-                    // TODO: how to get alt text on this mysterious thing?
-                    //props.iconAltText,
-                    fill: theme.palette.secondary.main,
-                    style: {
-                        margin: "auto",
-                        height: "70px",
-                        width: `${60 * iconScaleAsDecimal}px`,
-                    },
-                })}
-            </div>
         );
+    } else if (props.img != "none") {
+        const maxHeight = props.hideTitle ? 129 : 100;
+        // Usual case, show the image defined in the collection
+        imgElement = (
+            <Img
+                src={props.img}
+                css={css`
+                    max-height: ${maxHeight}px;
+                    max-width: 198px;
+                    margin-left: auto;
+                    margin-right: auto;
+                    margin-top: auto;
+                    margin-bottom: ${props.hideTitle ? "auto" : "10px"};
+                `}
+                // While we're waiting, show the text title
+                loader={titleElementIfNoImage}
+                // If we could not get an image, show the text title
+                unloader={titleElementIfNoImage}
+                // If we're hiding the title, we'd better have it as alt-text.
+                // If we're showing it anyway, the image adds no useful content,
+                // so display an explicit empty alt text to indicate it is only decorative.
+                alt={props.hideTitle ? props.title : ""}
+            />
+        );
+    }
 
-    const {
-        bookCount,
-        icon,
-        iconScale,
-        pageType,
-        preTitle,
-        ...propsToPassDown
-    } = props; // prevent react warnings
+    const { bookCount, ...propsToPassDown } = props; // prevent react warnings
     // make the cards smaller vertically if they purposely have no image, not even
     // the default one. Otherwise, let the default CheapCard height prevail.
     const height = props.img === "none" ? "height: 100px" : "";
@@ -122,34 +124,9 @@ const CategoryCard: React.FunctionComponent<IProps> = (props) => {
                 ${height}
             `}
             href={props.href}
-            // onClick={() => {
-            //     router!.push({
-            //         title: props.title,
-            //         pageType: props.pageType ? props.pageType : "category",
-            //         filter: props.filter,
-            //     });
-            // }}
         >
-            {titleAndIconIfIconDefined}
-
-            {/* We want to show an image for the category if we have one */}
-            {/* Note, react-image (Img) currently breaks strict mode. See app.tsx */}
-            {!props.icon && (
-                <Img
-                    src={props.img}
-                    css={css`
-                        max-height: 129px;
-                        max-width: 198px;
-                        margin-left: auto;
-                        margin-right: auto;
-                        margin-top: auto; // at the moment, seems to work best without margin-bottom
-                    `}
-                    // While we're waiting, show the text title
-                    loader={titleElementIfNoImage}
-                    // If we could not get an image, show the text title
-                    unloader={titleElementIfNoImage}
-                />
-            )}
+            {titleElement}
+            {imgElement}
 
             <div
                 css={css`

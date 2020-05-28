@@ -104,7 +104,7 @@ export const BookshelfGroup: React.FunctionComponent<IProps> = (props) => {
             return (
                 <CategoryCard
                     key={fullBookshelfKey}
-                    preTitle={bookshelf.countryDisplayName}
+                    //preTitle={bookshelf.countryDisplayName}
                     title={bookshelf.displayName || ""}
                     bookCount="??"
                     filter={{
