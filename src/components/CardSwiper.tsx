@@ -21,8 +21,12 @@ export const CardSwiper: React.FunctionComponent<{
         // we don't see the whole of the More card before the scroll arrow disappears,
         // making it very easy to click the More card unintentionally.
         slidesOffsetAfter: 100,
+        // We don't want any slidesOffsetBefore, but if it is zero and slidesOffsetAfter is not,
+        // watchOverflow doesn't work. See https://github.com/nolimits4web/swiper/pull/3291.
+        slidesOffsetBefore: 0.01,
         threshold: 10, // drag of less than 10px not recognized, therefore acts as normal click.
         //preventClicks: false, // Even a long drag activates the link
+        watchOverflow: true, // prevents sliding and showing arrows when all cards fit
     };
 
     const [swiper, setSwiper] = useState<any | null>(null);
