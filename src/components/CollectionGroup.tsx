@@ -18,11 +18,11 @@ import {
 import { BookCard } from "./BookCard";
 import { MoreCard } from "./MoreCard";
 import { CardSwiper } from "./CardSwiper";
-import { ICollection2 } from "../model/Collections";
+import { ICollection } from "../model/Collections";
 
 interface IProps {
     title?: string;
-    collection: ICollection2;
+    collection: ICollection;
     //order?: string; another collection prop?
     // I don't know... this could be "bookLimit" instead "rows". Have to think in terms
     // of mobile versus big screen.... hmmm...

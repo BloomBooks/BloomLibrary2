@@ -5,7 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import { Book } from "../../model/Book";
 
-import React, { useState, useEffect, ChangeEvent, useContext } from "react";
+import React, { useState } from "react";
 import {
     TextField,
     FormLabel,
@@ -15,7 +15,6 @@ import {
     Button,
 } from "@material-ui/core";
 import { observer } from "mobx-react";
-import { RouterContext } from "../../Router";
 import { HideBookControl } from "./HideBookControl";
 import {
     TagsChooser,
@@ -32,18 +31,17 @@ const borderColor = "#b0e1e8"; // or perhaps border color ${theme.palette.second
 // This React functional component displays some staff controls, shown (for example)
 // in the book detail page when the logged-in use is an moderator.
 const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
-    const router = useContext(RouterContext);
-
     // Whether anything has been edited and not yet saved.
     const [modified, setModifiedState] = useState(false);
 
+    // Todo: react router replacement for this.
     // Keeps the router in sync with our modified flag. The router
     // will prevent navigation when something needs saving.
-    useEffect(() => {
-        if (router) {
-            router.waitingOnSaveOrCancel = modified;
-        }
-    }, [modified, router]);
+    // useEffect(() => {
+    //     if (router) {
+    //         router.waitingOnSaveOrCancel = modified;
+    //     }
+    // }, [modified, router]);
 
     const handleSummaryChange = (
         event: React.ChangeEvent<HTMLInputElement>
@@ -96,7 +94,8 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
         // router.waitingOnSaveOrCancel until the next render.
         // It's also not necessary, because the reload reconstructs the page
         // completely, destroying all the pre-existing state.
-        router!.waitingOnSaveOrCancel = false;
+        // Todo: react router equivalent
+        //router!.waitingOnSaveOrCancel = false;
         document.location.reload();
     };
 

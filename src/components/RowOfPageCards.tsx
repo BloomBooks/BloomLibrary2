@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import {
-    ICollection2,
+    ICollection,
     getCollectionData,
     useCollection,
 } from "../model/Collections";
@@ -43,7 +43,7 @@ export const RowOfPageCardsForKey: React.FunctionComponent<{
 };
 
 export const RowOfPageCards: React.FunctionComponent<{
-    collection: ICollection2;
+    collection: ICollection;
     parents?: string;
 }> = (props) => {
     if (

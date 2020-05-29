@@ -2,12 +2,12 @@ import React from "react";
 import { BookGroup } from "./BookGroup";
 import { IFilter } from "../IFilter";
 import { getBestLevelStringOrEmpty } from "../connection/LibraryQueryHooks";
-import { ICollection2 } from "../model/Collections";
+import { ICollection } from "../model/Collections";
 import { CollectionGroup } from "./CollectionGroup";
 
 // For each level (whether set by a human or just computed), show a row of books for that level.
 export const LevelGroups: React.FunctionComponent<{
-    collection: ICollection2;
+    collection: ICollection;
     parents?: string;
 }> = (props) => {
     return (
@@ -34,9 +34,9 @@ export const LevelGroups: React.FunctionComponent<{
 };
 
 export function makeCollectionForLevel(
-    baseCollection: ICollection2,
+    baseCollection: ICollection,
     level: string
-): ICollection2 {
+): ICollection {
     let search = "level:" + level;
     if (baseCollection.filter?.search) {
         search += " " + baseCollection.filter.search;

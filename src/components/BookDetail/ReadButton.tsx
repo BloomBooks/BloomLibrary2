@@ -7,7 +7,6 @@ import { jsx } from "@emotion/core";
 import React, { useContext } from "react";
 import Button from "@material-ui/core/Button";
 import ReadIcon from "./read.svg";
-import { RouterContext } from "../../Router";
 import { commonUI } from "../../theme";
 
 interface IProps {
@@ -16,7 +15,6 @@ interface IProps {
     preferredLanguageIso?: string;
 }
 export const ReadButton: React.FunctionComponent<IProps> = (props) => {
-    const router = useContext(RouterContext);
     return (
         <Button
             variant="contained"

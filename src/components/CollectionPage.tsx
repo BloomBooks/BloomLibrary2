@@ -1,43 +1,20 @@
 import React, { useEffect, useState, useMemo, useContext } from "react";
-import { ByLevelPage } from "./PublisherPages";
-import { EnablingWritersPage } from "./EnablingWritersPage";
+
 //import { CachedTablesContext } from "../App";
-import { useContentful } from "react-contentful";
 import { ContentfulBanner } from "./banners/ContentfulBanner";
-import {
-    ICollection2,
-    ISubCollection,
-    getCollectionData,
-    makeLanguageCollection,
-    useCollection,
-} from "../model/Collections";
-import { RowOfPageCards, RowOfPageCardsForKey } from "./RowOfPageCards";
-import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
+import { useCollection } from "../model/Collections";
+import { RowOfPageCardsForKey } from "./RowOfPageCards";
 import { LevelGroups } from "./LevelGroups";
 import { ListOfBookGroups } from "./ListOfBookGroups";
 import { LanguageGroup } from "./LanguageGroup";
-import { CachedTablesContext } from "../App";
-import { CustomizableBanner } from "./banners/CustomizableBanner";
-import { getLanguageBannerSpec } from "./banners/LanguageCustomizations";
-import { PublisherBanner } from "./banners/PublisherBanner";
+
 import { CollectionGroup } from "./CollectionGroup";
 import { ByLanguageGroups } from "./ByLanguageGroups";
 import { ByTopicsGroups } from "./ByTopicsGroups";
-import QueryString from "qs";
 import { useLocation } from "react-router-dom";
-import { Breadcrumbs } from "./Breadcrumbs";
-import { TopLevelSearch } from "./TopLevelSearch";
 import { HomeBanner } from "./banners/HomeBanner";
 import { IFilter, InCirculationOptions } from "../IFilter";
-import { ButtonRow } from "./ButtonRow";
 import { getSubCollectionForFilters } from "./Pages";
-
-// export interface IBanner {
-//     name: string;
-//     bannerImage: string; // contentful id
-//     imageCredits: any; // contentful rich text
-//     blurb: any; // contentful rich text
-// }
 
 export const CollectionPage: React.FunctionComponent<{
     collectionNames: string;
@@ -46,9 +23,7 @@ export const CollectionPage: React.FunctionComponent<{
     const location = useLocation();
     const collectionNames = props.collectionNames.split("~");
     const collectionName = collectionNames[collectionNames.length - 1];
-    const { collection, error, generatorTag, loading } = useCollection(
-        collectionName
-    );
+    const { collection, error, loading } = useCollection(collectionName);
     if (loading) {
         return null;
     }

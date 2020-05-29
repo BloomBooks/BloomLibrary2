@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 
 import React, { useContext } from "react";
 import { CheapCard } from "./CheapCard";
-import { ICollection2 } from "../model/Collections";
+import { ICollection } from "../model/Collections";
 
 // const image = css`
 //     height: 100px;
@@ -19,7 +19,7 @@ import { ICollection2 } from "../model/Collections";
 export const cardWidth = 120;
 
 interface IProps {
-    collection: ICollection2;
+    collection: ICollection;
     skip?: number;
     parents?: string;
 }

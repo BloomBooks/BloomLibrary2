@@ -15,7 +15,6 @@ import {
     Redirect,
 } from "react-router-dom";
 
-import { BrowseView } from "./components/BrowseView";
 import theme from "./theme";
 import { ThemeProvider, Snackbar } from "@material-ui/core";
 import { LoginDialog } from "./components/User/LoginDialog";
@@ -36,59 +35,34 @@ import { Alert, AlertTitle } from "@material-ui/lab";
 
 import { GridPage } from "./components/Grid/GridPage";
 import { BulkEditPage } from "./components/BulkEdit/BulkEditPage";
-import { HomeGrownRouter, RouterContext } from "./Router";
 import { Header } from "./components/header/Header";
 import BookDetail from "./components/BookDetail/BookDetail";
-import { HomePage } from "./components/HomePage";
 import { ReadBookPage } from "./components/ReadBookPage";
-import {
-    LanguagePage,
-    CategoryPageWithDefaultLayout,
-    CategoryPageForBookshelf,
-    DefaultOrganizationPage,
-    ProjectPageWithDefaultLayout,
-    AllResultsPage,
-} from "./components/Pages";
-import { BiblePage } from "./components/BiblePage";
+import { AllResultsPage } from "./components/Pages";
 import { FeaturePage } from "./components/FeaturePage";
-import { Covid19Page } from "./components/Covid19Page";
-import { ByLevelPage } from "./components/PublisherPages";
-import { GuatemalaMOEPage } from "./components/banners/OrganizationCustomizations";
-import { forceCheck as forceCheckLazyLoadComponents } from "react-lazyload";
-import { EnablingWritersPage } from "./components/EnablingWritersPage";
-import { WycliffePage } from "./components/WycliffePage";
-import { SILLEADPage } from "./components/SILLEADPage";
-import { ICollection, getCollections } from "./model/Collections";
-import { makeCollectionForLevel } from "./components/LevelGroups";
 import { ContentfulBanner } from "./components/banners/ContentfulBanner";
 import { ContentfulContext } from "./ContentfulContext";
 import { CollectionPage } from "./components/CollectionPage";
 import { Footer } from "./components/Footer";
-import { RowOfPageCardsForKey } from "./components/RowOfPageCards";
 import { ContentfulPage } from "./components/ContentfulPage";
 
 interface ICachedTables {
     tags: string[];
     languagesByBookCount: ILanguage[];
     bookshelves: IBookshelfResult[];
-    collections: Map<string, ICollection>;
 }
 // for use when we aren't in a react context with hooks
 export const CachedTables: ICachedTables = {
     tags: [],
     languagesByBookCount: [],
     bookshelves: [],
-    collections: new Map<string, ICollection>(),
 };
 
 export const CachedTablesContext = React.createContext<ICachedTables>({
     tags: [],
     languagesByBookCount: [],
     bookshelves: [],
-    collections: new Map<string, ICollection>(),
 });
-
-const homeGrownRouter = new HomeGrownRouter();
 
 export const App: React.FunctionComponent<{}> = (props) => {
     const tags = useGetTagList();
@@ -97,10 +71,6 @@ export const App: React.FunctionComponent<{}> = (props) => {
     CachedTables.bookshelves = bookshelves;
     CachedTables.tags = tags;
     CachedTables.languagesByBookCount = languagesByBookCount;
-    const collections = useMemo(() => getCollections(bookshelves), [
-        bookshelves,
-    ]);
-    // tslint:disable-next-line: no-object-literal-type-assertion
 
     return (
         <>
@@ -125,7 +95,6 @@ export const App: React.FunctionComponent<{}> = (props) => {
                             tags,
                             languagesByBookCount: languagesByBookCount,
                             bookshelves,
-                            collections: getCollections(bookshelves),
                         }}
                     >
                         <OSFeaturesContext.Provider
@@ -139,238 +108,113 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                 <UnderConstruction />
                             )}
                             <ContentfulContext>
-                                <RouterContext.Provider value={homeGrownRouter}>
-                                    <Router>
-                                        <Header />
-                                        <Switch>
-                                            {/* Alias from legacy blorg */}
-                                            <Route path={"/browse"}>
-                                                <Redirect to="/page/create~downloads" />
-                                            </Route>
-                                            <Route
-                                                path={[
-                                                    "/downloads", // Alias for convenience when telling people where to get Bloom
-                                                    "/installers", // Alias from legacy blorg
-                                                ]}
-                                            >
-                                                <Redirect to="/page/create~downloads" />
-                                            </Route>
-                                            <Route
-                                                path="/_previewBanner/:id"
-                                                render={({ match }) => (
-                                                    <React.Fragment>
-                                                        <div // simulate it being in a context that sets some margin
-                                                            css={css`
-                                                                //margin: 20px;
-                                                                height: 500px;
-                                                            `}
-                                                        >
-                                                            <ContentfulBanner
-                                                                id={
-                                                                    match.params
-                                                                        .id
-                                                                }
-                                                            />
-                                                        </div>
-                                                        <Footer />
-                                                    </React.Fragment>
-                                                )}
-                                            ></Route>
-                                            <Route path="/book/:id">
-                                                <BookDetail />
-                                            </Route>
-                                            <Route path="/player/:id">
-                                                <ReadBookPage />
-                                            </Route>
-                                            <Route path="/about">
-                                                <ContentfulPage urlKey="about" />
-                                            </Route>
-                                            <Route path="/grid">
-                                                <GridPage />
-                                            </Route>
-                                            <Route
-                                                exact={true}
-                                                path={["/", "/read"]}
-                                            >
-                                                <CollectionPage
-                                                    collectionNames="root.read"
-                                                    filters=""
-                                                />
-                                            </Route>
-                                            <Route
-                                                exact={true}
-                                                path={"/create"}
-                                            >
-                                                <CollectionPage
-                                                    collectionNames="create"
-                                                    filters=""
-                                                />
-                                            </Route>
-                                            <Route path="/bulk">
-                                                <BulkEditPage />
-                                            </Route>
-                                            <Route
-                                                path="/language/:langCode"
-                                                render={({ match }) => (
-                                                    <LanguagePage
-                                                        langCode={
-                                                            match.params
-                                                                .langCode
-                                                        }
-                                                    />
-                                                )}
-                                            ></Route>
-                                            <Route
-                                                path="/topic/:topicName/:title?"
-                                                render={({ match }) => (
-                                                    <CategoryPageWithDefaultLayout
-                                                        title={
-                                                            match.params
-                                                                .title ||
-                                                            match.params
-                                                                .topicName
-                                                        }
-                                                        filter={{
-                                                            topic:
-                                                                match.params
-                                                                    .topicName,
-                                                        }}
-                                                    />
-                                                )}
-                                            />
-                                            <Route
-                                                path="/publisher/:name"
-                                                render={({ match }) => {
-                                                    switch (match.params.name) {
-                                                        // review: is this used, or can we get rid of this whole route?
-                                                        default:
-                                                            return (
-                                                                <DefaultOrganizationPage
-                                                                    fullBookshelfKey={
-                                                                        match
-                                                                            .params
-                                                                            .name
-                                                                    }
-                                                                />
-                                                            );
-                                                    }
-                                                }}
-                                            />
-                                            <Route
-                                                path="/project/:fullBookshelfKey*"
-                                                render={({ match }) => {
-                                                    switch (
-                                                        match.params
-                                                            .fullBookshelfKey
-                                                    ) {
-                                                        case "Enabling Writers Workshops":
-                                                            return (
-                                                                <EnablingWritersPage />
-                                                            );
-                                                        case "Bible":
-                                                            return (
-                                                                <BiblePage />
-                                                            );
-                                                        default:
-                                                            return (
-                                                                <ProjectPageWithDefaultLayout
-                                                                    fullBookshelfKey={
-                                                                        match
-                                                                            .params
-                                                                            .fullBookshelfKey
-                                                                    }
-                                                                />
-                                                            );
-                                                    }
-                                                }}
-                                            />
-                                            <Route
-                                                path="/org/:name*"
-                                                render={({ match }) => {
-                                                    switch (match.params.name) {
-                                                        case "Ministerio de Educación de Guatemala":
-                                                            return (
-                                                                <GuatemalaMOEPage />
-                                                            );
-                                                        case "SIL LEAD":
-                                                            return (
-                                                                <SILLEADPage />
-                                                            );
-                                                        case "Wycliffe":
-                                                            return (
-                                                                <WycliffePage />
-                                                            );
-                                                        default:
-                                                            return (
-                                                                <DefaultOrganizationPage
-                                                                    fullBookshelfKey={
-                                                                        match
-                                                                            .params
-                                                                            .name
-                                                                    }
-                                                                />
-                                                            );
-                                                    }
-                                                }}
-                                            />
-                                            <Route
-                                                path="/feature/:featureKey"
-                                                render={({ match }) => (
-                                                    <FeaturePage
-                                                        featureKey={
-                                                            match.params
-                                                                .featureKey
-                                                        }
-                                                    />
-                                                )}
-                                            />
-                                            {/* <Route path="/covid19">
-                                                <Covid19Page />
-                                            </Route> */}
-                                            <Route
-                                                path="/page/:lineage/"
-                                                render={({ match }) => {
-                                                    const parts = match.params.lineage.split(
-                                                        "~"
-                                                    );
-                                                    const last =
-                                                        parts[parts.length - 1];
-
-                                                    return (
-                                                        <ContentfulPage
-                                                            urlKey={last}
+                                <Router>
+                                    <Header />
+                                    <Switch>
+                                        {/* Alias from legacy blorg */}
+                                        <Route path={"/browse"}>
+                                            <Redirect to="/page/create~downloads" />
+                                        </Route>
+                                        <Route
+                                            path={[
+                                                "/downloads", // Alias for convenience when telling people where to get Bloom
+                                                "/installers", // Alias from legacy blorg
+                                            ]}
+                                        >
+                                            <Redirect to="/page/create~downloads" />
+                                        </Route>
+                                        <Route
+                                            path="/_previewBanner/:id" // used by preview button when editing in contentful
+                                            render={({ match }) => (
+                                                <React.Fragment>
+                                                    <div // simulate it being in a context that sets some margin
+                                                        css={css`
+                                                            //margin: 20px;
+                                                            height: 500px;
+                                                        `}
+                                                    >
+                                                        <ContentfulBanner
+                                                            id={match.params.id}
                                                         />
-                                                    );
-                                                }}
+                                                    </div>
+                                                    <Footer />
+                                                </React.Fragment>
+                                            )}
+                                        ></Route>
+                                        <Route path="/book/:id">
+                                            <BookDetail />
+                                        </Route>
+                                        <Route path="/player/:id">
+                                            <ReadBookPage />
+                                        </Route>
+                                        <Route path="/about">
+                                            <ContentfulPage urlKey="about" />
+                                        </Route>
+                                        <Route path="/grid">
+                                            <GridPage />
+                                        </Route>
+                                        <Route
+                                            exact={true}
+                                            path={["/", "/read"]}
+                                        >
+                                            <CollectionPage
+                                                collectionNames="root.read"
+                                                filters=""
                                             />
-                                            <Route
-                                                path="/:collectionNames/:filter+"
-                                                render={({ match }) => {
-                                                    const filters = match.params.filter.split(
-                                                        "/"
-                                                    );
-                                                    if (
-                                                        filters.length === 1 &&
+                                        </Route>
+                                        <Route exact={true} path={"/create"}>
+                                            <CollectionPage
+                                                collectionNames="create"
+                                                filters=""
+                                            />
+                                        </Route>
+                                        <Route path="/bulk">
+                                            <BulkEditPage />
+                                        </Route>
+                                        <Route
+                                            path="/feature/:featureKey" // obsolete, but keeping until replaced.
+                                            render={({ match }) => (
+                                                <FeaturePage
+                                                    featureKey={
+                                                        match.params.featureKey
+                                                    }
+                                                />
+                                            )}
+                                        />
+                                        <Route
+                                            path="/page/:lineage/"
+                                            render={({ match }) => {
+                                                const parts = match.params.lineage.split(
+                                                    "~"
+                                                );
+                                                const last =
+                                                    parts[parts.length - 1];
+
+                                                return (
+                                                    <ContentfulPage
+                                                        urlKey={last}
+                                                    />
+                                                );
+                                            }}
+                                        />
+                                        <Route
+                                            path="/:collectionNames/:filter*"
+                                            render={({ match }) => {
+                                                const filterParam =
+                                                    match.params.filter || "";
+                                                const filters = filterParam.split(
+                                                    "/"
+                                                );
+                                                if (
+                                                    filterParam.length === 0 ||
+                                                    (filters.length === 1 &&
                                                         filters[0].startsWith(
                                                             "search:"
-                                                        )
-                                                    ) {
-                                                        return (
-                                                            <CollectionPage
-                                                                collectionNames={
-                                                                    match.params
-                                                                        .collectionNames
-                                                                }
-                                                                filters={
-                                                                    match.params
-                                                                        .filter
-                                                                }
-                                                            />
-                                                        );
-                                                    }
+                                                        ))
+                                                ) {
                                                     return (
-                                                        <AllResultsPage
-                                                            collectionName={
+                                                        <CollectionPage
+                                                            collectionNames={
                                                                 match.params
                                                                     .collectionNames
                                                             }
@@ -380,25 +224,22 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                             }
                                                         />
                                                     );
-                                                }}
-                                            ></Route>
-                                            <Route
-                                                path="/:collectionNames/"
-                                                render={({ match }) => {
-                                                    return (
-                                                        <CollectionPage
-                                                            collectionNames={
-                                                                match.params
-                                                                    .collectionNames
-                                                            }
-                                                            filters=""
-                                                        />
-                                                    );
-                                                }}
-                                            />
-                                        </Switch>
-                                    </Router>
-                                </RouterContext.Provider>
+                                                }
+                                                return (
+                                                    <AllResultsPage
+                                                        collectionName={
+                                                            match.params
+                                                                .collectionNames
+                                                        }
+                                                        filters={
+                                                            match.params.filter
+                                                        }
+                                                    />
+                                                );
+                                            }}
+                                        ></Route>
+                                    </Switch>
+                                </Router>
                             </ContentfulContext>
                         </OSFeaturesContext.Provider>
                     </CachedTablesContext.Provider>

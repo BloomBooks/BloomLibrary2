@@ -5,16 +5,12 @@ import { storiesOf, addDecorator } from "@storybook/react";
 import { BookCard } from "../components/BookCard";
 import { BookGroup } from "../components/BookGroup";
 import { LanguageGroup } from "../components/LanguageGroup";
-import { LanguagePage, BookGroupForEachTopic } from "../components/Pages";
-import { HomePage } from "../components/HomePage";
-import { BookshelfGroup } from "../components/BookShelfGroup";
 import { SearchBox } from "../components/SearchBox";
 import "../index.css";
 import { StandAloneHarvesterArtifactUserControl } from "../components/BookDetail/ArtifactVisibilityPanel/ArtifactVisibilityPanel";
 import { ArtifactAndChoice } from "../components/BookDetail/ArtifactVisibilityPanel/ArtifactAndChoice";
 import { ArtifactVisibilitySettings } from "../model/ArtifactVisibilitySettings";
 import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
-import { HomeGrownRouter, RouterContext } from "../Router";
 import BookDetail from "../components/BookDetail/BookDetail";
 import { ThemeProvider } from "@material-ui/styles";
 import theme from "../theme";
@@ -23,11 +19,6 @@ import { FeaturePage } from "../components/FeaturePage";
 import { FeatureGroup } from "../components/FeatureGroup";
 import { ListOfBookGroups } from "../components/ListOfBookGroups";
 
-// Provide all stories with a router in their context:
-const router = new HomeGrownRouter();
-addDecorator((storyFn) => (
-    <RouterContext.Provider value={router}>{storyFn()}</RouterContext.Provider>
-));
 addDecorator((storyFn) => (
     <ThemeProvider theme={theme}>{storyFn()}</ThemeProvider>
 ));
@@ -99,10 +90,6 @@ storiesOf("BookGroup", module)
             filter={{ bookshelf: "Featured" }}
         />
     ))
-    .add("All Topics", () => (
-        <BookGroupForEachTopic filter={{ language: "th" }} />
-    ))
-
     .add("Sign Language", () => (
         <BookGroup title="Sign Language" filter={{ feature: "signLanguage" }} />
     ))
@@ -111,9 +98,6 @@ storiesOf("BookGroup", module)
             title="Visually Impaired"
             filter={{ feature: "visuallyImpaired" }}
         />
-    ))
-    .add("All Bookshelves", () => (
-        <BookshelfGroup title="All Bookshelves" bookShelfCategory="" />
     ))
     .add("All books by date", () => (
         <BookGroup title="All books by date" filter={{}} order={"-createdAt"} />
@@ -130,26 +114,24 @@ storiesOf("LanguageGroup", module).add("By book count", () => (
         <LanguageGroup />
     </ul>
 ));
-storiesOf("BookShelfGroup", module)
-    .add("Publishers", () => (
-        <BookshelfGroup title="Publishers" bookShelfCategory="publisher" />
-    ))
-    .add("A specific project with multiple workshops: Enabling Writers", () => (
-        <BookshelfGroup
-            title="Enabling Writers"
-            bookShelfCategory="project"
-            pathToTheCurrentLevel="Enabling Writers Workshops/"
-        />
-    ))
-    .add("Projects", () => (
-        <BookshelfGroup title="Projects" bookShelfCategory="project" />
-    ))
-    .add("Organizations & Governments", () => (
-        <BookshelfGroup
-            title="Organizations & Governments"
-            bookShelfCategory="org"
-        />
-    ));
+storiesOf("BookShelfGroup", module);
+
+// .add("A specific project with multiple workshops: Enabling Writers", () => (
+//     <BookshelfGroup
+//         title="Enabling Writers"
+//         bookShelfCategory="project"
+//         pathToTheCurrentLevel="Enabling Writers Workshops/"
+//     />
+// ))
+// .add("Projects", () => (
+//     <BookshelfGroup title="Projects" bookShelfCategory="project" />
+// ))
+// .add("Organizations & Governments", () => (
+//     <BookshelfGroup
+//         title="Organizations & Governments"
+//         bookShelfCategory="org"
+//     />
+// ));
 
 storiesOf("FeatureGroup", module).add("Feature Group", () => (
     <ListOfBookGroups>
@@ -158,8 +140,9 @@ storiesOf("FeatureGroup", module).add("Feature Group", () => (
 ));
 
 storiesOf("Pages", module)
-    .add("Home Page", () => <HomePage />)
-    .add("Thai Book Page", () => <LanguagePage langCode="th" />)
+    // REview: want these back in some updated form?
+    //.add("Home Page", () => <HomePage />)
+    //.add("Thai Book Page", () => <LanguagePage langCode="th" />)
     .add("Talking Book Feature Page", () => (
         <FeaturePage featureKey="talkingBook" />
     ))

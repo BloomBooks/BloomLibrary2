@@ -11,7 +11,6 @@ import IconButton from "@material-ui/core/IconButton";
 import { Theme, InputBase, Paper, Grow } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import CancelIcon from "@material-ui/icons/Cancel";
-import { RouterContext } from "../Router";
 import { withStyles } from "@material-ui/styles";
 import { giveFreeLearningCsv } from "../export/freeLearningIO";
 import { useLocation, useHistory } from "react-router-dom";
@@ -45,12 +44,13 @@ export const SearchBox: React.FunctionComponent<{
     // where it is invoked.)
     cssExtra?: string;
 }> = (props) => {
-    const router = useContext(RouterContext);
     const location = useLocation();
     const history = useHistory();
-    let initialSearchString = router!.current?.filter?.search
-        ? router!.current.filter.search
-        : "";
+    let search = location.pathname
+        .split("/")
+        .filter((x) => x.startsWith("search:"))[0];
+
+    let initialSearchString = search ? search.substring("search:".length) : "";
     if (initialSearchString.startsWith("phash")) {
         initialSearchString = "";
     }

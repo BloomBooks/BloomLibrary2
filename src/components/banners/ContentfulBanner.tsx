@@ -11,12 +11,12 @@ import { commonUI } from "../../theme";
 import { Breadcrumbs } from "../Breadcrumbs";
 import { BookCount } from "../BookCount";
 import { IFilter } from "../../IFilter";
-import { ICollection2, splitMedia } from "../../model/Collections";
+import { ICollection, splitMedia } from "../../model/Collections";
 import { ImgWithCredits } from "../../ImgWithCredits";
 import { ButtonRow } from "../ButtonRow";
 export const ContentfulBanner: React.FunctionComponent<{
     id: string; // of the banner object on contentful
-    collection?: ICollection2;
+    collection?: ICollection;
     filter?: IFilter;
 }> = (props) => {
     const [gotData, setGotData] = useState(false);

@@ -5,8 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { RouterContext } from "../Router";
-import React, { useContext } from "react";
+import React from "react";
 import { useLocation, Link } from "react-router-dom";
 import { useCollection } from "../model/Collections";
 import QueryString from "qs";

@@ -4,12 +4,9 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useContext } from "react";
-import { RouterContext } from "../Router";
+import React from "react";
 
 export const Footer: React.FunctionComponent = (props) => {
-    const router = useContext(RouterContext);
-
     return (
         <div
             css={css`

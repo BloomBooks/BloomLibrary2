@@ -1,12 +1,11 @@
 import React from "react";
-import { ICollection2, topics } from "../model/Collections";
+import { ICollection, topics } from "../model/Collections";
 import { CollectionGroup } from "./CollectionGroup";
 
 // For each topic, show a row of books for that topic.
 // Note: very similar to ByLevelsGroup, possibly we can factor out something common.
-// Not yet tested, pending creation of a page that uses it.
 export const ByTopicsGroups: React.FunctionComponent<{
-    collection: ICollection2;
+    collection: ICollection;
     parents?: string;
 }> = (props) => {
     return (
@@ -31,9 +30,9 @@ export const ByTopicsGroups: React.FunctionComponent<{
 };
 
 export function makeCollectionForTopic(
-    baseCollection: ICollection2,
+    baseCollection: ICollection,
     topic: string
-): ICollection2 {
+): ICollection {
     const filter = { ...baseCollection.filter, topic: topic };
     let label = baseCollection.label + " - " + topic;
     const urlKey = baseCollection.urlKey + "/topic:" + topic;
