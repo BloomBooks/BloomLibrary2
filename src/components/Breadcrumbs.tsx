@@ -68,7 +68,7 @@ export const Breadcrumbs: React.FunctionComponent = () => {
             parts.splice(0, 1);
         }
         for (const c of parts) {
-            crumbs.push(<CollectionCrumb collectionName={c} />);
+            crumbs.push(<CollectionCrumb key={c} collectionName={c} />);
         }
         items.splice(0, 1);
     }

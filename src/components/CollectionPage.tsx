@@ -92,7 +92,7 @@ export const CollectionPage: React.FunctionComponent<{
 
     const collectionRows = collection.childCollections.map((c) => {
         if (c.urlKey === "language-chooser") {
-            return <LanguageGroup />;
+            return <LanguageGroup key="lang" />;
         }
         return (
             <RowOfPageCardsForKey

@@ -33,9 +33,11 @@ const CategoryCard: React.FunctionComponent<IProps> = (props) => {
         titleElementIfNoImage = <React.Fragment />; // showing title anyway, don't need it in place of image
         titleElement = (
             <Fragment>
-                <h2
+                <div
                     css={css`
                         text-align: center;
+                        font-size: 12pt; // from chrome default for h2, which this element used to be
+                        font-weight: bold;
                         flex-grow: 1; // push the rest to the bottom
                         margin-bottom: 5px;
                         // For the sake of uniformity, the only styling we allow in richTextLabel is normal, h1, h2, and h3.
@@ -66,7 +68,7 @@ const CategoryCard: React.FunctionComponent<IProps> = (props) => {
                     {props.richTextLabel
                         ? documentToReactComponents(props.richTextLabel)
                         : props.title}
-                </h2>
+                </div>
             </Fragment>
         );
     }

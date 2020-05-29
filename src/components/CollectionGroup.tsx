@@ -130,6 +130,7 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
     ) {
         cards.push(
             <MoreCard
+                key="more"
                 collection={props.collection}
                 skip={nextSkip}
                 parents={props.parents}

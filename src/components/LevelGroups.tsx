@@ -14,6 +14,7 @@ export const LevelGroups: React.FunctionComponent<{
         <React.Fragment>
             {["1", "2", "3", "4"].map((level) => (
                 <CollectionGroup
+                    key={level}
                     title={"Level " + level}
                     collection={makeCollectionForLevel(props.collection, level)}
                     parents={props.parents}
@@ -22,6 +23,7 @@ export const LevelGroups: React.FunctionComponent<{
 
             {/* Show books that don't have a level */}
             <CollectionGroup
+                key="empty"
                 title="Books for which we are missing levels"
                 rows={99}
                 collection={makeCollectionForLevel(props.collection, "empty")}
