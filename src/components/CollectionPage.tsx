@@ -30,6 +30,7 @@ import { TopLevelSearch } from "./TopLevelSearch";
 import { HomeBanner } from "./banners/HomeBanner";
 import { IFilter, InCirculationOptions } from "../IFilter";
 import { ButtonRow } from "./ButtonRow";
+import { getSubCollectionForFilters } from "./Pages";
 
 // export interface IBanner {
 //     name: string;
@@ -40,6 +41,7 @@ import { ButtonRow } from "./ButtonRow";
 
 export const CollectionPage: React.FunctionComponent<{
     collectionNames: string;
+    filters: string;
 }> = (props) => {
     const location = useLocation();
     const collectionNames = props.collectionNames.split("~");
@@ -60,26 +62,20 @@ export const CollectionPage: React.FunctionComponent<{
         return <div>Collection not found</div>;
     }
 
-    // This is a bizarre place to have the special case for search on the home page. Here's why:
-    // On most pages, a search param just modifies which books are shown (specifically in lists
-    // coming from the useSearchBooks function in LibraryQueryHooks.ts). We get all the filters
-    // and layout implied by the rest of the route, but results restricted by the search.
-    // But we don't want that when someone types a query on the home page, since so few things
-    // would be affected that users would not see a useful filtered list. So typing something in
-    // that box has to produce something different on the home page.
-    // Now, we could make the search box do something special and make a different route, something
-    // like /search:dogs instead of /?search=dogs. But as well as needing a new route for /search
-    // and a component to implement it and the special case in the search box code, we'd need
-    // another special case in useSearchBooks. Having special cases in all those places feels
-    // worse than this.
-    // It would seem logical to just make the router use a different route based on looking for the
-    // ?search param. But as far as I can discover, that simply isn't supported.
-    if (collection.urlKey === "root.read" && location.search) {
-        const queryParams = QueryString.parse(location.search.substring(1));
-        if (queryParams.search) {
-            return <TopLevelSearch collection={collection} />;
-        }
-    }
+    const { filteredCollection } = getSubCollectionForFilters(
+        collection,
+        props.filters
+    );
+
+    // From here on, think carefully about when to use collection and when filteredCollection.
+    // For example, we want the original collection's banner, so it still looks like that
+    // collection, but with the filteredCollection's filter so we get the right count.
+    // We'll stick with the original layout but each option uses the filtered collection
+    // of books.
+    // Review: do we want the original collection's children? Currently we're not coming up
+    // with derived collections so we could show filtered counts for each of them, or modified
+    // links that would take us to filtered subcollections. But if we drop them altogether
+    // when there's a filter, it may change the appearance of the page more than expected.
 
     const parents = [...collectionNames];
     if (parents[0] === "root.read") {
@@ -105,13 +101,13 @@ export const CollectionPage: React.FunctionComponent<{
     });
 
     let booksComponent: React.ReactElement | null = null;
-    if (collection.filter) {
+    if (filteredCollection.filter) {
         switch (collection.layout) {
             default:
                 //"by-level": I'd like to have this case here for clarity, but lint chokes
                 booksComponent = (
                     <LevelGroups
-                        collection={collection}
+                        collection={filteredCollection}
                         parents={bookParents}
                     />
                 );
@@ -121,7 +117,7 @@ export const CollectionPage: React.FunctionComponent<{
             case "all-books": // untested
                 booksComponent = (
                     <CollectionGroup
-                        collection={collection}
+                        collection={filteredCollection}
                         parents={bookParents}
                         rows={
                             collection.urlKey === "new-arrivals"
@@ -138,14 +134,14 @@ export const CollectionPage: React.FunctionComponent<{
                 booksComponent = (
                     <ByLanguageGroups
                         titlePrefix=""
-                        filter={collection.filter}
+                        filter={filteredCollection.filter}
                     />
                 );
                 break;
             case "by-topic": // untested on this path, though ByTopicsGroup is used in AllResultsPage
                 booksComponent = (
                     <ByTopicsGroups
-                        collection={collection}
+                        collection={filteredCollection}
                         parents={bookParents}
                     />
                 );
@@ -158,7 +154,7 @@ export const CollectionPage: React.FunctionComponent<{
         <ContentfulBanner
             id={collection.banner}
             collection={collection}
-            filter={collection.filter}
+            filter={filteredCollection.filter}
         />
     );
     if (collection.urlKey === "root.read") {

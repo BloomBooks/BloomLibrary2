@@ -192,13 +192,19 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                 exact={true}
                                                 path={["/", "/read"]}
                                             >
-                                                <CollectionPage collectionNames="root.read" />
+                                                <CollectionPage
+                                                    collectionNames="root.read"
+                                                    filters=""
+                                                />
                                             </Route>
                                             <Route
                                                 exact={true}
                                                 path={"/create"}
                                             >
-                                                <CollectionPage collectionNames="create" />
+                                                <CollectionPage
+                                                    collectionNames="create"
+                                                    filters=""
+                                                />
                                             </Route>
                                             <Route path="/bulk">
                                                 <BulkEditPage />
@@ -338,13 +344,35 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                 }}
                                             />
                                             <Route
-                                                path="/:collection/:filter+"
+                                                path="/:collectionNames/:filter+"
                                                 render={({ match }) => {
+                                                    const filters = match.params.filter.split(
+                                                        "/"
+                                                    );
+                                                    if (
+                                                        filters.length === 1 &&
+                                                        filters[0].startsWith(
+                                                            "search:"
+                                                        )
+                                                    ) {
+                                                        return (
+                                                            <CollectionPage
+                                                                collectionNames={
+                                                                    match.params
+                                                                        .collectionNames
+                                                                }
+                                                                filters={
+                                                                    match.params
+                                                                        .filter
+                                                                }
+                                                            />
+                                                        );
+                                                    }
                                                     return (
                                                         <AllResultsPage
                                                             collectionName={
                                                                 match.params
-                                                                    .collection
+                                                                    .collectionNames
                                                             }
                                                             filters={
                                                                 match.params
@@ -363,6 +391,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                                 match.params
                                                                     .collectionNames
                                                             }
+                                                            filters=""
                                                         />
                                                     );
                                                 }}

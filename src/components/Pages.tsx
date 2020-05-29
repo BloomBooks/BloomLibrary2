@@ -45,6 +45,43 @@ import { makeCollectionForTopic, ByTopicsGroups } from "./ByTopicsGroups";
 //     );
 // };
 
+export function getSubCollectionForFilters(
+    collection: ICollection2,
+    filters: string
+): { filteredCollection: ICollection2; skip: number } {
+    let filteredCollection = collection;
+    let skip = 0;
+    if (filters) {
+        for (const filter of filters.split("/")) {
+            const parts = filter.split(":");
+            switch (parts[0]) {
+                case "level":
+                    filteredCollection = makeCollectionForLevel(
+                        filteredCollection,
+                        parts[1]
+                    );
+                    break;
+                case "topic":
+                    filteredCollection = makeCollectionForTopic(
+                        filteredCollection,
+                        parts[1]
+                    );
+                    break;
+                case "search":
+                    filteredCollection = makeCollectionForSearch(
+                        parts[1],
+                        filteredCollection
+                    );
+                    break;
+                case "skip":
+                    skip = parseInt(parts[1], 10);
+                    break;
+            }
+        }
+    }
+    return { filteredCollection, skip };
+}
+
 // I don't know if we'll stick with this... but for now this is what you get
 // if there are lots of books and you scroll to the end of the 20 or so that
 // we put in a row, and then you click on the MoreCard there to see the rest
@@ -68,36 +105,11 @@ export const AllResultsPage: React.FunctionComponent<{
         return <p>Page does not exist.</p>;
     }
 
-    let skip = 0;
-    let subcollection = collection;
-    if (props.filters) {
-        for (const filter of props.filters.split("/")) {
-            const parts = filter.split(":");
-            switch (parts[0]) {
-                case "level":
-                    subcollection = makeCollectionForLevel(
-                        subcollection,
-                        parts[1]
-                    );
-                    break;
-                case "topic":
-                    subcollection = makeCollectionForTopic(
-                        subcollection,
-                        parts[1]
-                    );
-                    break;
-                case "search":
-                    subcollection = makeCollectionForSearch(
-                        parts[1],
-                        subcollection
-                    );
-                    break;
-                case "skip":
-                    skip = parseInt(parts[1], 10);
-                    break;
-            }
-        }
-    }
+    const {
+        filteredCollection: subcollection,
+        skip,
+    } = getSubCollectionForFilters(collection, props.filters);
+
     // The idea here is that by default we break things up by level. If we already did, divide by topic.
     // If we already used both, make a flat list.
     // This ignores any information in the collection itself about how it prefers to be broken up.
