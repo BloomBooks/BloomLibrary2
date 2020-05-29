@@ -57,11 +57,11 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
         props.book,
         ArtifactType.shellbook
     );
-
     const showTranslateButton =
         shellBookSettings &&
         shellBookSettings.decision && // it's OK to download and translate the book
         bloomDesktopAvailable; // and this platform can run the software for doing it
+
     const bloomReaderSettings = getArtifactVisibilitySettings(
         props.book,
         ArtifactType.bloomReader
@@ -222,7 +222,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                 )}
                 {showBloomReaderButton && (
                     <ReadOfflineButton
-                        id={props.book.id}
+                        book={props.book}
                         fullWidth={fullWidthButtons}
                     />
                 )}
