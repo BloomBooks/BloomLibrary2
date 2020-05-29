@@ -176,7 +176,7 @@ export function makeCollectionForSearch(
     baseCollection?: ICollection2
 ): ICollection2 {
     const filter = { ...baseCollection?.filter, search };
-    let label = 'Books matching "' + search + '"';
+    let label = 'Books matching "' + decodeURIComponent(search) + '"';
     if (baseCollection?.label) {
         label = baseCollection.label + " - " + label;
     }

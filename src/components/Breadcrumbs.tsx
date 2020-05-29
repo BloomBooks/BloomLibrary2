@@ -83,7 +83,7 @@ export const Breadcrumbs: React.FunctionComponent = () => {
         }
         crumbs.push(
             <li key={item}>
-                {label}
+                {decodeURIComponent(label)}
                 {/* enhance: reinstate if we come up with a destination for the link.<Link
                     css={css`
                         text-decoration: none !important;
