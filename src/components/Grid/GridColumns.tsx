@@ -215,6 +215,14 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                 filter.search += ` uploader:${value} `;
             },
         },
+        {
+            name: "keywords",
+            sortingEnabled: true,
+            getCellValue: (b: Book) => b.getKeywordsText(),
+            addToFilter: (filter: IFilter, value: string) => {
+                filter.keywordsText = value;
+            },
+        },
     ];
 
     // generate the capitalized column names since the grid doesn't do that.
