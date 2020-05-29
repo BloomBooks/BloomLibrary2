@@ -140,7 +140,7 @@ export const MetadataGroup: React.FunctionComponent<{
                                                 color: ${theme.palette.secondary
                                                     .main} !important;
                                             `}
-                                            href={`/?bookId=${b.id}&pageType=book-detail&title=${b.title}`}
+                                            href={`/book/${b.id}`}
                                         >
                                             {b.title}
                                         </Link>
