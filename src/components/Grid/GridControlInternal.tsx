@@ -45,7 +45,6 @@ import {
     RowDetailState,
     Sorting,
 } from "@devexpress/dx-react-grid";
-import { RouterContext } from "../../Router";
 import { TableCell, useTheme } from "@material-ui/core";
 import { IFilter, InCirculationOptions } from "../../IFilter";
 import { getBookGridColumnsDefinitions, IGridColumn } from "./GridColumns";
@@ -63,7 +62,6 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
         const theme = useTheme();
         const user = useGetLoggedInUser();
         const kBooksPerGridPage = 20;
-        const router = useContext(RouterContext);
         const [gridFilters, setGridFilters] = useState<GridFilter[]>(
             props.initialGridFilters || []
         );
@@ -137,7 +135,7 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
         const filterMadeFromPageSearchPlusColumnFilters = CombineGridAndSearchBoxFilter(
             bookGridColumnDefinitions,
             gridFilters,
-            router!.current.filter
+            {} // todo: router!.current.filter
         );
 
         if (props.setCurrentFilter) {
@@ -172,7 +170,8 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                 )
             );
             //setColumnNamesInDisplayOrder(bookGridColumns.map(c => c.name));
-        }, [router, user, thisIsAModerator, bookGridColumnDefinitions]);
+            // todo? useEffect used to depend on router, though doesn't obviously use it.
+        }, [user, thisIsAModerator, bookGridColumnDefinitions]);
 
         // note: this is an embedded function as a way to get at bookGridColumnDefinitions. It's important
         // that we don't reconstruct it on every render, or else we'll lose cursor focus on each key press.
