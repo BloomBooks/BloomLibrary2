@@ -1,8 +1,11 @@
 import React from "react";
 
 export const bloomDesktopAvailable =
-    navigator.appVersion.indexOf("Win") >= 0 ||
-    navigator.appVersion.indexOf("Linux") >= 0;
+    (navigator.appVersion.indexOf("Win") >= 0 ||
+        navigator.appVersion.indexOf("Linux") >= 0) &&
+    // Running on Android will also include "Linux"
+    navigator.appVersion.indexOf("Android") < 0;
+
 export const bloomReaderAvailable =
     navigator.appVersion.indexOf("Android") >= 0;
 // From discussion at https://stackoverflow.com/questions/9038625/detect-if-device-is-ios.
@@ -18,7 +21,7 @@ const ios = /^(iPhone|iPad|iPod)/.test(navigator.platform);
 // and ever-changing. And currently all we're doing is hiding a button, so it's not all
 // that important to do so on every possible mobile device. Of course, we REALLY
 // don't want to prevent downloading a bloomd on anything that can run BloomReader,
-// but cantUserBloomD is currently only relevant if bloomReaderAvailable is false.
+// but cantUseBloomD is currently only relevant if bloomReaderAvailable is false.
 export const cantUseBloomD = ios;
 // This context allows anyone interested to find out whether the OS on which the
 // user is running has support for bloom desktop (e.g., to hide a download/translate
@@ -31,5 +34,5 @@ export const OSFeaturesContext = React.createContext<{
 }>({
     bloomDesktopAvailable,
     bloomReaderAvailable,
-    cantUseBloomD
+    cantUseBloomD,
 });
