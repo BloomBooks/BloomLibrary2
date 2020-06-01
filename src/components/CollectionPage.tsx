@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useMemo, useContext } from "react";
+import React from "react";
 
-//import { CachedTablesContext } from "../App";
 import { ContentfulBanner } from "./banners/ContentfulBanner";
 import { useCollection } from "../model/Collections";
 import { RowOfPageCardsForKey } from "./RowOfPageCards";
@@ -11,14 +10,13 @@ import { LanguageGroup } from "./LanguageGroup";
 import { CollectionGroup } from "./CollectionGroup";
 import { ByLanguageGroups } from "./ByLanguageGroups";
 import { ByTopicsGroups } from "./ByTopicsGroups";
-import { useLocation } from "react-router-dom";
 import { HomeBanner } from "./banners/HomeBanner";
 import { IFilter, InCirculationOptions } from "../IFilter";
-import { getSubCollectionForFilters } from "./Pages";
+import { getSubCollectionForFilters } from "./CollectionSubsetPage";
 
 export const CollectionPage: React.FunctionComponent<{
     collectionName: string;
-    breadcrumbs: string[]; // ~-separated list indicating how we got to this collection
+    breadcrumbs: string[];
     filters: string;
     embeddedMode?: boolean;
 }> = (props) => {
