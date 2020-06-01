@@ -3,15 +3,13 @@ import React from "react";
 import { ContentfulBanner } from "./banners/ContentfulBanner";
 import { useGetCollectionFromContentful } from "../model/Collections";
 import { RowOfPageCardsForKey } from "./RowOfPageCards";
-import { LevelGroups } from "./LevelGroups";
+import { ByLevelGroups } from "./ByLevelGroups";
 import { ListOfBookGroups } from "./ListOfBookGroups";
 import { LanguageGroup } from "./LanguageGroup";
 
-import { CollectionGroup } from "./CollectionGroup";
+import { BookCardGroup } from "./BookCardGroup";
 import { ByLanguageGroups } from "./ByLanguageGroups";
 import { ByTopicsGroups } from "./ByTopicsGroups";
-import { HomeBanner } from "./banners/HomeBanner";
-import { IFilter, InCirculationOptions } from "../IFilter";
 import { getSubCollectionForFilters } from "./CollectionSubsetPage";
 
 export const CollectionPage: React.FunctionComponent<{
@@ -78,7 +76,7 @@ export const CollectionPage: React.FunctionComponent<{
             default:
                 //"by-level": I'd like to have this case here for clarity, but lint chokes
                 booksComponent = (
-                    <LevelGroups
+                    <ByLevelGroups
                         collection={filteredCollection}
                         breadcrumbs={props.breadcrumbs}
                     />
@@ -88,7 +86,7 @@ export const CollectionPage: React.FunctionComponent<{
                 break;
             case "all-books": // untested
                 booksComponent = (
-                    <CollectionGroup
+                    <BookCardGroup
                         collection={filteredCollection}
                         breadcrumbs={props.breadcrumbs}
                         rows={

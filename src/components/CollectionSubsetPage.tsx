@@ -6,8 +6,8 @@ import { jsx } from "@emotion/core";
 import React, { useContext } from "react";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { ListOfBookGroups } from "./ListOfBookGroups";
-import { LevelGroups, makeCollectionForLevel } from "./LevelGroups";
-import { CollectionGroup } from "./CollectionGroup";
+import { ByLevelGroups, makeCollectionForLevel } from "./ByLevelGroups";
+import { BookCardGroup } from "./BookCardGroup";
 import {
     ICollection,
     makeCollectionForSearch,
@@ -96,14 +96,14 @@ export const CollectionSubsetPage: React.FunctionComponent<{
     // And it can be confusing if only one of the next-level categories has any content.
     // But at this stage we don't have access to a count of items in the collection, or any way to
     // know whether a particular way of subdividing them will actually break things up.
-    let subList = <LevelGroups collection={subcollection} breadcrumbs={[]} />;
+    let subList = <ByLevelGroups collection={subcollection} breadcrumbs={[]} />;
     if ((props.collectionName + props.filters).indexOf("level:") >= 0) {
         subList = (
             <ByTopicsGroups collection={subcollection} breadcrumbs={[]} />
         );
         if ((props.collectionName + props.filters).indexOf("topic:") >= 0) {
             subList = (
-                <CollectionGroup
+                <BookCardGroup
                     title={subcollection.label}
                     collection={subcollection}
                     breadcrumbs={[]}

@@ -4,8 +4,8 @@ import {
     useGetCollectionFromContentful,
 } from "../model/Collections";
 import { CategoryCardGroup } from "./CategoryCardGroup";
-import CategoryCard from "./CategoryCard";
-import { CollectionGroup } from "./CollectionGroup";
+import { CollectionCard } from "./CollectionCard";
+import { BookCardGroup } from "./BookCardGroup";
 
 export const RowOfPageCardsForKey: React.FunctionComponent<{
     urlKey: string;
@@ -41,7 +41,7 @@ export const RowOfPageCardsForKey: React.FunctionComponent<{
         );
     } else {
         return (
-            <CollectionGroup
+            <BookCardGroup
                 collection={collection}
                 breadcrumbs={props.breadcrumbs}
             />
@@ -66,7 +66,7 @@ export const RowOfPageCards: React.FunctionComponent<{
         const childCollection = childCollection1!; // can't persuade typescript that this can't be null.
         const key = childCollection!.urlKey;
         return (
-            <CategoryCard
+            <CollectionCard
                 key={key}
                 title={childCollection.label || ""}
                 richTextLabel={childCollection.richTextLabel}

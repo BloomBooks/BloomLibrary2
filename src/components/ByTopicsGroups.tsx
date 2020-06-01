@@ -1,6 +1,6 @@
 import React from "react";
 import { ICollection, topics } from "../model/Collections";
-import { CollectionGroup } from "./CollectionGroup";
+import { BookCardGroup } from "./BookCardGroup";
 
 // For each topic, show a row of books for that topic.
 // Note: very similar to ByLevelsGroup, possibly we can factor out something common.
@@ -11,7 +11,7 @@ export const ByTopicsGroups: React.FunctionComponent<{
     return (
         <React.Fragment>
             {topics.map((topic) => (
-                <CollectionGroup
+                <BookCardGroup
                     collection={makeCollectionForTopic(props.collection, topic)}
                     breadcrumbs={props.breadcrumbs}
                 />
@@ -20,7 +20,7 @@ export const ByTopicsGroups: React.FunctionComponent<{
             {/* Show books that don't have a topic? We don't have a good way to query for that yet;
             need to add special case for "empty" to already complex logic in LibraryQueryHooks
             constructParseBookQuery() */}
-            <CollectionGroup
+            <BookCardGroup
                 rows={99}
                 collection={makeCollectionForTopic(props.collection, "empty")}
                 breadcrumbs={props.breadcrumbs}

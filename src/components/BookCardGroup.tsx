@@ -32,7 +32,7 @@ interface IProps {
     breadcrumbs: string[];
 }
 
-export const CollectionGroup: React.FunctionComponent<IProps> = (props) => (
+export const BookCardGroup: React.FunctionComponent<IProps> = (props) => (
     // Enhance: this has parameters, height and offset, that should help
     // but so far I haven't got them to work well. It has many other
     // parameters too that someone should look into. Make sure to test

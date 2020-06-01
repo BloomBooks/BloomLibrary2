@@ -1,17 +1,17 @@
 import React from "react";
 import { getBestLevelStringOrEmpty } from "../connection/LibraryQueryHooks";
 import { ICollection } from "../model/Collections";
-import { CollectionGroup } from "./CollectionGroup";
+import { BookCardGroup } from "./BookCardGroup";
 
 // For each level (whether set by a human or just computed), show a row of books for that level.
-export const LevelGroups: React.FunctionComponent<{
+export const ByLevelGroups: React.FunctionComponent<{
     collection: ICollection;
     breadcrumbs: string[];
 }> = (props) => {
     return (
         <React.Fragment>
             {["1", "2", "3", "4"].map((level) => (
-                <CollectionGroup
+                <BookCardGroup
                     key={level}
                     title={"Level " + level}
                     collection={makeCollectionForLevel(props.collection, level)}
@@ -20,7 +20,7 @@ export const LevelGroups: React.FunctionComponent<{
             ))}
 
             {/* Show books that don't have a level */}
-            <CollectionGroup
+            <BookCardGroup
                 key="empty"
                 title="Books for which we are missing levels"
                 rows={99}
