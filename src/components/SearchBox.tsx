@@ -136,7 +136,9 @@ export const SearchBox: React.FunctionComponent<{
             p.startsWith("search:")
         );
         // we don't think it's useful to keep in history states that are just different searches.
-        const replaceInHistory = existingSearchIndex === pathParts.length - 1;
+        const replaceInHistory =
+            existingSearchIndex >= 0 &&
+            existingSearchIndex === pathParts.length - 1;
         if (existingSearchIndex >= 0) {
             // remove the existing one and everything after it.
             pathParts.splice(
