@@ -11,7 +11,7 @@ import { CollectionGroup } from "./CollectionGroup";
 import {
     ICollection,
     makeCollectionForSearch,
-    useCollection,
+    useGetCollectionFromContentful,
 } from "../model/Collections";
 import { makeCollectionForTopic, ByTopicsGroups } from "./ByTopicsGroups";
 
@@ -66,7 +66,9 @@ export const CollectionSubsetPage: React.FunctionComponent<{
 
     filters: string; // may result in automatically-created subcollections. Might be multiple ones slash-delimited
 }> = (props) => {
-    const { collection, error, loading } = useCollection(props.collectionName);
+    const { collection, error, loading } = useGetCollectionFromContentful(
+        props.collectionName
+    );
     if (loading) {
         return null;
     }

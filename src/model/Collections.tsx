@@ -1,11 +1,6 @@
-import React, { ReactElement, useContext } from "react";
+import { useContext } from "react";
 import { IFilter } from "../IFilter";
-import {
-    IBasicBookInfo,
-    getBestLevelStringOrEmpty,
-    IBookshelfResult,
-} from "../connection/LibraryQueryHooks";
-import { ExternalLink } from "../components/banners/ExternalLink";
+import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
 import { getLanguageNamesFromCode, ILanguage } from "./Language";
 import { useContentful } from "react-contentful";
 import { CachedTablesContext } from "../App";
@@ -28,7 +23,13 @@ import { Document } from "@contentful/rich-text-types";
         Blurb
 */
 
-export interface ISubCollection {
+// This mostly corresponds to the fields of a Collection from Contentful.
+// Some of the raw data we get from there gets processed to make simpler fields here.
+export interface ICollection {
+    banner: string; // contentful ID of banner object. (fields.banner.id)
+    layout: string; // from layout.fields.name
+    order?: string; // suitable for parse server order: param (e.g., -createdAt)
+
     urlKey: string; // used in react router urls; can be used to look up in contentful
     label: string; // used in subheadings and cards
     richTextLabel?: Document; // rich text
@@ -37,18 +38,16 @@ export interface ISubCollection {
     iconCredits?: string;
     iconAltText?: string;
     hideLabelOnCardAndDefaultBanner?: boolean;
-    childCollections: ISubCollection[]; // only the top level will have these
-}
-// This is supposed to correspond to the (data as any).fields that we will actually get
-// back from a contenful query on "collection", with a few tweaks
-export interface ICollection extends ISubCollection {
-    banner: string; // contentful ID of banner object. (fields.banner.id)
-    layout: string; // from layout.fields.name
+    childCollections: ICollection[]; // only the top level will have these
+    // When the filter cannot be fully defined as simple json in a Contentful collection (interpreted by ParseServer).
+    // E.g., we need to run code like getBestLevelStringOrEmpty() to get at the filter
     secondaryFilter?: (basicBookInfo: IBasicBookInfo) => boolean;
-    order?: string; // suitable for parse server order: param (e.g., -createdAt)
 }
 
-export function getCollectionData(fields: any): ICollection {
+function convertContentfulFieldsToICollection(fields: any): ICollection {
+    // if (!fields || !fields.urlKey) {
+    //     return undefined;
+    // }
     let order: string | undefined;
     switch (fields.bookSortOrder) {
         case "newest-first":
@@ -65,24 +64,10 @@ export function getCollectionData(fields: any): ICollection {
             bannerId = "Qm03fkNd1PWGX3KGxaZ2v";
         }
     }
-    const result: ICollection = {
-        ...getSubCollectionData(fields)!,
-        banner: bannerId,
-        layout: fields.layout?.fields?.name || "by-level",
-        order,
-    };
-
-    return result;
-}
-
-function getSubCollectionData(fields: any): ISubCollection | undefined {
-    if (!fields || !fields.urlKey) {
-        return undefined;
-    }
     const { credits: iconCredits, altText: iconAltText } = splitMedia(
         fields?.iconForCardAndDefaultBanner
     );
-    const result: ISubCollection = {
+    const result: ICollection = {
         urlKey: fields.urlKey as string,
         label: fields.label,
         richTextLabel: fields.richTextLabel,
@@ -93,7 +78,11 @@ function getSubCollectionData(fields: any): ISubCollection | undefined {
         iconAltText,
         hideLabelOnCardAndDefaultBanner: fields.hideLabelOnCardAndDefaultBanner,
         childCollections: getSubCollections(fields.childCollections),
+        banner: bannerId,
+        layout: fields.layout?.fields?.name || "by-level",
+        order,
     };
+
     return result;
 }
 
@@ -105,18 +94,21 @@ export function splitMedia(media: any): { credits: string; altText: string } {
     return { altText: parts[0].trim(), credits: (parts[1] ?? "").trim() };
 }
 
-function getSubCollections(childCollections: any[]): ISubCollection[] {
+function getSubCollections(childCollections: any[]): ICollection[] {
     if (!childCollections) {
         return [];
     }
     // The final map here is a kludge to convince typescript that filtering out
-    // the undefined elements yields a collections without any undefineds.
-    return childCollections
-        .map((x: any) => getSubCollectionData(x.fields))
-        .filter((y) => y)
-        .map((z) => z!);
+    // the undefined elements yields a collection without any undefineds.
+    return (
+        childCollections
+            .map((x: any) => convertContentfulFieldsToICollection(x.fields))
+            //.filter((y) => y)
+            .map((z) => z!)
+    );
 }
 
+// If we don't find a contentful collection for language:xx, we create one.
 export function makeLanguageCollection(
     langCode: string,
     languages: ILanguage[]
@@ -133,13 +125,6 @@ export function makeLanguageCollection(
         filter: { language: langCode },
         layout: "by-level",
     };
-}
-
-export interface useCollectionResponse {
-    collection?: ICollection;
-    generatorTag?: string; // gets a value for generated collections, like isoCode for languages.
-    error?: object; // whatever useContentful gives us if something goes wrong.
-    loading: boolean; // Hook response loading || !fetched, that is, we don't actually have a result yet
 }
 
 export const topics = [
@@ -219,11 +204,24 @@ export function makeCollectionForPHash(phash: string): ICollection {
     return result;
 }
 
-function makeTopicSubcollections(): ISubCollection[] {
+function makeTopicSubcollections(): ICollection[] {
     return topics.map((t) => makeTopicCollection(t));
 }
 
-export function useCollection(collectionName: string): useCollectionResponse {
+interface IContenfulCollectionQueryResponse {
+    collection?: ICollection;
+    error?: object; // whatever useContentful gives us if something goes wrong.
+    loading: boolean; // Hook response loading || !fetched, that is, we don't actually have a result yet
+}
+
+// A hook function for working with collections, generally retrieved from contentful.
+// Usually when first called it will return a result with loading true and the collection undefined.
+// When the query is complete a state change will cause it to be called again and return a useful
+// result.
+// In some cases, if a collection is not found on contentful, it is generated by code here.
+export function useGetCollectionFromContentful(
+    collectionName: string
+): IContenfulCollectionQueryResponse {
     const { languagesByBookCount: languages } = useContext(CachedTablesContext);
     const { data, error, fetched, loading } = useContentful({
         contentType: "collection",
@@ -244,6 +242,9 @@ export function useCollection(collectionName: string): useCollectionResponse {
 
     let collection: ICollection;
     //console.log(JSON.stringify(data));
+
+    // If Contentful didn't have a match, we can still generate a collection data structure for certain
+    // things, e.g. languages, topics, search, etc.
     if (!data || (data as any).items.length === 0) {
         if (collectionName.startsWith("language:")) {
             // language collections are optionally generated. We can make real cards if we
@@ -255,31 +256,32 @@ export function useCollection(collectionName: string): useCollectionResponse {
             // from the main database.
             collectionIso = collectionName.substring("language:".length);
             collection = makeLanguageCollection(collectionIso, languages);
-            return { collection, generatorTag: collectionIso, loading: false };
+            return { collection, loading: false };
         } else if (collectionName.startsWith("topic:")) {
             // topic collections currently are generated from the fixed list above.
             // the master "topics" collection is real (so it can be included at the
             // right place in its parent) but its children are inserted by another special case.
             const topicName = collectionName.substring("topic:".length);
             collection = makeTopicCollection(topicName);
-            return { collection, generatorTag: topicName, loading: false };
+            return { collection, loading: false };
         } else if (collectionName.startsWith("search:")) {
             // search collections are generated from a search string the user typed.
             const searchFor = collectionName.substring("search:".length);
             collection = makeCollectionForSearch(searchFor);
-            return { collection, generatorTag: searchFor, loading: false };
+            return { collection, loading: false };
         } else if (collectionName.startsWith("phash:")) {
             // search collections are generated from a search string the user typed.
             const phash = collectionName.substring("phash:".length);
             collection = makeCollectionForPHash(phash);
-            return { collection, generatorTag: phash, loading: false };
+            return { collection, loading: false };
         } else {
             return { loading: false };
         }
     } else {
         // usual case, got collection from contentful
-        //const collection = collections.get(collectionName);
-        collection = getCollectionData((data as any).items[0].fields);
+        collection = convertContentfulFieldsToICollection(
+            (data as any).items[0].fields
+        );
         if (collection.urlKey === "topics") {
             // we currently generate the subcollections for this.
             collection.childCollections = makeTopicSubcollections();

@@ -98,6 +98,7 @@ export const ContentfulBanner: React.FunctionComponent<{
     //const titleLines = banner.title;
     // const secondTitleLine =
     //     titleLines.length > 1 ? <div> {titleLines[1]}</div> : "";
+    const showLogo = logoUrl && logoUrl != "none";
     return (
         <div
             css={css`
@@ -151,7 +152,7 @@ export const ContentfulBanner: React.FunctionComponent<{
                         flex-direction: ${logoUrl ? "row" : "column"};
                     `}
                 >
-                    {logoUrl && logoUrl !== "none" && (
+                    {showLogo && (
                         <div
                             css={css`
                                 display: flex;
@@ -244,7 +245,7 @@ export const ContentfulBanner: React.FunctionComponent<{
                             `}
                         >
                             {props.filter &&
-                                !logoUrl &&
+                                !showLogo &&
                                 props.collection?.urlKey !== "new-arrivals" && (
                                     <BookCount filter={props.filter} />
                                 )}

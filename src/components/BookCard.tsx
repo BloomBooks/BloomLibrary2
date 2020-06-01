@@ -3,7 +3,7 @@ import css from "@emotion/css/macro";
 // these two make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React, { useContext } from "react";
+import React from "react";
 import { CheapCard } from "./CheapCard";
 import LazyLoad from "react-lazyload";
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";

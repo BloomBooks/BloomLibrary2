@@ -1,8 +1,7 @@
-import React, { useContext } from "react";
+import React from "react";
 import {
     ICollection,
-    getCollectionData,
-    useCollection,
+    useGetCollectionFromContentful,
 } from "../model/Collections";
 import { CategoryCardGroup } from "./CategoryCardGroup";
 import CategoryCard from "./CategoryCard";
@@ -12,7 +11,9 @@ export const RowOfPageCardsForKey: React.FunctionComponent<{
     urlKey: string;
     breadcrumbs: string[];
 }> = (props) => {
-    const { collection, error, loading } = useCollection(props.urlKey);
+    const { collection, error, loading } = useGetCollectionFromContentful(
+        props.urlKey
+    );
     if (loading) {
         return null;
     }

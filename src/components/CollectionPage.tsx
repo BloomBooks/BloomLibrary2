@@ -1,7 +1,7 @@
 import React from "react";
 
 import { ContentfulBanner } from "./banners/ContentfulBanner";
-import { useCollection } from "../model/Collections";
+import { useGetCollectionFromContentful } from "../model/Collections";
 import { RowOfPageCardsForKey } from "./RowOfPageCards";
 import { LevelGroups } from "./LevelGroups";
 import { ListOfBookGroups } from "./ListOfBookGroups";
@@ -20,7 +20,9 @@ export const CollectionPage: React.FunctionComponent<{
     filters: string;
     embeddedMode?: boolean;
 }> = (props) => {
-    const { collection, error, loading } = useCollection(props.collectionName);
+    const { collection, error, loading } = useGetCollectionFromContentful(
+        props.collectionName
+    );
     if (loading) {
         return null;
     }
@@ -71,6 +73,7 @@ export const CollectionPage: React.FunctionComponent<{
 
     let booksComponent: React.ReactElement | null = null;
     if (filteredCollection.filter) {
+        // "layout" is a choice that we can set in Contentful
         switch (collection.layout) {
             default:
                 //"by-level": I'd like to have this case here for clarity, but lint chokes
@@ -126,12 +129,12 @@ export const CollectionPage: React.FunctionComponent<{
             filter={filteredCollection.filter}
         />
     );
-    if (collection.urlKey === "root.read") {
-        const almostAllBooksFilter: IFilter = {
-            inCirculation: InCirculationOptions.Yes,
-        };
-        banner = <HomeBanner filter={almostAllBooksFilter} />;
-    }
+    // if (collection.urlKey === "root.read") {
+    //     const almostAllBooksFilter: IFilter = {
+    //         inCirculation: InCirculationOptions.Yes,
+    //     };
+    //     banner = <HomeBanner filter={almostAllBooksFilter} />;
+    // }
 
     return (
         <div>

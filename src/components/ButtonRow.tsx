@@ -5,13 +5,13 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React from "react";
-import { ISubCollection } from "../model/Collections";
+import { ICollection } from "../model/Collections";
 
 import { Button } from "@material-ui/core";
 import { commonUI } from "../theme";
 
 export const ButtonRow: React.FunctionComponent<{
-    collection: ISubCollection;
+    collection: ICollection;
     breadcrumbs: string[];
 }> = (props) => {
     if (
