@@ -245,6 +245,47 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                     </div>
                 </div>
             </div>
+            <div
+                id="apKeywordsRow"
+                css={css`
+                    display: flex;
+                    flex-direction: row;
+                `}
+            >
+                <div
+                    css={css`
+                        display: flex;
+                        flex-direction: column;
+                        flex-grow: 1;
+                    `}
+                >
+                    <TextField
+                        label="Keywords"
+                        variant="outlined"
+                        css={css`
+                            .MuiOutlinedInput-notchedOutline {
+                                border-color: ${borderColor} !important;
+                                border-width: 2px !important;
+                            }
+                            .MuiInputLabel-root {
+                                color: darkGrey;
+                            }
+                            .MuiInputBase-root {
+                                margin-bottom: 1em;
+                            }
+                            .MuiInputLabel-root.Mui-focused {
+                                color: black;
+                            }
+                            background-color: white;
+                        `}
+                        value={props.book.keywordsText || ""}
+                        onChange={(event) => {
+                            props.book.keywordsText = event.target.value;
+                            setModified(true);
+                        }}
+                    ></TextField>
+                </div>
+            </div>
             <BookshelvesChooser
                 setModified={setModified}
                 book={props.book}

@@ -187,7 +187,7 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
                     "title,allTitles,baseUrl,bookOrder,inCirculation,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
                     "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits," +
                     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount," +
-                    "harvestStartedAt,bookshelves,publisher,originalPublisher",
+                    "harvestStartedAt,bookshelves,publisher,originalPublisher,keywords",
                 // fluff up fields that reference other tables
                 // Note that what we're going to get in langPointers is actually the data from the rows of language,
                 // because of this statement:
@@ -272,7 +272,7 @@ export function useGetBooksForGrid(
                 keys:
                     "title,baseUrl,license,licenseNotes,inCirculation,summary,copyright,harvestState,harvestLog," +
                     "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits,bookshelves," +
-                    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher,originalPublisher",
+                    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher,originalPublisher,keywords",
                 // fluff up fields that reference other tables
                 include: "uploader,langPointers",
                 ...query,
@@ -660,7 +660,8 @@ export function constructParseBookQuery(
     skip?: number //pagination
 ): object {
     // todo: I don't know why this is undefined
-    const f = filter ? filter : {};
+    console.assert(filter, "Filter is unexpectedly falsey. Investigate why.");
+    const f: IFilter = filter ? filter : {};
 
     if (limit) {
         params.limit = limit;
@@ -890,6 +891,17 @@ export function constructParseBookQuery(
             // just don't include it in the query
             break;
     }
+
+    // keywordsText is not a real column. Don't pass this through
+    // Instead, convert it to search against keywordStems
+    delete params.where.keywordsText;
+    if (f.keywordsText) {
+        const [, keywordStems] = Book.getKeywordsAndStems(f.keywordsText);
+        params.where.keywordStems = {
+            $all: keywordStems,
+        };
+    }
+
     return params;
 }
 
