@@ -22,11 +22,21 @@ import {
     BookshelvesChooser,
     FeaturesChooser,
 } from "./StaffMultiChoosers";
+import { Prompt } from "react-router-dom";
 
 interface IProps {
     book: Book;
 }
 const borderColor = "#b0e1e8"; // or perhaps border color ${theme.palette.secondary.light}? The value here came from note in BL-8046
+
+// A function that can be added as a listener to window.beforeunload when we need to prompt
+// the user before navigating. It MUST be defined OUTSIDE the StaffPanel function, otherwise,
+// each render creates a different instance of the function and removeEventListener does
+// not work.
+const preventUnload = (e: Event) => {
+    e.preventDefault(); // causes standard browsers to prompt
+    e.returnValue = true; // caues non-standard browsers to prompt
+};
 
 // This React functional component displays some staff controls, shown (for example)
 // in the book detail page when the logged-in use is an moderator.
@@ -77,6 +87,16 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
             return;
         }
         setModifiedState(val);
+
+        // This handles changes outside the react router system.
+        // Unfortunately we are not allowed to control or localize the message.
+        // Note that we must pass a static function so we can pass the exact same
+        // function instance to remove as to add.
+        if (val) {
+            window.addEventListener("beforeunload", preventUnload);
+        } else {
+            window.removeEventListener("beforeunload", preventUnload);
+        }
     };
 
     const handleSave = () => {
@@ -106,6 +126,19 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                 width: 100%;
             `}
         >
+            <Prompt
+                // This works for changes INSIDE the react router system, that is,
+                // ones like typing in the search dialog that result ultimately in
+                // calls to react router's history.push() or history.replace() etc.
+                // Most changes, including following an href to elsewhere in bl.org,
+                // do not trigger this, which is why we also set up an event handler for
+                // window.beforeunload.
+                // It's tempting to try to make this look more like the browser's
+                // standard prompt for beforeunload, but that's different in each browser,
+                // so we may as well just be as clear as we can.
+                when={modified}
+                message="Please save your changes or Cancel"
+            />
             <div
                 id="apTopRow"
                 css={css`
