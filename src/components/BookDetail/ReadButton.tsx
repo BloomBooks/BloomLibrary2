@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useContext } from "react";
+import React from "react";
 import Button from "@material-ui/core/Button";
 import ReadIcon from "./read.svg";
 import { commonUI } from "../../theme";

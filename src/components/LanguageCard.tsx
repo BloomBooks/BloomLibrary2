@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useContext } from "react";
+import React from "react";
 import { CheapCard } from "./CheapCard";
 import { ILanguage, getLanguageNames } from "../model/Language";
 import { commonUI } from "../theme";

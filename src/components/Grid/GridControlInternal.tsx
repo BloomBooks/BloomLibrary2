@@ -3,13 +3,7 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React, {
-    useContext,
-    useState,
-    useEffect,
-    useMemo,
-    ReactText,
-} from "react";
+import React, { useState, useEffect, useMemo, ReactText } from "react";
 
 import {
     Plugin,

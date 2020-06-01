@@ -6,8 +6,6 @@ import { useContext, useMemo, useEffect, useState } from "react";
 import { CachedTablesContext } from "../App";
 import { getCleanedAndOrderedLanguageList, ILanguage } from "../model/Language";
 import { processRegExp } from "../Utilities";
-import { useLocation } from "react-router-dom";
-import * as QueryString from "qs";
 import { topics } from "../model/Collections";
 
 // For things other than books, which should use `useBookQuery()`

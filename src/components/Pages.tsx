@@ -52,16 +52,21 @@ export function getSubCollectionForFilters(
     return { filteredCollection, skip };
 }
 
-// I don't know if we'll stick with this... but for now this is what you get
-// if there are lots of books and you scroll to the end of the 20 or so that
-// we put in a row, and then you click on the MoreCard there to see the rest
-export const AllResultsPage: React.FunctionComponent<{
+// Used when someone clicks "More" on a row that is itself automatically-generated subset of the collection,
+// e.g. "Level 2", or "Agriculture". We then want to show a page that is just all the books that would
+// belong to that row. So we
+// 1) Don't want to show the whole banner (though we could change our minds about that)
+// 2) Don't want to show the child collections (they are not part of the row).
+// 3) Need a *new* way to categorize the books, since, in the "Level 2" example, we can't just show them all by level again.
+//    That way could just be showing them all as a big grid.
+// Finally, note that we are calling this "subset" to distinguish from "child collection"... don't confuse the two ideas.
+// There can be multiple levels of subset, as in collection/level:2/topic:animal stories/search:dogs
+export const CollectionSubsetPage: React.FunctionComponent<{
     collectionName: string; // may have tilde's, after last tilde is a contentful collection urlKey
+
     filters: string; // may result in automatically-created subcollections. Might be multiple ones slash-delimited
 }> = (props) => {
-    const collectionNames = props.collectionName.split("~");
-    const collectionName = collectionNames[collectionNames.length - 1];
-    const { collection, error, loading } = useCollection(collectionName);
+    const { collection, error, loading } = useCollection(props.collectionName);
     if (loading) {
         return null;
     }
@@ -89,14 +94,17 @@ export const AllResultsPage: React.FunctionComponent<{
     // And it can be confusing if only one of the next-level categories has any content.
     // But at this stage we don't have access to a count of items in the collection, or any way to
     // know whether a particular way of subdividing them will actually break things up.
-    let subList = <LevelGroups collection={subcollection} />;
+    let subList = <LevelGroups collection={subcollection} breadcrumbs={[]} />;
     if ((props.collectionName + props.filters).indexOf("level:") >= 0) {
-        subList = <ByTopicsGroups collection={subcollection} />;
+        subList = (
+            <ByTopicsGroups collection={subcollection} breadcrumbs={[]} />
+        );
         if ((props.collectionName + props.filters).indexOf("topic:") >= 0) {
             subList = (
                 <CollectionGroup
                     title={subcollection.label}
                     collection={subcollection}
+                    breadcrumbs={[]}
                     rows={20}
                     skip={skip}
                 />

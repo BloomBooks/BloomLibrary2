@@ -10,7 +10,7 @@ import { CollectionGroup } from "./CollectionGroup";
 
 export const RowOfPageCardsForKey: React.FunctionComponent<{
     urlKey: string;
-    parents?: string;
+    breadcrumbs: string[];
 }> = (props) => {
     const { collection, error, loading } = useCollection(props.urlKey);
     if (loading) {
@@ -33,18 +33,24 @@ export const RowOfPageCardsForKey: React.FunctionComponent<{
 
     if (collection.childCollections.length > 0) {
         return (
-            <RowOfPageCards collection={collection} parents={props.parents} />
+            <RowOfPageCards
+                collection={collection}
+                breadcrumbs={props.breadcrumbs}
+            />
         );
     } else {
         return (
-            <CollectionGroup collection={collection} parents={props.parents} />
+            <CollectionGroup
+                collection={collection}
+                breadcrumbs={props.breadcrumbs}
+            />
         );
     }
 };
 
 export const RowOfPageCards: React.FunctionComponent<{
     collection: ICollection;
-    parents?: string;
+    breadcrumbs: string[];
 }> = (props) => {
     if (
         !props.collection.childCollections ||
@@ -66,7 +72,7 @@ export const RowOfPageCards: React.FunctionComponent<{
                 hideTitle={childCollection.hideLabelOnCardAndDefaultBanner}
                 bookCount="??"
                 filter={childCollection.filter}
-                href={"/" + (props.parents ? props.parents + "~" : "") + key}
+                href={"/" + [...props.breadcrumbs, key].join("~")}
                 //pageType={props.bookShelfCategory}
                 img={childCollection.iconForCardAndDefaultBanner}
                 credits={childCollection.iconCredits}

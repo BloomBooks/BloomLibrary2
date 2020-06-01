@@ -4,14 +4,11 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useMemo } from "react";
+import React from "react";
 import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Link,
-    useRouteMatch,
-    useParams,
     Redirect,
 } from "react-router-dom";
 
@@ -38,7 +35,7 @@ import { BulkEditPage } from "./components/BulkEdit/BulkEditPage";
 import { Header } from "./components/header/Header";
 import BookDetail from "./components/BookDetail/BookDetail";
 import { ReadBookPage } from "./components/ReadBookPage";
-import { AllResultsPage } from "./components/Pages";
+import { CollectionSubsetPage } from "./components/Pages";
 import { FeaturePage } from "./components/FeaturePage";
 import { ContentfulBanner } from "./components/banners/ContentfulBanner";
 import { ContentfulContext } from "./ContentfulContext";
@@ -98,7 +95,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                     <CachedTablesContext.Provider
                         value={{
                             tags,
-                            languagesByBookCount: languagesByBookCount,
+                            languagesByBookCount,
                             bookshelves,
                         }}
                     >
@@ -120,14 +117,6 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                         <Route path={"/browse"}>
                                             <Redirect to="/page/create~downloads" />
                                         </Route>
-                                        <Route path={"/embed"}>
-                                            <iframe
-                                                src="https://cf-next.bloomlibrary.org"
-                                                height="100%"
-                                                width="100%"
-                                                title="embed"
-                                            ></iframe>
-                                        </Route>
                                         <Route
                                             path={[
                                                 "/downloads", // Alias for convenience when telling people where to get Bloom
@@ -136,6 +125,9 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                         >
                                             <Redirect to="/page/create~downloads" />
                                         </Route>
+                                        {/* At contentful.com, when you work on something, there is a "Preview" button
+                                        which takes you to our site so you can see how your content will actually be
+                                        displayed. For banners, we configured contentful to set you to this url. */}
                                         <Route
                                             path="/_previewBanner/:id" // used by preview button when editing in contentful
                                             render={({ match }) => (
@@ -171,13 +163,15 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                             path={["/", "/read"]}
                                         >
                                             <CollectionPage
-                                                collectionNames="root.read"
+                                                collectionName="root.read"
+                                                breadcrumbs={[]}
                                                 filters=""
                                             />
                                         </Route>
                                         <Route exact={true} path={"/create"}>
                                             <CollectionPage
-                                                collectionNames="create"
+                                                collectionName="create"
+                                                breadcrumbs={[]}
                                                 filters=""
                                             />
                                         </Route>
@@ -185,27 +179,13 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                             <BulkEditPage />
                                         </Route>
                                         <Route
-                                            path="/feature/:featureKey" // obsolete, but keeping until replaced.
-                                            render={({ match }) => (
-                                                <FeaturePage
-                                                    featureKey={
-                                                        match.params.featureKey
-                                                    }
-                                                />
-                                            )}
-                                        />
-                                        <Route
                                             path="/page/:lineage/"
                                             render={({ match }) => {
-                                                const parts = match.params.lineage.split(
-                                                    "~"
-                                                );
-                                                const last =
-                                                    parts[parts.length - 1];
-
                                                 return (
                                                     <ContentfulPage
-                                                        urlKey={last}
+                                                        urlKey={getCollectionName(
+                                                            match.params.lineage
+                                                        )}
                                                     />
                                                 );
                                             }}
@@ -218,6 +198,26 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                 const filters = filterParam.split(
                                                     "/"
                                                 );
+                                                const breadcrumbs = match.params.collectionNames.split(
+                                                    "~"
+                                                );
+                                                const collectionName =
+                                                    breadcrumbs[
+                                                        breadcrumbs.length - 1
+                                                    ] || "";
+                                                breadcrumbs.pop(); // remove current collection name
+                                                // Don't want leading root.read in breadcrumbs; home is automatically included.
+                                                if (
+                                                    breadcrumbs[0] ===
+                                                    "root.read"
+                                                ) {
+                                                    breadcrumbs.splice(0, 1);
+                                                }
+                                                // This heuristic will probably change. Basically this is the route
+                                                // for displaying top-level collections. Currently we also allow it
+                                                // to be modified with a single search filter, which constrains the
+                                                // books to be shown in the collection. If there are more filters
+                                                // we assume this is a 'more' page and show a different view.
                                                 if (
                                                     filterParam.length === 0 ||
                                                     (filters.length === 1 &&
@@ -227,9 +227,11 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                 ) {
                                                     return (
                                                         <CollectionPage
-                                                            collectionNames={
-                                                                match.params
-                                                                    .collectionNames
+                                                            collectionName={
+                                                                collectionName
+                                                            }
+                                                            breadcrumbs={
+                                                                breadcrumbs
                                                             }
                                                             filters={
                                                                 match.params
@@ -242,10 +244,9 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                     );
                                                 }
                                                 return (
-                                                    <AllResultsPage
+                                                    <CollectionSubsetPage
                                                         collectionName={
-                                                            match.params
-                                                                .collectionNames
+                                                            collectionName
                                                         }
                                                         filters={
                                                             match.params.filter
@@ -266,6 +267,14 @@ export const App: React.FunctionComponent<{}> = (props) => {
         </>
     );
 };
+
+// We make breadcrumbs work by putting the history we want in the form of
+// something~otherthing~whereWeAreNow. Only the last thing is used for our actual
+// location, all the other parts of this "lineage" are just used for breadcrumbs.
+function getCollectionName(listOfTildeSeparatedNames: string): string {
+    const parts = listOfTildeSeparatedNames.split("~");
+    return parts[parts.length - 1] || "";
+}
 
 export const UnderConstruction: React.FunctionComponent<{}> = () => {
     const [open, setOpen] = React.useState(true);

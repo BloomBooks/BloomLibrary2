@@ -6,14 +6,14 @@ import { CollectionGroup } from "./CollectionGroup";
 // Note: very similar to ByLevelsGroup, possibly we can factor out something common.
 export const ByTopicsGroups: React.FunctionComponent<{
     collection: ICollection;
-    parents?: string;
+    breadcrumbs: string[];
 }> = (props) => {
     return (
         <React.Fragment>
             {topics.map((topic) => (
                 <CollectionGroup
                     collection={makeCollectionForTopic(props.collection, topic)}
-                    parents={props.parents}
+                    breadcrumbs={props.breadcrumbs}
                 />
             ))}
 
@@ -23,7 +23,7 @@ export const ByTopicsGroups: React.FunctionComponent<{
             <CollectionGroup
                 rows={99}
                 collection={makeCollectionForTopic(props.collection, "empty")}
-                parents={props.parents}
+                breadcrumbs={props.breadcrumbs}
             />
         </React.Fragment>
     );

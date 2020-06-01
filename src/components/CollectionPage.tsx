@@ -17,14 +17,12 @@ import { IFilter, InCirculationOptions } from "../IFilter";
 import { getSubCollectionForFilters } from "./Pages";
 
 export const CollectionPage: React.FunctionComponent<{
-    collectionNames: string;
+    collectionName: string;
+    breadcrumbs: string[]; // ~-separated list indicating how we got to this collection
     filters: string;
     embeddedMode?: boolean;
 }> = (props) => {
-    const location = useLocation();
-    const collectionNames = props.collectionNames.split("~");
-    const collectionName = collectionNames[collectionNames.length - 1];
-    const { collection, error, loading } = useCollection(collectionName);
+    const { collection, error, loading } = useCollection(props.collectionName);
     if (loading) {
         return null;
     }
@@ -53,15 +51,12 @@ export const CollectionPage: React.FunctionComponent<{
     // links that would take us to filtered subcollections. But if we drop them altogether
     // when there's a filter, it may change the appearance of the page more than expected.
 
-    const parents = [...collectionNames];
-    if (parents[0] === "root.read") {
-        parents.splice(0, 1);
+    // For child collections, the list of breadcrumbs needs to include this one,
+    // since each subset is a child collection of this.
+    const breadcrumbsForChildren = [...props.breadcrumbs];
+    if (props.collectionName !== "root.read") {
+        breadcrumbsForChildren.push(props.collectionName);
     }
-
-    const collectionParents = parents.join("~"); // parents for subcollection includes own key
-    parents.pop();
-
-    const bookParents = parents.join("~"); // parents for books collection does not include own key
 
     const collectionRows = collection.childCollections.map((c) => {
         if (c.urlKey === "language-chooser") {
@@ -71,7 +66,7 @@ export const CollectionPage: React.FunctionComponent<{
             <RowOfPageCardsForKey
                 key={c.urlKey}
                 urlKey={c.urlKey}
-                parents={collectionParents}
+                breadcrumbs={breadcrumbsForChildren}
             />
         );
     });
@@ -84,7 +79,7 @@ export const CollectionPage: React.FunctionComponent<{
                 booksComponent = (
                     <LevelGroups
                         collection={filteredCollection}
-                        parents={bookParents}
+                        breadcrumbs={props.breadcrumbs}
                     />
                 );
                 break;
@@ -94,7 +89,7 @@ export const CollectionPage: React.FunctionComponent<{
                 booksComponent = (
                     <CollectionGroup
                         collection={filteredCollection}
-                        parents={bookParents}
+                        breadcrumbs={props.breadcrumbs}
                         rows={
                             collection.urlKey === "new-arrivals"
                                 ? 10
@@ -118,7 +113,7 @@ export const CollectionPage: React.FunctionComponent<{
                 booksComponent = (
                     <ByTopicsGroups
                         collection={filteredCollection}
-                        parents={bookParents}
+                        breadcrumbs={props.breadcrumbs}
                     />
                 );
 

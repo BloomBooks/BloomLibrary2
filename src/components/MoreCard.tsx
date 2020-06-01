@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useContext } from "react";
+import React from "react";
 import { CheapCard } from "./CheapCard";
 import { ICollection } from "../model/Collections";
 
@@ -21,13 +21,12 @@ export const cardWidth = 120;
 interface IProps {
     collection: ICollection;
     skip?: number;
-    parents?: string;
+    breadcrumbs: string[];
 }
 export const MoreCard: React.FunctionComponent<IProps> = (props) => {
     const href =
         "/" +
-        (props.parents ? props.parents + "~" : "") +
-        props.collection.urlKey +
+        [...props.breadcrumbs, props.collection.urlKey].join("~") +
         (props.skip ? "/skip:" + props.skip : "");
 
     return (

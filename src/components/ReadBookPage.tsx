@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useContext, useEffect, useCallback } from "react";
+import React, { useEffect, useCallback } from "react";
 import { useGetBookDetail } from "../connection/LibraryQueryHooks";
 import { Book } from "../model/Book";
 import { getUrlOfHtmlOfDigitalVersion } from "./BookDetail/ArtifactHelper";

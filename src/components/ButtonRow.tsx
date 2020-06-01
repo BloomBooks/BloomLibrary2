@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useContext } from "react";
+import React from "react";
 import { ISubCollection } from "../model/Collections";
 
 import { Button } from "@material-ui/core";
@@ -12,7 +12,7 @@ import { commonUI } from "../theme";
 
 export const ButtonRow: React.FunctionComponent<{
     collection: ISubCollection;
-    parents?: string;
+    breadcrumbs: string[];
 }> = (props) => {
     if (
         !props.collection.childCollections ||
@@ -24,10 +24,9 @@ export const ButtonRow: React.FunctionComponent<{
 
     const buttons: JSX.Element[] = childCollections.map((b: any) => {
         const key = b.fields.urlKey;
+        const path = [...props.breadcrumbs, key].join("~");
         const externalLink = key.startsWith("http");
-        const href = externalLink
-            ? key
-            : `/page/${props.parents ? props.parents + "~" : ""}${key}`;
+        const href = externalLink ? key : `/page/${path}`;
         return (
             <Button
                 css={css`

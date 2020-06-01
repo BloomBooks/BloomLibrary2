@@ -4,13 +4,12 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import LazyLoad, {
     forceCheck as forceCheckLazyLoadComponents,
 } from "react-lazyload";
 
 import { commonUI } from "../theme";
-import { IFilter } from "../IFilter";
 import {
     useSearchBooks,
     IBasicBookInfo,
@@ -30,7 +29,7 @@ interface IProps {
     skip?: number; // of items in collection (used for paging through with More)
 
     contextLangIso?: string;
-    parents?: string;
+    breadcrumbs: string[];
 }
 
 export const CollectionGroup: React.FunctionComponent<IProps> = (props) => (
@@ -133,7 +132,7 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
                 key="more"
                 collection={props.collection}
                 skip={nextSkip}
-                parents={props.parents}
+                breadcrumbs={props.breadcrumbs}
             />
         );
     }

@@ -253,7 +253,7 @@ export const ContentfulBanner: React.FunctionComponent<{
                             <div></div>
                             {banner.buttonRow && (
                                 <ButtonRow
-                                    parents={"create"}
+                                    breadcrumbs={["create"]}
                                     collection={banner.buttonRow.fields}
                                 />
                             )}

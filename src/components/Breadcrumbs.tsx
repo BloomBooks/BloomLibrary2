@@ -47,7 +47,7 @@ export const Breadcrumbs: React.FunctionComponent = () => {
         </li>
     );
     let isBook = false;
-    let items = location.pathname.split("/");
+    const items = location.pathname.split("/");
     // Typically there's a leading slash, producing an empty element.
     // On a 'more' page there may also be a 'more' following that.
     while (items[0] === "more" || items[0] === "" || items[0] === "root.read") {
