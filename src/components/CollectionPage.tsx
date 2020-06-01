@@ -19,6 +19,7 @@ import { getSubCollectionForFilters } from "./Pages";
 export const CollectionPage: React.FunctionComponent<{
     collectionNames: string;
     filters: string;
+    embeddedMode?: boolean;
 }> = (props) => {
     const location = useLocation();
     const collectionNames = props.collectionNames.split("~");
@@ -141,7 +142,7 @@ export const CollectionPage: React.FunctionComponent<{
 
     return (
         <div>
-            {banner}
+            {props.embeddedMode || banner}
             <ListOfBookGroups>
                 {collectionRows}
                 {booksComponent}

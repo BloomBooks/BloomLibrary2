@@ -72,6 +72,11 @@ export const App: React.FunctionComponent<{}> = (props) => {
     CachedTables.tags = tags;
     CachedTables.languagesByBookCount = languagesByBookCount;
 
+    // const embeddedMode = window.location.hostname
+    //     .toLowerCase()
+    //     .startsWith("embed");
+    const embeddedMode = window.self !== window.top;
+
     return (
         <>
             {/* <React.StrictMode>
@@ -109,11 +114,19 @@ export const App: React.FunctionComponent<{}> = (props) => {
                             )}
                             <ContentfulContext>
                                 <Router>
-                                    <Header />
+                                    {embeddedMode || <Header />}
                                     <Switch>
                                         {/* Alias from legacy blorg */}
                                         <Route path={"/browse"}>
                                             <Redirect to="/page/create~downloads" />
+                                        </Route>
+                                        <Route path={"/embed"}>
+                                            <iframe
+                                                src="https://cf-next.bloomlibrary.org"
+                                                height="100%"
+                                                width="100%"
+                                                title="embed"
+                                            ></iframe>
                                         </Route>
                                         <Route
                                             path={[
@@ -221,6 +234,9 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                             filters={
                                                                 match.params
                                                                     .filter
+                                                            }
+                                                            embeddedMode={
+                                                                embeddedMode
                                                             }
                                                         />
                                                     );
