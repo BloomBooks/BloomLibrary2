@@ -54,9 +54,13 @@ export class Book {
     @observable public features: string[] = [];
     @observable public bookshelves: string[] = [];
 
-    // This scalar string format is easier for the user/UI to modify, but in the database, we want to store it as an array of strings
+    // This scalar string format is easier for the user/UI to modify,
+    // but in the database, we store it as an array of strings instead
+    // StaffPanel component observes this
     @observable public keywordsText: string = "";
-    public keywords: string[] = [];
+
+    // KeywordLinks component observes this
+    @observable public keywords: string[] = [];
     public keywordStems: string[] = [];
 
     @observable
