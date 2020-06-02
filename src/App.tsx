@@ -154,9 +154,18 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                         <Route path="/about">
                                             <ContentfulPage urlKey="about" />
                                         </Route>
-                                        <Route path="/grid">
-                                            <GridPage />
-                                        </Route>
+                                        <Route
+                                            path="/grid/:filter*"
+                                            render={({ match }) => {
+                                                return (
+                                                    <GridPage
+                                                        filters={
+                                                            match.params.filter
+                                                        }
+                                                    />
+                                                );
+                                            }}
+                                        />
                                         <Route
                                             exact={true}
                                             path={["/", "/read"]}

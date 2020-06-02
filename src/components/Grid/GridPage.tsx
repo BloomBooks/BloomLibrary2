@@ -7,8 +7,16 @@ import React from "react";
 
 import { Breadcrumbs } from "../Breadcrumbs";
 import { GridControl } from "./GridControl";
+import { IFilter } from "../../IFilter";
 
-export const GridPage: React.FunctionComponent<{}> = props => {
+export const GridPage: React.FunctionComponent<{ filters: string }> = (
+    props
+) => {
+    let contextFilter: IFilter = {};
+    if (props.filters && props.filters.startsWith("search:")) {
+        const search = props.filters.split("/")[0].substring("search:".length);
+        contextFilter = { search };
+    }
     return (
         <div>
             <div
@@ -21,7 +29,7 @@ export const GridPage: React.FunctionComponent<{}> = props => {
             >
                 <Breadcrumbs />
             </div>
-            <GridControl />
+            <GridControl contextFilter={contextFilter} />
         </div>
     );
 };

@@ -129,7 +129,7 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
         const filterMadeFromPageSearchPlusColumnFilters = CombineGridAndSearchBoxFilter(
             bookGridColumnDefinitions,
             gridFilters,
-            {} // todo: router!.current.filter
+            props.contextFilter || {}
         );
 
         if (props.setCurrentFilter) {
