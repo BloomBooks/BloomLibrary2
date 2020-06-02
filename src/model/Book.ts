@@ -1,5 +1,8 @@
 import { observable, observe } from "mobx";
-import { updateBook } from "../connection/LibraryUpdates";
+import {
+    updateBook,
+    retrieveCurrentBookData,
+} from "../connection/LibraryUpdates";
 import { ArtifactVisibilitySettingsGroup } from "./ArtifactVisibilitySettings";
 import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
 import { ILanguage } from "./Language";
@@ -92,6 +95,23 @@ export class Book {
             return axisAndValue.split(":")[1].trim();
         } else return undefined;
     }
+
+    private updateTagsFromParseServerData(tags1: string[]) {
+        const tags = [...tags1];
+        for (let i = 0; i < tags.length; i++) {
+            const tag: string = tags[i];
+            const parts = tag.split(":");
+            if (parts.length !== 2) {
+                continue;
+            }
+            if (parts[0].trim() === "level") {
+                this.level = parts[1].trim();
+                tags.splice(i, 1);
+                break;
+            }
+        }
+        this.tags = tags;
+    }
     // Make various changes to the object we get from parse server to make it more
     // convenient for various BloomLibrary uses.
     public finishCreationFromParseServerData(bookId: string): void {
@@ -99,18 +119,7 @@ export class Book {
         this.id = bookId;
 
         if (this.tags) {
-            for (let i = 0; i < this.tags.length; i++) {
-                const tag: string = this.tags[i];
-                const parts = tag.split(":");
-                if (parts.length !== 2) {
-                    continue;
-                }
-                if (parts[0].trim() === "level") {
-                    this.level = parts[1].trim();
-                    this.tags.splice(i, 1);
-                    break;
-                }
-            }
+            this.updateTagsFromParseServerData(this.tags);
         }
         // work around https://issues.bloomlibrary.org/youtrack/issue/BL-8327 until it is fixed
         if (
@@ -245,6 +254,22 @@ export class Book {
         if (i < 0 && value) {
             this.tags.push(name);
         }
+    }
+
+    // For a check box control, we typically want to change that one thing and nothing else.
+    // But it's quite possible that other things have been changed on the server.
+    // For example, the user may be in grid view, open the book in a new tab,
+    // make changes there, notice that system:incoming has not updated, and change it.
+    // If we aren't careful, that will overwrite all the changes made in the other tab
+    // with the old values we still have here.
+    // To avoid this, when making such an update we fetch the most current book data
+    // before changing anything.
+    public async setBooleanTagAndSave(name: string, value: boolean) {
+        const currentData = await retrieveCurrentBookData(this.id);
+        Object.assign(this, currentData);
+        this.finishCreationFromParseServerData(this.id);
+        this.setBooleanTag(name, value);
+        this.saveAdminDataToParse();
     }
 
     public getBestTitle(langISO?: string): string {

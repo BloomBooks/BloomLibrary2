@@ -1,5 +1,6 @@
 import { axios } from "@use-hooks/axios";
 import { getConnection } from "./ParseServerConnection";
+import { bookDetailFields } from "./LibraryQueryHooks";
 
 export function updateBook(
     bookId: string,
@@ -15,7 +16,7 @@ export function updateBook(
     // process includes putting a session token into the headers that getConnection() returns.
     if (currentSession) {
         Object.assign(headers, {
-            "X-Parse-Session-Token": currentSession
+            "X-Parse-Session-Token": currentSession,
         });
     }
 
@@ -25,9 +26,26 @@ export function updateBook(
 
     axios
         .put(`${getConnection().url}classes/books/${bookId}`, params, {
-            headers
+            headers,
         })
-        .catch(error => {
+        .catch((error) => {
             alert(error);
         });
+}
+
+// Get the current information about one book.
+// Not sure this is the right place for this. But it's used in an update operation,
+// and it's definitely not a hook, so it seemed best to keep the parse server
+// direct operations in just two places.
+export async function retrieveCurrentBookData(bookId: string) {
+    const headers = getConnection().headers;
+    const result = await axios.get(
+        `${getConnection().url}classes/books/${bookId}`,
+        {
+            headers,
+            params: { keys: bookDetailFields },
+        }
+    );
+
+    return result.data;
 }

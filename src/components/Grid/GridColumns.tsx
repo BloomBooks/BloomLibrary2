@@ -271,8 +271,7 @@ const TagCheckbox: React.FunctionComponent<{
         <Checkbox
             checked={present}
             onChange={(e) => {
-                props.book.setBooleanTag(props.tag, e.target.checked);
-                props.book.saveAdminDataToParse();
+                props.book.setBooleanTagAndSave(props.tag, e.target.checked);
                 setPresent(e.target.checked);
             }}
         />

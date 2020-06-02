@@ -172,6 +172,12 @@ export function useGetPhashMatchingRelatedBooks(
         .map((r: any) => createBookFromParseServerData(r));
 }
 */
+
+export const bookDetailFields =
+    "title,allTitles,baseUrl,bookOrder,inCirculation,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
+    "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits," +
+    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount," +
+    "harvestStartedAt,bookshelves,publisher,originalPublisher,keywords";
 export function useGetBookDetail(bookId: string): Book | undefined | null {
     const { response, loading, error } = useAxios({
         url: `${getConnection().url}classes/books`,
@@ -181,11 +187,7 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
             headers: getConnection().headers,
             params: {
                 where: { objectId: bookId },
-                keys:
-                    "title,allTitles,baseUrl,bookOrder,inCirculation,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
-                    "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits," +
-                    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount," +
-                    "harvestStartedAt,bookshelves,publisher,originalPublisher,keywords",
+                keys: bookDetailFields,
                 // fluff up fields that reference other tables
                 // Note that what we're going to get in langPointers is actually the data from the rows of language,
                 // because of this statement:
