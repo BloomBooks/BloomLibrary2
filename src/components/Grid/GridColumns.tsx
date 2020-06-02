@@ -45,7 +45,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             sortingEnabled: true,
             getCellValue: (b: Book) => (
                 <Link
-                    href={`/?bookId=${b.id}&pageType=book-detail&title=${b.title}`}
+                    href={`/book/${b.id}`}
                     css={css`
                         color: black !important;
                     `}
