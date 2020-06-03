@@ -173,14 +173,12 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                             <CollectionPage
                                                 collectionName="root.read"
                                                 breadcrumbs={[]}
-                                                filters=""
                                             />
                                         </Route>
                                         <Route exact={true} path={"/create"}>
                                             <CollectionPage
                                                 collectionName="create"
                                                 breadcrumbs={[]}
-                                                filters=""
                                             />
                                         </Route>
                                         <Route path="/bulk">
@@ -222,17 +220,8 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                     breadcrumbs.splice(0, 1);
                                                 }
                                                 // This heuristic will probably change. Basically this is the route
-                                                // for displaying top-level collections. Currently we also allow it
-                                                // to be modified with a single search filter, which constrains the
-                                                // books to be shown in the collection. If there are more filters
-                                                // we assume this is a 'more' page and show a different view.
-                                                if (
-                                                    filterParam.length === 0 ||
-                                                    (filters.length === 1 &&
-                                                        filters[0].startsWith(
-                                                            "search:"
-                                                        ))
-                                                ) {
+                                                // for displaying top-level collections.
+                                                if (filterParam.length === 0) {
                                                     return (
                                                         <CollectionPage
                                                             collectionName={
@@ -240,10 +229,6 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                             }
                                                             breadcrumbs={
                                                                 breadcrumbs
-                                                            }
-                                                            filters={
-                                                                match.params
-                                                                    .filter
                                                             }
                                                             embeddedMode={
                                                                 embeddedMode

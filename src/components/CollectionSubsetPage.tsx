@@ -15,7 +15,12 @@ import {
 } from "../model/Collections";
 import { makeCollectionForTopic, ByTopicsGroups } from "./ByTopicsGroups";
 
-export function getSubCollectionForFilters(
+// Given a collection and a string like level:1/topic:anthropology/search:dogs,
+// creates a corresponding collection by adding appropriate filters.
+// If filters is empty it will just return the input collection.
+// As a somewhat special case, filters may end with skip:n for paging through
+// a parent collection.
+export function generateCollectionFromFilters(
     collection: ICollection,
     filters: string
 ): { filteredCollection: ICollection; skip: number } {
@@ -85,7 +90,7 @@ export const CollectionSubsetPage: React.FunctionComponent<{
     const {
         filteredCollection: subcollection,
         skip,
-    } = getSubCollectionForFilters(collection, props.filters);
+    } = generateCollectionFromFilters(collection, props.filters);
 
     // The idea here is that by default we break things up by level. If we already did, divide by topic.
     // If we already used both, make a flat list.
@@ -101,6 +106,7 @@ export const CollectionSubsetPage: React.FunctionComponent<{
         subList = (
             <ByTopicsGroups collection={subcollection} breadcrumbs={[]} />
         );
+        // If we had previously gone down a topic trail, then just show them all.
         if ((props.collectionName + props.filters).indexOf("topic:") >= 0) {
             subList = (
                 <BookCardGroup

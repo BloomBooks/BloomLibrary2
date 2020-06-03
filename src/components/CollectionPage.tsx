@@ -10,12 +10,10 @@ import { LanguageGroup } from "./LanguageGroup";
 import { BookCardGroup } from "./BookCardGroup";
 import { ByLanguageGroups } from "./ByLanguageGroups";
 import { ByTopicsGroups } from "./ByTopicsGroups";
-import { getSubCollectionForFilters } from "./CollectionSubsetPage";
 
 export const CollectionPage: React.FunctionComponent<{
     collectionName: string;
     breadcrumbs: string[];
-    filters: string;
     embeddedMode?: boolean;
 }> = (props) => {
     const { collection, error, loading } = useGetCollectionFromContentful(
@@ -33,21 +31,6 @@ export const CollectionPage: React.FunctionComponent<{
     if (!collection) {
         return <div>Collection not found</div>;
     }
-
-    const { filteredCollection } = getSubCollectionForFilters(
-        collection,
-        props.filters
-    );
-
-    // From here on, think carefully about when to use collection and when filteredCollection.
-    // For example, we want the original collection's banner, so it still looks like that
-    // collection, but with the filteredCollection's filter so we get the right count.
-    // We'll stick with the original layout but each option uses the filtered collection
-    // of books.
-    // Review: do we want the original collection's children? Currently we're not coming up
-    // with derived collections so we could show filtered counts for each of them, or modified
-    // links that would take us to filtered subcollections. But if we drop them altogether
-    // when there's a filter, it may change the appearance of the page more than expected.
 
     // For child collections, the list of breadcrumbs needs to include this one,
     // since each subset is a child collection of this.
@@ -70,14 +53,14 @@ export const CollectionPage: React.FunctionComponent<{
     });
 
     let booksComponent: React.ReactElement | null = null;
-    if (filteredCollection.filter) {
+    if (collection.filter) {
         // "layout" is a choice that we can set in Contentful
         switch (collection.layout) {
             default:
                 //"by-level": I'd like to have this case here for clarity, but lint chokes
                 booksComponent = (
                     <ByLevelGroups
-                        collection={filteredCollection}
+                        collection={collection}
                         breadcrumbs={props.breadcrumbs}
                     />
                 );
@@ -87,7 +70,7 @@ export const CollectionPage: React.FunctionComponent<{
             case "all-books": // untested
                 booksComponent = (
                     <BookCardGroup
-                        collection={filteredCollection}
+                        collection={collection}
                         breadcrumbs={props.breadcrumbs}
                         rows={
                             collection.urlKey === "new-arrivals"
@@ -104,14 +87,14 @@ export const CollectionPage: React.FunctionComponent<{
                 booksComponent = (
                     <ByLanguageGroups
                         titlePrefix=""
-                        filter={filteredCollection.filter}
+                        filter={collection.filter}
                     />
                 );
                 break;
             case "by-topic": // untested on this path, though ByTopicsGroup is used in AllResultsPage
                 booksComponent = (
                     <ByTopicsGroups
-                        collection={filteredCollection}
+                        collection={collection}
                         breadcrumbs={props.breadcrumbs}
                     />
                 );
@@ -120,19 +103,13 @@ export const CollectionPage: React.FunctionComponent<{
         }
     }
 
-    let banner = (
+    const banner = (
         <ContentfulBanner
             id={collection.banner}
             collection={collection}
-            filter={filteredCollection.filter}
+            filter={collection.filter}
         />
     );
-    // if (collection.urlKey === "root.read") {
-    //     const almostAllBooksFilter: IFilter = {
-    //         inCirculation: InCirculationOptions.Yes,
-    //     };
-    //     banner = <HomeBanner filter={almostAllBooksFilter} />;
-    // }
 
     return (
         <div>
