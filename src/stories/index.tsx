@@ -15,9 +15,6 @@ import BookDetail from "../components/BookDetail/BookDetail";
 import { ThemeProvider } from "@material-ui/styles";
 import theme from "../theme";
 import { ReadBookPage } from "../components/ReadBookPage";
-import { FeaturePage } from "../components/FeaturePage";
-import { FeatureGroup } from "../components/FeatureGroup";
-import { ListOfBookGroups } from "../components/ListOfBookGroups";
 
 addDecorator((storyFn) => (
     <ThemeProvider theme={theme}>{storyFn()}</ThemeProvider>
@@ -133,20 +130,14 @@ storiesOf("BookShelfGroup", module);
 //     />
 // ));
 
-storiesOf("FeatureGroup", module).add("Feature Group", () => (
-    <ListOfBookGroups>
-        <FeatureGroup title="Book Features" />
-    </ListOfBookGroups>
-));
-
-storiesOf("Pages", module)
-    // REview: want these back in some updated form?
-    //.add("Home Page", () => <HomePage />)
-    //.add("Thai Book Page", () => <LanguagePage langCode="th" />)
-    .add("Talking Book Feature Page", () => (
-        <FeaturePage featureKey="talkingBook" />
-    ))
-    .add("Motion Book Feature Page", () => <FeaturePage featureKey="motion" />);
+storiesOf("Pages", module);
+// REview: want these back in some updated form?
+//.add("Home Page", () => <HomePage />)
+//.add("Thai Book Page", () => <LanguagePage langCode="th" />)
+// .add("Talking Book Feature Page", () => (
+//     <FeaturePage featureKey="talkingBook" />
+// ))
+// .add("Motion Book Feature Page", () => <FeaturePage featureKey="motion" />);
 
 storiesOf("Components", module).add("SearchBox", () => {
     const bloomRed: string = theme.palette.primary.main;

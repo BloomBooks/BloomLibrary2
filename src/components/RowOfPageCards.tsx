@@ -3,7 +3,7 @@ import {
     ICollection,
     useGetCollectionFromContentful,
 } from "../model/Collections";
-import { CategoryCardGroup } from "./CategoryCardGroup";
+import { CardGroup } from "./CardGroup";
 import { CollectionCard } from "./CollectionCard";
 import { BookCardGroup } from "./BookCardGroup";
 
@@ -81,9 +81,5 @@ export const RowOfPageCards: React.FunctionComponent<{
             />
         );
     });
-    return (
-        <CategoryCardGroup title={props.collection.label}>
-            {cards}
-        </CategoryCardGroup>
-    );
+    return <CardGroup title={props.collection.label}>{cards}</CardGroup>;
 };

@@ -1,11 +1,11 @@
-import { getLanguageFeatures } from "./FeatureHelper";
+import { getFeaturesAvailableForOneLanguageOfBook } from "./FeatureHelper";
 it("getLanguageFeatures finds no features when passed empty list", () => {
-    const result = getLanguageFeatures(undefined, "en");
+    const result = getFeaturesAvailableForOneLanguageOfBook(undefined, "en");
     expect(result.length).toBe(0);
 });
 
 it("getLanguageFeatures finds expected features", () => {
-    const result = getLanguageFeatures(
+    const result = getFeaturesAvailableForOneLanguageOfBook(
         [
             "motion", // not matched, no lang code (and not a language feature)
             "blind", // not matched, no lang code
@@ -14,7 +14,7 @@ it("getLanguageFeatures finds expected features", () => {
             "talkingBook", // not matched, no lang code
             "talkingBook:en", // not matched, wrong language
             "talkingBook:tpi", // match!
-            "signLanguage:fr" // not matched, wrong language
+            "signLanguage:fr", // not matched, wrong language
         ],
         "tpi"
     );

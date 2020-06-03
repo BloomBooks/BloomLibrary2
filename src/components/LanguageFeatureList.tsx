@@ -5,7 +5,10 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import React from "react";
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
-import { getLanguageFeatures, featureIconHeight } from "./FeatureHelper";
+import {
+    getFeaturesAvailableForOneLanguageOfBook,
+    featureIconHeight,
+} from "./FeatureHelper";
 import { getUniqueLanguages, getNameDisplay } from "./LanguageLink";
 import { useTheme } from "@material-ui/core";
 
@@ -29,7 +32,7 @@ export const LanguageFeatureList: React.FunctionComponent<IProps> = (props) => {
         languageElements.push(getNameDisplay(language));
         // Looking for features that the book has with this language code attached,
         // such as talkingBook:en
-        const langFeatures = getLanguageFeatures(
+        const langFeatures = getFeaturesAvailableForOneLanguageOfBook(
             props.basicBookInfo.features,
             language.isoCode
         );

@@ -12,7 +12,7 @@ interface IProps {
     children: ReactElement[];
 }
 
-export const CategoryCardGroup: React.FunctionComponent<IProps> = (props) => {
+export const CardGroup: React.FunctionComponent<IProps> = (props) => {
     return (
         // Enhance: LazyLoad has parameters (height and offset) that should help
         // but so far I haven't got them to work well. It has many other

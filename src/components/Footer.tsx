@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 
 import React from "react";
 
-export const Footer: React.FunctionComponent = (props) => {
+export const Footer: React.FunctionComponent = () => {
     return (
         <div
             css={css`
