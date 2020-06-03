@@ -10,7 +10,7 @@ import { SearchBox } from "../SearchBox";
 import { UserMenu } from "../User/UserMenu";
 import { commonUI } from "../../theme";
 import Link from "@material-ui/core/Link/Link";
-import { useMediaQuery } from "@material-ui/core";
+import { useMediaQuery, Tab, Tabs } from "@material-ui/core";
 
 export const Header: React.FunctionComponent = () => {
     const searchBelow = !useMediaQuery("(min-width:500px)");
@@ -21,6 +21,10 @@ export const Header: React.FunctionComponent = () => {
     const backgroundColor = inCreate
         ? commonUI.colors.createArea
         : commonUI.colors.bloomRed;
+    const tabStyle = css`
+        color: white !important;
+        font-size: 18px !important;
+    `;
     return (
         <div
             css={css`
@@ -44,8 +48,7 @@ export const Header: React.FunctionComponent = () => {
             >
                 <img src={logo} alt={"Bloom Logo"} />
             </Link>
-            {/* TODO: change this to a material UI <Tabs> control, with the area (read or create) selected by looking at the current url */}
-            <div
+            {/* <div
                 css={css`
                     margin-left: 30px;
                     margin-top: auto;
@@ -53,25 +56,23 @@ export const Header: React.FunctionComponent = () => {
                         color: white !important;
                     }
                 `}
+            > */}
+            <Tabs
+                value={inCreate ? 1 : 0}
+                onChange={(e, value) =>
+                    window.location.assign(value ? "/create" : "/read")
+                }
+                css={css`
+                    margin-right: 30px;
+
+                    .MuiTabs-indicator {
+                        background-color: white !important;
+                    }
+                `}
             >
-                <Link href="/read">Read</Link>
-                <Link
-                    css={css`
-                        margin-left: 15px !important;
-                    `}
-                    href="/create"
-                >
-                    Create
-                </Link>
-                {/* <Link
-                    css={css`
-                        margin-left: 15px !important;
-                    `}
-                    href="/about"
-                >
-                    About
-                </Link> */}
-            </div>
+                <Tab label={"Read"} css={tabStyle}></Tab>
+                <Tab label={"Create"} css={tabStyle}></Tab>
+            </Tabs>
             {searchBelow || (
                 <React.Fragment>
                     <div
