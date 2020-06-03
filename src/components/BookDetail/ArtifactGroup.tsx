@@ -33,7 +33,7 @@ interface IArtifactUI {
 export const ArtifactGroup: React.FunctionComponent<{
     book: Book;
 }> = observer((props) => {
-    const { bloomReaderAvailable, cantUseBloomD } = useContext(
+    const { bloomReaderAvailable, cantUseBloomD, mobile } = useContext(
         OSFeaturesContext
     );
     const pdfSettings = getArtifactVisibilitySettings(
@@ -56,12 +56,20 @@ export const ArtifactGroup: React.FunctionComponent<{
 
     // We show the bloomD download button here if
     // (a) we're not showing the larger button elsewhere, and
-    // (b) we're not on a device (like an iphone) which we consider to have no good reason to download it.
+    // (b) we're not on a device (like an iphone) which we consider to have no good reason to download it, and
+    // (c) we're not on a mobile (touch) device and the button would be disabled
     const showBloomReaderButton: boolean =
-        !showingBloomReaderDownloadElsewhere && !cantUseBloomD;
+        !showingBloomReaderDownloadElsewhere &&
+        !cantUseBloomD &&
+        !(mobile && !haveABloomDToDownload);
+
+    const hidePdfButton: boolean = mobile && !pdfSettings?.decision;
+    const hideEpubButton: boolean = mobile && !epubSettings?.decision;
 
     // If we're showing a bloomd download button elsewhere, add a heading above the other downloads.
-    const showMoreDownloadsHeading: boolean = showingBloomReaderDownloadElsewhere;
+    const showMoreDownloadsHeading: boolean =
+        showingBloomReaderDownloadElsewhere &&
+        (!hidePdfButton || !hideEpubButton);
     return (
         <div>
             {showMoreDownloadsHeading && <div>More downloads</div>}
@@ -85,6 +93,7 @@ export const ArtifactGroup: React.FunctionComponent<{
                         type: ArtifactType.pdf,
                         settings: pdfSettings,
                         enabled: pdfSettings?.decision === true,
+                        hidden: hidePdfButton,
                     },
                     {
                         icon: ePUBIcon,
@@ -92,6 +101,7 @@ export const ArtifactGroup: React.FunctionComponent<{
                         type: ArtifactType.epub,
                         settings: epubSettings,
                         enabled: epubSettings?.decision === true,
+                        hidden: hideEpubButton,
                     },
                     {
                         icon: bloomReaderIcon,

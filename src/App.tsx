@@ -21,6 +21,7 @@ import {
     bloomDesktopAvailable,
     bloomReaderAvailable,
     cantUseBloomD,
+    mobile,
 } from "./components/OSFeaturesContext";
 import { Alert, AlertTitle } from "@material-ui/lab";
 interface ICachedTables {
@@ -79,6 +80,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                 bloomDesktopAvailable,
                                 bloomReaderAvailable,
                                 cantUseBloomD,
+                                mobile,
                             }}
                         >
                             {window.location.hostname === "localhost" || (
