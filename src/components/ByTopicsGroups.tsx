@@ -6,14 +6,12 @@ import { BookCardGroup } from "./BookCardGroup";
 // Note: very similar to ByLevelsGroup, possibly we can factor out something common.
 export const ByTopicsGroups: React.FunctionComponent<{
     collection: ICollection;
-    breadcrumbs: string[];
 }> = (props) => {
     return (
         <React.Fragment>
             {topics.map((topic) => (
                 <BookCardGroup
                     collection={makeCollectionForTopic(props.collection, topic)}
-                    breadcrumbs={props.breadcrumbs}
                 />
             ))}
 
@@ -23,7 +21,6 @@ export const ByTopicsGroups: React.FunctionComponent<{
             <BookCardGroup
                 rows={99}
                 collection={makeCollectionForTopic(props.collection, "empty")}
-                breadcrumbs={props.breadcrumbs}
             />
         </React.Fragment>
     );

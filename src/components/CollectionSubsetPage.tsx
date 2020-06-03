@@ -101,10 +101,10 @@ export const CollectionSubsetPage: React.FunctionComponent<{
     // And it can be confusing if only one of the next-level categories has any content.
     // But at this stage we don't have access to a count of items in the collection, or any way to
     // know whether a particular way of subdividing them will actually break things up.
-    let subList = <ByLevelGroups collection={subcollection} breadcrumbs={[]} />;
+    let subList = <ByLevelGroups collection={subcollection} />;
     if ((props.collectionName + props.filters).indexOf("level:") >= 0) {
         subList = (
-            <ByTopicsGroups collection={subcollection} breadcrumbs={[]} />
+            <ByTopicsGroups collection={subcollection} />
         );
         // If we had previously gone down a topic trail, then just show them all.
         if ((props.collectionName + props.filters).indexOf("topic:") >= 0) {
@@ -112,7 +112,6 @@ export const CollectionSubsetPage: React.FunctionComponent<{
                 <BookCardGroup
                     title={subcollection.label}
                     collection={subcollection}
-                    breadcrumbs={[]}
                     rows={20}
                     skip={skip}
                 />

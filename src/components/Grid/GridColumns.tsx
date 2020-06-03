@@ -47,7 +47,9 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                 <Link
                     href={`/book/${b.id}`}
                     css={css`
-                        color: black !important;
+                        color: ${b.inCirculation
+                            ? "black !important"
+                            : "grey !important"};
                     `}
                     target="_blank"
                 >

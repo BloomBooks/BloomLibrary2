@@ -6,7 +6,6 @@ import { BookCardGroup } from "./BookCardGroup";
 // For each level (whether set by a human or just computed), show a row of books for that level.
 export const ByLevelGroups: React.FunctionComponent<{
     collection: ICollection;
-    breadcrumbs: string[];
 }> = (props) => {
     return (
         <React.Fragment>
@@ -15,7 +14,6 @@ export const ByLevelGroups: React.FunctionComponent<{
                     key={level}
                     title={"Level " + level}
                     collection={makeCollectionForLevel(props.collection, level)}
-                    breadcrumbs={props.breadcrumbs}
                 />
             ))}
 
@@ -25,7 +23,6 @@ export const ByLevelGroups: React.FunctionComponent<{
                 title="Books for which we are missing levels"
                 rows={99}
                 collection={makeCollectionForLevel(props.collection, "empty")}
-                breadcrumbs={props.breadcrumbs}
             />
         </React.Fragment>
     );

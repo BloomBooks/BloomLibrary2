@@ -18,7 +18,7 @@ interface IProps {
     richTextLabel?: Document;
     hideTitle?: boolean;
     bookCount?: string;
-    href: string;
+    target: string; // what we're calling "target" is the last part of url, where the url is <breadcrumb stuff>/<target>
     filter: IFilter;
     img: string;
     credits?: string;
@@ -125,7 +125,7 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
                 padding: 10px;
                 ${height}
             `}
-            href={props.href}
+            target={props.target}
         >
             {titleElement}
             {imgElement}

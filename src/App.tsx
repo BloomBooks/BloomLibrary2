@@ -41,6 +41,7 @@ import { ContentfulContext } from "./ContentfulContext";
 import { CollectionPage } from "./components/CollectionPage";
 import { Footer } from "./components/Footer";
 import { ContentfulPage } from "./components/ContentfulPage";
+import { getTargetFromBreadCrumbs } from "./components/Breadcrumbs";
 
 interface ICachedTables {
     tags: string[];
@@ -170,16 +171,10 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                             exact={true}
                                             path={["/", "/read"]}
                                         >
-                                            <CollectionPage
-                                                collectionName="root.read"
-                                                breadcrumbs={[]}
-                                            />
+                                            <CollectionPage collectionName="root.read" />
                                         </Route>
                                         <Route exact={true} path={"/create"}>
-                                            <CollectionPage
-                                                collectionName="create"
-                                                breadcrumbs={[]}
-                                            />
+                                            <CollectionPage collectionName="create" />
                                         </Route>
                                         <Route path="/bulk">
                                             <BulkEditPage />
@@ -201,24 +196,10 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                             render={({ match }) => {
                                                 const filterParam =
                                                     match.params.filter || "";
-                                                const filters = filterParam.split(
-                                                    "/"
+                                                const collectionName = getTargetFromBreadCrumbs(
+                                                    match.params.collectionNames
                                                 );
-                                                const breadcrumbs = match.params.collectionNames.split(
-                                                    "~"
-                                                );
-                                                const collectionName =
-                                                    breadcrumbs[
-                                                        breadcrumbs.length - 1
-                                                    ] || "";
-                                                breadcrumbs.pop(); // remove current collection name
-                                                // Don't want leading root.read in breadcrumbs; home is automatically included.
-                                                if (
-                                                    breadcrumbs[0] ===
-                                                    "root.read"
-                                                ) {
-                                                    breadcrumbs.splice(0, 1);
-                                                }
+
                                                 // This heuristic will probably change. Basically this is the route
                                                 // for displaying top-level collections.
                                                 if (filterParam.length === 0) {
@@ -226,9 +207,6 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                         <CollectionPage
                                                             collectionName={
                                                                 collectionName
-                                                            }
-                                                            breadcrumbs={
-                                                                breadcrumbs
                                                             }
                                                             embeddedMode={
                                                                 embeddedMode

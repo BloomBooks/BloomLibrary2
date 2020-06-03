@@ -170,3 +170,32 @@ const CollectionCrumb: React.FunctionComponent<{ collectionName: string }> = (
         </li>
     );
 };
+
+export function getTargetFromBreadCrumbs(breadcrumbs: string) {
+    const parts = breadcrumbs.split("~");
+    return parts[parts.length - 1] || "";
+}
+
+// what we're calling "target" is the last part of url, where the url is <breadcrumb stuff>/<target>
+export function getUrlForTarget(target: string) {
+    // if (breadcrumbs[0] === "root.read") {
+    //     breadcrumbs.splice(0, 1);
+    // }
+    let s = trimLeft(window.location.pathname, "/"); // just remove leading slash
+    let t = trimLeft(target, "/");
+
+    const segments = t.split("/");
+    if (segments.length > 0 && s.endsWith(segments[0])) {
+        // if the target was ew.nigeria/level:1 then at this point we would have enabling-writers~ew.nigeria~ew.nigeria/level:1
+        // but our url format is compressed, such that we just want enabling-writers~ew.nigeria/level:1
+        // So we should give segments["enabling-writers~ew.nigeria","level:1"]
+        t = t.substr(segments[0].length); // take the duplicate part off
+    } else if (s) {
+        s = s + "~";
+    }
+
+    return s ? `${s}${t}` : t;
+}
+function trimLeft(s: string, char: string) {
+    return s.replace(new RegExp("^[" + char + "]+"), "");
+}

@@ -46,7 +46,7 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                 width: ${BookCardWidth}px;
             `}
             key={props.basicBookInfo.baseUrl}
-            href={`/book/${props.basicBookInfo.objectId}`}
+            target={`/book/${props.basicBookInfo.objectId}`}
             // onClick={() =>
             //     router!.pushBook(
             //         props.basicBookInfo.objectId,

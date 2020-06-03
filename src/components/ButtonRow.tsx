@@ -9,10 +9,10 @@ import { ICollection } from "../model/Collections";
 
 import { Button } from "@material-ui/core";
 import { commonUI } from "../theme";
+import { getUrlForTarget } from "./Breadcrumbs";
 
 export const ButtonRow: React.FunctionComponent<{
     collection: ICollection;
-    breadcrumbs: string[];
 }> = (props) => {
     if (
         !props.collection.childCollections ||
@@ -24,9 +24,9 @@ export const ButtonRow: React.FunctionComponent<{
 
     const buttons: JSX.Element[] = childCollections.map((b: any) => {
         const key = b.fields.urlKey;
-        const path = [...props.breadcrumbs, key].join("~");
         const externalLink = key.startsWith("http");
-        const href = externalLink ? key : `/page/${path}`;
+        const href = externalLink ? key : `/page/${getUrlForTarget(key)}`;
+
         return (
             <Button
                 css={css`

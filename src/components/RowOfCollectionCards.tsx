@@ -7,9 +7,8 @@ import { CardGroup } from "./CardGroup";
 import { CollectionCard } from "./CollectionCard";
 import { BookCardGroup } from "./BookCardGroup";
 
-export const RowOfPageCardsForKey: React.FunctionComponent<{
+export const RowOfCollectionCardsForKey: React.FunctionComponent<{
     urlKey: string;
-    breadcrumbs: string[];
 }> = (props) => {
     const { collection, error, loading } = useGetCollectionFromContentful(
         props.urlKey
@@ -33,25 +32,14 @@ export const RowOfPageCardsForKey: React.FunctionComponent<{
     }
 
     if (collection.childCollections.length > 0) {
-        return (
-            <RowOfPageCards
-                collection={collection}
-                breadcrumbs={props.breadcrumbs}
-            />
-        );
+        return <RowOfCollectionCards collection={collection} />;
     } else {
-        return (
-            <BookCardGroup
-                collection={collection}
-                breadcrumbs={props.breadcrumbs}
-            />
-        );
+        return <BookCardGroup collection={collection} />;
     }
 };
 
-export const RowOfPageCards: React.FunctionComponent<{
+export const RowOfCollectionCards: React.FunctionComponent<{
     collection: ICollection;
-    breadcrumbs: string[];
 }> = (props) => {
     if (
         !props.collection.childCollections ||
@@ -73,7 +61,7 @@ export const RowOfPageCards: React.FunctionComponent<{
                 hideTitle={childCollection.hideLabelOnCardAndDefaultBanner}
                 bookCount="??"
                 filter={childCollection.filter}
-                href={"/" + [...props.breadcrumbs, key].join("~")}
+                target={`/${key}`}
                 //pageType={props.bookShelfCategory}
                 img={childCollection.iconForCardAndDefaultBanner}
                 credits={childCollection.iconCredits}

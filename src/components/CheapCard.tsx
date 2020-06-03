@@ -5,31 +5,35 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import React from "react";
 import { commonUI } from "../theme";
+import { getUrlForTarget } from "./Breadcrumbs";
 
 interface IProps extends React.HTMLProps<HTMLDivElement> {
     onClick?: () => void;
     className?: string;
-    href?: string;
+    target?: string; // what we're calling "target" is the last part of url, where the url is <breadcrumb stuff>/<target>
 }
 
 // just a wrapper around the children you provide, made to look like a card and responsive to a click.
-export const CheapCard: React.FunctionComponent<IProps> = (props) => (
-    <a
-        //{...props}
-        className={`cheapCard ${props.className}`}
-        css={cardStyle}
-        href={props.href}
-        onClick={() => {
-            if (props.onClick) {
-                props.onClick();
-            }
+export const CheapCard: React.FunctionComponent<IProps> = (props) => {
+    const url = getUrlForTarget(props.target || "");
+    return (
+        <a
+            //{...props}
+            className={`cheapCard ${props.className}`}
+            css={cardStyle}
+            href={`/${url}`}
+            onClick={() => {
+                if (props.onClick) {
+                    props.onClick();
+                }
 
-            //   this.props.browseState.push(this.props.target);
-        }}
-    >
-        {props.children}
-    </a>
-);
+                //   this.props.browseState.push(this.props.target);
+            }}
+        >
+            {props.children}
+        </a>
+    );
+};
 
 const cardStyle = css`
     overflow-wrap: break-word; /* helps with titles that have super long words, else they scroll */

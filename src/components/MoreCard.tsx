@@ -21,12 +21,11 @@ export const cardWidth = 120;
 interface IProps {
     collection: ICollection;
     skip?: number;
-    breadcrumbs: string[];
 }
 export const MoreCard: React.FunctionComponent<IProps> = (props) => {
     const href =
         "/" +
-        [...props.breadcrumbs, props.collection.urlKey].join("~") +
+        [props.collection.urlKey] +
         (props.skip ? "/skip:" + props.skip : "");
 
     return (
@@ -34,7 +33,7 @@ export const MoreCard: React.FunctionComponent<IProps> = (props) => {
             css={css`
                 width: ${cardWidth}px;
             `}
-            href={href}
+            target={href}
         >
             {`See more of these books.`}
         </CheapCard>

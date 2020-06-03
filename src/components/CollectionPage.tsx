@@ -2,7 +2,7 @@ import React from "react";
 
 import { ContentfulBanner } from "./banners/ContentfulBanner";
 import { useGetCollectionFromContentful } from "../model/Collections";
-import { RowOfPageCardsForKey } from "./RowOfPageCards";
+import { RowOfCollectionCardsForKey } from "./RowOfCollectionCards";
 import { ByLevelGroups } from "./ByLevelGroups";
 import { ListOfBookGroups } from "./ListOfBookGroups";
 import { LanguageGroup } from "./LanguageGroup";
@@ -13,7 +13,6 @@ import { ByTopicsGroups } from "./ByTopicsGroups";
 
 export const CollectionPage: React.FunctionComponent<{
     collectionName: string;
-    breadcrumbs: string[];
     embeddedMode?: boolean;
 }> = (props) => {
     const { collection, error, loading } = useGetCollectionFromContentful(
@@ -32,24 +31,11 @@ export const CollectionPage: React.FunctionComponent<{
         return <div>Collection not found</div>;
     }
 
-    // For child collections, the list of breadcrumbs needs to include this one,
-    // since each subset is a child collection of this.
-    const breadcrumbsForChildren = [...props.breadcrumbs];
-    if (props.collectionName !== "root.read") {
-        breadcrumbsForChildren.push(props.collectionName);
-    }
-
     const collectionRows = collection.childCollections.map((c) => {
         if (c.urlKey === "language-chooser") {
             return <LanguageGroup key="lang" />;
         }
-        return (
-            <RowOfPageCardsForKey
-                key={c.urlKey}
-                urlKey={c.urlKey}
-                breadcrumbs={breadcrumbsForChildren}
-            />
-        );
+        return <RowOfCollectionCardsForKey key={c.urlKey} urlKey={c.urlKey} />;
     });
 
     let booksComponent: React.ReactElement | null = null;
@@ -58,12 +44,7 @@ export const CollectionPage: React.FunctionComponent<{
         switch (collection.layout) {
             default:
                 //"by-level": I'd like to have this case here for clarity, but lint chokes
-                booksComponent = (
-                    <ByLevelGroups
-                        collection={collection}
-                        breadcrumbs={props.breadcrumbs}
-                    />
-                );
+                booksComponent = <ByLevelGroups collection={collection} />;
                 break;
             case "no-books": // leave it null
                 break;
@@ -71,7 +52,6 @@ export const CollectionPage: React.FunctionComponent<{
                 booksComponent = (
                     <BookCardGroup
                         collection={collection}
-                        breadcrumbs={props.breadcrumbs}
                         rows={
                             collection.urlKey === "new-arrivals"
                                 ? 10
@@ -92,12 +72,7 @@ export const CollectionPage: React.FunctionComponent<{
                 );
                 break;
             case "by-topic": // untested on this path, though ByTopicsGroup is used in AllResultsPage
-                booksComponent = (
-                    <ByTopicsGroups
-                        collection={collection}
-                        breadcrumbs={props.breadcrumbs}
-                    />
-                );
+                booksComponent = <ByTopicsGroups collection={collection} />;
 
                 break;
         }

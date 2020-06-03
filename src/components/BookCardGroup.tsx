@@ -29,7 +29,6 @@ interface IProps {
     skip?: number; // of items in collection (used for paging through with More)
 
     contextLangIso?: string;
-    breadcrumbs: string[];
 }
 
 export const BookCardGroup: React.FunctionComponent<IProps> = (props) => (
@@ -132,7 +131,6 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
                 key="more"
                 collection={props.collection}
                 skip={nextSkip}
-                breadcrumbs={props.breadcrumbs}
             />
         );
     }
