@@ -9,6 +9,7 @@ import React from "react";
 import { useLocation, Link } from "react-router-dom";
 import { useGetCollectionFromContentful } from "../model/Collections";
 import QueryString from "qs";
+import { commonUI } from "../theme";
 
 export const Breadcrumbs: React.FunctionComponent = () => {
     const location = useLocation();
@@ -19,9 +20,11 @@ export const Breadcrumbs: React.FunctionComponent = () => {
         margin: 0; // better to let the consumer decide our margin
         //padding-left: 20px;
         margin-top: 5px;
+        margin-bottom: 14px;
         li {
             margin-right: 3px;
             //color: whitesmoke;
+
             &:after {
                 margin-left: 3px;
                 margin-right: 3px;

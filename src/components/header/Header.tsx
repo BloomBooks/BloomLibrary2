@@ -27,6 +27,7 @@ export const Header: React.FunctionComponent = () => {
     const tabStyle = css`
         color: white !important;
         font-size: 18px !important;
+        font-weight: bold !important;
     `;
     useEffect(() => {
         console.log("rerender header");
@@ -36,6 +37,7 @@ export const Header: React.FunctionComponent = () => {
             css={css`
                 display: flex;
                 background-color: ${backgroundColor};
+                transition: background-color 0.5s ease;
                 height: ${toolbarHeight};
                 flex-shrink: 0;
                 padding: 10px;
@@ -72,7 +74,6 @@ export const Header: React.FunctionComponent = () => {
                 css={css`
                     margin-left: 30px;
                     margin-right: 30px;
-
                     .MuiTabs-indicator {
                         background-color: white !important;
                     }

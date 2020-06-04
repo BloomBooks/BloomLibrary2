@@ -65,7 +65,7 @@ export const ContentfulBanner: React.FunctionComponent<{
     const textColor = backgroundImage ? "white" : "black";
 
     const darkenBackgroundImageFraction = backgroundImage ? 0.4 : 0;
-    const linkColor = backgroundImage ? "white" : commonUI.colors.SilBlue;
+    const linkColor = backgroundImage ? "white" : commonUI.colors.bloomRed;
 
     let bannerTitle: React.ReactNode = (
         <React.Fragment>{banner.title}</React.Fragment>
@@ -98,22 +98,21 @@ export const ContentfulBanner: React.FunctionComponent<{
     //const titleLines = banner.title;
     // const secondTitleLine =
     //     titleLines.length > 1 ? <div> {titleLines[1]}</div> : "";
-    const showLogo = logoUrl && logoUrl != "none";
+    const showLogo = logoUrl && logoUrl !== "none";
+    console.log("css: " + banner.css);
     return (
         <div
             css={css`
                 display: flex;
                 flex-direction: column;
+                overflow: hidden;
 
-                //height: 300px;
-                display: flex;
-
-                a {
+                a,
+                a:visited {
                     color: ${linkColor};
                     text-decoration: underline;
-                    &:visited {
-                        color: ${linkColor};
-                    }
+                    font-size: 14pt;
+                    font-weight: bold;
                 }
                 /* https://www.nngroup.com/articles/text-over-images/ */
                 /* #contrast-overlay {
@@ -143,6 +142,7 @@ export const ContentfulBanner: React.FunctionComponent<{
                     display: flex;
                     flex-direction: column;
                     padding: 20px;
+                    overflow: hidden;
                 `}
             >
                 {["root.read", "create"].includes(
@@ -152,6 +152,7 @@ export const ContentfulBanner: React.FunctionComponent<{
                     css={css`
                         display: flex;
                         flex-direction: ${logoUrl ? "row" : "column"};
+                        overflow: hidden;
                     `}
                 >
                     {showLogo && (
@@ -182,9 +183,9 @@ export const ContentfulBanner: React.FunctionComponent<{
                                 `}
                             />
                             {props.filter && (
-                                <div>
+                                <h2>
                                     <BookCount filter={props.filter} />
-                                </div>
+                                </h2>
                             )}
                         </div>
                     )}
@@ -249,7 +250,14 @@ export const ContentfulBanner: React.FunctionComponent<{
                             {props.filter &&
                                 !showLogo &&
                                 props.collection?.urlKey !== "new-arrivals" && (
-                                    <BookCount filter={props.filter} />
+                                    <div
+                                        css={css`
+                                            font-size: 14pt;
+                                            margin-top: auto;
+                                        `}
+                                    >
+                                        <BookCount filter={props.filter} />
+                                    </div>
                                 )}
                             {/* just a placeholder to push the imagecredits to the right
                              */}

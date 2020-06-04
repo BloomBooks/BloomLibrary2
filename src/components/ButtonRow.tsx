@@ -31,7 +31,9 @@ export const ButtonRow: React.FunctionComponent<{
             <Button
                 css={css`
                     margin-right: 10px !important;
-
+                    &:last-of-type {
+                        margin-right: 0 !important;
+                    }
                     background-color: white !important;
                     span {
                         font-weight: 600;
@@ -50,5 +52,13 @@ export const ButtonRow: React.FunctionComponent<{
             </Button>
         );
     });
-    return <ul css={css``}>{buttons}</ul>;
+    return (
+        <ul
+            css={css`
+                margin-bottom: 0;
+            `}
+        >
+            {buttons}
+        </ul>
+    );
 };
