@@ -150,7 +150,7 @@ export const SearchBox: React.FunctionComponent<{
                 pathParts.length - existingSearchIndex
             );
         }
-        pathParts.push("search:" + encodeURIComponent(enteredSearch));
+        pathParts.push(":search:" + encodeURIComponent(enteredSearch));
         const newUrl = "/" + pathParts.join("/");
         setEnteredSearch(""); // otherwise we get an infinite loop when rendered as part of the new page
         if (replaceInHistory) {

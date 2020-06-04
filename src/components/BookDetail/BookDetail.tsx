@@ -20,13 +20,14 @@ import { BookDetailHeaderGroup } from "./BookDetailHeaderGroup";
 import { ReportButton } from "./ReportButton";
 import { OSFeaturesContext } from "../../components/OSFeaturesContext";
 import { commonUI } from "../../theme";
-import { useParams } from "react-router-dom";
+import { Breadcrumbs } from "../Breadcrumbs";
 
 interface IProps {
+    id: string;
     contextLangIso?: string;
 }
 const BookDetail: React.FunctionComponent<IProps> = (props) => {
-    const { id } = useParams();
+    const id = props.id;
     const book = useGetBookDetail(id);
     if (book === undefined) {
         return <div>Loading...</div>;
@@ -77,6 +78,16 @@ export const BookDetailInternal: React.FunctionComponent<{
                 max-width: 800px;
             `}
         >
+            <div
+                css={css`
+                    a,
+                    a:visited {
+                        color: black;
+                    }
+                `}
+            >
+                <Breadcrumbs />
+            </div>
             <div
                 css={css`
                     margin: ${commonUI.detailViewMargin};

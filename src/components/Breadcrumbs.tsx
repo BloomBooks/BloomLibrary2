@@ -50,37 +50,60 @@ export const Breadcrumbs: React.FunctionComponent = () => {
         </li>
     );
     let isBook = false;
-    const items = location.pathname.split("/");
-    // Typically there's a leading slash, producing an empty element.
-    // On a 'more' page there may also be a 'more' following that.
-    while (items[0] === "more" || items[0] === "" || items[0] === "root.read") {
-        items.splice(0, 1);
+    const { breadcrumbs, collectionName, filters } = splitPathname(
+        location.pathname
+    );
+    // A leading slash, can produce an empty element, or even two if there's nothing
+    // following it. splitPathName should deal with that, but it's cheap to keep the robustness.
+    // We try to keep root.read out of the URL, but if it creeps in we can at least keep
+    // it out of breadcrumbs.
+    // On a 'more' page there may also be a 'more' which we don't need.
+    while (
+        breadcrumbs[0] === "more" ||
+        breadcrumbs[0] === "" ||
+        breadcrumbs[0] === "root.read"
+    ) {
+        breadcrumbs.splice(0, 1);
     }
-    if (items[0] === "book" || items[0] === "player") {
+    // book and player urls end in /book/id or /player/id, which puts the ID in the collectionName
+    // slot and "book" or "player" in the last breadcrumb. Currently only book ones have prior breadcrumbs,
+    // and player urls don't show breadcrumbs at all, but this logic works either way.
+    if (
+        breadcrumbs[breadcrumbs.length - 1] === "book" ||
+        breadcrumbs[breadcrumbs.length - 1] === "player"
+    ) {
         isBook = true;
-        items.splice(0, 1);
+        breadcrumbs.pop();
     }
-    if (items.length > 0) {
-        const parts = items[0].split("~");
-        if (isBook) {
-            const bookId = parts.pop();
-        }
-        if (parts[0] === "root.read") {
-            // We try to keep the root page ID out of even the URL, but if it sneaks in, forget it.
-            parts.splice(0, 1);
-        }
-        for (const c of parts) {
-            crumbs.push(<CollectionCrumb key={c} collectionName={c} />);
-        }
-        items.splice(0, 1);
+    breadcrumbs.forEach((c, i) => {
+        crumbs.push(
+            <CollectionCrumb
+                key={c}
+                collectionName={c}
+                previousBreadcrumbs={breadcrumbs.slice(0, i)}
+            />
+        );
+    });
+    if (!isBook) {
+        // Enhance: if there are no filters, this doesn't need to be a link.
+        crumbs.push(
+            <CollectionCrumb
+                key={collectionName}
+                collectionName={collectionName}
+                previousBreadcrumbs={breadcrumbs}
+            />
+        );
     }
-    for (const item of items) {
+    for (const item of filters) {
         let label = item;
         const labelParts = item.split(":");
         const prefix = labelParts[0];
         switch (prefix.toLowerCase()) {
             case "level":
                 label = "Level " + labelParts[1];
+                break;
+            case "search":
+                label = "Books matching " + labelParts.slice(1).join(":");
                 break;
         }
         crumbs.push(
@@ -94,25 +117,6 @@ export const Breadcrumbs: React.FunctionComponent = () => {
                 >
                     {label}
                 </Link> */}
-            </li>
-        );
-    }
-    const urlParams =
-        location.search?.length > 0
-            ? QueryString.parse(location.search.substring(1))
-            : {};
-    if (urlParams.search) {
-        // Enhance: when we implement a top-level search page, that would be a better destination.
-        crumbs.push(
-            <li key={"search"}>
-                <Link
-                    css={css`
-                        text-decoration: none !important;
-                    `}
-                    to={"/?search=" + urlParams.search}
-                >
-                    {"search for " + urlParams.search}
-                </Link>
             </li>
         );
     }
@@ -147,10 +151,11 @@ export const Breadcrumbs: React.FunctionComponent = () => {
 //     );
 // };
 
-const CollectionCrumb: React.FunctionComponent<{ collectionName: string }> = (
-    props
-) => {
-    const { collection, loading, error } = useGetCollectionFromContentful(
+const CollectionCrumb: React.FunctionComponent<{
+    collectionName: string;
+    previousBreadcrumbs: string[];
+}> = (props) => {
+    const { collection, error } = useGetCollectionFromContentful(
         props.collectionName
     );
     if (error) {
@@ -160,13 +165,15 @@ const CollectionCrumb: React.FunctionComponent<{ collectionName: string }> = (
     if (collection) {
         text = collection.label;
     }
+    const path = [...props.previousBreadcrumbs];
+    path.push(props.collectionName);
     return (
         <li>
             <Link
                 css={css`
                     text-decoration: none !important;
                 `}
-                to={"/" + props.collectionName}
+                to={"/" + path.join("/")}
             >
                 {text}
             </Link>
@@ -174,30 +181,61 @@ const CollectionCrumb: React.FunctionComponent<{ collectionName: string }> = (
     );
 };
 
-export function getTargetFromBreadCrumbs(breadcrumbs: string) {
-    const parts = breadcrumbs.split("~");
-    return parts[parts.length - 1] || "";
+// Given a segments list like /enabling-writers/ew-nigeria/:level:1/:topic:Agriculture/:search:dogs,
+// produces {collectionName: "ew-nigeria" filters: ["level:1", "topic:Agriculture", "search:dogs"],
+// breadcrumbs: ["enabling-writers"]}.
+// The collection name is the last segment with no leading colon.
+// The filters are all the following things that do have leading colons, minus the colons.
+// The breadcrumbs are the things before the collectionName (not counting an empty string before the first slash)
+export function splitPathname(
+    segmentString: string
+): { collectionName: string; filters: string[]; breadcrumbs: string[] } {
+    const segments = trimLeft(segmentString, "/").split("/");
+    let collectionSegmentIndex = segments.length - 1;
+    while (collectionSegmentIndex > 0) {
+        if (!segments[collectionSegmentIndex].startsWith(":")) {
+            break;
+        }
+        collectionSegmentIndex--;
+    }
+    const collectionName = segments[collectionSegmentIndex];
+
+    return {
+        collectionName,
+        filters: segments
+            .slice(collectionSegmentIndex + 1)
+            .map((x) => x.substring(1)),
+        breadcrumbs: segments.slice(0, collectionSegmentIndex),
+    };
 }
 
 // what we're calling "target" is the last part of url, where the url is <breadcrumb stuff>/<target>
+// Thus, it is the shortest URL that identifies the collection and filters that we want,
+// without a leading slash.
+// This function is called when the collection indicated by the current location pathname
+// is considered to be a parent of target, so we want a URL that indicates the target collection,
+// but uses the current location pathname collection as breadcrumbs.
+// It's possible that it is a true child collection; for example, if current pathname is
+// /enabling-writers and target is ew-nigeria, we want enabling-writers/ew-nigeria.
+// It's also possible that we're moving to a filtered subset collection; for example, if
+// the current pathname is /enabling-writers/ew-nigeria and target is ew-nigeria/:level:1
+// We want to get enabling-writers/ew-nigeria/:level:1 (only one ew-nigeria).
+// We might also be going a level of fiter deeper; for example, from location
+// /enabling-writers/ew-nigeria/:level:1 to target ew-nigeria/:level:1/:topic:Agriculture
+// producing enabling-writers/ew-nigeria/:level:1/:topic:Agriculture.
+// Any leading slash on target should be ignored.
+// See https://docs.google.com/document/d/1cA9-9tMSydZ6Euo-hKmdHo_JlO0aLW8Fi9v293oIHK0/edit#heading=h.3b7gegy9uie8
+// for more of the logic.
 export function getUrlForTarget(target: string) {
-    // if (breadcrumbs[0] === "root.read") {
-    //     breadcrumbs.splice(0, 1);
-    // }
-    let s = trimLeft(window.location.pathname, "/"); // just remove leading slash
-    let t = trimLeft(target, "/");
-
-    const segments = t.split("/");
-    if (segments.length > 0 && s.endsWith(segments[0])) {
-        // if the target was ew.nigeria/level:1 then at this point we would have enabling-writers~ew.nigeria~ew.nigeria/level:1
-        // but our url format is compressed, such that we just want enabling-writers~ew.nigeria/level:1
-        // So we should give segments["enabling-writers~ew.nigeria","level:1"]
-        t = t.substr(segments[0].length); // take the duplicate part off
-    } else if (s) {
-        s = s + "~";
+    const { breadcrumbs, collectionName: pathCollectionName } = splitPathname(
+        window.location.pathname
+    );
+    const { collectionName } = splitPathname(target);
+    if (pathCollectionName && collectionName !== pathCollectionName) {
+        breadcrumbs.push(pathCollectionName);
     }
-
-    return s ? `${s}${t}` : t;
+    breadcrumbs.push(trimLeft(target, "/"));
+    return breadcrumbs.join("/");
 }
 function trimLeft(s: string, char: string) {
     return s.replace(new RegExp("^[" + char + "]+"), "");

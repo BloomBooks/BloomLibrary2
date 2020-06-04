@@ -32,7 +32,7 @@ export function makeCollectionForTopic(
 ): ICollection {
     const filter = { ...baseCollection.filter, topic: topic };
     let label = baseCollection.label + " - " + topic;
-    const urlKey = baseCollection.urlKey + "/topic:" + topic;
+    const urlKey = baseCollection.urlKey + "/:topic:" + topic;
     if (topic === "empty") {
         label = baseCollection.label + " - (missing a topic)";
     }

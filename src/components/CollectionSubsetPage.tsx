@@ -22,12 +22,12 @@ import { makeCollectionForTopic, ByTopicsGroups } from "./ByTopicsGroups";
 // a parent collection.
 export function generateCollectionFromFilters(
     collection: ICollection,
-    filters: string
+    filters: string[]
 ): { filteredCollection: ICollection; skip: number } {
     let filteredCollection = collection;
     let skip = 0;
     if (filters) {
-        for (const filter of filters.split("/")) {
+        for (const filter of filters) {
             const parts = filter.split(":");
             switch (parts[0]) {
                 case "level":
@@ -69,7 +69,7 @@ export function generateCollectionFromFilters(
 export const CollectionSubsetPage: React.FunctionComponent<{
     collectionName: string; // may have tilde's, after last tilde is a contentful collection urlKey
 
-    filters: string; // may result in automatically-created subcollections. Might be multiple ones slash-delimited
+    filters: string[]; // may result in automatically-created subcollections. Might be multiple ones slash-delimited
 }> = (props) => {
     const { collection, error, loading } = useGetCollectionFromContentful(
         props.collectionName
@@ -103,9 +103,7 @@ export const CollectionSubsetPage: React.FunctionComponent<{
     // know whether a particular way of subdividing them will actually break things up.
     let subList = <ByLevelGroups collection={subcollection} />;
     if ((props.collectionName + props.filters).indexOf("level:") >= 0) {
-        subList = (
-            <ByTopicsGroups collection={subcollection} />
-        );
+        subList = <ByTopicsGroups collection={subcollection} />;
         // If we had previously gone down a topic trail, then just show them all.
         if ((props.collectionName + props.filters).indexOf("topic:") >= 0) {
             subList = (

@@ -41,7 +41,7 @@ import { ContentfulContext } from "./ContentfulContext";
 import { CollectionPage } from "./components/CollectionPage";
 import { Footer } from "./components/Footer";
 import { ContentfulPage } from "./components/ContentfulPage";
-import { getTargetFromBreadCrumbs } from "./components/Breadcrumbs";
+import { splitPathname } from "./components/Breadcrumbs";
 
 interface ICachedTables {
     tags: string[];
@@ -143,9 +143,17 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                 </React.Fragment>
                                             )}
                                         ></Route>
-                                        <Route path="/book/:id">
-                                            <BookDetail />
-                                        </Route>
+                                        <Route
+                                            path="/:breadcrumbs*/book/:id"
+                                            render={({ match }) => {
+                                                return (
+                                                    <BookDetail
+                                                        id={match.params.id}
+                                                    />
+                                                );
+                                            }}
+                                        />
+
                                         <Route path="/player/:id">
                                             <ReadBookPage />
                                         </Route>
@@ -189,17 +197,18 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                             }}
                                         />
                                         <Route
-                                            path="/:collectionNames/:filter*"
+                                            path="/:segments+"
                                             render={({ match }) => {
-                                                const filterParam =
-                                                    match.params.filter || "";
-                                                const collectionName = getTargetFromBreadCrumbs(
-                                                    match.params.collectionNames
+                                                const {
+                                                    collectionName,
+                                                    filters,
+                                                } = splitPathname(
+                                                    match.params.segments
                                                 );
 
-                                                // This heuristic will probably change. Basically this is the route
+                                                // This heuristic might change. Basically this is the route
                                                 // for displaying top-level collections.
-                                                if (filterParam.length === 0) {
+                                                if (filters.length === 0) {
                                                     return (
                                                         <CollectionPage
                                                             collectionName={
@@ -211,14 +220,13 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                                         />
                                                     );
                                                 }
+                                                // While this one is for filtered (subset) collections, typically from 'More' or Search
                                                 return (
                                                     <CollectionSubsetPage
                                                         collectionName={
                                                             collectionName
                                                         }
-                                                        filters={
-                                                            match.params.filter
-                                                        }
+                                                        filters={filters}
                                                     />
                                                 );
                                             }}
