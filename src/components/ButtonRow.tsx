@@ -10,6 +10,7 @@ import { ICollection } from "../model/Collections";
 import { Button } from "@material-ui/core";
 import { commonUI } from "../theme";
 import { getUrlForTarget } from "./Breadcrumbs";
+import { Link } from "react-router-dom";
 
 export const ButtonRow: React.FunctionComponent<{
     collection: ICollection;
@@ -29,6 +30,8 @@ export const ButtonRow: React.FunctionComponent<{
 
         return (
             <Button
+                // use the react-router link instead an an <a> element, so that we don't reload the page when we follow the href
+                component={(linkProps) => <Link to={href} {...linkProps} />}
                 css={css`
                     margin-right: 10px !important;
                     &:last-of-type {
@@ -44,7 +47,6 @@ export const ButtonRow: React.FunctionComponent<{
                 key={key}
                 variant="contained"
                 color="primary"
-                href={href}
                 target={externalLink ? "_blank" : undefined}
                 rel="noopener noreferrer"
             >

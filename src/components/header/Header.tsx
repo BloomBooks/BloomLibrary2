@@ -9,14 +9,13 @@ import logo from "./header-logo.svg";
 import { SearchBox } from "../SearchBox";
 import { UserMenu } from "../User/UserMenu";
 import { commonUI } from "../../theme";
-import Link from "@material-ui/core/Link/Link";
 import { useMediaQuery, Tab, Tabs } from "@material-ui/core";
+import { useHistory, Link, useLocation } from "react-router-dom";
 
 export const Header: React.FunctionComponent = () => {
-    const [createTabSelected, setCreateTabSelected] = useState(
-        window.location.pathname.indexOf("/create") > -1
-    );
-
+    const location = useLocation();
+    const createTabSelected = location.pathname.indexOf("/create") > -1;
+    const routerHistory = useHistory();
     const searchBelow = !useMediaQuery("(min-width:500px)");
     const normalToobarHeight = "48px";
     const toolbarHeight = searchBelow ? "90px" : normalToobarHeight;
@@ -29,9 +28,6 @@ export const Header: React.FunctionComponent = () => {
         font-size: 18px !important;
         font-weight: bold !important;
     `;
-    useEffect(() => {
-        console.log("rerender header");
-    }, []);
     return (
         <div
             css={css`
@@ -51,7 +47,7 @@ export const Header: React.FunctionComponent = () => {
                 css={css`
                     margin-top: auto !important;
                 `}
-                href="/"
+                to="/"
                 title="Home"
             >
                 <img src={logo} alt={"Bloom Logo"} />
@@ -68,8 +64,13 @@ export const Header: React.FunctionComponent = () => {
             <Tabs
                 value={createTabSelected ? 1 : 0}
                 onChange={(e, value) => {
-                    setCreateTabSelected(value);
-                    window.location.replace(value ? "/create" : "/read");
+                    //setCreateTabSelected(value);
+                    routerHistory.push(value ? "/create" : "/read");
+                    // window.history.pushState(
+                    //     {},
+                    //     "foo",
+                    //     value ? "/create" : "/read"
+                    // );
                 }}
                 css={css`
                     margin-left: 30px;

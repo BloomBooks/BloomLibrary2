@@ -6,9 +6,9 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import { commonUI } from "../theme";
 import { getUrlForTarget } from "./Breadcrumbs";
+import { Link } from "react-router-dom";
 
 interface IProps extends React.HTMLProps<HTMLDivElement> {
-    onClick?: () => void;
     className?: string;
     target?: string; // what we're calling "target" is the last part of url, where the url is <breadcrumb stuff>/<target>
 }
@@ -17,21 +17,14 @@ interface IProps extends React.HTMLProps<HTMLDivElement> {
 export const CheapCard: React.FunctionComponent<IProps> = (props) => {
     const url = getUrlForTarget(props.target || "");
     return (
-        <a
+        <Link
             //{...props}
             className={`cheapCard ${props.className}`}
             css={cardStyle}
-            href={`/${url}`}
-            onClick={() => {
-                if (props.onClick) {
-                    props.onClick();
-                }
-
-                //   this.props.browseState.push(this.props.target);
-            }}
+            to={`/${url}`}
         >
             {props.children}
-        </a>
+        </Link>
     );
 };
 
