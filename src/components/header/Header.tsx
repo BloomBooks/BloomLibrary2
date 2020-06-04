@@ -23,7 +23,7 @@ export const Header: React.FunctionComponent = () => {
 
     const backgroundColor = createTabSelected
         ? commonUI.colors.createArea
-        : commonUI.colors.bloomRed;
+        : commonUI.colors.SilRed;
     const tabStyle = css`
         color: white !important;
         font-size: 18px !important;

@@ -5,7 +5,7 @@ import {
     MenuItem,
     FormControl,
     Select,
-    FormHelperText
+    FormHelperText,
 } from "@material-ui/core";
 import { ArtifactVisibilitySettings } from "../../../model/ArtifactVisibilitySettings";
 
@@ -22,29 +22,29 @@ const useStyles = makeStyles(() =>
     createStyles({
         a: {
             textDecoration: "none",
-            "&:hover": { textDecoration: "none" }
+            "&:hover": { textDecoration: "none" },
         },
         artifactAndChoice: {
-            padding: 10
+            padding: 10,
         },
         button: {
             width: 100,
-            height: 55
+            height: 55,
         },
         buttonWithText: {
             color: "white",
             textTransform: "none", // prevent all caps
-            backgroundColor: commonUI.colors.bloomRed
+            backgroundColor: commonUI.colors.SilRed,
         },
         buttonWithIconOnly: {
-            "& img": { height: 43 } // makes it the same as a button with text
+            "& img": { height: 43 }, // makes it the same as a button with text
         },
         select: {
-            width: 200
+            width: 200,
         },
         formControl: {
-            marginLeft: 50
-        }
+            marginLeft: 50,
+        },
     })
 );
 
@@ -59,7 +59,7 @@ export const ArtifactAndChoice: React.FunctionComponent<{
     url: string;
     onChange: (show: string) => void;
     currentUserIsUploader: boolean;
-}> = props => {
+}> = (props) => {
     const classes = useStyles();
     const user = useGetLoggedInUser();
 

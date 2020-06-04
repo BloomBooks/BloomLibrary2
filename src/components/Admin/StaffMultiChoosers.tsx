@@ -25,7 +25,7 @@ export const BookshelvesChooser: React.FunctionComponent<{
             }}
             getStylingForValue={(t) => {
                 return {
-                    backgroundColor: commonUI.colors.bloomBlue,
+                    backgroundColor: commonUI.colors.SilBlue,
                 };
             }}
             {...props}

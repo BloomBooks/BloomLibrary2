@@ -2,8 +2,10 @@ import { createMuiTheme } from "@material-ui/core";
 
 export const commonUI = {
     colors: {
-        bloomRed: "#D65649",
-        bloomBlue: "#1d94a4",
+        //bloomRed: "#D65649",
+        SilRed: "#D13542",
+        //bloomBlue: "#1d94a4",
+        SilBlue: "#0067A6",
         bloomBlueTransparent: "#1d94a438",
         dialogTopBottomGray: "#F1F3F4",
         createArea: "#509E2F", // this is the SIL Intl green
@@ -25,9 +27,9 @@ export const commonUI = {
 // lots of examples: https://github.com/search?q=createMuiTheme&type=Code
 const theme = createMuiTheme({
     palette: {
-        primary: { main: commonUI.colors.bloomRed },
+        primary: { main: commonUI.colors.SilRed },
         secondary: {
-            main: commonUI.colors.bloomBlue,
+            main: commonUI.colors.SilBlue,
             light: commonUI.colors.bloomBlueTransparent,
         },
         warning: { main: "#F3AA18" },
