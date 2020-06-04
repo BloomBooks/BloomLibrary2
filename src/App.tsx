@@ -69,9 +69,6 @@ export const App: React.FunctionComponent<{}> = (props) => {
     CachedTables.tags = tags;
     CachedTables.languagesByBookCount = languagesByBookCount;
 
-    // const embeddedMode = window.location.hostname
-    //     .toLowerCase()
-    //     .startsWith("embed");
     const embeddedMode = window.self !== window.top;
 
     return (

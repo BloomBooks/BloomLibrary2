@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import logo from "./header-logo.svg";
 import { SearchBox } from "../SearchBox";
 import { UserMenu } from "../User/UserMenu";
@@ -13,18 +13,24 @@ import Link from "@material-ui/core/Link/Link";
 import { useMediaQuery, Tab, Tabs } from "@material-ui/core";
 
 export const Header: React.FunctionComponent = () => {
+    const [createTabSelected, setCreateTabSelected] = useState(
+        window.location.pathname.indexOf("/create") > -1
+    );
+
     const searchBelow = !useMediaQuery("(min-width:500px)");
     const normalToobarHeight = "48px";
     const toolbarHeight = searchBelow ? "90px" : normalToobarHeight;
-    const s: string = window.location.pathname;
-    const inCreate = s.indexOf("/create") > -1;
-    const backgroundColor = inCreate
+
+    const backgroundColor = createTabSelected
         ? commonUI.colors.createArea
         : commonUI.colors.bloomRed;
     const tabStyle = css`
         color: white !important;
         font-size: 18px !important;
     `;
+    useEffect(() => {
+        console.log("rerender header");
+    }, []);
     return (
         <div
             css={css`
@@ -58,11 +64,13 @@ export const Header: React.FunctionComponent = () => {
                 `}
             > */}
             <Tabs
-                value={inCreate ? 1 : 0}
-                onChange={(e, value) =>
-                    window.location.assign(value ? "/create" : "/read")
-                }
+                value={createTabSelected ? 1 : 0}
+                onChange={(e, value) => {
+                    setCreateTabSelected(value);
+                    window.location.replace(value ? "/create" : "/read");
+                }}
                 css={css`
+                    margin-left: 30px;
                     margin-right: 30px;
 
                     .MuiTabs-indicator {

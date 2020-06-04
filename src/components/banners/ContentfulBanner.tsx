@@ -65,7 +65,7 @@ export const ContentfulBanner: React.FunctionComponent<{
     const textColor = backgroundImage ? "white" : "black";
 
     const darkenBackgroundImageFraction = backgroundImage ? 0.4 : 0;
-    const linkColor = backgroundImage ? "white" : commonUI.colors.bloomBlue;
+    const linkColor = backgroundImage ? "white" : commonUI.colors.SilBlue;
 
     let bannerTitle: React.ReactNode = (
         <React.Fragment>{banner.title}</React.Fragment>
@@ -105,7 +105,7 @@ export const ContentfulBanner: React.FunctionComponent<{
                 display: flex;
                 flex-direction: column;
 
-                height: 300px;
+                //height: 300px;
                 display: flex;
 
                 a {
@@ -145,7 +145,9 @@ export const ContentfulBanner: React.FunctionComponent<{
                     padding: 20px;
                 `}
             >
-                <Breadcrumbs />
+                {["root.read", "create"].includes(
+                    props.collection?.urlKey!
+                ) || <Breadcrumbs />}
                 <div
                     css={css`
                         display: flex;
