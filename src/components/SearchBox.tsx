@@ -124,7 +124,11 @@ export const SearchBox: React.FunctionComponent<{
         setEnteredSearch(""); // otherwise we get no search box when rendered in new page
         // review: this replaces current history element...should we push instead? (Also below)
         history.push("/grid");
-    } else if (enteredSearch === "covid19") {
+    } else if (
+        ["covid", "covid19", "coronavirus", "cov19"].includes(
+            enteredSearch.toLowerCase()
+        )
+    ) {
         setEnteredSearch(""); // otherwise we get no search box when rendered in new page
         history.push("/covid19");
     } else if (enteredSearch) {
