@@ -5,12 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React from "react";
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    Redirect,
-} from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 
 import theme from "./theme";
 import { ThemeProvider, Snackbar } from "@material-ui/core";
@@ -29,19 +24,9 @@ import {
     cantUseBloomD,
 } from "./components/OSFeaturesContext";
 import { Alert, AlertTitle } from "@material-ui/lab";
-
-import { GridPage } from "./components/Grid/GridPage";
-import { BulkEditPage } from "./components/BulkEdit/BulkEditPage";
 import { Header } from "./components/header/Header";
-import BookDetail from "./components/BookDetail/BookDetail";
-import { ReadBookPage } from "./components/ReadBookPage";
-import { CollectionSubsetPage } from "./components/CollectionSubsetPage";
-import { ContentfulBanner } from "./components/banners/ContentfulBanner";
 import { ContentfulContext } from "./ContentfulContext";
-import { CollectionPage } from "./components/CollectionPage";
-import { Footer } from "./components/Footer";
-import { ContentfulPage } from "./components/ContentfulPage";
-import { splitPathname } from "./components/Breadcrumbs";
+import { Routes } from "./components/Routes";
 
 interface ICachedTables {
     tags: string[];
@@ -109,129 +94,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                             <ContentfulContext>
                                 <Router>
                                     {embeddedMode || <Header />}
-                                    <Switch>
-                                        {/* Alias from legacy blorg */}
-                                        <Route path={"/browse"}>
-                                            <Redirect to="/page/create~downloads" />
-                                        </Route>
-                                        <Route
-                                            path={[
-                                                "/downloads", // Alias for convenience when telling people where to get Bloom
-                                                "/installers", // Alias from legacy blorg
-                                            ]}
-                                        >
-                                            <Redirect to="/page/create~downloads" />
-                                        </Route>
-                                        {/* At contentful.com, when you work on something, there is a "Preview" button
-                                        which takes you to our site so you can see how your content will actually be
-                                        displayed. For banners, we configured contentful to set you to this url. */}
-                                        <Route
-                                            path="/_previewBanner/:id" // used by preview button when editing in contentful
-                                            render={({ match }) => (
-                                                <React.Fragment>
-                                                    <div // simulate it being in a context that sets some margin
-                                                        css={css`
-                                                            //margin: 20px;
-                                                            height: 500px;
-                                                        `}
-                                                    >
-                                                        <ContentfulBanner
-                                                            id={match.params.id}
-                                                        />
-                                                    </div>
-                                                    <Footer />
-                                                </React.Fragment>
-                                            )}
-                                        ></Route>
-                                        <Route
-                                            path="/:breadcrumbs*/book/:id"
-                                            render={({ match }) => {
-                                                return (
-                                                    <BookDetail
-                                                        id={match.params.id}
-                                                    />
-                                                );
-                                            }}
-                                        />
-
-                                        <Route path="/player/:id">
-                                            <ReadBookPage />
-                                        </Route>
-                                        <Route path="/about">
-                                            <ContentfulPage urlKey="about" />
-                                        </Route>
-                                        <Route
-                                            path="/grid/:filter*"
-                                            render={({ match }) => {
-                                                return (
-                                                    <GridPage
-                                                        filters={
-                                                            match.params.filter
-                                                        }
-                                                    />
-                                                );
-                                            }}
-                                        />
-                                        <Route
-                                            exact={true}
-                                            path={["/", "/read"]}
-                                        >
-                                            <CollectionPage collectionName="root.read" />
-                                        </Route>
-                                        <Route exact={true} path={"/create"}>
-                                            <CollectionPage collectionName="create" />
-                                        </Route>
-                                        <Route path="/bulk">
-                                            <BulkEditPage />
-                                        </Route>
-                                        <Route
-                                            path="/page/:lineage/"
-                                            render={({ match }) => {
-                                                return (
-                                                    <ContentfulPage
-                                                        urlKey={getCollectionName(
-                                                            match.params.lineage
-                                                        )}
-                                                    />
-                                                );
-                                            }}
-                                        />
-                                        <Route
-                                            path="/:segments+"
-                                            render={({ match }) => {
-                                                const {
-                                                    collectionName,
-                                                    filters,
-                                                } = splitPathname(
-                                                    match.params.segments
-                                                );
-
-                                                // This heuristic might change. Basically this is the route
-                                                // for displaying top-level collections.
-                                                if (filters.length === 0) {
-                                                    return (
-                                                        <CollectionPage
-                                                            collectionName={
-                                                                collectionName
-                                                            }
-                                                            embeddedMode={
-                                                                embeddedMode
-                                                            }
-                                                        />
-                                                    );
-                                                }
-                                                // While this one is for filtered (subset) collections, typically from 'More' or Search
-                                                return (
-                                                    <CollectionSubsetPage
-                                                        collectionName={
-                                                            collectionName
-                                                        }
-                                                        filters={filters}
-                                                    />
-                                                );
-                                            }}
-                                        ></Route>
-                                    </Switch>
+                                    <Routes />
                                 </Router>
                             </ContentfulContext>
                         </OSFeaturesContext.Provider>
@@ -243,14 +106,6 @@ export const App: React.FunctionComponent<{}> = (props) => {
         </>
     );
 };
-
-// We make breadcrumbs work by putting the history we want in the form of
-// something~otherthing~whereWeAreNow. Only the last thing is used for our actual
-// location, all the other parts of this "lineage" are just used for breadcrumbs.
-function getCollectionName(listOfTildeSeparatedNames: string): string {
-    const parts = listOfTildeSeparatedNames.split("~");
-    return parts[parts.length - 1] || "";
-}
 
 export const UnderConstruction: React.FunctionComponent<{}> = () => {
     const [open, setOpen] = React.useState(true);
