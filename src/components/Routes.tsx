@@ -183,6 +183,13 @@ export function getUrlForTarget(target: string) {
         breadcrumbs.push(pathCollectionName);
     }
     breadcrumbs.push(trimLeft(target, "/"));
+    if (
+        breadcrumbs[0] === "root.read" ||
+        breadcrumbs[0] === "read" ||
+        breadcrumbs[0] === ""
+    ) {
+        breadcrumbs.splice(0, 1);
+    }
     return breadcrumbs.join("/");
 }
 function trimLeft(s: string, char: string) {
