@@ -38,9 +38,11 @@ interface IProps {
 }
 
 export const BookGroup: React.FunctionComponent<IProps> = (props) => {
-    let rowCount = props.rows ?? 1;
+    // typically props.rows, if large, is intended as a maximum; very often the real size is
+    // much less. We get less gigantic scroll bar ranges by limiting it.
+    let rowCount = Math.min(props.rows ?? 1, 5);
     if (props.predeterminedBooks && props.rows !== 1) {
-        rowCount = props.predeterminedBooks.length / 5; // still rough, but better than just using the max.
+        rowCount = Math.ceil(props.predeterminedBooks.length / 5); // still rough, but better than just using the max.
     }
     // Enhance: this has parameters, height and offset, that should help
     // but so far I haven't got them to work well. It has many other

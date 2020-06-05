@@ -18,10 +18,16 @@ import React from "react";
 }*/
 
 export const ListOfBookGroups: React.FunctionComponent = (props) => (
+    // A ul apparently defaults to flex-shrink:1. And that's a problem for us, because it's parent
+    // is display:flex and height:100% and a list of book groups is usually more than a screen high.
+    // So the browser tries to shrink it. It can't really do so, but it does anyway, so now
+    // the ul overflows. And then the footer which is supposed to come after it overlaps some of the
+    // rows of cards.
     <ul
         css={css`
             padding-left: 20px;
             min-height: 200px;
+            flex-shrink: 0;
         `}
     >
         {props.children}
