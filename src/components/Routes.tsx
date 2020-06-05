@@ -25,7 +25,7 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
         <Switch>
             {/* Alias from legacy blorg */}
             <Route path={"/browse"}>
-                <Redirect to="/page/create~downloads" />
+                <Redirect to="/create" />
             </Route>
             <Route
                 path={[
@@ -33,7 +33,7 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                     "/installers", // Alias from legacy blorg
                 ]}
             >
-                <Redirect to="/page/create~downloads" />
+                <Redirect to="/page/create/downloads" />
             </Route>
             {/* At contentful.com, when you work on something, there is a "Preview" button
                                         which takes you to our site so you can see how your content will actually be

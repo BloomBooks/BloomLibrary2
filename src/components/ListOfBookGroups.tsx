@@ -17,10 +17,11 @@ import React from "react";
     flex-grow: 1;
 }*/
 
-export const ListOfBookGroups: React.FunctionComponent = props => (
+export const ListOfBookGroups: React.FunctionComponent = (props) => (
     <ul
         css={css`
             padding-left: 20px;
+            min-height: 200px;
         `}
     >
         {props.children}

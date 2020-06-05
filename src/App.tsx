@@ -148,23 +148,3 @@ export const UnderConstruction: React.FunctionComponent<{}> = () => {
 };
 
 export default App;
-
-/*  TODO
-
-Hatton: move default card/row/banner display name to collection. Might need a "single-line label" override?
-Hatton : make banner use that (in future we could provide an override on banner)
-Hatton: change collection id-->key
-
-
-
-
-JohnT:
-Move collection name interptation into new CollectionPage.tsx
-- becomes async: first see if there's a contentful page, if so retrieve it and its children, recursively.
-- (later: if not use defaults, e.g. for language:ha)
-- if it's a contenful page use John's new contentful banner
-- (later: if not use some default banner)
-- pageType becomes contentType and determines only what's below the banner
-- RowOfPageCards no longer gets title, but uses title of the collection it's given. There will be a separate collection for each row, e.g., Sub-projects
--
-*/
