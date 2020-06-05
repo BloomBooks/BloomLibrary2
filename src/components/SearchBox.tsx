@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
@@ -46,15 +46,26 @@ export const SearchBox: React.FunctionComponent<{
 }> = (props) => {
     const location = useLocation();
     const history = useHistory();
-    let search = location.pathname
+    const search = location.pathname
         .split("/")
-        .filter((x) => x.startsWith("search:"))[0];
+        .filter((x) => x.startsWith(":search:"))[0];
 
-    let initialSearchString = search ? search.substring("search:".length) : "";
+    let initialSearchString = search ? search.substring(":search:".length) : "";
     if (initialSearchString.startsWith("phash")) {
         initialSearchString = "";
     }
     const [searchString, setSearchString] = useState(initialSearchString);
+    // This is a bit subtle. SearchString needs to be state to get modified
+    // as the user types. But another thing that can happen is that our location
+    // changes as we follow links or switch from read to create. If something
+    // brings in a new URL that has a different search specification, we
+    // want the search box to update to match. Except when the user is actually
+    // editing in the box, the box and the URL should be the same.
+    // This must only happen when the url-derived initial search string changes,
+    // otherwise, the user could not edit the box.
+    useEffect(() => setSearchString(initialSearchString), [
+        initialSearchString,
+    ]);
     // search string when user clicks Enter.
     const [enteredSearch, setEnteredSearch] = useState("");
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -84,7 +84,7 @@ export const Breadcrumbs: React.FunctionComponent = () => {
             />
         );
     });
-    if (!isBook) {
+    if (!isBook && collectionName !== "root.read") {
         // Enhance: if there are no filters, this doesn't need to be a link.
         crumbs.push(
             <CollectionCrumb
@@ -181,31 +181,44 @@ const CollectionCrumb: React.FunctionComponent<{
     );
 };
 
-// Given a segments list like /enabling-writers/ew-nigeria/:level:1/:topic:Agriculture/:search:dogs,
+// Given a pathname like /enabling-writers/ew-nigeria/:level:1/:topic:Agriculture/:search:dogs,
 // produces {collectionName: "ew-nigeria" filters: ["level:1", "topic:Agriculture", "search:dogs"],
 // breadcrumbs: ["enabling-writers"]}.
 // The collection name is the last segment with no leading colon.
 // The filters are all the following things that do have leading colons, minus the colons.
 // The breadcrumbs are the things before the collectionName (not counting an empty string before the first slash)
+// Special cases:
+// - pathname is undefined, or possibly empty or a single slash: happens when there's no pathname at all:
+//       collectionName is root.read, others results are empty
+// - everything is a filter: collectionName is root.read
+// - collection works out to "read": change to "root.read"
 export function splitPathname(
-    segmentString: string
+    pathname?: string
 ): { collectionName: string; filters: string[]; breadcrumbs: string[] } {
-    const segments = trimLeft(segmentString, "/").split("/");
+    const segments = trimLeft(pathname ?? "", "/").split("/");
     let collectionSegmentIndex = segments.length - 1;
-    while (collectionSegmentIndex > 0) {
+    while (collectionSegmentIndex >= 0) {
         if (!segments[collectionSegmentIndex].startsWith(":")) {
             break;
         }
         collectionSegmentIndex--;
     }
-    const collectionName = segments[collectionSegmentIndex];
+    let collectionName = segments[collectionSegmentIndex];
+    if (
+        collectionSegmentIndex < 0 ||
+        collectionName === "read" ||
+        !collectionName
+    ) {
+        // all segments (if any) are filters! We're in the root collection.
+        collectionName = "root.read";
+    }
 
     return {
         collectionName,
         filters: segments
             .slice(collectionSegmentIndex + 1)
             .map((x) => x.substring(1)),
-        breadcrumbs: segments.slice(0, collectionSegmentIndex),
+        breadcrumbs: segments.slice(0, Math.max(collectionSegmentIndex, 0)),
     };
 }
 

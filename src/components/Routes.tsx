@@ -74,9 +74,6 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                     return <GridPage filters={match.params.filter} />;
                 }}
             />
-            <Route exact={true} path={["/", "/read"]}>
-                <CollectionPage collectionName="root.read" />
-            </Route>
             <Route exact={true} path={"/create"}>
                 <CollectionPage collectionName="create" />
             </Route>
@@ -89,8 +86,9 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                     return <ContentfulPage urlKey={match.params.pageName} />;
                 }}
             />
+            {/* Must come last, this matches anything, including the home path with nothing at all. */}
             <Route
-                path="/:segments+"
+                path="/:segments*"
                 render={({ match }) => {
                     const { collectionName, filters } = splitPathname(
                         match.params.segments
