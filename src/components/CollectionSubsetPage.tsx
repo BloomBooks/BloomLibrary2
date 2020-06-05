@@ -44,7 +44,7 @@ export function generateCollectionFromFilters(
                     break;
                 case "search":
                     filteredCollection = makeCollectionForSearch(
-                        parts[1],
+                        decodeURIComponent(parts[1]),
                         filteredCollection
                     );
                     break;

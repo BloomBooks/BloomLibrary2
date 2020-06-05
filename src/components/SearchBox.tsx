@@ -50,7 +50,9 @@ export const SearchBox: React.FunctionComponent<{
         .split("/")
         .filter((x) => x.startsWith(":search:"))[0];
 
-    let initialSearchString = search ? search.substring(":search:".length) : "";
+    let initialSearchString = search
+        ? decodeURIComponent(search.substring(":search:".length))
+        : "";
     if (initialSearchString.startsWith("phash")) {
         initialSearchString = "";
     }
