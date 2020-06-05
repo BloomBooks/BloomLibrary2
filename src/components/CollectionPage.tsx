@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { ContentfulBanner } from "./banners/ContentfulBanner";
 import { useGetCollectionFromContentful } from "../model/Collections";
@@ -15,6 +15,8 @@ export const CollectionPage: React.FunctionComponent<{
     collectionName: string;
     embeddedMode?: boolean;
 }> = (props) => {
+    // remains empty (and unused) except in byLanguageGroups mode, when a callback sets it.
+    const [booksAndLanguages, setBooksAndLanguages] = useState("");
     const { collection, error, loading } = useGetCollectionFromContentful(
         props.collectionName
     );
@@ -68,6 +70,11 @@ export const CollectionPage: React.FunctionComponent<{
                     <ByLanguageGroups
                         titlePrefix=""
                         filter={collection.filter}
+                        reportBooksAndLanguages={(books, languages) =>
+                            setBooksAndLanguages(
+                                `${books} books in ${languages} languages`
+                            )
+                        }
                     />
                 );
                 break;
@@ -83,6 +90,16 @@ export const CollectionPage: React.FunctionComponent<{
             id={collection.banner}
             collection={collection}
             filter={collection.filter}
+            bookCount={
+                // if not by-language, we want this to be undefined, which triggers the usual
+                // calculation of a book count using the filter. If it IS by-language,
+                // we want an empty string until we have a real languages-and-books count,
+                // so we don't waste a query (and possibly get flicker) trying to compute
+                // the filter-based count.
+                collection.layout === "by-language"
+                    ? booksAndLanguages
+                    : undefined
+            }
         />
     );
 

@@ -18,6 +18,7 @@ export const ContentfulBanner: React.FunctionComponent<{
     id: string; // of the banner object on contentful
     collection?: ICollection;
     filter?: IFilter;
+    bookCount?: string; // often undefined, meaning compute from filter
 }> = (props) => {
     const [gotData, setGotData] = useState(false);
     const { data, error, fetched, loading } = useContentful({
@@ -100,6 +101,17 @@ export const ContentfulBanner: React.FunctionComponent<{
     //     titleLines.length > 1 ? <div> {titleLines[1]}</div> : "";
     const showLogo = logoUrl && logoUrl !== "none";
     console.log("css: " + banner.css);
+    let bookCount: React.ReactFragment | undefined;
+    if (props.bookCount !== undefined) {
+        // if it's an empty string, we assume it's pending real data
+        bookCount = <h2>{props.bookCount}</h2>;
+    } else if (props.filter) {
+        bookCount = (
+            <h2>
+                <BookCount filter={props.filter} />
+            </h2>
+        );
+    }
     return (
         <div
             css={css`
@@ -182,11 +194,7 @@ export const ContentfulBanner: React.FunctionComponent<{
                                     flex-grow: 1;
                                 `}
                             />
-                            {props.filter && (
-                                <h2>
-                                    <BookCount filter={props.filter} />
-                                </h2>
-                            )}
+                            {bookCount}
                         </div>
                     )}
                     <div
@@ -247,8 +255,7 @@ export const ContentfulBanner: React.FunctionComponent<{
                                 width: 100%;
                             `}
                         >
-                            {props.filter &&
-                                !showLogo &&
+                            {!showLogo &&
                                 props.collection?.urlKey !== "new-arrivals" && (
                                     <div
                                         css={css`
@@ -256,7 +263,7 @@ export const ContentfulBanner: React.FunctionComponent<{
                                             margin-top: auto;
                                         `}
                                     >
-                                        <BookCount filter={props.filter} />
+                                        {bookCount}
                                     </div>
                                 )}
                             {/* just a placeholder to push the imagecredits to the right
