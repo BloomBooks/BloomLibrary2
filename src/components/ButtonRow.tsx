@@ -30,8 +30,17 @@ export const ButtonRow: React.FunctionComponent<{
 
         return (
             <Button
-                // use the react-router link instead an an <a> element, so that we don't reload the page when we follow the href
-                component={(linkProps) => <Link to={href} {...linkProps} />}
+                // use the react-router link instead an an <a> element, so that we don't reload the page when we follow the href.
+                // But ONLY for internal refs...Link will convert something like https://community.software.sil.org/c/bloom
+                // into something like http://localhost:3000/https://community.software.sil.org/c/bloom and try to feed
+                // it through our own router.
+                component={(linkProps) =>
+                    externalLink ? (
+                        <a href={href} {...linkProps} />
+                    ) : (
+                        <Link to={href} {...linkProps} />
+                    )
+                }
                 css={css`
                     margin-right: 10px !important;
                     &:last-of-type {
