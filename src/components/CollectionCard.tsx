@@ -93,8 +93,9 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
                 credits={props.credits}
                 src={props.img}
                 css={css`
-                    max-height: ${maxHeight}px;
-                    max-width: 198px;
+                    height: ${maxHeight}px;
+                    object-fit: contain;
+                    width: 198px;
                     margin-left: auto;
                     margin-right: auto;
                     margin-top: auto;
