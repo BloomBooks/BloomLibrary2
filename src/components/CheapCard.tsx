@@ -5,7 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import React from "react";
 import { commonUI } from "../theme";
-import { getUrlForTarget } from "./Breadcrumbs";
+import { getUrlForTarget } from "./Routes";
 import { Link } from "react-router-dom";
 
 interface IProps extends React.HTMLProps<HTMLDivElement> {

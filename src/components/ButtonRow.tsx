@@ -9,7 +9,7 @@ import { ICollection } from "../model/Collections";
 
 import { Button } from "@material-ui/core";
 import { commonUI } from "../theme";
-import { getUrlForTarget } from "./Breadcrumbs";
+import { getUrlForTarget } from "./Routes";
 import { Link } from "react-router-dom";
 
 export const ButtonRow: React.FunctionComponent<{

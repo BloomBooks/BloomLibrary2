@@ -16,7 +16,6 @@ import { ContentfulBanner } from "./banners/ContentfulBanner";
 import { CollectionPage } from "./CollectionPage";
 import { Footer } from "./Footer";
 import { ContentfulPage } from "./ContentfulPage";
-import { splitPathname } from "./Breadcrumbs";
 
 // The main set of switches that loads differnt things into the main content area of Blorg
 // based on the current window location.
@@ -116,3 +115,76 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
         </Switch>
     );
 };
+
+// Given a pathname like /enabling-writers/ew-nigeria/:level:1/:topic:Agriculture/:search:dogs,
+// produces {collectionName: "ew-nigeria" filters: ["level:1", "topic:Agriculture", "search:dogs"],
+// breadcrumbs: ["enabling-writers"]}.
+// The collection name is the last segment with no leading colon.
+// The filters are all the following things that do have leading colons, minus the colons.
+// The breadcrumbs are the things before the collectionName (not counting an empty string before the first slash)
+// Special cases:
+// - pathname is undefined, or possibly empty or a single slash: happens when there's no pathname at all:
+//       collectionName is root.read, others results are empty
+// - everything is a filter: collectionName is root.read
+// - collection works out to "read": change to "root.read"
+export function splitPathname(
+    pathname?: string
+): { collectionName: string; filters: string[]; breadcrumbs: string[] } {
+    const segments = trimLeft(pathname ?? "", "/").split("/");
+    let collectionSegmentIndex = segments.length - 1;
+    while (collectionSegmentIndex >= 0) {
+        if (!segments[collectionSegmentIndex].startsWith(":")) {
+            break;
+        }
+        collectionSegmentIndex--;
+    }
+    let collectionName = segments[collectionSegmentIndex];
+    if (
+        collectionSegmentIndex < 0 ||
+        collectionName === "read" ||
+        !collectionName
+    ) {
+        // all segments (if any) are filters! We're in the root collection.
+        collectionName = "root.read";
+    }
+
+    return {
+        collectionName,
+        filters: segments
+            .slice(collectionSegmentIndex + 1)
+            .map((x) => x.substring(1)),
+        breadcrumbs: segments.slice(0, Math.max(collectionSegmentIndex, 0)),
+    };
+}
+
+// what we're calling "target" is the last part of url, where the url is <breadcrumb stuff>/<target>
+// Thus, it is the shortest URL that identifies the collection and filters that we want,
+// without a leading slash.
+// This function is called when the collection indicated by the current location pathname
+// is considered to be a parent of target, so we want a URL that indicates the target collection,
+// but uses the current location pathname collection as breadcrumbs.
+// It's possible that it is a true child collection; for example, if current pathname is
+// /enabling-writers and target is ew-nigeria, we want enabling-writers/ew-nigeria.
+// It's also possible that we're moving to a filtered subset collection; for example, if
+// the current pathname is /enabling-writers/ew-nigeria and target is ew-nigeria/:level:1
+// We want to get enabling-writers/ew-nigeria/:level:1 (only one ew-nigeria).
+// We might also be going a level of fiter deeper; for example, from location
+// /enabling-writers/ew-nigeria/:level:1 to target ew-nigeria/:level:1/:topic:Agriculture
+// producing enabling-writers/ew-nigeria/:level:1/:topic:Agriculture.
+// Any leading slash on target should be ignored.
+// See https://docs.google.com/document/d/1cA9-9tMSydZ6Euo-hKmdHo_JlO0aLW8Fi9v293oIHK0/edit#heading=h.3b7gegy9uie8
+// for more of the logic.
+export function getUrlForTarget(target: string) {
+    const { breadcrumbs, collectionName: pathCollectionName } = splitPathname(
+        window.location.pathname
+    );
+    const { collectionName } = splitPathname(target);
+    if (pathCollectionName && collectionName !== pathCollectionName) {
+        breadcrumbs.push(pathCollectionName);
+    }
+    breadcrumbs.push(trimLeft(target, "/"));
+    return breadcrumbs.join("/");
+}
+function trimLeft(s: string, char: string) {
+    return s.replace(new RegExp("^[" + char + "]+"), "");
+}
