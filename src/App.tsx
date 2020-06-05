@@ -27,6 +27,7 @@ import { Alert, AlertTitle } from "@material-ui/lab";
 import { Header } from "./components/header/Header";
 import { ContentfulContext } from "./ContentfulContext";
 import { Routes } from "./components/Routes";
+import { Footer } from "./components/Footer";
 
 interface ICachedTables {
     tags: string[];
@@ -95,6 +96,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                 <Router>
                                     {embeddedMode || <Header />}
                                     <Routes />
+                                    <Footer />
                                 </Router>
                             </ContentfulContext>
                         </OSFeaturesContext.Provider>
