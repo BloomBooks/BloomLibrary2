@@ -530,7 +530,9 @@ function processAxiosStatus(answer: IAxiosAnswer): ISimplifiedAxiosResult {
                 ? -1
                 : answer.response["data"]["count"],
         error: null,
-        waiting: answer.loading,
+        // loading appears to be totally unreliable. If we didn't get
+        // some response yet, for our purposes, we're still waiting.
+        waiting: answer.loading || !answer.response,
     };
 }
 

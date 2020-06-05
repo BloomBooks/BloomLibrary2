@@ -37,7 +37,11 @@ interface IProps {
     predeterminedBooks?: IBasicBookInfo[];
 }
 
-export const BookGroup: React.FunctionComponent<IProps> = (props) => (
+export const BookGroup: React.FunctionComponent<IProps> = (props) => {
+    let rowCount = props.rows ?? 1;
+    if (props.predeterminedBooks && props.rows !== 1) {
+        rowCount = props.predeterminedBooks.length / 5; // still rough, but better than just using the max.
+    }
     // Enhance: this has parameters, height and offset, that should help
     // but so far I haven't got them to work well. It has many other
     // parameters too that someone should look into. Make sure to test
@@ -48,18 +52,20 @@ export const BookGroup: React.FunctionComponent<IProps> = (props) => (
     // If the params are bad, some groups at the end will NEVER show.
 
     /* Note, this currently breaks strict mode. See app.tsx */
-    <LazyLoad
-        height={
-            /* note, if the number of cards is too small to fill up those rows, this will expect
+    return (
+        <LazyLoad
+            height={
+                /* note, if the number of cards is too small to fill up those rows, this will expect
                     to be taller than it is, but then when it is replaced by the actual content, the
                     scrollbar will adjust, so no big deal?*/
-            (props.rows ?? 1) * commonUI.bookCardHeightPx +
-            commonUI.bookGroupTopMarginPx
-        }
-    >
-        <BookGroupInner {...props} />
-    </LazyLoad>
-);
+                rowCount * commonUI.bookCardHeightPx +
+                commonUI.bookGroupTopMarginPx
+            }
+        >
+            <BookGroupInner {...props} />
+        </LazyLoad>
+    );
+};
 export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
     // we have either a horizontally-scrolling list of 20, or several rows
     // of 5 each
@@ -75,6 +81,8 @@ export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
         !!props.predeterminedBooks // skip this if we already have books
     );
 
+    const ready = !!props.predeterminedBooks || search?.waiting === false;
+
     // We make life hard on <Lazy> components by thinking maybe we'll show, for example, a row of Level 1 books at
     // the top of the screen. So the <Lazy> thing may think "well, no room for me then until they scroll". But
     // then it turns out that we don't have any level 1 books, so we don't even have a scroll bar. But too late, the
@@ -84,9 +92,10 @@ export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
     // as it adds complexity and we don't know how expensive it is to do the check. But it might mean a bit faster
     // display of the row at the bottom.
     const [didReceiveResult, setDidReceiveResult] = useState(false);
+    let books = props.predeterminedBooks || search.books;
     useEffect(() => {
-        if (!didReceiveResult && search?.waiting === false) {
-            if (search?.books.length === 0) {
+        if (!didReceiveResult && ready) {
+            if (books.length === 0) {
                 // We aren't going to show this row now, so other rows may have incorrectly determined
                 // that they should not load yet. But since we aren't going to show, they may be on
                 // screen after all.
@@ -94,10 +103,9 @@ export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
             }
             setDidReceiveResult(true);
         }
-    }, [search, didReceiveResult]);
+    }, [didReceiveResult, ready, books.length]);
 
     const showInOneRow = !props.rows || props.rows < 2;
-    let books = props.predeterminedBooks || search.books;
     if (props.secondaryFilter) {
         books = books.filter((b) => props.secondaryFilter!(b));
     }
@@ -175,7 +183,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
                             : search.totalMatchingRecords}
                     </span>
                 </h1>
-                {search.waiting || bookList}
+                {ready && bookList}
             </li>
         )
     );
