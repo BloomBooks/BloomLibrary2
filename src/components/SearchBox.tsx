@@ -148,7 +148,7 @@ export const SearchBox: React.FunctionComponent<{
         // In particular if the path is just a slash (at the root), we start out with two empty strings.
         const pathParts = location.pathname.split("/").filter((x) => x);
         const existingSearchIndex = pathParts.findIndex((p) =>
-            p.startsWith("search:")
+            p.startsWith(":search:")
         );
         // we don't think it's useful to keep in history states that are just different searches.
         const replaceInHistory =
