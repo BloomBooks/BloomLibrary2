@@ -6,6 +6,7 @@ import {
 import { CardGroup } from "./CardGroup";
 import { CollectionCard } from "./CollectionCard";
 import { BookCardGroup } from "./BookCardGroup";
+import { PageNotFound } from "./PageNotFound";
 
 export const RowOfCollectionCardsForKey: React.FunctionComponent<{
     urlKey: string;
@@ -23,7 +24,7 @@ export const RowOfCollectionCardsForKey: React.FunctionComponent<{
     }
 
     if (!collection) {
-        return <div>Collection not found</div>;
+        return <PageNotFound />;
     }
 
     if (error) {

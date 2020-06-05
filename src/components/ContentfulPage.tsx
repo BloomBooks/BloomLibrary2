@@ -6,6 +6,7 @@ import { useContentful } from "react-contentful";
 /** @jsx jsx */
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import ReactMarkdown from "react-markdown";
+import { PageNotFound } from "./PageNotFound";
 
 export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
     props
@@ -25,10 +26,9 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
         return null;
     }
 
-    if (!data) {
-        return <p>Page does not exist.</p>;
+    if (!data || !(data as any).items || (data as any).items.length === 0) {
+        return <PageNotFound />;
     }
-    console.debug(data);
 
     return (
         <div
