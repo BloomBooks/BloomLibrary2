@@ -22,6 +22,11 @@ export const Breadcrumbs: React.FunctionComponent = () => {
         //padding-left: 20px;
         margin-top: 5px;
         margin-bottom: 14px;
+
+        /* bold only the last breadcrumb. Question: should we eve *show* the last one? It's redundant.
+        li:last-child a {
+            font-weight: bold;
+        }*/
         li {
             margin-right: 3px;
             //color: whitesmoke;

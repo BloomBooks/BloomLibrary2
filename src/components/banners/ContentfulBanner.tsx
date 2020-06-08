@@ -124,7 +124,6 @@ export const ContentfulBanner: React.FunctionComponent<{
                     color: ${linkColor};
                     text-decoration: underline;
                     font-size: 14pt;
-                    font-weight: bold;
                 }
                 /* https://www.nngroup.com/articles/text-over-images/ */
                 /* #contrast-overlay {
