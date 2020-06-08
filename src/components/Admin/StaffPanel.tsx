@@ -331,7 +331,11 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
             <BookshelvesChooser
                 setModified={setModified}
                 book={props.book}
-            ></BookshelvesChooser>
+            ></BookshelvesChooser>{" "}
+            <BookLanguagesChooser
+                setModified={setModified}
+                book={props.book}
+            ></BookLanguagesChooser>
             <div
                 css={css`
                     margin-top: 1em;
@@ -345,10 +349,6 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                     setModified={setModified}
                     book={props.book}
                 ></TagsChooser>
-                <BookLanguagesChooser
-                    setModified={setModified}
-                    book={props.book}
-                ></BookLanguagesChooser>
 
                 <FeaturesChooser
                     setModified={setModified}
