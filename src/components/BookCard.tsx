@@ -63,6 +63,10 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                     /* new thumbnails are just the image, and they look better if we see the top and lose some of the bottom
                      legacy thumbnails have title at top, so better to center them*/
                     object-position: ${isModernThumbnail ? "top" : ""};
+                    /* hides alt text while lazy loading */
+                    &.swiper-lazy-loading {
+                        visibility: hidden;
+                    }
                 `}
                 alt={"book thumbnail"}
                 // NB: if you're not getting an image, e.g. in Storybook, it might be because it's not inside of a swiper,
