@@ -84,3 +84,8 @@ a:hover {
     height: 100%;
     top: 0;
 }
+
+/* hide the scroll buttons except for the row that has the pointer */
+.swiper-container:not(:hover) .swiper-button {
+    display: none;
+}
