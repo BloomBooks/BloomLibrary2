@@ -110,12 +110,7 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
 
     const handleCancel = () => {
         // avoid unsaved changes warning.
-        // Note that setting modified false is not enough, that won't affect
-        // router.waitingOnSaveOrCancel until the next render.
-        // It's also not necessary, because the reload reconstructs the page
-        // completely, destroying all the pre-existing state.
-        // Todo: react router equivalent
-        //router!.waitingOnSaveOrCancel = false;
+        setModified(false);
         document.location.reload();
     };
 

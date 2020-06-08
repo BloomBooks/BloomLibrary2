@@ -5,6 +5,7 @@ import { CachedTablesContext } from "../../App";
 import { featureSpecs } from "../FeatureHelper";
 import { commonUI } from "../../theme";
 import { MultiChooser } from "./MultiChooser";
+import { CreatableMultiChooser } from "./CreatableMultiChooser";
 
 export const BookshelvesChooser: React.FunctionComponent<{
     book: Book;
@@ -112,10 +113,9 @@ export const TagsChooser: React.FunctionComponent<{
     ];
 
     return (
-        <MultiChooser
+        <CreatableMultiChooser
             label="Tags"
             availableValues={tagChoices}
-            getLabelForValue={(v) => v}
             getSelectedValues={() =>
                 props.book.tags
                     .slice()
@@ -124,10 +124,10 @@ export const TagsChooser: React.FunctionComponent<{
                     //.filter((t) => !tagIsShownElsewhereInUI(t))
                     .sort()
             }
-            setSelectedValues={(items: any[]) => {
+            setSelectedValues={(items: string[]) => {
                 props.book.tags = items;
             }}
-            getStylingForValue={(t) => {
+            getStylingForValue={(t: string) => {
                 const defaultStyle = {
                     backgroundColor: "#575757",
                     color: "white",
