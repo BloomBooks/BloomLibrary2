@@ -156,15 +156,17 @@ export const SearchBox: React.FunctionComponent<{
         const replaceInHistory =
             existingSearchIndex >= 0 &&
             existingSearchIndex === pathParts.length - 1;
-        if (existingSearchIndex >= 0) {
-            // remove the existing one and everything after it.
-            pathParts.splice(
-                existingSearchIndex,
-                pathParts.length - existingSearchIndex
-            );
-        }
-        pathParts.push(":search:" + encodeURIComponent(enteredSearch));
-        const newUrl = "/" + pathParts.join("/");
+        // Commented out code allows search to be relative to current collection or subset
+        // if (existingSearchIndex >= 0) {
+        //     // remove the existing one and everything after it.
+        //     pathParts.splice(
+        //         existingSearchIndex,
+        //         pathParts.length - existingSearchIndex
+        //     );
+        // }
+        // pathParts.push(":search:" + encodeURIComponent(enteredSearch));
+        // const newUrl = "/" + pathParts.join("/");
+        const newUrl = "/:search:" + encodeURIComponent(enteredSearch);
         setEnteredSearch(""); // otherwise we get an infinite loop when rendered as part of the new page
         if (replaceInHistory) {
             history.replace(newUrl);
