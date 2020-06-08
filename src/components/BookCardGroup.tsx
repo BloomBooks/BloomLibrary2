@@ -176,6 +176,10 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
                     // we don't know yet how many rows we might get if rows>1, but at least leave room for one
                     min-height: ${commonUI.bookCardHeightPx +
                     commonUI.bookGroupTopMarginPx}px;
+                    // hide the scroll buttons except for the row that has the pointer
+                    .swiper-container:not(:hover) .swiper-button {
+                        display: none;
+                    }
                 `}
             >
                 <h1>
