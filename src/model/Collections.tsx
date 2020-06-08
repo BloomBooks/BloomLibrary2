@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { IFilter } from "../IFilter";
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
 import { getLanguageNamesFromCode, ILanguage } from "./Language";
@@ -223,12 +223,47 @@ export function useGetCollectionFromContentful(
     collectionName: string
 ): IContenfulCollectionQueryResponse {
     const { languagesByBookCount: languages } = useContext(CachedTablesContext);
-    const { data, error, fetched, loading } = useContentful({
+    // bizarrely, contentful sometimes returns no collection, no error,
+    // loading false, and fetched true even though there is a collection
+    // for the requested ID. Soon after, another render occurs with the
+    // collection. These three variables help us cope with this.
+    const [startTime, setStartTime] = useState(new Date().getTime());
+    const [cancelTimeout, setCancelTimeout] = useState<
+        NodeJS.Timeout | undefined
+    >();
+    const [oldCollectionName, setOldCollectionName] = useState("");
+    const clearCancelTimeout = () => {
+        if (cancelTimeout) {
+            clearTimeout(cancelTimeout);
+        }
+    };
+    useEffect(() => {
+        // Called whenever we change collectionName, this sets various state
+        // to help us detect spurious results indicating that the collection
+        // is missing.
+        const startAt = new Date().getTime();
+        console.log(`start time for ${collectionName} set to ` + startAt);
+        setStartTime(startAt);
+        setOldCollectionName(collectionName);
+        clearCancelTimeout();
+        // Moving this into clearCancelTimeout() will cause unnecessary renders.
+        // But here we're changing state anyway, and we need to forget any
+        // timeout that belongs to a previous collection so we know to start
+        // a new one for this if we get a spurious failure.
+        if (cancelTimeout) {
+            setCancelTimeout(undefined);
+        }
+    }, [collectionName]);
+    console.log(
+        `calling useContentFul for ${collectionName} at ` + new Date().getTime()
+    );
+    const response = useContentful({
         contentType: "collection",
         query: {
             "fields.urlKey": `${collectionName}`,
         },
     });
+    const { data, error, fetched, loading } = response;
     if (loading || !fetched) {
         return { collection: undefined, loading: true };
     }
@@ -243,6 +278,8 @@ export function useGetCollectionFromContentful(
     let collection: ICollection;
     //console.log(JSON.stringify(data));
 
+    let result: IContenfulCollectionQueryResponse | undefined;
+
     // If Contentful didn't have a match, we can still generate a collection data structure for certain
     // things, e.g. languages, topics, search, etc.
     if (!data || (data as any).items.length === 0) {
@@ -256,25 +293,65 @@ export function useGetCollectionFromContentful(
             // from the main database.
             collectionIso = collectionName.substring("language:".length);
             collection = makeLanguageCollection(collectionIso, languages);
-            return { collection, loading: false };
+            result = { collection, loading: false };
         } else if (collectionName.startsWith("topic:")) {
             // topic collections currently are generated from the fixed list above.
             // the master "topics" collection is real (so it can be included at the
             // right place in its parent) but its children are inserted by another special case.
             const topicName = collectionName.substring("topic:".length);
             collection = makeTopicCollection(topicName);
-            return { collection, loading: false };
+            result = { collection, loading: false };
         } else if (collectionName.startsWith("search:")) {
             // search collections are generated from a search string the user typed.
             const searchFor = collectionName.substring("search:".length);
             collection = makeCollectionForSearch(searchFor);
-            return { collection, loading: false };
+            result = { collection, loading: false };
         } else if (collectionName.startsWith("phash:")) {
             // search collections are generated from a search string the user typed.
             const phash = collectionName.substring("phash:".length);
             collection = makeCollectionForPHash(phash);
-            return { collection, loading: false };
+            result = { collection, loading: false };
         } else {
+            const now = new Date().getTime();
+            console.log(
+                `got possibly spurious fail for ${collectionName} at ` + now
+            );
+            // We need two ways of detecting a spurious missing collection.
+            // First, if collectionName is not the same as oldCollectionName,
+            // then we got the spurious missing collection notification in the
+            // exact same render as we requested it (by changing the collectionName
+            // we pass to useContentful). That is, the useEffect that sets both
+            // oldCollectionname and startTime has not been run for this collectionName.
+            // That is certainly a spurious missing collection report!
+            // The second one is more arbitrary and may actually be unnecessary;
+            // I've only for sure noted the spurious missing collection report
+            // in the same render that requested the collection. The idea is that
+            // any missing collection report in the first second after we requested
+            // it is suspect; instead of passing it on we will report that we're
+            // still loading, but start a timeout that can report a real failure
+            // if we don't get a successful result in a later render.
+            if (
+                collectionName !== oldCollectionName ||
+                now - startTime < 1000
+            ) {
+                // assume we're still loading..but we need another render
+                // if we don't eventually get the collection.
+                if (!cancelTimeout) {
+                    setCancelTimeout(
+                        setTimeout(() => setCancelTimeout(undefined), 1000)
+                    );
+                }
+                console.log(
+                    `returned spurious loading for ${collectionName} at ` +
+                        new Date().getTime()
+                );
+                return { loading: true };
+            }
+            clearCancelTimeout();
+            console.log(
+                `returned final fail for ${collectionName} at ` +
+                    new Date().getTime()
+            );
             return { loading: false };
         }
     } else {
@@ -286,7 +363,17 @@ export function useGetCollectionFromContentful(
             // we currently generate the subcollections for this.
             collection.childCollections = makeTopicSubcollections();
         }
-        return { collection, loading: false };
+        result = { collection, loading: false };
         //console.log(JSON.stringify(collection));
     }
+    // all paths that lead here have obtained a collection successfully,
+    // so we no longer need an extra render to possibly report it missing.
+    clearCancelTimeout();
+    return result;
 }
+
+export const QueryStateContext = React.createContext<{
+    activeContentfulQueries: number;
+}>({
+    activeContentfulQueries: 0,
+});
