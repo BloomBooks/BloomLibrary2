@@ -127,7 +127,7 @@ export const SearchBox: React.FunctionComponent<{
 
     const cancelSearch = () => {
         setSearchString("");
-        if (location.search) {
+        if (location.pathname.indexOf(":search:") >= 0) {
             history.goBack();
         }
     };
