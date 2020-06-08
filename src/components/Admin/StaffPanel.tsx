@@ -23,6 +23,7 @@ import {
     FeaturesChooser,
 } from "./StaffMultiChoosers";
 import { Prompt } from "react-router-dom";
+import { commonUI } from "../../theme";
 
 interface IProps {
     book: Book;
@@ -119,6 +120,8 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
         <div
             css={css`
                 width: 100%;
+                display: flex;
+                flex-direction: column;
             `}
         >
             <Prompt
@@ -134,6 +137,17 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                 when={modified}
                 message="Please save your changes or Cancel"
             />
+            <a
+                href={`mailto:${props.book.uploader?.username}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                css={css`
+                    margin-left: auto;
+                    color: ${commonUI.colors.bloomBlue};
+                `}
+            >
+                {props.book.uploader?.username}
+            </a>
             <div
                 id="apTopRow"
                 css={css`
