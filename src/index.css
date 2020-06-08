@@ -3,10 +3,6 @@ body,
 #root {
     height: 100%;
 }
-.App {
-    display: flex;
-    flex-direction: column;
-}
 body {
     margin: 0;
     padding: 0;
@@ -42,11 +38,6 @@ h2 {
 ul {
     list-style: none;
     padding: 0;
-}
-
-.App {
-    margin-left: 0;
-    height: 100%;
 }
 
 a:hover {

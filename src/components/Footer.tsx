@@ -14,6 +14,7 @@ export const Footer: React.FunctionComponent = () => {
     const separator = (
         <span
             css={css`
+                flex-shrink: 0; //https://css-tricks.com/couple-takes-sticky-footer/
                 width: 20px;
                 display: inline-block;
                 text-align: center;
