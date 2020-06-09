@@ -25,7 +25,7 @@ export const KeywordLinks: React.FunctionComponent<{
                             <span>
                                 <Link
                                     color="secondary"
-                                    href={`/?title=search%20for%20"${keyword}"&pageType=grid&filter%5BkeywordsText%5D=${keyword}`}
+                                    href={`/:keyword:${keyword}`}
                                 >
                                     {keyword}
                                 </Link>

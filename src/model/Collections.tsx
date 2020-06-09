@@ -264,6 +264,10 @@ export function useGetCollectionFromContentful(
             const topicName = collectionName.substring("topic:".length);
             collection = makeTopicCollection(topicName);
             return { collection, loading: false };
+        } else if (collectionName.startsWith("keyword:")) {
+            const keyword = collectionName.substring("keyword:".length);
+            collection = makeCollectionForKeyword(keyword);
+            return { collection, loading: false };
         } else if (collectionName.startsWith("search:")) {
             // search collections are generated from a search string the user typed.
             const searchFor = collectionName.substring("search:".length);
@@ -289,4 +293,37 @@ export function useGetCollectionFromContentful(
         return { collection, loading: false };
         //console.log(JSON.stringify(collection));
     }
+}
+
+export function makeCollectionForKeyword(
+    keyword: string,
+    baseCollection?: ICollection
+): ICollection {
+    const filter: IFilter = {
+        ...baseCollection?.filter,
+        keywordsText: keyword,
+    };
+    let label = "Books with keyword " + keyword;
+    if (baseCollection?.label) {
+        label = baseCollection.label + " - " + label;
+    }
+
+    let urlKey = "keyword:" + keyword;
+    if (baseCollection?.urlKey) {
+        urlKey = baseCollection.urlKey + "/" + urlKey;
+    }
+    // Enhance: how can we append "- keyword" to title, given that it's some unknown
+    // contentful representation of a rich text?
+    const result = {
+        ...baseCollection,
+        filter,
+        label,
+        title: label,
+        urlKey,
+        childCollections: [],
+        banner: "Qm03fkNd1PWGX3KGxaZ2v",
+        iconForCardAndDefaultBanner: "",
+        layout: "by-level",
+    };
+    return result;
 }

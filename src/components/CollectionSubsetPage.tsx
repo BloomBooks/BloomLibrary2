@@ -12,6 +12,7 @@ import {
     ICollection,
     makeCollectionForSearch,
     useGetCollectionFromContentful,
+    makeCollectionForKeyword,
 } from "../model/Collections";
 import { makeCollectionForTopic, ByTopicsGroups } from "./ByTopicsGroups";
 
@@ -44,6 +45,12 @@ export function generateCollectionFromFilters(
                     break;
                 case "search":
                     filteredCollection = makeCollectionForSearch(
+                        decodeURIComponent(parts[1]),
+                        filteredCollection
+                    );
+                    break;
+                case "keyword":
+                    filteredCollection = makeCollectionForKeyword(
                         decodeURIComponent(parts[1]),
                         filteredCollection
                     );
