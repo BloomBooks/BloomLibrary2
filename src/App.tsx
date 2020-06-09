@@ -22,6 +22,7 @@ import {
     bloomDesktopAvailable,
     bloomReaderAvailable,
     cantUseBloomD,
+    mobile,
 } from "./components/OSFeaturesContext";
 import { Alert, AlertTitle } from "@material-ui/lab";
 import { Header } from "./components/header/Header";
@@ -93,6 +94,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                             bloomDesktopAvailable,
                             bloomReaderAvailable,
                             cantUseBloomD,
+                                mobile,
                         }}
                     >
                         {window.location.hostname === "localhost" || (

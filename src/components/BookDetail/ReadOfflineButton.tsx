@@ -8,64 +8,68 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import BloomPubIcon from "./BloomPubWhite.svg";
 import { commonUI } from "../../theme";
+import { getArtifactUrl, ArtifactType } from "./ArtifactHelper";
+import { Book } from "../../model/Book";
 
 interface IProps {
-    id: string;
+    book: Book;
     fullWidth?: boolean;
 }
-export const ReadOfflineButton: React.FunctionComponent<IProps> = props => {
+export const ReadOfflineButton: React.FunctionComponent<IProps> = (props) => {
     return (
-        <Button
-            variant="contained"
-            color="secondary"
-            startIcon={
-                <img
-                    src={BloomPubIcon}
-                    alt="bloom reader document"
-                    css={css`
-                        width: 35px;
-                        margin-right: 10px;
-                    `}
-                />
-            }
-            size="large"
-            css={css`
-                width: ${props.fullWidth
-                    ? "100%"
-                    : commonUI.detailViewMainButtonWidth};
-                height: ${commonUI.detailViewMainButtonHeight};
-                margin-bottom: 10px !important;
-                float: right;
-            `}
-            onClick={() => alert("TODO: not implemented yet")}
-        >
-            <div>
-                <h1
-                    css={css`
-                        margin-bottom: 0;
-                        margin-top: 0;
-                    `}
-                >
-                    <p
+        // A link to download the .bloomd file
+        <a href={getArtifactUrl(props.book, ArtifactType.bloomReader)}>
+            <Button
+                variant="contained"
+                color="secondary"
+                startIcon={
+                    <img
+                        src={BloomPubIcon}
+                        alt="bloom reader document"
+                        css={css`
+                            width: 35px;
+                            margin-right: 10px;
+                        `}
+                    />
+                }
+                size="large"
+                css={css`
+                    width: ${props.fullWidth
+                        ? "100%"
+                        : commonUI.detailViewMainButtonWidth};
+                    height: ${commonUI.detailViewMainButtonHeight};
+                    margin-bottom: 10px !important;
+                    float: right;
+                `}
+            >
+                <div>
+                    <h1
                         css={css`
                             margin-bottom: 0;
                             margin-top: 0;
                         `}
                     >
-                        READ OFFLINE
+                        <p
+                            css={css`
+                                margin-bottom: 0;
+                                margin-top: 0;
+                            `}
+                        >
+                            READ OFFLINE
+                        </p>
+                    </h1>
+                    <p
+                        css={css`
+                            margin-bottom: 0;
+                            margin-top: 0;
+                            font-size: 9px;
+                            text-transform: none;
+                        `}
+                    >
+                        Download into Bloom Reader
                     </p>
-                </h1>
-                <p
-                    css={css`
-                        margin-bottom: 0;
-                        margin-top: 0;
-                        font-size: 9px;
-                        text-transform: none;
-                    `}
-                >
-                    Download into Bloom Reader
-                </p>
-            </div>
-        </Button>
+                </div>
+            </Button>
+        </a>
     );
 };

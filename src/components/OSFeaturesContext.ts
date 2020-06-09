@@ -1,10 +1,13 @@
 import React from "react";
 
 export const bloomDesktopAvailable =
-    navigator.appVersion.indexOf("Win") >= 0 ||
-    navigator.appVersion.indexOf("Linux") >= 0;
-export const bloomReaderAvailable =
-    navigator.appVersion.indexOf("Android") >= 0;
+    (navigator.appVersion.indexOf("Win") >= 0 ||
+        navigator.appVersion.indexOf("Linux") >= 0) &&
+    // Running on Android will also include "Linux"
+    navigator.appVersion.indexOf("Android") < 0;
+
+const android = navigator.appVersion.indexOf("Android") >= 0;
+export const bloomReaderAvailable = android;
 // From discussion at https://stackoverflow.com/questions/9038625/detect-if-device-is-ios.
 // This will NOT detect an ipad running IOS 13 in desktop mode, which is probably what we
 // want, since the current application is hiding the bloomd download on non-desktop devices
@@ -18,8 +21,11 @@ const ios = /^(iPhone|iPad|iPod)/.test(navigator.platform);
 // and ever-changing. And currently all we're doing is hiding a button, so it's not all
 // that important to do so on every possible mobile device. Of course, we REALLY
 // don't want to prevent downloading a bloomd on anything that can run BloomReader,
-// but cantUserBloomD is currently only relevant if bloomReaderAvailable is false.
+// but cantUseBloomD is currently only relevant if bloomReaderAvailable is false.
 export const cantUseBloomD = ios;
+// We hide disabled download buttons on mobile (touch) devices because it not
+// easily discoverable why a button is disabled.
+export const mobile = android || ios;
 // This context allows anyone interested to find out whether the OS on which the
 // user is running has support for bloom desktop (e.g., to hide a download/translate
 // button) and whether it has bloomReader support (and so downloading for that should
@@ -28,8 +34,10 @@ export const OSFeaturesContext = React.createContext<{
     bloomDesktopAvailable: boolean;
     bloomReaderAvailable: boolean;
     cantUseBloomD: boolean;
+    mobile: boolean;
 }>({
     bloomDesktopAvailable,
     bloomReaderAvailable,
-    cantUseBloomD
+    cantUseBloomD,
+    mobile,
 });

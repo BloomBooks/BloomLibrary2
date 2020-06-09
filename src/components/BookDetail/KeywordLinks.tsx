@@ -1,9 +1,11 @@
 import { Book } from "../../model/Book";
 import { Link } from "@material-ui/core";
+import { observer } from "mobx-react";
 import React from "react";
+
 export const KeywordLinks: React.FunctionComponent<{
     book: Book;
-}> = (props) => {
+}> = observer((props) => {
     if (props.book.keywords?.length > 0) {
         return (
             <span>
@@ -37,4 +39,4 @@ export const KeywordLinks: React.FunctionComponent<{
     } else {
         return null;
     }
-};
+});
