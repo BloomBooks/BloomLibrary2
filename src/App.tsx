@@ -113,7 +113,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                 >
                                     <Routes />
                                 </div>
-                                <Footer />
+                                {embeddedMode || <Footer />}
                             </Router>
                         </ContentfulContext>
                     </OSFeaturesContext.Provider>
