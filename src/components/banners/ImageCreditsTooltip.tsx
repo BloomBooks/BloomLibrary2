@@ -25,6 +25,8 @@ export const ImageCreditsTooltip: React.FunctionComponent<{
             aria-label="Image Credits"
             css={css`
                 padding: 0;
+                margin-left: auto !important;
+                margin-top: auto !important;
             `}
         >
             <InfoIcon
