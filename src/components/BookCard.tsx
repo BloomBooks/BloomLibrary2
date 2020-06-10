@@ -3,7 +3,7 @@ import css from "@emotion/css/macro";
 // these two make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { CheapCard } from "./CheapCard";
 import LazyLoad from "react-lazyload";
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
@@ -30,6 +30,7 @@ interface IProps {
 
 export const BookCard: React.FunctionComponent<IProps> = (props) => {
     const legacyStyleThumbnail = getLegacyThumbnailUrl(props.basicBookInfo);
+    const [loaded, setLoaded] = useState(false);
     const { thumbnailUrl, isModernThumbnail } = getThumbnailUrl(
         props.basicBookInfo
     );
@@ -38,6 +39,9 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
         props.basicBookInfo.allTitles,
         props.contextLangIso
     );
+    useEffect(() => {
+        setTimeout(() => setLoaded(true), 500);
+    }, []);
     const titlePadding = 3;
     const card = (
         <CheapCard
@@ -63,12 +67,16 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                     /* new thumbnails are just the image, and they look better if we see the top and lose some of the bottom
                      legacy thumbnails have title at top, so better to center them*/
                     object-position: ${isModernThumbnail ? "top" : ""};
-                    /* hides alt text while lazy loading */
+                    /* hides alt text during (most of) lazy loading */
                     &.swiper-lazy-loading {
                         visibility: hidden;
                     }
                 `}
-                alt={"book thumbnail"}
+                // When the img has no src, browser may show the alt. Very soon, swiper applies the class
+                // swiper-lazy-loading which hides it alltogether until swiper sets the src.
+                // And then fairly soon after that, hopefully we see the image.
+                // But to avoid an ugly flash of this message, we wait half a second before letting it have a value.
+                alt={loaded ? "book thumbnail" : ""}
                 // NB: if you're not getting an image, e.g. in Storybook, it might be because it's not inside of a swiper,
                 // but wasn't told to 'handle its own laziness'.
                 src={props.handleYourOwnLaziness ? thumbnailUrl : undefined}
