@@ -1,6 +1,7 @@
 import React from "react";
-import { ICollection, topics } from "../model/Collections";
+import { ICollection } from "../model/ContentInterfaces";
 import { BookCardGroup } from "./BookCardGroup";
+import { kTopicList } from "../model/ClosedVocabularies";
 
 // For each topic, show a row of books for that topic.
 // Note: very similar to ByLevelsGroup, possibly we can factor out something common.
@@ -9,7 +10,7 @@ export const ByTopicsGroups: React.FunctionComponent<{
 }> = (props) => {
     return (
         <React.Fragment>
-            {topics.map((topic) => (
+            {kTopicList.map((topic) => (
                 <BookCardGroup
                     collection={makeCollectionForTopic(props.collection, topic)}
                 />

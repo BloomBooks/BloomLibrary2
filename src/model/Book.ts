@@ -1,4 +1,4 @@
-import { observable, observe } from "mobx";
+import { observable } from "mobx";
 import {
     updateBook,
     retrieveCurrentBookData,

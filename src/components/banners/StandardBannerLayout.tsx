@@ -4,77 +4,29 @@ import React from "react"; // see https://github.com/emotion-js/emotion/issues/1
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import { ImageCreditsTooltip } from "./ImageCreditsTooltip";
-import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
-import { commonUI } from "../../theme";
 import { Breadcrumbs } from "../Breadcrumbs";
 import { BookCount } from "../BookCount";
 import { IFilter } from "../../IFilter";
-import { ICollection, splitMedia } from "../../model/Collections";
+import { ICollection, IBanner } from "../../model/ContentInterfaces";
 import { ImgWithCredits } from "../../ImgWithCredits";
-import { ButtonRow } from "../ButtonRow";
+import { Blurb } from "./Blurb";
+
+/* Enhance: This is actually still combining 2 distinct layouts, and could be profitably split up.
+    The one layout is where there is a logo; in all cases thus far, this has not background image or background color.
+    The other layout that this component supports is where there is a true background image and an overlay but no logo.
+    There is a 3rd layout, which has already been implemented as its own component:ImageOnRightBannerLayout
+*/
 export const StandardBannerLayout: React.FunctionComponent<{
-    id: string; // of the banner object on contentful
-    collection?: ICollection;
+    collection: ICollection;
+    banner: IBanner;
     filter?: IFilter;
-    bookCount?: string; // often undefined, meaning compute from filter
-    bannerFields: any;
 }> = (props) => {
-    const backgroundImage =
-        props.bannerFields?.backgroundImage?.fields?.file?.url ?? "";
-    let logoUrl = props.bannerFields?.logo?.fields?.file?.url ?? undefined;
-    let { credits: logoCredits, altText: logoAltText } = splitMedia(
-        props.bannerFields?.logo
-    );
+    const backgroundImage = props.banner.backgroundImage?.url ?? "";
+
     const textColor = backgroundImage ? "white" : "black";
 
     const darkenBackgroundImageFraction = backgroundImage ? 0.4 : 0;
-    const linkColor = backgroundImage ? "white" : commonUI.colors.bloomRed;
 
-    let bannerTitle: React.ReactNode = (
-        <React.Fragment>{props.bannerFields.title}</React.Fragment>
-    );
-    let hideTitle = props.bannerFields.hideTitle;
-    const defaultBannerIds = [
-        "Qm03fkNd1PWGX3KGxaZ2v", // default banner for others that lack one and other generated collections like search.
-        "7v95c68TL9uJBe4pP5KTN0", // default language banner
-        "7E1IHa5mYvLLSToJYh5vfW", // default topic banner
-    ];
-    if (defaultBannerIds.includes(props.id)) {
-        if (props.collection?.label) {
-            bannerTitle = (
-                <React.Fragment>{props.collection.label}</React.Fragment>
-            );
-        }
-        if (props.collection?.richTextLabel) {
-            bannerTitle = documentToReactComponents(
-                props.collection.richTextLabel
-            );
-        }
-        if (props.collection?.iconForCardAndDefaultBanner) {
-            logoUrl = props.collection.iconForCardAndDefaultBanner;
-            logoAltText = props.collection.iconAltText ?? "";
-            logoCredits = props.collection.iconCredits ?? "";
-        }
-        hideTitle = props.collection?.hideLabelOnCardAndDefaultBanner;
-    }
-
-    //const titleLines = banner.title;
-    // const secondTitleLine =
-    //     titleLines.length > 1 ? <div> {titleLines[1]}</div> : "";
-    const showLogo = logoUrl && logoUrl !== "none";
-    console.log("css: " + props.bannerFields.css);
-    let bookCount: React.ReactFragment | undefined;
-    if (props.bookCount !== undefined) {
-        // if it's an empty string, we assume it's pending real data
-        bookCount = <h2>{props.bookCount}</h2>;
-    } else if (props.filter) {
-        bookCount = (
-            <h2>
-                <BookCount filter={props.filter} />
-            </h2>
-        );
-    }
     return (
         <div
             css={css`
@@ -87,9 +39,7 @@ export const StandardBannerLayout: React.FunctionComponent<{
                 }
 
                 background-image: url(${backgroundImage});
-                background-position: ${props.bannerFields.backgroundImagePosition};
-                /* this can override any of the above*/
-                /* ${props.bannerFields.css} */
+                background-position: ${props.banner.backgroundImagePosition};
             `}
         >
             <div
@@ -111,138 +61,58 @@ export const StandardBannerLayout: React.FunctionComponent<{
                 {["root.read", "create"].includes(
                     props.collection?.urlKey!
                 ) || <Breadcrumbs />}
+
                 <div
                     css={css`
                         display: flex;
-                        flex-direction: ${logoUrl ? "row" : "column"};
+                        flex-direction: row;
+                        max-height: 260px;
                         overflow: hidden;
                     `}
                 >
-                    {showLogo && (
-                        <div
-                            css={css`
-                                display: flex;
-                                flex-direction: column;
-                                max-height: 260px;
-                            `}
-                        >
-                            <ImgWithCredits
-                                credits={logoCredits}
-                                src={logoUrl}
-                                alt={
-                                    logoAltText
-                                        ? logoAltText
-                                        : "logo for " + props.bannerFields.title
-                                }
-                                css={css`
-                                    height: 150px;
-                                    margin-right: 50px;
-                                `}
-                            />
-                            <div
-                                id="push-bookcount-down"
-                                css={css`
-                                    height: 0;
-                                    flex-grow: 1;
-                                `}
-                            />
-                            {bookCount}
-                        </div>
-                    )}
-                    <div
-                        css={css`
-                            flex-grow: 2;
-                            display: flex;
-                            flex-direction: column;
-                            color: white;
-                        `}
-                    >
-                        {hideTitle || (
-                            <h1
-                                css={css`
-                                    font-size: 36px;
-                                    margin-top: 0;
-                                    /*flex-grow: 1; // push the rest to the bottom*/
-                                    // For the sake of uniformity, the only styling we allow in richTextLabel is normal, h1, h2, and h3.
-                                    // Here we define what they will look like. H1 continues to get the default
-                                    // 36px we use for plain labels. (Review: or, make H2 that, and let H1 be a way to get bigger?)
-                                    h1 {
-                                        font-size: 36px; // rich text will produce an h1 nested inside the h1 above.
-                                    }
-                                    h2 {
-                                        font-size: 32px;
-                                        font-weight: 500; // our master style sheet makes H1 this, don't want h2 bolder
-                                    }
-                                    h3 {
-                                        font-size: 28px;
-                                        font-weight: 500;
-                                    }
-                                    p {
-                                        font-size: 24px;
-                                    }
-                                `}
-                            >
-                                {bannerTitle}
-                                {/* {titleLines[0]}
-                        //{secondTitleLine} */}
-                            </h1>
-                        )}
+                    <LogoOnBanner
+                        collection={props.collection}
+                        banner={props.banner}
+                    />
 
-                        <div
-                            css={css`
-                                font-weight: normal;
-                                max-width: 600px;
-                                margin-bottom: 10px;
-                                overflow: auto;
-                            `}
-                        >
-                            {documentToReactComponents(
-                                props.bannerFields.blurb
-                            )}
-                        </div>
-                        <div
-                            css={css`
-                                margin-top: auto;
-                                margin-bottom: 5px;
-                                display: flex;
-                                justify-content: space-between;
-                                width: 100%;
-                            `}
-                        >
-                            {!showLogo &&
-                                props.collection?.urlKey !== "new-arrivals" && (
-                                    <div
-                                        css={css`
-                                            font-size: 14pt;
-                                            margin-top: auto;
-                                        `}
-                                    >
-                                        {bookCount}
-                                    </div>
-                                )}
-                            {/* just a placeholder to push the imagecredits to the right
-                             */}
-                            <div></div>
-                            {props.bannerFields.buttonRow && (
-                                <ButtonRow
-                                    collection={
-                                        props.bannerFields.buttonRow.fields
-                                    }
-                                />
-                            )}
-                            {/* there should always be imageCredits, but they may not
-                        have arrived yet */}
-                            {props.bannerFields.imageCredits && (
-                                <ImageCreditsTooltip
-                                    imageCredits={documentToReactComponents(
-                                        props.bannerFields.imageCredits
-                                    )}
-                                />
-                            )}
-                        </div>
-                    </div>
+                    <Blurb
+                        {...props}
+                        width={"100%"}
+                        hideTitle={props.banner.hideTitle}
+                    />
                 </div>
+
+                {props.collection?.urlKey !== "new-arrivals" && (
+                    <BookCount filter={props.filter || {}} />
+                )}
             </div>
         </div>
+    );
+};
+
+// we can either show the logo explicitly defined on the banner, or fall back to one defined on the collection, or neither.
+export const LogoOnBanner: React.FunctionComponent<{
+    collection: ICollection;
+    banner: IBanner;
+}> = (props) => {
+    const logo = props.banner.logo
+        ? props.banner.logo
+        : props.collection.iconForCardAndDefaultBanner;
+    return (
+        (logo && (
+            <ImgWithCredits
+                credits={logo.credits}
+                src={logo.url}
+                alt={
+                    logo.altText
+                        ? logo.altText
+                        : "logo for " + props.banner.title
+                }
+                css={css`
+                    height: 150px;
+                    margin-right: 50px;
+                `}
+            />
+        )) || <React.Fragment></React.Fragment>
     );
 };

@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 
 import React from "react";
 import { CheapCard } from "./CheapCard";
-import { ICollection } from "../model/Collections";
+import { ICollection } from "../model/ContentInterfaces";
 
 // const image = css`
 //     height: 100px;

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import { ContentfulBanner } from "./banners/ContentfulBanner";
-import { useGetCollectionFromContentful } from "../model/Collections";
+import { useGetCollection } from "../model/Collections";
 import { RowOfCollectionCardsForKey } from "./RowOfCollectionCards";
 import { ByLevelGroups } from "./ByLevelGroups";
 import { ListOfBookGroups } from "./ListOfBookGroups";
@@ -17,7 +17,7 @@ export const CollectionPage: React.FunctionComponent<{
 }> = (props) => {
     // remains empty (and unused) except in byLanguageGroups mode, when a callback sets it.
     const [booksAndLanguages, setBooksAndLanguages] = useState("");
-    const { collection, error, loading } = useGetCollectionFromContentful(
+    const { collection, error, loading } = useGetCollection(
         props.collectionName
     );
     if (loading) {
@@ -87,7 +87,7 @@ export const CollectionPage: React.FunctionComponent<{
 
     const banner = (
         <ContentfulBanner
-            id={collection.banner}
+            id={collection.bannerId}
             collection={collection}
             filter={collection.filter}
             bookCount={

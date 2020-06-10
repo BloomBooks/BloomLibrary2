@@ -5,24 +5,21 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import { ImageCreditsTooltip } from "./ImageCreditsTooltip";
-import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { IFilter } from "../../IFilter";
-import { ICollection, splitMedia } from "../../model/Collections";
+import { IBanner, ICollection } from "../../model/ContentInterfaces";
 import { Blurb } from "./Blurb";
 import useMedia from "use-media";
 
 export const ImageOnRightBannerLayout: React.FunctionComponent<{
-    id: string; // of the banner object on contentful
-    collection?: ICollection;
+    collection: ICollection;
+    banner: IBanner;
     filter?: IFilter;
     bookCount?: string; // often undefined, meaning compute from filter
-    bannerFields: any;
 }> = (props) => {
     // don't try to show the image on phones
     const showImage = useMedia({ minWidth: "412px" }); // 1px + largest phone width in the chrome debugger
 
-    const backgroundImage =
-        props.bannerFields?.backgroundImage?.fields?.file?.url ?? "";
+    const backgroundImageUrl = props.banner.backgroundImage?.url || "";
     return (
         <div
             css={css`
@@ -34,6 +31,7 @@ export const ImageOnRightBannerLayout: React.FunctionComponent<{
                 {...props}
                 padding={"30px"}
                 width={showImage ? "500px" : "100%"}
+                hideTitle={props.banner.hideTitle}
             />
 
             {showImage && (
@@ -48,18 +46,21 @@ export const ImageOnRightBannerLayout: React.FunctionComponent<{
                             color: white;
                         }
 
-                        background-image: url(${backgroundImage});
-                        background-position: ${props.bannerFields
+                        background-image: url(${backgroundImageUrl});
+                        background-position: ${props.banner
                             .backgroundImagePosition};
                     `}
                 >
                     {/* there should always be imageCredits, but they may not
                         have arrived yet */}
-                    {props.bannerFields.imageCredits && (
+                    {props.banner.backgroundImage?.credits && (
                         <ImageCreditsTooltip
-                            imageCredits={documentToReactComponents(
-                                props.bannerFields.imageCredits
-                            )}
+                            imageCredits={
+                                // we could make this markdown eventually but for now it's just a string
+                                <span>
+                                    props.banner.backgroundImage?.credits
+                                </span>
+                            }
                         />
                     )}
                 </div>

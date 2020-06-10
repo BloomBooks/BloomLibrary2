@@ -16,6 +16,7 @@ import { ContentfulBanner } from "./banners/ContentfulBanner";
 import { CollectionPage } from "./CollectionPage";
 import { Footer } from "./Footer";
 import { ContentfulPage } from "./ContentfulPage";
+import { makeTopicCollection } from "../model/Collections";
 
 // The main set of switches that loads differnt things into the main content area of Blorg
 // based on the current window location.
@@ -48,7 +49,10 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                                 height: 500px;
                             `}
                         >
-                            <ContentfulBanner id={match.params.id} />
+                            <ContentfulBanner
+                                id={match.params.id}
+                                collection={makeTopicCollection("Agriculture")}
+                            />
                         </div>
                         <Footer />
                     </React.Fragment>

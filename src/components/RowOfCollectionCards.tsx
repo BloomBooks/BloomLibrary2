@@ -1,19 +1,15 @@
 import React from "react";
-import {
-    ICollection,
-    useGetCollectionFromContentful,
-} from "../model/Collections";
+import { useGetCollection } from "../model/Collections";
 import { CardGroup } from "./CardGroup";
 import { CollectionCard } from "./CollectionCard";
 import { BookCardGroup } from "./BookCardGroup";
 import { PageNotFound } from "./PageNotFound";
+import { ICollection } from "../model/ContentInterfaces";
 
 export const RowOfCollectionCardsForKey: React.FunctionComponent<{
     urlKey: string;
 }> = (props) => {
-    const { collection, error, loading } = useGetCollectionFromContentful(
-        props.urlKey
-    );
+    const { collection, error, loading } = useGetCollection(props.urlKey);
     if (loading) {
         return null;
     }
@@ -64,7 +60,7 @@ export const RowOfCollectionCards: React.FunctionComponent<{
                 filter={childCollection.filter}
                 target={`/${key}`}
                 //pageType={props.bookShelfCategory}
-                img={childCollection.iconForCardAndDefaultBanner}
+                img={childCollection.iconForCardAndDefaultBanner?.url || ""}
                 credits={childCollection.iconCredits}
                 altText={childCollection.iconAltText}
             />

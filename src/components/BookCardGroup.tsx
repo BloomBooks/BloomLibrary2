@@ -17,7 +17,7 @@ import {
 import { BookCard } from "./BookCard";
 import { MoreCard } from "./MoreCard";
 import { CardSwiper } from "./CardSwiper";
-import { ICollection } from "../model/Collections";
+import { ICollection } from "../model/ContentInterfaces";
 
 interface IProps {
     title?: string;

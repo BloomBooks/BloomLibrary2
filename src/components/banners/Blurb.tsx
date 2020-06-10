@@ -4,40 +4,17 @@ import React from "react"; // see https://github.com/emotion-js/emotion/issues/1
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import { ImageCreditsTooltip } from "./ImageCreditsTooltip";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
-import { BookCount } from "../BookCount";
-import { IFilter } from "../../IFilter";
-import { ICollection, splitMedia } from "../../model/Collections";
+import { ICollection, IBanner } from "../../model/ContentInterfaces";
 import { ButtonRow } from "../ButtonRow";
 
 export const Blurb: React.FunctionComponent<{
-    id: string; // of the banner object on contentful
-    collection?: ICollection;
-    filter?: IFilter;
-    bookCount?: string; // often undefined, meaning compute from filter
-    bannerFields: any;
+    collection: ICollection;
+    banner: IBanner;
     width?: string;
     padding?: string;
+    hideTitle: boolean;
 }> = (props) => {
-    let bookCount: React.ReactFragment | undefined;
-    if (props.bookCount !== undefined) {
-        // if it's an empty string, we assume it's pending real data
-        bookCount = <h2>{props.bookCount}</h2>;
-    } else if (props.filter) {
-        bookCount = (
-            <h2>
-                <BookCount filter={props.filter} />
-            </h2>
-        );
-    }
-    // logo is not supported in this layout    let logoUrl = props.bannerFields?.logo?.fields?.file?.url ?? undefined;
-    // let { credits: logoCredits, altText: logoAltText } = splitMedia(
-    //     props.bannerFields?.logo
-    // );
-    const bannerTitle: React.ReactNode = (
-        <React.Fragment>{props.bannerFields.title}</React.Fragment>
-    );
     return (
         <div
             css={css`
@@ -49,6 +26,67 @@ export const Blurb: React.FunctionComponent<{
                 padding: ${props.padding};
             `}
         >
+            {props.hideTitle || <CollectionTitle {...props} />}
+
+            <div
+                css={css`
+                    font-weight: normal;
+                    max-width: 600px;
+                    margin-bottom: 10px;
+                    overflow: auto;
+                `}
+            >
+                {documentToReactComponents(
+                    props.banner.blurb as any //actually we know it's a "Document", but that type is not exported
+                )}
+            </div>
+            <div
+                css={css`
+                    margin-top: auto;
+                    margin-bottom: 5px;
+                    display: flex;
+                    justify-content: space-between;
+                    width: 100%;
+                `}
+            >
+                {/* just a placeholder to push the imagecredits to the right
+                 */}
+                <div></div>
+                {props.banner.buttonRow && (
+                    <ButtonRow collection={props.banner.buttonRow.fields} />
+                )}
+            </div>
+        </div>
+    );
+};
+
+const CollectionTitle: React.FunctionComponent<{
+    collection: ICollection;
+    banner: IBanner;
+    width?: string;
+    padding?: string;
+    hideTitle: boolean;
+}> = (props) => {
+    let bannerTitle: React.ReactNode = (
+        <React.Fragment>{props.banner.title}</React.Fragment>
+    );
+
+    // e.g. we have collection with titles [Default banner], [Default topic banner], [Default Language Banner].
+    if (props.banner.title.startsWith("[Default")) {
+        // enhance: move to IBanner.useCollectionLabel
+        if (props.collection?.label) {
+            bannerTitle = (
+                <React.Fragment>{props.collection.label}</React.Fragment>
+            );
+        }
+        if (props.collection?.richTextLabel) {
+            bannerTitle = documentToReactComponents(
+                props.collection.richTextLabel
+            );
+        }
+    }
+    return (
+        (!props.hideTitle && (
             <h1
                 css={css`
                     font-size: 36px;
@@ -75,79 +113,6 @@ export const Blurb: React.FunctionComponent<{
             >
                 {bannerTitle}
             </h1>
-
-            <div
-                css={css`
-                    font-weight: normal;
-                    max-width: 600px;
-                    margin-bottom: 10px;
-                    overflow: auto;
-                `}
-            >
-                {documentToReactComponents(props.bannerFields.blurb)}
-            </div>
-            <div
-                css={css`
-                    margin-top: auto;
-                    margin-bottom: 5px;
-                    display: flex;
-                    justify-content: space-between;
-                    width: 100%;
-                `}
-            >
-                {props.collection?.urlKey !== "new-arrivals" && (
-                    <div
-                        css={css`
-                            font-size: 14pt;
-                            margin-top: auto;
-                        `}
-                    >
-                        {bookCount}
-                    </div>
-                )}
-                {/* just a placeholder to push the imagecredits to the right
-                 */}
-                <div></div>
-                {props.bannerFields.buttonRow && (
-                    <ButtonRow
-                        collection={props.bannerFields.buttonRow.fields}
-                    />
-                )}
-            </div>
-        </div>
-    );
-};
-export const ImageOnRightBannerLayout: React.FunctionComponent<{
-    id: string; // of the banner object on contentful
-    collection?: ICollection;
-    filter?: IFilter;
-    bookCount?: string; // often undefined, meaning compute from filter
-    bannerFields: any;
-}> = (props) => {
-    //const linkColor = sideImage ? "white" : commonUI.colors.bloomRed;
-
-    console.log("css: " + props.bannerFields.css);
-
-    return (
-        <React.Fragment>
-            <Blurb {...props} />
-            <div
-                css={css`
-                    display: flex;
-                    flex-direction: column;
-                    overflow: hidden;
-                `}
-            >
-                {/* there should always be imageCredits, but they may not
-                        have arrived yet */}
-                {props.bannerFields.imageCredits && (
-                    <ImageCreditsTooltip
-                        imageCredits={documentToReactComponents(
-                            props.bannerFields.imageCredits
-                        )}
-                    />
-                )}
-            </div>
-        </React.Fragment>
+        )) || <React.Fragment />
     );
 };

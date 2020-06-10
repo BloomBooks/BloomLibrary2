@@ -1,10 +1,11 @@
 import { useContext } from "react";
-import { IFilter } from "../IFilter";
-import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
 import { getLanguageNamesFromCode, ILanguage } from "./Language";
 import { useContentful } from "react-contentful";
 import { CachedTablesContext } from "../App";
-import { Document } from "@contentful/rich-text-types";
+import { ICollection } from "./ContentInterfaces";
+import { convertContentfulCollectionToICollection } from "./Contentful";
+import { kTopicList } from "./ClosedVocabularies";
+import { IFilter } from "../IFilter";
 
 /* From original design: Each collection has
     id
@@ -23,91 +24,6 @@ import { Document } from "@contentful/rich-text-types";
         Blurb
 */
 
-// This mostly corresponds to the fields of a Collection from Contentful.
-// Some of the raw data we get from there gets processed to make simpler fields here.
-export interface ICollection {
-    banner: string; // contentful ID of banner object. (fields.banner.id)
-    layout: string; // from layout.fields.name
-    order?: string; // suitable for parse server order: param (e.g., -createdAt)
-
-    urlKey: string; // used in react router urls; can be used to look up in contentful
-    label: string; // used in subheadings and cards
-    richTextLabel?: Document; // rich text
-    filter: IFilter;
-    iconForCardAndDefaultBanner: string; // url
-    iconCredits?: string;
-    iconAltText?: string;
-    hideLabelOnCardAndDefaultBanner?: boolean;
-    childCollections: ICollection[]; // only the top level will have these
-    // When the filter cannot be fully defined as simple json in a Contentful collection (interpreted by ParseServer).
-    // E.g., we need to run code like getBestLevelStringOrEmpty() to get at the filter
-    secondaryFilter?: (basicBookInfo: IBasicBookInfo) => boolean;
-}
-
-function convertContentfulFieldsToICollection(fields: any): ICollection {
-    // if (!fields || !fields.urlKey) {
-    //     return undefined;
-    // }
-    let order: string | undefined;
-    switch (fields.bookSortOrder) {
-        case "newest-first":
-            order = "-createdAt";
-            break;
-    }
-    let bannerId = fields.banner?.sys?.id;
-    if (!bannerId) {
-        if (fields.urlKey.startsWith("language:")) {
-            bannerId = "7v95c68TL9uJBe4pP5KTN0"; // also in makeLanguageCollection
-        } else if (fields.urlKey.startsWith("topic:")) {
-            bannerId = "7E1IHa5mYvLLSToJYh5vfW"; // also in makeTopicCollection
-        } else {
-            bannerId = "Qm03fkNd1PWGX3KGxaZ2v";
-        }
-    }
-    const { credits: iconCredits, altText: iconAltText } = splitMedia(
-        fields?.iconForCardAndDefaultBanner
-    );
-    const result: ICollection = {
-        urlKey: fields.urlKey as string,
-        label: fields.label,
-        richTextLabel: fields.richTextLabel,
-        filter: fields.filter,
-        iconForCardAndDefaultBanner:
-            fields?.iconForCardAndDefaultBanner?.fields?.file?.url,
-        iconCredits,
-        iconAltText,
-        hideLabelOnCardAndDefaultBanner: fields.hideLabelOnCardAndDefaultBanner,
-        childCollections: getSubCollections(fields.childCollections),
-        banner: bannerId,
-        layout: fields.layout?.fields?.name || "by-level",
-        order,
-    };
-
-    return result;
-}
-
-export function splitMedia(media: any): { credits: string; altText: string } {
-    if (!media?.fields?.description) {
-        return { credits: "", altText: "" };
-    }
-    const parts = (media.fields.description as string).split("Credits:");
-    return { altText: parts[0].trim(), credits: (parts[1] ?? "").trim() };
-}
-
-function getSubCollections(childCollections: any[]): ICollection[] {
-    if (!childCollections) {
-        return [];
-    }
-    // The final map here is a kludge to convince typescript that filtering out
-    // the undefined elements yields a collection without any undefineds.
-    return (
-        childCollections
-            .map((x: any) => convertContentfulFieldsToICollection(x.fields))
-            //.filter((y) => y)
-            .map((z) => z!)
-    );
-}
-
 // If we don't find a contentful collection for language:xx, we create one.
 export function makeLanguageCollection(
     langCode: string,
@@ -120,38 +36,21 @@ export function makeLanguageCollection(
         urlKey: "language:" + langCode,
         label: languageDisplayName,
         childCollections: [],
-        banner: "7v95c68TL9uJBe4pP5KTN0", // default language banner
-        iconForCardAndDefaultBanner: "", // I think this will be unused so can stay blank
+        bannerId: "7v95c68TL9uJBe4pP5KTN0", // default language banner
+        iconForCardAndDefaultBanner: undefined, // I think this will be unused so can stay blank
         filter: { language: langCode },
         layout: "by-level",
     };
 }
 
-export const topics = [
-    "Agriculture",
-    "Animal Stories",
-    "Business",
-    "Dictionary",
-    "Environment",
-    "Primer",
-    "Math",
-    "Culture",
-    "Science",
-    "Story Book",
-    "Traditional Story",
-    "Health",
-    "Personal Development",
-    "Spiritual",
-];
-
-function makeTopicCollection(topicName: string): ICollection {
+export function makeTopicCollection(topicName: string): ICollection {
     return {
         urlKey: "topic:" + topicName,
         label: topicName,
         childCollections: [],
         filter: { topic: topicName },
-        banner: "7E1IHa5mYvLLSToJYh5vfW", // standard default for topics
-        iconForCardAndDefaultBanner: "none",
+        bannerId: "7E1IHa5mYvLLSToJYh5vfW", // standard default for topics
+        iconForCardAndDefaultBanner: undefined,
         layout: "by-level",
     };
 }
@@ -177,8 +76,8 @@ export function makeCollectionForSearch(
         label,
         urlKey,
         childCollections: [],
-        banner: "Qm03fkNd1PWGX3KGxaZ2v",
-        iconForCardAndDefaultBanner: "",
+        bannerId: "Qm03fkNd1PWGX3KGxaZ2v",
+        iconForCardAndDefaultBanner: undefined,
         layout: "by-level",
     };
     return result;
@@ -197,15 +96,15 @@ export function makeCollectionForPHash(phash: string): ICollection {
         label,
         urlKey,
         childCollections: [],
-        banner: "Qm03fkNd1PWGX3KGxaZ2v", // default
-        iconForCardAndDefaultBanner: "",
+        bannerId: "Qm03fkNd1PWGX3KGxaZ2v", // default
+        iconForCardAndDefaultBanner: undefined,
         layout: "by-level",
     };
     return result;
 }
 
 function makeTopicSubcollections(): ICollection[] {
-    return topics.map((t) => makeTopicCollection(t));
+    return kTopicList.map((t) => makeTopicCollection(t));
 }
 
 interface IContenfulCollectionQueryResponse {
@@ -219,7 +118,7 @@ interface IContenfulCollectionQueryResponse {
 // When the query is complete a state change will cause it to be called again and return a useful
 // result.
 // In some cases, if a collection is not found on contentful, it is generated by code here.
-export function useGetCollectionFromContentful(
+export function useGetCollection(
     collectionName: string
 ): IContenfulCollectionQueryResponse {
     const { languagesByBookCount: languages } = useContext(CachedTablesContext);
@@ -283,7 +182,7 @@ export function useGetCollectionFromContentful(
         }
     } else {
         // usual case, got collection from contentful
-        collection = convertContentfulFieldsToICollection(
+        collection = convertContentfulCollectionToICollection(
             (data as any).items[0].fields
         );
         if (collection.urlKey === "topics") {
@@ -314,16 +213,14 @@ export function makeCollectionForKeyword(
     }
     // Enhance: how can we append "- keyword" to title, given that it's some unknown
     // contentful representation of a rich text?
-    const result = {
+    return {
         ...baseCollection,
         filter,
         label,
-        title: label,
         urlKey,
         childCollections: [],
-        banner: "Qm03fkNd1PWGX3KGxaZ2v",
-        iconForCardAndDefaultBanner: "",
+        bannerId: "Qm03fkNd1PWGX3KGxaZ2v",
+        iconForCardAndDefaultBanner: undefined,
         layout: "by-level",
     };
-    return result;
 }

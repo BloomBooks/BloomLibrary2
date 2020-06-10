@@ -21,6 +21,7 @@ const prod: IConnection = {
     },
     url: "https://bloom-parse-server-production.azurewebsites.net/parse/",
 };
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const dev: IConnection = {
     headers: {
         "Content-Type": "text/json",

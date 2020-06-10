@@ -7,9 +7,7 @@ import { jsx } from "@emotion/core";
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
 import { useLocation, Link } from "react-router-dom";
-import { useGetCollectionFromContentful } from "../model/Collections";
-import QueryString from "qs";
-import { commonUI } from "../theme";
+import { useGetCollection } from "../model/Collections";
 import { splitPathname } from "./Routes";
 
 export const Breadcrumbs: React.FunctionComponent = () => {
@@ -161,9 +159,7 @@ const CollectionCrumb: React.FunctionComponent<{
     collectionName: string;
     previousBreadcrumbs: string[];
 }> = (props) => {
-    const { collection, error } = useGetCollectionFromContentful(
-        props.collectionName
-    );
+    const { collection, error } = useGetCollection(props.collectionName);
     if (error) {
         console.log(error);
     }

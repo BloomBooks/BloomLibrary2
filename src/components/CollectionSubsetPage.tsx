@@ -3,18 +3,18 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React, { useContext } from "react";
+import React from "react";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { ListOfBookGroups } from "./ListOfBookGroups";
 import { ByLevelGroups, makeCollectionForLevel } from "./ByLevelGroups";
 import { BookCardGroup } from "./BookCardGroup";
 import {
-    ICollection,
     makeCollectionForSearch,
-    useGetCollectionFromContentful,
     makeCollectionForKeyword,
+    useGetCollection,
 } from "../model/Collections";
 import { makeCollectionForTopic, ByTopicsGroups } from "./ByTopicsGroups";
+import { ICollection } from "../model/ContentInterfaces";
 
 // Given a collection and a string like level:1/topic:anthropology/search:dogs,
 // creates a corresponding collection by adding appropriate filters.
@@ -78,7 +78,7 @@ export const CollectionSubsetPage: React.FunctionComponent<{
 
     filters: string[]; // may result in automatically-created subcollections. Might be multiple ones slash-delimited
 }> = (props) => {
-    const { collection, error, loading } = useGetCollectionFromContentful(
+    const { collection, error, loading } = useGetCollection(
         props.collectionName
     );
     if (loading) {
@@ -126,9 +126,9 @@ export const CollectionSubsetPage: React.FunctionComponent<{
     return (
         <React.Fragment>
             <div
-            // css={css`
-            //     background-color: black;
-            // `}
+                css={css`
+                    padding: 20px;
+                `}
             >
                 <Breadcrumbs />
             </div>

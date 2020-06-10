@@ -1,20 +1,16 @@
-import css from "@emotion/css/macro";
 import React, { useState } from "react"; // see https://github.com/emotion-js/emotion/issues/1156
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
-
 import { useContentful } from "react-contentful";
 import { IFilter } from "../../IFilter";
-import { ICollection } from "../../model/Collections";
-import { StandardBannerLayout } from "./StandardBannerLayout";
-import { ImageOnRightBannerLayout } from "./ImageOnRightBannerLayout";
+import { ICollection } from "../../model/ContentInterfaces";
+import { convertContentfulBannerToIBanner } from "../../model/Contentful";
+import { Banner } from "./Banner";
 export const ContentfulBanner: React.FunctionComponent<{
     id: string; // of the banner object on contentful
-    collection?: ICollection;
+    collection: ICollection;
     filter?: IFilter;
     bookCount?: string; // often undefined, meaning compute from filter
 }> = (props) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [gotData, setGotData] = useState(false);
     const { data, error, fetched, loading } = useContentful({
         contentType: "pageBanner",
@@ -39,7 +35,7 @@ export const ContentfulBanner: React.FunctionComponent<{
         return <p>Could not retrieve the banner id ${props.id}.</p>;
     }
 
-    const bannerFields = (data as any).fields;
+    const banner = convertContentfulBannerToIBanner((data as any).fields);
     // I don't know why this happens, but sometimes data comes back as a promise instead of
     // the actual data. Reproduction steps as of May 18 2020: Navigate from home page through
     // Enabling Writers to American University of Nigeria, then to the More page for level 1,
@@ -49,40 +45,9 @@ export const ContentfulBanner: React.FunctionComponent<{
     // is really available.
     // This appears to be a bug in the useContentful code, and of course it could return a
     // promise more than once; but so far this has proved a sufficient work-around.
-    if (!bannerFields && (data as any).then) {
+    if (!banner && (data as any).then) {
         (data as any).then(() => setGotData(true));
         return null;
     }
-    const defaultTextColor = bannerFields.backgroundImage ? "white" : "black";
-    return (
-        <div
-            css={css`
-                display: flex;
-                flex-direction: column;
-                overflow: hidden;
-
-                *,
-                a {
-                    color: ${bannerFields.textColor || defaultTextColor};
-                    font-size: 14pt;
-                }
-                a:visited {
-                    text-decoration: underline;
-                }
-                background-color: ${bannerFields.backgroundColor};
-
-                /* this can override any of the above*/
-                ${bannerFields.css}
-            `}
-        >
-            {(bannerFields.backgroundColor && (
-                <ImageOnRightBannerLayout
-                    {...props}
-                    bannerFields={bannerFields}
-                />
-            )) || (
-                <StandardBannerLayout {...props} bannerFields={bannerFields} />
-            )}
-        </div>
-    );
+    return <Banner banner={banner} collection={props.collection} />;
 };

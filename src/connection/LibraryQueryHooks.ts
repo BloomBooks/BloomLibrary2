@@ -6,7 +6,7 @@ import { useContext, useMemo, useEffect, useState } from "react";
 import { CachedTablesContext } from "../App";
 import { getCleanedAndOrderedLanguageList, ILanguage } from "../model/Language";
 import { processRegExp } from "../Utilities";
-import { topics } from "../model/Collections";
+import { kTopicList } from "../model/ClosedVocabularies";
 
 // For things other than books, which should use `useBookQuery()`
 function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
@@ -838,7 +838,7 @@ export function constructParseBookQuery(
             // optimize: is it more efficient to try to come up with a regex that will
             // fail if it finds topic:?
             tagParts.push({
-                $nin: topics.map((t) => "topic:" + t),
+                $nin: kTopicList.map((t) => "topic:" + t),
             });
         } else if (f.topic.indexOf(",") >= 0) {
             const topicsRegex = f.topic

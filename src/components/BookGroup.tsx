@@ -16,7 +16,6 @@ import {
     IBasicBookInfo,
 } from "../connection/LibraryQueryHooks";
 import { BookCard } from "./BookCard";
-import { MoreCard } from "./MoreCard";
 import { CardSwiper } from "./CardSwiper";
 
 interface IProps {

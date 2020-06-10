@@ -1,6 +1,6 @@
 import React from "react";
 import { getBestLevelStringOrEmpty } from "../connection/LibraryQueryHooks";
-import { ICollection } from "../model/Collections";
+import { ICollection } from "../model/ContentInterfaces";
 import { BookCardGroup } from "./BookCardGroup";
 
 // For each level (whether set by a human or just computed), show a row of books for that level.

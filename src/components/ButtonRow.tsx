@@ -5,7 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React from "react";
-import { ICollection } from "../model/Collections";
+import { ICollection } from "../model/ContentInterfaces";
 
 import { Button } from "@material-ui/core";
 import { commonUI } from "../theme";
@@ -36,6 +36,7 @@ export const ButtonRow: React.FunctionComponent<{
                 // it through our own router.
                 component={(linkProps) =>
                     externalLink ? (
+                        // eslint-disable-next-line jsx-a11y/anchor-has-content
                         <a href={href} {...linkProps} />
                     ) : (
                         <Link to={href} {...linkProps} />
