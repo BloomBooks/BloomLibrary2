@@ -45,12 +45,14 @@ export function generateCollectionFromFilters(
                     break;
                 case "search":
                     filteredCollection = makeCollectionForSearch(
+                        collection,
                         decodeURIComponent(parts[1]),
                         filteredCollection
                     );
                     break;
                 case "keyword":
                     filteredCollection = makeCollectionForKeyword(
+                        collection,
                         decodeURIComponent(parts[1]),
                         filteredCollection
                     );
