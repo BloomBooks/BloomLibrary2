@@ -34,6 +34,10 @@ export const ButtonRow: React.FunctionComponent<{
                 // But ONLY for internal refs...Link will convert something like https://community.software.sil.org/c/bloom
                 // into something like http://localhost:3000/https://community.software.sil.org/c/bloom and try to feed
                 // it through our own router.
+
+                //NB: this gives a console error. But what works for other people in 2019,
+                // https://github.com/mui-org/material-ui/issues/15823 and https://github.com/mui-org/material-ui/issues/15171
+                // does not compile here in June 2020
                 component={(linkProps) =>
                     externalLink ? (
                         // eslint-disable-next-line jsx-a11y/anchor-has-content

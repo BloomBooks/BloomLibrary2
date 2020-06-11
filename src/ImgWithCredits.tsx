@@ -18,7 +18,7 @@ export const ImgWithCredits: React.FunctionComponent<IProps> = (props) => {
     return (
         <Tooltip
             // didn't work: classes={{ popper: "popper", tooltip: "tooltip" }}
-            title={props.credits}
+            title={props.credits || ""}
             css={css`
                 /* didn't work .tooltip {
                             border: solid blue !important;

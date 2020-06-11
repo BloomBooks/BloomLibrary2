@@ -82,9 +82,7 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                     return <GridPage filters={match.params.filter} />;
                 }}
             />
-            <Route exact={true} path={"/create"}>
-                <CollectionPage collectionName="create" />
-            </Route>
+
             <Route path="/bulk">
                 <BulkEditPage />
             </Route>

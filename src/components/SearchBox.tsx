@@ -166,7 +166,12 @@ export const SearchBox: React.FunctionComponent<{
         // }
         // pathParts.push(":search:" + encodeURIComponent(enteredSearch));
         // const newUrl = "/" + pathParts.join("/");
-        const newUrl = "/:search:" + encodeURIComponent(enteredSearch);
+
+        // special case that when in create mode, we don't want to leave it.
+        const prefix = history.location.pathname.startsWith("/create")
+            ? "/create"
+            : "";
+        const newUrl = prefix + "/:search:" + encodeURIComponent(enteredSearch);
         setEnteredSearch(""); // otherwise we get an infinite loop when rendered as part of the new page
         if (replaceInHistory) {
             history.replace(newUrl);
