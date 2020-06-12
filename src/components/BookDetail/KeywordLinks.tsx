@@ -25,7 +25,11 @@ export const KeywordLinks: React.FunctionComponent<{
                             <span>
                                 <Link
                                     color="secondary"
-                                    href={`/:keyword:${keyword}`}
+                                    // we decided not to do this href={`/:keyword:${keyword}`}
+                                    // because we think it's more helpful to show *all* the books that might
+                                    // have this word in their title or summary, not just the ones that we
+                                    // have so far marked with this keyword
+                                    href={`/:search:${keyword}`}
                                 >
                                     {keyword}
                                 </Link>

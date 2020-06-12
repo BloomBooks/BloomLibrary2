@@ -11,11 +11,6 @@ import { ICollection, IBanner } from "../../model/ContentInterfaces";
 import { ImgWithCredits } from "../../ImgWithCredits";
 import { Blurb } from "./Blurb";
 
-/* Enhance: This is actually still combining 2 distinct layouts, and could be profitably split up.
-    The one layout is where there is a logo; in all cases thus far, this has not background image or background color.
-    The other layout that this component supports is where there is a true background image and an overlay but no logo.
-    There is a 3rd layout, which has already been implemented as its own component:ImageOnRightBannerLayout
-*/
 export const StandardBannerLayout: React.FunctionComponent<{
     collection: ICollection;
     banner: IBanner;

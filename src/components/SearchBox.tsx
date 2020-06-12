@@ -127,6 +127,8 @@ export const SearchBox: React.FunctionComponent<{
 
     const cancelSearch = () => {
         setSearchString("");
+        // at the moment, the only search we allow is over the whole library, so
+        // when we cancel, we return to the whole library.
         if (location.pathname.indexOf(":search:") >= 0) {
             history.push("/");
         }

@@ -30,7 +30,7 @@ interface IProps {
 
 export const BookCard: React.FunctionComponent<IProps> = (props) => {
     const legacyStyleThumbnail = getLegacyThumbnailUrl(props.basicBookInfo);
-    const [loaded, setLoaded] = useState(false);
+    const [readyToAddAltText, setReadyToAddAltText] = useState(false);
     const { thumbnailUrl, isModernThumbnail } = getThumbnailUrl(
         props.basicBookInfo
     );
@@ -40,7 +40,10 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
         props.contextLangIso
     );
     useEffect(() => {
-        setTimeout(() => setLoaded(true), 500);
+        // This is just a delay so that Swiper can put a .swiper-lazy-loading class onto
+        // the img. What was happening before was that the screen was showing our alt-text
+        // for a bit before that happened.
+        setTimeout(() => setReadyToAddAltText(true), 500);
     }, []);
     const titlePadding = 3;
     const card = (
@@ -76,7 +79,7 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                 // swiper-lazy-loading which hides it alltogether until swiper sets the src.
                 // And then fairly soon after that, hopefully we see the image.
                 // But to avoid an ugly flash of this message, we wait half a second before letting it have a value.
-                alt={loaded ? "book thumbnail" : ""}
+                alt={readyToAddAltText ? "book thumbnail" : ""}
                 // NB: if you're not getting an image, e.g. in Storybook, it might be because it's not inside of a swiper,
                 // but wasn't told to 'handle its own laziness'.
                 src={props.handleYourOwnLaziness ? thumbnailUrl : undefined}

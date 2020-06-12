@@ -10,7 +10,6 @@ import { ByLevelGroups, makeCollectionForLevel } from "./ByLevelGroups";
 import { BookCardGroup } from "./BookCardGroup";
 import {
     makeCollectionForSearch,
-    makeCollectionForKeyword,
     useGetCollection,
 } from "../model/Collections";
 import { makeCollectionForTopic, ByTopicsGroups } from "./ByTopicsGroups";
@@ -50,13 +49,13 @@ export function generateCollectionFromFilters(
                         filteredCollection
                     );
                     break;
-                case "keyword":
-                    filteredCollection = makeCollectionForKeyword(
-                        collection,
-                        decodeURIComponent(parts[1]),
-                        filteredCollection
-                    );
-                    break;
+                // case "keyword":
+                //     filteredCollection = makeCollectionForKeyword(
+                //         collection,
+                //         decodeURIComponent(parts[1]),
+                //         filteredCollection
+                //     );
+                //     break;
                 case "skip":
                     skip = parseInt(parts[1], 10);
                     break;

@@ -1,11 +1,11 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { getLanguageNamesFromCode, ILanguage } from "./Language";
 import { useContentful } from "react-contentful";
 import { CachedTablesContext } from "../App";
 import { ICollection } from "./ContentInterfaces";
 import { convertContentfulCollectionToICollection } from "./Contentful";
 import { kTopicList } from "./ClosedVocabularies";
-import { IFilter } from "../IFilter";
+import { strict as assert } from "assert";
 
 /* From original design: Each collection has
     id
@@ -27,6 +27,7 @@ import { IFilter } from "../IFilter";
 // If we don't find a contentful collection for language:xx, we create one.
 export function makeLanguageCollection(
     templateCollection: ICollection,
+    explicitCollection: ICollection | undefined,
     langCode: string,
     languages: ILanguage[]
 ): ICollection {
@@ -34,29 +35,37 @@ export function makeLanguageCollection(
         ?.displayNameWithAutonym;
     if (!languageDisplayName) languageDisplayName = langCode;
     return {
+        // last wins
         ...templateCollection,
+        ...explicitCollection,
         urlKey: "language:" + langCode,
-        label: languageDisplayName,
-        childCollections: [],
         filter: { language: langCode },
+        // We need the label in [Template Language Collection] to be $1.
+        // Then we allow a override collection to define its own label, else we
+        // need it to have "$1" in the label.
+        label:
+            templateCollection.label.replace("$1", languageDisplayName) ||
+            languageDisplayName,
     };
 }
 
 export function makeTopicCollection(
     templateCollection: ICollection,
+    explicitCollection: ICollection | undefined,
     topicName: string
 ): ICollection {
+    // last wins
     return {
-        ...templateCollection,
-        urlKey: "topic:" + topicName,
-        label: topicName,
-        childCollections: [],
-        filter: { topic: topicName },
         iconForCardAndDefaultBanner: {
             url: "none",
             altText: "none",
             credits: "none",
         },
+        ...templateCollection,
+        ...explicitCollection,
+        urlKey: "topic:" + topicName,
+        label: templateCollection.label.replace("$1", topicName) || topicName,
+        filter: { topic: topicName },
     };
 }
 
@@ -82,7 +91,6 @@ export function makeCollectionForSearch(
         filter,
         label,
         urlKey,
-        childCollections: [],
     };
     return result;
 }
@@ -117,7 +125,10 @@ export function getDummyCollectionForPreview(bannerId: string): ICollection {
         layout: "by-level",
     };
 }
-function makeTopicSubcollections(): ICollection[] {
+// These are just for cards. At this point it would not be possible to override what we see on a topic
+// card. But once you click the card, then you're going to topic:foo and we would pick up any explicit
+// "topic:foo" collection.
+function makeTopicCollectionsForCards(): ICollection[] {
     return kTopicList.map((t) =>
         makeTopicCollection(
             {
@@ -125,9 +136,10 @@ function makeTopicSubcollections(): ICollection[] {
                 label: t,
                 childCollections: [],
                 filter: { topic: t },
-                bannerId: "",
-                layout: "by-level",
+                bannerId: "", // this will never be used because it's just for the card
+                layout: "by-level", // this will never be used because it's just for the card
             },
+            undefined,
             t
         )
     );
@@ -165,6 +177,7 @@ export function useGetCollection(
             "fields.urlKey[in]": `${collectionName},${templateKey}`,
         },
     });
+
     if (loading || !fetched) {
         return { collection: undefined, loading: true };
     }
@@ -177,72 +190,125 @@ export function useGetCollection(
     if (!data || (data as any).items.length === 0) {
         return { loading: false };
     }
+    const collections: any[] = (data as any).items;
 
-    // Note that for things like topic, keyword, and search, this is the *template* collection, which
-    // we'll use later to create the actual collection.
-    let collection = convertContentfulCollectionToICollection(
-        (data as any).items[0].fields
+    assert(collections.length > 0);
+    assert(collections.length < 3);
+    let templateFacetCollection: ICollection | undefined;
+    let explicitCollection: ICollection | undefined;
+    let bailOut = false;
+    collections.forEach((item: any) => {
+        if (item.fields.urlKey === templateKey) {
+            templateFacetCollection = convertContentfulCollectionToICollection(
+                item.fields
+            );
+        } else if (item.fields.urlKey === collectionName) {
+            explicitCollection = convertContentfulCollectionToICollection(
+                item.fields
+            );
+        } else {
+            // Not one of the collections we asked for!
+            // useContentful sometimes returns stale data when it has started
+            // loading a different collection. Assume this is happening.
+            bailOut = true;
+        }
+    });
+    if (bailOut) return { loading: true };
+    console.log(`nameparts = ${JSON.stringify(nameParts)}`);
+    console.log(`collections=${JSON.stringify(collections)}`);
+    assert(
+        templateFacetCollection || nameParts.length === 1,
+        `If it's a facetted collection, we should have a template for it. nameparts = ${JSON.stringify(
+            nameParts
+        )}  `
     );
 
-    if (collection.urlKey.startsWith("[") && nameParts.length > 1) {
-        const value = nameParts[1];
-        switch (nameParts[0]) {
-            case "language":
-                // language collections are optionally generated. We can make real cards if we
-                // want, to give a more interesting background image etc, but if we don't have
-                // one for a language, we generate a default here.
-                // We currently don't need to mess with the actual content of the languages
-                // collection because a special case in CollectionPage for the language-chooser urlKey
-                // creates a special LanguageGroup row, which determines the children directly
-                // from the main database.
-                collection = makeLanguageCollection(
-                    collection,
-                    value,
-                    languages
-                );
-                return { collection, loading: false };
-
-            case "topic":
-                // topic collections currently are generated from the fixed list above.
-                // the master "topics" collection is real (so it can be included at the
-                // right place in its parent) but its children are inserted by another special case.
-                collection = makeTopicCollection(collection, value);
-                return { collection, loading: false };
-
-            case "keyword":
-                collection = makeCollectionForKeyword(collection, value);
-                return { collection, loading: false };
-
-            case "search":
-                // search collections are generated from a search string the user typed.
-                collection = makeCollectionForSearch(collection, value);
-                return { collection, loading: false };
-
-            case "phash":
-                // search collections are generated from a search string the user typed.
-                collection = makeCollectionForPHash(collection, value);
-                return { collection, loading: false };
-
-            default:
-                return { loading: false };
-        }
+    if (templateFacetCollection) {
+        return {
+            loading: false,
+            collection: getFacetCollection(
+                nameParts[0],
+                nameParts[1],
+                templateFacetCollection,
+                explicitCollection, // may or may not be defined
+                languages
+            ),
+        };
     } else {
-        // usual case, got collection from contentful
-
-        if (collection.urlKey === "topics") {
+        assert(explicitCollection);
+        explicitCollection = explicitCollection!; // just help the compiler. If we got here, then we have an explicit collection
+        if (explicitCollection.urlKey === "topics") {
             // We currently generate the one collection for each topic, just
             // for showing the cards. If someone clicks a card, well then we
             // go and see what the collection should really be. If we ever
             // want to use icons on the card, then we can just remove this
             // whole block and instead populate the "Topics" collection on
             // Contentful
-            collection.childCollections = makeTopicSubcollections();
+            explicitCollection.childCollections = makeTopicCollectionsForCards();
         }
-        return { collection, loading: false };
+        return { collection: explicitCollection, loading: false };
     }
 }
 
-export function makeCollectionForKeyword(
+function getFacetCollection(
+    facet: string,
+    value: string,
+    templateCollection: ICollection,
+    explicitCollection: ICollection | undefined,
+    languages: ILanguage[]
+): ICollection {
+    /* --- ENHANCE: Currently if we have a leading colon, e.g. bloomlibrary.org/:keyword:foo, we won't get to use the
+    "[Template Keyword Collection]", nor the actual "keyword:foo" collection from CF, if it exists.
+    This is because the leading colon triggers the CollectionSubsetPage, which only creates and applies a filter to
+    the root collection. */
+
+    switch (facet) {
+        case "language":
+            // language collections are optionally generated. We can make real cards if we
+            // want, to give a more interesting background image etc, but if we don't have
+            // one for a language, we generate a default here.
+            // We currently don't need to mess with the actual content of the languages
+            // collection because a special case in CollectionPage for the language-chooser urlKey
+            // creates a special LanguageGroup row, which determines the children directly
+            // from the main database.
+            return makeLanguageCollection(
+                templateCollection,
+                explicitCollection,
+                value,
+                languages
+            );
+
+        case "topic":
+            // topic collections currently are generated from the fixed list above.
+            // the master "topics" collection is real (so it can be included at the
+            // right place in its parent) but its children are inserted by another special case.
+            return makeTopicCollection(
+                templateCollection,
+                explicitCollection,
+                value
+            );
+
+        // case "keyword":
+        //     collection = makeCollectionForKeyword(collection, value);
+        //     return { collection, loading: false };
+
+        case "search":
+            // search collections are generated from a search string the user typed.
+            return makeCollectionForSearch(templateCollection, value);
+
+        case "phash":
+            // search collections are generated from a search string the user typed.
+            return makeCollectionForPHash(templateCollection, value);
+
+        default:
+            throw Error(`Unknown facet: ${facet}`);
+    }
+}
+
+/* We're thinking (but not certain) that we just want to treat keyword lookups as searches (which will of course
+    find books that have this explicit keyword *
+
+    export function makeCollectionForKeyword(
     templateCollection: ICollection,
     keyword: string,
     baseCollection?: ICollection
@@ -271,7 +337,8 @@ export function makeCollectionForKeyword(
         childCollections: [],
         iconForCardAndDefaultBanner: undefined,
     };
-}
+}*/
+
 function Capitalize(s: string): string {
     return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 }

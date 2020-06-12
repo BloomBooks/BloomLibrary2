@@ -21,14 +21,15 @@ const contentfulClientPreview = new (ContentfulClient as any)({
 }) as ContentfulClientInterface;
 
 export const ContentfulContext: React.FunctionComponent<{}> = (props) => {
-    const contentfulClient =
-        window.location.pathname.indexOf("_preview") > -1
-            ? contentfulClientPreview
-            : contentfulClientPublished;
-
     return (
-        <ContentfulProvider client={contentfulClient}>
+        <ContentfulProvider client={getContentfulClient()}>
             {props.children}
         </ContentfulProvider>
     );
 };
+
+export function getContentfulClient() {
+    return window.location.pathname.indexOf("_preview") > -1
+        ? contentfulClientPreview
+        : contentfulClientPublished;
+}

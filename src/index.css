@@ -86,6 +86,8 @@ a:hover {
 }
 
 /* hide the scroll buttons except for the row that has the pointer */
+/* This is here instead of CardSwiper because the react component Swiper that we would have liked
+to apply it to does not support our inline css */
 .swiper-container:not(:hover) .swiper-button {
     display: none;
 }
