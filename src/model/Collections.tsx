@@ -1,12 +1,11 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext } from "react";
 import { getLanguageNamesFromCode, ILanguage } from "./Language";
-import { useContentful } from "react-contentful";
 import { CachedTablesContext } from "../App";
 import { ICollection } from "./ContentInterfaces";
 import { convertContentfulCollectionToICollection } from "./Contentful";
 import { kTopicList } from "./ClosedVocabularies";
 import { strict as assert } from "assert";
-import { getContentfulClient } from "../ContentfulContext";
+import { useContentful } from "../connection/UseContentful";
 
 /* From original design: Each collection has
     id
@@ -171,30 +170,38 @@ export function useGetCollection(
     if (nameParts.length > 1) {
         templateKey = `[Template ${Capitalize(nameParts[0])} Collection]`;
     }
-    const [results, setResults] = useState<{
-        collectionName: string;
-        result: any[] | undefined;
-    }>({ collectionName: "", result: undefined });
+    // const [results, setResults] = useState<{
+    //     collectionName: string;
+    //     result: any[] | undefined;
+    // }>({ collectionName: "", result: undefined });
 
-    useEffect(() => {
-        getContentfulClient()
-            .getEntries({
-                content_type: "collection",
-                "fields.urlKey[in]": `${collectionName},${templateKey}`,
-                include: 10,
-            })
-            .then((entries) =>
-                setResults({ collectionName, result: entries.items })
-            );
-    }, [collectionName, templateKey]);
-
-    if (
-        !results ||
-        !results.result ||
-        results.collectionName !== collectionName
-    ) {
+    const { loading, result } = useContentful({
+        content_type: "collection",
+        "fields.urlKey[in]": `${collectionName},${templateKey}`,
+        include: 10,
+    });
+    if (loading || !result) {
         return { loading: true };
     }
+    // useEffect(() => {
+    //     getContentfulClient()
+    //         .getEntries({
+    //             content_type: "collection",
+    //             "fields.urlKey[in]": `${collectionName},${templateKey}`,
+    //             include: 10,
+    //         })
+    //         .then((entries) =>
+    //             setResults({ collectionName, result: entries.items })
+    //         );
+    // }, [collectionName, templateKey]);
+
+    // if (
+    //     !results ||
+    //     !results.result ||
+    //     results.collectionName !== collectionName
+    // ) {
+    //     return { loading: true };
+    // }
 
     // const { data, error, fetched, loading } = useContentful({
     //     contentType: "collection",
@@ -215,7 +222,7 @@ export function useGetCollection(
     // if (!data || (data as any).items.length === 0) {
     //     return { loading: false };
     // }
-    const collections: any[] = results.result;
+    const collections: any[] = result;
 
     assert(collections.length > 0);
     assert(collections.length < 3);

@@ -1739,7 +1739,7 @@
   dependencies:
     regenerator-runtime "^0.13.2"
 
-"@babel/runtime@^7.4.0", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
+"@babel/runtime@^7.4.0":
   version "7.9.6"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.9.6.tgz#a9102eb5cadedf3f31d08a9ecf294af7827ea29f"
   integrity sha512-64AF1xY3OAkFHqOb9s4jpgk1Mm5vDZ4L3acHvAml+53nO1XbXLuDodsVpO4OIUsmemlUHMxNdYMNJmsvOwLrvQ==
@@ -3431,14 +3431,6 @@
   version "16.9.19"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.19.tgz#c842aa83ea490007d29938146ff2e4d9e4360c40"
   integrity sha512-LJV97//H+zqKWMms0kvxaKYJDG05U2TtQB3chRLF8MPNs+MQh/H1aGlyDUxjaHvu08EAGerdX2z4LTBc7ns77A==
-  dependencies:
-    "@types/prop-types" "*"
-    csstype "^2.2.0"
-
-"@types/react@^16.9.23", "@types/react@^16.9.32":
-  version "16.9.35"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.35.tgz#a0830d172e8aadd9bd41709ba2281a3124bbd368"
-  integrity sha512-q0n0SsWcGc8nDqH2GJfWQWUOmZSJhXV64CjVN5SvcNti3TdEaA3AH0D8DwNmMdzjMAC/78tB8nAZIlV8yTz+zQ==
   dependencies:
     "@types/prop-types" "*"
     csstype "^2.2.0"
@@ -5720,13 +5712,6 @@ content-type@~1.0.4:
   resolved "https://registry.yarnpkg.com/content-type/-/content-type-1.0.4.tgz#e138cc75e040c727b1966fe5e5f8c9aee256fe3b"
   integrity sha512-hIP3EEPs8tB9AT1L+NUqtwOAps4mk2Zob89MWXMHjHWg9milF/j4osnnQLXBCBFBk/tvIG/tUc9mOUJiPBhPXA==
 
-contentful-parsers@^0.2.12:
-  version "0.2.12"
-  resolved "https://registry.yarnpkg.com/contentful-parsers/-/contentful-parsers-0.2.12.tgz#ba05f51c9f90c4da8196897e0fd5a7743d3b77e3"
-  integrity sha512-3yfVw2PfrX7riP4chx/pCTw4iWVdpbGVuZ5mvfOmYMh3bYNbRQ33y6WrpOPEb3LPFxMCLNYI8Lai/CycPY2aJA==
-  dependencies:
-    "@babel/runtime" "^7.8.7"
-
 contentful-resolve-response@^1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/contentful-resolve-response/-/contentful-resolve-response-1.1.4.tgz#9eb656876eecb2cd00444f0adf26bd91a5ec1992"
@@ -5742,7 +5727,7 @@ contentful-sdk-core@^6.4.5:
     lodash "^4.17.10"
     qs "^6.5.2"
 
-contentful@^7.14.2:
+contentful@^7.14.4:
   version "7.14.4"
   resolved "https://registry.yarnpkg.com/contentful/-/contentful-7.14.4.tgz#882c2785cab953c0729453f60dbb8acd556f5f6a"
   integrity sha512-BY5mEr8DkPxVPot4aMurtuOqf9HxkXW6T9KRDUtJcxua/sAITjYu3YOeZG8PeNGYI40R5yqIvpJ6vMI+/lg4Fg==
@@ -7871,11 +7856,6 @@ flatted@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-2.0.1.tgz#69e57caa8f0eacbc281d2e2cb458d46fdb449e08"
   integrity sha512-a1hQMktqW9Nmqr5aktAux3JMNqaucxGcjtjWnZLHX7yyPCmlSV3M54nGYbqT8K+0GhF3NBgmJCc3ma+WOgX8Jg==
-
-flatted@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/flatted/-/flatted-2.0.2.tgz#4575b21e2bcee7434aa9be662f4b7b5f9c2b5138"
-  integrity sha512-r5wGx7YeOwNWNlCA0wQ86zKyDLMQr+/RB8xy74M4hTphfmjlijTSSXGuH8rnvKZnfT9i+75zmd8jcKdMR4O6jA==
 
 flatten@^1.0.2:
   version "1.0.3"
@@ -10628,11 +10608,6 @@ loglevel@^1.6.6:
   version "1.6.6"
   resolved "https://registry.yarnpkg.com/loglevel/-/loglevel-1.6.6.tgz#0ee6300cc058db6b3551fa1c4bf73b83bb771312"
   integrity sha512-Sgr5lbboAUBo3eXCSPL4/KoVz3ROKquOjcctxmHIt+vol2DrqTQe3SwkKKuYhEiWB5kYa13YyopJ69deJ1irzQ==
-
-lomit@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/lomit/-/lomit-0.2.0.tgz#460c6e0e2c0da12a526b2d30716e22d7a33717fe"
-  integrity sha512-JQ81vbTqdPpArEHDpzuAzpIm7TUTXu6mITiUhoPr/2sQHqiPv8mEFS0vYQziPZiaRAWLK9T/RbCiAr0r4zzq+A==
 
 long@^4.0.0:
   version "4.0.0"
@@ -13449,25 +13424,6 @@ react-clientside-effect@^1.2.0:
   dependencies:
     "@babel/runtime" "^7.0.0"
 
-react-contentful@^2.0.7:
-  version "2.0.7"
-  resolved "https://registry.yarnpkg.com/react-contentful/-/react-contentful-2.0.7.tgz#735646dbfdc0abbab9bcaa1356a69779d3769ce6"
-  integrity sha512-hGZdFy7KPdKRkAeEVJ1M3k3PoDcLnmcsb2O5pJYkU8zNNciW1PkJH3eaurq3AGafF8yHaeulrUdkSk+JK4rgdQ==
-  dependencies:
-    "@babel/runtime" "^7.9.2"
-    "@contentful/rich-text-react-renderer" "^13.4.0"
-    "@types/react" "^16.9.32"
-    contentful "^7.14.2"
-    contentful-parsers "^0.2.12"
-    flatted "^2.0.2"
-    hoist-non-react-statics "^3.3.2"
-    invariant "^2.2.4"
-    lomit "^0.2.0"
-    prop-types "^15.7.2"
-    react-hoc-helpers "^0.1.5"
-    react-is "^16.13.1"
-    warning "^4.0.3"
-
 react-dev-utils@^10.2.0:
   version "10.2.0"
   resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-10.2.0.tgz#b11cc48aa2be2502fb3c27a50d1dfa95cfa9dfe0"
@@ -13611,14 +13567,6 @@ react-helmet-async@^1.0.2:
     react-fast-compare "^2.0.4"
     shallowequal "^1.1.0"
 
-react-hoc-helpers@^0.1.5:
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/react-hoc-helpers/-/react-hoc-helpers-0.1.5.tgz#d2f7548fcfd95527ed0968473bff8ab0de97bba9"
-  integrity sha512-BEOyAFU2iKrtJYLHNu4VTX3tSwcKXq36CeQejGvbFZvXbQajoZg4EsARqxGehP3Z7d7iOCOFuRWgd5VK/10s8g==
-  dependencies:
-    "@babel/runtime" "^7.8.7"
-    "@types/react" "^16.9.23"
-
 react-hotkeys@2.0.0-pre4:
   version "2.0.0-pre4"
   resolved "https://registry.yarnpkg.com/react-hotkeys/-/react-hotkeys-2.0.0-pre4.tgz#a1c248a51bdba4282c36bf3204f80d58abc73333"
@@ -13661,7 +13609,7 @@ react-is@^16.12.0, react-is@^16.7.0, react-is@^16.8.0, react-is@^16.8.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.12.0.tgz#2cc0fe0fba742d97fd527c42a13bec4eeb06241c"
   integrity sha512-rPCkf/mWBtKc97aLL9/txD8DZdemK0vkA3JMLShjlJB3Pj3s+lpf1KaBzMfQrAmhMQB0n1cU/SUGgKKBCe837Q==
 
-react-is@^16.13.1, react-is@^16.6.0, react-is@^16.8.6:
+react-is@^16.6.0, react-is@^16.8.6:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==

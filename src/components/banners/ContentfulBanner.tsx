@@ -1,5 +1,5 @@
 import React, { useState } from "react"; // see https://github.com/emotion-js/emotion/issues/1156
-import { useContentful } from "react-contentful";
+import { useContentful } from "../../connection/UseContentful";
 import { IFilter } from "../../IFilter";
 import { ICollection } from "../../model/ContentInterfaces";
 import { convertContentfulBannerToIBanner } from "../../model/Contentful";
@@ -12,30 +12,30 @@ export const ContentfulBanner: React.FunctionComponent<{
 }> = (props) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [gotData, setGotData] = useState(false);
-    const { data, error, fetched, loading } = useContentful({
-        contentType: "pageBanner",
-        id: `${props.id}`,
+    const { result: data, loading } = useContentful({
+        content_type: "pageBanner",
+        "sys.id": `${props.id}`,
         // default for "include' is "1", and with the current model, we only need to go 1 deep (to get the background image url)
         // include: 1
     });
-    if (loading || !fetched) {
+    if (loading) {
         return null;
     }
 
-    if (error) {
-        console.error(error);
-        return (
-            <p>
-                Error ${error} looking for banner id = ${props.id}.
-            </p>
-        );
-    }
+    // if (error) {
+    //     console.error(error);
+    //     return (
+    //         <p>
+    //             Error ${error} looking for banner id = ${props.id}.
+    //         </p>
+    //     );
+    // }
 
     if (!data) {
         return <p>Could not retrieve the banner id ${props.id}.</p>;
     }
 
-    const banner = convertContentfulBannerToIBanner((data as any).fields);
+    const banner = convertContentfulBannerToIBanner((data[0] as any).fields);
     // I don't know why this happens, but sometimes data comes back as a promise instead of
     // the actual data. Reproduction steps as of May 18 2020: Navigate from home page through
     // Enabling Writers to American University of Nigeria, then to the More page for level 1,

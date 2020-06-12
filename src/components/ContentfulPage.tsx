@@ -2,29 +2,39 @@ import css from "@emotion/css/macro";
 import React from "react"; // see https://github.com/emotion-js/emotion/issues/1156
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
-import { useContentful } from "react-contentful";
 /** @jsx jsx */
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import ReactMarkdown from "react-markdown";
 import { PageNotFound } from "./PageNotFound";
+import { useContentful } from "../connection/UseContentful";
 
 export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
     props
 ) => {
-    const { data, error, fetched, loading } = useContentful({
-        contentType: "page",
-        query: {
-            "fields.urlKey": `${props.urlKey}`,
-        },
+    const { loading, result: data } = useContentful({
+        content_type: "page",
+        "fields.urlKey": `${props.urlKey}`,
+        include: 10,
     });
-    if (loading || !fetched) {
+    if (loading || !data) {
         return null;
     }
 
-    if (error) {
-        console.error(error);
-        return null;
-    }
+    // const { data, error, fetched, loading } = getContentfulClient().getEntries({
+    //     contentType: "page",
+    //     query: {
+    //         "fields.urlKey": `${props.urlKey}`,
+    //     },
+    //     include:10
+    // });
+    // if (loading || !fetched) {
+    //     return null;
+    // }
+
+    // if (error) {
+    //     console.error(error);
+    //     return null;
+    // }
 
     if (!data || !(data as any).items || (data as any).items.length === 0) {
         return <PageNotFound />;

@@ -26,7 +26,6 @@ import {
 } from "./components/OSFeaturesContext";
 import { Alert, AlertTitle } from "@material-ui/lab";
 import { Header } from "./components/header/Header";
-import { ContentfulContext } from "./ContentfulContext";
 import { Routes } from "./components/Routes";
 import { Footer } from "./components/Footer";
 
@@ -100,22 +99,21 @@ export const App: React.FunctionComponent<{}> = (props) => {
                         {window.location.hostname === "localhost" || (
                             <UnderConstruction />
                         )}
-                        <ContentfulContext>
-                            <Router>
-                                {embeddedMode || <Header />}
-                                {/* This div takes up all the space available so that the footer
+
+                        <Router>
+                            {embeddedMode || <Header />}
+                            {/* This div takes up all the space available so that the footer
                                 is either at the bottom or pushed off screen */}
-                                <div
-                                    id="expandableContent"
-                                    css={css`
-                                        flex: 1 0 auto;
-                                    `}
-                                >
-                                    <Routes />
-                                </div>
-                                {embeddedMode || <Footer />}
-                            </Router>
-                        </ContentfulContext>
+                            <div
+                                id="expandableContent"
+                                css={css`
+                                    flex: 1 0 auto;
+                                `}
+                            >
+                                <Routes />
+                            </div>
+                            {embeddedMode || <Footer />}
+                        </Router>
                     </OSFeaturesContext.Provider>
                 </CachedTablesContext.Provider>
             </ThemeProvider>

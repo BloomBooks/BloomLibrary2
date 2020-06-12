@@ -12,6 +12,7 @@ export const ByTopicsGroups: React.FunctionComponent<{
         <React.Fragment>
             {kTopicList.map((topic) => (
                 <BookCardGroup
+                    key={topic}
                     collection={makeCollectionForTopic(props.collection, topic)}
                 />
             ))}
