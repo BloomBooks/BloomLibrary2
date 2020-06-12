@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { getLanguageNamesFromCode, ILanguage } from "./Language";
 import { useContentful } from "react-contentful";
 import { CachedTablesContext } from "../App";
@@ -6,6 +6,7 @@ import { ICollection } from "./ContentInterfaces";
 import { convertContentfulCollectionToICollection } from "./Contentful";
 import { kTopicList } from "./ClosedVocabularies";
 import { strict as assert } from "assert";
+import { getContentfulClient } from "../ContentfulContext";
 
 /* From original design: Each collection has
     id
@@ -170,27 +171,51 @@ export function useGetCollection(
     if (nameParts.length > 1) {
         templateKey = `[Template ${Capitalize(nameParts[0])} Collection]`;
     }
+    const [results, setResults] = useState<{
+        collectionName: string;
+        result: any[] | undefined;
+    }>({ collectionName: "", result: undefined });
 
-    const { data, error, fetched, loading } = useContentful({
-        contentType: "collection",
-        query: {
-            "fields.urlKey[in]": `${collectionName},${templateKey}`,
-        },
-    });
+    useEffect(() => {
+        getContentfulClient()
+            .getEntries({
+                content_type: "collection",
+                "fields.urlKey[in]": `${collectionName},${templateKey}`,
+                include: 10,
+            })
+            .then((entries) =>
+                setResults({ collectionName, result: entries.items })
+            );
+    }, [collectionName, templateKey]);
 
-    if (loading || !fetched) {
-        return { collection: undefined, loading: true };
+    if (
+        !results ||
+        !results.result ||
+        results.collectionName !== collectionName
+    ) {
+        return { loading: true };
     }
 
-    if (error) {
-        console.error(error);
-        return { collection: undefined, error, loading: false };
-    }
+    // const { data, error, fetched, loading } = useContentful({
+    //     contentType: "collection",
+    //     query: {
+    //         "fields.urlKey[in]": `${collectionName},${templateKey}`,
+    //     },
+    // });
 
-    if (!data || (data as any).items.length === 0) {
-        return { loading: false };
-    }
-    const collections: any[] = (data as any).items;
+    // if (loading || !fetched) {
+    //     return { collection: undefined, loading: true };
+    // }
+
+    // if (error) {
+    //     console.error(error);
+    //     return { collection: undefined, error, loading: false };
+    // }
+
+    // if (!data || (data as any).items.length === 0) {
+    //     return { loading: false };
+    // }
+    const collections: any[] = results.result;
 
     assert(collections.length > 0);
     assert(collections.length < 3);
@@ -214,8 +239,8 @@ export function useGetCollection(
         }
     });
     if (bailOut) return { loading: true };
-    console.log(`nameparts = ${JSON.stringify(nameParts)}`);
-    console.log(`collections=${JSON.stringify(collections)}`);
+    // console.log(`nameparts = ${JSON.stringify(nameParts)}`);
+    // console.log(`collections=${JSON.stringify(collections)}`);
     assert(
         templateFacetCollection || nameParts.length === 1,
         `If it's a facetted collection, we should have a template for it. nameparts = ${JSON.stringify(
