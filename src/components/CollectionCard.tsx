@@ -20,7 +20,7 @@ interface IProps {
     bookCount?: string;
     target: string; // what we're calling "target" is the last part of url, where the url is <breadcrumb stuff>/<target>
     filter: IFilter;
-    img: string;
+    imageUrl: string;
     credits?: string;
     altText?: string;
 }
@@ -74,7 +74,7 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
     }
 
     let imgElement = <React.Fragment />;
-    if (!props.img) {
+    if (!props.imageUrl) {
         imgElement = (
             <img
                 src={booksIcon}
@@ -85,13 +85,13 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
                 alt="A stack of generic books"
             ></img>
         );
-    } else if (props.img !== "none") {
+    } else if (props.imageUrl !== "none") {
         const maxHeight = props.hideTitle ? 129 : 100;
         // Usual case, show the image defined in the collection
         imgElement = (
             <ImgWithCredits
                 credits={props.credits}
-                src={props.img}
+                src={props.imageUrl}
                 css={css`
                     height: ${maxHeight}px;
                     object-fit: contain;
@@ -117,7 +117,7 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
     const { bookCount, ...propsToPassDown } = props; // prevent react warnings
     // make the cards smaller vertically if they purposely have no image, not even
     // the default one. Otherwise, let the default CheapCard height prevail.
-    const height = props.img === "none" ? "height: 100px" : "";
+    const height = props.imageUrl === "none" ? "height: 100px" : "";
     return (
         <CheapCard
             {...propsToPassDown} // needed for swiper to work

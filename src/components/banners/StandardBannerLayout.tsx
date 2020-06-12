@@ -20,6 +20,7 @@ export const StandardBannerLayout: React.FunctionComponent<{
     collection: ICollection;
     banner: IBanner;
     filter?: IFilter;
+    bookCount?: string; // often undefined, meaning compute from filter
 }> = (props) => {
     const backgroundImage = props.banner.backgroundImage?.url ?? "";
 
@@ -78,13 +79,17 @@ export const StandardBannerLayout: React.FunctionComponent<{
                     <Blurb
                         {...props}
                         width={"100%"}
-                        hideTitle={props.banner.hideTitle}
+                        hideTitle={
+                            props.collection.hideLabelOnCardAndDefaultBanner ||
+                            props.banner.hideTitle
+                        }
                     />
                 </div>
 
-                {props.collection?.urlKey !== "new-arrivals" && (
-                    <BookCount filter={props.filter || {}} />
-                )}
+                {props.collection?.urlKey !== "new-arrivals" &&
+                    (props.bookCount || (
+                        <BookCount filter={props.filter || {}} />
+                    ))}
             </div>
         </div>
     );

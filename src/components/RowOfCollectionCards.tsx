@@ -60,7 +60,9 @@ export const RowOfCollectionCards: React.FunctionComponent<{
                 filter={childCollection.filter}
                 target={`/${key}`}
                 //pageType={props.bookShelfCategory}
-                img={childCollection.iconForCardAndDefaultBanner?.url || ""}
+                imageUrl={
+                    childCollection.iconForCardAndDefaultBanner?.url || ""
+                }
                 credits={childCollection.iconCredits}
                 altText={childCollection.iconAltText}
             />

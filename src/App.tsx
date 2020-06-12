@@ -94,7 +94,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                             bloomDesktopAvailable,
                             bloomReaderAvailable,
                             cantUseBloomD,
-                                mobile,
+                            mobile,
                         }}
                     >
                         {window.location.hostname === "localhost" || (

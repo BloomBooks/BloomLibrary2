@@ -52,6 +52,11 @@ export function makeTopicCollection(
         label: topicName,
         childCollections: [],
         filter: { topic: topicName },
+        iconForCardAndDefaultBanner: {
+            url: "none",
+            altText: "none",
+            credits: "none",
+        },
     };
 }
 
@@ -179,7 +184,7 @@ export function useGetCollection(
         (data as any).items[0].fields
     );
 
-    if (nameParts.length > 1) {
+    if (collection.urlKey.startsWith("[") && nameParts.length > 1) {
         const value = nameParts[1];
         switch (nameParts[0]) {
             case "language":

@@ -10,6 +10,7 @@ import { ImageOnRightBannerLayout } from "./ImageOnRightBannerLayout";
 export const Banner: React.FunctionComponent<{
     collection: ICollection;
     banner: IBanner;
+    bookCount?: string; // often undefined, meaning compute from filter
 }> = (props) => {
     const defaultTextColor = props.banner.backgroundImage ? "white" : "black";
     return (
@@ -34,8 +35,18 @@ export const Banner: React.FunctionComponent<{
             `}
         >
             {(props.banner.backgroundColor && (
-                <ImageOnRightBannerLayout {...props} banner={props.banner} />
-            )) || <StandardBannerLayout {...props} banner={props.banner} />}
+                <ImageOnRightBannerLayout
+                    {...props}
+                    banner={props.banner}
+                    bookCount={props.bookCount}
+                />
+            )) || (
+                <StandardBannerLayout
+                    {...props}
+                    banner={props.banner}
+                    bookCount={props.bookCount}
+                />
+            )}
         </div>
     );
 };

@@ -38,9 +38,9 @@ const BookCountInternal: React.FunctionComponent<{
     // if there is an error, we'll see that (from noResultsElement)
     return (
         noResultsElement || (
-            <h2
+            <span // Don't change this to something like h2.  Book count is used in different contexts
                 css={css`
-                    font-size: 14pt;
+                    /* don't put a font size here. Book count is used in different contexts */
                     margin: 0 !important;
                     margin-top: auto;
                 `}
@@ -48,7 +48,7 @@ const BookCountInternal: React.FunctionComponent<{
                 {props.message
                     ? props.message.replace("{0}", count)
                     : `${count} Books`}
-            </h2>
+            </span>
         )
     );
 };
