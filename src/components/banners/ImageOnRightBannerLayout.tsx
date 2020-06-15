@@ -9,6 +9,7 @@ import { IFilter } from "../../IFilter";
 import { IBanner, ICollection } from "../../model/ContentInterfaces";
 import { Blurb } from "./Blurb";
 import useMedia from "use-media";
+import { Breadcrumbs } from "../Breadcrumbs";
 
 export const ImageOnRightBannerLayout: React.FunctionComponent<{
     collection: ICollection;
@@ -23,48 +24,57 @@ export const ImageOnRightBannerLayout: React.FunctionComponent<{
     return (
         <div
             css={css`
-                display: flex;
-                flex-direction: row;
+                margin-left: 30px;
             `}
         >
-            <Blurb
-                {...props}
-                padding={"30px"}
-                width={showImage ? "500px" : "100%"}
-                hideTitle={props.banner.hideTitle}
-            />
+            <Breadcrumbs />
 
-            {showImage && (
-                <div
-                    css={css`
-                        display: flex;
-                        flex-direction: column;
-                        flex-grow: 1;
-                        overflow: hidden;
-                        background-size: cover;
-                        * {
-                            color: white;
-                        }
+            <div
+                css={css`
+                    display: flex;
+                    flex-direction: row;
+                `}
+            >
+                <Blurb
+                    {...props}
+                    //padding={"30px"}
+                    width={showImage ? "500px" : "100%"}
+                    hideTitle={props.banner.hideTitle}
+                />
 
-                        background-image: url(${backgroundImageUrl});
-                        background-position: ${props.banner
-                            .backgroundImagePosition};
-                    `}
-                >
-                    {/* there should always be imageCredits, but they may not
-                        have arrived yet */}
-                    {props.banner.backgroundImage?.credits && (
-                        <ImageCreditsTooltip
-                            imageCredits={
-                                // we could make this markdown eventually but for now it's just a string
-                                <span>
-                                    props.banner.backgroundImage?.credits
-                                </span>
+                {showImage && (
+                    <div
+                        css={css`
+                            display: flex;
+                            flex-direction: column;
+                            flex-grow: 1;
+                            overflow: hidden;
+                            background-size: cover;
+                            margin-left: 20px;
+                            * {
+                                color: white;
                             }
-                        />
-                    )}
-                </div>
-            )}
+
+                            background-image: url(${backgroundImageUrl});
+                            background-position: ${props.banner
+                                .backgroundImagePosition};
+                        `}
+                    >
+                        {/* there should always be imageCredits, but they may not
+                        have arrived yet */}
+                        {props.banner.backgroundImage?.credits && (
+                            <ImageCreditsTooltip
+                                imageCredits={
+                                    // we could make this markdown eventually but for now it's just a string
+                                    <span>
+                                        props.banner.backgroundImage?.credits
+                                    </span>
+                                }
+                            />
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
