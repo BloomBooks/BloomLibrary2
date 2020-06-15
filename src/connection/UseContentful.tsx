@@ -15,7 +15,11 @@ export function useContentful(
             .getEntries({ include: 10, ...query })
             .then((entries: any) =>
                 setResults({ queryString, result: entries.items })
-            );
+            )
+            .catch((err: Error) => {
+                console.error(JSON.stringify(err));
+                throw err; // at least sentry will report it
+            });
         // We want to depend on query, but not in a way that causes a
         // new http request just because the client's render creates
         // a new object with the same content on each call.

@@ -9,23 +9,13 @@ import { ICollection } from "../model/ContentInterfaces";
 export const RowOfCollectionCardsForKey: React.FunctionComponent<{
     urlKey: string;
 }> = (props) => {
-    const { collection, error, loading } = useGetCollection(props.urlKey);
+    const { collection, loading } = useGetCollection(props.urlKey);
     if (loading) {
-        return null;
-    }
-
-    if (error) {
-        console.error(error);
         return null;
     }
 
     if (!collection) {
         return <PageNotFound />;
-    }
-
-    if (error) {
-        console.error(error);
-        return null;
     }
 
     if (collection.childCollections.length > 0) {

@@ -79,15 +79,8 @@ export const CollectionSubsetPage: React.FunctionComponent<{
 
     filters: string[]; // may result in automatically-created subcollections. Might be multiple ones slash-delimited
 }> = (props) => {
-    const { collection, error, loading } = useGetCollection(
-        props.collectionName
-    );
+    const { collection, loading } = useGetCollection(props.collectionName);
     if (loading) {
-        return null;
-    }
-
-    if (error) {
-        console.error(error);
         return null;
     }
 

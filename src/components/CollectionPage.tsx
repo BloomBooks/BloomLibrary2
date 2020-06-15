@@ -17,15 +17,8 @@ export const CollectionPage: React.FunctionComponent<{
 }> = (props) => {
     // remains empty (and unused) except in byLanguageGroups mode, when a callback sets it.
     const [booksAndLanguages, setBooksAndLanguages] = useState("");
-    const { collection, error, loading } = useGetCollection(
-        props.collectionName
-    );
+    const { collection, loading } = useGetCollection(props.collectionName);
     if (loading) {
-        return null;
-    }
-
-    if (error) {
-        console.error(error);
         return null;
     }
 

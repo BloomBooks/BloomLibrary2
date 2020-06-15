@@ -24,130 +24,8 @@ import { useContentful } from "../connection/UseContentful";
         Blurb
 */
 
-// If we don't find a contentful collection for language:xx, we create one.
-export function makeLanguageCollection(
-    templateCollection: ICollection,
-    explicitCollection: ICollection | undefined,
-    langCode: string,
-    languages: ILanguage[]
-): ICollection {
-    let languageDisplayName = getLanguageNamesFromCode(langCode!, languages)
-        ?.displayNameWithAutonym;
-    if (!languageDisplayName) languageDisplayName = langCode;
-    return {
-        // last wins
-        ...templateCollection,
-        ...explicitCollection,
-        urlKey: "language:" + langCode,
-        filter: { language: langCode },
-        // We need the label in [Template Language Collection] to be $1.
-        // Then we allow a override collection to define its own label, else we
-        // need it to have "$1" in the label.
-        label:
-            templateCollection.label.replace("$1", languageDisplayName) ||
-            languageDisplayName,
-    };
-}
-
-export function makeTopicCollection(
-    templateCollection: ICollection,
-    explicitCollection: ICollection | undefined,
-    topicName: string
-): ICollection {
-    // last wins
-    return {
-        iconForCardAndDefaultBanner: {
-            url: "none",
-            altText: "none",
-            credits: "none",
-        },
-        ...templateCollection,
-        ...explicitCollection,
-        urlKey: "topic:" + topicName,
-        label: templateCollection.label.replace("$1", topicName) || topicName,
-        filter: { topic: topicName },
-    };
-}
-
-export function makeCollectionForSearch(
-    templateCollection: ICollection,
-    search: string,
-    baseCollection?: ICollection
-): ICollection {
-    const filter = { ...baseCollection?.filter, search };
-    let label = 'Books matching "' + decodeURIComponent(search) + '"';
-    if (baseCollection?.label) {
-        label = baseCollection.label + " - " + label;
-    }
-    let urlKey = "search:" + search;
-    if (baseCollection?.urlKey) {
-        urlKey = baseCollection.urlKey + "/" + urlKey;
-    }
-    // Enhance: how can we modify title to indicate that it's restricted to books matching a search,
-    // given that it's some unknown contentful representation of a rich text?
-    const result: ICollection = {
-        ...templateCollection,
-        ...baseCollection,
-        filter,
-        label,
-        urlKey,
-    };
-    return result;
-}
-
-export function makeCollectionForPHash(
-    templateCollection: ICollection,
-    phash: string
-): ICollection {
-    // review: would it be cleaner to make phash a top-level field in filter?
-    // Would require changes to the LibraryQueryHooks function for interpreting
-    // filter. It's also remotely possible that losing the ability to type
-    // a phash: into the search box would be missed.
-    const filter = { search: "phash:" + phash };
-    const urlKey = "phash:" + phash;
-    const result: ICollection = {
-        ...templateCollection,
-        filter,
-        urlKey,
-        childCollections: [],
-    };
-    return result;
-}
-
-export function getDummyCollectionForPreview(bannerId: string): ICollection {
-    return {
-        label: "dummy",
-        urlKey: "dummy",
-        filter: {},
-        childCollections: [],
-        bannerId,
-        iconForCardAndDefaultBanner: undefined,
-        layout: "by-level",
-    };
-}
-// These are just for cards. At this point it would not be possible to override what we see on a topic
-// card. But once you click the card, then you're going to topic:foo and we would pick up any explicit
-// "topic:foo" collection.
-function makeTopicCollectionsForCards(): ICollection[] {
-    return kTopicList.map((t) =>
-        makeTopicCollection(
-            {
-                urlKey: "topic:" + t,
-                label: t,
-                childCollections: [],
-                filter: { topic: t },
-                bannerId: "", // this will never be used because it's just for the card
-                layout: "by-level", // this will never be used because it's just for the card
-            },
-            undefined,
-            t
-        )
-    );
-}
-
 interface IContentfulCollectionQueryResponse {
     collection?: ICollection;
-    error?: object; // whatever useContentful gives us if something goes wrong.
     loading: boolean; // Hook response loading || !fetched, that is, we don't actually have a result yet
 }
 
@@ -170,61 +48,22 @@ export function useGetCollection(
     if (nameParts.length > 1) {
         templateKey = `[Template ${Capitalize(nameParts[0])} Collection]`;
     }
-    // const [results, setResults] = useState<{
-    //     collectionName: string;
-    //     result: any[] | undefined;
-    // }>({ collectionName: "", result: undefined });
 
     const { loading, result } = useContentful({
         content_type: "collection",
         "fields.urlKey[in]": `${collectionName},${templateKey}`,
         include: 10,
     });
-    if (loading || !result) {
+    if (loading) {
         return { loading: true };
     }
-    // useEffect(() => {
-    //     getContentfulClient()
-    //         .getEntries({
-    //             content_type: "collection",
-    //             "fields.urlKey[in]": `${collectionName},${templateKey}`,
-    //             include: 10,
-    //         })
-    //         .then((entries) =>
-    //             setResults({ collectionName, result: entries.items })
-    //         );
-    // }, [collectionName, templateKey]);
 
-    // if (
-    //     !results ||
-    //     !results.result ||
-    //     results.collectionName !== collectionName
-    // ) {
-    //     return { loading: true };
-    // }
+    const collections: any[] = result!;
 
-    // const { data, error, fetched, loading } = useContentful({
-    //     contentType: "collection",
-    //     query: {
-    //         "fields.urlKey[in]": `${collectionName},${templateKey}`,
-    //     },
-    // });
-
-    // if (loading || !fetched) {
-    //     return { collection: undefined, loading: true };
-    // }
-
-    // if (error) {
-    //     console.error(error);
-    //     return { collection: undefined, error, loading: false };
-    // }
-
-    // if (!data || (data as any).items.length === 0) {
-    //     return { loading: false };
-    // }
-    const collections: any[] = result;
-
-    assert(collections.length > 0);
+    assert(
+        collections.length > 0,
+        `No collections were returned for ${collectionName} or ${templateKey}`
+    );
     assert(collections.length < 3);
     let templateFacetCollection: ICollection | undefined;
     let explicitCollection: ICollection | undefined;
@@ -335,6 +174,132 @@ function getFacetCollection(
         default:
             throw Error(`Unknown facet: ${facet}`);
     }
+}
+
+// If we don't find a contentful collection for language:xx, we create one.
+export function makeLanguageCollection(
+    templateCollection: ICollection,
+    explicitCollection: ICollection | undefined,
+    langCode: string,
+    languages: ILanguage[]
+): ICollection {
+    let languageDisplayName = getLanguageNamesFromCode(langCode!, languages)
+        ?.displayNameWithAutonym;
+    if (!languageDisplayName) languageDisplayName = langCode;
+
+    // We need the label in [Template Language Collection] to be $1.
+    // Then we allow an explicit collection to define its own label, else we
+    // need it to have "$1" in the label.
+
+    let label = explicitCollection?.label
+        ? explicitCollection.label.replace("$1", languageDisplayName)
+        : templateCollection.label.replace("$1", languageDisplayName);
+    // if we still don't have anything
+    label = label || languageDisplayName;
+    return {
+        // last wins
+        ...templateCollection,
+        ...explicitCollection,
+        urlKey: "language:" + langCode,
+        filter: { language: langCode },
+        label,
+    };
+}
+
+export function makeTopicCollection(
+    templateCollection: ICollection,
+    explicitCollection: ICollection | undefined,
+    topicName: string
+): ICollection {
+    // last wins
+    return {
+        iconForCardAndDefaultBanner: {
+            url: "none",
+            altText: "none",
+            credits: "none",
+        },
+        ...templateCollection,
+        ...explicitCollection,
+        urlKey: "topic:" + topicName,
+        label: templateCollection.label.replace("$1", topicName) || topicName,
+        filter: { topic: topicName },
+    };
+}
+
+export function makeCollectionForSearch(
+    templateCollection: ICollection,
+    search: string,
+    baseCollection?: ICollection
+): ICollection {
+    const filter = { ...baseCollection?.filter, search };
+    let label = 'Books matching "' + decodeURIComponent(search) + '"';
+    if (baseCollection?.label) {
+        label = baseCollection.label + " - " + label;
+    }
+    let urlKey = "search:" + search;
+    if (baseCollection?.urlKey) {
+        urlKey = baseCollection.urlKey + "/" + urlKey;
+    }
+    // Enhance: how can we modify title to indicate that it's restricted to books matching a search,
+    // given that it's some unknown contentful representation of a rich text?
+    const result: ICollection = {
+        ...templateCollection,
+        ...baseCollection,
+        filter,
+        label,
+        urlKey,
+    };
+    return result;
+}
+
+export function makeCollectionForPHash(
+    templateCollection: ICollection,
+    phash: string
+): ICollection {
+    // review: would it be cleaner to make phash a top-level field in filter?
+    // Would require changes to the LibraryQueryHooks function for interpreting
+    // filter. It's also remotely possible that losing the ability to type
+    // a phash: into the search box would be missed.
+    const filter = { search: "phash:" + phash };
+    const urlKey = "phash:" + phash;
+    const result: ICollection = {
+        ...templateCollection,
+        filter,
+        urlKey,
+        childCollections: [],
+    };
+    return result;
+}
+
+export function getDummyCollectionForPreview(bannerId: string): ICollection {
+    return {
+        label: "dummy",
+        urlKey: "dummy",
+        filter: {},
+        childCollections: [],
+        bannerId,
+        iconForCardAndDefaultBanner: undefined,
+        layout: "by-level",
+    };
+}
+// These are just for cards. At this point it would not be possible to override what we see on a topic
+// card. But once you click the card, then you're going to topic:foo and we would pick up any explicit
+// "topic:foo" collection.
+function makeTopicCollectionsForCards(): ICollection[] {
+    return kTopicList.map((t) =>
+        makeTopicCollection(
+            {
+                urlKey: "topic:" + t,
+                label: t,
+                childCollections: [],
+                filter: { topic: t },
+                bannerId: "", // this will never be used because it's just for the card
+                layout: "by-level", // this will never be used because it's just for the card
+            },
+            undefined,
+            t
+        )
+    );
 }
 
 /* We're thinking (but not certain) that we just want to treat keyword lookups as searches (which will of course

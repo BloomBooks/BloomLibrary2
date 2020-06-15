@@ -159,10 +159,8 @@ const CollectionCrumb: React.FunctionComponent<{
     collectionName: string;
     previousBreadcrumbs: string[];
 }> = (props) => {
-    const { collection, error } = useGetCollection(props.collectionName);
-    if (error) {
-        console.log(error);
-    }
+    const { collection } = useGetCollection(props.collectionName);
+
     let text = props.collectionName;
     if (collection) {
         text = collection.label;

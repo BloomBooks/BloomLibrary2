@@ -20,22 +20,6 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
         return null;
     }
 
-    // const { data, error, fetched, loading } = getContentfulClient().getEntries({
-    //     contentType: "page",
-    //     query: {
-    //         "fields.urlKey": `${props.urlKey}`,
-    //     },
-    //     include:10
-    // });
-    // if (loading || !fetched) {
-    //     return null;
-    // }
-
-    // if (error) {
-    //     console.error(error);
-    //     return null;
-    // }
-
     if (!data || !(data as any).items || (data as any).items.length === 0) {
         return <PageNotFound />;
     }
