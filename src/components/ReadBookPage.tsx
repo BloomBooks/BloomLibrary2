@@ -21,6 +21,8 @@ export const ReadBookPage: React.FunctionComponent<{}> = (props) => {
                 const r = JSON.parse(event.data);
                 if (r.messageType === "backButtonClicked") {
                     history.goBack();
+                    // without a timeout, sometimes this works, sometimes it doesn't
+                    window.setTimeout(() => history.goBack(), 200);
                 }
             } catch (err) {
                 console.log(`Got error with message: ${err}`);
