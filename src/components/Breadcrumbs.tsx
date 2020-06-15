@@ -88,7 +88,7 @@ export const Breadcrumbs: React.FunctionComponent = () => {
             />
         );
     });
-    if (!isBook && collectionName !== "root.read") {
+    if (!isBook && !["root.read", "grid", "bulk"].includes(collectionName)) {
         // Enhance: if there are no filters, this doesn't need to be a link.
         crumbs.push(
             <CollectionCrumb
