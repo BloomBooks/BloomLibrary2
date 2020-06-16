@@ -20,6 +20,8 @@ import {
 } from "./ArtifactHelper";
 import { OSFeaturesContext } from "../../components/OSFeaturesContext";
 import { ArtifactVisibilitySettings } from "../../model/ArtifactVisibilitySettings";
+import { getBookDetailsParams } from "./BookDetail";
+import { track } from "../../Analytics";
 
 interface IArtifactUI {
     icon: string;
@@ -28,10 +30,12 @@ interface IArtifactUI {
     settings: ArtifactVisibilitySettings | undefined;
     enabled: boolean;
     hidden?: boolean | undefined;
+    analyticsType: string;
 }
 
 export const ArtifactGroup: React.FunctionComponent<{
     book: Book;
+    contextLangIso?: string;
 }> = observer((props) => {
     const { bloomReaderAvailable, cantUseBloomD, mobile } = useContext(
         OSFeaturesContext
@@ -94,6 +98,7 @@ export const ArtifactGroup: React.FunctionComponent<{
                         settings: pdfSettings,
                         enabled: pdfSettings?.decision === true,
                         hidden: hidePdfButton,
+                        analyticsType: "pdf",
                     },
                     {
                         icon: ePUBIcon,
@@ -102,6 +107,7 @@ export const ArtifactGroup: React.FunctionComponent<{
                         settings: epubSettings,
                         enabled: epubSettings?.decision === true,
                         hidden: hideEpubButton,
+                        analyticsType: "epub",
                     },
                     {
                         icon: bloomReaderIcon,
@@ -110,8 +116,12 @@ export const ArtifactGroup: React.FunctionComponent<{
                         settings: bloomReaderSettings,
                         enabled: haveABloomDToDownload,
                         hidden: !showBloomReaderButton,
+                        analyticsType: "bloomd",
                     },
                 ].map((a: IArtifactUI) => {
+                    const artifactUrl = getArtifactUrl(props.book, a.type);
+                    const parts = artifactUrl.split("/");
+                    const fileName = parts[parts.length - 1];
                     return (
                         !a.hidden && (
                             <Tooltip
@@ -138,11 +148,18 @@ export const ArtifactGroup: React.FunctionComponent<{
                                         ></div>
                                     )}
                                     <a
-                                        href={getArtifactUrl(
-                                            props.book,
-                                            a.type
-                                        )}
+                                        href={artifactUrl}
+                                        // prevents page reloading!
+                                        download={fileName}
                                         key={a.alt}
+                                        onClick={() => {
+                                            const params = getBookDetailsParams(
+                                                props.book,
+                                                props.contextLangIso,
+                                                a.analyticsType
+                                            );
+                                            track("Download Book", params);
+                                        }}
                                     >
                                         <img src={a.icon} alt={a.alt} />
                                     </a>

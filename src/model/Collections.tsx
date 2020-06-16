@@ -236,7 +236,7 @@ export function makeCollectionForSearch(
     if (baseCollection?.label) {
         label = baseCollection.label + " - " + label;
     }
-    let urlKey = "search:" + search;
+    let urlKey = ":search:" + search;
     if (baseCollection?.urlKey) {
         urlKey = baseCollection.urlKey + "/" + urlKey;
     }

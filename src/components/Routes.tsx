@@ -61,15 +61,28 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                 )}
             ></Route>
             <Route
-                path="/:breadcrumbs*/book/:id"
+                path="/:prefixes*/book/:id"
                 render={({ match }) => {
-                    return <BookDetail id={match.params.id} />;
+                    return (
+                        <BookDetail
+                            id={match.params.id}
+                            prefixes={match.params.prefixes}
+                        />
+                    );
                 }}
             />
 
-            <Route path="/player/:id">
-                <ReadBookPage />
-            </Route>
+            <Route
+                path="/player/:id/:language?"
+                render={({ match }) => {
+                    return (
+                        <ReadBookPage
+                            id={match.params.id}
+                            contextLangIso={match.params.language}
+                        />
+                    );
+                }}
+            />
             <Route path="/about">
                 <ContentfulPage urlKey="about" />
             </Route>

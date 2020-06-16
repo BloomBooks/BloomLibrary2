@@ -10,10 +10,13 @@ import TranslationIcon from "./translation.svg";
 import { getArtifactUrl, ArtifactType } from "./ArtifactHelper";
 import { Book } from "../../model/Book";
 import { commonUI } from "../../theme";
+import { track } from "../../Analytics";
+import { getBookDetailsParams } from "./BookDetail";
 
 export const TranslateButton: React.FunctionComponent<{
     book: Book;
     fullWidth?: boolean;
+    contextLangIso?: string;
 }> = (props) => {
     return (
         <Button
@@ -37,6 +40,14 @@ export const TranslateButton: React.FunctionComponent<{
             startIcon={
                 <img alt="Download Translation Icon" src={TranslationIcon} />
             }
+            onClick={() => {
+                const params = getBookDetailsParams(
+                    props.book,
+                    props.contextLangIso,
+                    "shell"
+                );
+                track("Download Book", params);
+            }}
             /* TODO: give some UI around this. See BL-8111 */
             href={getArtifactUrl(props.book, ArtifactType.shellbook)}
         >

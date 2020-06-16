@@ -209,21 +209,23 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
             >
                 {showReadOnLine && (
                     <ReadButton
-                        id={props.book.id}
+                        book={props.book}
                         fullWidth={fullWidthButtons}
-                        preferredLanguageIso={props.contextLangIso}
+                        contextLangIso={props.contextLangIso}
                     />
                 )}
                 {showTranslateButton && (
                     <TranslateButton
                         book={props.book}
                         fullWidth={fullWidthButtons}
+                        contextLangIso={props.contextLangIso}
                     />
                 )}
                 {showBloomReaderButton && (
                     <ReadOfflineButton
                         book={props.book}
                         fullWidth={fullWidthButtons}
+                        contextLangIso={props.contextLangIso}
                     />
                 )}
             </div>

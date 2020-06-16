@@ -7,6 +7,9 @@ import { BookCardGroup } from "./BookCardGroup";
 export const ByLevelGroups: React.FunctionComponent<{
     collection: ICollection;
 }> = (props) => {
+    const contextLangIso = props.collection.urlKey.startsWith("language:")
+        ? props.collection.urlKey.substring("language:".length)
+        : undefined;
     return (
         <React.Fragment>
             {["1", "2", "3", "4"].map((level) => (
@@ -14,6 +17,7 @@ export const ByLevelGroups: React.FunctionComponent<{
                     key={level}
                     title={"Level " + level}
                     collection={makeCollectionForLevel(props.collection, level)}
+                    contextLangIso={contextLangIso}
                 />
             ))}
 
@@ -23,6 +27,7 @@ export const ByLevelGroups: React.FunctionComponent<{
                 title="Books for which we are missing levels"
                 rows={99}
                 collection={makeCollectionForLevel(props.collection, "empty")}
+                contextLangIso={contextLangIso}
             />
         </React.Fragment>
     );

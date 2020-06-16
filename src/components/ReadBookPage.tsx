@@ -8,10 +8,15 @@ import React, { useEffect, useCallback } from "react";
 import { useGetBookDetail } from "../connection/LibraryQueryHooks";
 import { Book } from "../model/Book";
 import { getUrlOfHtmlOfDigitalVersion } from "./BookDetail/ArtifactHelper";
-import { useParams, useLocation, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+import { useTrack } from "../Analytics";
+import { getBookDetailsParams } from "./BookDetail/BookDetail";
 
-export const ReadBookPage: React.FunctionComponent<{}> = (props) => {
-    const { id } = useParams();
+export const ReadBookPage: React.FunctionComponent<{
+    id: string;
+    contextLangIso?: string;
+}> = (props) => {
+    const id = props.id;
     const history = useHistory();
 
     const handleMessageFromBloomPlayer = useCallback(
@@ -39,15 +44,20 @@ export const ReadBookPage: React.FunctionComponent<{}> = (props) => {
     }, [handleMessageFromBloomPlayer]);
 
     const book = useGetBookDetail(id);
-    const query = new URLSearchParams(useLocation().search);
+    useTrack(
+        "Download Book",
+        getBookDetailsParams(book, props.contextLangIso, "read"),
+        !!book
+    );
     const url = book ? getUrlOfHtmlOfDigitalVersion(book) : "working"; // url=working shows a loading icon
 
     // use the bloomplayer.htm we copy into our public/ folder, where CRA serves from
     // TODO: this isn't working with react-router, but I don't know how RR even gets run inside of this iframe
     const bloomPlayerUrl = "/bloom-player/bloomplayer.htm";
 
-    const lang = query.get("lang") || "";
-    const langParam = lang ? `&lang=${lang}` : "";
+    const langParam = props.contextLangIso
+        ? `&lang=${props.contextLangIso}`
+        : "";
 
     const iframeSrc = `${bloomPlayerUrl}?url=${url}&showBackButton=true&useOriginalPageSize=true${langParam}`;
 

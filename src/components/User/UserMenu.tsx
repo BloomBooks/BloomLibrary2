@@ -14,6 +14,7 @@ import { ShowLoginDialog } from "./LoginDialog";
 import { observer } from "mobx-react";
 import { logout as logoutFromParseServer } from "../../connection/ParseServerConnection";
 import Avatar from "react-avatar";
+import { track } from "../../Analytics";
 
 // This React component displays a button for functions related to the user who may
 // be logged in. If no user is logged in, it displays a generic icon with pull-down
@@ -27,7 +28,7 @@ interface IProps extends React.HTMLProps<HTMLDivElement> {
     buttonHeight: string;
 }
 
-export const UserMenu: React.FunctionComponent<IProps> = observer(props => {
+export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
     // This variable is used according to an apparently standard but rather
     // obscure convention for managing Material button/menu combinations.
     // When the menu is hidden, it is null. When the menu is showing, it
@@ -73,13 +74,31 @@ export const UserMenu: React.FunctionComponent<IProps> = observer(props => {
     useEffect(
         () =>
             firebase.auth().onAuthStateChanged(() => {
+                // If someone is now logged in, and it wasnt' who we previously had logged
+                // in (or more likely no one was previously logged in), report login
+                if (
+                    firebase.auth()?.currentUser?.email &&
+                    loggedInUser?.email !== firebase.auth()?.currentUser?.email
+                ) {
+                    // In previous blorg, we tracked the user name, but we're avoiding PII now.
+                    track("Log In", {});
+                }
+                // If no one is now logged in and someone was, report logout.
+                // Review: we won't (and probably can't?) get a report when the browser
+                // or tab shuts down and similar.
+                if (
+                    !firebase.auth()?.currentUser?.email &&
+                    loggedInUser?.email
+                ) {
+                    track("Log Out", {});
+                }
                 setLoggedInUser(firebase.auth().currentUser);
                 // console.log(
                 //     "$$$$$$$$$$$$ onAuthStateChanged " +
                 //         firebase.auth().currentUser
                 // );
             }),
-        []
+        [loggedInUser]
     );
 
     const showMenu = (ev: any) => {

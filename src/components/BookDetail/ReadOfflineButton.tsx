@@ -10,15 +10,35 @@ import BloomPubIcon from "./BloomPubWhite.svg";
 import { commonUI } from "../../theme";
 import { getArtifactUrl, ArtifactType } from "./ArtifactHelper";
 import { Book } from "../../model/Book";
+import { getBookDetailsParams } from "./BookDetail";
+import { track } from "../../Analytics";
 
 interface IProps {
     book: Book;
     fullWidth?: boolean;
+    contextLangIso?: string;
 }
 export const ReadOfflineButton: React.FunctionComponent<IProps> = (props) => {
+    const artifactUrl = getArtifactUrl(props.book, ArtifactType.bloomReader);
+    const parts = artifactUrl.split("/");
+    const fileName = parts[parts.length - 1];
     return (
         // A link to download the .bloomd file
-        <a href={getArtifactUrl(props.book, ArtifactType.bloomReader)}>
+        <a
+            href={artifactUrl}
+            // This is more than a hint. Without an explicit download attribute,
+            // the browser will reload the whole SPA as it first tries to navigate
+            // to the URL, then discovers that it's just a download.
+            download={fileName}
+            onClick={() => {
+                const params = getBookDetailsParams(
+                    props.book,
+                    props.contextLangIso,
+                    "bloomd"
+                );
+                track("Download Book", params);
+            }}
+        >
             <Button
                 variant="contained"
                 color="secondary"

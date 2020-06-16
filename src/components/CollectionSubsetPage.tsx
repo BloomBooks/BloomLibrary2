@@ -3,7 +3,7 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { ListOfBookGroups } from "./ListOfBookGroups";
 import { ByLevelGroups, makeCollectionForLevel } from "./ByLevelGroups";
@@ -14,6 +14,9 @@ import {
 } from "../model/Collections";
 import { makeCollectionForTopic, ByTopicsGroups } from "./ByTopicsGroups";
 import { ICollection } from "../model/ContentInterfaces";
+import { getBookSearchParams } from "./CollectionPage";
+import { track } from "../Analytics";
+import { BookCount } from "./BookCount";
 
 // Given a collection and a string like level:1/topic:anthropology/search:dogs,
 // creates a corresponding collection by adding appropriate filters.
@@ -76,10 +79,10 @@ export function generateCollectionFromFilters(
 // There can be multiple levels of subset, as in collection/level:2/topic:animal stories/search:dogs
 export const CollectionSubsetPage: React.FunctionComponent<{
     collectionName: string; // may have tilde's, after last tilde is a contentful collection urlKey
-
     filters: string[]; // may result in automatically-created subcollections. Might be multiple ones slash-delimited
 }> = (props) => {
     const { collection, loading } = useGetCollection(props.collectionName);
+
     if (loading) {
         return null;
     }
@@ -117,6 +120,20 @@ export const CollectionSubsetPage: React.FunctionComponent<{
             );
         }
     }
+    const sendAnalytics = (count: number) => {
+        // This feels as if it should be in a useEffect since it's doing
+        // something side-effect-y. But all the hard work is being done
+        // by the BookCount component, which promises to call this function
+        // exactly once per filter, however many times we render.
+        // I was not able to achieve the same with useEffect.
+        const parts = subcollection.urlKey.split("/");
+        if (parts.length === 2 && parts[1].startsWith(":search:")) {
+            const match = parts[1].substring(":search:".length);
+            track("Search", { match, count });
+        }
+        const { params } = getBookSearchParams(subcollection);
+        track("Book Search", params);
+    };
     return (
         <React.Fragment>
             <div
@@ -125,7 +142,12 @@ export const CollectionSubsetPage: React.FunctionComponent<{
                 `}
             >
                 <Breadcrumbs />
+                <BookCount
+                    filter={subcollection.filter}
+                    reportCount={sendAnalytics}
+                />
             </div>
+
             {/* <SearchBanner filter={props.filter} /> */}
             <ListOfBookGroups>{subList}</ListOfBookGroups>
         </React.Fragment>

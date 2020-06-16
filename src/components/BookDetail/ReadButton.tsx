@@ -8,11 +8,14 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import ReadIcon from "./read.svg";
 import { commonUI } from "../../theme";
+import { track } from "../../Analytics";
+import { getBookDetailsParams } from "./BookDetail";
+import { Book } from "../../model/Book";
 
 interface IProps {
-    id: string;
+    book: Book;
     fullWidth?: boolean;
-    preferredLanguageIso?: string;
+    contextLangIso?: string;
 }
 export const ReadButton: React.FunctionComponent<IProps> = (props) => {
     return (
@@ -38,10 +41,11 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
                 margin-bottom: 10px !important;
                 float: right;
             `}
-            onClick={() =>
-                //router!.pushBookRead(props.id, props.preferredLanguageIso)
-                (window.location.href = `/player/${props.id}`)
-            }
+            onClick={() => {
+                window.location.href =
+                    `/player/${props.book.id}` +
+                    (props.contextLangIso ? "/" + props.contextLangIso : "");
+            }}
         >
             <h1
                 css={css`

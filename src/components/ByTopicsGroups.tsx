@@ -8,12 +8,16 @@ import { kTopicList } from "../model/ClosedVocabularies";
 export const ByTopicsGroups: React.FunctionComponent<{
     collection: ICollection;
 }> = (props) => {
+    const contextLangIso = props.collection.urlKey.startsWith("language:")
+        ? props.collection.urlKey.substring("language:".length)
+        : undefined;
     return (
         <React.Fragment>
             {kTopicList.map((topic) => (
                 <BookCardGroup
                     key={topic}
                     collection={makeCollectionForTopic(props.collection, topic)}
+                    contextLangIso={contextLangIso}
                 />
             ))}
 
@@ -23,6 +27,7 @@ export const ByTopicsGroups: React.FunctionComponent<{
             <BookCardGroup
                 rows={99}
                 collection={makeCollectionForTopic(props.collection, "empty")}
+                contextLangIso={contextLangIso}
             />
         </React.Fragment>
     );

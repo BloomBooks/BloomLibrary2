@@ -26,10 +26,10 @@ storiesOf("BookDetail", module)
     .add("Beautiful Day", () => <BookDetail id={"lhQnYpvD9p"} />)
     .add("ReadBookPage", () => (
         <ReadBookPage
-        // id={
-        //     // this is "the women who married bats" from dev.bloomlibrary.org
-        //     "0oh7hURGtT"
-        // }
+            id={
+                // this is "the women who married bats" from dev.bloomlibrary.org
+                "0oh7hURGtT"
+            }
         />
     ));
 storiesOf("BookCard", module).add("simple", () => {

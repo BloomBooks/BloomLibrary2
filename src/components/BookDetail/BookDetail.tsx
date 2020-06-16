@@ -12,7 +12,7 @@ import TranslationIcon from "./translation.svg";
 import { IconButton, Divider, Link } from "@material-ui/core";
 import { Alert } from "../Alert";
 
-import { observer } from "mobx-react";
+import { observer, PropTypes } from "mobx-react";
 import { BookExtraPanels } from "./BookExtraPanels";
 import { MetadataGroup } from "./MetadataGroup";
 import { ArtifactGroup } from "./ArtifactGroup";
@@ -21,14 +21,22 @@ import { ReportButton } from "./ReportButton";
 import { OSFeaturesContext } from "../../components/OSFeaturesContext";
 import { commonUI } from "../../theme";
 import { Breadcrumbs } from "../Breadcrumbs";
+import { useTrack } from "../../Analytics";
+import { splitPathname } from "../Routes";
 
 interface IProps {
     id: string;
-    contextLangIso?: string;
+    prefixes?: string;
 }
 const BookDetail: React.FunctionComponent<IProps> = (props) => {
     const id = props.id;
     const book = useGetBookDetail(id);
+    const contextLangIso = getContextLang(props.prefixes);
+    useTrack(
+        "Book Detail",
+        getBookDetailsParams(book, contextLangIso, undefined, props.prefixes),
+        !!book
+    );
     if (book === undefined) {
         return <div>Loading...</div>;
     } else if (book === null) {
@@ -38,12 +46,82 @@ const BookDetail: React.FunctionComponent<IProps> = (props) => {
             <React.StrictMode>
                 <BookDetailInternal
                     book={book}
-                    contextLangIso={props.contextLangIso}
+                    contextLangIso={contextLangIso}
                 ></BookDetailInternal>
             </React.StrictMode>
         );
     }
 };
+
+function getContextLang(prefixes?: string): string | undefined {
+    if (!prefixes) {
+        return undefined;
+    }
+    const parts = prefixes.split("/");
+    const langPart = parts.find((x) => x.startsWith("language:"));
+    if (!langPart) {
+        return undefined;
+    }
+    return langPart.substring("language:".length);
+}
+
+export interface IBookAnalyticsParams {
+    bookID?: string;
+    title?: string;
+    publisher?: string;
+    topic?: string;
+    level?: string;
+    language?: string;
+    type?: string;
+    source?: string;
+}
+
+export function getBookDetailsParams(
+    book: Book | null | undefined,
+    lang: string | undefined,
+    type: string | undefined,
+    prefixes?: string
+): IBookAnalyticsParams {
+    const topicTag = (book?.tags || []).find((x) => x.startsWith("topic:"));
+    const topic = topicTag ? topicTag.substring("topic:".length) : "";
+    let level = book?.level;
+    if (!level) {
+        const computedLevelTag = (book?.tags || []).find((x) =>
+            x.startsWith("computedLevel:")
+        );
+        if (computedLevelTag) {
+            level = computedLevelTag.substring("computedLevel:".length);
+        }
+    }
+    const result: IBookAnalyticsParams = {
+        bookID: book?.id,
+        title: book?.title,
+        publisher: book?.publisher,
+        topic,
+        level,
+    };
+    if (lang) {
+        result.language = lang;
+    }
+    if (type) {
+        result.type = type;
+    }
+    if (prefixes) {
+        // The idea here is that our spec calls for the pathname
+        // not to include breadcrumbs, that is, it should just indicate
+        // the collection, including any filters.
+        // The split extracts the collectionName, and then we re-attach the filters.
+        // However, currently, I believe book detail is never invoked
+        // with a url including either breadcrumbs or filters, just {/collection urlkey}/book/id.
+        // So we'd get the same result (but be less future-proof)
+        // by ust setting result.source to filters.
+        const { collectionName, filters } = splitPathname(prefixes);
+        const pathParts = filters.map((x) => ":" + x);
+        pathParts.splice(0, 0, collectionName);
+        result.source = pathParts.join("/");
+    }
+    return result;
+}
 
 export const BookDetailInternal: React.FunctionComponent<{
     book: Book;

@@ -10,6 +10,8 @@ import { LanguageGroup } from "./LanguageGroup";
 import { BookCardGroup } from "./BookCardGroup";
 import { ByLanguageGroups } from "./ByLanguageGroups";
 import { ByTopicsGroups } from "./ByTopicsGroups";
+import { useTrack } from "../Analytics";
+import { ICollection } from "../model/ContentInterfaces";
 
 export const CollectionPage: React.FunctionComponent<{
     collectionName: string;
@@ -18,6 +20,8 @@ export const CollectionPage: React.FunctionComponent<{
     // remains empty (and unused) except in byLanguageGroups mode, when a callback sets it.
     const [booksAndLanguages, setBooksAndLanguages] = useState("");
     const { collection, loading } = useGetCollection(props.collectionName);
+    const { params, sendIt } = getBookSearchParams(collection);
+    useTrack("Book Search", params, sendIt);
     if (loading) {
         return null;
     }
@@ -106,3 +110,57 @@ export const CollectionPage: React.FunctionComponent<{
         </div>
     );
 };
+
+interface ISearchParamsResult {
+    params: object;
+    sendIt: boolean;
+}
+
+export function getBookSearchParams(
+    collection: ICollection | undefined
+): ISearchParamsResult {
+    if (!collection) {
+        return { params: {}, sendIt: false };
+    }
+    const segments = collection.urlKey.split("/");
+    const search = segments.find((x) => x.startsWith(":search:"));
+    const params = {
+        pathname: collection.urlKey,
+        shelf: segments[0],
+        // This is for compatibility with old bloom library, which expected this field.
+        // Blorg2 does not currently filter for CC licence, so in effect it is always
+        // true for our queries.
+        allLicenses: "true",
+        features: [] as string[],
+        searchString: search ? search.substring(":search:".length) : "",
+        lang: "",
+        tag: "",
+    };
+
+    if (collection.filter?.feature) {
+        params.features = collection.filter.feature.split(" OR ");
+    }
+    // enhance: may also want to look for segments starting with feature: if we implement that
+
+    if (segments[0].startsWith("language:")) {
+        params.lang = segments[0].substring("language:".length);
+    }
+    // enhance: may also want to consider collection.filter.language or
+    // later segments starting with :language:, but neither is used currently.
+
+    const tags = [];
+
+    if (collection.filter?.topic) {
+        tags.push("topic:" + collection.filter.topic);
+    }
+    if (collection.filter?.otherTags) {
+        tags.splice(tags.length, 0, collection.filter.otherTags);
+    }
+    const level = segments.find((x) => x.startsWith(":level:"));
+    if (level) {
+        tags.push(level.substring(1));
+    }
+    params.tag = tags.join(",");
+
+    return { params, sendIt: true };
+}
