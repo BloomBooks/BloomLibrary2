@@ -111,16 +111,16 @@ export const Footer: React.FunctionComponent = () => {
                     display: flex;
                 `}
             >
+                {/* Disabled until we fix the footer links and make content
+                            See BL-8623
                 <BlorgLink href="support">Support</BlorgLink>
                 {separator}
                 <BlorgLink href="downloads">Downloads</BlorgLink>
                 {separator}
                 <BlorgLink href="TermsOfUse">Terms of Use</BlorgLink>
                 {separator}
-                <BlorgLink href="PrivacyPolicy">Privacy Policy</BlorgLink>
+                   <BlorgLink href="PrivacyPolicy">Privacy Policy</BlorgLink> */}
             </div>
-
-            {/* Bottom Row */}
 
             <div
                 css={css`
