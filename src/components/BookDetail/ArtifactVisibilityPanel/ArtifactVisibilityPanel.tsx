@@ -13,7 +13,7 @@ import {
     ArtifactType,
     getArtifactUrl,
     getArtifactVisibilitySettings,
-    getArtifactTypeFromKey
+    getArtifactTypeFromKey,
 } from "../ArtifactHelper";
 import { Book } from "../../../model/Book";
 
@@ -25,7 +25,7 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
     currentUserIsUploader?: boolean;
     currentUserIsModerator?: boolean;
     onChange?: () => {};
-}> = props => {
+}> = (props) => {
     const book = props.book;
     if (!book) return <React.Fragment></React.Fragment>;
     if (!book.harvestState || book.harvestState !== "Done")
@@ -74,7 +74,7 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
         // but we want the resulting array to have the keys in the same
         // order as they appear in the enum. And we don't want any unexpected
         // keys which don't appear in the enum.
-        return Object.keys(ArtifactType).filter(artifactTypeKey => {
+        return Object.keys(ArtifactType).filter((artifactTypeKey) => {
             return (
                 book.artifactsToOfferToUsers[
                     getArtifactTypeFromKey(artifactTypeKey)
@@ -117,7 +117,7 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
                                     )!
                                 }
                                 url={getArtifactUrl(book, artifactType)}
-                                onChange={showSetting =>
+                                onChange={(showSetting) =>
                                     handleChange(artifactType, showSetting)
                                 }
                                 currentUserIsUploader={
@@ -144,15 +144,20 @@ export const StandAloneHarvesterArtifactUserControl: React.FunctionComponent<{
     currentUserIsUploader?: boolean;
     currentUserIsModerator?: boolean;
     onChange?: () => {};
-}> = props => {
+}> = (props) => {
     const book = useGetBookDetail(props.bookId);
-    if (!book) return <React.Fragment></React.Fragment>;
-    return (
-        <HarvesterArtifactUserControl
-            {...props}
-            book={book}
-        ></HarvesterArtifactUserControl>
-    );
+    if (book === undefined) {
+        return <div>Loading...</div>;
+    } else if (book === null) {
+        return <div>Sorry, we could not find that book.</div>;
+    } else {
+        return (
+            <HarvesterArtifactUserControl
+                {...props}
+                book={book}
+            ></HarvesterArtifactUserControl>
+        );
+    }
 };
 
 // This is what we use if the show column is not populated in parse.

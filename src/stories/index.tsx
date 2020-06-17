@@ -194,10 +194,7 @@ const toTriStateString = (value: boolean | undefined) => {
 };
 storiesOf("Harvester Artifact Control", module)
     .add("Entire Control", () => (
-        // <StandAloneHarvesterArtifactUserControl bookId="65XiBsxtYS" /> //dev
-        // <StandAloneHarvesterArtifactUserControl bookId="WQvJ1kBoHE" /> //dev
-        // <StandAloneHarvesterArtifactUserControl bookId="TgERGZnLVW" /> //dev
-        <StandAloneHarvesterArtifactUserControl bookId="jnG2YFeIIG" /> //prod
+        <StandAloneHarvesterArtifactUserControl bookId="5gELSjYesr" />
     ))
     .add("ArtifactAndChoice", () => (
         <>
