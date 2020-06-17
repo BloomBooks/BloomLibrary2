@@ -49,11 +49,5 @@ export const ContentfulBanner: React.FunctionComponent<{
         (data as any).then(() => setGotData(true));
         return null;
     }
-    return (
-        <Banner
-            banner={banner}
-            collection={props.collection}
-            bookCount={props.bookCount}
-        />
-    );
+    return <Banner {...props} banner={banner} />;
 };
