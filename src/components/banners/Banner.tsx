@@ -20,9 +20,10 @@ export const Banner: React.FunctionComponent<{
                 flex-direction: column;
                 overflow: hidden;
 
-                *,
-                a {
+                * {
                     color: ${props.banner.textColor || defaultTextColor};
+                }
+                a {
                     font-size: 14pt;
                 }
                 a:visited {

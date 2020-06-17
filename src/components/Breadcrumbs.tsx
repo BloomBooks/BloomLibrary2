@@ -46,6 +46,9 @@ export const Breadcrumbs: React.FunctionComponent = () => {
             <Link
                 css={css`
                     text-decoration: none !important;
+                    &:hover {
+                        text-decoration: underline !important;
+                    }
                 `}
                 to="/"
             >
@@ -172,6 +175,9 @@ const CollectionCrumb: React.FunctionComponent<{
             <Link
                 css={css`
                     text-decoration: none !important;
+                    &:hover {
+                        text-decoration: underline !important;
+                    }
                 `}
                 to={"/" + path.join("/")}
             >

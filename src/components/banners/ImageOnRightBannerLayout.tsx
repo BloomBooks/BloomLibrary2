@@ -10,6 +10,7 @@ import { IBanner, ICollection } from "../../model/ContentInterfaces";
 import { Blurb } from "./Blurb";
 import useMedia from "use-media";
 import { Breadcrumbs } from "../Breadcrumbs";
+import { BookCount } from "../BookCount";
 
 export const ImageOnRightBannerLayout: React.FunctionComponent<{
     collection: ICollection;
@@ -24,7 +25,7 @@ export const ImageOnRightBannerLayout: React.FunctionComponent<{
     return (
         <div
             css={css`
-                margin-left: 30px;
+                padding: 30px;
             `}
         >
             <Breadcrumbs />
@@ -41,7 +42,6 @@ export const ImageOnRightBannerLayout: React.FunctionComponent<{
                     width={showImage ? "500px" : "100%"}
                     hideTitle={props.banner.hideTitle}
                 />
-
                 {showImage && (
                     <div
                         css={css`
@@ -75,6 +75,7 @@ export const ImageOnRightBannerLayout: React.FunctionComponent<{
                     </div>
                 )}
             </div>
+            {props.bookCount || <BookCount filter={props.filter || {}} />}
         </div>
     );
 };
