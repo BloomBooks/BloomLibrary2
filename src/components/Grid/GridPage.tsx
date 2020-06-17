@@ -13,8 +13,8 @@ export const GridPage: React.FunctionComponent<{ filters: string }> = (
     props
 ) => {
     let contextFilter: IFilter = {};
-    if (props.filters && props.filters.startsWith("search:")) {
-        const search = props.filters.split("/")[0].substring("search:".length);
+    if (props.filters && props.filters.startsWith(":search:")) {
+        const search = props.filters.split("/")[0].substring(":search:".length);
         contextFilter = { search };
     }
     return (

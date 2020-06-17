@@ -169,10 +169,11 @@ export const SearchBox: React.FunctionComponent<{
         // pathParts.push(":search:" + encodeURIComponent(enteredSearch));
         // const newUrl = "/" + pathParts.join("/");
 
-        // special case that when in create mode, we don't want to leave it.
-        const prefix = history.location.pathname.startsWith("/create")
-            ? "/create"
-            : "";
+        // special case that when in create or grid mode, we don't want to leave it.
+        const prefix =
+            ["/create", "/grid"].find((x) =>
+                history.location.pathname.startsWith(x)
+            ) || "";
         const newUrl = prefix + "/:search:" + encodeURIComponent(enteredSearch);
         setEnteredSearch(""); // otherwise we get an infinite loop when rendered as part of the new page
         if (replaceInHistory) {
