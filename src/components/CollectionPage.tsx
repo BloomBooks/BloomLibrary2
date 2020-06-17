@@ -12,6 +12,7 @@ import { ByLanguageGroups } from "./ByLanguageGroups";
 import { ByTopicsGroups } from "./ByTopicsGroups";
 import { useTrack } from "../Analytics";
 import { ICollection } from "../model/ContentInterfaces";
+import { useDocumentTitle } from "./Routes";
 
 export const CollectionPage: React.FunctionComponent<{
     collectionName: string;
@@ -21,6 +22,7 @@ export const CollectionPage: React.FunctionComponent<{
     const [booksAndLanguages, setBooksAndLanguages] = useState("");
     const { collection, loading } = useGetCollection(props.collectionName);
     const { params, sendIt } = getBookSearchParams(collection);
+    useDocumentTitle(collection?.label);
     useTrack("Book Search", params, sendIt);
     if (loading) {
         return null;

@@ -17,6 +17,7 @@ import { ICollection } from "../model/ContentInterfaces";
 import { getBookSearchParams } from "./CollectionPage";
 import { track } from "../Analytics";
 import { BookCount } from "./BookCount";
+import { useDocumentTitle } from "./Routes";
 
 // Given a collection and a string like level:1/topic:anthropology/search:dogs,
 // creates a corresponding collection by adding appropriate filters.
@@ -82,7 +83,7 @@ export const CollectionSubsetPage: React.FunctionComponent<{
     filters: string[]; // may result in automatically-created subcollections. Might be multiple ones slash-delimited
 }> = (props) => {
     const { collection, loading } = useGetCollection(props.collectionName);
-
+    useDocumentTitle(props.collectionName);
     if (loading) {
         return null;
     }

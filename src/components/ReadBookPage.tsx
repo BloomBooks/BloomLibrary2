@@ -11,6 +11,7 @@ import { getUrlOfHtmlOfDigitalVersion } from "./BookDetail/ArtifactHelper";
 import { useHistory } from "react-router-dom";
 import { useTrack } from "../Analytics";
 import { getBookDetailsParams } from "./BookDetail/BookDetail";
+import { useDocumentTitle } from "./Routes";
 
 export const ReadBookPage: React.FunctionComponent<{
     id: string;
@@ -19,9 +20,9 @@ export const ReadBookPage: React.FunctionComponent<{
     const id = props.id;
     const history = useHistory();
 
+    useDocumentTitle("Play"); // Note that the title comes from the ?title parameter, if present. This "Play" will not normally be used.
     const handleMessageFromBloomPlayer = useCallback(
         (event: MessageEvent) => {
-            //        console.log(JSON.stringify(event.data));
             try {
                 const r = JSON.parse(event.data);
                 if (r.messageType === "backButtonClicked") {

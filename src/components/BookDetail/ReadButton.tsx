@@ -8,8 +8,6 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import ReadIcon from "./read.svg";
 import { commonUI } from "../../theme";
-import { track } from "../../Analytics";
-import { getBookDetailsParams } from "./BookDetail";
 import { Book } from "../../model/Book";
 
 interface IProps {
@@ -44,7 +42,9 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
             onClick={() => {
                 window.location.href =
                     `/player/${props.book.id}` +
-                    (props.contextLangIso ? "/" + props.contextLangIso : "");
+                    (props.contextLangIso ? "/" + props.contextLangIso : "") +
+                    "?title=" +
+                    encodeURI(props.book.title);
             }}
         >
             <h1

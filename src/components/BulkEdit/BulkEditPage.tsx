@@ -12,11 +12,13 @@ import { AssignPublisherPanel } from "./AssignPublisherPanel";
 import { Filter as GridFilter } from "@devexpress/dx-react-grid";
 import { AddTagPanel } from "./AddTagPanel";
 import { AddBookshelfPanel } from "./AddBookshelfPanel";
+import { useDocumentTitle } from "../Routes";
 
 // The Bulk Edit page is for moderators; it has a series of panels for making changes, followed by a grid
 // for selecting what books will be changed.
 export const BulkEditPage: React.FunctionComponent<{}> = () => {
     const [refreshIndex, setRefreshIndex] = useState(0);
+    useDocumentTitle("Bulk Edit");
     return (
         <div
             css={css`

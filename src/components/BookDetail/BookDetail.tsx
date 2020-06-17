@@ -22,7 +22,7 @@ import { OSFeaturesContext } from "../../components/OSFeaturesContext";
 import { commonUI } from "../../theme";
 import { Breadcrumbs } from "../Breadcrumbs";
 import { useTrack } from "../../Analytics";
-import { splitPathname } from "../Routes";
+import { splitPathname, useDocumentTitle } from "../Routes";
 
 interface IProps {
     id: string;
@@ -32,6 +32,7 @@ const BookDetail: React.FunctionComponent<IProps> = (props) => {
     const id = props.id;
     const book = useGetBookDetail(id);
     const contextLangIso = getContextLang(props.prefixes);
+    useDocumentTitle("About - " + book?.title);
     useTrack(
         "Book Detail",
         getBookDetailsParams(book, contextLangIso, undefined, props.prefixes),

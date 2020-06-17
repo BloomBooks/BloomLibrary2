@@ -4,9 +4,8 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Switch, Route, Redirect, useLocation } from "react-router-dom";
-
 import { GridPage } from "./Grid/GridPage";
 import { BulkEditPage } from "./BulkEdit/BulkEditPage";
 import BookDetail from "./BookDetail/BookDetail";
@@ -43,59 +42,59 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                 {/* At contentful.com, when you work on something, there is a "Preview" button
                                         which takes you to our site so you can see how your content will actually be
                                         displayed. For banners, we configured contentful to set you to this url. */}
-            <Route
-                path="/_previewBanner/:id" // used by preview button when editing in contentful
-                render={({ match }) => (
-                    <React.Fragment>
-                        <div // simulate it being in a context that sets some margin
-                            css={css`
-                                //margin: 20px;
-                                height: 500px;
-                            `}
-                        >
-                            <ContentfulBanner
+                <Route
+                    path="/_previewBanner/:id" // used by preview button when editing in contentful
+                    render={({ match }) => (
+                        <React.Fragment>
+                            <div // simulate it being in a context that sets some margin
+                                css={css`
+                                    //margin: 20px;
+                                    height: 500px;
+                                `}
+                            >
+                                <ContentfulBanner
+                                    id={match.params.id}
+                                    collection={getDummyCollectionForPreview(
+                                        match.params.id
+                                    )}
+                                />
+                            </div>
+                            <Footer />
+                        </React.Fragment>
+                    )}
+                ></Route>
+                <Route
+                    path="/:prefixes*/book/:id"
+                    render={({ match }) => {
+                        return (
+                            <BookDetail
                                 id={match.params.id}
-                                collection={getDummyCollectionForPreview(
-                                    match.params.id
-                                )}
+                                prefixes={match.params.prefixes}
                             />
-                        </div>
-                        <Footer />
-                    </React.Fragment>
-                )}
-            ></Route>
-            <Route
-                path="/:prefixes*/book/:id"
-                render={({ match }) => {
-                    return (
-                        <BookDetail
-                            id={match.params.id}
-                            prefixes={match.params.prefixes}
-                        />
-                    );
-                }}
-            />
+                        );
+                    }}
+                />
 
-            <Route
-                path="/player/:id/:language?"
-                render={({ match }) => {
-                    return (
-                        <ReadBookPage
-                            id={match.params.id}
-                            contextLangIso={match.params.language}
-                        />
-                    );
-                }}
-            />
-            <Route path="/about">
-                <ContentfulPage urlKey="about" />
-            </Route>
-            <Route
-                path="/grid/:filter*"
-                render={({ match }) => {
-                    return <GridPage filters={match.params.filter} />;
-                }}
-            />
+                <Route
+                    path="/player/:id/:language?"
+                    render={({ match }) => {
+                        return (
+                            <ReadBookPage
+                                id={match.params.id}
+                                contextLangIso={match.params.language}
+                            />
+                        );
+                    }}
+                />
+                <Route path="/about">
+                    <ContentfulPage urlKey="about" />
+                </Route>
+                <Route
+                    path="/grid/:filter*"
+                    render={({ match }) => {
+                        return <GridPage filters={match.params.filter} />;
+                    }}
+                />
 
                 <Route path="/bulk">
                     <BulkEditPage />
@@ -218,4 +217,21 @@ export function getUrlForTarget(target: string) {
 }
 function trimLeft(s: string, char: string) {
     return s.replace(new RegExp("^[" + char + "]+"), "");
+}
+
+export function useDocumentTitle(title: string | undefined) {
+    const location = useLocation();
+    useEffect(() => {
+        if (!title) {
+            document.title = "Loading...";
+        } else {
+            // we support titles coming in from the URL to support book playback
+            // (I'm not sure why that's different, but it is).
+            const urlParams = new URLSearchParams(location.search);
+            const titleFromUrl = urlParams.get("title");
+            document.title =
+                "Bloom Library: " +
+                (titleFromUrl ? decodeURI(titleFromUrl) : title);
+        }
+    }, [title, location]);
 }

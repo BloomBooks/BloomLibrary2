@@ -6,10 +6,12 @@ import { jsx } from "@emotion/core";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import ReactMarkdown from "react-markdown";
 import { useContentful } from "../connection/UseContentful";
+import { useDocumentTitle } from "./Routes";
 
 export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
     props
 ) => {
+    useDocumentTitle(props.urlKey);
     const { loading, result: data } = useContentful({
         content_type: "page",
         "fields.urlKey": `${props.urlKey}`,
