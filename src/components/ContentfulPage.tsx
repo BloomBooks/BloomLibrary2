@@ -5,7 +5,6 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import ReactMarkdown from "react-markdown";
-import { PageNotFound } from "./PageNotFound";
 import { useContentful } from "../connection/UseContentful";
 
 export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
@@ -21,7 +20,7 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
     }
 
     if (!data || !(data as any).items || (data as any).items.length === 0) {
-        return <PageNotFound />;
+        throw Error("404: " + props.urlKey);
     }
 
     return (

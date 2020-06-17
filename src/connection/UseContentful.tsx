@@ -9,16 +9,24 @@ export function useContentful(
         result: any[] | undefined;
     }>({ queryString: "", result: undefined });
 
+    // see https://github.com/facebook/react/issues/14981
+    const [
+        ,
+        /*unused*/ dummyToThrowStuffToErrorBoundaryInsideAHook,
+    ] = useState();
+
     const queryString = JSON.stringify(query);
     useEffect(() => {
         getContentfulClient()
             .getEntries({ include: 10, ...query })
-            .then((entries: any) =>
-                setResults({ queryString, result: entries.items })
-            )
+            .then((entries: any) => {
+                setResults({ queryString, result: entries.items });
+            })
             .catch((err: Error) => {
                 console.error(JSON.stringify(err));
-                throw err; // at least sentry will report it
+                dummyToThrowStuffToErrorBoundaryInsideAHook(() => {
+                    throw err;
+                });
             });
         // We want to depend on query, but not in a way that causes a
         // new http request just because the client's render creates

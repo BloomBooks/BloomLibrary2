@@ -44,7 +44,7 @@ export function useGetCollection(
     // collection named "Language:en", but then if that is not found, it will
     // return "[Template Language Collection]".
     const nameParts = collectionName.split(":");
-    let templateKey = "Don't match anything";
+    let templateKey = "-";
     if (nameParts.length > 1) {
         templateKey = `[Template ${Capitalize(nameParts[0])} Collection]`;
     }
@@ -62,7 +62,8 @@ export function useGetCollection(
 
     assert(
         collections.length > 0,
-        `No collections were returned for ${collectionName} or ${templateKey}`
+        // The 404 here causes our ErrorBoundary to show the PageNotFound page.
+        `404: ${collectionName} or ${templateKey}`
     );
     assert(collections.length < 3);
     let templateFacetCollection: ICollection | undefined;

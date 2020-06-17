@@ -5,7 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React from "react";
-import { Switch, Route, Redirect } from "react-router-dom";
+import { Switch, Route, Redirect, useLocation } from "react-router-dom";
 
 import { GridPage } from "./Grid/GridPage";
 import { BulkEditPage } from "./BulkEdit/BulkEditPage";
@@ -17,26 +17,30 @@ import { CollectionPage } from "./CollectionPage";
 import { Footer } from "./Footer";
 import { ContentfulPage } from "./ContentfulPage";
 import { getDummyCollectionForPreview } from "../model/Collections";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 // The main set of switches that loads differnt things into the main content area of Blorg
 // based on the current window location.
 export const Routes: React.FunctionComponent<{}> = (props) => {
     const embeddedMode = window.self !== window.top;
+    const url = useLocation();
+
     return (
-        <Switch>
-            {/* Alias from legacy blorg */}
-            <Route path={"/browse"}>
-                <Redirect to="/create" />
-            </Route>
-            <Route
-                path={[
-                    "/downloads", // Alias for convenience when telling people where to get Bloom
-                    "/installers", // Alias from legacy blorg
-                ]}
-            >
-                <Redirect to="/page/create/downloads" />
-            </Route>
-            {/* At contentful.com, when you work on something, there is a "Preview" button
+        <ErrorBoundary url={url.pathname}>
+            <Switch>
+                {/* Alias from legacy blorg */}
+                <Route path={"/browse"}>
+                    <Redirect to="/create" />
+                </Route>
+                <Route
+                    path={[
+                        "/downloads", // Alias for convenience when telling people where to get Bloom
+                        "/installers", // Alias from legacy blorg
+                    ]}
+                >
+                    <Redirect to="/page/create/downloads" />
+                </Route>
+                {/* At contentful.com, when you work on something, there is a "Preview" button
                                         which takes you to our site so you can see how your content will actually be
                                         displayed. For banners, we configured contentful to set you to this url. */}
             <Route
@@ -93,43 +97,46 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                 }}
             />
 
-            <Route path="/bulk">
-                <BulkEditPage />
-            </Route>
-            <Route
-                path="/page/:breadcrumbs*/:pageName/"
-                render={({ match }) => {
-                    return <ContentfulPage urlKey={match.params.pageName} />;
-                }}
-            />
-            {/* Must come last, this matches anything, including the home path with nothing at all. */}
-            <Route
-                path="/:segments*"
-                render={({ match }) => {
-                    const { collectionName, filters } = splitPathname(
-                        match.params.segments
-                    );
-
-                    // This heuristic might change. Basically this is the route
-                    // for displaying top-level collections.
-                    if (filters.length === 0) {
+                <Route path="/bulk">
+                    <BulkEditPage />
+                </Route>
+                <Route
+                    path="/page/:breadcrumbs*/:pageName/"
+                    render={({ match }) => {
                         return (
-                            <CollectionPage
+                            <ContentfulPage urlKey={match.params.pageName} />
+                        );
+                    }}
+                />
+                {/* Must come last, this matches anything, including the home path with nothing at all. */}
+                <Route
+                    path="/:segments*"
+                    render={({ match }) => {
+                        const { collectionName, filters } = splitPathname(
+                            match.params.segments
+                        );
+
+                        // This heuristic might change. Basically this is the route
+                        // for displaying top-level collections.
+                        if (filters.length === 0) {
+                            return (
+                                <CollectionPage
+                                    collectionName={collectionName}
+                                    embeddedMode={embeddedMode}
+                                />
+                            );
+                        }
+                        // While this one is for filtered (subset) collections, typically from 'More' or Search
+                        return (
+                            <CollectionSubsetPage
                                 collectionName={collectionName}
-                                embeddedMode={embeddedMode}
+                                filters={filters}
                             />
                         );
-                    }
-                    // While this one is for filtered (subset) collections, typically from 'More' or Search
-                    return (
-                        <CollectionSubsetPage
-                            collectionName={collectionName}
-                            filters={filters}
-                        />
-                    );
-                }}
-            ></Route>
-        </Switch>
+                    }}
+                ></Route>
+            </Switch>
+        </ErrorBoundary>
     );
 };
 
