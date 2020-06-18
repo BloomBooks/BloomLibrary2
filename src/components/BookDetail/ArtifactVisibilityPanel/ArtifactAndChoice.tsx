@@ -1,3 +1,8 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
 import React, { useEffect, useRef } from "react";
 import { createStyles, makeStyles } from "@material-ui/styles";
 import {
@@ -5,13 +10,13 @@ import {
     MenuItem,
     FormControl,
     Select,
-    FormHelperText
+    FormHelperText,
 } from "@material-ui/core";
 import { ArtifactVisibilitySettings } from "../../../model/ArtifactVisibilitySettings";
 
-import pdfIcon from "./pdf.png";
-import epubIcon from "./epub.png";
-import bloomReaderIcon from "./bloomd.png";
+import pdfIcon from "../PDF.svg";
+import epubIcon from "../ePUB.svg";
+import bloomReaderIcon from "../BloomPub.svg";
 import readIcon from "../read.svg";
 import translationIcon from "../translation.svg";
 import { ArtifactType } from "../ArtifactHelper";
@@ -22,29 +27,26 @@ const useStyles = makeStyles(() =>
     createStyles({
         a: {
             textDecoration: "none",
-            "&:hover": { textDecoration: "none" }
+            "&:hover": { textDecoration: "none" },
         },
         artifactAndChoice: {
-            padding: 10
+            padding: 10,
         },
         button: {
             width: 100,
-            height: 55
+            height: 55,
         },
         buttonWithText: {
             color: "white",
             textTransform: "none", // prevent all caps
-            backgroundColor: commonUI.colors.bloomRed
+            backgroundColor: commonUI.colors.bloomRed,
         },
         buttonWithIconOnly: {
-            "& img": { height: 43 } // makes it the same as a button with text
+            "& img": { height: 43 }, // makes it the same as a button with text
         },
         select: {
-            width: 200
+            width: 200,
         },
-        formControl: {
-            marginLeft: 50
-        }
     })
 );
 
@@ -59,7 +61,7 @@ export const ArtifactAndChoice: React.FunctionComponent<{
     url: string;
     onChange: (show: string) => void;
     currentUserIsUploader: boolean;
-}> = props => {
+}> = (props) => {
     const classes = useStyles();
     const user = useGetLoggedInUser();
 
@@ -198,7 +200,16 @@ export const ArtifactAndChoice: React.FunctionComponent<{
     };
 
     return (
-        <div className={classes.artifactAndChoice}>
+        <div
+            className={classes.artifactAndChoice}
+            // Using makeStyles to set the margin-left doesn't work. It gets overridden by the default .MuiFormControl-root.
+            // So we hack it here.
+            css={css`
+                .MuiFormControl-root {
+                    margin-left: 50px;
+                }
+            `}
+        >
             <a
                 href={props.url}
                 target={isInternalUrl() ? undefined : "_blank"}
@@ -206,7 +217,7 @@ export const ArtifactAndChoice: React.FunctionComponent<{
             >
                 {getButton()}
             </a>
-            <FormControl className={classes.formControl}>
+            <FormControl>
                 <Select
                     value={thisPersonsChoice}
                     onChange={handleChange}
