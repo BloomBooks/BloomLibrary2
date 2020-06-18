@@ -171,7 +171,7 @@ export const SearchBox: React.FunctionComponent<{
 
         // special case that when in create or grid mode, we don't want to leave it.
         const prefix =
-            ["/create", "/grid"].find((x) =>
+            ["/create", "/grid", "/bulk"].find((x) =>
                 history.location.pathname.startsWith(x)
             ) || "";
         const newUrl = prefix + "/:search:" + encodeURIComponent(enteredSearch);
