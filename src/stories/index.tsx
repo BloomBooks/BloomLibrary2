@@ -197,3 +197,12 @@ storiesOf("Harvester Artifact Control", module)
             })}
         </>
     ));
+
+storiesOf("Embedding", module).add("Should Work", () => (
+    <iframe
+        src={"http://localhost:3000/embed/embed-test/enabling-writers"}
+        title="embed test"
+        height="600px"
+        width="600px"
+    ></iframe>
+));

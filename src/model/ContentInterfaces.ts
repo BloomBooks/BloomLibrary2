@@ -41,3 +41,10 @@ export interface ICollection {
     // E.g., we need to run code like getBestLevelStringOrEmpty() to get at the filter
     secondaryFilter?: (basicBookInfo: IBasicBookInfo) => boolean;
 }
+
+export interface IEmbedSettings {
+    urlKey: string; // localized will be something like this: { [key: string]: string };
+    enabled: boolean;
+    collectionUrlKey: string;
+    // domain: string; was a good idea but we're not allowed, from an iframe, to know the host domain
+}

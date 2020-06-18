@@ -17,8 +17,10 @@ import { Footer } from "./Footer";
 import { ContentfulPage } from "./ContentfulPage";
 import { getDummyCollectionForPreview } from "../model/Collections";
 import { ErrorBoundary } from "./ErrorBoundary";
+import { IEmbedSettings } from "../model/ContentInterfaces";
+import { EmbeddingHost } from "./EmbeddingHost";
 
-// The main set of switches that loads differnt things into the main content area of Blorg
+// The main set of switches that loads different things into the main content area of Blorg
 // based on the current window location.
 export const Routes: React.FunctionComponent<{}> = (props) => {
     const embeddedMode = window.self !== window.top;
@@ -107,30 +109,31 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                         );
                     }}
                 />
+                <Route
+                    path={"/embed/:embedSettings/:segments*"}
+                    render={({ match, location }) => {
+                        return (
+                            <EmbeddingHost
+                                settingsUrlKey={match.params.embedSettings}
+                                urlSegments={location.pathname}
+                            ></EmbeddingHost>
+                        );
+                    }}
+                ></Route>
+
                 {/* Must come last, this matches anything, including the home path with nothing at all. */}
                 <Route
-                    path="/:segments*"
+                    path={"/:segments*"}
                     render={({ match }) => {
-                        const { collectionName, filters } = splitPathname(
-                            match.params.segments
-                        );
-
-                        // This heuristic might change. Basically this is the route
-                        // for displaying top-level collections.
-                        if (filters.length === 0) {
-                            return (
-                                <CollectionPage
-                                    collectionName={collectionName}
-                                    embeddedMode={embeddedMode}
-                                />
+                        if (window.self !== window.top) {
+                            throw new Error(
+                                "Embedding is only possible with an embed-* path."
                             );
                         }
-                        // While this one is for filtered (subset) collections, typically from 'More' or Search
                         return (
-                            <CollectionSubsetPage
-                                collectionName={collectionName}
-                                filters={filters}
-                            />
+                            <CollectionWrapper
+                                segments={match.params.segments}
+                            ></CollectionWrapper>
                         );
                     }}
                 ></Route>
@@ -151,9 +154,20 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
 // - everything is a filter: collectionName is root.read
 // - collection works out to "read": change to "root.read"
 export function splitPathname(
-    pathname?: string
-): { collectionName: string; filters: string[]; breadcrumbs: string[] } {
+    pathname: string
+): {
+    embeddedSettingsUrlKey: string | undefined;
+    collectionName: string;
+    filters: string[];
+    breadcrumbs: string[];
+    useDefaultCollection: boolean;
+} {
     const segments = trimLeft(pathname ?? "", "/").split("/");
+    let embeddedSettings;
+    if (segments.length > 1 && segments[0] === "embed") {
+        embeddedSettings = segments[1];
+        segments.splice(0, 2);
+    }
     let collectionSegmentIndex = segments.length - 1;
     while (collectionSegmentIndex >= 0) {
         if (!segments[collectionSegmentIndex].startsWith(":")) {
@@ -162,6 +176,10 @@ export function splitPathname(
         collectionSegmentIndex--;
     }
     let collectionName = segments[collectionSegmentIndex];
+
+    const useDefaultCollection =
+        !!embeddedSettings && (collectionSegmentIndex < 0 || !collectionName);
+
     if (
         collectionSegmentIndex < 0 ||
         collectionName === "read" ||
@@ -172,11 +190,13 @@ export function splitPathname(
     }
 
     return {
+        embeddedSettingsUrlKey: embeddedSettings,
         collectionName,
         filters: segments
             .slice(collectionSegmentIndex + 1)
             .map((x) => x.substring(1)),
         breadcrumbs: segments.slice(0, Math.max(collectionSegmentIndex, 0)),
+        useDefaultCollection,
     };
 }
 
@@ -198,22 +218,31 @@ export function splitPathname(
 // See https://docs.google.com/document/d/1cA9-9tMSydZ6Euo-hKmdHo_JlO0aLW8Fi9v293oIHK0/edit#heading=h.3b7gegy9uie8
 // for more of the logic.
 export function getUrlForTarget(target: string) {
-    const { breadcrumbs, collectionName: pathCollectionName } = splitPathname(
-        window.location.pathname
-    );
+    const {
+        embeddedSettingsUrlKey,
+        breadcrumbs,
+        collectionName: pathCollectionName,
+    } = splitPathname(window.location.pathname);
+    const segments = [
+        embeddedSettingsUrlKey ? "embed" : undefined,
+        embeddedSettingsUrlKey,
+        ...breadcrumbs,
+    ].filter((s) => !!s);
+
     const { collectionName } = splitPathname(target);
     if (pathCollectionName && collectionName !== pathCollectionName) {
-        breadcrumbs.push(pathCollectionName);
+        segments.push(pathCollectionName);
     }
-    breadcrumbs.push(trimLeft(target, "/"));
+    segments.push(trimLeft(target, "/"));
+    // NB: we do not expect to get any of these in combination with /embed/
     if (
-        breadcrumbs[0] === "root.read" ||
-        breadcrumbs[0] === "read" ||
-        breadcrumbs[0] === ""
+        segments[0] === "root.read" ||
+        segments[0] === "read" ||
+        segments[0] === ""
     ) {
-        breadcrumbs.splice(0, 1);
+        segments.splice(0, 1);
     }
-    return breadcrumbs.join("/");
+    return segments.join("/");
 }
 function trimLeft(s: string, char: string) {
     return s.replace(new RegExp("^[" + char + "]+"), "");
@@ -235,3 +264,28 @@ export function useDocumentTitle(title: string | undefined) {
         }
     }, [title, location]);
 }
+
+export const CollectionWrapper: React.FunctionComponent<{
+    segments: string;
+    embeddedSettings?: IEmbedSettings;
+}> = (props) => {
+    const { collectionName, filters } = splitPathname(props.segments);
+
+    // This heuristic might change. Basically this is the route
+    // for displaying top-level collections.
+    if (filters.length === 0) {
+        return (
+            <CollectionPage
+                embeddedSettings={props.embeddedSettings}
+                collectionName={collectionName}
+            />
+        );
+    }
+    // While this one is for filtered (subset) collections, typically from 'More' or Search
+    return (
+        <CollectionSubsetPage
+            collectionName={collectionName}
+            filters={filters}
+        />
+    );
+};

@@ -1,4 +1,10 @@
-import { IBanner, IMedia, ICollection } from "./ContentInterfaces";
+import {
+    IBanner,
+    IMedia,
+    ICollection,
+    IEmbedSettings,
+} from "./ContentInterfaces";
+import { Field } from "contentful";
 
 /* The aim is to keep knowledge of Contentful limited to this file, to the extent
 that we think it is worth it. Meanwhile, rest of the code can use generic structures.
@@ -81,6 +87,23 @@ function convertContentfulMediaToIMedia(
     }
     a.url = media.fields.file.url || "";
     return a;
+}
+interface IContentfulEmbeddingSettings {
+    fields: {
+        urlKey: string; // localized will be something like this: { [key: string]: string };
+        enabled: boolean;
+        //domain: string;
+        collection: { fields: { urlKey: string } };
+    };
+}
+export function convertContentfulEmbeddingSettingsToIEmbedSettings(
+    settings: IContentfulEmbeddingSettings
+): IEmbedSettings {
+    return {
+        urlKey: settings.fields.urlKey || "",
+        enabled: settings.fields.enabled || false,
+        collectionUrlKey: settings.fields.collection.fields.urlKey,
+    };
 }
 
 function getSubCollections(childCollections: any[]): ICollection[] {

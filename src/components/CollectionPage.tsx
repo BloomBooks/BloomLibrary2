@@ -11,12 +11,12 @@ import { BookCardGroup } from "./BookCardGroup";
 import { ByLanguageGroups } from "./ByLanguageGroups";
 import { ByTopicsGroups } from "./ByTopicsGroups";
 import { useTrack } from "../Analytics";
-import { ICollection } from "../model/ContentInterfaces";
+import { ICollection, IEmbedSettings } from "../model/ContentInterfaces";
 import { useDocumentTitle } from "./Routes";
 
 export const CollectionPage: React.FunctionComponent<{
     collectionName: string;
-    embeddedMode?: boolean;
+    embeddedSettings?: IEmbedSettings;
 }> = (props) => {
     // remains empty (and unused) except in byLanguageGroups mode, when a callback sets it.
     const [booksAndLanguages, setBooksAndLanguages] = useState("");
@@ -104,7 +104,7 @@ export const CollectionPage: React.FunctionComponent<{
 
     return (
         <div>
-            {props.embeddedMode || banner}
+            {!!props.embeddedSettings || banner}
             <ListOfBookGroups>
                 {collectionRows}
                 {booksComponent}
