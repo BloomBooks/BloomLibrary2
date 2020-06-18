@@ -21,9 +21,11 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
         return null;
     }
 
-    if (!data || !(data as any).items || (data as any).items.length === 0) {
+    if (!data || data.length === 0) {
         throw Error("404: " + props.urlKey);
     }
+
+    const page = data[0];
 
     return (
         <div
@@ -40,10 +42,10 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
         >
             <ReactMarkdown
                 escapeHtml={false}
-                source={(data as any).items[0].fields.markdownBody}
+                source={page.fields.markdownBody}
             />
             {/* Maybe we're going to remove this Richtext option entirely? Depend if we can get people to work in Markdown */}
-            {documentToReactComponents((data as any).items[0].fields.body)}
+            {documentToReactComponents(page.fields.body)}
         </div>
     );
 };

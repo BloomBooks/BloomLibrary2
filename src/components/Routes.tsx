@@ -100,7 +100,7 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                     <BulkEditPage />
                 </Route>
                 <Route
-                    path="/page/:breadcrumbs*/:pageName/"
+                    path="/page/:breadcrumbs*/:pageName"
                     render={({ match }) => {
                         return (
                             <ContentfulPage urlKey={match.params.pageName} />
