@@ -5,13 +5,17 @@ import {
     ILanguage,
     getLanguageNames as getLanguageDisplayNames,
 } from "../model/Language";
+import { getAnchorProps } from "../embedded";
 
 export const LanguageLink: React.FunctionComponent<{
     language: ILanguage;
 }> = (props) => {
     const displayName = getNameDisplay(props.language);
     return (
-        <Link color="secondary" href={"/language:" + props.language.isoCode}>
+        <Link
+            color="secondary"
+            {...getAnchorProps("/language:" + props.language.isoCode)}
+        >
             {displayName}
         </Link>
     );

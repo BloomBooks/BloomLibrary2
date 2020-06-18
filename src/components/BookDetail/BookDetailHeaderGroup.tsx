@@ -23,6 +23,7 @@ import { OSFeaturesContext } from "../../components/OSFeaturesContext";
 import { commonUI } from "../../theme";
 import { useGetBookCountRaw } from "../../connection/LibraryQueryHooks";
 import { getResultsOrMessageElement } from "../../connection/GetQueryResultsUI";
+import { getAnchorProps } from "../../embedded";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{
     book: Book;
@@ -177,7 +178,9 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                                                 font-size: 9pt;
                                             `}
                                             color={"secondary"}
-                                            href={`/phash:${sanitizedPhashOfFirstContentImage}`}
+                                            {...getAnchorProps(
+                                                `/phash:${sanitizedPhashOfFirstContentImage}`
+                                            )}
                                         >{`${countOfBooksWithMatchingPhash} books that may be translations`}</Link>
                                     </li>
                                 )}

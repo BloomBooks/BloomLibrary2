@@ -2,6 +2,7 @@ import { Book } from "../../model/Book";
 import { Link } from "@material-ui/core";
 import { observer } from "mobx-react";
 import React from "react";
+import { getAnchorProps } from "../../embedded";
 
 export const KeywordLinks: React.FunctionComponent<{
     book: Book;
@@ -29,7 +30,7 @@ export const KeywordLinks: React.FunctionComponent<{
                                     // because we think it's more helpful to show *all* the books that might
                                     // have this word in their title or summary, not just the ones that we
                                     // have so far marked with this keyword
-                                    href={`/:search:${keyword}`}
+                                    {...getAnchorProps(`/:search:${keyword}`)}
                                 >
                                     {keyword}
                                 </Link>

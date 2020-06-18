@@ -18,6 +18,7 @@ import { getTagDisplayName } from "../../model/Tag";
 import { useGetRelatedBooks } from "../../connection/LibraryQueryHooks";
 import { Bookshelf } from "../../model/Bookshelf";
 import { KeywordLinks } from "./KeywordLinks";
+import { getAnchorProps } from "../../embedded";
 
 export const MetadataGroup: React.FunctionComponent<{
     book: Book;
@@ -145,7 +146,7 @@ export const MetadataGroup: React.FunctionComponent<{
                                                 color: ${theme.palette.secondary
                                                     .main} !important;
                                             `}
-                                            href={`/book/${b.id}`}
+                                            {...getAnchorProps(`/book/${b.id}`)}
                                         >
                                             {b.title}
                                         </Link>
