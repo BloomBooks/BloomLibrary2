@@ -10,8 +10,8 @@ import TranslationIcon from "./translation.svg";
 import { getArtifactUrl, ArtifactType } from "./ArtifactHelper";
 import { Book } from "../../model/Book";
 import { commonUI } from "../../theme";
-import { track } from "../../Analytics";
-import { getBookDetailsParams } from "./BookDetail";
+import { track } from "../../analytics/Analytics";
+import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 
 export const TranslateButton: React.FunctionComponent<{
     book: Book;
@@ -41,7 +41,7 @@ export const TranslateButton: React.FunctionComponent<{
                 <img alt="Download Translation Icon" src={TranslationIcon} />
             }
             onClick={() => {
-                const params = getBookDetailsParams(
+                const params = getBookAnalyticsInfo(
                     props.book,
                     props.contextLangIso,
                     "shell"

@@ -20,8 +20,8 @@ import {
 } from "./ArtifactHelper";
 import { OSFeaturesContext } from "../../components/OSFeaturesContext";
 import { ArtifactVisibilitySettings } from "../../model/ArtifactVisibilitySettings";
-import { getBookDetailsParams } from "./BookDetail";
-import { track } from "../../Analytics";
+import { track } from "../../analytics/Analytics";
+import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 
 interface IArtifactUI {
     icon: string;
@@ -153,7 +153,7 @@ export const ArtifactGroup: React.FunctionComponent<{
                                         download={fileName}
                                         key={a.alt}
                                         onClick={() => {
-                                            const params = getBookDetailsParams(
+                                            const params = getBookAnalyticsInfo(
                                                 props.book,
                                                 props.contextLangIso,
                                                 a.analyticsType

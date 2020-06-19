@@ -53,7 +53,10 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                 width: ${BookCardWidth}px;
             `}
             key={props.basicBookInfo.baseUrl}
-            target={`book/${props.basicBookInfo.objectId}`}
+            target={
+                `book/${props.basicBookInfo.objectId}` +
+                (props.contextLangIso ? "?lang=" + props.contextLangIso : "")
+            }
             // onClick={() =>
             //     router!.pushBook(
             //         props.basicBookInfo.objectId,

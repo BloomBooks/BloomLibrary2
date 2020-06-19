@@ -44,9 +44,11 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
             onClick={() => {
                 window.location.href =
                     url +
-                    (props.contextLangIso ? "/" + props.contextLangIso : "") +
                     "?title=" +
-                    encodeURI(props.book.title);
+                    encodeURI(props.book.title) +
+                    (props.contextLangIso
+                        ? "&lang=" + props.contextLangIso
+                        : "");
             }}
         >
             <h1

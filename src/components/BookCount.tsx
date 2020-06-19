@@ -11,21 +11,20 @@ import {
     getNoResultsElement,
 } from "../connection/GetQueryResultsUI";
 
+interface IProps {
+    message?: string;
+    filter: IFilter;
+    noMatches?: JSX.Element;
+    //ClassName?: string;
+}
+
 // typically displays "[count] books", where count is the number of books that pass
 // the query. If message is a string containing {0}, displays that string with the
 // argument replaced with the count. If message does not contain that, simply displays
 // message. (This last option serves as a fall-back when a higher-level client wants
-// to display a customized message.)
-export const BookCount: React.FunctionComponent<{
-    message?: string;
-    filter: IFilter;
-    // This function is called exactly once for each filter, that is,
-    // it won't be called while we are loading the count, or on subsequent
-    // calls until the filter changes, just the first time we get
-    // a real result for a given filter.
-    reportCount?: (x: number) => void;
-    //ClassName?: string;
-}> = (props) => {
+// to display a customized message.) If noResults is provided, this will be shown
+// when the query returns zero books (instead of one of the other options with count zero).
+export const BookCount: React.FunctionComponent<IProps> = (props) => {
     return props.message && props.message.indexOf("{0}") < 0 ? (
         <>{props.message}</>
     ) : (
@@ -33,12 +32,7 @@ export const BookCount: React.FunctionComponent<{
     );
 };
 
-const BookCountInternal: React.FunctionComponent<{
-    message?: string;
-    filter: IFilter;
-    reportCount?: (x: number) => void;
-    //ClassName?: string;
-}> = (props) => {
+const BookCountInternal: React.FunctionComponent<IProps> = (props) => {
     const bookCountResult = useGetBookCountRaw(props.filter);
     const { noResultsElement, count } = getResultsOrMessageElement(
         bookCountResult
@@ -64,7 +58,7 @@ const BookCountInternal: React.FunctionComponent<{
             waitingForLoading: true,
             reportedCount: false,
         });
-        return getNoResultsElement();
+        return getNoResultsElement(); // NOT props.noMatches, we don't know yet whether count is zero.
     }
     if (state.waitingForLoading) {
         if (bookCountResult.loading) {
@@ -75,7 +69,7 @@ const BookCountInternal: React.FunctionComponent<{
                 waitingForLoading: false,
                 reportedCount: false,
             });
-            // and we should have the proper noResultsElement, since loading is properly true.
+            // and we can fall through to show whatever result we have, since loading is properly true.
         } else {
             // Another spurious result before we even sent the request to the server.
             return getNoResultsElement();
@@ -84,17 +78,15 @@ const BookCountInternal: React.FunctionComponent<{
     // If we get this far, we've seen bookCountResult.loading true for the current
     // filter. So we can trust bookCountResult: if it says loading, we just
     // continue to return noResultsElement; if not, we should have a good count.
-    // If this is the FIRST time we got a good count for this filter, we want
-    // to invoke our callback.
-    // (If we don't HAVE a reportCount callback, reportedCount will never get
-    // set. That's harmless and saves another render.)
-    if (!state.reportedCount && !bookCountResult.loading && props.reportCount) {
-        setState({
-            filterString,
-            waitingForLoading: false,
-            reportedCount: true,
-        });
-        props.reportCount(count);
+    if (bookCountResult.loading) {
+        return noResultsElement;
+    }
+
+    // OK, we have a real result for the current filter. If the count is zero
+    // and we have a noMatches, use it.
+    if (count === 0 && !noResultsElement && props.noMatches) {
+        // we got a result of zero, so show the special element for that case
+        return props.noMatches;
     }
 
     // while we're waiting, this will be blank (from noResultsElement).
@@ -115,24 +107,3 @@ const BookCountInternal: React.FunctionComponent<{
         )
     );
 };
-
-/*
-
- let bookCount: React.ReactNode = React.Fragment;
-    if (props.bookCount !== undefined) {
-        // if it's an empty string, we assume it's pending real data
-        bookCount = <h2>{props.bookCount}</h2>;
-    } else if (props.filter) {
-        bookCount = (
-            <h2
-                css={css`
-                    font-size: 14pt;
-                    margin: 0 !important;
-                    margin-top: auto;
-                `}
-            >
-                <BookCount filter={props.filter} />
-            </h2>
-        );
-    }
-    */

@@ -10,8 +10,8 @@ import BloomPubIcon from "./BloomPubWhite.svg";
 import { commonUI } from "../../theme";
 import { getArtifactUrl, ArtifactType } from "./ArtifactHelper";
 import { Book } from "../../model/Book";
-import { getBookDetailsParams } from "./BookDetail";
-import { track } from "../../Analytics";
+import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
+import { track } from "../../analytics/Analytics";
 
 interface IProps {
     book: Book;
@@ -31,7 +31,7 @@ export const ReadOfflineButton: React.FunctionComponent<IProps> = (props) => {
             // to the URL, then discovers that it's just a download.
             download={fileName}
             onClick={() => {
-                const params = getBookDetailsParams(
+                const params = getBookAnalyticsInfo(
                     props.book,
                     props.contextLangIso,
                     "bloomd"

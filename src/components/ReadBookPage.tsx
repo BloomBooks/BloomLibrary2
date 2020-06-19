@@ -8,17 +8,20 @@ import React, { useEffect, useCallback } from "react";
 import { useGetBookDetail } from "../connection/LibraryQueryHooks";
 import { Book } from "../model/Book";
 import { getUrlOfHtmlOfDigitalVersion } from "./BookDetail/ArtifactHelper";
-import { useHistory } from "react-router-dom";
-import { useTrack } from "../Analytics";
-import { getBookDetailsParams } from "./BookDetail/BookDetail";
+import { useHistory, useLocation } from "react-router-dom";
+import { useTrack } from "../analytics/Analytics";
+import { getBookAnalyticsInfo } from "../analytics/BookAnalyticsInfo";
 import { useDocumentTitle } from "./Routes";
 
 export const ReadBookPage: React.FunctionComponent<{
     id: string;
-    contextLangIso?: string;
 }> = (props) => {
     const id = props.id;
     const history = useHistory();
+    const location = useLocation();
+    const query = new URLSearchParams(location.search);
+    const lang = query.get("lang");
+    const contextLangIso = lang ? lang : undefined;
 
     useDocumentTitle("Play"); // Note that the title comes from the ?title parameter, if present. This "Play" will not normally be used.
     const handleMessageFromBloomPlayer = useCallback(
@@ -47,7 +50,7 @@ export const ReadBookPage: React.FunctionComponent<{
     const book = useGetBookDetail(id);
     useTrack(
         "Download Book",
-        getBookDetailsParams(book, props.contextLangIso, "read"),
+        getBookAnalyticsInfo(book, contextLangIso, "read"),
         !!book
     );
     const url = book ? getUrlOfHtmlOfDigitalVersion(book) : "working"; // url=working shows a loading icon
@@ -56,9 +59,7 @@ export const ReadBookPage: React.FunctionComponent<{
     // TODO: this isn't working with react-router, but I don't know how RR even gets run inside of this iframe
     const bloomPlayerUrl = "/bloom-player/bloomplayer.htm";
 
-    const langParam = props.contextLangIso
-        ? `&lang=${props.contextLangIso}`
-        : "";
+    const langParam = contextLangIso ? `&lang=${contextLangIso}` : "";
 
     const iframeSrc = `${bloomPlayerUrl}?url=${url}&showBackButton=true&useOriginalPageSize=true${langParam}`;
 
