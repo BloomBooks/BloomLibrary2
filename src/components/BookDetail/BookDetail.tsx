@@ -75,6 +75,7 @@ export interface IBookAnalyticsParams {
     language?: string;
     type?: string;
     source?: string;
+    bookInstanceId?: string;
 }
 
 export function getBookDetailsParams(
@@ -100,6 +101,7 @@ export function getBookDetailsParams(
         publisher: book?.publisher,
         topic,
         level,
+        bookInstanceId: book?.bookInstanceId,
     };
     if (lang) {
         result.language = lang;

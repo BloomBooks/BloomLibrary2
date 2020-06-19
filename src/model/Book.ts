@@ -44,6 +44,7 @@ export class Book {
     public harvestLog: string[] = [];
     public harvestState: string = "";
     public phashOfFirstContentImage: string = "";
+    public bookInstanceId: string = "";
 
     // things that can be edited on the site are observable so that the rest of the UI will update if they are changed.
     @observable public title: string = "";
