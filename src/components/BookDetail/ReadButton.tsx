@@ -9,6 +9,7 @@ import Button from "@material-ui/core/Button";
 import ReadIcon from "./read.svg";
 import { commonUI } from "../../theme";
 import { Book } from "../../model/Book";
+import { getUrlForTarget } from "../Routes";
 
 interface IProps {
     book: Book;
@@ -16,6 +17,7 @@ interface IProps {
     contextLangIso?: string;
 }
 export const ReadButton: React.FunctionComponent<IProps> = (props) => {
+    const url = getUrlForTarget(`/player/${props.book.id}`);
     return (
         <Button
             variant="contained"
@@ -41,7 +43,7 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
             `}
             onClick={() => {
                 window.location.href =
-                    `/player/${props.book.id}` +
+                    url +
                     (props.contextLangIso ? "/" + props.contextLangIso : "") +
                     "?title=" +
                     encodeURI(props.book.title);

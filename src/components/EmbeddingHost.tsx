@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useContentful } from "../connection/UseContentful";
 import { convertContentfulEmbeddingSettingsToIEmbedSettings } from "../model/Contentful";
 import { splitPathname, CollectionWrapper } from "./Routes";
+import { useLocation } from "react-router-dom";
 
 // Note, there is a Storybook story for testing this in an iframe.
 // This relies on a matching Contentful "Embedded Settings".
@@ -35,9 +36,7 @@ export const EmbeddingHost: React.FunctionComponent<{
     //  1) fully populate the ICollection:ChildCollections rather than just store ids
     //  2) add a "descendants" field to ICollection which just has an array of ids for us to check here.
     // tslint:disable-next-line: prefer-const
-    let { collectionName, useDefaultCollection } = splitPathname(
-        props.urlSegments
-    );
+    let { collectionName } = splitPathname(props.urlSegments);
 
     // TODO: I only got this far with the useDefaultCollection idea... we would actually have to pass this
     // to our child *and* change the current window url
@@ -78,3 +77,23 @@ export const EmbeddingHost: React.FunctionComponent<{
         />
     );
 };
+
+// If this iframe has the necessary javascript loaded, this will allow visitors to be able to share, bookmark locations within the library, or
+// refresh without losing their place. See the the other end of this code at testembed.htm
+export function useSetEmbeddedUrl() {
+    const location = useLocation();
+    useEffect(() => {
+        const { collectionName, breadcrumbs } = splitPathname(
+            location.pathname
+        );
+        const p = breadcrumbs;
+        p.push(collectionName);
+        window.parent.postMessage(
+            {
+                event: "addBloomLibraryLocationToUrl",
+                data: p.join("/"), // nb: the receiver already encodes this
+            },
+            "*"
+        );
+    }, [location]);
+}

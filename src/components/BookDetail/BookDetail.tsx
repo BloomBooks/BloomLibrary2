@@ -148,7 +148,7 @@ export const BookDetailInternal: React.FunctionComponent<{
     );
     const [alertText, setAlertText] = useState<string | null>(null);
     const breakToColumn = "540px";
-
+    const embeddedMode = window.location.pathname.startsWith("/embed/");
     return (
         <div
             // had width:800px, but that destroys responsiveness
@@ -167,7 +167,7 @@ export const BookDetailInternal: React.FunctionComponent<{
                     }
                 `}
             >
-                <Breadcrumbs />
+                {embeddedMode || <Breadcrumbs />}
             </div>
             <div
                 css={css`

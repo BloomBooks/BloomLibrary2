@@ -18,16 +18,15 @@ import { ContentfulPage } from "./ContentfulPage";
 import { getDummyCollectionForPreview } from "../model/Collections";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { IEmbedSettings } from "../model/ContentInterfaces";
-import { EmbeddingHost } from "./EmbeddingHost";
+import { EmbeddingHost, useSetEmbeddedUrl } from "./EmbeddingHost";
 
 // The main set of switches that loads different things into the main content area of Blorg
 // based on the current window location.
-export const Routes: React.FunctionComponent<{}> = (props) => {
-    const embeddedMode = window.self !== window.top;
-    const url = useLocation();
-
+export const Routes: React.FunctionComponent<{}> = () => {
+    const location = useLocation();
+    useSetEmbeddedUrl();
     return (
-        <ErrorBoundary url={url.pathname}>
+        <ErrorBoundary url={location.pathname}>
             <Switch>
                 {/* Alias from legacy blorg */}
                 <Route path={"/browse"}>
@@ -160,7 +159,6 @@ export function splitPathname(
     collectionName: string;
     filters: string[];
     breadcrumbs: string[];
-    useDefaultCollection: boolean;
 } {
     const segments = trimLeft(pathname ?? "", "/").split("/");
     let embeddedSettings;
@@ -176,9 +174,6 @@ export function splitPathname(
         collectionSegmentIndex--;
     }
     let collectionName = segments[collectionSegmentIndex];
-
-    const useDefaultCollection =
-        !!embeddedSettings && (collectionSegmentIndex < 0 || !collectionName);
 
     if (
         collectionSegmentIndex < 0 ||
@@ -196,7 +191,6 @@ export function splitPathname(
             .slice(collectionSegmentIndex + 1)
             .map((x) => x.substring(1)),
         breadcrumbs: segments.slice(0, Math.max(collectionSegmentIndex, 0)),
-        useDefaultCollection,
     };
 }
 

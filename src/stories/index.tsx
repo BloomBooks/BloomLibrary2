@@ -198,9 +198,13 @@ storiesOf("Harvester Artifact Control", module)
         </>
     ));
 
+/* Note, this doesn't test what you get if you also add embed-bloomlibrary.js to your html file. (I.e. can't bookmark and such.)
+Just load testembed.htm in a browser to test that. */
 storiesOf("Embedding", module).add("Should Work", () => (
     <iframe
-        src={"http://localhost:3000/embed/embed-test/enabling-writers"}
+        //note, this last bit ("rise-png") must match what is in the Contentful "embed-test" object. If that changes, you'll get
+        // an error here.
+        src={"http://localhost:3000/embed/embed-test/rise-png"}
         title="embed test"
         height="600px"
         width="600px"
