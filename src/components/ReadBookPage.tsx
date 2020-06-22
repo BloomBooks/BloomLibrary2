@@ -12,6 +12,7 @@ import { useHistory, useLocation } from "react-router-dom";
 import { useTrack } from "../analytics/Analytics";
 import { getBookAnalyticsInfo } from "../analytics/BookAnalyticsInfo";
 import { useDocumentTitle } from "./Routes";
+import { beforePlayerUnloads } from "../analytics/BloomPlayerAnalytics";
 
 export const ReadBookPage: React.FunctionComponent<{
     id: string;
@@ -22,6 +23,12 @@ export const ReadBookPage: React.FunctionComponent<{
     const query = new URLSearchParams(location.search);
     const lang = query.get("lang");
     const contextLangIso = lang ? lang : undefined;
+    useEffect(() => {
+        window.addEventListener("beforeunload", beforePlayerUnloads);
+        return () => {
+            window.removeEventListener("beforeunload", beforePlayerUnloads);
+        };
+    }, []);
 
     useDocumentTitle("Play"); // Note that the title comes from the ?title parameter, if present. This "Play" will not normally be used.
     const handleMessageFromBloomPlayer = useCallback(
