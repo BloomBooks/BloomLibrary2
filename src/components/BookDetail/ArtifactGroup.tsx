@@ -100,7 +100,9 @@ export const ArtifactGroup: React.FunctionComponent<{
                         alt: "Download ePUB",
                         type: ArtifactType.epub,
                         settings: epubSettings,
-                        enabled: epubSettings?.decision === true,
+                        enabled:
+                            epubSettings?.decision === true &&
+                            props.book.harvestState === "Done",
                         hidden: hideEpubButton,
                     },
                     {
@@ -108,7 +110,9 @@ export const ArtifactGroup: React.FunctionComponent<{
                         alt: "Download for Bloom Reader",
                         type: ArtifactType.bloomReader,
                         settings: bloomReaderSettings,
-                        enabled: haveABloomDToDownload,
+                        enabled:
+                            haveABloomDToDownload &&
+                            props.book.harvestState === "Done",
                         hidden: !showBloomReaderButton,
                     },
                 ].map((a: IArtifactUI) => {

@@ -52,7 +52,10 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
 
     // Show this button if the harvester made an artifact we can read online,
     // and no one decided it was not fit to use.
-    const showReadOnLine = readOnlineSettings && readOnlineSettings.decision;
+    const showReadOnLine =
+        readOnlineSettings &&
+        readOnlineSettings.decision &&
+        props.book.harvestState === "Done";
     const shellBookSettings = getArtifactVisibilitySettings(
         props.book,
         ArtifactType.shellbook
@@ -67,6 +70,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
         ArtifactType.bloomReader
     );
     const showBloomReaderButton =
+        props.book.harvestState === "Done" &&
         bloomReaderSettings && // harvester made a bloomd
         bloomReaderSettings.decision && // no one decided it was not fit to use
         bloomReaderAvailable; // and we're on a platform that supports bloom reader
