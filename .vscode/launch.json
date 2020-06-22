@@ -23,18 +23,28 @@
             "sourceMapPathOverrides": {
                 "webpack:///src/*": "${webRoot}/*"
             }
-        }
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Linux Launch Chrome with localhost",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceRoot}/src",
+            "runtimeExecutable": "/usr/bin/chromium-browser",
+            "runtimeArgs": [
+                "--remote-debugging-port=9222",
+                "--user-data-dir=/tmp/chrome-debug"
+            ],
+            "sourceMapPathOverrides": {
+                "webpack:///src/*": "${webRoot}/*"
+            }
+        },
         {
             "name": "Debug CRA Tests",
             "type": "node",
             "request": "launch",
             "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/react-scripts",
-            "args": [
-                "test",
-                "--runInBand",
-                "--no-cache",
-                "--watchAll=false"
-            ],
+            "args": ["test", "--runInBand", "--no-cache", "--watchAll=false"],
             "cwd": "${workspaceRoot}",
             "protocol": "inspector",
             "console": "integratedTerminal",
