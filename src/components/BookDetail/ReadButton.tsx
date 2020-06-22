@@ -43,6 +43,7 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
             `}
             onClick={() => {
                 window.location.href =
+                    "/" +
                     url +
                     "?title=" +
                     encodeURI(props.book.title) +

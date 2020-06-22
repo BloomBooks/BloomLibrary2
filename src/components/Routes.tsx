@@ -207,7 +207,7 @@ export function getUrlForTarget(target: string) {
         breadcrumbs,
         collectionName: pathCollectionName,
     } = splitPathname(window.location.pathname);
-    const segments = [
+    let segments = [
         embeddedSettingsUrlKey ? "embed" : undefined,
         embeddedSettingsUrlKey,
         ...breadcrumbs,
@@ -216,6 +216,17 @@ export function getUrlForTarget(target: string) {
     const { collectionName } = splitPathname(target);
     if (pathCollectionName && collectionName !== pathCollectionName) {
         segments.push(pathCollectionName);
+    }
+    if (target.startsWith("/player/")) {
+        // don't want breadcrumbs.
+        // TODO: we do want to allow this in embed mode, I believe.
+        // Hence, I've for the moment kept any embed prefixes.
+        // But, the route above for /player/ is not set up for it,
+        // so it won't work. Submitting this so at least
+        segments = [
+            embeddedSettingsUrlKey ? "embed" : undefined,
+            embeddedSettingsUrlKey,
+        ].filter((s) => !!s);
     }
     segments.push(trimLeft(target, "/"));
     // NB: we do not expect to get any of these in combination with /embed/
