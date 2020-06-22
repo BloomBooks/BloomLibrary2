@@ -12,7 +12,10 @@ import { useHistory, useLocation } from "react-router-dom";
 import { useTrack } from "../analytics/Analytics";
 import { getBookAnalyticsInfo } from "../analytics/BookAnalyticsInfo";
 import { useDocumentTitle } from "./Routes";
-import { beforePlayerUnloads } from "../analytics/BloomPlayerAnalytics";
+import {
+    beforePlayerUnloads,
+    startingBook,
+} from "../analytics/BloomPlayerAnalytics";
 
 export const ReadBookPage: React.FunctionComponent<{
     id: string;
@@ -23,12 +26,17 @@ export const ReadBookPage: React.FunctionComponent<{
     const query = new URLSearchParams(location.search);
     const lang = query.get("lang");
     const contextLangIso = lang ? lang : undefined;
+    // We need to do some analytics stuff when the user stops reading the book.
+    // Note that it's usually possible in an SPA to change pages without raising
+    // this event. If that becomes possible here, anything that does it should call
+    // this function. But it's not a problem currently.
     useEffect(() => {
         window.addEventListener("beforeunload", beforePlayerUnloads);
         return () => {
             window.removeEventListener("beforeunload", beforePlayerUnloads);
         };
     }, []);
+    useEffect(() => startingBook(), [id]);
 
     useDocumentTitle("Play"); // Note that the title comes from the ?title parameter, if present. This "Play" will not normally be used.
     const handleMessageFromBloomPlayer = useCallback(
@@ -36,6 +44,10 @@ export const ReadBookPage: React.FunctionComponent<{
             try {
                 const r = JSON.parse(event.data);
                 if (r.messageType === "backButtonClicked") {
+                    // This apparently triggers the beforeunload event, though my
+                    // intuition says it shouldn't. If ever it doesn't, or
+                    // we replace it with something that doesn't, beforePlayerUnloads()
+                    // needs to be called.
                     history.goBack();
                     // without a timeout, sometimes this works, sometimes it doesn't
                     window.setTimeout(() => history.goBack(), 200);

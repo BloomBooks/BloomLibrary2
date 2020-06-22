@@ -67,7 +67,6 @@ import React, { useEffect, useState } from "react";
 })();
 /* tslint:enable */
 /* eslint-enable */
-const theOneAnalytics = (window as any).analytics;
 // Possible "sources" to send data to.
 // Note that a Segment.io "source" is the (intermediate) destination that we send stuff TO.
 // Development: vidljptawu, Production: a6nswpue7x, bloomlibrary test: plYUfYSopTpXkUxNpV58oGwhPNRSyBzo
@@ -76,10 +75,14 @@ const theOneAnalytics = (window as any).analytics;
 //prettier-ignore
 //analytics.load(!sharedService.isProductionSite || localStorageService.get('trackLiveAnalytics') === "false" ? "vidljptawu" : "a6nswpue7x");
 // This is for the segment.io 'source' "BloomLibrary Test".
-theOneAnalytics.load("plYUfYSopTpXkUxNpV58oGwhPNRSyBzo");
+// (Note: window.analytics here is typically the array created in the immediately-invokved function above
+// to save events that happen before the script in that object's load method is loaded.
+(window as any).analytics.load("plYUfYSopTpXkUxNpV58oGwhPNRSyBzo");
 export function track(event: string, params: object) {
-    // I think we could just use theOneAnalytics, but I'm trying to stay as close as I can to
-    // the way the analytics code is designed to work.
+    // Note that once the script created in the load() function above is loaded,
+    // window.analytics is an object defined in that script, not the object
+    // we created in the immediately-invoked function above. So don't be tempted
+    // to save that object and reuse it here.
     const analytics = (window as any).analytics;
     analytics.track(event, params);
 }
