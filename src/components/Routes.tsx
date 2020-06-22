@@ -173,6 +173,18 @@ export function splitPathname(
         // all segments (if any) are filters! We're in the root collection.
         collectionName = "root.read";
     }
+    if (collectionSegmentIndex >= 1) {
+        let previous = segments[collectionSegmentIndex - 1];
+        if (previous === "player") {
+            collectionName = ""; // we have no way of knowing it, but it's not the book ID.
+        }
+        if (previous === "book") {
+            collectionName =
+                collectionSegmentIndex >= 2
+                    ? segments[collectionSegmentIndex - 2]
+                    : "";
+        }
+    }
 
     return {
         embeddedSettingsUrlKey: embeddedSettings,
