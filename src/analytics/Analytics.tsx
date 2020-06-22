@@ -1,60 +1,82 @@
 import React, { useEffect, useState } from "react";
 // This file contains code for sending analytics information to segment.io.
 
-// This block is boilerplate stuff from segment.io.  It is only modified to adhere to strict mode and pass lint.
-// (A lot of mods, since their code makes huge use of the comma operator, which lint does not allow.)
-// I don't know everything it does, but one thing is it stores up any calls made before the analytics object is fully initialized.
-// Once the object is initialized, it runs through the queue.  This prevents script errors during load.
-const theOneAnalytics: any = (window as any).analytics || [];
-(window as any).analytics = theOneAnalytics;
-theOneAnalytics.methods = [
-    "identify",
-    "group",
-    "track",
-    "page",
-    "pageview",
-    "alias",
-    "ready",
-    "on",
-    "once",
-    "off",
-    "trackLink",
-    "trackForm",
-    "trackClick",
-    "trackSubmit",
-];
-theOneAnalytics.factory = (t: any) => {
-    return (...args: any[]) => {
-        const a = Array.prototype.slice.call(args);
-        a.unshift(t);
-        theOneAnalytics.push(a);
-        return theOneAnalytics;
-    };
-};
-for (const key of theOneAnalytics.methods) {
-    theOneAnalytics[key] = theOneAnalytics.factory(key);
-}
-theOneAnalytics.load = (t: any) => {
-    if (!document.getElementById("analytics-js")) {
-        const a = document.createElement("script");
-        a.type = "text/javascript";
-        a.id = "analytics-js";
-        a.async = !0;
-        a.src =
-            ("https:" === document.location.protocol ? "https://" : "http://") +
-            "cdn.segment.io/analytics.js/v1/" +
-            t +
-            "/analytics.min.js";
-        const n = document.getElementsByTagName("script")[0];
-        n.parentNode?.insertBefore(a, n);
-    }
-};
-theOneAnalytics.SNIPPET_VERSION = "2.0.9";
-// Development: vidljptawu, Production: a6nswpue7x
+// This block is boilerplate stuff from segment.io.  It is only modified by automatic line breaking and to pass typescript,
+// to remove the automatic root-page notification, and to extract the line that sets the ID so we can make that configurable.
+/* eslint-disable */
+/* tslint:disable */
+(function () {
+    // tslint:disable-next-line: prefer-const
+    var analytics = ((window as any).analytics =
+        (window as any).analytics || []);
+    if (!analytics.initialize)
+        if (analytics.invoked)
+            window.console &&
+                console.error &&
+                console.error("Segment snippet included twice.");
+        else {
+            analytics.invoked = !0;
+            analytics.methods = [
+                "trackSubmit",
+                "trackClick",
+                "trackLink",
+                "trackForm",
+                "pageview",
+                "identify",
+                "reset",
+                "group",
+                "track",
+                "ready",
+                "alias",
+                "debug",
+                "page",
+                "once",
+                "off",
+                "on",
+                "addSourceMiddleware",
+                "addIntegrationMiddleware",
+                "setAnonymousId",
+                "addDestinationMiddleware",
+            ];
+            analytics.factory = function (e: any) {
+                return function () {
+                    var t = Array.prototype.slice.call(arguments);
+                    t.unshift(e);
+                    analytics.push(t);
+                    return analytics;
+                };
+            };
+            for (var e = 0; e < analytics.methods.length; e++) {
+                var t = analytics.methods[e];
+                analytics[t] = analytics.factory(t);
+            }
+            analytics.load = function (e: any, t: any) {
+                var n = document.createElement("script");
+                n.type = "text/javascript";
+                n.async = !0;
+                n.src =
+                    "https://cdn.segment.com/analytics.js/v1/" +
+                    e +
+                    "/analytics.min.js";
+                var a = document.getElementsByTagName("script")[0] as any;
+                a.parentNode.insertBefore(n, a);
+                analytics._loadOptions = t;
+            };
+            analytics.SNIPPET_VERSION = "4.1.0";
+        }
+})();
+/* tslint:enable */
+/* eslint-enable */
+const theOneAnalytics = (window as any).analytics;
+// Possible "sources" to send data to.
+// Note that a Segment.io "source" is the (intermediate) destination that we send stuff TO.
+// Development: vidljptawu, Production: a6nswpue7x, bloomlibrary test: plYUfYSopTpXkUxNpV58oGwhPNRSyBzo
 // Todo: use something like this to only make analytics in production and only if user has not disabled it.
+// The old code below is taken from the original BL and based on an angularjs service.
 //prettier-ignore
 //analytics.load(!sharedService.isProductionSite || localStorageService.get('trackLiveAnalytics') === "false" ? "vidljptawu" : "a6nswpue7x");
-theOneAnalytics.load("vidljptawu");
+// This is for the segment.io 'source' "BloomLibrary Test".
+theOneAnalytics.load("plYUfYSopTpXkUxNpV58oGwhPNRSyBzo");
 export function track(event: string, params: object) {
     // I think we could just use theOneAnalytics, but I'm trying to stay as close as I can to
     // the way the analytics code is designed to work.
