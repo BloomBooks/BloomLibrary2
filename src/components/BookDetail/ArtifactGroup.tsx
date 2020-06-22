@@ -61,10 +61,10 @@ export const ArtifactGroup: React.FunctionComponent<{
     const showBloomReaderButton: boolean =
         !showingBloomReaderDownloadElsewhere &&
         !cantUseBloomD &&
-        !(mobile && !haveABloomDToDownload);
+        haveABloomDToDownload;
 
     const hidePdfButton: boolean = mobile && !pdfSettings?.decision;
-    const hideEpubButton: boolean = mobile && !epubSettings?.decision;
+    const hideEpubButton: boolean = !epubSettings?.decision;
 
     // If we're showing a bloomd download button elsewhere, add a heading above the other downloads.
     const showMoreDownloadsHeading: boolean =
