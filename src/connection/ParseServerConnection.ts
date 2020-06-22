@@ -170,6 +170,10 @@ function failedToLoginInToParseServer() {
     alert(
         "Oops, something went wrong when trying to log you into our database."
     );
+    // Make Sentry log this.
+    throw new Error(
+        "Login to parse server failed after successful firebase login"
+    );
 }
 // Remove the parse session header when the user logs out.
 // This is probably redundant since currently the logout process reloads the whole page.
