@@ -2,8 +2,8 @@ import { Book } from "../model/Book";
 import { splitPathname } from "../components/Routes";
 
 export interface IBookAnalyticsInfo {
-    bookID?: string;
-    title?: string;
+    book?: string;
+    bookTitle?: string;
     publisher?: string;
     topic?: string;
     level?: string;
@@ -35,8 +35,8 @@ export function getBookAnalyticsInfo(
         }
     }
     const result: IBookAnalyticsInfo = {
-        bookID: book?.id,
-        title: book?.title,
+        book: book?.id,
+        bookTitle: book?.title,
         publisher: book?.publisher,
         topic,
         level,
