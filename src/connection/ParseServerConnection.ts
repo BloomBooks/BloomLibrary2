@@ -1,5 +1,6 @@
 import axios from "axios";
 import { LoggedInUser, User } from "./LoggedInUser";
+import * as Sentry from "@sentry/browser";
 
 // This file exports a function getConnection(), which returns the headers
 // needed to talk to our Parse Server backend db.
@@ -167,12 +168,13 @@ export async function connectParseServer(
     });
 }
 function failedToLoginInToParseServer() {
+    Sentry.captureException(
+        new Error(
+            "Login to parse server failed after successful firebase login"
+        )
+    );
     alert(
         "Oops, something went wrong when trying to log you into our database."
-    );
-    // Make Sentry log this.
-    throw new Error(
-        "Login to parse server failed after successful firebase login"
     );
 }
 // Remove the parse session header when the user logs out.
