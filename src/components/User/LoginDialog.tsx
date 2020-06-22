@@ -13,7 +13,7 @@ import "firebase/auth";
 //import * as firebaseui from "firebaseui";
 import { DialogTitle } from "@material-ui/core";
 import Dialog from "@material-ui/core/Dialog";
-import { track } from "../../analytics/Analytics";
+import * as Sentry from "@sentry/browser";
 
 //import { staticUser } from "./User";
 
@@ -61,7 +61,7 @@ const uiConfig = {
             return false;
         },
         signInFailure: (error: any) => {
-            track("Login failed", { error }); // doesn't work, nothing seems to bring us here
+            Sentry.captureException(error); // probably won't happen, nothing seems to bring us here
             console.log("!!!!!!!!!!! signInFailure");
             alert("signInFailure");
             return new Promise((r, x) => {});

@@ -39,7 +39,7 @@ const BookDetail: React.FunctionComponent<IProps> = (props) => {
     const { collectionName } = splitPathname(location.pathname);
     useTrack(
         "Book Detail",
-        getBookAnalyticsInfo(book, contextLangIso, "undefined", collectionName),
+        getBookAnalyticsInfo(book, contextLangIso, undefined, collectionName),
         !!book
     );
     if (book === undefined) {

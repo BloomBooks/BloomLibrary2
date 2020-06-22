@@ -38,8 +38,11 @@ const BookCountInternal: React.FunctionComponent<IProps> = (props) => {
         bookCountResult
     );
     const [state, setState] = useState({
-        filterString: "",
-        waitingForLoading: false,
+        filterString: "", // what we're filtering for
+        waitingForLoading: false, // do we need to wait for a return result with loading true before we believe results?
+        // have we done any one-time side effects of getting a valid count for this filter?
+        // The initial value doesn't matter except possibly if the initial search string is empty,
+        // when it might help to prevent a spurious display of noMatches
         reportedCount: true,
     });
     const filterString = JSON.stringify(props.filter);

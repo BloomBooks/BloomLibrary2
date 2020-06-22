@@ -96,10 +96,10 @@ export const CollectionSubsetPage: React.FunctionComponent<{
     // although its value is not set until later in the method.
     // On the early renders, collection and hence actualCollection will be undefined,
     // so it does nothing. The first time (and ONLY the first time, unless something
-    // makes a meaningful change to our collection or filters that we do have a collection,
+    // makes a meaningful change to our collection or filters) that we do have a collection,
     // we send the event. The stringify calls are to prevent the effect firing just because
-    // of new object instances with the same content. )
-    let whatDeterminesAnalyticsCollection =
+    // of new object instances with the same content.
+    const whatDeterminesAnalyticsCollection =
         JSON.stringify(props.filters) + JSON.stringify(collection);
     useEffect(() => {
         if (analyticsCollection) {
@@ -150,10 +150,10 @@ export const CollectionSubsetPage: React.FunctionComponent<{
 
     const parts = subcollection.urlKey.split("/");
 
-    let noResults: JSX.Element | undefined;
+    let noMatches: JSX.Element | undefined;
     if (parts.length === 2 && parts[1].startsWith(":search:")) {
         const match = parts[1].substring(":search:".length);
-        noResults = <NoSearchResults match={match} />;
+        noMatches = <NoSearchResults match={match} />;
     }
     return (
         <React.Fragment>
@@ -165,7 +165,7 @@ export const CollectionSubsetPage: React.FunctionComponent<{
                 <Breadcrumbs />
                 <BookCount
                     filter={subcollection.filter}
-                    noMatches={noResults}
+                    noMatches={noMatches}
                 />
             </div>
 

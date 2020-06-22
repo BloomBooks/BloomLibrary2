@@ -15,6 +15,7 @@ import { observer } from "mobx-react";
 import { logout as logoutFromParseServer } from "../../connection/ParseServerConnection";
 import Avatar from "react-avatar";
 import { track } from "../../analytics/Analytics";
+import * as Sentry from "@sentry/browser";
 
 // This React component displays a button for functions related to the user who may
 // be logged in. If no user is logged in, it displays a generic icon with pull-down
@@ -115,7 +116,7 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
         try {
             ShowLoginDialog(true);
         } catch (error) {
-            track("Login failed", { error }); // doesn't work, nothing seems to bring us here
+            Sentry.captureException(error); // probably won't happen, nothing seems to bring us here
             // setState({ isLoading: false, error: error });
         }
     };
