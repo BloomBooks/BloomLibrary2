@@ -12,7 +12,7 @@ import { LicenseLink } from "./LicenseLink";
 import titleCase from "title-case";
 import { Link, useTheme } from "@material-ui/core";
 import { commonUI } from "../../theme";
-import { BookAnalytics } from "./BookAnalytics";
+import { BookStats } from "./BookStats";
 import { CachedTablesContext } from "../../App";
 import { getTagDisplayName } from "../../model/Tag";
 import { useGetRelatedBooks } from "../../connection/LibraryQueryHooks";
@@ -73,7 +73,7 @@ export const MetadataGroup: React.FunctionComponent<{
                             </Link>
                         </div>
                     )}
-                <BookAnalytics book={props.book} />
+                <BookStats book={props.book} />
             </div>
             <div
                 id="column2"
