@@ -11,7 +11,7 @@ import { Link } from "@material-ui/core";
 
 export const ReportButton: React.FunctionComponent<{
     book: Book;
-}> = props => (
+}> = (props) => (
     // <Button
     //     color="secondary"
     //     css={css`
@@ -27,10 +27,10 @@ export const ReportButton: React.FunctionComponent<{
         rel="noopener noreferrer" // copied from LicenseLink
         css={css`
             flex-shrink: 1;
-            margin-right: 10px !important;
+            margin-right: 20px !important;
             display: flex;
             align-items: center;
-            margin-top: 5px;
+            margin-top: 10px !important;
         `}
         onClick={() => alert("not implemented yet")}
     >
