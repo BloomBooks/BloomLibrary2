@@ -58,9 +58,9 @@ export function getConnection(): IConnection {
     //     window.location.hostname === "localhost" &&
     //     window.location.port === "9009"
     // ) {
-    return prod;
+    // return prod;
     // }
-    //return dev;
+    return dev;
 }
 
 // This should only be called when there is a current user logged in.

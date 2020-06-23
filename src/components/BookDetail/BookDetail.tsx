@@ -12,11 +12,12 @@ import TranslationIcon from "./translation.svg";
 import { IconButton, Divider, Link } from "@material-ui/core";
 import { Alert } from "../Alert";
 
-import { observer, PropTypes } from "mobx-react";
+import { observer } from "mobx-react";
 import { BookExtraPanels } from "./BookExtraPanels";
 import { MetadataGroup } from "./MetadataGroup";
 import { ArtifactGroup } from "./ArtifactGroup";
 import { BookDetailHeaderGroup } from "./BookDetailHeaderGroup";
+import { DeleteButton } from "./DeleteButton";
 import { ReportButton } from "./ReportButton";
 import { OSFeaturesContext } from "../../components/OSFeaturesContext";
 import { commonUI } from "../../theme";
@@ -162,14 +163,14 @@ export const BookDetailInternal: React.FunctionComponent<{
                             }
                         `}
                     >
-                        <ReportButton
-                            book={props.book}
+                        <div
                             css={css`
-                                margin-right: auto;
-                                justify-content: left;
+                                display: flex;
                             `}
-                        />
-
+                        >
+                            <ReportButton book={props.book} />
+                            <DeleteButton book={props.book} />
+                        </div>
                         {/* Enhance, maybe, add this and wire to some message <HowToPrintButton />*/}
                         {bloomDesktopAvailable || (
                             <Link
