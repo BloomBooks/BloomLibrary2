@@ -1,4 +1,4 @@
-import useAxios, { IReturns } from "@use-hooks/axios";
+import useAxios, { IReturns, axios } from "@use-hooks/axios";
 import { IFilter, InCirculationOptions } from "../IFilter";
 import { getConnection } from "./ParseServerConnection";
 import { Book, createBookFromParseServerData } from "../model/Book";
@@ -912,4 +912,10 @@ export function getCountString(queryResult: any): string {
     if (loading || !response) return "";
     if (error) return "error";
     return response["data"]["count"].toString();
+}
+
+export async function deleteBook(id: string) {
+    return axios.delete(`${getConnection().url}classes/books/${id}`, {
+        headers: getConnection().headers,
+    });
 }
