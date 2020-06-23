@@ -68,8 +68,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             getCellValue: (b: Book) =>
                 b.languages.map((l) => l.name).join(", "),
             addToFilter: (filter: IFilter, value: string) => {
-                // enhance: at the moment we don't have a "language:" search axis, so this will search other fields as well
-                filter.search += ` ${value}`;
+                filter.language = value;
             },
         },
         {
