@@ -24,6 +24,8 @@ const sampleUrl =
 
 storiesOf("BookDetail", module)
     .add("Beautiful Day", () => <BookDetail id={"lhQnYpvD9p"} />)
+    // .add("production test book", () => <BookDetail id={"5rWQGc1d0q"} />)
+    // .add("production test book 2", () => <BookDetail id={"BviSvJYwKk"} />)
     .add("ReadBookPage", () => (
         <ReadBookPage
             id={
