@@ -44,13 +44,11 @@ export const ReadBookPage: React.FunctionComponent<{
             try {
                 const r = JSON.parse(event.data);
                 if (r.messageType === "backButtonClicked") {
-                    // This apparently triggers the beforeunload event, though my
-                    // intuition says it shouldn't. If ever it doesn't, or
-                    // we replace it with something that doesn't, beforePlayerUnloads()
-                    // needs to be called.
-                    history.goBack();
-                    // without a timeout, sometimes this works, sometimes it doesn't
-                    window.setTimeout(() => history.goBack(), 200);
+                    // History.push doesn't automatically raise beforeunload, since
+                    // from the browser's point of view we're staying on the same page.
+                    // Easiest just to call the function we want ourselves.
+                    beforePlayerUnloads();
+                    history.push(`/book/${id}`);
                 }
             } catch (err) {
                 console.log(`Got error with message: ${err}`);
