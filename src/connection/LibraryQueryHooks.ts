@@ -111,10 +111,14 @@ export function useGetRelatedBooks(bookId: string): Book[] {
                         objectId: bookId,
                     },
                 },
-                // We don't really need all the fields of the related books, but I don't
-                // see a way to restrict to just the fields we want. It's surely faster
-                // to just get it all then get the bookids and then do separate queries to get their titles
-                include: "books",
+                // This dot notation should cause it to get just the two fields we care
+                // about (search for "multi level includes using dot notation" in parse
+                // server doc), but it actually seems to get them all, just like include: "books".
+                // May as well leave it in since it might work if we upgrade to a later
+                // parse server version. It's surely faster
+                // to just get it all than to get the bookids and then do separate queries to get
+                // the titles and check they are in circulation.
+                include: "books.title,books.inCirculation",
             },
         },
     });
@@ -129,9 +133,15 @@ export function useGetRelatedBooks(bookId: string): Book[] {
     ) {
         return [];
     }
-    return response["data"]["results"][0].books
-        .filter((r: any) => r.objectId !== bookId) // don't return the book for which we're looking for related books.
-        .map((r: any) => createBookFromParseServerData(r));
+    return (
+        response["data"]["results"][0].books
+            // don't return the book for which we're looking for related books,
+            // or any that have been specifically put out of circulation.
+            .filter(
+                (r: any) => r.objectId !== bookId && r.inCirculation !== false
+            )
+            .map((r: any) => createBookFromParseServerData(r))
+    );
 }
 /*
 export function useGetPhashMatchingRelatedBooks(
