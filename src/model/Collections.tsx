@@ -234,7 +234,10 @@ export function makeCollectionForSearch(
 ): ICollection {
     const filter = { ...baseCollection?.filter, search };
     let label = 'Books matching "' + decodeURIComponent(search) + '"';
-    if (baseCollection?.label) {
+    // The root.read is a special case that is always unmarked...not including
+    // it's label allows us to, for example, see "Bloom Library: Books matching dogs"
+    // rather than "Bloom Library: Read - Books matching dogs"
+    if (baseCollection?.urlKey !== "root.read" && baseCollection?.label) {
         label = baseCollection.label + " - " + label;
     }
     let urlKey = ":search:" + search;
