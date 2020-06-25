@@ -8,9 +8,15 @@ window.onload = function () {
     if (libraryLocation) {
         libraryLocation = decodeURIComponent(libraryLocation);
         var libraryIFrame = document.getElementById("bloomlibrary");
-        // drop the initial collection parameter (it will be replaced by what we have)
         var segments = libraryIFrame.src.split("/");
-        segments.splice(segments.length - 1, 1);
+        if (libraryLocation.startsWith("player/")) {
+            // reading a book doesn't require (nor permit) the leading embed information
+            const embedIndex = segments.findIndex((x) => x === "embed");
+            segments.splice(embedIndex, segments.length - embedIndex);
+        } else {
+            // drop the initial collection parameter (it will be replaced by what we have)
+            segments.splice(segments.length - 1, 1);
+        }
         // add on what we have
         libraryIFrame.src = segments.join("/") + "/" + libraryLocation;
         console.log("Set iframe src to " + libraryIFrame.src);

@@ -17,7 +17,10 @@ interface IProps {
     contextLangIso?: string;
 }
 export const ReadButton: React.FunctionComponent<IProps> = (props) => {
-    const url = getUrlForTarget(`/player/${props.book.id}`);
+    const url = `player/${props.book.id}`;
+    // This inserts breadcrumbs, embedding information, etc., which we don't want
+    // since it interferes with the route for /player/X
+    //const url = getUrlForTarget(`/player/${props.book.id}`);
     return (
         <Button
             variant="contained"
