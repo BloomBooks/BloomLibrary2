@@ -598,6 +598,7 @@ export function splitString(
         "country:",
         "phash:",
         "level:",
+        "feature:",
     ];
 
     const possibleParts = [...facets, ...allTagsInDatabase];
@@ -730,6 +731,11 @@ export function constructParseBookQuery(
                             className: "_User",
                         },
                     };
+                    break;
+                case "feature":
+                    // Note that if filter actually has a feature field (filter.feature is defined)
+                    // that will win, overiding any feature: in the search field (see below).
+                    params.where.features = facetValue;
                     break;
                 case "phash":
                     // work around https://issues.bloomlibrary.org/youtrack/issue/BL-8327 until it is fixed
