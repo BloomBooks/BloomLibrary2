@@ -265,11 +265,18 @@ export function useDocumentTitle(title: string | undefined) {
             // (I'm not sure why that's different, but it is).
             const urlParams = new URLSearchParams(location.search);
             const titleFromUrl = urlParams.get("title");
-            document.title =
-                "Bloom Library: " +
-                (titleFromUrl ? decodeURI(titleFromUrl) : title);
+            setBloomLibraryTitle(
+                titleFromUrl ? decodeURI(titleFromUrl) : title
+            );
         }
     }, [title, location]);
+}
+
+// This is used where we can't use useDocumentTitle, typically because
+// we don't know the title until after some conditional logic prevented by
+// rules of hooks.
+export function setBloomLibraryTitle(title: string): void {
+    document.title = "Bloom Library: " + title;
 }
 
 export const CollectionWrapper: React.FunctionComponent<{

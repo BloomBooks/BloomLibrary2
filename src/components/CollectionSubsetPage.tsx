@@ -17,7 +17,7 @@ import { ICollection } from "../model/ContentInterfaces";
 import { getCollectionAnalyticsInfo } from "../analytics/CollectionAnalyticsInfo";
 import { track } from "../analytics/Analytics";
 import { BookCount } from "./BookCount";
-import { useDocumentTitle } from "./Routes";
+import { useDocumentTitle, setBloomLibraryTitle } from "./Routes";
 import { NoSearchResults } from "./NoSearchResults";
 
 // Given a collection and a string like level:1/topic:anthropology/search:dogs,
@@ -84,30 +84,38 @@ export const CollectionSubsetPage: React.FunctionComponent<{
     filters: string[]; // may result in automatically-created subcollections. Might be multiple ones slash-delimited
 }> = (props) => {
     const { collection, loading } = useGetCollection(props.collectionName);
-    useDocumentTitle(props.collectionName);
-    let analyticsCollection: ICollection | undefined;
+    // Can't use here, we want title information based on subcollection.
+    //useDocumentTitle(props.collectionName);
 
-    // This is tricky. We want to generate the analytics params from the actual subcollection
+    // This will be set equal to subcollection if we are able to compute a subcollection.
+    // When the useEffect below runs in cases where we don't have a collection yet,
+    // and so can't make a subcollection either, it is undefined.
+    let possibleSubCollection: ICollection | undefined;
+
+    // This is tricky. We want to generate various things from the actual subcollection
     // we display. But we can't create that until we get the root collection it's based on.
-    // On the other hand, the useEffect (or useTrack, which we'd prefer to use) can't occur
+    // On the other hand, the useEffect (or useTrack, which we'd prefer to use for some things) can't occur
     // after the early return statements that handle NOT having a collection, because of rules of hooks.
     // The solution here is to take advantage of the fact that the useEffect function is
-    // not called until the END of the render; thus, it can make use of 'actualCollection'
+    // not called until the END of the render; thus, it can make use of 'possibleSubCollection'
     // although its value is not set until later in the method.
-    // On the early renders, collection and hence actualCollection will be undefined,
+    // On the early renders, collection and hence possibleSubCollection will be undefined,
     // so it does nothing. The first time (and ONLY the first time, unless something
     // makes a meaningful change to our collection or filters) that we do have a collection,
-    // we send the event. The stringify calls are to prevent the effect firing just because
+    // we do the side effects. The stringify calls are to prevent the effect firing just because
     // of new object instances with the same content.
-    const whatDeterminesAnalyticsCollection =
+    const whatDeterminesSubCollection =
         JSON.stringify(props.filters) + JSON.stringify(collection);
     useEffect(() => {
-        if (analyticsCollection) {
-            const { params } = getCollectionAnalyticsInfo(analyticsCollection);
+        if (possibleSubCollection) {
+            const { params } = getCollectionAnalyticsInfo(
+                possibleSubCollection
+            );
             track("Open Collection", params);
+            setBloomLibraryTitle(possibleSubCollection.label);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [whatDeterminesAnalyticsCollection]);
+    }, [whatDeterminesSubCollection]);
 
     if (loading) {
         return null;
@@ -121,7 +129,7 @@ export const CollectionSubsetPage: React.FunctionComponent<{
         filteredCollection: subcollection,
         skip,
     } = generateCollectionFromFilters(collection, props.filters);
-    analyticsCollection = subcollection;
+    possibleSubCollection = subcollection;
 
     // The idea here is that by default we break things up by level. If we already did, divide by topic.
     // If we already used both, make a flat list.
