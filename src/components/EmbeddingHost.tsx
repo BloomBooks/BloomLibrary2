@@ -83,15 +83,19 @@ export const EmbeddingHost: React.FunctionComponent<{
 export function useSetEmbeddedUrl() {
     const location = useLocation();
     useEffect(() => {
-        const { collectionName, breadcrumbs } = splitPathname(
-            location.pathname
-        );
-        const p = breadcrumbs;
-        p.push(collectionName);
+        let bloomLibraryLocation = location.pathname.substring(1);
+        if (!location.pathname.startsWith("/player/")) {
+            const { collectionName, breadcrumbs } = splitPathname(
+                location.pathname
+            );
+            const p = breadcrumbs;
+            p.push(collectionName);
+            bloomLibraryLocation = p.join("/");
+        }
         window.parent.postMessage(
             {
                 event: "addBloomLibraryLocationToUrl",
-                data: p.join("/"), // nb: the receiver already encodes this
+                data: bloomLibraryLocation, // nb: the receiver already encodes this
             },
             "*"
         );
