@@ -1,6 +1,7 @@
 import React from "react";
 
 import { storiesOf, addDecorator } from "@storybook/react";
+import { withKnobs, boolean } from "@storybook/addon-knobs";
 
 import { BookCard } from "../components/BookCard";
 import { BookGroup } from "../components/BookGroup";
@@ -15,7 +16,9 @@ import BookDetail from "../components/BookDetail/BookDetail";
 import { ThemeProvider } from "@material-ui/styles";
 import theme from "../theme";
 import { ReadBookPage } from "../components/ReadBookPage";
+import { ConfirmationDialog } from "../components/ConfirmationDialog";
 
+addDecorator(withKnobs);
 addDecorator((storyFn) => (
     <ThemeProvider theme={theme}>{storyFn()}</ThemeProvider>
 ));
@@ -141,19 +144,34 @@ storiesOf("Pages", module);
 // ))
 // .add("Motion Book Feature Page", () => <FeaturePage featureKey="motion" />);
 
-storiesOf("Components", module).add("SearchBox", () => {
-    const bloomRed: string = theme.palette.primary.main;
-    return (
-        <div
-            style={{
-                height: "48px",
-                backgroundColor: bloomRed,
-            }}
-        >
-            <SearchBox />
-        </div>
-    );
-});
+storiesOf("Components", module)
+    .add("SearchBox", () => {
+        const bloomRed: string = theme.palette.primary.main;
+        return (
+            <div
+                style={{
+                    height: "48px",
+                    backgroundColor: bloomRed,
+                }}
+            >
+                <SearchBox />
+            </div>
+        );
+    })
+    .add("Confirmation Dialog", () => {
+        return (
+            <ConfirmationDialog
+                title={"Delete this book?"}
+                content={
+                    "If you continue, this version of the book will be removed from BloomLibrary.org. There is no way to undo this except by uploading it again."
+                }
+                open={boolean("Open", false)}
+                onClose={(confirm) => {
+                    if (confirm) alert("confirmed");
+                }}
+            />
+        );
+    });
 
 const triStateBooleanOptions = [undefined, false, true];
 let i = 0;
