@@ -47,7 +47,7 @@ export const ReadOfflineButton: React.FunctionComponent<IProps> = (props) => {
                         src={BloomPubIcon}
                         alt="bloom reader document"
                         css={css`
-                            width: 35px;
+                            width: 60px;
                             margin-right: 10px;
                         `}
                     />
@@ -73,6 +73,7 @@ export const ReadOfflineButton: React.FunctionComponent<IProps> = (props) => {
                             css={css`
                                 margin-bottom: 0;
                                 margin-top: 0;
+                                line-height: 19px;
                             `}
                         >
                             READ OFFLINE

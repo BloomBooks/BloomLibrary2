@@ -10,7 +10,7 @@ import { observer } from "mobx-react";
 
 import pdfIcon from "./PDF.svg";
 import ePUBIcon from "./ePUB.svg";
-import bloomReaderIcon from "./BloomPub.svg";
+import bloomPubIcon from "./BloomPub.svg";
 
 import { Book } from "../../model/Book";
 import {
@@ -52,20 +52,20 @@ export const ArtifactGroup: React.FunctionComponent<{
         props.book,
         ArtifactType.bloomReader
     );
-    const haveABloomDToDownload: boolean =
+    const haveABloomPubToDownload: boolean =
         bloomReaderSettings?.decision === true;
     // If bloom reader is available for this device and we have a bloomd, a more prominent button is shown elsewhere.
     const showingBloomReaderDownloadElsewhere =
-        bloomReaderAvailable && haveABloomDToDownload;
+        bloomReaderAvailable && haveABloomPubToDownload;
 
     // We show the bloomD download button here if
     // (a) we're not showing the larger button elsewhere, and
     // (b) we're not on a device (like an iphone) which we consider to have no good reason to download it, and
     // (c) we're not on a mobile (touch) device and the button would be disabled
-    const showBloomReaderButton: boolean =
+    const showBloomPUBButton: boolean =
         !showingBloomReaderDownloadElsewhere &&
         !cantUseBloomD &&
-        !(mobile && !haveABloomDToDownload);
+        !(mobile && !haveABloomPubToDownload);
 
     const hidePdfButton: boolean = mobile && !pdfSettings?.decision;
     const hideEpubButton: boolean = mobile && !epubSettings?.decision;
@@ -112,15 +112,16 @@ export const ArtifactGroup: React.FunctionComponent<{
                         analyticsType: "epub",
                     },
                     {
-                        icon: bloomReaderIcon,
-                        alt: "Download for Bloom Reader",
+                        icon: bloomPubIcon,
+                        alt:
+                            "Download BloomPUB for Bloom Reader or BloomPub Viewer",
                         type: ArtifactType.bloomReader,
                         settings: bloomReaderSettings,
                         enabled:
-                            haveABloomDToDownload &&
+                            haveABloomPubToDownload &&
                             props.book.harvestState === "Done",
-                        hidden: !showBloomReaderButton,
-                        analyticsType: "bloomd",
+                        hidden: !showBloomPUBButton,
+                        analyticsType: "bloompub",
                     },
                 ].map((a: IArtifactUI) => {
                     const artifactUrl = getArtifactUrl(props.book, a.type);
@@ -133,12 +134,9 @@ export const ArtifactGroup: React.FunctionComponent<{
                                 aria-label={`${a.alt} is not available`}
                                 title={
                                     a.settings?.reasonForHiding(props.book) ||
-                                    ""
+                                    a.alt
                                 }
                                 arrow={true}
-                                disableHoverListener={a.enabled}
-                                disableFocusListener={a.enabled}
-                                disableTouchListener={a.enabled}
                             >
                                 <IconButton>
                                     {!a.enabled && (
