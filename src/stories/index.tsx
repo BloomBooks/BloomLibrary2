@@ -162,18 +162,15 @@ storiesOf("Components", module)
         return (
             <ConfirmationDialog
                 title={"Delete this book?"}
-                content={
-                    <Fragment>
-                        If you continue, this version of the book will be
-                        removed from BloomLibrary.org. There is no way to undo
-                        this except by uploading it again.
-                    </Fragment>
-                }
                 open={boolean("Open", false)}
                 onClose={(confirm) => {
                     if (confirm) alert("confirmed");
                 }}
-            />
+            >
+                If you continue, this version of the book will be removed from
+                BloomLibrary.org. There is no way to undo this except by
+                uploading it again.
+            </ConfirmationDialog>
         );
     });
 
