@@ -1,6 +1,8 @@
-import React, { Fragment } from "react";
+import React from "react";
 import useAxios from "@use-hooks/axios";
+import { Tooltip } from "@material-ui/core";
 
+import infoIcon from "../../assets/info.png";
 import { Book } from "../../model/Book";
 
 // The casing here is unfortunate, but that's what the database gives us no matter what we do there.
@@ -58,15 +60,26 @@ export const BookStats: React.FunctionComponent<{
 
     const bookStats = useGetBookStats(props.book);
     return (
-        (shouldDisplayBookStats(bookStats) && (
-            <div>{`${bookStats.libraryviews || 0} views, ${
-                bookStats.totalreads || 0
-            } reads, ${bookStats.devicecount || 0} devices, ${
-                bookStats.shelldownloads || 0
-            } shell downloads`}</div>
-        )) || (
-            // Reserve vertical space
-            <Fragment>&nbsp;</Fragment>
-        )
+        <div style={{ display: "flex" }}>
+            {shouldDisplayBookStats(bookStats) ? (
+                <div>{`${bookStats.libraryviews || 0} views, ${
+                    bookStats.totalreads || 0
+                } reads, ${bookStats.devicecount || 0} devices, ${
+                    bookStats.shelldownloads || 0
+                } shell downloads`}</div>
+            ) : (
+                <div>Statistics not available yet</div>
+            )}
+            <Tooltip
+                title="Statistics beginning mid-2020. They are updated every 24 hours."
+                arrow={true}
+            >
+                <img
+                    src={infoIcon}
+                    style={{ width: "1em", marginLeft: "5px" }}
+                    alt=""
+                />
+            </Tooltip>
+        </div>
     );
 };
