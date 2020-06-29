@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import useAxios from "@use-hooks/axios";
 
 import { Book } from "../../model/Book";
@@ -64,7 +64,9 @@ export const BookStats: React.FunctionComponent<{
             } reads, ${bookStats.devicecount || 0} devices, ${
                 bookStats.shelldownloads || 0
             } shell downloads`}</div>
-        )) ||
-        null
+        )) || (
+            // Reserve vertical space
+            <Fragment>&nbsp;</Fragment>
+        )
     );
 };
