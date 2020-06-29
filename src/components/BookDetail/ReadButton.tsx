@@ -9,6 +9,7 @@ import Button from "@material-ui/core/Button";
 import ReadIcon from "./read.svg";
 import { commonUI } from "../../theme";
 import { Book } from "../../model/Book";
+import { useHistory } from "react-router-dom";
 
 interface IProps {
     book: Book;
@@ -16,6 +17,7 @@ interface IProps {
     contextLangIso?: string;
 }
 export const ReadButton: React.FunctionComponent<IProps> = (props) => {
+    const history = useHistory();
     const url = `player/${props.book.id}`;
     // This inserts breadcrumbs, embedding information, etc., which we don't want
     // since it interferes with the route for /player/X
@@ -44,14 +46,19 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
                 float: right;
             `}
             onClick={() => {
-                window.location.href =
+                // It's important to use react-dom's history here, becuase just setting
+                // the window's location will reload the page, and that will defeat
+                // the ReadBookPage's attempt to go full screen, because the browser
+                // thinks there has been no interaction with the page.
+                history.push(
                     "/" +
-                    url +
-                    "?title=" +
-                    encodeURI(props.book.title) +
-                    (props.contextLangIso
-                        ? "&lang=" + props.contextLangIso
-                        : "");
+                        url +
+                        "?title=" +
+                        encodeURI(props.book.title) +
+                        (props.contextLangIso
+                            ? "&lang=" + props.contextLangIso
+                            : "")
+                );
             }}
         >
             <h1

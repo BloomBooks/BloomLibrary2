@@ -7,10 +7,14 @@ import SILLogo from "../assets/SIL.png";
 import GitHubLogo from "../assets/GitHub-Mark-Light-32px.png";
 import React from "react";
 import { Link } from "@material-ui/core";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 
 //import { Link } from "react-router-dom";
 export const Footer: React.FunctionComponent = () => {
+    const location = useLocation();
+    // review: should this be a prop?
+    const hideHeader = location.pathname.startsWith("/player/");
+    if (hideHeader) return <React.Fragment></React.Fragment>;
     const separator = (
         <span
             css={css`
