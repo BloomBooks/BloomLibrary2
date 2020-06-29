@@ -4,7 +4,6 @@ import {
     ICollection,
     IEmbedSettings,
 } from "./ContentInterfaces";
-import { Field } from "contentful";
 
 /* The aim is to keep knowledge of Contentful limited to this file, to the extent
 that we think it is worth it. Meanwhile, rest of the code can use generic structures.

@@ -9,7 +9,6 @@ import Button from "@material-ui/core/Button";
 import ReadIcon from "./read.svg";
 import { commonUI } from "../../theme";
 import { Book } from "../../model/Book";
-import { getUrlForTarget } from "../Routes";
 
 interface IProps {
     book: Book;

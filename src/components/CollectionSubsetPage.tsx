@@ -3,7 +3,7 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { ListOfBookGroups } from "./ListOfBookGroups";
 import { ByLevelGroups, makeCollectionForLevel } from "./ByLevelGroups";
@@ -17,7 +17,7 @@ import { ICollection } from "../model/ContentInterfaces";
 import { getCollectionAnalyticsInfo } from "../analytics/CollectionAnalyticsInfo";
 import { track } from "../analytics/Analytics";
 import { BookCount } from "./BookCount";
-import { useDocumentTitle, setBloomLibraryTitle } from "./Routes";
+import { setBloomLibraryTitle } from "./Routes";
 import { NoSearchResults } from "./NoSearchResults";
 
 // Given a collection and a string like level:1/topic:anthropology/search:dogs,

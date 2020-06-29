@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 // This file contains code for sending analytics information to segment.io.
 
 // This block is boilerplate stuff from segment.io.  It is only modified by automatic line breaking and to pass typescript,

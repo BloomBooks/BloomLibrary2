@@ -54,7 +54,7 @@ export const ReadBookPage: React.FunctionComponent<{
                 console.log(`Got error with message: ${err}`);
             }
         },
-        [history]
+        [history, id]
     );
 
     useEffect(() => {

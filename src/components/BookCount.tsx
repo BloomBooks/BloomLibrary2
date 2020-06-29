@@ -1,5 +1,5 @@
 import css from "@emotion/css/macro";
-import React, { useEffect, useState } from "react"; // see https://github.com/emotion-js/emotion/issues/1156
+import React, { useState } from "react"; // see https://github.com/emotion-js/emotion/issues/1156
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
