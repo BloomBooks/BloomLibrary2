@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 
 import { storiesOf, addDecorator } from "@storybook/react";
 import { withKnobs, boolean } from "@storybook/addon-knobs";
@@ -163,7 +163,11 @@ storiesOf("Components", module)
             <ConfirmationDialog
                 title={"Delete this book?"}
                 content={
-                    "If you continue, this version of the book will be removed from BloomLibrary.org. There is no way to undo this except by uploading it again."
+                    <Fragment>
+                        If you continue, this version of the book will be
+                        removed from BloomLibrary.org. There is no way to undo
+                        this except by uploading it again.
+                    </Fragment>
                 }
                 open={boolean("Open", false)}
                 onClose={(confirm) => {

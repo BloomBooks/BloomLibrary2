@@ -89,7 +89,12 @@ export const DeleteButton: React.FunctionComponent<{
                 <ConfirmationDialog
                     title={"Delete this book?"}
                     content={
-                        "If you continue, this book will be removed from BloomLibrary.org. There is no way to undo this except by uploading it again."
+                        <Fragment>
+                            If you continue, this version of the book{" "}
+                            <em>{props.book.title}</em> will be removed from
+                            BloomLibrary.org. There is no way to undo this
+                            except by uploading it again.
+                        </Fragment>
                     }
                     confirmButtonText={"Permanently delete this book"}
                     open={confirmationDialogOpen}
