@@ -14,7 +14,6 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 
 export const ConfirmationDialog: React.FunctionComponent<{
     title: string;
-    content: JSX.Element;
     confirmButtonText?: string;
     open: boolean;
     onClose: (confirm: boolean) => void;
@@ -41,7 +40,7 @@ export const ConfirmationDialog: React.FunctionComponent<{
                             color: unset !important;
                         `}
                     >
-                        {props.content}
+                        {props.children}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions
@@ -53,7 +52,10 @@ export const ConfirmationDialog: React.FunctionComponent<{
                     <Button
                         onClick={() => handleClose(true)}
                         color="primary"
-                        // Make it left aligned. Override MUI right alignment.
+                        // Make it left aligned. (Override MUI right alignment.)
+                        // This is appropriate currently because our only use of this
+                        // dialog is to confirm a destructive action (delete a book).
+                        // It may need to parameterized if/when there are other uses.
                         css={css`
                             margin-right: auto !important;
                         `}
