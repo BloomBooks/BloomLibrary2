@@ -47,7 +47,7 @@ export function startingBook() {
 // way of calling this...compare the two ways the StaffPanel catches closing.
 // But currently both ways of "going back" from ReadBookPage already trigger
 // the unload event.
-export function beforePlayerUnloads() {
+export function sendPlayerClosingAnalytics() {
     if (bookProgressReport) {
         trackForPlayer(bookProgressReport);
     }
