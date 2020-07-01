@@ -19,6 +19,7 @@ import { getDummyCollectionForPreview } from "../model/Collections";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { IEmbedSettings } from "../model/ContentInterfaces";
 import { EmbeddingHost, useSetEmbeddedUrl } from "./EmbeddingHost";
+import { CollectionStatsPage } from "./CollectionStatsPage";
 
 // The main set of switches that loads different things into the main content area of Blorg
 // based on the current window location.
@@ -106,6 +107,23 @@ export const Routes: React.FunctionComponent<{}> = () => {
                                 settingsUrlKey={match.params.embedSettings}
                                 urlSegments={location.pathname}
                             ></EmbeddingHost>
+                        );
+                    }}
+                ></Route>
+
+                {/* the colon here is not literally there in the url */}
+                <Route
+                    path={"/:collectionName/stats"}
+                    render={({ match }) => {
+                        if (window.self !== window.top) {
+                            throw new Error(
+                                "Stats not available in embedding."
+                            );
+                        }
+                        return (
+                            <CollectionStatsPage
+                                collectionName={match.params.collectionName}
+                            ></CollectionStatsPage>
                         );
                     }}
                 ></Route>
