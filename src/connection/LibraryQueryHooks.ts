@@ -549,7 +549,7 @@ export function useSearchBooks(
 export function useCollectionStats(filter: IFilter | undefined): IAxiosAnswer {
     const params = {
         // It seems at least 1 key needs to be requested for it to return any results
-        keys: "objectId",
+        keys: "objectId,bookInstanceId",
     };
     const limit = undefined;
     const skip = undefined;
