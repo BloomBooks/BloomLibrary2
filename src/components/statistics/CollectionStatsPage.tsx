@@ -3,31 +3,20 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React, { useState } from "react";
+import React from "react";
 
-import { ContentfulBanner } from "../banners/ContentfulBanner";
 import { useGetCollection } from "../../model/Collections";
-import { RowOfCollectionCardsForKey } from "../RowOfCollectionCards";
-import { ByLevelGroups } from "../ByLevelGroups";
-import { ListOfBookGroups } from "../ListOfBookGroups";
-import { LanguageGroup } from "../LanguageGroup";
 
-import { BookCardGroup } from "../BookCardGroup";
-import { ByLanguageGroups } from "../ByLanguageGroups";
-import { ByTopicsGroups } from "../ByTopicsGroups";
-import { useTrack } from "../../analytics/Analytics";
 import { IEmbedSettings } from "../../model/ContentInterfaces";
 import { useDocumentTitle } from "../Routes";
-import { getCollectionAnalyticsInfo } from "../../analytics/CollectionAnalyticsInfo";
 
 import { ICollection } from "../../model/ContentInterfaces";
 import { useCollectionStats } from "../../connection/LibraryQueryHooks";
 
-import { Bar, LabelFormatter } from "@nivo/bar";
-
 // Used for formatting dates... because... apparently vanilla JS doesn't support it out of the box?!?!?!
 import moment from "moment";
 import { commonUI } from "../../theme";
+import { ReaderSessionsChart } from "./ReaderSessionsChart";
 
 interface IBookDownload {
     bookid: string;
@@ -41,7 +30,7 @@ interface IDailySessionsInfo {
     bloomreadersessions: number;
 }
 
-interface ICollectionStatsResponse {
+export interface ICollectionStatsResponse {
     //stats: IBookDownload[];
     stats: IDailySessionsInfo[];
     devices: number;
@@ -196,12 +185,6 @@ function useGetCollectionStats(
     // return getEmptyCollectionStats();
 }
 
-function getWeek(date: moment.Moment) {
-    const sunday = date.clone();
-    sunday.day(0);
-    return sunday.format("YYYY-MM-DD");
-}
-
 export const CollectionStatsPage: React.FunctionComponent<{
     collectionName: string;
     embeddedSettings?: IEmbedSettings;
@@ -211,7 +194,6 @@ export const CollectionStatsPage: React.FunctionComponent<{
     const { collection, loading } = useGetCollection(props.collectionName);
     //const { params, sendIt } = getCollectionAnalyticsInfo(collection);
     useDocumentTitle(collection?.label + " statistics");
-    const byMonth = false;
 
     const responseData = useGetCollectionStats(collection);
 
@@ -229,36 +211,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
         return <div>Collection not found</div>;
     }
 
-    const counts = new Map<string, number>();
-    const infoList = responseData.stats;
-    let maxCount = 0;
-
-    infoList.forEach((dailyInfo) => {
-        const date = moment(dailyInfo.datelocal);
-        const key = byMonth ? date.format("MMM YYYY") : getWeek(date);
-
-        const count = counts.get(key) || 0;
-        const newCount = count + dailyInfo.bloomreadersessions;
-        maxCount = Math.max(maxCount, newCount);
-        counts.set(key, newCount);
-    });
-
-    const mapData = Array.from(counts.keys()).map((x) => {
-        return { date: x, sessionCount: counts.get(x) };
-    });
-
-    const labelFormatter: LabelFormatter = (((d: string | number) => (
-        <tspan
-            y={d > maxCount / 10 ? 10 : -10}
-            fill={d > maxCount / 10 ? "white" : commonUI.colors.bloomRed}
-        >
-            {d}
-        </tspan>
-        // We're really fighting typescript here. The labelFormat can, in fact, take a function
-        // that returns a react svg element; but our type definitions don't know it.
-    )) as any) as LabelFormatter;
     const backColor = "#333";
-    const graphWidth = 600;
     const gapWidth = "10px";
 
     return (
@@ -343,59 +296,10 @@ export const CollectionStatsPage: React.FunctionComponent<{
                         {responseData.languages}
                     </div>
                 </div>
-                <div>
-                    <div
-                        // It would be nice if this was part of the chart, so it's included in any svg we
-                        // make for it...but so far I can't find any way to do so.
-                        css={css`
-                            color: ${commonUI.colors.bloomRed};
-                            background-color: ${backColor};
-                            padding-top: 5px;
-                            display: flex;
-                            justify-content: space-around;
-                            width: ${graphWidth}px;
-
-                            font-size: smaller;
-                        `}
-                    >
-                        Bloom Reader Sessions
-                    </div>
-                    <Bar
-                        data={mapData}
-                        keys={["sessionCount"]}
-                        indexBy="date"
-                        groupMode={"stacked"}
-                        layout={"vertical"}
-                        height={200}
-                        width={graphWidth}
-                        colors={[commonUI.colors.bloomRed]}
-                        theme={{
-                            background: backColor,
-                            axis: { ticks: { text: { fill: "#eee" } } },
-                            grid: {
-                                line: {
-                                    stroke: "white",
-                                    strokeOpacity: 1,
-                                    strokeWidth: 1,
-                                },
-                            },
-                        }}
-                        labelTextColor="white"
-                        labelFormat={labelFormatter}
-                        gridYValues={[0, maxCount]}
-                        axisLeft={{ tickValues: [0, maxCount] }}
-                        // height/width need to include enough space for margin too
-                        margin={{ top: 10, right: 20, bottom: 70, left: 40 }}
-                        axisBottom={{
-                            tickSize: 5,
-                            tickPadding: 5,
-                            tickRotation: -45,
-                            legend: "Date",
-                            legendPosition: "middle",
-                            legendOffset: 60,
-                        }}
-                    ></Bar>
-                </div>
+                <ReaderSessionsChart
+                    responseData={responseData}
+                    backColor={backColor}
+                />
             </div>
             {/* <p> mapData={JSON.stringify(mapData)}</p> */}
             {/* <p>
