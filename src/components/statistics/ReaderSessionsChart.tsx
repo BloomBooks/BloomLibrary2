@@ -9,7 +9,7 @@ import { Bar, LabelFormatter } from "@nivo/bar";
 // Used for formatting dates... because... apparently vanilla JS doesn't support it out of the box?!?!?!
 import moment from "moment";
 import { commonUI } from "../../theme";
-import { ICollectionStatsResponse } from "./CollectionStatsPage";
+import { ICollectionStatsResponse } from "./DataStudioDasboardScreen";
 
 interface IBookDownload {
     bookid: string;
