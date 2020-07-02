@@ -23,6 +23,15 @@ import {
 } from "./ComprehensionQuestionsReport";
 import { IScreenProps, RegisterScreen } from "./CollectionStatsPage";
 
+// Most or all of this code is not currently used. We may resurrect it if we decide to more
+// closely emulate the old Guatemala/RISE dashboard.
+// Note that if we keep the dark background, we need to make some optional settings for
+// colors of various things in the ReaderSettingsChart.
+// Also, this started to be coded assuming one big stats query, but we're now making separate
+// ones for overview, aggregated-by-day, and aggregated-by-book, so that will need cleaning up
+// Somehow it should have some version of the comprehension question and book reading data
+// added if we decide to finish it.
+
 interface IBookDownload {
     bookid: string;
     timeofshelldownload: string;
@@ -313,7 +322,7 @@ export const DataStudioDashboardScreen: React.FunctionComponent<IScreenProps> = 
                     </div>
                 </div>
                 <ReaderSessionsChart
-                    responseData={responseData}
+                    stats={responseData.stats}
                     backColor={backColor}
                 />
             </div>

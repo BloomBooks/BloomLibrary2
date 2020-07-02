@@ -13,6 +13,7 @@ import Select from "@material-ui/core/Select";
 
 import { DataStudioDashboardScreen } from "./DataStudioDasboardScreen";
 import { ComprehensionQuestionsReport } from "./ComprehensionQuestionsReport";
+import { ReaderSessionsScreen } from "./ReaderSessionsChart";
 
 export interface IScreenProps {
     collectionName: string;
@@ -39,9 +40,7 @@ RegisterScreen({
 
 RegisterScreen({
     label: "Bloom Reader Sessions",
-    component: (p: IScreenProps) => (
-        <DataStudioDashboardScreen {...p}></DataStudioDashboardScreen>
-    ),
+    component: (p: IScreenProps) => <ReaderSessionsScreen {...p} />,
 });
 
 export const CollectionStatsPage: React.FunctionComponent<{

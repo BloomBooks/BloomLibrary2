@@ -10,6 +10,7 @@ import { Bar, LabelFormatter } from "@nivo/bar";
 import moment from "moment";
 import { commonUI } from "../../theme";
 import { ICollectionStatsResponse } from "./DataStudioDasboardScreen";
+import { IScreenProps } from "./CollectionStatsPage";
 
 interface IBookDownload {
     bookid: string;
@@ -23,13 +24,146 @@ interface IDailySessionsInfo {
     bloomreadersessions: number;
 }
 
+// Temporary for testing
+function getFakeCollectionStats(): IDailySessionsInfo[] {
+    return [
+        {
+            datelocal: "2020-05-18T00:00:00.000Z",
+            bookbranding: "Juarez-Guatemala",
+            country: "Guatemala",
+            bloomreadersessions: 2,
+        },
+        {
+            datelocal: "2020-05-19T00:00:00.000Z",
+            bookbranding: "Juarez-Guatemala",
+            country: "Guatemala",
+            bloomreadersessions: 3,
+        },
+        {
+            datelocal: "2020-05-20T00:00:00.000Z",
+            bookbranding: "Juarez-Guatemala",
+            country: "Guatemala",
+            bloomreadersessions: 8,
+        },
+        {
+            datelocal: "2020-05-27T00:00:00.000Z",
+            bookbranding: "Juarez-Guatemala",
+            country: "Guatemala",
+            bloomreadersessions: 40,
+        },
+        {
+            datelocal: "2020-05-28T00:00:00.000Z",
+            bookbranding: "Juarez-Guatemala",
+            country: "Guatemala",
+            bloomreadersessions: 19,
+        },
+        {
+            datelocal: "2020-06-18T00:00:00.000Z",
+            bookbranding: "Juarez-Guatemala",
+            country: "Guatemala",
+            bloomreadersessions: 6,
+        },
+        {
+            datelocal: "2020-06-19T00:00:00.000Z",
+            bookbranding: "Juarez-Guatemala",
+            country: "Guatemala",
+            bloomreadersessions: 12,
+        },
+        {
+            datelocal: "2020-06-22T00:00:00.000Z",
+            bookbranding: "Juarez-Guatemala",
+            country: "Guatemala",
+            bloomreadersessions: 43,
+        },
+        {
+            datelocal: "2020-06-23T00:00:00.000Z",
+            bookbranding: "Juarez-Guatemala",
+            country: "Guatemala",
+            bloomreadersessions: 96,
+        },
+        {
+            datelocal: "2020-06-23T00:00:00.000Z",
+            bookbranding: "Juarez-Guatemala",
+            country: "United States",
+            bloomreadersessions: 1,
+        },
+        {
+            datelocal: "2020-06-24T00:00:00.000Z",
+            bookbranding: "Juarez-Guatemala",
+            country: "Guatemala",
+            bloomreadersessions: 87,
+        },
+        {
+            datelocal: "2020-06-25T00:00:00.000Z",
+            bookbranding: "Juarez-Guatemala",
+            country: "Guatemala",
+            bloomreadersessions: 158,
+        },
+        {
+            datelocal: "2020-06-26T00:00:00.000Z",
+            bookbranding: "Juarez-Guatemala",
+            country: "Guatemala",
+            bloomreadersessions: 58,
+        },
+        {
+            datelocal: "2020-06-27T00:00:00.000Z",
+            bookbranding: "Juarez-Guatemala",
+            country: "Guatemala",
+            bloomreadersessions: 41,
+        },
+        {
+            datelocal: "2020-06-28T00:00:00.000Z",
+            bookbranding: "Juarez-Guatemala",
+            country: "Guatemala",
+            bloomreadersessions: 113,
+        },
+        {
+            datelocal: "2020-06-28T00:00:00.000Z",
+            bookbranding: "Juarez-Guatemala",
+            country: "Mexico",
+            bloomreadersessions: 1,
+        },
+        {
+            datelocal: "2020-06-29T00:00:00.000Z",
+            bookbranding: "Juarez-Guatemala",
+            country: "Guatemala",
+            bloomreadersessions: 127,
+        },
+        {
+            datelocal: "2020-06-30T00:00:00.000Z",
+            bookbranding: "Juarez-Guatemala",
+            country: "Colombia",
+            bloomreadersessions: 3,
+        },
+        {
+            datelocal: "2020-06-30T00:00:00.000Z",
+            bookbranding: "Juarez-Guatemala",
+            country: "Guatemala",
+            bloomreadersessions: 97,
+        },
+        {
+            datelocal: "2020-06-30T00:00:00.000Z",
+            bookbranding: "Juarez-Guatemala",
+            country: "United States",
+            bloomreadersessions: 11,
+        },
+    ];
+}
+
+export const ReaderSessionsScreen: React.FunctionComponent<IScreenProps> = (
+    props
+) => {
+    const stats = getFakeCollectionStats();
+    return <ReaderSessionsChart stats={stats} backColor="white" />;
+};
+
 export const ReaderSessionsChart: React.FunctionComponent<{
-    responseData: ICollectionStatsResponse;
+    stats: IDailySessionsInfo[];
     backColor: string;
 }> = (props) => {
     const byMonth = false;
     const counts = new Map<string, number>();
-    const infoList = props.responseData.stats;
+    const infoList = props.stats;
     let maxCount = 0;
 
     infoList.forEach((dailyInfo) => {
