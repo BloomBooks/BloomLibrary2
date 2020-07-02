@@ -21,6 +21,7 @@ import {
     IComprehensionQuestionData,
     ComprehensionQuestionsReport,
 } from "./ComprehensionQuestionsReport";
+import { IScreenProps, RegisterScreen } from "./CollectionStatsPage";
 
 interface IBookDownload {
     bookid: string;
@@ -200,10 +201,9 @@ function useGetCollectionStats(
     // return getEmptyCollectionStats();
 }
 
-export const DataStudioDasboardScreen: React.FunctionComponent<{
-    collectionName: string;
-    embeddedSettings?: IEmbedSettings;
-}> = (props) => {
+export const DataStudioDashboardScreen: React.FunctionComponent<IScreenProps> = (
+    props
+) => {
     // remains empty (and unused) except in byLanguageGroups mode, when a callback sets it.
     //const [booksAndLanguages, setBooksAndLanguages] = useState("");
     const { collection, loading } = useGetCollection(props.collectionName);
