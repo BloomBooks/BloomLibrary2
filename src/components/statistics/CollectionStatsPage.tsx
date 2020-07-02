@@ -8,12 +8,11 @@ import React, { useState, FunctionComponent } from "react";
 import { useGetCollection } from "../../model/Collections";
 
 import { useDocumentTitle } from "../Routes";
-import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 
-import { DataStudioDashboardScreen } from "./DataStudioDasboardScreen";
 import { ComprehensionQuestionsReport } from "./ComprehensionQuestionsReport";
 import { ReaderSessionsScreen } from "./ReaderSessionsChart";
+import { DateRangePicker } from "./DateRangePicker";
 
 export interface IScreenProps {
     collectionName: string;
@@ -47,9 +46,15 @@ export const CollectionStatsPage: React.FunctionComponent<{
     collectionName: string;
 }> = (props) => {
     const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
+    const [startDay, setStartDay] = useState(
+        /* back one year */ new Date(
+            new Date().setFullYear(new Date().getFullYear() - 1)
+        )
+    );
+    const [endDay, setEndDay] = useState(new Date());
     // remains empty (and unused) except in byLanguageGroups mode, when a callback sets it.
     //const [booksAndLanguages, setBooksAndLanguages] = useState("");
-    const { collection, loading } = useGetCollection(props.collectionName);
+    const { collection } = useGetCollection(props.collectionName);
     //const { params, sendIt } = getCollectionAnalyticsInfo(collection);
     useDocumentTitle(collection?.label + " statistics");
 
@@ -62,6 +67,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
         <div
             css={css`
                 margin-left: ${pageLeftMargin}px;
+                margin-right: ${pageLeftMargin}px;
                 h1 {
                     font-size: 36px;
                     line-height: 28px;
@@ -80,35 +86,46 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     background-color: ${kgray};
                     //height: 75px;
                     margin-left: -${pageLeftMargin}px; // push back out to the edge
+                    margin-right: -${pageLeftMargin}px; // push back out to the edge
                     padding-top: 20px;
                     padding-bottom: 20px;
                     padding-left: ${pageLeftMargin}px;
+                    padding-right: ${pageLeftMargin}px;
+                    display: flex;
+                    justify-content: space-between;
                 `}
             >
-                <FormControl>
-                    <Select
-                        css={css`
-                            background-color: white;
-                            padding-left: 10px;
-                            min-width: 300px;
-                        `}
-                        native
-                        value={currentScreenIndex}
-                        onChange={(e) =>
-                            setCurrentScreenIndex(e.target.value as number)
-                        }
-                        inputProps={{
-                            name: "age",
-                            id: "age-native-simple",
-                        }}
-                    >
-                        {screens.map((screen, index) => (
-                            <option key={index} value={index}>
-                                {screen.label}
-                            </option>
-                        ))}
-                    </Select>
-                </FormControl>
+                <Select
+                    css={css`
+                        background-color: white !important;
+                        padding-left: 10px;
+                        min-width: 300px;
+                    `}
+                    native
+                    value={currentScreenIndex}
+                    onChange={(e) =>
+                        setCurrentScreenIndex(e.target.value as number)
+                    }
+                    inputProps={{
+                        name: "age",
+                        id: "age-native-simple",
+                    }}
+                >
+                    {screens.map((screen, index) => (
+                        <option key={index} value={index}>
+                            {screen.label}
+                        </option>
+                    ))}
+                </Select>
+
+                <DateRangePicker
+                    start={startDay}
+                    end={endDay}
+                    setRange={(start, end) => {
+                        setStartDay(start);
+                        setEndDay(end);
+                    }}
+                ></DateRangePicker>
             </div>
             <div
                 css={css`
@@ -117,8 +134,8 @@ export const CollectionStatsPage: React.FunctionComponent<{
             >
                 {screens[currentScreenIndex].component({
                     collectionName: props.collectionName,
-                    start: new Date(),
-                    end: new Date(),
+                    start: startDay,
+                    end: endDay,
                 })}
             </div>
             <div
@@ -127,6 +144,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     height: 100px;
                     background-color: ${kgray};
                     margin-left: -${pageLeftMargin}px; // push back out to the edge
+                    margin-right: -${pageLeftMargin}px; // push back out to the edge
                 `}
             >
                 <span

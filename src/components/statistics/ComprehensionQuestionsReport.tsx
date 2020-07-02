@@ -4,10 +4,6 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import { Bar, LabelFormatter } from "@nivo/bar";
-
-// Used for formatting dates... because... apparently vanilla JS doesn't support it out of the box?!?!?!
-import moment from "moment";
 import { commonUI } from "../../theme";
 
 import {
