@@ -15,6 +15,7 @@ import {
     TableHeaderRow,
     Table,
 } from "@devexpress/dx-react-grid-material-ui";
+import { SortingState, IntegratedSorting } from "@devexpress/dx-react-grid";
 import { IGridColumn } from "../Grid/GridColumns";
 import { useState } from "react";
 import { IScreenProps } from "./CollectionStatsPage";
@@ -159,11 +160,20 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IScreenProps>
                 Comprehension Questions
             </div>
             <Grid rows={cqData} columns={columns}>
+                <SortingState
+                    defaultSorting={[
+                        { columnName: "quizzesTaken", direction: "desc" },
+                    ]}
+                />
+                <IntegratedSorting />
                 <Table
                     columnExtensions={tableColumnExtensions}
                     cellComponent={CustomTableCell}
                 />
-                <TableHeaderRow cellComponent={CustomTableHeaderCell} />
+                <TableHeaderRow
+                    cellComponent={CustomTableHeaderCell}
+                    showSortingControls
+                />
             </Grid>
             {/* <div
                 css={css`
