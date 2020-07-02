@@ -19,7 +19,7 @@ import { getDummyCollectionForPreview } from "../model/Collections";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { IEmbedSettings } from "../model/ContentInterfaces";
 import { EmbeddingHost, useSetEmbeddedUrl } from "./EmbeddingHost";
-import { CollectionStatsPage } from "./CollectionStatsPage";
+import { CollectionStatsPage } from "./statistics/CollectionStatsPage";
 
 // The main set of switches that loads different things into the main content area of Blorg
 // based on the current window location.

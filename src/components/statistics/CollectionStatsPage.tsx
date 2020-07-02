@@ -5,29 +5,29 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import React, { useState } from "react";
 
-import { ContentfulBanner } from "./banners/ContentfulBanner";
-import { useGetCollection } from "../model/Collections";
-import { RowOfCollectionCardsForKey } from "./RowOfCollectionCards";
-import { ByLevelGroups } from "./ByLevelGroups";
-import { ListOfBookGroups } from "./ListOfBookGroups";
-import { LanguageGroup } from "./LanguageGroup";
+import { ContentfulBanner } from "../banners/ContentfulBanner";
+import { useGetCollection } from "../../model/Collections";
+import { RowOfCollectionCardsForKey } from "../RowOfCollectionCards";
+import { ByLevelGroups } from "../ByLevelGroups";
+import { ListOfBookGroups } from "../ListOfBookGroups";
+import { LanguageGroup } from "../LanguageGroup";
 
-import { BookCardGroup } from "./BookCardGroup";
-import { ByLanguageGroups } from "./ByLanguageGroups";
-import { ByTopicsGroups } from "./ByTopicsGroups";
-import { useTrack } from "../analytics/Analytics";
-import { IEmbedSettings } from "../model/ContentInterfaces";
-import { useDocumentTitle } from "./Routes";
-import { getCollectionAnalyticsInfo } from "../analytics/CollectionAnalyticsInfo";
+import { BookCardGroup } from "../BookCardGroup";
+import { ByLanguageGroups } from "../ByLanguageGroups";
+import { ByTopicsGroups } from "../ByTopicsGroups";
+import { useTrack } from "../../analytics/Analytics";
+import { IEmbedSettings } from "../../model/ContentInterfaces";
+import { useDocumentTitle } from "../Routes";
+import { getCollectionAnalyticsInfo } from "../../analytics/CollectionAnalyticsInfo";
 
-import { ICollection } from "../model/ContentInterfaces";
-import { useCollectionStats } from "../connection/LibraryQueryHooks";
+import { ICollection } from "../../model/ContentInterfaces";
+import { useCollectionStats } from "../../connection/LibraryQueryHooks";
 
 import { Bar, LabelFormatter } from "@nivo/bar";
 
 // Used for formatting dates... because... apparently vanilla JS doesn't support it out of the box?!?!?!
 import moment from "moment";
-import { commonUI } from "../theme";
+import { commonUI } from "../../theme";
 
 interface IBookDownload {
     bookid: string;
