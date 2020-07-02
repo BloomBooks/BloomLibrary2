@@ -17,6 +17,10 @@ import { useCollectionStats } from "../../connection/LibraryQueryHooks";
 import moment from "moment";
 import { commonUI } from "../../theme";
 import { ReaderSessionsChart } from "./ReaderSessionsChart";
+import {
+    IComprehensionQuestionData,
+    ComprehensionQuestionsReport,
+} from "./ComprehensionQuestionsReport";
 
 interface IBookDownload {
     bookid: string;
@@ -35,11 +39,12 @@ export interface ICollectionStatsResponse {
     stats: IDailySessionsInfo[];
     devices: number;
     languages: number;
+    comprehensionData: IComprehensionQuestionData[];
 }
 
 // reinstate in place of getFakeCollectionStats once past initial
 function getEmptyCollectionStats(): ICollectionStatsResponse {
-    return { stats: [], devices: 0, languages: 0 };
+    return { stats: [], devices: 0, languages: 0, comprehensionData: [] };
 }
 
 // Temporary for testing
@@ -47,6 +52,16 @@ function getFakeCollectionStats(): ICollectionStatsResponse {
     const fakeResponse = {
         devices: 1072,
         languages: 35,
+        comprehensionData: [
+            {
+                title: "(3-6a) The Good Brothers",
+                branding: "PNG-RISE",
+                questions: 3,
+                quizzesTaken: 222,
+                meanCorrect: 69,
+                medianCorrect: 50,
+            },
+        ],
         stats: [
             {
                 datelocal: "2020-05-18T00:00:00.000Z",
@@ -227,6 +242,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
             <div
                 css={css`
                     display: flex;
+                    margin-bottom: ${gapWidth};
                 `}
             >
                 <div
@@ -301,6 +317,10 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     backColor={backColor}
                 />
             </div>
+            <ComprehensionQuestionsReport
+                cqData={responseData.comprehensionData}
+                backColor={backColor}
+            />
             {/* <p> mapData={JSON.stringify(mapData)}</p> */}
             {/* <p>
                 rawResponse=

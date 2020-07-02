@@ -23,11 +23,6 @@ interface IDailySessionsInfo {
     bloomreadersessions: number;
 }
 
-// reinstate in place of getFakeCollectionStats once past initial
-function getEmptyCollectionStats(): ICollectionStatsResponse {
-    return { stats: [], devices: 0, languages: 0 };
-}
-
 export const ReaderSessionsChart: React.FunctionComponent<{
     responseData: ICollectionStatsResponse;
     backColor: string;
