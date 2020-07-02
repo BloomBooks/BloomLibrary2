@@ -12,6 +12,7 @@ import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 
 import { DataStudioDashboardScreen } from "./DataStudioDasboardScreen";
+import { ComprehensionQuestionsReport } from "./ComprehensionQuestionsReport";
 
 export interface IScreenProps {
     collectionName: string;
@@ -31,7 +32,9 @@ export function RegisterScreen(screen: IScreen) {
 }
 RegisterScreen({
     label: "Comprehension Questions",
-    component: (p: IScreenProps) => <Pretend {...p}></Pretend>,
+    component: (p: IScreenProps) => (
+        <ComprehensionQuestionsReport {...p}></ComprehensionQuestionsReport>
+    ),
 });
 
 RegisterScreen({

@@ -87,10 +87,10 @@ export const ReaderSessionsChart: React.FunctionComponent<{
                 colors={[commonUI.colors.bloomRed]}
                 theme={{
                     background: props.backColor,
-                    axis: { ticks: { text: { fill: "#eee" } } },
+                    //axis: { ticks: { text: { fill: "#eee" } } },
                     grid: {
                         line: {
-                            stroke: "white",
+                            stroke: "darkgrey",
                             strokeOpacity: 1,
                             strokeWidth: 1,
                         },

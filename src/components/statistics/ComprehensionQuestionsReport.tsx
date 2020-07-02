@@ -10,6 +10,15 @@ import { Bar, LabelFormatter } from "@nivo/bar";
 import moment from "moment";
 import { commonUI } from "../../theme";
 
+import {
+    Grid,
+    TableHeaderRow,
+    Table,
+} from "@devexpress/dx-react-grid-material-ui";
+import { IGridColumn } from "../Grid/GridColumns";
+import { useState } from "react";
+import { IScreenProps } from "./CollectionStatsPage";
+
 interface IBookDownload {
     bookid: string;
     timeofshelldownload: string;
@@ -31,17 +40,114 @@ export interface IComprehensionQuestionData {
     medianCorrect: number;
 }
 
-export const ComprehensionQuestionsReport: React.FunctionComponent<{
-    cqData: IComprehensionQuestionData[];
-    backColor: string;
-}> = (props) => {
+function getFakeCQData(): IComprehensionQuestionData[] {
+    return [
+        {
+            title: "(3-6a) The Good Brothers",
+            branding: "PNG-RISE",
+            questions: 3,
+            quizzesTaken: 222,
+            meanCorrect: 69,
+            medianCorrect: 50,
+        },
+        {
+            title: "(2-6a) Anni's Pineapple",
+            branding: "PNG-RISE",
+            questions: 3,
+            quizzesTaken: 198,
+            meanCorrect: 61,
+            medianCorrect: 23,
+        },
+        {
+            title: "(3-7a) Pidik Goes To The Market",
+            branding: "PNG-RISE",
+            questions: 5,
+            quizzesTaken: 187,
+            meanCorrect: 57,
+            medianCorrect: 88,
+        },
+    ];
+}
+
+export const ComprehensionQuestionsReport: React.FunctionComponent<IScreenProps> = (
+    props
+) => {
+    const cqData = getFakeCQData();
+    const columns: IGridColumn[] = [
+        { name: "title", title: "Book Title" },
+        { name: "branding", title: "Branding" },
+        { name: "questions", title: "Questions" },
+        { name: "quizzesTaken", title: "Quizzes Taken" },
+        { name: "meanCorrect", title: "Mean Percent Correct" },
+        { name: "medianCorrect", title: "Median Percent Correct" },
+    ];
+    const [tableColumnExtensions] = useState([
+        { columnName: "title", width: "20%" },
+        { columnName: "branding", width: "15%" },
+        { columnName: "questions", width: "auto", align: "right" },
+        { columnName: "quizzesTaken", width: "auto", align: "right" },
+        { columnName: "meanCorrect", width: "auto", align: "right" },
+        { columnName: "medianCorrect", width: 120 },
+    ] as Table.ColumnExtension[]);
+
+    const CustomTableHeaderCell = (cellProps: any) => {
+        const adjustedProps = { ...cellProps };
+        adjustedProps.value =
+            adjustedProps.column.title || adjustedProps.column.name;
+        return (
+            <TableHeaderRow.Cell
+                {...adjustedProps}
+                css={css`
+                    white-space: normal !important;
+                `}
+            />
+        );
+    };
+
+    const CustomTableCell = (cellProps: any) => {
+        const adjustedProps = { ...cellProps };
+        if (cellProps.column.name === "medianCorrect") {
+            return (
+                <Table.Cell {...adjustedProps}>
+                    <div
+                        css={css`
+                            display: flex;
+                        `}
+                    >
+                        <div
+                            css={css`
+                                width: 20px;
+                            `}
+                        >
+                            {adjustedProps.value}
+                        </div>
+                        <div
+                            css={css`
+                                height: 10px;
+                                margin-top: 4px;
+                                width: ${adjustedProps.value}px;
+                                background-color: ${commonUI.colors.bloomRed};
+                            `}
+                        ></div>
+                    </div>
+                </Table.Cell>
+            );
+        } else {
+            return <Table.Cell {...adjustedProps} />;
+        }
+    };
+
+    //  const [headerColumnExtensions] = useState([
+    //      { columnName: "quizzesTaken", wordWrapEnabled: true },
+    //      { columnName: "meanCorrect", wordWrapEnabled: true },
+    //      { columnName: "medianCorrect", wordWrapEnabled: true },
+    //  ]);
     return (
         <div
             css={css`
                 color: ${commonUI.colors.bloomRed};
-                background-color: ${props.backColor};
+                background-color: white;
                 padding: 5px;
-                font-size: smaller;
             `}
         >
             <div
@@ -52,7 +158,14 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<{
             >
                 Comprehension Questions
             </div>
-            <div
+            <Grid rows={cqData} columns={columns}>
+                <Table
+                    columnExtensions={tableColumnExtensions}
+                    cellComponent={CustomTableCell}
+                />
+                <TableHeaderRow cellComponent={CustomTableHeaderCell} />
+            </Grid>
+            {/* <div
                 css={css`
                     display: flex;
                 `}
@@ -69,11 +182,11 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<{
                     >
                         Book Title
                     </div>
-                    {props.cqData.map((book) => (
+                    {cqData.map((book) => (
                         <div key={book.title}>{book.title}</div>
                     ))}
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 };

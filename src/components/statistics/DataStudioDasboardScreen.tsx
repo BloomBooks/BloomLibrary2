@@ -317,10 +317,6 @@ export const DataStudioDashboardScreen: React.FunctionComponent<IScreenProps> = 
                     backColor={backColor}
                 />
             </div>
-            <ComprehensionQuestionsReport
-                cqData={responseData.comprehensionData}
-                backColor={backColor}
-            />
             {/* <p> mapData={JSON.stringify(mapData)}</p> */}
             {/* <p>
                 rawResponse=
