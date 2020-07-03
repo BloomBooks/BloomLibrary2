@@ -3535,6 +3535,13 @@
   resolved "https://registry.yarnpkg.com/@types/color-name/-/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
   integrity sha512-rr+OQyAjxze7GgWrSaJwydHStIhHq2lvY3BOC2Mj7KnzI7XK0Uw1TOOdI9lDoajEbSWLiYgoo4f1R51erQfhPQ==
 
+"@types/dom-to-image@^2.6.1":
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/@types/dom-to-image/-/dom-to-image-2.6.1.tgz#2b30a7080448b3b9265683886ca429bc6ae6112f"
+  integrity sha512-pTaEZxf1sZVRE5FDji9kmdiZLr2a4JLR1IQvJtuIsDXmq0Tv+lLpZqxXf/7wzMMIicMImXrrAZUEgf1XJpzksg==
+  dependencies:
+    "@types/node" "*"
+
 "@types/encodeurl@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@types/encodeurl/-/encodeurl-1.0.0.tgz#b811667d62e53d01adc4bbbfc3b5a1ad99b4738a"
@@ -7080,6 +7087,16 @@ dom-storage@2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/dom-storage/-/dom-storage-2.1.0.tgz#00fb868bc9201357ea243c7bcfd3304c1e34ea39"
   integrity sha512-g6RpyWXzl0RR6OTElHKBl7nwnK87GUyZMYC7JWsB/IA73vpqK2K6LT39x4VepLxlSsWBFrPVLnsSR5Jyty0+2Q==
+
+dom-to-image-more@^2.8.0:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/dom-to-image-more/-/dom-to-image-more-2.8.0.tgz#c60ae3858796c67c7f9dc25f7c5f12bfc22067eb"
+  integrity sha512-YqlHI1i+TMuaKwkFRO5oDPjC3eWf+6Hln9rHZcnFYvmoXwCrGZmZ7BYXBJOjw5utYg2Lp+QF9YO96F7CsDC4eQ==
+
+dom-to-image@^2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/dom-to-image/-/dom-to-image-2.6.0.tgz#8a503608088c87b1c22f9034ae032e1898955867"
+  integrity sha1-ilA2CAiMh7HCL5A0rgMuGJiVWGc=
 
 dom-walk@^0.1.0:
   version "0.1.1"

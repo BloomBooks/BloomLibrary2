@@ -14,6 +14,9 @@ import { StatsOverviewScreen } from "./StatsOverviewScreen";
 import { ComprehensionQuestionsReport } from "./ComprehensionQuestionsReport";
 import { ReaderSessionsScreen } from "./ReaderSessionsChart";
 import { DateRangePicker } from "./DateRangePicker";
+import domtoimage from "dom-to-image";
+import Button from "@material-ui/core/Button";
+import { saveAs } from "file-saver";
 
 export interface IScreenProps {
     collectionName: string;
@@ -133,6 +136,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
                 ></DateRangePicker>
             </div>
             <div
+                id="screen"
                 css={css`
                     //height: 500px;
                 `}
@@ -176,6 +180,44 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     placerat. Dolor ullamcorper.
                 </p>
             </div>
+            <Button
+                onClick={() => {
+                    domtoimage
+                        .toSvg(document.getElementById("screen")!)
+                        .then((dataUrl: string) => {
+                            saveAs(
+                                dataUrl,
+                                screens[currentScreenIndex].label + ".svg"
+                            );
+                        });
+                }}
+            >
+                SVG
+            </Button>
+            <Button
+                onClick={() => {
+                    downloadAsPng(
+                        document.getElementById("screen")!,
+                        screens[currentScreenIndex].label + ".png",
+                        3
+                    );
+                }}
+            >
+                PNG
+            </Button>
         </div>
     );
 };
+function downloadAsPng(el: HTMLElement, filename: string, scale: number) {
+    const props = {
+        width: el.clientWidth * scale,
+        height: el.clientHeight * scale,
+        style: {
+            transform: "scale(" + scale + ")",
+            "transform-origin": "top left",
+        },
+    };
+    domtoimage.toPng(el, props).then((blob) => {
+        saveAs(blob, filename);
+    });
+}
