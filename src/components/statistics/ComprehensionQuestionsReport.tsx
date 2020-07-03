@@ -79,7 +79,7 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IScreenProps>
         { name: "medianCorrect", title: "Median Percent Correct" },
     ];
     const [tableColumnExtensions] = useState([
-        { columnName: "title", width: "20%" },
+        { columnName: "title", width: "20%", align: "left" },
         { columnName: "branding", width: "15%" },
         { columnName: "questions", width: "auto", align: "right" },
         { columnName: "quizzesTaken", width: "auto", align: "right" },
@@ -142,19 +142,17 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IScreenProps>
     return (
         <div
             css={css`
-                color: ${commonUI.colors.bloomRed};
-                background-color: white;
-                padding: 5px;
+                thead.MuiTableHead-root * {
+                    line-height: 15px;
+                    vertical-align: top;
+                }
+                // make the table line up with the rest of the page
+                th,
+                td:first-child {
+                    padding-left: 0 !important;
+                }
             `}
         >
-            <div
-                css={css`
-                    color: ${commonUI.colors.bloomRed};
-                    margin-bottom: 10px;
-                `}
-            >
-                Comprehension Questions
-            </div>
             <Grid rows={cqData} columns={columns}>
                 <SortingState
                     defaultSorting={[

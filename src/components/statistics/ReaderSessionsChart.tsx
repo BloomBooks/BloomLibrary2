@@ -193,22 +193,6 @@ export const ReaderSessionsChart: React.FunctionComponent<{
 
     return (
         <div>
-            <div
-                // It would be nice if this was part of the chart, so it's included in any svg we
-                // make for it...but so far I can't find any way to do so.
-                css={css`
-                    color: ${commonUI.colors.bloomRed};
-                    background-color: ${props.backColor};
-                    padding-top: 5px;
-                    display: flex;
-                    justify-content: space-around;
-                    width: ${graphWidth}px;
-
-                    font-size: smaller;
-                `}
-            >
-                Bloom Reader Sessions
-            </div>
             <Bar
                 data={mapData}
                 keys={["sessionCount"]}
@@ -244,7 +228,6 @@ export const ReaderSessionsChart: React.FunctionComponent<{
                     tickSize: 5,
                     tickPadding: 5,
                     tickRotation: -45,
-                    legend: "Date",
                     legendPosition: "middle",
                     legendOffset: 60,
                 }}

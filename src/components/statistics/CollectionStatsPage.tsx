@@ -27,30 +27,24 @@ export interface IScreen {
 export const Pretend: React.FunctionComponent<IScreenProps> = (props) => {
     return <h1>Pretend</h1>;
 };
-const screens: IScreen[] = [];
-export function RegisterScreen(screen: IScreen) {
-    screens.push(screen);
-}
-
+const screens: IScreen[] = [
+    {
+        label: "Comprehension Questions",
+        component: (p: IScreenProps) => (
+            <ComprehensionQuestionsReport {...p}></ComprehensionQuestionsReport>
+        ),
+    },
+    {
+        label: "Bloom Reader Sessions",
+        component: (p: IScreenProps) => <ReaderSessionsScreen {...p} />,
+    },
+];
 RegisterScreen({
     label: "Overview",
     component: (p: IScreenProps) => <StatsOverviewScreen {...p} />,
 });
 
-RegisterScreen({
-    label: "Comprehension Questions",
-    component: (p: IScreenProps) => (
-        <ComprehensionQuestionsReport {...p}></ComprehensionQuestionsReport>
-    ),
-});
-
-RegisterScreen({
-    label: "Bloom Reader Sessions",
-    component: (p: IScreenProps) => <ReaderSessionsScreen {...p} />,
-});
-
 export const kStatsPageGray = "#ececec";
-
 export const CollectionStatsPage: React.FunctionComponent<{
     collectionName: string;
 }> = (props) => {
@@ -105,9 +99,12 @@ export const CollectionStatsPage: React.FunctionComponent<{
             >
                 <Select
                     css={css`
-                        background-color: white !important;
                         padding-left: 10px;
                         min-width: 300px;
+                        &,
+                        * {
+                            background-color: white !important;
+                        }
                     `}
                     native
                     value={currentScreenIndex}
@@ -140,6 +137,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     //height: 500px;
                 `}
             >
+                <h3>{screens[currentScreenIndex].label}</h3>
                 {screens[currentScreenIndex].component({
                     collectionName: props.collectionName,
                     start: startDay,
@@ -151,6 +149,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     padding: 10px;
                     height: 100px;
                     background-color: ${kStatsPageGray};
+                    margin-top: 10px;
                     margin-left: -${pageLeftMargin}px; // push back out to the edge
                     margin-right: -${pageLeftMargin}px; // push back out to the edge
                 `}
