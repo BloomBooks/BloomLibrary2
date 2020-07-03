@@ -12,39 +12,35 @@ import Select from "@material-ui/core/Select";
 
 import { StatsOverviewScreen } from "./StatsOverviewScreen";
 import { ComprehensionQuestionsReport } from "./ComprehensionQuestionsReport";
-import { ReaderSessionsScreen } from "./ReaderSessionsChart";
+import { ReaderSessionsChart } from "./ReaderSessionsChart";
 import { DateRangePicker } from "./DateRangePicker";
 import domtoimage from "dom-to-image-more";
 import Button from "@material-ui/core/Button";
 import { saveAs } from "file-saver";
 import DownloadPngIcon from "./download-png.svg";
-import IconButton from "@material-ui/core/IconButton";
-export interface IScreenProps {
-    collectionName: string;
-    start: Date;
-    end: Date;
-}
+import { IStatsProps } from "./StatsInterfaces";
+
 export interface IScreen {
     label: string;
-    component: React.FunctionComponent<IScreenProps>;
+    component: React.FunctionComponent<IStatsProps>;
 }
-export const Pretend: React.FunctionComponent<IScreenProps> = (props) => {
+export const Pretend: React.FunctionComponent<IStatsProps> = (props) => {
     return <h1>Pretend</h1>;
 };
 const screens: IScreen[] = [
     {
         label: "Overview",
-        component: (p: IScreenProps) => <StatsOverviewScreen {...p} />,
+        component: (p: IStatsProps) => <StatsOverviewScreen {...p} />,
     },
     {
         label: "Comprehension Questions",
-        component: (p: IScreenProps) => (
+        component: (p: IStatsProps) => (
             <ComprehensionQuestionsReport {...p}></ComprehensionQuestionsReport>
         ),
     },
     {
         label: "Bloom Reader Sessions",
-        component: (p: IScreenProps) => <ReaderSessionsScreen {...p} />,
+        component: (p: IStatsProps) => <ReaderSessionsChart {...p} />,
     },
 ];
 

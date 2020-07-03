@@ -5,6 +5,9 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import React from "react";
 
+/* I got tired of maintaining this thing we aren't using
+
+
 import { useGetCollection } from "../../model/Collections";
 
 import { useDocumentTitle } from "../Routes";
@@ -15,7 +18,7 @@ import { ICollection } from "../../model/ContentInterfaces";
 import { commonUI } from "../../theme";
 import { ReaderSessionsChart } from "./ReaderSessionsChart";
 import { IComprehensionQuestionData } from "./ComprehensionQuestionsReport";
-import { IScreenProps } from "./CollectionStatsPage";
+import { IStatsProps, IDailyBookStat } from "./Definitions";
 
 // Most or all of this code is not currently used. We may resurrect it if we decide to more
 // closely emulate the old Guatemala/RISE dashboard.
@@ -40,7 +43,7 @@ interface IDailySessionsInfo {
 
 export interface ICollectionStatsResponse {
     //stats: IBookDownload[];
-    stats: IDailySessionsInfo[];
+    stats: IDailyBookStat[];
     devices: number;
     languages: number;
     comprehensionData: IComprehensionQuestionData[];
@@ -204,7 +207,7 @@ function useGetCollectionStats(
     // return getEmptyCollectionStats();
 }
 
-export const DataStudioDashboardScreen: React.FunctionComponent<IScreenProps> = (
+export const DataStudioDashboardScreen: React.FunctionComponent<IStatsProps> = (
     props
 ) => {
     // remains empty (and unused) except in byLanguageGroups mode, when a callback sets it.
@@ -315,16 +318,14 @@ export const DataStudioDashboardScreen: React.FunctionComponent<IScreenProps> = 
                         {responseData.languages}
                     </div>
                 </div>
-                <ReaderSessionsChart
-                    stats={responseData.stats}
-                    backColor={backColor}
-                />
+                <ReaderSessionsChart {...props} />
             </div>
-            {/* <p> mapData={JSON.stringify(mapData)}</p> */}
+            {/* <p> mapData={JSON.stringify(mapData)}</p> -/}
             {/* <p>
                 rawResponse=
                 {JSON.stringify(responseData)}
-            </p> */}
+            </p> -/}
         </div>
     );
 };
+*/
