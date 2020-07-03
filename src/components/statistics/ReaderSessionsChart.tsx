@@ -215,14 +215,14 @@ export const ReaderSessionsChart: React.FunctionComponent<{
                 }}
                 labelTextColor="white"
                 labelFormat={labelFormatter}
-                gridYValues={[0, maxCount]}
-                axisLeft={{ tickValues: [0, maxCount] }}
+                gridYValues={[]}
+                axisLeft={{ tickValues: [] }}
                 // height/width need to include enough space for margin too
                 margin={{
                     top: 10,
                     right: 20,
                     bottom: 70,
-                    left: 40,
+                    left: 0,
                 }}
                 axisBottom={{
                     tickSize: 5,
