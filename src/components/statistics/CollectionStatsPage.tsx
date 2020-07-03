@@ -17,7 +17,8 @@ import { DateRangePicker } from "./DateRangePicker";
 import domtoimage from "dom-to-image-more";
 import Button from "@material-ui/core/Button";
 import { saveAs } from "file-saver";
-
+import DownloadPngIcon from "./download-png.svg";
+import IconButton from "@material-ui/core/IconButton";
 export interface IScreenProps {
     collectionName: string;
     start: Date;
@@ -138,7 +139,8 @@ export const CollectionStatsPage: React.FunctionComponent<{
             <div
                 id="screen"
                 css={css`
-                    //height: 500px;
+                    width: fit-content; // this is important for image export, else it may be too wide
+                    background-color: white; // this is important for image export, else it's transparent which will confuse people
                 `}
             >
                 <h3>{screens[currentScreenIndex].label}</h3>
@@ -147,13 +149,14 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     start: startDay,
                     end: endDay,
                 })}
-                <div
-                    css={css`
+            </div>
+            <div
+                css={css`
                         display: flex;    justify-content: flex-end;
 }
                     `}
-                >
-                    {/* For some reason the resulting SVG file works in browsers but not inkscape, figma, or Affinity.
+            >
+                {/* For some reason the resulting SVG file works in browsers but not inkscape, figma, or Affinity.
             <Button
                 onClick={() => {
                     domtoimage
@@ -168,19 +171,20 @@ export const CollectionStatsPage: React.FunctionComponent<{
             >
                 SVG
             </Button> */}
-                    <Button
-                        onClick={() => {
-                            downloadAsPng(
-                                document.getElementById("screen")!,
-                                screens[currentScreenIndex].label + ".png",
-                                3
-                            );
-                        }}
-                    >
-                        PNG
-                    </Button>
-                </div>
+                <Button
+                    onClick={() => {
+                        downloadAsPng(
+                            document.getElementById("screen")!,
+                            screens[currentScreenIndex].label + ".png",
+                            3
+                        );
+                    }}
+                    aria-label="download PNG image"
+                >
+                    <img alt="download PNG" src={DownloadPngIcon} />
+                </Button>
             </div>
+
             <div
                 css={css`
                     padding: 10px;

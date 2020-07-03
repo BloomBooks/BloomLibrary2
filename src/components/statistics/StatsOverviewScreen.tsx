@@ -42,7 +42,8 @@ export const StatsOverviewScreen: React.FunctionComponent<IScreenProps> = (
             css={css`
                 display: flex;
                 background-color: ${kDarkGrey};
-                margin-left: -10px;
+                margin-left: 0;
+                margin-right: 0;
                 padding: ${gapWidth};
             `}
         >
