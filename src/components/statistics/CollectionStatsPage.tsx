@@ -29,6 +29,10 @@ export const Pretend: React.FunctionComponent<IScreenProps> = (props) => {
 };
 const screens: IScreen[] = [
     {
+        label: "Overview",
+        component: (p: IScreenProps) => <StatsOverviewScreen {...p} />,
+    },
+    {
         label: "Comprehension Questions",
         component: (p: IScreenProps) => (
             <ComprehensionQuestionsReport {...p}></ComprehensionQuestionsReport>
@@ -39,10 +43,6 @@ const screens: IScreen[] = [
         component: (p: IScreenProps) => <ReaderSessionsScreen {...p} />,
     },
 ];
-RegisterScreen({
-    label: "Overview",
-    component: (p: IScreenProps) => <StatsOverviewScreen {...p} />,
-});
 
 export const kStatsPageGray = "#ececec";
 export const CollectionStatsPage: React.FunctionComponent<{
@@ -149,7 +149,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     padding: 10px;
                     height: 100px;
                     background-color: ${kStatsPageGray};
-                    margin-top: 10px;
+                    margin-top: 20px;
                     margin-left: -${pageLeftMargin}px; // push back out to the edge
                     margin-right: -${pageLeftMargin}px; // push back out to the edge
                 `}

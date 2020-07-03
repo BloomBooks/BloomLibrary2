@@ -11,6 +11,9 @@ import moment from "moment";
 import { commonUI } from "../../theme";
 import { ICollectionStatsResponse } from "./DataStudioDasboardScreen";
 import { IScreenProps, kStatsPageGray } from "./CollectionStatsPage";
+import Paper from "@material-ui/core/Paper";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
 
 export interface IOverviewStats {
     devices: number;
@@ -26,6 +29,7 @@ function getFakeCollectionStats(): IOverviewStats {
 }
 
 const gapWidth = "10px";
+const kDarkGrey = "#5d5d5d";
 
 export const StatsOverviewScreen: React.FunctionComponent<IScreenProps> = (
     props
@@ -37,76 +41,55 @@ export const StatsOverviewScreen: React.FunctionComponent<IScreenProps> = (
             // parent on the left.
             css={css`
                 display: flex;
-                background-color: ${kStatsPageGray};
+                background-color: ${kDarkGrey};
                 margin-left: -10px;
                 padding: ${gapWidth};
             `}
         >
-            <div
-                css={css`
-                    color: ${commonUI.colors.bloomRed};
-                    margin-right: ${gapWidth};
-                    background-color: white;
-                    padding: 10px;
-                `}
-            >
+            <StatsCard value={stats.devices.toString()}>
+                Devices
                 <div
                     css={css`
-                        padding-top: 5px;
-                        display: flex;
-                        justify-content: space-around;
-                    `}
-                >
-                    Devices
-                </div>
-                <div
-                    css={css`
-                        display: flex;
-                        justify-content: space-around;
-                        font-size: smaller;
+                        font-size: 12px;
                     `}
                 >
                     with Bloom Reader
                 </div>
-                <div
-                    css={css`
-                        display: flex;
-                        justify-content: space-around;
-                        font-size: larger;
-                        margin-top: 15px;
-                    `}
-                >
-                    {stats.devices}
-                </div>
-            </div>
-            <div
-                css={css`
-                    color: ${commonUI.colors.bloomRed};
-                    margin-right: ${gapWidth};
-                    background-color: white;
-                    padding: 10px;
-                `}
-            >
-                <div
-                    css={css`
-                        padding-top: 5px;
-                        display: flex;
-                        justify-content: space-around;
-                    `}
-                >
-                    Languages
-                </div>
-                <div
-                    css={css`
-                        display: flex;
-                        justify-content: space-around;
-                        font-size: larger;
-                        margin-top: 15px;
-                    `}
-                >
-                    {stats.languages}
-                </div>
-            </div>
+            </StatsCard>
+            <StatsCard value={stats.languages.toString()}>Languages</StatsCard>
         </div>
     );
 };
+
+const StatsCard: React.FunctionComponent<{ value: string }> = (props) => (
+    <Card
+        css={css`
+            margin-right: 15px;
+
+            * {
+                text-align: center;
+            }
+        `}
+    >
+        <CardContent
+            css={css`
+                padding: 16px;
+
+                height: 86px;
+
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            `}
+        >
+            <div
+                css={css`
+                    color: ${kDarkGrey};
+                `}
+            >
+                {props.children}
+            </div>
+            <h1>{props.value}</h1>
+        </CardContent>
+    </Card>
+);
