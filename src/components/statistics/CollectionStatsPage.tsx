@@ -3,7 +3,7 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React, { useState, FunctionComponent } from "react";
+import React, { useState } from "react";
 
 import { useGetCollection } from "../../model/Collections";
 
@@ -14,7 +14,7 @@ import { StatsOverviewScreen } from "./StatsOverviewScreen";
 import { ComprehensionQuestionsReport } from "./ComprehensionQuestionsReport";
 import { ReaderSessionsScreen } from "./ReaderSessionsChart";
 import { DateRangePicker } from "./DateRangePicker";
-import domtoimage from "dom-to-image";
+import domtoimage from "dom-to-image-more";
 import Button from "@material-ui/core/Button";
 import { saveAs } from "file-saver";
 
@@ -147,6 +147,39 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     start: startDay,
                     end: endDay,
                 })}
+                <div
+                    css={css`
+                        display: flex;    justify-content: flex-end;
+}
+                    `}
+                >
+                    {/* For some reason the resulting SVG file works in browsers but not inkscape, figma, or Affinity.
+            <Button
+                onClick={() => {
+                    domtoimage
+                        .toSvg(document.getElementById("screen")!)
+                        .then((dataUrl: string) => {
+                            saveAs(
+                                dataUrl,
+                                screens[currentScreenIndex].label + ".svg"
+                            );
+                        });
+                }}
+            >
+                SVG
+            </Button> */}
+                    <Button
+                        onClick={() => {
+                            downloadAsPng(
+                                document.getElementById("screen")!,
+                                screens[currentScreenIndex].label + ".png",
+                                3
+                            );
+                        }}
+                    >
+                        PNG
+                    </Button>
+                </div>
             </div>
             <div
                 css={css`
@@ -180,31 +213,6 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     placerat. Dolor ullamcorper.
                 </p>
             </div>
-            <Button
-                onClick={() => {
-                    domtoimage
-                        .toSvg(document.getElementById("screen")!)
-                        .then((dataUrl: string) => {
-                            saveAs(
-                                dataUrl,
-                                screens[currentScreenIndex].label + ".svg"
-                            );
-                        });
-                }}
-            >
-                SVG
-            </Button>
-            <Button
-                onClick={() => {
-                    downloadAsPng(
-                        document.getElementById("screen")!,
-                        screens[currentScreenIndex].label + ".png",
-                        3
-                    );
-                }}
-            >
-                PNG
-            </Button>
         </div>
     );
 };
