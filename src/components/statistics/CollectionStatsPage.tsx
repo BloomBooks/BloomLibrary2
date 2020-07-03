@@ -10,6 +10,7 @@ import { useGetCollection } from "../../model/Collections";
 import { useDocumentTitle } from "../Routes";
 import Select from "@material-ui/core/Select";
 
+import { StatsOverviewScreen } from "./StatsOverviewScreen";
 import { ComprehensionQuestionsReport } from "./ComprehensionQuestionsReport";
 import { ReaderSessionsScreen } from "./ReaderSessionsChart";
 import { DateRangePicker } from "./DateRangePicker";
@@ -30,6 +31,12 @@ const screens: IScreen[] = [];
 export function RegisterScreen(screen: IScreen) {
     screens.push(screen);
 }
+
+RegisterScreen({
+    label: "Overview",
+    component: (p: IScreenProps) => <StatsOverviewScreen {...p} />,
+});
+
 RegisterScreen({
     label: "Comprehension Questions",
     component: (p: IScreenProps) => (
@@ -41,6 +48,8 @@ RegisterScreen({
     label: "Bloom Reader Sessions",
     component: (p: IScreenProps) => <ReaderSessionsScreen {...p} />,
 });
+
+export const kStatsPageGray = "#ececec";
 
 export const CollectionStatsPage: React.FunctionComponent<{
     collectionName: string;
@@ -62,7 +71,6 @@ export const CollectionStatsPage: React.FunctionComponent<{
         return <div>Collection not found</div>;
     }
     const pageLeftMargin = 10;
-    const kgray = "#ececec";
     return (
         <div
             css={css`
@@ -83,7 +91,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
             <h2>Bloom Collection Statistics</h2>
             <div
                 css={css`
-                    background-color: ${kgray};
+                    background-color: ${kStatsPageGray};
                     //height: 75px;
                     margin-left: -${pageLeftMargin}px; // push back out to the edge
                     margin-right: -${pageLeftMargin}px; // push back out to the edge
@@ -142,7 +150,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
                 css={css`
                     padding: 10px;
                     height: 100px;
-                    background-color: ${kgray};
+                    background-color: ${kStatsPageGray};
                     margin-left: -${pageLeftMargin}px; // push back out to the edge
                     margin-right: -${pageLeftMargin}px; // push back out to the edge
                 `}
