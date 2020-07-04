@@ -3,27 +3,56 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
+import React from "react";
 import { IStatsProps } from "./StatsInterfaces";
+import { StatsCard } from "./StatsCard";
 
 export interface IOverviewStats {
-    devices: number;
+    books: number;
     languages: number;
+    topics: number;
+
+    bloomPubDeviceMobile: number;
+    bloomPubDevicePC: number;
+
+    downloadsEpub: number;
+    downloadsBloomPub: number;
+    downloadsPDF: number;
+    downloadsShellbooks: number;
+
+    readsWeb: number;
+    readsApps: number;
+    readsBloomReader: number;
 }
 
 // Temporary for testing
 function getFakeCollectionStats(props: IStatsProps): IOverviewStats {
     return {
-        devices: 1072,
-        languages: 35,
+        books: 67,
+        languages: 4,
+        topics: 5,
+
+        bloomPubDeviceMobile: 234,
+        bloomPubDevicePC: 12,
+
+        downloadsEpub: 123,
+        downloadsBloomPub: 234,
+        downloadsPDF: 82,
+        downloadsShellbooks: 12,
+
+        readsWeb: 1024,
+        readsApps: 22,
+        readsBloomReader: 99,
     };
 }
 
 const gapWidth = "10px";
-const kDarkGrey = "#5d5d5d";
+export const kDarkGrey = "#5d5d5d";
 
+export interface IItem {
+    label: string;
+    value: number;
+}
 export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
     props
 ) => {
@@ -34,13 +63,36 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
             // parent on the left.
             css={css`
                 display: flex;
-                background-color: ${kDarkGrey};
                 margin-left: 0;
                 margin-right: 0;
-                padding: ${gapWidth};
+
+                max-width: 800px;
+                flex-wrap: wrap;
+                // margin between cards
+                & > * {
+                    margin-right: 20px;
+                    margin-bottom: 20px;
+                }
             `}
         >
-            <StatsCard value={stats.devices.toString()}>
+            <StatsCard
+                subitems={[
+                    { label: "Languages", value: stats.languages },
+                    { label: "Topics", value: stats.topics },
+                ]}
+            >
+                Books
+            </StatsCard>
+
+            <StatsCard
+                info={
+                    "Count of devices where we received notice where at least on book from this collection had been loaded."
+                }
+                subitems={[
+                    { label: "Mobile", value: stats.bloomPubDeviceMobile },
+                    { label: "PC", value: stats.bloomPubDevicePC },
+                ]}
+            >
                 Devices
                 <div
                     css={css`
@@ -50,40 +102,29 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
                     with Bloom Reader
                 </div>
             </StatsCard>
-            <StatsCard value={stats.languages.toString()}>Languages</StatsCard>
+
+            <StatsCard
+                subitems={[
+                    { label: "Web", value: stats.readsWeb },
+                    { label: "Apps", value: stats.readsApps },
+                    { label: "Bloom Reader", value: stats.readsBloomReader },
+                ]}
+            >
+                Reads
+            </StatsCard>
+            <StatsCard
+                subitems={[
+                    { label: "bloomPub", value: stats.downloadsBloomPub },
+                    { label: "ePUB", value: stats.downloadsEpub },
+                    { label: "PDF", value: stats.downloadsPDF },
+                    {
+                        label: "For Translation",
+                        value: stats.downloadsShellbooks,
+                    },
+                ]}
+            >
+                Downloads
+            </StatsCard>
         </div>
     );
 };
-
-const StatsCard: React.FunctionComponent<{ value: string }> = (props) => (
-    <Card
-        css={css`
-            margin-right: 15px;
-
-            * {
-                text-align: center;
-            }
-        `}
-    >
-        <CardContent
-            css={css`
-                padding: 16px;
-
-                height: 86px;
-
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-            `}
-        >
-            <div
-                css={css`
-                    color: ${kDarkGrey};
-                `}
-            >
-                {props.children}
-            </div>
-            <h1>{props.value}</h1>
-        </CardContent>
-    </Card>
-);

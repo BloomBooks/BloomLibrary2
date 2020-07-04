@@ -64,12 +64,12 @@ export const CollectionStatsPage: React.FunctionComponent<{
     if (!collection) {
         return <div>Collection not found</div>;
     }
-    const pageLeftMargin = 10;
+    const kSideMarginPx = 20;
     return (
         <div
             css={css`
-                margin-left: ${pageLeftMargin}px;
-                margin-right: ${pageLeftMargin}px;
+                margin-left: ${kSideMarginPx}px;
+                margin-right: ${kSideMarginPx}px;
                 h1 {
                     font-size: 36px;
                     line-height: 28px;
@@ -85,21 +85,21 @@ export const CollectionStatsPage: React.FunctionComponent<{
             <h2>Bloom Collection Statistics</h2>
             <div
                 css={css`
-                    background-color: ${kStatsPageGray};
+                    //background-color: ${kStatsPageGray};
                     //height: 75px;
-                    margin-left: -${pageLeftMargin}px; // push back out to the edge
-                    margin-right: -${pageLeftMargin}px; // push back out to the edge
+                    /* margin-left: -${kSideMarginPx}px; // push back out to the edge
+                    margin-right: -${kSideMarginPx}px; // push back out to the edge */
                     padding-top: 20px;
                     padding-bottom: 20px;
-                    padding-left: ${pageLeftMargin}px;
-                    padding-right: ${pageLeftMargin}px;
+                    /* padding-left: ${kSideMarginPx}px;
+                    padding-right: ${kSideMarginPx}px; */
                     display: flex;
                     justify-content: space-between;
                 `}
             >
                 <Select
                     css={css`
-                        padding-left: 10px;
+                        padding-left: 0;
                         min-width: 300px;
                         &,
                         * {
@@ -133,18 +133,34 @@ export const CollectionStatsPage: React.FunctionComponent<{
                 ></DateRangePicker>
             </div>
             <div
-                id="screen"
                 css={css`
-                    width: fit-content; // this is important for image export, else it may be too wide
-                    background-color: white; // this is important for image export, else it's transparent which will confuse people
+                    width: 100%;
+                    background-color: ${kStatsPageGray};
+                    margin-left: -${kSideMarginPx}px; // push back out to the edge
+                    margin-right: -${kSideMarginPx}px; // push back out to the edge
+                    padding: ${kSideMarginPx}px;
                 `}
             >
-                <h3>{screens[currentScreenIndex].label}</h3>
-                {screens[currentScreenIndex].component({
-                    collectionName: props.collectionName,
-                    start: startDay,
-                    end: endDay,
-                })}
+                <div
+                    id="screen"
+                    css={css`
+                        width: fit-content; // this is important for image export, else it may be too wide
+                        //background-color: white; // this is important for image export, else it's transparent which will confuse people
+                    `}
+                >
+                    <h3
+                        css={css`
+                            margin-block-start: 0;
+                        `}
+                    >
+                        {screens[currentScreenIndex].label}
+                    </h3>
+                    {screens[currentScreenIndex].component({
+                        collectionName: props.collectionName,
+                        start: startDay,
+                        end: endDay,
+                    })}
+                </div>
             </div>
             <div
                 css={css`
@@ -180,15 +196,11 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     <img alt="download PNG" src={DownloadPngIcon} />
                 </Button>
             </div>
-
+            {/*
             <div
                 css={css`
                     padding: 10px;
                     height: 100px;
-                    background-color: ${kStatsPageGray};
-                    margin-top: 20px;
-                    margin-left: -${pageLeftMargin}px; // push back out to the edge
-                    margin-right: -${pageLeftMargin}px; // push back out to the edge
                 `}
             >
                 <span
@@ -212,7 +224,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     dictumst et lacus condimentum aliquet consequat, vitae in
                     placerat. Dolor ullamcorper.
                 </p>
-            </div>
+            </div> */}
         </div>
     );
 };
