@@ -84,7 +84,6 @@ export const StatsCard: React.FunctionComponent<{
                     font-size: 48px;
                     font-weight: bold;
                     margin-bottom: 0;
-                    margin-top: 10px;
                 `}
             >
                 {props.subitems?.map((i) => i.value).reduce((t, i) => t + i)}

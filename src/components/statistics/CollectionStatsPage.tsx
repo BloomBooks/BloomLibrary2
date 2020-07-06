@@ -13,12 +13,13 @@ import Select from "@material-ui/core/Select";
 import { StatsOverviewScreen } from "./StatsOverviewScreen";
 import { ComprehensionQuestionsReport } from "./ComprehensionQuestionsReport";
 import { ReaderSessionsChart } from "./ReaderSessionsChart";
-import { DateRangePicker } from "./DateRangePicker";
+import { DateRangePicker, IDateRange } from "./DateRangePicker";
 import domtoimage from "dom-to-image-more";
 import Button from "@material-ui/core/Button";
 import { saveAs } from "file-saver";
 import DownloadPngIcon from "./download-png.svg";
 import { IStatsProps } from "./StatsInterfaces";
+import { useStorageState } from "react-storage-hooks";
 
 export interface IScreen {
     label: string;
@@ -49,12 +50,23 @@ export const CollectionStatsPage: React.FunctionComponent<{
     collectionName: string;
 }> = (props) => {
     const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
-    const [startDay, setStartDay] = useState(
-        /* back one year */ new Date(
-            new Date().setFullYear(new Date().getFullYear() - 1)
-        )
+    const [dateRange, setDateRange] = useStorageState<IDateRange>(
+        localStorage,
+        "analytics-date-range",
+        {
+            startDate: undefined, // from forever
+            endDate: undefined, // today
+        }
     );
-    const [endDay, setEndDay] = useState(new Date());
+
+    // they come back from localStorage as strings.
+    if (typeof dateRange.startDate === "string") {
+        dateRange.startDate = new Date(dateRange.startDate);
+    }
+    if (typeof dateRange.endDate === "string") {
+        dateRange.endDate = new Date(dateRange.endDate);
+    }
+
     // remains empty (and unused) except in byLanguageGroups mode, when a callback sets it.
     //const [booksAndLanguages, setBooksAndLanguages] = useState("");
     const { collection } = useGetCollection(props.collectionName);
@@ -124,11 +136,9 @@ export const CollectionStatsPage: React.FunctionComponent<{
                 </Select>
 
                 <DateRangePicker
-                    start={startDay}
-                    end={endDay}
-                    setRange={(start, end) => {
-                        setStartDay(start);
-                        setEndDay(end);
+                    range={dateRange}
+                    setRange={(range) => {
+                        setDateRange(range);
                     }}
                 ></DateRangePicker>
             </div>
@@ -157,8 +167,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     </h3>
                     {screens[currentScreenIndex].component({
                         collectionName: props.collectionName,
-                        start: startDay,
-                        end: endDay,
+                        dateRange,
                     })}
                 </div>
             </div>

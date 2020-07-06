@@ -29,7 +29,7 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
     let maxCount = 0;
 
     dayStats.forEach((dailyInfo) => {
-        const date = moment(dailyInfo.dateUTC);
+        const date = moment(dailyInfo.dateEventLocal);
         const key = byMonth ? date.format("MMM YYYY") : getWeek(date);
 
         const count = counts.get(key) || 0;

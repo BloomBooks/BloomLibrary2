@@ -14,6 +14,18 @@ import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import DateRangeIcon from "@material-ui/icons/DateRange";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+
+export type IDateBoundary = Date | undefined;
+
+export interface IDateRange {
+    startDate: IDateBoundary;
+    endDate: IDateBoundary;
+    /* Future enhancement:
+    namedRange?: undefined | "previousMonth" | "lastMonth" | "lastYear";
+    */
+}
 
 // Why this is custom:
 // This picker 1) shows a button affordance that tells the current range
@@ -21,9 +33,8 @@ import DateRangeIcon from "@material-ui/icons/DateRange";
 // (much clearer than off-the-shelf picker)
 // TODO: verify that it will show dates in local-sensitive ways
 export const DateRangePicker: React.FunctionComponent<{
-    start: Date;
-    end: Date;
-    setRange: (from: Date, to: Date) => void;
+    range: IDateRange;
+    setRange: (range: IDateRange) => void;
 }> = (props) => {
     const [open, setOpen] = useState(false);
     return (
@@ -41,8 +52,13 @@ export const DateRangePicker: React.FunctionComponent<{
                         margin-left: 10px;
                     `}
                 >
-                    {props.start.toLocaleDateString()} —{" "}
-                    {props.end.toLocaleDateString()}
+                    {props.range.startDate
+                        ? props.range.startDate.toLocaleDateString()
+                        : "∞"}{" "}
+                    —{" "}
+                    {props.range.endDate
+                        ? props.range.endDate.toLocaleDateString()
+                        : "Today"}
                 </span>
             </Button>
             {open && (
@@ -63,13 +79,44 @@ export const DateRangePicker: React.FunctionComponent<{
                         `}
                     >
                         <div>
+                            <Select
+                                value={
+                                    props.range.endDate === undefined &&
+                                    props.range.startDate === undefined
+                                        ? "∞"
+                                        : "custom"
+                                }
+                                onChange={() => {
+                                    props.setRange({
+                                        startDate: undefined,
+                                        endDate: undefined,
+                                    });
+                                }}
+                                autoWidth
+                                MenuProps={{
+                                    disablePortal: true,
+                                }}
+                            >
+                                <MenuItem value="∞">{"All Time"}</MenuItem>
+                                <MenuItem disabled={true} value="custom">
+                                    {"Custom"}
+                                </MenuItem>
+                            </Select>
                             <div>
                                 <h4>Include Events From</h4>
                                 <Calendar
-                                    value={props.start}
+                                    value={
+                                        props.range.startDate
+                                            ? props.range.startDate
+                                            : new Date(2010, 1, 1)
+                                    }
                                     onChange={(start: any) => {
                                         if (start)
-                                            props.setRange(start, props.end);
+                                            // We don't currently have a way to detect that they want to set the start back to infinity.
+                                            props.setRange({
+                                                ...props.range,
+                                                startDate: start,
+                                            });
                                     }}
                                 ></Calendar>
                             </div>
@@ -80,10 +127,27 @@ export const DateRangePicker: React.FunctionComponent<{
                             >
                                 <h4>To</h4>{" "}
                                 <Calendar
-                                    value={props.end}
-                                    onChange={(end: any) => {
+                                    value={
+                                        props.range.endDate
+                                            ? props.range.endDate
+                                            : new Date()
+                                    }
+                                    onChange={(d: Date | Date[]) => {
+                                        const end = d as Date;
                                         if (end)
-                                            props.setRange(props.start, end);
+                                            props.setRange({
+                                                ...props.range,
+                                                // If they've chosen the current day as the end,
+                                                // we presume they'd be happy if we just remember
+                                                // it as "TODAY". That could be wrong, but then it's
+                                                // easy for them to fix in the future when they want
+                                                // to go and nail it down to that previous day.
+                                                endDate:
+                                                    end.getDate() ===
+                                                    new Date().getDate()
+                                                        ? undefined
+                                                        : end,
+                                            });
                                     }}
                                 ></Calendar>
                             </div>
