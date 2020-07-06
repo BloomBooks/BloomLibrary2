@@ -18,7 +18,7 @@ import domtoimage from "dom-to-image-more";
 import Button from "@material-ui/core/Button";
 import { saveAs } from "file-saver";
 import DownloadPngIcon from "./download-png.svg";
-import { IStatsProps } from "./StatsInterfaces";
+import { IStatsProps, ExportDataFn } from "./StatsInterfaces";
 import { useStorageState } from "react-storage-hooks";
 
 export interface IScreen {
@@ -50,6 +50,9 @@ export const CollectionStatsPage: React.FunctionComponent<{
     collectionName: string;
 }> = (props) => {
     const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
+    const [dataMatrixFn, setDataMatrixFn] = useState<
+        ExportDataFn | undefined
+    >();
     const [dateRange, setDateRange] = useStorageState<IDateRange>(
         localStorage,
         "analytics-date-range",
@@ -168,14 +171,20 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     {screens[currentScreenIndex].component({
                         collectionName: props.collectionName,
                         dateRange,
+                        registerExportDataFn: (fn: ExportDataFn) => {
+                            // this double function is to keep react's use state thing from *running* the function,
+                            // which is wants to do!
+                            setDataMatrixFn(() => fn);
+                            console.log(JSON.stringify(fn()));
+                        },
                     })}
                 </div>
             </div>
             <div
                 css={css`
-                        display: flex;    justify-content: flex-end;
-}
-                    `}
+                    display: flex;
+                    justify-content: flex-end;
+                `}
             >
                 {/* For some reason the resulting SVG file works in browsers but not inkscape, figma, or Affinity.
             <Button
@@ -204,6 +213,28 @@ export const CollectionStatsPage: React.FunctionComponent<{
                 >
                     <img alt="download PNG" src={DownloadPngIcon} />
                 </Button>
+                {dataMatrixFn && (
+                    <Button
+                        onClick={() => {
+                            const csv = dataMatrixFn()
+                                .map((columnsOfOneRow) => {
+                                    return columnsOfOneRow
+                                        .map((c) => csvEncode(c))
+                                        .join(", ");
+                                })
+                                .join("\n");
+                            //console.log(csv);
+                            saveAs(
+                                new Blob([csv], {
+                                    type: "text/csv;charset=utf-8",
+                                }),
+                                screens[currentScreenIndex].label + ".csv"
+                            );
+                        }}
+                    >
+                        CSV
+                    </Button>
+                )}
             </div>
             {/*
             <div
@@ -249,4 +280,27 @@ function downloadAsPng(el: HTMLElement, filename: string, scale: number) {
     domtoimage.toPng(el, props).then((blob) => {
         saveAs(blob, filename);
     });
+}
+
+function csvEncode(value: string): string {
+    let needsQuotes = false;
+    needsQuotes = value.indexOf(",") > -1;
+
+    // mac,linux, windows all have an \r, so that's
+    // enough, even though windows also has \n.
+    needsQuotes = needsQuotes || value.indexOf("\r") > -1;
+
+    // the rfc spec seems astonishingly inconsistent on the question of
+    // whether quotes should be escaped if the entire field is not surrounded in quotes
+
+    value = value.replace(/"/g, '""');
+
+    if (needsQuotes) {
+        // If double-quotes are used to enclose fields, then a double-quote
+        // appearing inside a field must be escaped by preceding it with
+        //  another double quote.
+        //value = value.replace(/"/g, '""');
+        return '"' + value + '"';
+    }
+    return value;
 }

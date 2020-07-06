@@ -6,6 +6,7 @@ import { IDateRange } from "./DateRangePicker";
 export interface IStatsProps {
     collectionName: string;
     dateRange: IDateRange;
+    registerExportDataFn: (fn: ExportDataFn) => void;
 }
 
 // These are query results in which each row represents one day.
@@ -34,3 +35,5 @@ export interface IBookStat {
     finishedCount: number;
     */
 }
+
+export type ExportDataFn = () => string[][];

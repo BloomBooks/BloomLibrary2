@@ -3,7 +3,7 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React from "react";
+import React, { useEffect } from "react";
 import { IStatsProps } from "./StatsInterfaces";
 import { StatsCard } from "./StatsCard";
 
@@ -57,6 +57,22 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
     props
 ) => {
     const stats = getFakeCollectionStats(props);
+    useEffect(
+        () => {
+            return props.registerExportDataFn(() => {
+                const headerRow = Object.keys(stats);
+                const valueRow = Object.values(stats).map((v) =>
+                    v.toString()
+                ) as string[];
+                const all: string[][] = [];
+                all[0] = headerRow;
+                all[1] = valueRow;
+                return all;
+            });
+        },
+        [] /* todo*/
+    );
+
     return (
         <div
             // The -10px margin is really ugly but needed to avoid a white bar that is usually imposed by the

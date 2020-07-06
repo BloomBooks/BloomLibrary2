@@ -37,6 +37,9 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
         maxCount = Math.max(maxCount, newCount);
         counts.set(key, newCount);
     });
+    // props.registerDataMatrixFn(() => {
+    //     return [[]];
+    // });
 
     const mapData = Array.from(counts.keys()).map((x) => {
         return { date: x, sessionCount: counts.get(x) };
