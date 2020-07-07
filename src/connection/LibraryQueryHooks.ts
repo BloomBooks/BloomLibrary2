@@ -1,4 +1,5 @@
 import useAxios, { IReturns, axios, IParams } from "@use-hooks/axios";
+import moment from "moment";
 import { IFilter, InCirculationOptions } from "../IFilter";
 import { getConnection } from "./ParseServerConnection";
 import { getBloomApiUrl } from "./ApiConnection";
@@ -8,6 +9,7 @@ import { CachedTablesContext } from "../App";
 import { getCleanedAndOrderedLanguageList, ILanguage } from "../model/Language";
 import { processRegExp } from "../Utilities";
 import { kTopicList } from "../model/ClosedVocabularies";
+import { IStatsProps } from "../components/statistics/StatsInterfaces";
 
 // For things other than books, which should use `useBookQuery()`
 function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
@@ -546,37 +548,61 @@ export function useSearchBooks(
 }
 
 // Sends a request to get the stats for all books matching the filters
-export function useCollectionStats(filter: IFilter | undefined): IAxiosAnswer {
-    const params = {
-        // It seems at least 1 key needs to be requested for it to return any results
-        keys: "objectId,bookInstanceId",
-    };
-    const limit = undefined;
-    const skip = undefined;
-    // If we don't have a filter, typically because we had to call the hook before
-    // conditional logic testing for whether we had already retrieved a collection
-    // from which we could get the filter, there's no point in actually running
-    // the query. useAxios will just immediately return no results.
-    const doNotRunQuery: boolean = !filter;
-    const bookQueryParams = makeBookQueryAxiosParams(
-        params,
-        filter || {},
-        limit,
-        skip,
-        doNotRunQuery
-    );
+export function useCollectionStats(
+    statsProps: IStatsProps,
+    urlSuffix: string
+): IAxiosAnswer {
+    let apiFilter: any;
+    if (!statsProps.collection.statisticsQuerySpec) {
+        const params = {
+            // These are the specific keys we want parse to look up and provide to postgresql
+            keys: "objectId,bookInstanceId",
+        };
+        const limit = undefined;
+        const skip = undefined;
+        // If we don't have a filter, typically because we had to call the hook before
+        // conditional logic testing for whether we had already retrieved a collection
+        // from which we could get the filter, there's no point in actually running
+        // the query. useAxios will just immediately return no results.
+        const doNotRunQuery: boolean = !statsProps.collection.filter;
+        const bookQueryParams = makeBookQueryAxiosParams(
+            params,
+            statsProps.collection.filter || {},
+            limit,
+            skip,
+            doNotRunQuery
+        );
+        apiFilter = {
+            parseDBQuery: bookQueryParams,
+        };
+    } else {
+        apiFilter = statsProps.collection.statisticsQuerySpec;
+    }
+
+    if (statsProps.dateRange.startDate) {
+        apiFilter.fromDate = getISODateString(statsProps.dateRange.startDate);
+    }
+    if (statsProps.dateRange.endDate) {
+        apiFilter.toDate = getISODateString(statsProps.dateRange.endDate);
+    }
+
+    const url = `${getBloomApiUrl()}/v1/stats/${urlSuffix}`;
 
     return useAxios({
-        url: `${getBloomApiUrl()}/v1/stats`,
+        url,
         method: "POST",
         options: {
             data: {
-                "book-query": bookQueryParams,
+                filter: apiFilter,
             },
         },
 
-        trigger: bookQueryParams.trigger,
+        trigger: url + JSON.stringify(apiFilter),
     });
+}
+
+function getISODateString(date: Date) {
+    return moment(date).format("YYYY-MM-DD");
 }
 
 function processAxiosStatus(answer: IAxiosAnswer): ISimplifiedAxiosResult {

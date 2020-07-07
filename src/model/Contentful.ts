@@ -47,6 +47,7 @@ export function convertContentfulCollectionToICollection(
         label: fields.label,
         richTextLabel: fields.richTextLabel,
         filter: fields.filter,
+        statisticsQuerySpec: fields.statisticsQuerySpec,
         iconForCardAndDefaultBanner: icon,
         hideLabelOnCardAndDefaultBanner: fields.hideLabelOnCardAndDefaultBanner,
         childCollections: getSubCollections(fields.childCollections),

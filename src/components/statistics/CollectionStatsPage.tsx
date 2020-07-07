@@ -166,7 +166,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
                         {screens[currentScreenIndex].label}
                     </h3>
                     {screens[currentScreenIndex].component({
-                        collectionName: props.collectionName,
+                        collection,
                         dateRange,
                     })}
                 </div>
