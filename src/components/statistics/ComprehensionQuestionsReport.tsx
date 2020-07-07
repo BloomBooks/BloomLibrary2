@@ -96,6 +96,7 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> 
     return (
         <div
             css={css`
+                background-color: white;
                 thead.MuiTableHead-root * {
                     line-height: 15px;
                     vertical-align: top;

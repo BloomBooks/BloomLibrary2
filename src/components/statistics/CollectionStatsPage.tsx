@@ -22,6 +22,7 @@ import DownloadCsvIcon from "./download-csv.svg";
 import { IStatsProps, ExportDataFn } from "./StatsInterfaces";
 import { useStorageState } from "react-storage-hooks";
 import { exportCsv } from "./exportData";
+import LinearProgress from "@material-ui/core/LinearProgress";
 
 export interface IScreen {
     label: string;
@@ -52,7 +53,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
     collectionName: string;
 }> = (props) => {
     const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
-    const [dataMatrixFn, setExportDataFn] = useState<
+    const [exportDataFn, setExportDataFn] = useState<
         ExportDataFn | undefined
     >();
     const [dateRange, setDateRange] = useStorageState<IDateRange>(
@@ -149,78 +150,94 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     }}
                 ></DateRangePicker>
             </div>
+            {/* using the fact that no data has been registered with us to know when data is available */}
+            {exportDataFn || (
+                <LinearProgress
+                    css={css`
+                        margin-top: 50px;
+                        width: 100%;
+                    `}
+                />
+            )}
             <div
                 css={css`
-                    width: 100%;
-                    background-color: ${kStatsPageGray};
-                    margin-left: -${kSideMarginPx}px; // push back out to the edge
-                    margin-right: -${kSideMarginPx}px; // push back out to the edge
-                    padding: ${kSideMarginPx}px;
+                    /* don't display at all until we have data... in the meantime we are showing the progress bar*/
+                    display: ${exportDataFn ? "block" : "none"};
                 `}
             >
                 <div
-                    id="screen"
                     css={css`
-                        width: fit-content; // this is important for image export, else it may be too wide
-                        //background-color: white; // this is important for image export, else it's transparent which will confuse people
+                        width: 100%;
+                        background-color: ${kStatsPageGray};
+                        margin-left: -${kSideMarginPx}px; // push back out to the edge
+                        margin-right: -${kSideMarginPx}px; // push back out to the edge
+                        padding: ${kSideMarginPx}px;
                     `}
                 >
-                    <h3
+                    <div
+                        id="screen"
                         css={css`
-                            margin-block-start: 0;
+                            width: fit-content; // this is important for image export, else it may be too wide
+                            //background-color: white; // this is important for image export, else it's transparent which will confuse people
                         `}
                     >
-                        {screens[currentScreenIndex].label}
-                    </h3>
-                    {screens[currentScreenIndex].component({
-                        collection,
-                        dateRange,
-                        registerExportDataFn: (
-                            fn: ExportDataFn | undefined
-                        ) => {
-                            // this double function is to keep react's use state thing from *running* the function,
-                            // which is wants to do!
-                            setExportDataFn(() => fn);
+                        <h3
+                            css={css`
+                                margin-block-start: 0;
+                            `}
+                        >
+                            {screens[currentScreenIndex].label}
+                        </h3>
 
-                            // if (fn) {
-                            //     console.log(JSON.stringify(fn()));
-                            // }
-                        },
-                    })}
+                        {screens[currentScreenIndex].component({
+                            collection,
+                            dateRange,
+                            registerExportDataFn: (
+                                fn: ExportDataFn | undefined
+                            ) => {
+                                // this double function is to keep react's use state thing from *running* the function,
+                                // which is wants to do!
+                                setExportDataFn(() => fn);
+
+                                // if (fn) {
+                                //     console.log(JSON.stringify(fn()));
+                                // }
+                            },
+                        })}
+                    </div>
                 </div>
-            </div>
-            <div
-                css={css`
-                    display: flex;
-                    justify-content: flex-end;
-                `}
-            >
-                <Button
-                    onClick={() => {
-                        downloadAsPng(
-                            document.getElementById("screen")!,
-                            screens[currentScreenIndex].label + ".png",
-                            3
-                        );
-                    }}
-                    aria-label="download PNG image"
+                <div
+                    css={css`
+                        display: flex;
+                        justify-content: flex-end;
+                    `}
                 >
-                    <img alt="download PNG" src={DownloadPngIcon} />
-                </Button>
-                {dataMatrixFn && (
                     <Button
-                        onClick={() =>
-                            exportCsv(
-                                screens[currentScreenIndex].label,
-                                dataMatrixFn
-                            )
-                        }
+                        onClick={() => {
+                            downloadAsPng(
+                                document.getElementById("screen")!,
+                                screens[currentScreenIndex].label + ".png",
+                                3
+                            );
+                        }}
+                        aria-label="download PNG image"
                     >
-                        <img alt="download CSV" src={DownloadCsvIcon} />
+                        <img alt="download PNG" src={DownloadPngIcon} />
                     </Button>
-                )}
-            </div>
-            {/*
+                    {exportDataFn && (
+                        <Button
+                            onClick={() =>
+                                exportCsv(
+                                    screens[currentScreenIndex].label,
+                                    exportDataFn
+                                )
+                            }
+                        >
+                            <img alt="download CSV" src={DownloadCsvIcon} />
+                        </Button>
+                    )}
+                </div>
+                {/*
             <div
                 css={css`
                     padding: 10px;
@@ -249,6 +266,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     placerat. Dolor ullamcorper.
                 </p>
             </div> */}
+            </div>
         </div>
     );
 };
