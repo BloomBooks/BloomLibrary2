@@ -6,47 +6,9 @@ import { jsx } from "@emotion/core";
 import React, { useEffect } from "react";
 import { IStatsProps } from "./StatsInterfaces";
 import { StatsCard } from "./StatsCard";
+import { useGetOverviewStats } from "./useGetOverviewStats";
 
-export interface IOverviewStats {
-    books: number;
-    languages: number;
-    topics: number;
-
-    bloomPubDeviceMobile: number;
-    bloomPubDevicePC: number;
-
-    downloadsEpub: number;
-    downloadsBloomPub: number;
-    downloadsPDF: number;
-    downloadsShellbooks: number;
-
-    readsWeb: number;
-    readsApps: number;
-    readsBloomReader: number;
-}
-
-// Temporary for testing
-function getFakeCollectionStats(props: IStatsProps): IOverviewStats {
-    return {
-        books: 67,
-        languages: 4,
-        topics: 5,
-
-        bloomPubDeviceMobile: 234,
-        bloomPubDevicePC: 12,
-
-        downloadsEpub: 123,
-        downloadsBloomPub: 234,
-        downloadsPDF: 82,
-        downloadsShellbooks: 12,
-
-        readsWeb: 1024,
-        readsApps: 22,
-        readsBloomReader: 99,
-    };
-}
-
-const gapWidth = "10px";
+//const gapWidth = "10px";
 export const kDarkGrey = "#5d5d5d";
 
 export interface IItem {
@@ -56,7 +18,8 @@ export interface IItem {
 export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
     props
 ) => {
-    const stats = getFakeCollectionStats(props);
+    const stats = useGetOverviewStats(props);
+    if (!stats) return <React.Fragment />;
     useEffect(
         () => {
             return props.registerExportDataFn(() => {
@@ -96,6 +59,7 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
                     { label: "Languages", value: stats.languages },
                     { label: "Topics", value: stats.topics },
                 ]}
+                overrideTotal={stats.books}
             >
                 Books
             </StatsCard>

@@ -169,7 +169,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
                         {screens[currentScreenIndex].label}
                     </h3>
                     {screens[currentScreenIndex].component({
-                        collectionName: props.collectionName,
+                        collection,
                         dateRange,
                         registerExportDataFn: (fn: ExportDataFn) => {
                             // this double function is to keep react's use state thing from *running* the function,

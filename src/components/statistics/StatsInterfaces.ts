@@ -1,12 +1,31 @@
 // These are the properties that the main screen sends down to filter what we show.
 
 import { IDateRange } from "./DateRangePicker";
+import { ICollection } from "../../model/ContentInterfaces";
 
 // In the future individual charts might have further settings, but it seems like then they should define new interfaces?
 export interface IStatsProps {
-    collectionName: string;
+    collection: ICollection;
     dateRange: IDateRange;
     registerExportDataFn: (fn: ExportDataFn) => void;
+}
+
+export interface IOverviewStats {
+    books: number;
+    languages: number;
+    topics: number;
+
+    bloomPubDeviceMobile: number;
+    bloomPubDevicePC: number;
+
+    downloadsEpub: number;
+    downloadsBloomPub: number;
+    downloadsPDF: number;
+    downloadsShellbooks: number;
+
+    readsWeb: number;
+    readsApps: number;
+    readsBloomReader: number;
 }
 
 // These are query results in which each row represents one day.
@@ -28,12 +47,12 @@ export interface IBookStat {
     meanCorrect: number;
     medianCorrect: number;
 
-    /* to add
     language: string;
+    /* to add
     features: string;
+    */
     startedCount: number;
     finishedCount: number;
-    */
 }
 
 export type ExportDataFn = () => string[][];

@@ -1,5 +1,6 @@
 import { IFilter } from "../IFilter";
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
+import { IStatisticsQuerySpec } from "../IStatisticsQuerySpec";
 
 // simplified down to a non-contentful-specific form which, assumed localization has already been done
 export interface IMedia {
@@ -32,6 +33,7 @@ export interface ICollection {
     // enhance: maybe instead provide a function that would return the react nodes, so we could hide this Contentful-specific type?
     richTextLabel?: any; // NB: here we are leaking the Contentful "Document", which does not have an exported type
     filter: IFilter;
+    statisticsQuerySpec?: IStatisticsQuerySpec;
     iconForCardAndDefaultBanner?: IMedia;
     iconCredits?: string;
     iconAltText?: string;
