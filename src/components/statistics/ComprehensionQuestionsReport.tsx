@@ -16,11 +16,14 @@ import { IGridColumn } from "../Grid/GridColumns";
 import { useState } from "react";
 import { IStatsProps } from "./StatsInterfaces";
 import { useGetBookStats } from "./useGetBookStats";
+import { useProvideDataForExport } from "./exportData";
 
 export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> = (
     props
 ) => {
     const stats = useGetBookStats(props);
+    useProvideDataForExport(stats, props);
+
     const columns: IGridColumn[] = [
         { name: "title", title: "Book Title" },
         { name: "branding", title: "Branding" },

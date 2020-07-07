@@ -10,7 +10,9 @@ import { Bar, LabelFormatter } from "@nivo/bar";
 import moment from "moment";
 import { commonUI } from "../../theme";
 import { useGetDailyBookEventStats } from "./useGetDailyBookEventStats";
-import { IStatsProps } from "./StatsInterfaces";
+import { IStatsProps, IDailyBookStat } from "./StatsInterfaces";
+import { useEffect } from "react";
+import { useProvideDataForExport } from "./exportData";
 
 interface IBookDownload {
     bookid: string;
@@ -21,6 +23,10 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
     props
 ) => {
     const dayStats = useGetDailyBookEventStats(props);
+    // if (dayStats) {
+    //     console.log("daystats: " + JSON.stringify(dayStats));
+    // }
+    useProvideDataForExport(dayStats, props);
 
     if (!dayStats) return <h1>{"Loading..."}</h1>;
 
