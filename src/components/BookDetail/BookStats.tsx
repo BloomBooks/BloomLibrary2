@@ -76,7 +76,7 @@ export const BookStats: React.FunctionComponent<{
             >
                 <img
                     src={infoIcon}
-                    style={{ width: "1em", marginLeft: "5px" }}
+                    style={{ height: "1em", width: "1em", marginLeft: "5px" }}
                     alt=""
                 />
             </Tooltip>
