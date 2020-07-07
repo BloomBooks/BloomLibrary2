@@ -1,3 +1,6 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
@@ -58,10 +61,19 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
         // We're really fighting typescript here. The labelFormat can, in fact, take a function
         // that returns a react svg element; but our type definitions don't know it.
     )) as any) as LabelFormatter;
-    const graphWidth = 600;
+    const graphWidth = Math.max(600, 20 * mapData.length);
 
     return (
-        <div>
+        <div
+            // I'd prefer to use 100% - 40px, but one of our usual parents has width fit-content,
+            // which figures out how wide the chart would be without overflow and makes that div
+            // too wide. We'll have to find another answer if this chart is ever not the width of
+            // the window.
+            css={css`
+                width: calc(100vw - 40px);
+                overflow-x: scroll;
+            `}
+        >
             <Bar
                 data={mapData}
                 keys={["sessionCount"]}
