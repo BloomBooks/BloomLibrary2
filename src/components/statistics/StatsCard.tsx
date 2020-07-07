@@ -9,13 +9,11 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import { IItem, kDarkGrey } from "./StatsOverviewScreen";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
-import { IconButton } from "@material-ui/core";
-import { positions } from "@material-ui/system";
+import { IconButton, Tooltip } from "@material-ui/core";
 import { kStatsPageGray } from "./CollectionStatsPage";
-import { Tooltip } from "@material-ui/core";
 
 export const StatsCard: React.FunctionComponent<{
-    //overrideTotal?: string | number;
+    overrideTotal?: number;
     subitems?: IItem[];
     info?: string;
 }> = (props) => (
@@ -86,7 +84,13 @@ export const StatsCard: React.FunctionComponent<{
                     margin-bottom: 0;
                 `}
             >
-                {props.subitems?.map((i) => i.value).reduce((t, i) => t + i)}
+                {props.overrideTotal
+                    ? props.overrideTotal
+                    : props.subitems
+                          ?.map((i) => i.value)
+                          // The plusses in front of t and i make these add like numbers
+                          // instead of concatenate like strings
+                          .reduce((t: number, i: number) => +t + +i, 0)}
             </div>
 
             <div

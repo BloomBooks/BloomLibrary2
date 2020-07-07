@@ -1,34 +1,40 @@
 import { IStatsProps, IBookStat } from "./StatsInterfaces";
+import { useCollectionStats } from "../../connection/LibraryQueryHooks";
 
-export function useGetBookStats(props: IStatsProps): IBookStat[] | undefined {
-    return getFakeData(props);
+export function useGetBookStats(props: IStatsProps): IBookStat[] {
+    const { response } = useCollectionStats(props, "reading/per-book");
+
+    if (response && response["data"] && response["data"]["stats"])
+        return response["data"]["stats"].map((s: any) => {
+            return {
+                title: s.booktitle,
+                branding: s.bookbranding,
+                language: s.language,
+                startedCount: s.started,
+                finishedCount: s.finished,
+            };
+        });
+    return [];
 }
 
-function getFakeData(props: IStatsProps): IBookStat[] {
-    return [
-        {
-            title: "(3-6a) The Good Brothers",
-            branding: "PNG-RISE",
-            questions: 3,
-            quizzesTaken: 222,
-            meanCorrect: 69,
-            medianCorrect: 50,
-        },
-        {
-            title: "(2-6a) Anni's Pineapple",
-            branding: "PNG-RISE",
-            questions: 3,
-            quizzesTaken: 198,
-            meanCorrect: 61,
-            medianCorrect: 23,
-        },
-        {
-            title: "(3-7a) Pidik Goes To The Market",
-            branding: "PNG-RISE",
-            questions: 5,
-            quizzesTaken: 187,
-            meanCorrect: 57,
-            medianCorrect: 88,
-        },
-    ];
+export function useGetBookComprehensionEventStats(
+    props: IStatsProps
+): IBookStat[] {
+    const { response } = useCollectionStats(
+        props,
+        "reading/per-book-comprehension"
+    );
+
+    if (response && response["data"] && response["data"]["stats"])
+        return response["data"]["stats"].map((s: any) => {
+            return {
+                title: s.booktitle,
+                branding: s.bookbranding,
+                questions: s.numquestionsinbook,
+                quizzesTaken: s.numquizzestaken,
+                meanCorrect: s.meanpctcorrect,
+                medianCorrect: s.medianpctcorrect,
+            };
+        });
+    return [];
 }
