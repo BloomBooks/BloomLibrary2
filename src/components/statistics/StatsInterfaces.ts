@@ -7,7 +7,7 @@ import { ICollection } from "../../model/ContentInterfaces";
 export interface IStatsProps {
     collection: ICollection;
     dateRange: IDateRange;
-    registerExportDataFn: (fn: ExportDataFn) => void;
+    registerExportDataFn: (fn: ExportDataFn | undefined) => void;
 }
 
 export interface IOverviewStats {

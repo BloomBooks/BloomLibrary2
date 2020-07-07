@@ -3,7 +3,7 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { useGetCollection } from "../../model/Collections";
 
@@ -18,8 +18,10 @@ import domtoimage from "dom-to-image-more";
 import Button from "@material-ui/core/Button";
 import { saveAs } from "file-saver";
 import DownloadPngIcon from "./download-png.svg";
+import DownloadCsvIcon from "./download-csv.svg";
 import { IStatsProps, ExportDataFn } from "./StatsInterfaces";
 import { useStorageState } from "react-storage-hooks";
+import { exportCsv } from "./exportData";
 
 export interface IScreen {
     label: string;
@@ -50,7 +52,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
     collectionName: string;
 }> = (props) => {
     const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
-    const [dataMatrixFn, setDataMatrixFn] = useState<
+    const [dataMatrixFn, setExportDataFn] = useState<
         ExportDataFn | undefined
     >();
     const [dateRange, setDateRange] = useStorageState<IDateRange>(
@@ -123,9 +125,11 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     `}
                     native
                     value={currentScreenIndex}
-                    onChange={(e) =>
-                        setCurrentScreenIndex(e.target.value as number)
-                    }
+                    onChange={(e) => {
+                        // clear the export function when we switch screens. Let the screen call us back with the new function
+                        setExportDataFn(undefined);
+                        setCurrentScreenIndex(e.target.value as number);
+                    }}
                     inputProps={{
                         name: "age",
                         id: "age-native-simple",
@@ -171,11 +175,16 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     {screens[currentScreenIndex].component({
                         collection,
                         dateRange,
-                        registerExportDataFn: (fn: ExportDataFn) => {
+                        registerExportDataFn: (
+                            fn: ExportDataFn | undefined
+                        ) => {
                             // this double function is to keep react's use state thing from *running* the function,
                             // which is wants to do!
-                            setDataMatrixFn(() => fn);
-                            console.log(JSON.stringify(fn()));
+                            setExportDataFn(() => fn);
+
+                            // if (fn) {
+                            //     console.log(JSON.stringify(fn()));
+                            // }
                         },
                     })}
                 </div>
@@ -186,21 +195,6 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     justify-content: flex-end;
                 `}
             >
-                {/* For some reason the resulting SVG file works in browsers but not inkscape, figma, or Affinity.
-            <Button
-                onClick={() => {
-                    domtoimage
-                        .toSvg(document.getElementById("screen")!)
-                        .then((dataUrl: string) => {
-                            saveAs(
-                                dataUrl,
-                                screens[currentScreenIndex].label + ".svg"
-                            );
-                        });
-                }}
-            >
-                SVG
-            </Button> */}
                 <Button
                     onClick={() => {
                         downloadAsPng(
@@ -215,24 +209,14 @@ export const CollectionStatsPage: React.FunctionComponent<{
                 </Button>
                 {dataMatrixFn && (
                     <Button
-                        onClick={() => {
-                            const csv = dataMatrixFn()
-                                .map((columnsOfOneRow) => {
-                                    return columnsOfOneRow
-                                        .map((c) => csvEncode(c))
-                                        .join(", ");
-                                })
-                                .join("\n");
-                            //console.log(csv);
-                            saveAs(
-                                new Blob([csv], {
-                                    type: "text/csv;charset=utf-8",
-                                }),
-                                screens[currentScreenIndex].label + ".csv"
-                            );
-                        }}
+                        onClick={() =>
+                            exportCsv(
+                                screens[currentScreenIndex].label,
+                                dataMatrixFn
+                            )
+                        }
                     >
-                        CSV
+                        <img alt="download CSV" src={DownloadCsvIcon} />
                     </Button>
                 )}
             </div>
@@ -280,27 +264,4 @@ function downloadAsPng(el: HTMLElement, filename: string, scale: number) {
     domtoimage.toPng(el, props).then((blob) => {
         saveAs(blob, filename);
     });
-}
-
-function csvEncode(value: string): string {
-    let needsQuotes = false;
-    needsQuotes = value.indexOf(",") > -1;
-
-    // mac,linux, windows all have an \r, so that's
-    // enough, even though windows also has \n.
-    needsQuotes = needsQuotes || value.indexOf("\r") > -1;
-
-    // the rfc spec seems astonishingly inconsistent on the question of
-    // whether quotes should be escaped if the entire field is not surrounded in quotes
-
-    value = value.replace(/"/g, '""');
-
-    if (needsQuotes) {
-        // If double-quotes are used to enclose fields, then a double-quote
-        // appearing inside a field must be escaped by preceding it with
-        //  another double quote.
-        //value = value.replace(/"/g, '""');
-        return '"' + value + '"';
-    }
-    return value;
 }

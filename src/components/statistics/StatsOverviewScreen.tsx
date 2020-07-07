@@ -3,9 +3,10 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React, { useEffect } from "react";
+import React from "react";
 import { IStatsProps } from "./StatsInterfaces";
 import { StatsCard } from "./StatsCard";
+import { useProvideDataForExport } from "./exportData";
 import { useGetOverviewStats } from "./useGetOverviewStats";
 
 //const gapWidth = "10px";
@@ -19,22 +20,8 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
     props
 ) => {
     const stats = useGetOverviewStats(props);
-    useEffect(
-        () => {
-            if (stats)
-                return props.registerExportDataFn(() => {
-                    const headerRow = Object.keys(stats);
-                    const valueRow = Object.values(stats).map((v) =>
-                        v.toString()
-                    ) as string[];
-                    const all: string[][] = [];
-                    all[0] = headerRow;
-                    all[1] = valueRow;
-                    return all;
-                });
-        },
-        [] /* todo*/
-    );
+
+    useProvideDataForExport(stats ? [stats] : undefined, props);
 
     if (!stats) return <React.Fragment />;
 
