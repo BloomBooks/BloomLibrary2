@@ -53,11 +53,11 @@ export const DateRangePicker: React.FunctionComponent<{
                     `}
                 >
                     {props.range.startDate
-                        ? props.range.startDate.toLocaleDateString()
+                        ? toUTCLocaleDateString(props.range.startDate)
                         : "∞"}{" "}
                     —{" "}
                     {props.range.endDate
-                        ? props.range.endDate.toLocaleDateString()
+                        ? toUTCLocaleDateString(props.range.endDate)
                         : "Today"}
                 </span>
             </Button>
@@ -115,7 +115,7 @@ export const DateRangePicker: React.FunctionComponent<{
                                             // We don't currently have a way to detect that they want to set the start back to infinity.
                                             props.setRange({
                                                 ...props.range,
-                                                startDate: start,
+                                                startDate: toUTCDate(start),
                                             });
                                     }}
                                 ></Calendar>
@@ -143,10 +143,10 @@ export const DateRangePicker: React.FunctionComponent<{
                                                 // easy for them to fix in the future when they want
                                                 // to go and nail it down to that previous day.
                                                 endDate:
-                                                    end.getDate() ===
-                                                    new Date().getDate()
+                                                    end.toDateString() ===
+                                                    new Date().toDateString()
                                                         ? undefined
-                                                        : end,
+                                                        : toUTCDate(end),
                                             });
                                     }}
                                 ></Calendar>
@@ -158,3 +158,39 @@ export const DateRangePicker: React.FunctionComponent<{
         </div>
     );
 };
+
+function toUTCDate(input: any): IDateBoundary {
+    if (!input) {
+        return undefined;
+    }
+    // The dates we get back from the calendar control are set to time 00:00:00.000
+    // on the specified date in the LOCAL timezone of the computer, which is the evening
+    // of the day before in negative timezones like the US. We want the same date,
+    // but in UTC.
+    const date = input as Date;
+    const result = new Date(
+        Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+    );
+    return result;
+}
+
+// This date should only be used for formatting output. It returns a date
+// whose values in the current timezone are equal to the UTC values of the input.
+// Typically it will have a different UTC time from the input, and not be valid
+// for comparing with true dates. However, its various formatting functions will
+// give the results we'd like to get if Date had functions like toUTCLocaleDateString().
+export function getFakeUtcDate(input: Date): Date {
+    return new Date(
+        input.getUTCFullYear(),
+        input.getUTCMonth(),
+        input.getUTCDate(),
+        input.getUTCHours(),
+        input.getUTCMinutes(),
+        input.getUTCSeconds(),
+        input.getUTCMilliseconds()
+    );
+}
+
+export function toUTCLocaleDateString(input: Date): string {
+    return getFakeUtcDate(input).toLocaleDateString();
+}

@@ -2,18 +2,38 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import { Bar, LabelFormatter } from "@nivo/bar";
-
-// Used for formatting dates... because... apparently vanilla JS doesn't support it out of the box?!?!?!
-import moment from "moment";
 import { commonUI } from "../../theme";
 import { useGetDailyBookEventStats } from "./useGetDailyBookEventStats";
-import { IStatsProps, IDailyBookStat } from "./StatsInterfaces";
-import { useEffect } from "react";
+import { IStatsProps } from "./StatsInterfaces";
 import { useProvideDataForExport } from "./exportData";
+import { getFakeUtcDate } from "./DateRangePicker";
 
 interface IBookDownload {
     bookid: string;
     timeofshelldownload: string;
+}
+
+// Given a UTC date, format as MMM YYYY
+function toMmmYyyy(input: Date): string {
+    const ds = getFakeUtcDate(input).toDateString(); // DDD MMM DD YYYY, locale-independent
+    return ds.substring(4, 8) + ds.substring(11);
+}
+
+function twoDigit(input: number): string {
+    return input >= 10
+        ? input.toString().substring(0, 2)
+        : "0" + input.toString().substring(0);
+}
+
+// Given a UTC date, format as YYYY-MM-DD
+export function toYyyyMmDd(date: Date) {
+    const result =
+        date.getUTCFullYear() +
+        "-" +
+        twoDigit(date.getUTCMonth() + 1) +
+        "-" +
+        twoDigit(date.getUTCDate());
+    return result;
 }
 
 export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
@@ -32,8 +52,10 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
     let maxCount = 0;
 
     dayStats.forEach((dailyInfo) => {
-        const date = moment(dailyInfo.dateEventLocal);
-        const key = byMonth ? date.format("MMM YYYY") : getWeek(date);
+        // Since dateEventLocal is formatted YYYY-MM-DD, we can reliably expect it to
+        // be parsed as a UTC date.
+        const date = new Date(dailyInfo.dateEventLocal);
+        const key = byMonth ? toMmmYyyy(date) : getFirstDayOfWeekYyyyMmDd(date);
 
         const count = counts.get(key) || 0;
         const newCount = count + dailyInfo.bloomReaderSessions;
@@ -105,8 +127,11 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
     );
 };
 
-function getWeek(date: moment.Moment) {
-    const sunday = date.clone();
-    sunday.day(0);
-    return sunday.format("YYYY-MM-DD");
+function getFirstDayOfWeekYyyyMmDd(date: Date): string {
+    //const sunday = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+    const day = getFakeUtcDate(date).getDay(); // no getUTCDay function
+    const offset = day * 24 * 60 * 60 * 1000;
+    const sunday = new Date();
+    sunday.setTime(date.getTime() - offset);
+    return toYyyyMmDd(sunday);
 }
