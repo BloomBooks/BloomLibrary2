@@ -19,22 +19,24 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
     props
 ) => {
     const stats = useGetOverviewStats(props);
-    if (!stats) return <React.Fragment />;
     useEffect(
         () => {
-            return props.registerExportDataFn(() => {
-                const headerRow = Object.keys(stats);
-                const valueRow = Object.values(stats).map((v) =>
-                    v.toString()
-                ) as string[];
-                const all: string[][] = [];
-                all[0] = headerRow;
-                all[1] = valueRow;
-                return all;
-            });
+            if (stats)
+                return props.registerExportDataFn(() => {
+                    const headerRow = Object.keys(stats);
+                    const valueRow = Object.values(stats).map((v) =>
+                        v.toString()
+                    ) as string[];
+                    const all: string[][] = [];
+                    all[0] = headerRow;
+                    all[1] = valueRow;
+                    return all;
+                });
         },
         [] /* todo*/
     );
+
+    if (!stats) return <React.Fragment />;
 
     return (
         <div
