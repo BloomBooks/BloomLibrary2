@@ -15,7 +15,7 @@ export function useGetDailyBookEventStats(
                 dateEventLocal: s.datelocal,
                 branding: s.bookbranding,
                 country: s.country,
-                bloomReaderSessions: s.bloomReaderSessions,
+                bloomReaderSessions: s.bloomreadersessions,
             };
         });
     return [];
