@@ -1,5 +1,4 @@
 import useAxios, { IReturns, axios, IParams } from "@use-hooks/axios";
-import moment from "moment";
 import { IFilter, InCirculationOptions } from "../IFilter";
 import { getConnection } from "./ParseServerConnection";
 import { getBloomApiUrl } from "./ApiConnection";
@@ -10,6 +9,7 @@ import { getCleanedAndOrderedLanguageList, ILanguage } from "../model/Language";
 import { processRegExp } from "../Utilities";
 import { kTopicList } from "../model/ClosedVocabularies";
 import { IStatsProps } from "../components/statistics/StatsInterfaces";
+import { toYyyyMmDd } from "../components/statistics/ReaderSessionsChart";
 
 // For things other than books, which should use `useBookQuery()`
 function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
@@ -602,7 +602,7 @@ export function useCollectionStats(
 }
 
 function getISODateString(date: Date) {
-    return moment(date).format("YYYY-MM-DD");
+    return toYyyyMmDd(date);
 }
 
 function processAxiosStatus(answer: IAxiosAnswer): ISimplifiedAxiosResult {
