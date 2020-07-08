@@ -23,6 +23,7 @@ import { IStatsProps, ExportDataFn } from "./StatsInterfaces";
 import { useStorageState } from "react-storage-hooks";
 import { exportCsv } from "./exportData";
 import LinearProgress from "@material-ui/core/LinearProgress";
+import { BookReadingReport } from "./BookReadingReport";
 
 export interface IScreen {
     label: string;
@@ -45,6 +46,12 @@ const screens: IScreen[] = [
     {
         label: "Bloom Reader Sessions",
         component: (p: IStatsProps) => <ReaderSessionsChart {...p} />,
+    },
+    {
+        label: "Books Read",
+        component: (p: IStatsProps) => (
+            <BookReadingReport {...p}></BookReadingReport>
+        ),
     },
 ];
 
@@ -175,35 +182,44 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     `}
                 >
                     <div
-                        id="screen"
+                        // This allows horizontal scrolling for the whole 'screen' element...
+                        // the chosen block of data. Mainly useful for charts with many columns.
                         css={css`
-                            width: fit-content; // this is important for image export, else it may be too wide
-                            //background-color: white; // this is important for image export, else it's transparent which will confuse people
+                            width: 100%;
+                            overflow-x: auto;
                         `}
                     >
-                        <h3
+                        <div
+                            id="screen"
                             css={css`
-                                margin-block-start: 0;
+                                width: fit-content; // this is important for image export, else it may be too wide
+                                //background-color: white; // this is important for image export, else it's transparent which will confuse people
                             `}
                         >
-                            {screens[currentScreenIndex].label}
-                        </h3>
+                            <h3
+                                css={css`
+                                    margin-block-start: 0;
+                                `}
+                            >
+                                {screens[currentScreenIndex].label}
+                            </h3>
 
-                        {screens[currentScreenIndex].component({
-                            collection,
-                            dateRange,
-                            registerExportDataFn: (
-                                fn: ExportDataFn | undefined
-                            ) => {
-                                // this double function is to keep react's use state thing from *running* the function,
-                                // which is wants to do!
-                                setExportDataFn(() => fn);
+                            {screens[currentScreenIndex].component({
+                                collection,
+                                dateRange,
+                                registerExportDataFn: (
+                                    fn: ExportDataFn | undefined
+                                ) => {
+                                    // this double function is to keep react's use state thing from *running* the function,
+                                    // which is wants to do!
+                                    setExportDataFn(() => fn);
 
-                                // if (fn) {
-                                //     console.log(JSON.stringify(fn()));
-                                // }
-                            },
-                        })}
+                                    // if (fn) {
+                                    //     console.log(JSON.stringify(fn()));
+                                    // }
+                                },
+                            })}
+                        </div>
                     </div>
                 </div>
                 <div
