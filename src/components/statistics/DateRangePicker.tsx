@@ -52,13 +52,15 @@ export const DateRangePicker: React.FunctionComponent<{
                         margin-left: 10px;
                     `}
                 >
-                    {props.range.startDate
-                        ? toUTCLocaleDateString(props.range.startDate)
-                        : "∞"}{" "}
-                    —{" "}
-                    {props.range.endDate
-                        ? toUTCLocaleDateString(props.range.endDate)
-                        : "Today"}
+                    {props.range.startDate || props.range.endDate
+                        ? (props.range.startDate
+                              ? toUTCLocaleDateString(props.range.startDate)
+                              : "∞") +
+                          " — " +
+                          (props.range.endDate
+                              ? toUTCLocaleDateString(props.range.endDate)
+                              : "Today")
+                        : "All Time"}
                 </span>
             </Button>
             {open && (
