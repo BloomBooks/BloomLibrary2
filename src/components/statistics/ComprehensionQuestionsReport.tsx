@@ -38,7 +38,8 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> 
         { columnName: "questions", width: "auto", align: "right" },
         { columnName: "quizzesTaken", width: "auto", align: "right" },
         { columnName: "meanCorrect", width: "auto", align: "right" },
-        { columnName: "medianCorrect", width: 120 },
+        // 30px: number plus margin; 100px: 100% is 100px wide; 16px: material default padding
+        { columnName: "medianCorrect", width: 30 + 100 + 16 },
     ] as Table.ColumnExtension[]);
 
     const CustomTableHeaderCell = (cellProps: any) => {
@@ -63,11 +64,15 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> 
                     <div
                         css={css`
                             display: flex;
+                            flex-shrink: 0;
                         `}
                     >
                         <div
                             css={css`
-                                width: 20px;
+                                width: 25px;
+                                text-align: right;
+                                margin-right: 5px;
+                                flex-shrink: 0;
                             `}
                         >
                             {adjustedProps.value}
@@ -78,6 +83,7 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> 
                                 margin-top: 4px;
                                 width: ${adjustedProps.value}px;
                                 background-color: ${commonUI.colors.bloomRed};
+                                flex-shrink: 0;
                             `}
                         ></div>
                     </div>
