@@ -1,5 +1,6 @@
 import axios from "axios";
 import { LoggedInUser, User } from "./LoggedInUser";
+import * as Sentry from "@sentry/browser";
 
 // This file exports a function getConnection(), which returns the headers
 // needed to talk to our Parse Server backend db.
@@ -21,6 +22,7 @@ const prod: IConnection = {
     },
     url: "https://bloom-parse-server-production.azurewebsites.net/parse/",
 };
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const dev: IConnection = {
     headers: {
         "Content-Type": "text/json",
@@ -56,9 +58,9 @@ export function getConnection(): IConnection {
     //     window.location.hostname === "localhost" &&
     //     window.location.port === "9009"
     // ) {
-    //return prod;
+    return prod;
     // }
-    return dev;
+    //return dev;
 }
 
 // This should only be called when there is a current user logged in.
@@ -166,6 +168,11 @@ export async function connectParseServer(
     });
 }
 function failedToLoginInToParseServer() {
+    Sentry.captureException(
+        new Error(
+            "Login to parse server failed after successful firebase login"
+        )
+    );
     alert(
         "Oops, something went wrong when trying to log you into our database."
     );

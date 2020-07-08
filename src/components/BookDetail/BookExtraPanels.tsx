@@ -10,7 +10,7 @@ import { observer } from "mobx-react";
 import {
     ExpansionPanel,
     ExpansionPanelSummary,
-    ExpansionPanelDetails
+    ExpansionPanelDetails,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { HarvesterArtifactUserControl } from "./ArtifactVisibilityPanel/ArtifactVisibilityPanel";
@@ -18,7 +18,7 @@ import { HarvesterArtifactUserControl } from "./ArtifactVisibilityPanel/Artifact
 import { LoggedInUser } from "../../connection/LoggedInUser";
 export const BookExtraPanels: React.FunctionComponent<{
     book: Book;
-}> = observer(props => {
+}> = observer((props) => {
     const user = LoggedInUser.current;
     const userIsUploader = user?.username === props.book.uploader?.username;
 
@@ -54,7 +54,7 @@ export const BookExtraPanels: React.FunctionComponent<{
             )}
 
             {user?.moderator && (
-                <ExpansionPanel expanded={true}>
+                <ExpansionPanel defaultExpanded={true}>
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                         Staff Controls
                     </ExpansionPanelSummary>

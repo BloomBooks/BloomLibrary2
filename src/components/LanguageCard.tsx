@@ -4,25 +4,13 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useContext } from "react";
+import React from "react";
 import { CheapCard } from "./CheapCard";
-import { RouterContext, Router } from "../Router";
 import { ILanguage, getLanguageNames } from "../model/Language";
 import { commonUI } from "../theme";
 import { useTheme } from "@material-ui/core";
 
-export function routeToLanguage(language: ILanguage, router: Router) {
-    const { displayName } = getLanguageNames(language);
-
-    router.push({
-        title: displayName,
-        pageType: "language",
-        filter: { language: language.isoCode },
-    });
-}
-
 export const LanguageCard: React.FunctionComponent<ILanguage> = (props) => {
-    const router = useContext(RouterContext);
     const theme = useTheme();
     const { displayName: languageName, autonym } = getLanguageNames(props);
 
@@ -43,9 +31,8 @@ export const LanguageCard: React.FunctionComponent<ILanguage> = (props) => {
                 height: ${commonUI.languageCardHeightInPx}px;
                 padding-bottom: 3px;
             `}
-            onClick={() => {
-                routeToLanguage(props, router!);
-            }}
+            target={`/language:${props.isoCode}`}
+            onClick={undefined} // we just want to follow the href, whatever might be in propsToPassDown
         >
             <h2
                 css={css`

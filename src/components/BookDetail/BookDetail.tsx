@@ -17,16 +17,32 @@ import { BookExtraPanels } from "./BookExtraPanels";
 import { MetadataGroup } from "./MetadataGroup";
 import { ArtifactGroup } from "./ArtifactGroup";
 import { BookDetailHeaderGroup } from "./BookDetailHeaderGroup";
+import { DeleteButton } from "./DeleteButton";
 import { ReportButton } from "./ReportButton";
 import { OSFeaturesContext } from "../../components/OSFeaturesContext";
 import { commonUI } from "../../theme";
+import { Breadcrumbs } from "../Breadcrumbs";
+import { useTrack } from "../../analytics/Analytics";
+import { splitPathname, useDocumentTitle } from "../Routes";
+import { useLocation } from "react-router-dom";
+import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 
 interface IProps {
     id: string;
-    contextLangIso?: string;
 }
 const BookDetail: React.FunctionComponent<IProps> = (props) => {
-    const book = useGetBookDetail(props.id);
+    const id = props.id;
+    const book = useGetBookDetail(id);
+    const location = useLocation();
+    const query = new URLSearchParams(location.search);
+    const contextLangIso = getContextLang(query);
+    useDocumentTitle("About - " + book?.title);
+    const { collectionName } = splitPathname(location.pathname);
+    useTrack(
+        "Book Detail",
+        getBookAnalyticsInfo(book, contextLangIso, undefined, collectionName),
+        !!book
+    );
     if (book === undefined) {
         return <div>Loading...</div>;
     } else if (book === null) {
@@ -36,12 +52,20 @@ const BookDetail: React.FunctionComponent<IProps> = (props) => {
             <React.StrictMode>
                 <BookDetailInternal
                     book={book}
-                    contextLangIso={props.contextLangIso}
+                    contextLangIso={contextLangIso}
                 ></BookDetailInternal>
             </React.StrictMode>
         );
     }
 };
+
+function getContextLang(query: URLSearchParams): string | undefined {
+    const lang = query.get("lang");
+    if (lang) {
+        return lang;
+    }
+    return undefined;
+}
 
 export const BookDetailInternal: React.FunctionComponent<{
     book: Book;
@@ -65,7 +89,7 @@ export const BookDetailInternal: React.FunctionComponent<{
     );
     const [alertText, setAlertText] = useState<string | null>(null);
     const breakToColumn = "540px";
-
+    const embeddedMode = window.location.pathname.startsWith("/embed/");
     return (
         <div
             // had width:800px, but that destroys responsiveness
@@ -76,6 +100,16 @@ export const BookDetailInternal: React.FunctionComponent<{
                 max-width: 800px;
             `}
         >
+            <div
+                css={css`
+                    a,
+                    a:visited {
+                        color: black;
+                    }
+                `}
+            >
+                {embeddedMode || <Breadcrumbs />}
+            </div>
             <div
                 css={css`
                     margin: ${commonUI.detailViewMargin};
@@ -129,14 +163,14 @@ export const BookDetailInternal: React.FunctionComponent<{
                             }
                         `}
                     >
-                        <ReportButton
-                            book={props.book}
+                        <div
                             css={css`
-                                margin-right: auto;
-                                justify-content: left;
+                                display: flex;
                             `}
-                        />
-
+                        >
+                            <ReportButton book={props.book} />
+                            <DeleteButton book={props.book} />
+                        </div>
                         {/* Enhance, maybe, add this and wire to some message <HowToPrintButton />*/}
                         {bloomDesktopAvailable || (
                             <Link

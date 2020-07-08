@@ -29,44 +29,47 @@ export const ByLanguageGroups: React.FunctionComponent<{
     const [totalBookCount, setTotalBookCount] = useState(0);
     const arbitraryMaxLangsPerBook = 20;
     const reportBooksAndLanguages = props.reportBooksAndLanguages; // to avoid useEffect depending on props.
+    const waiting = searchResults.waiting;
     useEffect(() => {
-        const newRows = new Map<string, IBasicBookInfo[]>();
-        let totalCount = 0;
-        // for langIndex = 1... arbitraryMaxLangsPerBook
-        // for b in books
-        // lang = book.langs[langIndex]
-        // if x[lang][b.phash] is missing, add x[lang][b.phash]. So the first book with a lang in position langIndex wins.
-        for (
-            let langIndex = 0;
-            langIndex < arbitraryMaxLangsPerBook;
-            langIndex++
-        ) {
-            // eslint-disable-next-line no-loop-func
-            searchResults.books.forEach((book) => {
-                const key = ComparisonKey(book);
-                const langCode = book.languages[langIndex]?.isoCode;
-                if (langCode) {
-                    const rowForLang = newRows.get(langCode);
-                    if (!rowForLang) {
-                        newRows.set(langCode, [book]);
-                        totalCount++;
-                    } else {
-                        if (
-                            key === undefined || // if we can't come up with a key, just add this book to the row
-                            !rowForLang.find(
-                                (bookAlreadyInRow) =>
-                                    key === ComparisonKey(bookAlreadyInRow)
-                            )
-                        ) {
-                            rowForLang.push(book);
+        if (!waiting) {
+            const newRows = new Map<string, IBasicBookInfo[]>();
+            let totalCount = 0;
+            // for langIndex = 1... arbitraryMaxLangsPerBook
+            // for b in books
+            // lang = book.langs[langIndex]
+            // if x[lang][b.phash] is missing, add x[lang][b.phash]. So the first book with a lang in position langIndex wins.
+            for (
+                let langIndex = 0;
+                langIndex < arbitraryMaxLangsPerBook;
+                langIndex++
+            ) {
+                // eslint-disable-next-line no-loop-func
+                searchResults.books.forEach((book) => {
+                    const key = ComparisonKey(book);
+                    const langCode = book.languages[langIndex]?.isoCode;
+                    if (langCode) {
+                        const rowForLang = newRows.get(langCode);
+                        if (!rowForLang) {
+                            newRows.set(langCode, [book]);
                             totalCount++;
+                        } else {
+                            if (
+                                key === undefined || // if we can't come up with a key, just add this book to the row
+                                !rowForLang.find(
+                                    (bookAlreadyInRow) =>
+                                        key === ComparisonKey(bookAlreadyInRow)
+                                )
+                            ) {
+                                rowForLang.push(book);
+                                totalCount++;
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
+            setRows(newRows);
+            setTotalBookCount(totalCount);
         }
-        setRows(newRows);
-        setTotalBookCount(totalCount);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         // Including this:
@@ -76,13 +79,14 @@ export const ByLanguageGroups: React.FunctionComponent<{
         // We can get away without it because the books.length will change when the query comes back
         searchResults.books.length,
         reportBooksAndLanguages,
+        waiting,
     ]);
     const langCount = rows.size;
     useEffect(() => {
-        if (reportBooksAndLanguages) {
+        if (reportBooksAndLanguages && !waiting) {
             reportBooksAndLanguages(totalBookCount, langCount);
         }
-    }, [totalBookCount, langCount, reportBooksAndLanguages]);
+    }, [totalBookCount, langCount, reportBooksAndLanguages, waiting]);
     const { languagesByBookCount } = useContext(CachedTablesContext);
     const languages = useMemo(
         () =>
@@ -103,6 +107,9 @@ export const ByLanguageGroups: React.FunctionComponent<{
         () => languages.filter((l) => rows.get(l.isoCode)),
         [languages, rows]
     );
+    if (waiting) {
+        return <React.Fragment />;
+    }
     return (
         <React.Fragment>
             {languagesWithTheseBooks.map((l) => {

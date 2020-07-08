@@ -3,10 +3,6 @@ body,
 #root {
     height: 100%;
 }
-.App {
-    display: flex;
-    flex-direction: column;
-}
 body {
     margin: 0;
     padding: 0;
@@ -42,11 +38,6 @@ h2 {
 ul {
     list-style: none;
     padding: 0;
-}
-
-.App {
-    margin-left: 0;
-    height: 100%;
 }
 
 a:hover {
@@ -92,4 +83,11 @@ a:hover {
     margin-top: 0;
     height: 100%;
     top: 0;
+}
+
+/* hide the scroll buttons except for the row that has the pointer */
+/* This is here instead of CardSwiper because the react component Swiper that we would have liked
+to apply it to does not support our inline css */
+.swiper-container:not(:hover) .swiper-button {
+    display: none;
 }

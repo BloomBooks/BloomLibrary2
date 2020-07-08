@@ -12,12 +12,13 @@ import { LicenseLink } from "./LicenseLink";
 import titleCase from "title-case";
 import { Link, useTheme } from "@material-ui/core";
 import { commonUI } from "../../theme";
-import { BookAnalytics } from "./BookAnalytics";
+import { BookStats } from "./BookStats";
 import { CachedTablesContext } from "../../App";
 import { getTagDisplayName } from "../../model/Tag";
 import { useGetRelatedBooks } from "../../connection/LibraryQueryHooks";
 import { Bookshelf } from "../../model/Bookshelf";
 import { KeywordLinks } from "./KeywordLinks";
+import { getAnchorProps } from "../../embedded";
 
 export const MetadataGroup: React.FunctionComponent<{
     book: Book;
@@ -72,7 +73,7 @@ export const MetadataGroup: React.FunctionComponent<{
                             </Link>
                         </div>
                     )}
-                <BookAnalytics book={props.book} />
+                <BookStats book={props.book} />
             </div>
             <div
                 id="column2"
@@ -145,7 +146,7 @@ export const MetadataGroup: React.FunctionComponent<{
                                                 color: ${theme.palette.secondary
                                                     .main} !important;
                                             `}
-                                            href={`/?bookId=${b.id}&pageType=book-detail&title=${b.title}`}
+                                            {...getAnchorProps(`/book/${b.id}`)}
                                         >
                                             {b.title}
                                         </Link>

@@ -6,6 +6,8 @@ export const commonUI = {
         bloomBlue: "#1d94a4",
         bloomBlueTransparent: "#1d94a438",
         dialogTopBottomGray: "#F1F3F4",
+        createArea: "#509E2F", // this is the SIL Intl green
+        createAreaTextOnWhite: "#226B04", // a bit darker for contrast
     },
 
     // Some of these aren't very global, but this is a convenient place to put

@@ -4,11 +4,11 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import React, {
-    useContext,
     useState,
     useEffect,
     useMemo,
     ReactText,
+    useContext,
 } from "react";
 
 import {
@@ -45,7 +45,6 @@ import {
     RowDetailState,
     Sorting,
 } from "@devexpress/dx-react-grid";
-import { RouterContext } from "../../Router";
 import { TableCell, useTheme } from "@material-ui/core";
 import { IFilter, InCirculationOptions } from "../../IFilter";
 import { getBookGridColumnsDefinitions, IGridColumn } from "./GridColumns";
@@ -56,14 +55,19 @@ import StaffPanel from "../Admin/StaffPanel";
 import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 import { observer } from "mobx-react";
 import { IGridControlProps } from "./GridControl";
+import { CachedTablesContext } from "../../App";
+import { ILanguage } from "../../model/Language";
+import matchSorter from "match-sorter";
 
 // we need the observer in order to get the logged in user, which may not be immediately available
 const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer(
     (props) => {
         const theme = useTheme();
+        const { languagesByBookCount: languages } = useContext(
+            CachedTablesContext
+        );
         const user = useGetLoggedInUser();
         const kBooksPerGridPage = 20;
-        const router = useContext(RouterContext);
         const [gridFilters, setGridFilters] = useState<GridFilter[]>(
             props.initialGridFilters || []
         );
@@ -137,7 +141,8 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
         const filterMadeFromPageSearchPlusColumnFilters = CombineGridAndSearchBoxFilter(
             bookGridColumnDefinitions,
             gridFilters,
-            router!.current.filter
+            props.contextFilter || {},
+            languages
         );
 
         if (props.setCurrentFilter) {
@@ -172,7 +177,8 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                 )
             );
             //setColumnNamesInDisplayOrder(bookGridColumns.map(c => c.name));
-        }, [router, user, thisIsAModerator, bookGridColumnDefinitions]);
+            // todo? useEffect used to depend on router, though doesn't obviously use it.
+        }, [user, thisIsAModerator, bookGridColumnDefinitions]);
 
         // note: this is an embedded function as a way to get at bookGridColumnDefinitions. It's important
         // that we don't reconstruct it on every render, or else we'll lose cursor focus on each key press.
@@ -323,7 +329,8 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
 function CombineGridAndSearchBoxFilter(
     bookGridColumns: IGridColumn[],
     gridFilters: GridFilter[],
-    routerFilter: IFilter
+    routerFilter: IFilter,
+    languages: ILanguage[]
 ): IFilter {
     const f: IFilter = {
         ...routerFilter,
@@ -339,7 +346,24 @@ function CombineGridAndSearchBoxFilter(
                 (c) => c.name === g.columnName
             );
             f.search = f.search || ""; // avoid getting an undefined if the filter tries to add to the existing search
-            gridColumnDefinition!.addToFilter!(f, g.value);
+            let target = g.value;
+            // This is the same matching algorithm used by the language chooser on the home page;
+            // but here, we just choose the first matching language to match on.
+            // It would be nice to put this special case into the column definition, but
+            // I don't see how, as the column creating code doesn't have access to the
+            // languages collection.
+            if (gridColumnDefinition?.name === "languages" && target) {
+                const matchingLanguages = matchSorter(languages, target, {
+                    keys: ["englishName", "name", "isoCode"],
+                });
+                target =
+                    matchingLanguages.length > 0
+                        ? matchingLanguages[0].isoCode
+                        : "";
+            }
+            if (target) {
+                gridColumnDefinition!.addToFilter!(f, target);
+            }
         }
     });
     return f;

@@ -13,6 +13,7 @@ import "firebase/auth";
 //import * as firebaseui from "firebaseui";
 import { DialogTitle } from "@material-ui/core";
 import Dialog from "@material-ui/core/Dialog";
+import * as Sentry from "@sentry/browser";
 
 //import { staticUser } from "./User";
 
@@ -30,8 +31,8 @@ const uiConfig = {
         //        firebase.auth.EmailAuthProvider.PROVIDER_ID
         {
             provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
-            signInMethod: "password" //getEmailSignInMethod()
-        }
+            signInMethod: "password", //getEmailSignInMethod()
+        },
     ],
     callbacks: {
         signInSuccessWithAuthResult: (authResult: any, redirectUrl: any) => {
@@ -60,14 +61,15 @@ const uiConfig = {
             return false;
         },
         signInFailure: (error: any) => {
+            Sentry.captureException(error); // probably won't happen, nothing seems to bring us here
             console.log("!!!!!!!!!!! signInFailure");
             alert("signInFailure");
             return new Promise((r, x) => {});
-        }
-    }
+        },
+    },
 };
 
-export const LoginDialog: React.FunctionComponent<{}> = props => {
+export const LoginDialog: React.FunctionComponent<{}> = (props) => {
     const [isOpen, setIsOpen] = useState(false);
 
     staticShowLoginDialog = (doOpen: boolean) => setIsOpen(doOpen);

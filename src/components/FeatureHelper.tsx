@@ -1,8 +1,3 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
 import React from "react";
 import { ReactComponent as ActivityIcon } from "../assets/Activity.svg";
 import { ReactComponent as ComicIcon } from "../assets/Comic.svg";
@@ -12,16 +7,20 @@ import { ReactComponent as TalkingBookIcon } from "../assets/Talking Book.svg";
 import { ReactComponent as VisuallyImpairedIcon } from "../assets/Visually Impaired.svg";
 import { IFilter } from "../IFilter";
 
+// Information about features (like talking book, motion) that supports the display of
+// features in the bar under the picture on book cards. Previously also supported Feature
+// page cards, so there may be some obsolete fields still now these are just collections.
+
 export interface IFeatureSpec {
     featureKey: string;
     featureTitle: string;
     filter: IFilter;
-    description: JSX.Element;
+    //description: JSX.Element;
     icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
     // Some icons "look" bigger than others, so we can scale them to make them look more similar.
     // The number is a percentage less than (scale down) or greater than (scale up) 100.
     // This is only used in some contexts (e.g. CategoryCard).
-    iconScale?: number;
+    //iconScale?: number;
     languageDependent: boolean;
 }
 
@@ -46,43 +45,43 @@ export const featureSpecs: IFeatureSpec[] = [
         featureKey: "talkingBook",
         featureTitle: "Talking Books",
         filter: { feature: "talkingBook" },
-        description: (
-            <div>
-                <div>
-                    We all love to hear a story, and listening while reading
-                    along may help learners to improve their own reading skills.
-                </div>
-                <br />
-                <div>
-                    Bloom's unique approach makes it easy to make Talking Books
-                    for the web &amp; phones. You can record by sentence, by
-                    text box, or by importing existing audio.&nbsp;
-                    <a href="https://vimeo.com/channels/bloomlibrary/181840473">
-                        Learn More
-                    </a>
-                    .
-                </div>
-            </div>
-        ),
+        // description: (
+        //     <div>
+        //         <div>
+        //             We all love to hear a story, and listening while reading
+        //             along may help learners to improve their own reading skills.
+        //         </div>
+        //         <br />
+        //         <div>
+        //             Bloom's unique approach makes it easy to make Talking Books
+        //             for the web &amp; phones. You can record by sentence, by
+        //             text box, or by importing existing audio.&nbsp;
+        //             <a href="https://vimeo.com/channels/bloomlibrary/181840473">
+        //                 Learn More
+        //             </a>
+        //             .
+        //         </div>
+        //     </div>
+        // ),
         icon: (props) => (
             <TalkingBookIcon
                 title={"Talking Book"}
                 {...props}
             ></TalkingBookIcon>
         ),
-        iconScale: 85,
+        //iconScale: 85,
         languageDependent: true,
     },
     {
         featureKey: "blind",
         featureTitle: "Books for the Visually Impaired",
         filter: { feature: "blind" },
-        description: (
-            <div>
-                These books include narrated image descriptions to help the
-                visually impaired.
-            </div>
-        ),
+        // description: (
+        //     <div>
+        //         These books include narrated image descriptions to help the
+        //         visually impaired.
+        //     </div>
+        // ),
         icon: (props) => (
             <VisuallyImpairedIcon
                 title={"Features for the Visually Impaired"}
@@ -95,12 +94,12 @@ export const featureSpecs: IFeatureSpec[] = [
         featureKey: "comic",
         featureTitle: "Comic Books",
         filter: { feature: "comic" },
-        description: (
-            <div>
-                Comic Books contain comic speech bubbles, captions, and/or other
-                text which appears over images.
-            </div>
-        ),
+        // description: (
+        //     <div>
+        //         Comic Books contain comic speech bubbles, captions, and/or other
+        //         text which appears over images.
+        //     </div>
+        // ),
         icon: (props) => (
             <ComicIcon title={"Comic Book"} {...props}></ComicIcon>
         ),
@@ -110,50 +109,50 @@ export const featureSpecs: IFeatureSpec[] = [
         featureKey: "motion",
         featureTitle: "Motion Books",
         filter: { feature: "motion" },
-        description: (
-            <div>
-                Motion Books are books in which otherwise still pictures appear
-                to have motion. Normally, they are Talking Books to which you
-                add motion.
-                <br />
-                <br />
-                Motion books have two modes:
-                <ul
-                    css={css`
-                        list-style: unset;
-                        padding-inline-start: 20px;
-                    `}
-                >
-                    <li>
-                        Portrait - When you look at your book in a portrait
-                        view, you do not see motion, but you do see the text
-                        highlighted with the audio.
-                    </li>
-                    <li>
-                        Landscape - When you turn the device sideways for a
-                        landscape view, pictures fill the screen and you see the
-                        motion.
-                    </li>
-                </ul>
-            </div>
-        ),
+        // description: (
+        //     <div>
+        //         Motion Books are books in which otherwise still pictures appear
+        //         to have motion. Normally, they are Talking Books to which you
+        //         add motion.
+        //         <br />
+        //         <br />
+        //         Motion books have two modes:
+        //         <ul
+        //             css={css`
+        //                 list-style: unset;
+        //                 padding-inline-start: 20px;
+        //             `}
+        //         >
+        //             <li>
+        //                 Portrait - When you look at your book in a portrait
+        //                 view, you do not see motion, but you do see the text
+        //                 highlighted with the audio.
+        //             </li>
+        //             <li>
+        //                 Landscape - When you turn the device sideways for a
+        //                 landscape view, pictures fill the screen and you see the
+        //                 motion.
+        //             </li>
+        //         </ul>
+        //     </div>
+        //),
         icon: (props) => (
             <MotionIcon title={"Motion Book"} {...props}></MotionIcon>
         ),
-        iconScale: 125,
+        //iconScale: 125,
         languageDependent: false,
     },
     {
         featureKey: "signLanguage",
         featureTitle: "Sign Language Books",
         filter: { feature: "signLanguage" },
-        description: (
-            <div>
-                Sign Language Books contains videos of signed languages. They
-                are often multilingual, including the text in another, written
-                language.
-            </div>
-        ),
+        // description: (
+        //     <div>
+        //         Sign Language Books contains videos of signed languages. They
+        //         are often multilingual, including the text in another, written
+        //         language.
+        //     </div>
+        // ),
         icon: (props) => (
             <SignLanguageIcon
                 title={"Sign Language"}
@@ -166,13 +165,13 @@ export const featureSpecs: IFeatureSpec[] = [
         featureKey: "activity",
         featureTitle: "Books with Interactive Activities",
         filter: { feature: "activity OR quiz" },
-        description: (
-            <div>
-                These books contain one or more activities, such as
-                multiple-choice quizzes, usually designed to assess
-                comprehension.
-            </div>
-        ),
+        // description: (
+        //     <div>
+        //         These books contain one or more activities, such as
+        //         multiple-choice quizzes, usually designed to assess
+        //         comprehension.
+        //     </div>
+        // ),
         icon: (props) => (
             <ActivityIcon
                 title={"Interactive Activity"}
@@ -183,9 +182,9 @@ export const featureSpecs: IFeatureSpec[] = [
     },
 ];
 
-export const getNonLanguageFeatures = (
+export function getNonLanguageFeatures(
     features: string[] | undefined
-): IFeatureSpec[] => {
+): IFeatureSpec[] {
     if (!features) return [];
     return features
         .map(
@@ -195,17 +194,17 @@ export const getNonLanguageFeatures = (
                 )[0]
         )
         .filter((f) => !!f);
-};
+}
 
 // Get a FeatureOption (and thus icon-creating function) for each
 // language-dependent feature in the list that has the specified
 // language.
-export const getLanguageFeatures = (
-    features: string[] | undefined,
+export function getFeaturesAvailableForOneLanguageOfBook(
+    featureInfoOfBook: string[] | undefined,
     lang: string
-): IFeatureSpec[] => {
-    if (!features) return [];
-    return features
+): IFeatureSpec[] {
+    if (!featureInfoOfBook) return [];
+    return featureInfoOfBook
         .map(
             // for each feature in the book, look for a feature option
             // such that the book feature starts with the feature option
@@ -222,4 +221,4 @@ export const getLanguageFeatures = (
                 )[0]
         )
         .filter((f) => !!f); // drop the features where there was no match
-};
+}

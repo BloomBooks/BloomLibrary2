@@ -4,10 +4,9 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useContext } from "react";
+import React from "react";
 import { CheapCard } from "./CheapCard";
-import { RouterContext } from "../Router";
-import { IFilter } from "../IFilter";
+import { ICollection } from "../model/ContentInterfaces";
 
 // const image = css`
 //     height: 100px;
@@ -20,29 +19,21 @@ import { IFilter } from "../IFilter";
 export const cardWidth = 120;
 
 interface IProps {
-    title: string;
-    className?: string;
-    count: number;
-    filter: IFilter;
-    rows: number;
+    collection: ICollection;
+    skip?: number;
 }
-export const MoreCard: React.FunctionComponent<IProps> = props => {
-    const router = useContext(RouterContext);
+export const MoreCard: React.FunctionComponent<IProps> = (props) => {
+    const href =
+        "/" +
+        [props.collection.urlKey] +
+        (props.skip ? "/:skip:" + props.skip : "");
+
     return (
         <CheapCard
-            className={props.className}
             css={css`
                 width: ${cardWidth}px;
             `}
-            onClick={() => {
-                //alert("click " + this.props.title);
-                router!.push({
-                    title: props.title,
-                    pageType: "more",
-                    filter: props.filter,
-                    rows: props.rows * 2
-                });
-            }}
+            target={href}
         >
             {`See more of these books.`}
         </CheapCard>

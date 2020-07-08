@@ -45,9 +45,11 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             sortingEnabled: true,
             getCellValue: (b: Book) => (
                 <Link
-                    href={`/?bookId=${b.id}&pageType=book-detail&title=${b.title}`}
+                    href={`/book/${b.id}`}
                     css={css`
-                        color: black !important;
+                        color: ${b.inCirculation
+                            ? "black !important"
+                            : "grey !important"};
                     `}
                     target="_blank"
                 >
@@ -66,8 +68,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             getCellValue: (b: Book) =>
                 b.languages.map((l) => l.name).join(", "),
             addToFilter: (filter: IFilter, value: string) => {
-                // enhance: at the moment we don't have a "language:" search axis, so this will search other fields as well
-                filter.search += ` ${value}`;
+                filter.language = value;
             },
         },
         {
@@ -271,8 +272,7 @@ const TagCheckbox: React.FunctionComponent<{
         <Checkbox
             checked={present}
             onChange={(e) => {
-                props.book.setBooleanTag(props.tag, e.target.checked);
-                props.book.saveAdminDataToParse();
+                props.book.setBooleanTagAndSave(props.tag, e.target.checked);
                 setPresent(e.target.checked);
             }}
         />
