@@ -47,9 +47,16 @@ export function getConnection(): IConnection {
     if (
         window.location.hostname === "bloomlibrary.org" ||
         window.location.hostname === "next.bloomlibrary.org" ||
-        window.location.hostname === "cf-next.bloomlibrary.org"
+        window.location.hostname === "cf-next.bloomlibrary.org" ||
+        window.location.hostname === "alpha.bloomlibrary.org"
     ) {
         return prod;
+    }
+    if (
+        window.location.hostname === "dev.bloomlibrary.org" ||
+        window.location.hostname === "dev-next.bloomlibrary.org"
+    ) {
+        return dev;
     }
 
     // Storybook is currently configured to look at development
