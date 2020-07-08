@@ -8,11 +8,14 @@ export interface IGridControlProps {
         gridColumnFilters: GridFilter[] //just the filters from the headers of the columns
     ) => void;
     initialGridFilters?: GridFilter[];
+    contextFilter?: IFilter;
 }
 
 // This is wrapped so that we can keep all the javascript involved in the grid
 // in a separate js file, downloaded to the user's browser only if he/she needs it.
-export const GridControl: React.FunctionComponent<IGridControlProps> = props => {
+export const GridControl: React.FunctionComponent<IGridControlProps> = (
+    props
+) => {
     const GridControlInternal = React.lazy(() =>
         import(
             /* webpackChunkName: "gridControlInternal" */ "./GridControlInternal"

@@ -1,27 +1,20 @@
-import React, { useContext } from "react";
+import React from "react";
 
 import { Link } from "@material-ui/core";
-import { RouterContext } from "../Router";
 import {
     ILanguage,
-    getLanguageNames as getLanguageDisplayNames
+    getLanguageNames as getLanguageDisplayNames,
 } from "../model/Language";
+import { getAnchorProps } from "../embedded";
 
 export const LanguageLink: React.FunctionComponent<{
     language: ILanguage;
-}> = props => {
-    const router = useContext(RouterContext);
+}> = (props) => {
     const displayName = getNameDisplay(props.language);
     return (
         <Link
             color="secondary"
-            onClick={() => {
-                router!.push({
-                    title: displayName,
-                    pageType: "language",
-                    filter: { language: props.language.isoCode }
-                });
-            }}
+            {...getAnchorProps("/language:" + props.language.isoCode)}
         >
             {displayName}
         </Link>
@@ -36,7 +29,7 @@ export const LanguageLink: React.FunctionComponent<{
 export function getUniqueLanguages(languages: ILanguage[]): ILanguage[] {
     const result: ILanguage[] = [];
     for (const name of getLanguageNames(languages)) {
-        result.push(languages.filter(l => getNameDisplay(l) === name)[0]);
+        result.push(languages.filter((l) => getNameDisplay(l) === name)[0]);
     }
     return result;
 }

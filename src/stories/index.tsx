@@ -1,33 +1,24 @@
-import React from "react";
+import React, { Fragment } from "react";
 
 import { storiesOf, addDecorator } from "@storybook/react";
+import { withKnobs, boolean } from "@storybook/addon-knobs";
 
 import { BookCard } from "../components/BookCard";
 import { BookGroup } from "../components/BookGroup";
 import { LanguageGroup } from "../components/LanguageGroup";
-import { LanguagePage, BookGroupForEachTopic } from "../components/Pages";
-import { HomePage } from "../components/HomePage";
-import { BookshelfGroup } from "../components/BookShelfGroup";
 import { SearchBox } from "../components/SearchBox";
 import "../index.css";
 import { StandAloneHarvesterArtifactUserControl } from "../components/BookDetail/ArtifactVisibilityPanel/ArtifactVisibilityPanel";
 import { ArtifactAndChoice } from "../components/BookDetail/ArtifactVisibilityPanel/ArtifactAndChoice";
 import { ArtifactVisibilitySettings } from "../model/ArtifactVisibilitySettings";
 import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
-import { Router, RouterContext } from "../Router";
 import BookDetail from "../components/BookDetail/BookDetail";
 import { ThemeProvider } from "@material-ui/styles";
 import theme from "../theme";
 import { ReadBookPage } from "../components/ReadBookPage";
-import { FeaturePage } from "../components/FeaturePage";
-import { FeatureGroup } from "../components/FeatureGroup";
-import { ListOfBookGroups } from "../components/ListOfBookGroups";
+import { ConfirmationDialog } from "../components/ConfirmationDialog";
 
-// Provide all stories with a router in their context:
-const router = new Router();
-addDecorator((storyFn) => (
-    <RouterContext.Provider value={router}>{storyFn()}</RouterContext.Provider>
-));
+addDecorator(withKnobs);
 addDecorator((storyFn) => (
     <ThemeProvider theme={theme}>{storyFn()}</ThemeProvider>
 ));
@@ -36,6 +27,8 @@ const sampleUrl =
 
 storiesOf("BookDetail", module)
     .add("Beautiful Day", () => <BookDetail id={"lhQnYpvD9p"} />)
+    // .add("production test book", () => <BookDetail id={"5rWQGc1d0q"} />)
+    // .add("production test book 2", () => <BookDetail id={"BviSvJYwKk"} />)
     .add("ReadBookPage", () => (
         <ReadBookPage
             id={
@@ -99,10 +92,6 @@ storiesOf("BookGroup", module)
             filter={{ bookshelf: "Featured" }}
         />
     ))
-    .add("All Topics", () => (
-        <BookGroupForEachTopic filter={{ language: "th" }} />
-    ))
-
     .add("Sign Language", () => (
         <BookGroup title="Sign Language" filter={{ feature: "signLanguage" }} />
     ))
@@ -111,9 +100,6 @@ storiesOf("BookGroup", module)
             title="Visually Impaired"
             filter={{ feature: "visuallyImpaired" }}
         />
-    ))
-    .add("All Bookshelves", () => (
-        <BookshelfGroup title="All Bookshelves" bookShelfCategory="" />
     ))
     .add("All books by date", () => (
         <BookGroup title="All books by date" filter={{}} order={"-createdAt"} />
@@ -130,61 +116,63 @@ storiesOf("LanguageGroup", module).add("By book count", () => (
         <LanguageGroup />
     </ul>
 ));
-storiesOf("BookShelfGroup", module)
-    .add("Publishers", () => (
-        <BookshelfGroup title="Publishers" bookShelfCategory="publisher" />
-    ))
-    .add("A specific project with multiple workshops: Enabling Writers", () => (
-        <BookshelfGroup
-            title="Enabling Writers"
-            bookShelfCategory="project"
-            pathToTheCurrentLevel="Enabling Writers Workshops/"
-        />
-    ))
-    .add("Projects", () => (
-        <BookshelfGroup title="Projects" bookShelfCategory="project" />
-    ))
-    .add("Organizations & Governments", () => (
-        <BookshelfGroup
-            title="Organizations & Governments"
-            bookShelfCategory="org"
-        />
-    ));
+storiesOf("BookShelfGroup", module);
 
-storiesOf("FeatureGroup", module).add("Feature Group", () => (
-    <ListOfBookGroups>
-        <FeatureGroup title="Book Features" />
-    </ListOfBookGroups>
-));
+// .add("A specific project with multiple workshops: Enabling Writers", () => (
+//     <BookshelfGroup
+//         title="Enabling Writers"
+//         bookShelfCategory="project"
+//         pathToTheCurrentLevel="Enabling Writers Workshops/"
+//     />
+// ))
+// .add("Projects", () => (
+//     <BookshelfGroup title="Projects" bookShelfCategory="project" />
+// ))
+// .add("Organizations & Governments", () => (
+//     <BookshelfGroup
+//         title="Organizations & Governments"
+//         bookShelfCategory="org"
+//     />
+// ));
 
-storiesOf("Pages", module)
-    .add("Home Page", () => <HomePage />)
-    .add("Thai Book Page", () => (
-        <LanguagePage title="some title" filter={{ language: "th" }} />
-    ))
-    .add("Talking Book Feature Page", () => (
-        <FeaturePage
-            title={"Talking Books"}
-            filter={{ feature: "talkingBook" }}
-        />
-    ))
-    .add("Motion Book Feature Page", () => (
-        <FeaturePage title={"Motion Books"} filter={{ feature: "motion" }} />
-    ));
+storiesOf("Pages", module);
+// REview: want these back in some updated form?
+//.add("Home Page", () => <HomePage />)
+//.add("Thai Book Page", () => <LanguagePage langCode="th" />)
+// .add("Talking Book Feature Page", () => (
+//     <FeaturePage featureKey="talkingBook" />
+// ))
+// .add("Motion Book Feature Page", () => <FeaturePage featureKey="motion" />);
 
-storiesOf("Components", module).add("SearchBox", () => {
-    const bloomRed: string = theme.palette.primary.main;
-    return (
-        <div
-            style={{
-                height: "48px",
-                backgroundColor: bloomRed,
-            }}
-        >
-            <SearchBox />
-        </div>
-    );
-});
+storiesOf("Components", module)
+    .add("SearchBox", () => {
+        const bloomRed: string = theme.palette.primary.main;
+        return (
+            <div
+                style={{
+                    height: "48px",
+                    backgroundColor: bloomRed,
+                }}
+            >
+                <SearchBox />
+            </div>
+        );
+    })
+    .add("Confirmation Dialog", () => {
+        return (
+            <ConfirmationDialog
+                title={"Delete this book?"}
+                open={boolean("Open", false)}
+                onClose={(confirm) => {
+                    if (confirm) alert("confirmed");
+                }}
+            >
+                If you continue, this version of the book will be removed from
+                BloomLibrary.org. There is no way to undo this except by
+                uploading it again.
+            </ConfirmationDialog>
+        );
+    });
 
 const triStateBooleanOptions = [undefined, false, true];
 let i = 0;
@@ -230,3 +218,16 @@ storiesOf("Harvester Artifact Control", module)
             })}
         </>
     ));
+
+/* Note, this doesn't test what you get if you also add embed-bloomlibrary.js to your html file. (I.e. can't bookmark and such.)
+Just load testembed.htm in a browser to test that. */
+storiesOf("Embedding", module).add("Should Work", () => (
+    <iframe
+        //note, this last bit ("rise-png") must match what is in the Contentful "embed-test" object. If that changes, you'll get
+        // an error here.
+        src={"http://localhost:3000/embed/embed-test/rise-png"}
+        title="embed test"
+        height="600px"
+        width="600px"
+    ></iframe>
+));

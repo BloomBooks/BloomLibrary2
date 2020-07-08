@@ -5,7 +5,8 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React from "react";
-import { BrowseView } from "./components/BrowseView";
+import { BrowserRouter as Router } from "react-router-dom";
+
 import theme from "./theme";
 import { ThemeProvider, Snackbar } from "@material-ui/core";
 import { LoginDialog } from "./components/User/LoginDialog";
@@ -24,6 +25,10 @@ import {
     mobile,
 } from "./components/OSFeaturesContext";
 import { Alert, AlertTitle } from "@material-ui/lab";
+import { Header } from "./components/header/Header";
+import { Routes } from "./components/Routes";
+import { Footer } from "./components/Footer";
+
 interface ICachedTables {
     tags: string[];
     languagesByBookCount: ILanguage[];
@@ -50,50 +55,70 @@ export const App: React.FunctionComponent<{}> = (props) => {
     CachedTables.tags = tags;
     CachedTables.languagesByBookCount = languagesByBookCount;
 
+    const embeddedMode = window.self !== window.top;
+
     return (
-        <>
+        <div
+            css={css`
+                display: flex;
+                flex-direction: column;
+                margin-left: 0;
+                height: 100%;
+            `}
+        >
             {/* <React.StrictMode>
-                    In StrictMode,
-                        * react-image 2.3.0 makes this complain about UNSAFE_componentWillReceiveProps
-                        * react-lazyload 2.6.5 makes it complain about finDomNode
-                    These then make it hard to notice new errors, it can be very hard to figure
-                    out what component is causing the problem if you don't notice it close to the time
-                    that the error was introduced. So I'm disabling this for now... would be nice to
-                    enable it once in while and make sure no other problems have snuck in. Eventually
-                    the above libraries should catch up, or we could switch to ones that do.
+        In StrictMode,
+            * react-image 2.3.0 makes this complain about UNSAFE_componentWillReceiveProps
+            * react-lazyload 2.6.5 makes it complain about finDomNode
+        These then make it hard to notice new errors, it can be very hard to figure
+        out what component is causing the problem if you don't notice it close to the time
+        that the error was introduced. So I'm disabling this for now... would be nice to
+        enable it once in while and make sure no other problems have snuck in. Eventually
+        the above libraries should catch up, or we could switch to ones that do.
 
-                    Note, we still wrap any sections that don't have any non-strict children in <React.StrictMode>.
+        Note, we still wrap any sections that don't have any non-strict children in <React.StrictMode>.
 
-                    See also https://github.com/facebook/react/issues/16362
-            */}
-            <div className="App">
-                <ThemeProvider theme={theme}>
-                    <CachedTablesContext.Provider
+        See also https://github.com/facebook/react/issues/16362
+*/}
+            <ThemeProvider theme={theme}>
+                <CachedTablesContext.Provider
+                    value={{
+                        tags,
+                        languagesByBookCount,
+                        bookshelves,
+                    }}
+                >
+                    <OSFeaturesContext.Provider
                         value={{
-                            tags,
-                            languagesByBookCount: languagesByBookCount,
-                            bookshelves,
+                            bloomDesktopAvailable,
+                            bloomReaderAvailable,
+                            cantUseBloomD,
+                            mobile,
                         }}
                     >
-                        <OSFeaturesContext.Provider
-                            value={{
-                                bloomDesktopAvailable,
-                                bloomReaderAvailable,
-                                cantUseBloomD,
-                                mobile,
-                            }}
-                        >
-                            {window.location.hostname === "localhost" || (
-                                <UnderConstruction />
-                            )}
-                            <BrowseView />
-                        </OSFeaturesContext.Provider>
-                    </CachedTablesContext.Provider>
-                </ThemeProvider>
-            </div>
-            <LoginDialog />
-            {/* </React.StrictMode> */}
-        </>
+                        {window.location.hostname === "localhost" || (
+                            <UnderConstruction />
+                        )}
+
+                        <Router>
+                            {embeddedMode || <Header />}
+                            {/* This div takes up all the space available so that the footer
+                                is either at the bottom or pushed off screen */}
+                            <div
+                                id="expandableContent"
+                                css={css`
+                                    flex: 1 0 auto;
+                                `}
+                            >
+                                <Routes />
+                            </div>
+                            {embeddedMode || <Footer />}
+                        </Router>
+                    </OSFeaturesContext.Provider>
+                </CachedTablesContext.Provider>
+            </ThemeProvider>
+            <LoginDialog /> {/* </React.StrictMode> */}
+        </div>
     );
 };
 
@@ -114,7 +139,6 @@ export const UnderConstruction: React.FunctionComponent<{}> = () => {
                 elevation={6}
                 onClose={handleClose}
             >
-                {" "}
                 <AlertTitle>Under Construction</AlertTitle>
                 <div
                     css={css`

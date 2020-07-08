@@ -1,11 +1,15 @@
-import useAxios, { IReturns } from "@use-hooks/axios";
+import useAxios, { IReturns, axios, IParams } from "@use-hooks/axios";
 import { IFilter, InCirculationOptions } from "../IFilter";
 import { getConnection } from "./ParseServerConnection";
+import { getBloomApiUrl } from "./ApiConnection";
 import { Book, createBookFromParseServerData } from "../model/Book";
 import { useContext, useMemo, useEffect, useState } from "react";
 import { CachedTablesContext } from "../App";
 import { getCleanedAndOrderedLanguageList, ILanguage } from "../model/Language";
 import { processRegExp } from "../Utilities";
+import { kTopicList } from "../model/ClosedVocabularies";
+import { IStatsProps } from "../components/statistics/StatsInterfaces";
+import { toYyyyMmDd } from "../components/statistics/ReaderSessionsChart";
 
 // For things other than books, which should use `useBookQuery()`
 function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
@@ -110,10 +114,14 @@ export function useGetRelatedBooks(bookId: string): Book[] {
                         objectId: bookId,
                     },
                 },
-                // We don't really need all the fields of the related books, but I don't
-                // see a way to restrict to just the fields we want. It's surely faster
-                // to just get it all then get the bookids and then do separate queries to get their titles
-                include: "books",
+                // This dot notation should cause it to get just the two fields we care
+                // about (search for "multi level includes using dot notation" in parse
+                // server doc), but it actually seems to get them all, just like include: "books".
+                // May as well leave it in since it might work if we upgrade to a later
+                // parse server version. It's surely faster
+                // to just get it all than to get the bookids and then do separate queries to get
+                // the titles and check they are in circulation.
+                include: "books.title,books.inCirculation",
             },
         },
     });
@@ -128,9 +136,15 @@ export function useGetRelatedBooks(bookId: string): Book[] {
     ) {
         return [];
     }
-    return response["data"]["results"][0].books
-        .filter((r: any) => r.objectId !== bookId) // don't return the book for which we're looking for related books.
-        .map((r: any) => createBookFromParseServerData(r));
+    return (
+        response["data"]["results"][0].books
+            // don't return the book for which we're looking for related books,
+            // or any that have been specifically put out of circulation.
+            .filter(
+                (r: any) => r.objectId !== bookId && r.inCirculation !== false
+            )
+            .map((r: any) => createBookFromParseServerData(r))
+    );
 }
 /*
 export function useGetPhashMatchingRelatedBooks(
@@ -171,6 +185,12 @@ export function useGetPhashMatchingRelatedBooks(
         .map((r: any) => createBookFromParseServerData(r));
 }
 */
+
+export const bookDetailFields =
+    "title,allTitles,baseUrl,bookOrder,inCirculation,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
+    "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits," +
+    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount," +
+    "harvestStartedAt,bookshelves,publisher,originalPublisher,keywords,bookInstanceId";
 export function useGetBookDetail(bookId: string): Book | undefined | null {
     const { response, loading, error } = useAxios({
         url: `${getConnection().url}classes/books`,
@@ -180,11 +200,7 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
             headers: getConnection().headers,
             params: {
                 where: { objectId: bookId },
-                keys:
-                    "title,allTitles,baseUrl,bookOrder,inCirculation,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
-                    "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits," +
-                    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount," +
-                    "harvestStartedAt,bookshelves,publisher,originalPublisher,keywords",
+                keys: bookDetailFields,
                 // fluff up fields that reference other tables
                 // Note that what we're going to get in langPointers is actually the data from the rows of language,
                 // because of this statement:
@@ -323,21 +339,43 @@ function useBookQueryInternal(
     doNotRunActuallyQuery?: boolean
 ): IAxiosAnswer {
     const { tags } = useContext(CachedTablesContext);
+    const axiosParams = makeBookQueryAxiosParams(
+        params,
+        filter,
+        limit,
+        skip,
+        doNotRunActuallyQuery,
+        tags
+    );
 
+    return useAxios(axiosParams);
+}
+
+// Creates a partial Axios params object with the url and connection headers filled in.
+// The caller is responsible for filling out the rest of the object.
+function makeBookQueryAxiosParams(
+    params: {}, // this is the order, which fields, limits, etc.
+    filter: IFilter, // this is *which* records to return
+    limit?: number, //pagination
+    skip?: number, //pagination
+    doNotActuallyRunQuery?: boolean,
+    tags?: string[]
+): IParams<any> {
     const finalParams = constructParseBookQuery(
         params,
         filter,
-        tags,
+        tags || [],
         limit,
         skip
     );
     //console.log("finalParams: " + JSON.stringify(finalParams));
-    return useAxios({
+
+    return {
         url: `${getConnection().url}classes/books`,
         // The "rules of hooks" require that if we're ever going to run a useEffect, we have to *always* run it
         // So we can't conditionally run this useBookQueryInternal(). But useAxios does give this way to run its
         // internal useEffect() but not actually run the query.
-        forceDispatchEffect: () => !doNotRunActuallyQuery,
+        forceDispatchEffect: () => !doNotActuallyRunQuery,
         method: "GET",
         // there is an inner useEffect, and it looks at this. We want to rerun whenever the query changes (duh).
         // Also, the very first time this runs, we will need to run again once we get
@@ -352,7 +390,7 @@ function useBookQueryInternal(
             headers: getConnection().headers,
             params: finalParams,
         },
-    });
+    };
 }
 
 // export function useBookQuery(
@@ -509,6 +547,64 @@ export function useSearchBooks(
     };
 }
 
+// Sends a request to get the stats for all books matching the filters
+export function useCollectionStats(
+    statsProps: IStatsProps,
+    urlSuffix: string
+): IAxiosAnswer {
+    let apiFilter: any;
+    if (!statsProps.collection.statisticsQuerySpec) {
+        const params = {
+            // These are the specific keys we want parse to look up and provide to postgresql
+            keys: "objectId,bookInstanceId",
+        };
+        const limit = undefined;
+        const skip = undefined;
+        // If we don't have a filter, typically because we had to call the hook before
+        // conditional logic testing for whether we had already retrieved a collection
+        // from which we could get the filter, there's no point in actually running
+        // the query. useAxios will just immediately return no results.
+        const doNotRunQuery: boolean = !statsProps.collection.filter;
+        const bookQueryParams = makeBookQueryAxiosParams(
+            params,
+            statsProps.collection.filter || {},
+            limit,
+            skip,
+            doNotRunQuery
+        );
+        apiFilter = {
+            parseDBQuery: bookQueryParams,
+        };
+    } else {
+        apiFilter = statsProps.collection.statisticsQuerySpec;
+    }
+
+    if (statsProps.dateRange.startDate) {
+        apiFilter.fromDate = getISODateString(statsProps.dateRange.startDate);
+    }
+    if (statsProps.dateRange.endDate) {
+        apiFilter.toDate = getISODateString(statsProps.dateRange.endDate);
+    }
+
+    const url = `${getBloomApiUrl()}/v1/stats/${urlSuffix}`;
+
+    return useAxios({
+        url,
+        method: "POST",
+        options: {
+            data: {
+                filter: apiFilter,
+            },
+        },
+
+        trigger: url + JSON.stringify(apiFilter),
+    });
+}
+
+function getISODateString(date: Date) {
+    return toYyyyMmDd(date);
+}
+
 function processAxiosStatus(answer: IAxiosAnswer): ISimplifiedAxiosResult {
     if (answer.error)
         return {
@@ -527,7 +623,9 @@ function processAxiosStatus(answer: IAxiosAnswer): ISimplifiedAxiosResult {
                 ? -1
                 : answer.response["data"]["count"],
         error: null,
-        waiting: answer.loading,
+        // loading appears to be totally unreliable. If we didn't get
+        // some response yet, for our purposes, we're still waiting.
+        waiting: answer.loading || !answer.response,
     };
 }
 
@@ -583,6 +681,7 @@ export function splitString(
         "country:",
         "phash:",
         "level:",
+        "feature:",
     ];
 
     const possibleParts = [...facets, ...allTagsInDatabase];
@@ -682,7 +781,13 @@ export function constructParseBookQuery(
         params.keys = params.keys.replace(/ /g, "");
     }
 
-    const tagParts = [];
+    // A list of tags. If it contains anything, tags must contain each item.
+    const tagsAll: string[] = [];
+    // A list of tag queries, such as {$in:["level:1", "computedLevel:1"]} or {$regex:"topic:Agriculture|topic:Math"}
+    // If it contains a single item and topicsAll is empty,
+    // we can use params.where.tags = tagParts[0]. If it contains more than one, we need
+    // params.where.$and:[{tags: tagParts[0]}, {tags: tagParts[1]}... {tags: {$all:topicsAll}}]
+    const tagParts: object[] = [];
     if (!!f.search) {
         const { otherSearchTerms, specialParts } = splitString(
             filter.search!,
@@ -710,6 +815,11 @@ export function constructParseBookQuery(
                         },
                     };
                     break;
+                case "feature":
+                    // Note that if filter actually has a feature field (filter.feature is defined)
+                    // that will win, overiding any feature: in the search field (see below).
+                    params.where.features = facetValue;
+                    break;
                 case "phash":
                     // work around https://issues.bloomlibrary.org/youtrack/issue/BL-8327 until it is fixed
                     // This would be correct
@@ -724,7 +834,7 @@ export function constructParseBookQuery(
                     break;
                 case "level":
                     if (facetValue === "empty") {
-                        params.where.tags = {
+                        tagParts.push({
                             $nin: [
                                 "level:1",
                                 "level:2",
@@ -735,18 +845,18 @@ export function constructParseBookQuery(
                                 "computedLevel:3",
                                 "computedLevel:4",
                             ],
-                        };
+                        });
                     } else {
-                        params.where.tags = {
+                        tagParts.push({
                             $in: [
                                 "computedLevel:" + facetValue,
                                 "level:" + facetValue,
                             ],
-                        };
+                        });
                     }
                     break;
                 default:
-                    tagParts.push(part);
+                    tagsAll.push(part);
                     break;
             }
         }
@@ -799,7 +909,7 @@ export function constructParseBookQuery(
     // }
     if (f.otherTags != null) {
         delete params.where.otherTags;
-        f.otherTags.split(",").forEach((t) => tagParts.push(t));
+        f.otherTags.split(",").forEach((t) => tagsAll.push(t));
     }
     // we can search for bookshelves by category (org, project, etc) using useGetBookshelves(). But
     // we cannot, here, filter books by category. We cannot say "give me all the books that are listed in all project bookshelves"
@@ -823,23 +933,41 @@ export function constructParseBookQuery(
     // take `f.topic` to be a comma-separated list
     if (f.topic) {
         delete params.where.topic;
-        const topicsRegex = f.topic
-            .split(",")
-            .map((s) => "topic:" + processRegExp(s))
-            .join("|");
-        params.where.tags = {
-            $regex: topicsRegex,
-            ...caseInsensitive,
-        };
-        // This will only be used if there are "otherTags". It means that if both are specified, then we loose the
-        // above regex for partial matching, but we gain the
-        // ability to filter on both the Topic and OtherTags columns in the grid.
-        tagParts.push("topic:" + f.topic);
+        if (f.topic === "empty") {
+            // optimize: is it more efficient to try to come up with a regex that will
+            // fail if it finds topic:?
+            tagParts.push({
+                $nin: kTopicList.map((t) => "topic:" + t),
+            });
+        } else if (f.topic.indexOf(",") >= 0) {
+            const topicsRegex = f.topic
+                .split(",")
+                .map((s) => "topic:" + processRegExp(s))
+                .join("|");
+            tagParts.push({
+                $regex: topicsRegex,
+                ...caseInsensitive,
+            });
+        } else {
+            // just one topic, more efficient not to use regex
+            tagsAll.push("topic:" + f.topic);
+        }
     }
-    if (tagParts.length > 0) {
-        params.where.tags = {
-            $all: tagParts,
-        };
+    // Now we need to assemble topicsAll and tagParts
+    if (tagsAll.length) {
+        // merge topicsAll into tagsAll
+        tagParts.push({
+            $all: tagsAll,
+        });
+    }
+    if (tagParts.length === 1) {
+        params.where.tags = tagParts[0];
+    } else if (tagParts.length > 1) {
+        params.where.$and = tagParts.map((p: any) => {
+            return {
+                tags: p,
+            };
+        });
     }
 
     if (f.feature != null) {
@@ -883,4 +1011,10 @@ export function getCountString(queryResult: any): string {
     if (loading || !response) return "";
     if (error) return "error";
     return response["data"]["count"].toString();
+}
+
+export async function deleteBook(id: string) {
+    return axios.delete(`${getConnection().url}classes/books/${id}`, {
+        headers: getConnection().headers,
+    });
 }

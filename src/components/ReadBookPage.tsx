@@ -4,35 +4,112 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useContext, useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useState } from "react";
 import { useGetBookDetail } from "../connection/LibraryQueryHooks";
 import { Book } from "../model/Book";
-import { RouterContext } from "../Router";
 import { getUrlOfHtmlOfDigitalVersion } from "./BookDetail/ArtifactHelper";
+import { useHistory, useLocation } from "react-router-dom";
+import { useTrack } from "../analytics/Analytics";
+import { getBookAnalyticsInfo } from "../analytics/BookAnalyticsInfo";
+import { useDocumentTitle } from "./Routes";
+import FullscreenIcon from "@material-ui/icons/Fullscreen";
+import {
+    sendPlayerClosingAnalytics,
+    startingBook,
+} from "../analytics/BloomPlayerAnalytics";
+import { commonUI } from "../theme";
+import { useMediaQuery } from "@material-ui/core";
 
-export const ReadBookPage: React.FunctionComponent<{ id: string }> = (
-    props
-) => {
-    const router = useContext(RouterContext);
+export const ReadBookPage: React.FunctionComponent<{
+    id: string;
+}> = (props) => {
+    const id = props.id;
+    const history = useHistory();
+    const location = useLocation();
+    const widerThanPhone = useMediaQuery("(min-width:450px)"); // a bit more than the largest phone width in the chrome debugger (411px)
+    const higherThanPhone = useMediaQuery("(min-height:450px)");
+    // If either dimension is smaller than a phone, we'll guess we are on one
+    // and go full screen automatically.
+    const autoFullScreen = !widerThanPhone || !higherThanPhone;
+    const query = new URLSearchParams(location.search);
+    const [, setCounter] = useState(0); // used to force render after going to full screen
+    const lang = query.get("lang");
+    const [rotateParams, setRotateParams] = useState({
+        canRotate: true,
+        isLandscape: false,
+    });
+    const contextLangIso = lang ? lang : undefined;
+    // Determine whether (on this render) we are actually in full-screen mode.
+    const fullScreen = !!document.fullscreenElement;
+    const fullScreenChangeHandler = () => {
+        setCounter((oldCount) => oldCount + 1); // force a render
+    };
+    // We need to do various things when the user stops reading the book.
+    // Note that it's usually possible in an SPA to change pages without raising
+    // this event. If that becomes possible here, anything that does it should call
+    // this function. But it's not a problem currently.
+    useEffect(() => {
+        window.addEventListener("beforeunload", onPlayerUnloading);
+        // This works in Android browser (Android 6, at least), but not in Chrome. I think Chrome
+        // considers it a security issue for the app to know when the user
+        // uses escape to exit full screen mode, so there is no way
+        // we can find out we need to put the button back.
+        document.addEventListener("fullscreenchange", fullScreenChangeHandler);
+        return () => {
+            window.removeEventListener("beforeunload", onPlayerUnloading);
+            document.removeEventListener(
+                "fullscreenchange",
+                fullScreenChangeHandler
+            );
+        };
+    }, []);
+    useEffect(() => startingBook(), [id]);
 
+    // We don't use rotateParams here, because one caller wants to call it
+    // immediately after calling setRotateParams, when the new values won't be
+    // available.
+    const setupScreen = (canRotate: boolean, isLandscape: boolean) => {
+        document.documentElement
+            .requestFullscreen()
+            .then(() => {
+                setCounter((oldCount) => oldCount + 1); // force a render
+                // We are only allowed to do this this if successfully in full screen mode
+                if (!canRotate) {
+                    window.screen.orientation.lock(
+                        isLandscape ? "landscape" : "portrait"
+                    );
+                }
+            })
+            // If we can't do it, we can't. That's what the full screen button is for.
+            // We're not allowed to go full-screen, for example, if we're starting
+            // out on this page and haven't touched a button.
+            .catch(() => {});
+    };
+
+    useDocumentTitle("Play"); // Note that the title comes from the ?title parameter, if present. This "Play" will not normally be used.
     const handleMessageFromBloomPlayer = useCallback(
         (event: MessageEvent) => {
-            //        console.log(JSON.stringify(event.data));
             try {
                 const r = JSON.parse(event.data);
                 if (r.messageType === "backButtonClicked") {
-                    router!.push({
-                        bookId: router!.current.bookId,
-                        title: "Book Detail",
-                        pageType: "book-detail",
-                        filter: {},
-                    });
+                    // History.push doesn't automatically raise beforeunload, since
+                    // from the browser's point of view we're staying on the same page.
+                    // Easiest just to call the function we want ourselves.
+                    onPlayerUnloading();
+                    history.push(`/book/${id}`);
+                } else if (r.messageType === "reportBookProperties") {
+                    const canRotate = r.params?.canRotate as boolean;
+                    const isLandscape = r.params?.landscape as boolean;
+                    setRotateParams({ canRotate, isLandscape });
+                    if (autoFullScreen) {
+                        setupScreen(canRotate, isLandscape);
+                    }
                 }
             } catch (err) {
                 console.log(`Got error with message: ${err}`);
             }
         },
-        [router]
+        [history, id, autoFullScreen]
     );
 
     useEffect(() => {
@@ -42,30 +119,60 @@ export const ReadBookPage: React.FunctionComponent<{ id: string }> = (
         };
     }, [handleMessageFromBloomPlayer]);
 
-    const book = useGetBookDetail(props.id);
+    const book = useGetBookDetail(id);
+    useTrack(
+        "Download Book",
+        getBookAnalyticsInfo(book, contextLangIso, "read"),
+        !!book
+    );
     const url = book ? getUrlOfHtmlOfDigitalVersion(book) : "working"; // url=working shows a loading icon
 
     // use the bloomplayer.htm we copy into our public/ folder, where CRA serves from
-    const bloomPlayerUrl = "bloom-player/bloomplayer.htm";
+    // TODO: this isn't working with react-router, but I don't know how RR even gets run inside of this iframe
+    const bloomPlayerUrl = "/bloom-player/bloomplayer.htm";
 
-    const langParam = router?.current.contextLangIso
-        ? `&lang=${router.current.contextLangIso}`
-        : "";
+    const langParam = contextLangIso ? `&lang=${contextLangIso}` : "";
 
     const iframeSrc = `${bloomPlayerUrl}?url=${url}&showBackButton=true&useOriginalPageSize=true${langParam}`;
 
     return (
-        <iframe
-            title="bloom player"
-            css={css`
-                border: none;
-                width: 100%;
-                height: 100%;
-            `}
-            src={iframeSrc}
-        ></iframe>
+        <React.Fragment>
+            <iframe
+                title="bloom player"
+                css={css`
+                    border: none;
+                    width: 100%;
+                    height: 100%;
+                `}
+                src={iframeSrc}
+                //src={"https://google.com"}
+            ></iframe>
+            {fullScreen || (
+                <FullscreenIcon
+                    css={css`
+                        position: absolute;
+                        top: 20px;
+                        right: 8px;
+                        color: ${commonUI.colors.bloomRed};
+                    `}
+                    onClick={() => {
+                        setupScreen(
+                            rotateParams.canRotate,
+                            rotateParams.isLandscape
+                        );
+                    }}
+                />
+            )}
+            // <div>I am groot</div>
+        </React.Fragment>
     );
 };
+
+function onPlayerUnloading() {
+    window.screen.orientation.unlock();
+    document.exitFullscreen().catch((e) => console.log(e));
+    sendPlayerClosingAnalytics();
+}
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getHarvesterBaseUrl(book: Book) {

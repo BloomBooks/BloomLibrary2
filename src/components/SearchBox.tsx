@@ -4,16 +4,16 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useContext, useState } from "react";
+import React, { useState, useEffect } from "react";
 import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import { Theme, InputBase, Paper, Grow } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import CancelIcon from "@material-ui/icons/Cancel";
-import { RouterContext } from "../Router";
 import { withStyles } from "@material-ui/styles";
 import { giveFreeLearningCsv } from "../export/freeLearningIO";
+import { useLocation, useHistory } from "react-router-dom";
 
 // NB: I tried a bunch of iterations over 2 days with forwardRefs and stuff trying to get this search box
 // to have both the html tooltip AND stop losing focus every time a letter was typed. The upshot was this
@@ -44,14 +44,32 @@ export const SearchBox: React.FunctionComponent<{
     // where it is invoked.)
     cssExtra?: string;
 }> = (props) => {
-    const router = useContext(RouterContext);
-    let initialSearchString = router!.current.filter?.search
-        ? router!.current.filter.search
+    const location = useLocation();
+    const history = useHistory();
+    const search = location.pathname
+        .split("/")
+        .filter((x) => x.startsWith(":search:"))[0];
+
+    let initialSearchString = search
+        ? decodeURIComponent(search.substring(":search:".length))
         : "";
     if (initialSearchString.startsWith("phash")) {
         initialSearchString = "";
     }
     const [searchString, setSearchString] = useState(initialSearchString);
+    // This is a bit subtle. SearchString needs to be state to get modified
+    // as the user types. But another thing that can happen is that our location
+    // changes as we follow links or switch from read to create. If something
+    // brings in a new URL that has a different search specification, we
+    // want the search box to update to match. Except when the user is actually
+    // editing in the box, the box and the URL should be the same.
+    // This must only happen when the url-derived initial search string changes,
+    // otherwise, the user could not edit the box.
+    useEffect(() => setSearchString(initialSearchString), [
+        initialSearchString,
+    ]);
+    // search string when user clicks Enter.
+    const [enteredSearch, setEnteredSearch] = useState("");
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [showTooltip, setShowTooltip] = useState(true);
 
@@ -80,6 +98,7 @@ export const SearchBox: React.FunctionComponent<{
     );
 
     const handleSearch = () => {
+        // These 'magic' strings cause a file to be written without changing the state of the page.
         if (
             searchString.toLowerCase() === "freelearningiocsv" ||
             searchString.toLowerCase() === "csv"
@@ -87,39 +106,10 @@ export const SearchBox: React.FunctionComponent<{
             giveFreeLearningCsv();
             return;
         }
-        // enhance: we should just have a set of these keyword-->special page searches, not code for each.
 
-        // shortcut to grid
-        if (searchString.toLowerCase() === "grid") {
-            router!.push({
-                title: `Grid`,
-                pageType: "grid",
-                filter: {},
-            });
-            setSearchString("");
-            return;
-        }
-        if (CheckForCovidSearch(searchString)) {
-            router!.push({
-                title: "",
-                pageType: "Covid19",
-                filter: {},
-            });
-            setSearchString("");
-            return;
-        }
         if (searchString.length > 0) {
-            const location = {
-                title: `search for "${searchString}"`,
-                pageType: ["grid", "bulk"].includes(router!.current.pageType)
-                    ? router!.current.pageType
-                    : "search",
-                filter: {
-                    ...router!.current.filter,
-                    search: searchString,
-                },
-            };
-            router!.push(location);
+            setSearchString("");
+            setEnteredSearch(searchString);
         } else {
             // delete everything and press enter is the same as "cancel"
             cancelSearch();
@@ -136,18 +126,62 @@ export const SearchBox: React.FunctionComponent<{
     };
 
     const cancelSearch = () => {
-        const currentRouterFilter = router!.current.filter;
-
-        // If the user previously pressed 'Enter' with this search text, we need to go back up the stack.
-        if (
-            currentRouterFilter?.search &&
-            currentRouterFilter?.search.length > 0
-        ) {
-            window.history.back(); // Observable router will handle breadcrumbs.
-        }
         setSearchString("");
+        // at the moment, the only search we allow is over the whole library, so
+        // when we cancel, we return to the whole library.
+        if (location.pathname.indexOf(":search:") >= 0) {
+            history.push("/");
+        }
     };
 
+    // enhance: we should just have a set of these keyword-->special page searches, not code for each.
+    if (enteredSearch === "grid") {
+        setEnteredSearch(""); // otherwise we get no search box when rendered in new page
+        // review: this replaces current history element...should we push instead? (Also below)
+        history.push("/grid");
+    } else if (
+        ["covid", "covid19", "coronavirus", "cov19"].includes(
+            enteredSearch.toLowerCase()
+        )
+    ) {
+        setEnteredSearch(""); // otherwise we get no search box when rendered in new page
+        history.push("/covid19");
+    } else if (enteredSearch) {
+        // We always get one empty string from before the leading slash.
+        // We may get one at the end, too, if the path ends with a slash.
+        // In particular if the path is just a slash (at the root), we start out with two empty strings.
+        const pathParts = location.pathname.split("/").filter((x) => x);
+        const existingSearchIndex = pathParts.findIndex((p) =>
+            p.startsWith(":search:")
+        );
+        // we don't think it's useful to keep in history states that are just different searches.
+        const replaceInHistory =
+            existingSearchIndex >= 0 &&
+            existingSearchIndex === pathParts.length - 1;
+        // Commented out code allows search to be relative to current collection or subset
+        // if (existingSearchIndex >= 0) {
+        //     // remove the existing one and everything after it.
+        //     pathParts.splice(
+        //         existingSearchIndex,
+        //         pathParts.length - existingSearchIndex
+        //     );
+        // }
+        // pathParts.push(":search:" + encodeURIComponent(enteredSearch));
+        // const newUrl = "/" + pathParts.join("/");
+
+        // special case that when in create or grid mode, we don't want to leave it.
+        const prefix =
+            ["/create", "/grid", "/bulk"].find((x) =>
+                history.location.pathname.startsWith(x)
+            ) || "";
+        const newUrl = prefix + "/:search:" + encodeURIComponent(enteredSearch);
+        setEnteredSearch(""); // otherwise we get an infinite loop when rendered as part of the new page
+        if (replaceInHistory) {
+            history.replace(newUrl);
+        } else {
+            history.push(newUrl);
+        }
+    }
     const searchTextField: JSX.Element = (
         <Paper
             key="searchField"

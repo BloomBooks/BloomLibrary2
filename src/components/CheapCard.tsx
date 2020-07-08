@@ -5,28 +5,28 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import React from "react";
 import { commonUI } from "../theme";
+import { getUrlForTarget } from "./Routes";
+import { Link } from "react-router-dom";
 
 interface IProps extends React.HTMLProps<HTMLDivElement> {
-    onClick?: () => void;
     className?: string;
+    target?: string; // what we're calling "target" is the last part of url, where the url is <breadcrumb stuff>/<target>
 }
 
 // just a wrapper around the children you provide, made to look like a card and responsive to a click.
-export const CheapCard: React.FunctionComponent<IProps> = props => (
-    <div
-        {...props}
-        className={`cheapCard ${props.className}`}
-        css={cardStyle}
-        onClick={() => {
-            if (props.onClick) {
-                props.onClick();
-            }
-            //   this.props.browseState.push(this.props.target);
-        }}
-    >
-        {props.children}
-    </div>
-);
+export const CheapCard: React.FunctionComponent<IProps> = (props) => {
+    const url = getUrlForTarget(props.target || "");
+    return (
+        <Link
+            //{...props}
+            className={`cheapCard ${props.className}`}
+            css={cardStyle}
+            to={`/${url}`}
+        >
+            {props.children}
+        </Link>
+    );
+};
 
 const cardStyle = css`
     overflow-wrap: break-word; /* helps with titles that have super long words, else they scroll */
@@ -56,4 +56,10 @@ const cardStyle = css`
     left: 1px;
 
     overflow: hidden;
+
+    text-decoration: none;
+    &,
+    &:visited {
+        color: black;
+    }
 `;
