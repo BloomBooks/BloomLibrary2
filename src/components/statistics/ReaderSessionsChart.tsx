@@ -73,17 +73,40 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
         return { date: x, sessionCount: counts.get(x) };
     });
 
-    const labelFormatter: LabelFormatter = (((d: string | number) => (
-        <tspan
-            y={d > maxCount / 10 ? 10 : -10}
-            fill={d > maxCount / 10 ? "white" : commonUI.colors.bloomRed}
-        >
-            {d}
-        </tspan>
-        // We're really fighting typescript here. The labelFormat can, in fact, take a function
-        // that returns a react svg element; but our type definitions don't know it.
-    )) as any) as LabelFormatter;
-    const graphWidth = Math.max(600, 20 * mapData.length);
+    const labelFormatter: LabelFormatter = (((d: string | number) => {
+        const input = d as number;
+        let label = input.toString();
+        // For large numbers, give 2-3 digits precision plus an indicator,
+        // e.g., 43M, 4.3M, 431K,43K,4.3K, 431, 43, 4.
+        // The column width is set to be just enough to accommodate strings
+        // this long.
+        // When we get to more than 100M reader sessions on a day we may
+        // need to enhance this, as the column is not quite wide enoug for 430M,
+        // since M is a little wider than K.
+        if (input >= 10000000) {
+            label = Math.round(input / 1000000) + "M";
+        } else if (input >= 1000000) {
+            label = Math.round(input / 100000) / 10 + "M";
+        } else if (input >= 10000) {
+            label = Math.round(input / 1000) + "K";
+        } else if (input >= 1000) {
+            label = Math.round(input / 100) / 10 + "K";
+        }
+        return (
+            <tspan
+                y={d > maxCount / 10 ? 10 : -10}
+                fill={d > maxCount / 10 ? "white" : commonUI.colors.bloomRed}
+                //transform={"rotate(90)"} does not work on tspan
+            >
+                {label}
+            </tspan>
+            // We're really fighting typescript here. The labelFormat can, in fact, take a function
+            // that returns a react svg element; but our type definitions don't know it.
+        );
+    }) as any) as LabelFormatter;
+    // The 30px width here is critical to having the labels fit on the bars
+    // (at least on Chrome on Windows...)
+    const graphWidth = Math.max(600, 30 * mapData.length);
 
     return (
         <div
@@ -105,6 +128,7 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
                 height={200}
                 width={graphWidth}
                 colors={[commonUI.colors.bloomRed]}
+                labelSkipHeight={1} // attempt to make labels show on very short bars, did not work.
                 theme={{
                     background: "white",
                     //axis: { ticks: { text: { fill: "#eee" } } },
@@ -115,6 +139,20 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
                             strokeWidth: 1,
                         },
                     },
+                }}
+                // The default tooltip is designed to tell you which of several stacked
+                // datasets the hover applies to, and therefore includes a label
+                // and color block that are redundant for us. Just show which column
+                // it is and its full-precision value.
+                tooltip={(data) => {
+                    const { value, indexValue } = data;
+                    // const result = document.createElement("div");
+                    // result.innerText = value.toString();
+                    return (
+                        <div>
+                            {indexValue + ": "} <strong>{value}</strong>
+                        </div>
+                    );
                 }}
                 labelTextColor="white"
                 labelFormat={labelFormatter}
