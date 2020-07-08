@@ -23,6 +23,7 @@ import { IStatsProps, ExportDataFn } from "./StatsInterfaces";
 import { useStorageState } from "react-storage-hooks";
 import { exportCsv } from "./exportData";
 import LinearProgress from "@material-ui/core/LinearProgress";
+import { BookReadingReport } from "./BookReadingReport";
 
 export interface IScreen {
     label: string;
@@ -45,6 +46,12 @@ const screens: IScreen[] = [
     {
         label: "Bloom Reader Sessions",
         component: (p: IStatsProps) => <ReaderSessionsChart {...p} />,
+    },
+    {
+        label: "Books Read",
+        component: (p: IStatsProps) => (
+            <BookReadingReport {...p}></BookReadingReport>
+        ),
     },
 ];
 
