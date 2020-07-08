@@ -109,16 +109,7 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
     const graphWidth = Math.max(600, 30 * mapData.length);
 
     return (
-        <div
-            // I'd prefer to use 100% - 40px, but one of our usual parents has width fit-content,
-            // which figures out how wide the chart would be without overflow and makes that div
-            // too wide. We'll have to find another answer if this chart is ever not the width of
-            // the window.
-            css={css`
-                width: calc(100vw - 40px);
-                overflow-x: scroll;
-            `}
-        >
+        <div>
             <Bar
                 data={mapData}
                 keys={["sessionCount"]}
@@ -163,7 +154,7 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
                     top: 10,
                     right: 20,
                     bottom: 70,
-                    left: 0,
+                    left: 10,
                 }}
                 axisBottom={{
                     tickSize: 5,
