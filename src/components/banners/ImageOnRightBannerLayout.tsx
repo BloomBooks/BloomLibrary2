@@ -19,7 +19,7 @@ export const ImageOnRightBannerLayout: React.FunctionComponent<{
     bookCount?: string; // often undefined, meaning compute from filter
 }> = (props) => {
     // don't try to show the image on phones
-    const showImage = useMedia({ minWidth: "412px" }); // 1px + largest phone width in the chrome debugger
+    const showImage = useMedia({ minWidth: "415px" }); // 1px + largest phone width in the chrome debugger
 
     const backgroundImageUrl = props.banner.backgroundImage?.url || "";
     return (
