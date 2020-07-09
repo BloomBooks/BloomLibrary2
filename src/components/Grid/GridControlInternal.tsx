@@ -359,7 +359,7 @@ function CombineGridAndSearchBoxFilter(
                 target =
                     matchingLanguages.length > 0
                         ? matchingLanguages[0].isoCode
-                        : "";
+                        : target; // will result in 'no data'
             }
             if (target) {
                 gridColumnDefinition!.addToFilter!(f, target);
