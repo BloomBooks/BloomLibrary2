@@ -9,7 +9,6 @@ import { IntlProvider } from "react-intl";
 // these two firebase imports are strange, but not an error. See https://github.com/firebase/firebase-js-sdk/issues/1832
 import firebase from "firebase/app";
 import "firebase/auth";
-import { defineMessages, defineMessage } from "react-intl";
 
 //import * as firebaseui from "firebaseui";
 import { connectParseServer } from "./connection/ParseServerConnection";
@@ -110,8 +109,14 @@ const spanish = {
     "rangePicker.custom": "Custom_es",
 };
 
+function getUserLanguageFromBrowser() {
+    return navigator.languages && navigator.languages.length
+        ? navigator.languages[0]
+        : navigator.language ?? "en";
+}
+
 ReactDOM.render(
-    <IntlProvider locale={"es"} messages={spanish}>
+    <IntlProvider locale={getUserLanguageFromBrowser()} messages={spanish}>
         <App />
     </IntlProvider>,
     document.getElementById("root")
