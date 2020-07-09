@@ -111,9 +111,7 @@ export const BookReadingReport: React.FunctionComponent<IStatsProps> = (
         >
             <Grid rows={stats!} columns={columns}>
                 <SortingState
-                    defaultSorting={[
-                        { columnName: "quizzesTaken", direction: "desc" },
-                    ]}
+                    defaultSorting={[{ columnName: "title", direction: "asc" }]}
                 />
                 <IntegratedSorting
                     columnExtensions={integratedSortingColumnExtensions}
