@@ -42,6 +42,15 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> 
         // 30px: number plus margin; 100px: 100% is 100px wide; 16px: material default padding
         { columnName: "medianCorrect", width: 30 + 100 + 16 },
     ] as Table.ColumnExtension[]);
+
+    // Configure numeric sorts for the last two columns (so 453 is not less than 5)
+    const [integratedSortingColumnExtensions] = useState([
+        { columnName: "questions", compare: compareNumbers },
+        { columnName: "quizzesTaken", compare: compareNumbers },
+        { columnName: "meanCorrect", compare: compareNumbers },
+        { columnName: "medianCorrect", compare: compareNumbers },
+    ]);
+
     const i18n = useIntl();
     const CustomTableHeaderCell = (cellProps: any) => {
         const adjustedProps = { ...cellProps };
@@ -127,7 +136,9 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> 
                         { columnName: "quizzesTaken", direction: "desc" },
                     ]}
                 />
-                <IntegratedSorting />
+                <IntegratedSorting
+                    columnExtensions={integratedSortingColumnExtensions}
+                />
                 <Table
                     columnExtensions={tableColumnExtensions}
                     cellComponent={CustomTableCell}
@@ -161,4 +172,13 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> 
             </div> */}
         </div>
     );
+};
+
+const compareNumbers = (a: string, b: string): number => {
+    const numA = parseFloat(a);
+    const numB = parseFloat(b);
+    if (numA === numB) {
+        return 0;
+    }
+    return numA < numB ? -1 : 1;
 };
