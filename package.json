@@ -62,6 +62,7 @@
         "react-firebaseui": "^4.1.0",
         "react-id-swiper": "^3.0.0",
         "react-image": "^2.3.0",
+        "react-intl": "^5.0.2",
         "react-json-view": "^1.19.1",
         "react-lazyload": "^2.6.5",
         "react-markdown": "^4.3.1",

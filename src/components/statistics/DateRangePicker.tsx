@@ -16,6 +16,7 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import DateRangeIcon from "@material-ui/icons/DateRange";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
+import { useIntl, FormattedMessage } from "react-intl";
 
 export type IDateBoundary = Date | undefined;
 
@@ -37,6 +38,9 @@ export const DateRangePicker: React.FunctionComponent<{
     setRange: (range: IDateRange) => void;
 }> = (props) => {
     const [open, setOpen] = useState(false);
+
+    const i18n = useIntl();
+
     return (
         <div>
             <Button
@@ -52,15 +56,25 @@ export const DateRangePicker: React.FunctionComponent<{
                         margin-left: 10px;
                     `}
                 >
-                    {props.range.startDate || props.range.endDate
-                        ? (props.range.startDate
-                              ? toUTCLocaleDateString(props.range.startDate)
-                              : "∞") +
-                          " — " +
-                          (props.range.endDate
-                              ? toUTCLocaleDateString(props.range.endDate)
-                              : "Today")
-                        : "All Time"}
+                    {props.range.startDate || props.range.endDate ? (
+                        (props.range.startDate
+                            ? toUTCLocaleDateString(props.range.startDate)
+                            : "∞") +
+                        " — " +
+                        (props.range.endDate ? (
+                            toUTCLocaleDateString(props.range.endDate)
+                        ) : (
+                            <FormattedMessage
+                                id="rangePicker.today"
+                                defaultMessage="Today"
+                            />
+                        ))
+                    ) : (
+                        <FormattedMessage
+                            id="rangePicker.allTime"
+                            defaultMessage="All Time"
+                        />
+                    )}
                 </span>
             </Button>
             {open && (
@@ -99,14 +113,29 @@ export const DateRangePicker: React.FunctionComponent<{
                                     disablePortal: true,
                                 }}
                             >
-                                <MenuItem value="∞">{"All Time"}</MenuItem>
+                                <MenuItem value="∞">
+                                    <FormattedMessage
+                                        id="rangePicker.allTime"
+                                        defaultMessage="All Time"
+                                    />
+                                </MenuItem>
                                 <MenuItem disabled={true} value="custom">
-                                    {"Custom"}
+                                    <FormattedMessage
+                                        id="rangePicker.custom"
+                                        defaultMessage="Custom"
+                                    />
                                 </MenuItem>
                             </Select>
                             <div>
-                                <h4>Include Events From</h4>
+                                <h4>
+                                    {" "}
+                                    <FormattedMessage
+                                        id="rangePicker.from"
+                                        defaultMessage="Include Events From"
+                                    />
+                                </h4>
                                 <Calendar
+                                    locale={i18n.locale}
                                     value={
                                         props.range.startDate
                                             ? props.range.startDate
@@ -127,8 +156,14 @@ export const DateRangePicker: React.FunctionComponent<{
                                     margin-top: 10px;
                                 `}
                             >
-                                <h4>To</h4>{" "}
+                                <h4>
+                                    <FormattedMessage
+                                        id="rangePicker.to"
+                                        defaultMessage="To"
+                                    />
+                                </h4>
                                 <Calendar
+                                    locale={i18n.locale}
                                     value={
                                         props.range.endDate
                                             ? props.range.endDate

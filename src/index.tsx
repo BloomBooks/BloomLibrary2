@@ -4,10 +4,12 @@ import "./index.css";
 import * as Sentry from "@sentry/browser";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
+import { IntlProvider } from "react-intl";
 
 // these two firebase imports are strange, but not an error. See https://github.com/firebase/firebase-js-sdk/issues/1832
 import firebase from "firebase/app";
 import "firebase/auth";
+import { defineMessages, defineMessage } from "react-intl";
 
 //import * as firebaseui from "firebaseui";
 import { connectParseServer } from "./connection/ParseServerConnection";
@@ -19,7 +21,7 @@ try {
             dsn:
                 "https://f33c34679bd044ba93eebb6fdf2132e3@sentry.keyman.com/18",
             environment: window.location.hostname,
-            attachStacktrace: true
+            attachStacktrace: true,
         });
     }
 } catch (error) {
@@ -33,7 +35,7 @@ const firebaseConfig = {
     projectId: "sil-bloomlibrary",
     storageBucket: "sil-bloomlibrary.appspot.com",
     messagingSenderId: "481016061476",
-    appId: "1:481016061476:web:8c9905ffec02e8579b82b1"
+    appId: "1:481016061476:web:8c9905ffec02e8579b82b1",
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -48,7 +50,7 @@ firebase.auth().onAuthStateChanged(() => {
             // .then(result =>
             //     console.log("ConnectParseServer resolved with " + result)
             // )
-            .catch(err => {
+            .catch((err) => {
                 console.log(
                     "*** Signing out of firebase because of an error connecting to ParseServer"
                 );
@@ -57,7 +59,63 @@ firebase.auth().onAuthStateChanged(() => {
     });
 });
 
-ReactDOM.render(<App />, document.getElementById("root"));
+// const translationsForUsersLocale = defineMessages({
+//   collectionStatisticsHeader: {
+//     id: 'app.home.greeting',
+//     description: 'Bloom Collection Statistics',
+//     defaultMessage: 'Bloom Collection Statistics',
+//   },
+// });
+
+const spanish = {
+    "stats.header": "Bloom Collection Statistics_es",
+
+    "stats.overview": "Overview_es",
+    books: "Libros",
+    topics: "Topics_es",
+    devices: "Aparatos",
+    "stats.devices.info":
+        "Count of devices where we received notice where at least on book from this collection had been loaded._es",
+    "stats.devices.bloomReader": "con Bloom Reader",
+    "stats.devices.mobile": "Mobile_es",
+    "stats.devices.pc": "PC_es",
+    "stats.reads": "Reads_es",
+    "stats.reads.web": "Web_es",
+    "stats.reads.apps": "Apps_es",
+    bloomReader: "Bloom Reader_es",
+    downloads: "Downloads_es",
+    "downloads.forTranslation": "For Translation_es",
+
+    "stats.bloomReaderSessions": "Sesiones de Bloom Reader",
+
+    "stats.booksRead": "Libros leídos",
+    language: "Idioma",
+    languages: "Idiomas",
+    "stats.booksRead.finishedCount": "Terminado",
+    "stats.booksRead.startedCount": "Empezado",
+
+    // comprehension
+    "stats.comprehensionQuestions": "Preguntas de comprensión",
+    bookTitle: "Título del libro",
+    branding: "Marcación",
+    "stats.questions": "Preguntas",
+    "stats.quizzesTaken": "Pruebas realizadas",
+    "stats.meanCorrect": "Media",
+    "stats.medianCorrect": "Mediana",
+
+    "rangePicker.allTime": "All Time_es",
+    "rangePicker.today": "Today_es",
+    "rangePicker.to": "To_es",
+    "rangePicker.from": "Include Events From_es",
+    "rangePicker.custom": "Custom_es",
+};
+
+ReactDOM.render(
+    <IntlProvider locale={"es"} messages={spanish}>
+        <App />
+    </IntlProvider>,
+    document.getElementById("root")
+);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

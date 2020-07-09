@@ -17,6 +17,7 @@ import { useState } from "react";
 import { IStatsProps } from "./StatsInterfaces";
 import { useGetBookComprehensionEventStats } from "./useGetBookStats";
 import { useProvideDataForExport } from "./exportData";
+import { useIntl } from "react-intl";
 
 export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> = (
     props
@@ -25,8 +26,8 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> 
     useProvideDataForExport(stats, props);
 
     const columns: IGridColumn[] = [
-        { name: "title", title: "Book Title" },
-        { name: "branding", title: "Branding" },
+        { name: "title", title: "Book Title", l10nId: "bookTitle" },
+        { name: "branding", title: "Branding", l10nId: "branding" },
         { name: "questions", title: "Questions" },
         { name: "quizzesTaken", title: "Quizzes Taken" },
         { name: "meanCorrect", title: "Mean Percent Correct" },
@@ -41,11 +42,17 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> 
         // 30px: number plus margin; 100px: 100% is 100px wide; 16px: material default padding
         { columnName: "medianCorrect", width: 30 + 100 + 16 },
     ] as Table.ColumnExtension[]);
-
+    const i18n = useIntl();
     const CustomTableHeaderCell = (cellProps: any) => {
         const adjustedProps = { ...cellProps };
         adjustedProps.value =
             adjustedProps.column.title || adjustedProps.column.name;
+        adjustedProps.column.title = i18n.formatMessage({
+            id:
+                adjustedProps.column.l10nId ??
+                "stats." + adjustedProps.column.name,
+            defaultMessage: adjustedProps.column.title,
+        });
         return (
             <TableHeaderRow.Cell
                 {...adjustedProps}

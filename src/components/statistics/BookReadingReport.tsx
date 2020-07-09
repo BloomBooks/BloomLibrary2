@@ -19,6 +19,7 @@ import { useGetBookStats } from "./useGetBookStats";
 import { useProvideDataForExport } from "./exportData";
 import { CachedTablesContext } from "../../App";
 import { getLanguageNamesFromCode } from "../../model/Language";
+import { useIntl } from "react-intl";
 
 export const BookReadingReport: React.FunctionComponent<IStatsProps> = (
     props
@@ -40,9 +41,9 @@ export const BookReadingReport: React.FunctionComponent<IStatsProps> = (
     }
 
     const columns: IGridColumn[] = [
-        { name: "title", title: "Book Title" },
-        { name: "branding", title: "Branding" },
-        { name: "language", title: "Language" },
+        { name: "title", title: "Book Title", l10nId: "bookTitle" },
+        { name: "branding", title: "Branding", l10nId: "branding" },
+        { name: "language", title: "Language", l10nId: "language" },
         //{ name: "extra", title: "Extra" },
         { name: "finishedCount", title: "Finished" },
         { name: "startedCount", title: "Started" },
@@ -64,11 +65,19 @@ export const BookReadingReport: React.FunctionComponent<IStatsProps> = (
         { columnName: "startedCount", width: "95px", align: "right" },
     ] as Table.ColumnExtension[]);
 
+    const i18n = useIntl();
+
     // This table might not need this...no column headers need wrapping?
     const CustomTableHeaderCell = (cellProps: any) => {
         const adjustedProps = { ...cellProps };
         adjustedProps.value =
             adjustedProps.column.title || adjustedProps.column.name;
+        adjustedProps.column.title = i18n.formatMessage({
+            id:
+                adjustedProps.column.l10nId ??
+                "stats.booksRead." + adjustedProps.column.name,
+            defaultMessage: adjustedProps.column.title,
+        });
         return (
             <TableHeaderRow.Cell
                 {...adjustedProps}

@@ -3,7 +3,7 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 
 import { useGetCollection } from "../../model/Collections";
 
@@ -24,6 +24,7 @@ import { useStorageState } from "react-storage-hooks";
 import { exportCsv } from "./exportData";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import { BookReadingReport } from "./BookReadingReport";
+import { FormattedMessage, useIntl } from "react-intl";
 
 export interface IScreen {
     label: string;
@@ -32,33 +33,52 @@ export interface IScreen {
 export const Pretend: React.FunctionComponent<IStatsProps> = (props) => {
     return <h1>Pretend</h1>;
 };
-const screens: IScreen[] = [
-    {
-        label: "Overview",
-        component: (p: IStatsProps) => <StatsOverviewScreen {...p} />,
-    },
-    {
-        label: "Comprehension Questions",
-        component: (p: IStatsProps) => (
-            <ComprehensionQuestionsReport {...p}></ComprehensionQuestionsReport>
-        ),
-    },
-    {
-        label: "Bloom Reader Sessions",
-        component: (p: IStatsProps) => <ReaderSessionsChart {...p} />,
-    },
-    {
-        label: "Books Read",
-        component: (p: IStatsProps) => (
-            <BookReadingReport {...p}></BookReadingReport>
-        ),
-    },
-];
 
 export const kStatsPageGray = "#ececec";
 export const CollectionStatsPage: React.FunctionComponent<{
     collectionName: string;
 }> = (props) => {
+    const i18n = useIntl();
+    const screens: IScreen[] = useMemo(
+        () => [
+            {
+                label: i18n.formatMessage({
+                    id: "stats.overview",
+                    defaultMessage: "Overview",
+                }),
+                component: (p: IStatsProps) => <StatsOverviewScreen {...p} />,
+            },
+            {
+                label: i18n.formatMessage({
+                    id: "stats.comprehensionQuestions",
+                    defaultMessage: "Comprehension Questions",
+                }),
+                component: (p: IStatsProps) => (
+                    <ComprehensionQuestionsReport
+                        {...p}
+                    ></ComprehensionQuestionsReport>
+                ),
+            },
+            {
+                label: i18n.formatMessage({
+                    id: "stats.bloomReaderSessions",
+                    defaultMessage: "Bloom Reader Sessions",
+                }),
+                component: (p: IStatsProps) => <ReaderSessionsChart {...p} />,
+            },
+            {
+                label: i18n.formatMessage({
+                    id: "stats.booksRead",
+                    defaultMessage: "Books Read",
+                }),
+                component: (p: IStatsProps) => (
+                    <BookReadingReport {...p}></BookReadingReport>
+                ),
+            },
+        ],
+        [i18n]
+    );
+
     const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
     const [exportDataFn, setExportDataFn] = useState<
         ExportDataFn | undefined
@@ -107,7 +127,13 @@ export const CollectionStatsPage: React.FunctionComponent<{
             `}
         >
             <h1>{collection?.label}</h1>
-            <h2>Bloom Collection Statistics</h2>
+
+            <h2>
+                <FormattedMessage
+                    id="stats.header"
+                    defaultMessage="Bloom Collection Statistics"
+                />
+            </h2>
             <div
                 css={css`
                     //background-color: ${kStatsPageGray};

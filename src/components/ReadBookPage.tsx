@@ -163,7 +163,6 @@ export const ReadBookPage: React.FunctionComponent<{
                     }}
                 />
             )}
-            // <div>I am groot</div>
         </React.Fragment>
     );
 };
