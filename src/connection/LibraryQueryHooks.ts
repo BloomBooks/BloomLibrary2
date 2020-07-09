@@ -823,6 +823,11 @@ export function constructParseBookQuery(
                     // Note that if filter actually has a feature field (filter.feature is defined)
                     // that will win, overiding any feature: in the search field (see below).
                     params.where.features = facetValue;
+                    if (facetValue === "activity") {
+                        // old data had a separate entry for quiz, now we just consider that
+                        // a kind of activity.
+                        params.where.features = { $in: ["activity", "quiz"] };
+                    }
                     break;
                 case "phash":
                     // work around https://issues.bloomlibrary.org/youtrack/issue/BL-8327 until it is fixed
