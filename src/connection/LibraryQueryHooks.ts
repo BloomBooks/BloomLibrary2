@@ -576,7 +576,11 @@ export function useCollectionStats(
             parseDBQuery: bookQueryParams,
         };
     } else {
-        apiFilter = statsProps.collection.statisticsQuerySpec;
+        // we're going to modify apiFilter, and don't want to modify statsProps, so make a copy.
+        // This is important...if we don't so it, a stale fromDate or toDate can get saved
+        // in statsProps.collection.statisticsQuerySpec, and then if later stats.Props.startDate
+        // changes to undefined, the code below won't remove it.
+        apiFilter = { ...statsProps.collection.statisticsQuerySpec };
     }
 
     if (statsProps.dateRange.startDate) {
