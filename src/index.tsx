@@ -104,14 +104,14 @@ const spanish = {
 
     // query description
     "stats.queryDescription.underCountingNote":
-        "Note that the events that devices and browsers try to send to us are sometimes stopped by various network firewalls. Therefore we may be under counting._es",
-    "stats.queryDescription.about": "About this data",
+        "Tenga en cuenta que los eventos que los aparatos y los navegadores intentan enviarnos son a veces detenidos por varios cortafuegos de red.Por lo tanto, los resultados pueden estar subestimados.",
+    "stats.queryDescription.about": "Sobre estos datos",
     "stats.queryDescription.intro":
-        "These statistics are from events we received which fit the following criteria:",
-    "stats.queryDescription.collection": "Books currently in the collection:",
-    "stats.queryDescription.branding": "Books with branding:",
-    "stats.queryDescription.country": "From users inside of country:",
-    "stats.queryDescription.dateRange": "Date range:",
+        "Estas estadísticas son de eventos que recibimos que cumplen con los siguientes criterios:",
+    "stats.queryDescription.collection": "Libros actualmente en la colección:",
+    "stats.queryDescription.branding": "Libros con marcación:",
+    "stats.queryDescription.country": "De usuarios dentro del país:",
+    "stats.queryDescription.dateRange": "Rango de fechas:",
 
     // range picker
     "rangePicker.allTime": "Todas las fechas",
