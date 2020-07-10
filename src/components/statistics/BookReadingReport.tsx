@@ -60,9 +60,14 @@ export const BookReadingReport: React.FunctionComponent<IStatsProps> = (
         { columnName: "branding", width: "auto" },
         { columnName: "language", width: "auto" },
         //{ columnName: "extra", width: "auto" },
-        { columnName: "finishedCount", width: "95px", align: "right" },
 
-        { columnName: "startedCount", width: "95px", align: "right" },
+        // I'd like to make these columns just wide enough to show their labels,
+        // with wrapping. The grid is implemented with tables, however, and they
+        // don't have that sort of smarts. This is enough for the Spanish labels,
+        // which are wider than English.
+        { columnName: "finishedCount", width: "130px", align: "right" },
+
+        { columnName: "startedCount", width: "130px", align: "right" },
     ] as Table.ColumnExtension[]);
 
     const i18n = useIntl();
