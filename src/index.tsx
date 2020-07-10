@@ -67,30 +67,30 @@ firebase.auth().onAuthStateChanged(() => {
 // });
 
 const spanish = {
-    "stats.header": "Bloom Collection Statistics_es",
+    "stats.header": "Estadísticas de la colección Bloom",
 
-    "stats.overview": "Overview_es",
+    "stats.overview": "Resumen",
     books: "Libros",
-    topics: "Topics_es",
+    topics: "Temas",
     devices: "Aparatos",
     "stats.devices.info":
-        "Count of devices where we received notice where at least on book from this collection had been loaded._es",
+        "Conteo de aparatos para los cuales recibimos la noticia de que al menos un libro de esta colección había sido cargado.",
     "stats.devices.bloomReader": "con Bloom Reader",
-    "stats.devices.mobile": "Mobile_es",
-    "stats.devices.pc": "PC_es",
-    "stats.reads": "Reads_es",
-    "stats.reads.web": "Web_es",
-    "stats.reads.apps": "Apps_es",
-    bloomReader: "Bloom Reader_es",
-    downloads: "Downloads_es",
-    "downloads.forTranslation": "For Translation_es",
+    "stats.devices.mobile": "Móviles",
+    "stats.devices.pc": "PC",
+    "stats.reads": "Leídos",
+    "stats.reads.web": "Web",
+    "stats.reads.apps": "Apps",
+    bloomReader: "Bloom Reader",
+    downloads: "Descargas",
+    "downloads.forTranslation": "Para traducir",
 
     "stats.bloomReaderSessions": "Sesiones de Bloom Reader",
 
     "stats.booksRead": "Libros leídos",
     language: "Idioma",
     languages: "Idiomas",
-    "stats.booksRead.finishedCount": "Terminado",
+    "stats.booksRead.finishedCount": "Termindado(s)",
     "stats.booksRead.startedCount": "Empezado",
 
     // comprehension
@@ -104,21 +104,21 @@ const spanish = {
 
     // query description
     "stats.queryDescription.underCountingNote":
-        "These statistic are from events we received which fit the following criteria:_es",
+        "Note that the events that devices and browsers try to send to us are sometimes stopped by various network firewalls. Therefore we may be under counting._es",
     "stats.queryDescription.about": "About this data",
     "stats.queryDescription.intro":
-        "These statistic are from events we received which fit the following criteria:",
+        "These statistics are from events we received which fit the following criteria:",
     "stats.queryDescription.collection": "Books currently in the collection:",
     "stats.queryDescription.branding": "Books with branding:",
     "stats.queryDescription.country": "From users inside of country:",
     "stats.queryDescription.dateRange": "Date range:",
 
     // range picker
-    "rangePicker.allTime": "All Time_es",
-    "rangePicker.today": "Today_es",
-    "rangePicker.to": "To_es",
-    "rangePicker.from": "Include Events From_es",
-    "rangePicker.custom": "Custom_es",
+    "rangePicker.allTime": "Todas las fechas",
+    "rangePicker.today": "Hoy día",
+    "rangePicker.to": "Hasta",
+    "rangePicker.from": "Incluir los eventos desde",
+    "rangePicker.custom": "Personalizado",
 };
 
 function getUserLanguageFromBrowser() {

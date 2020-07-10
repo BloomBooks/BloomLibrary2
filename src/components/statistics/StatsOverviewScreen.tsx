@@ -72,7 +72,7 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
                 info={i18n.formatMessage({
                     id: "stats.devices.info",
                     defaultMessage:
-                        "Count of devices where we received notice where at least on book from this collection had been loaded.",
+                        "Count of devices for which we received notice that at least one book from this collection had been loaded.",
                 })}
                 subitems={[
                     {
