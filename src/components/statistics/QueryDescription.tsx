@@ -7,11 +7,12 @@ import React, { useMemo } from "react";
 import { IDateRange, rangeToString } from "./DateRangePicker";
 import { useIntl } from "react-intl";
 import { ICollection } from "../../model/ContentInterfaces";
+
 function useLocalize(prefix: string): (id: string, msg: string) => string {
     const l10n = useIntl();
     const t = useMemo(
         () => (id: string, msg: string) => {
-            console.log(`"${prefix + id}":"${msg}"`);
+            //console.log(`"${prefix + id}":"${msg}"`);
             return l10n.formatMessage({
                 id: prefix + id,
                 defaultMessage: msg,

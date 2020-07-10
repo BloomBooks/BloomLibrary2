@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 
 import theme from "./theme";
@@ -28,7 +28,9 @@ import { Alert, AlertTitle } from "@material-ui/lab";
 import { Header } from "./components/header/Header";
 import { Routes } from "./components/Routes";
 import { Footer } from "./components/Footer";
+import { IntlProvider } from "react-intl";
 
+import { useGetLocalizations } from "./GetLocalizations";
 interface ICachedTables {
     tags: string[];
     languagesByBookCount: ILanguage[];
@@ -47,6 +49,8 @@ export const CachedTablesContext = React.createContext<ICachedTables>({
     bookshelves: [],
 });
 
+//console.log("getUserLanguageFromBrowser() " + getUserLanguageFromBrowser());
+
 export const App: React.FunctionComponent<{}> = (props) => {
     const tags = useGetTagList();
     const languagesByBookCount = useGetCleanedAndOrderedLanguageList();
@@ -56,17 +60,34 @@ export const App: React.FunctionComponent<{}> = (props) => {
     CachedTables.languagesByBookCount = languagesByBookCount;
 
     const embeddedMode = window.self !== window.top;
+    const [chosenLocale, setChosenLocale] = useState(
+        getUserLanguageFromBrowser()
+    );
+    const stringsForThisLocale = useGetLocalizations(chosenLocale);
 
     return (
-        <div
-            css={css`
-                display: flex;
-                flex-direction: column;
-                margin-left: 0;
-                height: 100%;
-            `}
+        <IntlProvider
+            locale={chosenLocale}
+            messages={stringsForThisLocale}
+            onError={(s: any) => {
+                if (s.code !== "MISSING_TRANSLATION") {
+                    console.info(`${JSON.stringify(s)}`);
+
+                    console.warn(
+                        `Add Message to Bloom Library Strings:\n${s.descriptor.id},${s.descriptor.defaultMessage}`
+                    );
+                }
+            }}
         >
-            {/* <React.StrictMode>
+            <div
+                css={css`
+                    display: flex;
+                    flex-direction: column;
+                    margin-left: 0;
+                    height: 100%;
+                `}
+            >
+                {/* <React.StrictMode>
         In StrictMode,
             * react-image 2.3.0 makes this complain about UNSAFE_componentWillReceiveProps
             * react-lazyload 2.6.5 makes it complain about finDomNode
@@ -80,45 +101,46 @@ export const App: React.FunctionComponent<{}> = (props) => {
 
         See also https://github.com/facebook/react/issues/16362
 */}
-            <ThemeProvider theme={theme}>
-                <CachedTablesContext.Provider
-                    value={{
-                        tags,
-                        languagesByBookCount,
-                        bookshelves,
-                    }}
-                >
-                    <OSFeaturesContext.Provider
+                <ThemeProvider theme={theme}>
+                    <CachedTablesContext.Provider
                         value={{
-                            bloomDesktopAvailable,
-                            bloomReaderAvailable,
-                            cantUseBloomD,
-                            mobile,
+                            tags,
+                            languagesByBookCount,
+                            bookshelves,
                         }}
                     >
-                        {window.location.hostname === "localhost" || (
-                            <UnderConstruction />
-                        )}
+                        <OSFeaturesContext.Provider
+                            value={{
+                                bloomDesktopAvailable,
+                                bloomReaderAvailable,
+                                cantUseBloomD,
+                                mobile,
+                            }}
+                        >
+                            {window.location.hostname === "localhost" || (
+                                <UnderConstruction />
+                            )}
 
-                        <Router>
-                            {embeddedMode || <Header />}
-                            {/* This div takes up all the space available so that the footer
+                            <Router>
+                                {embeddedMode || <Header />}
+                                {/* This div takes up all the space available so that the footer
                                 is either at the bottom or pushed off screen */}
-                            <div
-                                id="expandableContent"
-                                css={css`
-                                    flex: 1 0 auto;
-                                `}
-                            >
-                                <Routes />
-                            </div>
-                            {embeddedMode || <Footer />}
-                        </Router>
-                    </OSFeaturesContext.Provider>
-                </CachedTablesContext.Provider>
-            </ThemeProvider>
-            <LoginDialog /> {/* </React.StrictMode> */}
-        </div>
+                                <div
+                                    id="expandableContent"
+                                    css={css`
+                                        flex: 1 0 auto;
+                                    `}
+                                >
+                                    <Routes />
+                                </div>
+                                {embeddedMode || <Footer />}
+                            </Router>
+                        </OSFeaturesContext.Provider>
+                    </CachedTablesContext.Provider>
+                </ThemeProvider>
+                <LoginDialog /> {/* </React.StrictMode> */}
+            </div>
+        </IntlProvider>
     );
 };
 
@@ -161,5 +183,11 @@ export const UnderConstruction: React.FunctionComponent<{}> = () => {
         </Snackbar>
     );
 };
+
+function getUserLanguageFromBrowser() {
+    return navigator.languages && navigator.languages.length
+        ? navigator.languages[0]
+        : navigator.language ?? "en";
+}
 
 export default App;

@@ -128,7 +128,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
             `}
         >
             <h1>{collection?.label}</h1>
-
+            <FormattedMessage id="foobar!!" defaultMessage="Foobar" />
             <h2>
                 <FormattedMessage
                     id="stats.header"
@@ -185,7 +185,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
                 ></DateRangePicker>
             </div>
             {/* using the fact that no data has been registered with us to know when data is available */}
-            {exportDataFn || (
+            {!exportDataFn && (
                 <LinearProgress
                     css={css`
                         margin-top: 50px;
