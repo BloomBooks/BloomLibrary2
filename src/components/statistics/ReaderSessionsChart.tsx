@@ -61,7 +61,8 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
         const key = byMonth ? toMmmYyyy(date) : getFirstDayOfWeekYyyyMmDd(date);
 
         const count = counts.get(key) || 0;
-        const newCount = count + dailyInfo.bloomReaderSessions;
+        // The preceding plus signs make these add like numbers instead of concatenate like strings.
+        const newCount = +count + +dailyInfo.bloomReaderSessions;
         maxCount = Math.max(maxCount, newCount);
         counts.set(key, newCount);
     });
