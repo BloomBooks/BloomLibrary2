@@ -6,7 +6,7 @@ import { useCollectionStats } from "../../connection/LibraryQueryHooks";
 
 export function useGetDailyBookEventStats(
     props: IStatsProps
-): IDailyBookEventStat[] {
+): IDailyBookEventStat[] | undefined {
     const { response } = useCollectionStats(props, "reading/per-day");
 
     if (response && response["data"] && response["data"]["stats"])
@@ -21,5 +21,5 @@ export function useGetDailyBookEventStats(
                 bloomReaderSessions: parseInt(s.bloomreadersessions, 10),
             };
         });
-    return [];
+    return undefined;
 }

@@ -1,7 +1,7 @@
 import { IStatsProps, IBookStat } from "./StatsInterfaces";
 import { useCollectionStats } from "../../connection/LibraryQueryHooks";
 
-export function useGetBookStats(props: IStatsProps): IBookStat[] {
+export function useGetBookStats(props: IStatsProps): IBookStat[] | undefined {
     const { response } = useCollectionStats(props, "reading/per-book");
 
     if (response && response["data"] && response["data"]["stats"])
@@ -17,13 +17,16 @@ export function useGetBookStats(props: IStatsProps): IBookStat[] {
                 finishedCount: parseInt(s.finished, 10),
             };
         });
-    return [];
+    return undefined;
 }
 
 export function useGetBookComprehensionEventStats(
     props: IStatsProps
-): IBookStat[] {
-    const { response } = useCollectionStats(props, "reading/per-book");
+): IBookStat[] | undefined {
+    const { response } = useCollectionStats(
+        props,
+        "reading/per-book"
+    );
 
     if (response && response["data"] && response["data"]["stats"])
         return response["data"]["stats"].map((s: any) => {
@@ -39,5 +42,5 @@ export function useGetBookComprehensionEventStats(
                 medianCorrect: parseFloat(s.medianpctquestionscorrect),
             };
         });
-    return [];
+    return undefined;
 }

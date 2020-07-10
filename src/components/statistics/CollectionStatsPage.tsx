@@ -84,6 +84,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
     const [exportDataFn, setExportDataFn] = useState<
         ExportDataFn | undefined
     >();
+    const [waiting, setWaiting] = useState(true);
     const [dateRange, setDateRange] = useStorageState<IDateRange>(
         localStorage,
         "analytics-date-range",
@@ -184,8 +185,8 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     }}
                 ></DateRangePicker>
             </div>
-            {/* using the fact that no data has been registered with us to know when data is available */}
-            {exportDataFn || (
+            {/* show this until data is available */}
+            {waiting && (
                 <LinearProgress
                     css={css`
                         margin-top: 50px;
@@ -196,7 +197,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
             <div
                 css={css`
                     /* don't display at all until we have data... in the meantime we are showing the progress bar*/
-                    display: ${exportDataFn ? "block" : "none"};
+                    display: ${waiting ? "none" : "block"};
                 `}
             >
                 <div
@@ -235,11 +236,13 @@ export const CollectionStatsPage: React.FunctionComponent<{
                                 collection,
                                 dateRange,
                                 registerExportDataFn: (
-                                    fn: ExportDataFn | undefined
+                                    fn: ExportDataFn | undefined,
+                                    waiting: boolean
                                 ) => {
                                     // this double function is to keep react's use state thing from *running* the function,
                                     // which is wants to do!
                                     setExportDataFn(() => fn);
+                                    setWaiting(waiting);
 
                                     // if (fn) {
                                     //     console.log(JSON.stringify(fn()));

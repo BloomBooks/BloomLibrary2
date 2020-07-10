@@ -22,14 +22,15 @@ import { useIntl } from "react-intl";
 export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> = (
     props
 ) => {
-    const stats = useGetBookComprehensionEventStats(props).filter(
-        (bookStatInfo) => {
-            // Filter out non-null values
-            // We'll just look at 2 of them. It'd also be fine to check all the relevant fields too, if desired.
-            return bookStatInfo.quizzesTaken && bookStatInfo.questions;
-        }
-    );
-    useProvideDataForExport(stats, props);
+    const stats1 = useGetBookComprehensionEventStats(props);
+    useProvideDataForExport(stats1, props);
+    const stats = stats1
+        ? stats1.filter((bookStatInfo) => {
+              // Filter out non-null values
+              // We'll just look at 2 of them. It'd also be fine to check all the relevant fields too, if desired.
+              return bookStatInfo.quizzesTaken && bookStatInfo.questions;
+          })
+        : undefined;
 
     const columns: IGridColumn[] = [
         { name: "title", title: "Book Title", l10nId: "bookTitle" },
@@ -116,6 +117,8 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> 
         }
     };
 
+    const gotRows = stats && stats.length > 0;
+
     //  const [headerColumnExtensions] = useState([
     //      { columnName: "quizzesTaken", wordWrapEnabled: true },
     //      { columnName: "meanCorrect", wordWrapEnabled: true },
@@ -136,24 +139,27 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> 
                 }
             `}
         >
-            <Grid rows={stats!} columns={columns}>
-                <SortingState
-                    defaultSorting={[
-                        { columnName: "quizzesTaken", direction: "desc" },
-                    ]}
-                />
-                <IntegratedSorting
-                    columnExtensions={integratedSortingColumnExtensions}
-                />
-                <Table
-                    columnExtensions={tableColumnExtensions}
-                    cellComponent={CustomTableCell}
-                />
-                <TableHeaderRow
-                    cellComponent={CustomTableHeaderCell}
-                    showSortingControls
-                />
-            </Grid>
+            {gotRows || <div>No data found</div>}
+            {gotRows && (
+                <Grid rows={stats!} columns={columns}>
+                    <SortingState
+                        defaultSorting={[
+                            { columnName: "quizzesTaken", direction: "desc" },
+                        ]}
+                    />
+                    <IntegratedSorting
+                        columnExtensions={integratedSortingColumnExtensions}
+                    />
+                    <Table
+                        columnExtensions={tableColumnExtensions}
+                        cellComponent={CustomTableCell}
+                    />
+                    <TableHeaderRow
+                        cellComponent={CustomTableHeaderCell}
+                        showSortingControls
+                    />
+                </Grid>
+            )}
             {/* <div
                 css={css`
                     display: flex;

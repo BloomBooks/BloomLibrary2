@@ -99,6 +99,7 @@ export const BookReadingReport: React.FunctionComponent<IStatsProps> = (
         { columnName: "startedCount", compare: compareNumbers },
     ]);
 
+    const gotRows = stats && stats.length > 0;
     return (
         <div
             css={css`
@@ -114,22 +115,27 @@ export const BookReadingReport: React.FunctionComponent<IStatsProps> = (
                 }
             `}
         >
-            <Grid rows={stats!} columns={columns}>
-                <SortingState
-                    defaultSorting={[{ columnName: "title", direction: "asc" }]}
-                />
-                <IntegratedSorting
-                    columnExtensions={integratedSortingColumnExtensions}
-                />
-                <Table
-                    columnExtensions={tableColumnExtensions}
-                    //cellComponent={CustomTableCell}
-                />
-                <TableHeaderRow
-                    cellComponent={CustomTableHeaderCell}
-                    showSortingControls
-                />
-            </Grid>
+            {gotRows || <div>No data found</div>}
+            {gotRows && (
+                <Grid rows={stats!} columns={columns}>
+                    <SortingState
+                        defaultSorting={[
+                            { columnName: "title", direction: "asc" },
+                        ]}
+                    />
+                    <IntegratedSorting
+                        columnExtensions={integratedSortingColumnExtensions}
+                    />
+                    <Table
+                        columnExtensions={tableColumnExtensions}
+                        //cellComponent={CustomTableCell}
+                    />
+                    <TableHeaderRow
+                        cellComponent={CustomTableHeaderCell}
+                        showSortingControls
+                    />
+                </Grid>
+            )}
         </div>
     );
 };
