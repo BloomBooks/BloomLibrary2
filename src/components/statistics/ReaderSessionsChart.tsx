@@ -76,8 +76,46 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
 
     sortAndComplete(mapData, byMonth);
 
+    // Items with values smaller than about this get zero pixels, and therfore
+    // no bar or label, so they are indistinguishable from empty bars.
+    const minVal = Math.ceil(maxCount / 120); // map has a bit more than 120px.
+
+    // To fix it, we basically change them to have a value of minVal, which
+    // makes them one pixel. However, for labels, we want to recover the original
+    // value. Since the only input to the labelFormatter is the value itself,
+    // we have to somehow encode the real value in the value, without significantly
+    // changing the height of the bar beyond the zero-to-one pixel fix.
+    // Since the values in this chart are all integers, we save the real
+    // value in the fractional part of the number. Dividing by 100*maxCount
+    // will make the fraction much less than one, so it won't have a noticeable affect
+    // on the height of the bar, even if maxCount is small. To further ensure this,
+    // we don't mess with things at all if a value of 1 is big enough to be visible.
+    // Javascript floating point numbers seem to be very high precision, so I don't
+    // think this will introduce errors unless the counts are absolutely enormous.
+    // In charts with counts up to 4000 or so, the unrounded counts have zeros or
+    // nines for about 8 digits, so we should be good up to about 400 billion
+    // book events per day. If we get that many, I don't think people will worry
+    // too much about small discrepancies on our off days.
+    if (minVal > 1) {
+        for (const item of mapData) {
+            if (item.sessionCount && item.sessionCount <= minVal) {
+                item.sessionCount = minVal + item.sessionCount / 100 / maxCount;
+            }
+        }
+    }
+
+    // Function to reverse the transformation in the loop above, for displaying
+    // the real count. Values between minVal and minVal + 1 have the real value
+    // encoded in their fractional part.
+    const fixVal = (input: number) => {
+        if (minVal > 1 && input >= minVal && input < minVal + 1) {
+            return Math.round((input - minVal) * 100 * maxCount);
+        }
+        return input;
+    };
+
     const labelFormatter: LabelFormatter = (((d: string | number) => {
-        const input = d as number;
+        const input = fixVal(d as number);
         let label = input.toString();
         // For large numbers, give 2-3 digits precision plus an indicator,
         // e.g., 43M, 4.3M, 431K,43K,4.3K, 431, 43, 4.
@@ -144,7 +182,7 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
                     // result.innerText = value.toString();
                     return (
                         <div>
-                            {indexValue + ": "} <strong>{value}</strong>
+                            {indexValue + ": "} <strong>{fixVal(value)}</strong>
                         </div>
                     );
                 }}
