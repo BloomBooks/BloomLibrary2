@@ -25,6 +25,7 @@ import { exportCsv } from "./exportData";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import { BookReadingReport } from "./BookReadingReport";
 import { FormattedMessage, useIntl } from "react-intl";
+import { QueryDescription } from "./QueryDescription";
 
 export interface IScreen {
     label: string;
@@ -38,18 +39,18 @@ export const kStatsPageGray = "#ececec";
 export const CollectionStatsPage: React.FunctionComponent<{
     collectionName: string;
 }> = (props) => {
-    const i18n = useIntl();
+    const l10n = useIntl();
     const screens: IScreen[] = useMemo(
         () => [
             {
-                label: i18n.formatMessage({
+                label: l10n.formatMessage({
                     id: "stats.overview",
                     defaultMessage: "Overview",
                 }),
                 component: (p: IStatsProps) => <StatsOverviewScreen {...p} />,
             },
             {
-                label: i18n.formatMessage({
+                label: l10n.formatMessage({
                     id: "stats.comprehensionQuestions",
                     defaultMessage: "Comprehension Questions",
                 }),
@@ -60,14 +61,14 @@ export const CollectionStatsPage: React.FunctionComponent<{
                 ),
             },
             {
-                label: i18n.formatMessage({
+                label: l10n.formatMessage({
                     id: "stats.bloomReaderSessions",
                     defaultMessage: "Bloom Reader Sessions",
                 }),
                 component: (p: IStatsProps) => <ReaderSessionsChart {...p} />,
             },
             {
-                label: i18n.formatMessage({
+                label: l10n.formatMessage({
                     id: "stats.booksRead",
                     defaultMessage: "Books Read",
                 }),
@@ -76,7 +77,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
                 ),
             },
         ],
-        [i18n]
+        [l10n]
     );
 
     const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
@@ -279,35 +280,17 @@ export const CollectionStatsPage: React.FunctionComponent<{
                         </Button>
                     )}
                 </div>
-                {/*
-            <div
-                css={css`
-                    padding: 10px;
-                    height: 100px;
-                `}
-            >
-                <span
+
+                <div
                     css={css`
-                        font-size: 20px;
+                        padding: 10px;
                     `}
                 >
-                    🛈
-                </span>
-                <h3
-                    css={css`
-                        display: inline;
-                    `}
-                >
-                    {" "}
-                    About this screen
-                </h3>
-                <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Mauris praesent praesent pretium dictum ipsum. Consequat,
-                    dictumst et lacus condimentum aliquet consequat, vitae in
-                    placerat. Dolor ullamcorper.
-                </p>
-            </div> */}
+                    <QueryDescription
+                        collection={collection}
+                        dateRange={dateRange}
+                    ></QueryDescription>
+                </div>
             </div>
         </div>
     );

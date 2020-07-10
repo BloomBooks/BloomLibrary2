@@ -102,6 +102,18 @@ const spanish = {
     "stats.meanCorrect": "Media",
     "stats.medianCorrect": "Mediana",
 
+    // query description
+    "stats.queryDescription.underCountingNote":
+        "These statistic are from events we received which fit the following criteria:_es",
+    "stats.queryDescription.about": "About this data",
+    "stats.queryDescription.intro":
+        "These statistic are from events we received which fit the following criteria:",
+    "stats.queryDescription.collection": "Books currently in the collection:",
+    "stats.queryDescription.branding": "Books with branding:",
+    "stats.queryDescription.country": "From users inside of country:",
+    "stats.queryDescription.dateRange": "Date range:",
+
+    // range picker
     "rangePicker.allTime": "All Time_es",
     "rangePicker.today": "Today_es",
     "rangePicker.to": "To_es",

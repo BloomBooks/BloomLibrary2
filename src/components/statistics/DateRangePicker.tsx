@@ -16,7 +16,7 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import DateRangeIcon from "@material-ui/icons/DateRange";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import { useIntl, FormattedMessage } from "react-intl";
+import { useIntl, FormattedMessage, IntlShape } from "react-intl";
 
 export type IDateBoundary = Date | undefined;
 
@@ -39,7 +39,7 @@ export const DateRangePicker: React.FunctionComponent<{
 }> = (props) => {
     const [open, setOpen] = useState(false);
 
-    const i18n = useIntl();
+    const l10n = useIntl();
 
     return (
         <div>
@@ -56,25 +56,7 @@ export const DateRangePicker: React.FunctionComponent<{
                         margin-left: 10px;
                     `}
                 >
-                    {props.range.startDate || props.range.endDate ? (
-                        (props.range.startDate
-                            ? toUTCLocaleDateString(props.range.startDate)
-                            : "∞") +
-                        " — " +
-                        (props.range.endDate ? (
-                            toUTCLocaleDateString(props.range.endDate)
-                        ) : (
-                            <FormattedMessage
-                                id="rangePicker.today"
-                                defaultMessage="Today"
-                            />
-                        ))
-                    ) : (
-                        <FormattedMessage
-                            id="rangePicker.allTime"
-                            defaultMessage="All Time"
-                        />
-                    )}
+                    {rangeToString(props.range, l10n)}
                 </span>
             </Button>
             {open && (
@@ -135,7 +117,7 @@ export const DateRangePicker: React.FunctionComponent<{
                                     />
                                 </h4>
                                 <Calendar
-                                    locale={i18n.locale}
+                                    locale={l10n.locale}
                                     value={
                                         props.range.startDate
                                             ? props.range.startDate
@@ -163,7 +145,7 @@ export const DateRangePicker: React.FunctionComponent<{
                                     />
                                 </h4>
                                 <Calendar
-                                    locale={i18n.locale}
+                                    locale={l10n.locale}
                                     value={
                                         props.range.endDate
                                             ? props.range.endDate
@@ -230,4 +212,20 @@ export function getFakeUtcDate(input: Date): Date {
 
 export function toUTCLocaleDateString(input: Date): string {
     return getFakeUtcDate(input).toLocaleDateString();
+}
+
+export function rangeToString(range: IDateRange, l10n: IntlShape): string {
+    return range.startDate || range.endDate
+        ? (range.startDate ? toUTCLocaleDateString(range.startDate) : "∞") +
+              " — " +
+              (range.endDate
+                  ? toUTCLocaleDateString(range.endDate)
+                  : l10n.formatMessage({
+                        id: "rangePicker.today",
+                        defaultMessage: "Today",
+                    }))
+        : l10n.formatMessage({
+              id: "rangePicker.allTime",
+              defaultMessage: "All Time",
+          });
 }
