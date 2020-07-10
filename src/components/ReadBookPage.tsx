@@ -13,12 +13,13 @@ import { useTrack } from "../analytics/Analytics";
 import { getBookAnalyticsInfo } from "../analytics/BookAnalyticsInfo";
 import { useDocumentTitle } from "./Routes";
 import FullscreenIcon from "@material-ui/icons/Fullscreen";
+import { ThemeProvider } from "@material-ui/styles";
 import {
     sendPlayerClosingAnalytics,
     startingBook,
 } from "../analytics/BloomPlayerAnalytics";
 import { commonUI } from "../theme";
-import { useMediaQuery } from "@material-ui/core";
+import { useMediaQuery, IconButton, createMuiTheme } from "@material-ui/core";
 
 export const ReadBookPage: React.FunctionComponent<{
     id: string;
@@ -135,6 +136,21 @@ export const ReadBookPage: React.FunctionComponent<{
 
     const iframeSrc = `${bloomPlayerUrl}?url=${url}&showBackButton=true&useOriginalPageSize=true${langParam}`;
 
+    // This theme matches Bloom-player. It is supposed to help the full-screen button
+    // better match the Bloom-player icons, whose toolbar it overlays. Not successful
+    // in making the hover background color have the same transparency as bloom-player.
+    // Decided to keep it as (a) it may be helping somewhat (b) it may be a necessary
+    // part of a complete solution; there's an 'override' property in theme that can
+    // set styles for things.
+    const theme = createMuiTheme({
+        palette: {
+            primary: {
+                main: "#2e2e2e",
+                contrastText: commonUI.colors.bloomRed,
+            },
+            secondary: { main: commonUI.colors.bloomRed },
+        },
+    });
     return (
         <React.Fragment>
             <iframe
@@ -148,20 +164,45 @@ export const ReadBookPage: React.FunctionComponent<{
                 //src={"https://google.com"}
             ></iframe>
             {fullScreen || (
-                <FullscreenIcon
+                <div
                     css={css`
-                        position: absolute;
-                        top: 20px;
-                        right: 8px;
+                        position: absolute !important;
+                        top: 8px;
+                        right: -6px;
                         color: ${commonUI.colors.bloomRed};
                     `}
-                    onClick={() => {
-                        setupScreen(
-                            rotateParams.canRotate,
-                            rotateParams.isLandscape
-                        );
-                    }}
-                />
+                >
+                    <ThemeProvider theme={theme}>
+                        <IconButton
+                            // doesn't help, something is not quite right...
+                            // possibly that VS Code lower-cases the style name on save!
+                            // css={css`
+                            //     &.MuiIconButton-colorSecondary:hover: {
+                            //         background-color: rgba(
+                            //             214,
+                            //             86,
+                            //             73,
+                            //             0.08
+                            //         ) !important;
+                            //     }
+                            // `}
+                            title="Full Screen"
+                            color="secondary"
+                            onClick={() => {
+                                setupScreen(
+                                    rotateParams.canRotate,
+                                    rotateParams.isLandscape
+                                );
+                            }}
+                        >
+                            <FullscreenIcon
+                                css={css`
+                                    color: ${commonUI.colors.bloomRed};
+                                `}
+                            />
+                        </IconButton>
+                    </ThemeProvider>
+                </div>
             )}
         </React.Fragment>
     );
