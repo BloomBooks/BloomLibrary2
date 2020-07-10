@@ -20,10 +20,7 @@ export function useGetBookStats(props: IStatsProps): IBookStat[] {
 export function useGetBookComprehensionEventStats(
     props: IStatsProps
 ): IBookStat[] {
-    const { response } = useCollectionStats(
-        props,
-        "reading/per-book-comprehension"
-    );
+    const { response } = useCollectionStats(props, "reading/per-book");
 
     if (response && response["data"] && response["data"]["stats"])
         return response["data"]["stats"].map((s: any) => {
