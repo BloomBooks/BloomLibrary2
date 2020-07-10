@@ -74,6 +74,8 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
         return { date: x, sessionCount: counts.get(x) };
     });
 
+    sortAndComplete(mapData, byMonth);
+
     const labelFormatter: LabelFormatter = (((d: string | number) => {
         const input = d as number;
         let label = input.toString();
@@ -176,4 +178,35 @@ function getFirstDayOfWeekYyyyMmDd(date: Date): string {
     const sunday = new Date();
     sunday.setTime(date.getTime() - offset);
     return toYyyyMmDd(sunday);
+}
+
+function sortAndComplete(
+    items: Array<{ date: string; sessionCount: number | undefined }>,
+    byMonth: boolean
+): void {
+    items.sort((a, b) => {
+        if (a.date === b.date) return 0;
+        return Date.parse(a.date) < Date.parse(b.date) ? -1 : 1;
+    });
+    let i = 0;
+    while (i < items.length - 1) {
+        let nextDate = new Date(items[i].date);
+        if (byMonth) {
+            if (nextDate.getUTCMonth() === 11) {
+                // untested
+                nextDate.setUTCFullYear(nextDate.getUTCFullYear() + 1);
+                nextDate.setUTCMonth(0);
+            } else {
+                nextDate.setUTCMonth(nextDate.getMonth() + 1);
+            }
+        } else {
+            nextDate = new Date(nextDate.getTime() + 1000 * 60 * 60 * 24 * 7); // add seven days of milliseconds
+        }
+        i++;
+        const nextDateString = toYyyyMmDd(nextDate);
+        if (items[i].date === nextDateString) {
+            continue;
+        }
+        items.splice(i, 0, { date: nextDateString, sessionCount: 0 });
+    }
 }
