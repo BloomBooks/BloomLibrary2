@@ -18,6 +18,8 @@ export function useGetOverviewStats(
 
             bloomPubDeviceMobile: parseInt(s.devicecount, 10),
 
+            readsBloomReader: parseInt(s.bloomreaderreadcount, 10),
+
             // TODO: get these from the database
             topics: 0,
 
@@ -30,7 +32,6 @@ export function useGetOverviewStats(
 
             readsWeb: 0,
             readsApps: 0,
-            readsBloomReader: 0,
         };
     }
     return undefined;
