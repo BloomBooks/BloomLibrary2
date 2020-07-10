@@ -88,9 +88,7 @@ export const StatsCard: React.FunctionComponent<{
                     ? props.overrideTotal
                     : props.subitems
                           ?.map((i) => i.value)
-                          // The plusses in front of t and i make these add like numbers
-                          // instead of concatenate like strings
-                          .reduce((t: number, i: number) => +t + +i, 0)}
+                          .reduce((t: number, i: number) => t + i, 0)}
             </div>
 
             <div

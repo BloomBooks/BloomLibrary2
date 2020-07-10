@@ -91,7 +91,7 @@ const spanish = {
     language: "Idioma",
     languages: "Idiomas",
     "stats.booksRead.finishedCount": "Termindado(s)",
-    "stats.booksRead.startedCount": "Empezado",
+    "stats.booksRead.startedCount": "Empezado(s)",
 
     // comprehension
     "stats.comprehensionQuestions": "Preguntas de comprensión",
@@ -104,7 +104,7 @@ const spanish = {
 
     // query description
     "stats.queryDescription.underCountingNote":
-        "Tenga en cuenta que los eventos que los aparatos y los navegadores intentan enviarnos son a veces detenidos por varios cortafuegos de red.Por lo tanto, los resultados pueden estar subestimados.",
+        "Tenga en cuenta que los eventos que los aparatos y los navegadores intentan enviarnos son a veces detenidos por varios cortafuegos de red. Por lo tanto, los resultados pueden estar subestimados.",
     "stats.queryDescription.about": "Sobre estos datos",
     "stats.queryDescription.intro":
         "Estas estadísticas son de eventos que recibimos que cumplen con los siguientes criterios:",
