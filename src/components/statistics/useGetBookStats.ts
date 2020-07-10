@@ -29,8 +29,8 @@ export function useGetBookComprehensionEventStats(
                 branding: s.bookbranding,
                 questions: s.numquestionsinbook,
                 quizzesTaken: s.numquizzestaken,
-                meanCorrect: s.meanpctcorrect,
-                medianCorrect: s.medianpctcorrect,
+                meanCorrect: s.meanpctquestionscorrect,
+                medianCorrect: s.medianpctquestionscorrect,
             };
         });
     return [];

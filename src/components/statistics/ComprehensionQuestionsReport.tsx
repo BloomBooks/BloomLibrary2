@@ -22,7 +22,13 @@ import { useIntl } from "react-intl";
 export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> = (
     props
 ) => {
-    const stats = useGetBookComprehensionEventStats(props);
+    const stats = useGetBookComprehensionEventStats(props).filter(
+        (bookStatInfo) => {
+            // Filter out non-null values
+            // We'll just look at 2 of them. It'd also be fine to check all the relevant fields too, if desired.
+            return bookStatInfo.quizzesTaken && bookStatInfo.questions;
+        }
+    );
     useProvideDataForExport(stats, props);
 
     const columns: IGridColumn[] = [
@@ -174,9 +180,24 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> 
     );
 };
 
-const compareNumbers = (a: string, b: string): number => {
-    const numA = parseFloat(a);
-    const numB = parseFloat(b);
+const compareNumbers = (
+    a: string | undefined | null,
+    b: string | undefined | null
+): number => {
+    // First check for falsy strings. These are problematic.
+    // If you don't handle them, the list will become sorted in arbitrary order.
+    // We'll just define nulls as being worse than 0... so... negative infinity.
+    let numA = a ? parseFloat(a) : Number.NEGATIVE_INFINITY;
+    if (isNaN(numA)) {
+        // Parse errors are also problematic.
+        numA = Number.NEGATIVE_INFINITY;
+    }
+
+    let numB = b ? parseFloat(b) : Number.NEGATIVE_INFINITY;
+    if (isNaN(numB)) {
+        numB = Number.NEGATIVE_INFINITY;
+    }
+
     if (numA === numB) {
         return 0;
     }
