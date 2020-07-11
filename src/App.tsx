@@ -63,19 +63,26 @@ export const App: React.FunctionComponent<{}> = (props) => {
     const [chosenLocale, setChosenLocale] = useState(
         getUserLanguageFromBrowser()
     );
-    const stringsForThisLocale = useGetLocalizations(chosenLocale);
+    const { closestLocale, stringsForThisLocale } = useGetLocalizations(
+        chosenLocale
+    );
 
     return (
         <IntlProvider
             locale={chosenLocale}
             messages={stringsForThisLocale}
             onError={(s: any) => {
-                if (s.code !== "MISSING_TRANSLATION") {
-                    console.info(`${JSON.stringify(s)}`);
-
+                // TODO this isn't working yet. The idea is to only print a message for the dev if we're in english and it looks
+                // like we haven't registered the string in the Bloom Library Strings.csv file.
+                if (
+                    closestLocale === "en" &&
+                    s.code === "MISSING_TRANSLATION"
+                ) {
                     console.warn(
-                        `Add Message to Bloom Library Strings:\n${s.descriptor.id},${s.descriptor.defaultMessage}`
+                        `Add Message to Bloom Library Strings.csv:\n${s.descriptor.id},${s.descriptor.defaultMessage}`
                     );
+                } else {
+                    console.error(`${JSON.stringify(s)}`);
                 }
             }}
         >

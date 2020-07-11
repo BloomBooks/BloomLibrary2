@@ -6,13 +6,18 @@ interface IStringMap {
     [id: string]: string;
 }
 
-export function useGetLocalizations(locale: string): any {
+export function useGetLocalizations(
+    locale: string
+): { closestLocale: string; stringsForThisLocale: any } {
     const { response } = useAxios({
         url: "/Bloom Library strings.csv",
         method: "GET",
         trigger: locale,
     });
-    const messageDictionaryForThisLocale = useMemo(() => {
+    const answer: {
+        closestLocale: string;
+        stringsForThisLocale: any;
+    } = useMemo(() => {
         const csv = response && response["data"] ? response["data"] : "";
         console.log(JSON.stringify(csv));
 
@@ -29,19 +34,19 @@ export function useGetLocalizations(locale: string): any {
             );
             console.log(JSON.stringify(x));
             const y: IStringMap = {};
-            const code = getBestCodeForLocale(locale, x);
+            const closestLocale = getBestCodeForLocale(locale, x);
             x.forEach((row: any) => {
-                y[row.Id] = row[code];
+                y[row.Id] = row[closestLocale];
             });
             console.log("***");
             console.log(JSON.stringify(y));
-            return y;
+            return { closestLocale, stringsForThisLocale: y };
         }
 
-        return {};
+        return { closestLocale: locale, stringsForThisLocale: [] };
     }, [response, locale]);
 
-    return messageDictionaryForThisLocale;
+    return answer;
 }
 
 function getBestCodeForLocale(locale: string, rows: any[]): string {
@@ -50,7 +55,10 @@ function getBestCodeForLocale(locale: string, rows: any[]): string {
     if (exampleRow[locale]) {
         return locale;
     }
-    const primary = locale.split("-")[0];
+    let primary = locale.split("-")[0];
+    if (primary === "en") {
+        primary = "Source";
+    }
     if (exampleRow[primary]) {
         return primary;
     }
