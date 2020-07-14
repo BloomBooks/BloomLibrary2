@@ -84,11 +84,13 @@ export const StatsCard: React.FunctionComponent<{
                     margin-bottom: 0;
                 `}
             >
-                {props.overrideTotal
-                    ? props.overrideTotal
-                    : props.subitems
-                          ?.map((i) => i.value)
-                          .reduce((t: number, i: number) => t + i, 0)}
+                {formatNumber(
+                    props.overrideTotal
+                        ? props.overrideTotal
+                        : props.subitems
+                              ?.map((i) => i.value)
+                              .reduce((t: number, i: number) => t + i, 0)
+                )}
             </div>
 
             <div
@@ -129,7 +131,7 @@ export const StatsCard: React.FunctionComponent<{
                                 font-weight: bold;
                             `}
                         >
-                            {i.value}
+                            {formatNumber(i.value)}
                         </div>
                     </div>
                 ))}
@@ -137,3 +139,10 @@ export const StatsCard: React.FunctionComponent<{
         </CardContent>
     </Card>
 );
+
+function formatNumber(i: number | undefined): string {
+    if (i === undefined) {
+        return "0";
+    }
+    return i.toLocaleString();
+}
