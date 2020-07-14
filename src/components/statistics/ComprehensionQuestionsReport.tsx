@@ -22,6 +22,7 @@ import { useIntl } from "react-intl";
 export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> = (
     props
 ) => {
+    const l10n = useIntl();
     const stats1 = useGetBookComprehensionEventStats(props);
     useProvideDataForExport(stats1, props);
     const stats = stats1
@@ -40,6 +41,15 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> 
         { name: "meanCorrect", title: "Mean Percent Correct" },
         { name: "medianCorrect", title: "Median Percent Correct" },
     ];
+    // localize
+    columns.forEach((c) => {
+        const s = l10n.formatMessage({
+            id: c.l10nId ?? "stats." + c.name,
+            defaultMessage: c.title,
+        });
+        c.title = s;
+    });
+
     const [tableColumnExtensions] = useState([
         { columnName: "title", width: "20%", align: "left" },
         { columnName: "branding", width: "15%" },
@@ -58,19 +68,10 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> 
         { columnName: "medianCorrect", compare: compareNumbers },
     ]);
 
-    const i18n = useIntl();
     const CustomTableHeaderCell = (cellProps: any) => {
         const style = cellProps.style || {};
         style.fontWeight = "bold";
         const adjustedProps = { ...cellProps, style };
-        adjustedProps.value =
-            adjustedProps.column.title || adjustedProps.column.name;
-        adjustedProps.column.title = i18n.formatMessage({
-            id:
-                adjustedProps.column.l10nId ??
-                "stats." + adjustedProps.column.name,
-            defaultMessage: adjustedProps.column.title,
-        });
         return (
             <TableHeaderRow.Cell
                 {...adjustedProps}
@@ -163,28 +164,6 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> 
                     />
                 </Grid>
             )}
-            {/* <div
-                css={css`
-                    display: flex;
-                `}
-            >
-                <div
-                    css={css`
-                        color: white;
-                    `}
-                >
-                    <div
-                        css={css`
-                            font-weight: bold;
-                        `}
-                    >
-                        Book Title
-                    </div>
-                    {cqData.map((book) => (
-                        <div key={book.title}>{book.title}</div>
-                    ))}
-                </div>
-            </div> */}
         </div>
     );
 };

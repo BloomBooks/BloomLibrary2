@@ -24,6 +24,7 @@ import { useIntl } from "react-intl";
 export const BookReadingReport: React.FunctionComponent<IStatsProps> = (
     props
 ) => {
+    const l10n = useIntl();
     const stats = useGetBookStats(props);
     useProvideDataForExport(stats, props);
     const { languagesByBookCount: languages } = useContext(CachedTablesContext);
@@ -45,9 +46,25 @@ export const BookReadingReport: React.FunctionComponent<IStatsProps> = (
         { name: "branding", title: "Branding", l10nId: "branding" },
         { name: "language", title: "Language", l10nId: "language" },
         //{ name: "extra", title: "Extra" },
-        { name: "finishedCount", title: "Finished" },
-        { name: "startedCount", title: "Started" },
+        {
+            name: "finishedCount",
+            title: "Finished",
+            l10nId: "stats.booksRead.finishedCount",
+        },
+        {
+            name: "startedCount",
+            title: "Started",
+            l10nId: "stats.booksRead.startedCount",
+        },
     ];
+    // localize
+    columns.forEach((c) => {
+        const s = l10n.formatMessage({
+            id: c.l10nId ?? "stats." + c.name,
+            defaultMessage: c.title,
+        });
+        c.title = s;
+    });
     // The current grid control is using an underlying HTML table, not a FlexBox or Grid.
     // The options for column widths are very limited. "Auto" simply distributes the width
     // not allocated to specific-sized columns, without regard for content. 95px is wide
@@ -70,21 +87,11 @@ export const BookReadingReport: React.FunctionComponent<IStatsProps> = (
         { columnName: "startedCount", width: "130px", align: "right" },
     ] as Table.ColumnExtension[]);
 
-    const i18n = useIntl();
-
     // This table might not need this...no column headers need wrapping?
     const CustomTableHeaderCell = (cellProps: any) => {
         const style = cellProps.style || {};
         style.fontWeight = "bold";
         const adjustedProps = { ...cellProps, style };
-        adjustedProps.value =
-            adjustedProps.column.title || adjustedProps.column.name;
-        adjustedProps.column.title = i18n.formatMessage({
-            id:
-                adjustedProps.column.l10nId ??
-                "stats.booksRead." + adjustedProps.column.name,
-            defaultMessage: adjustedProps.column.title,
-        });
         return (
             <TableHeaderRow.Cell
                 {...adjustedProps}
