@@ -100,6 +100,11 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
             if (item.sessionCount && item.sessionCount <= minVal) {
                 item.sessionCount = minVal + item.sessionCount / 100 / maxCount;
             }
+            // item.date is expected to be YYYY-MM-DD, which seems to be reliably interpreted as UTC
+            const date = new Date(item.date);
+            const options = { timeZone: "UTC" };
+            const label = date.toLocaleDateString(undefined, options);
+            item.date = label;
         }
     }
 
