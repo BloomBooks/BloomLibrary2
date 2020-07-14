@@ -55,13 +55,13 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
                         }),
                         value: stats.languages,
                     },
-                    {
-                        label: i18n.formatMessage({
-                            id: "topics",
-                            defaultMessage: "Topics",
-                        }),
-                        value: stats.topics,
-                    },
+                    // {
+                    //     label: i18n.formatMessage({
+                    //         id: "topics",
+                    //         defaultMessage: "Topics",
+                    //     }),
+                    //     value: stats.topics,
+                    // },
                 ]}
                 overrideTotal={stats.books}
             >
@@ -82,13 +82,13 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
                         }),
                         value: stats.bloomPubDeviceMobile,
                     },
-                    {
-                        label: i18n.formatMessage({
-                            id: "stats.devices.pc",
-                            defaultMessage: "PC",
-                        }),
-                        value: stats.bloomPubDevicePC,
-                    },
+                    // {
+                    //     label: i18n.formatMessage({
+                    //         id: "stats.devices.pc",
+                    //         defaultMessage: "PC",
+                    //     }),
+                    //     value: stats.bloomPubDevicePC,
+                    // },
                 ]}
             >
                 <FormattedMessage id="devices" defaultMessage="Devices" />
@@ -106,20 +106,20 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
 
             <StatsCard
                 subitems={[
-                    {
-                        label: i18n.formatMessage({
-                            id: "stats.reads.web",
-                            defaultMessage: "Web",
-                        }),
-                        value: stats.readsWeb,
-                    },
-                    {
-                        label: i18n.formatMessage({
-                            id: "stats.reads.apps",
-                            defaultMessage: "Apps",
-                        }),
-                        value: stats.readsApps,
-                    },
+                    // {
+                    //     label: i18n.formatMessage({
+                    //         id: "stats.reads.web",
+                    //         defaultMessage: "Web",
+                    //     }),
+                    //     value: stats.readsWeb,
+                    // },
+                    // {
+                    //     label: i18n.formatMessage({
+                    //         id: "stats.reads.apps",
+                    //         defaultMessage: "Apps",
+                    //     }),
+                    //     value: stats.readsApps,
+                    // },
                     {
                         label: i18n.formatMessage({
                             id: "bloomReader",
@@ -131,7 +131,7 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
             >
                 <FormattedMessage id="stats.reads" defaultMessage="Reads" />
             </StatsCard>
-            <StatsCard
+            {/* <StatsCard
                 subitems={[
                     { label: "bloomPub", value: stats.downloadsBloomPub },
                     { label: "ePUB", value: stats.downloadsEpub },
@@ -146,7 +146,7 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
                 ]}
             >
                 <FormattedMessage id="downloads" defaultMessage="Downloads" />
-            </StatsCard>
+            </StatsCard> */}
         </div>
     );
 };
