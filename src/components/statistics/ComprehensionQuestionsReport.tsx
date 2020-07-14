@@ -135,7 +135,8 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> 
                     vertical-align: top;
                 }
                 // make the table line up with the rest of the page
-                th,
+                // (but don't interfere with the space between columns)
+                th:first-child,
                 td:first-child {
                     padding-left: 0 !important;
                 }
