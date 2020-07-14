@@ -74,7 +74,9 @@ export const BookReadingReport: React.FunctionComponent<IStatsProps> = (
 
     // This table might not need this...no column headers need wrapping?
     const CustomTableHeaderCell = (cellProps: any) => {
-        const adjustedProps = { ...cellProps };
+        const style = cellProps.style || {};
+        style.fontWeight = "bold";
+        const adjustedProps = { ...cellProps, style };
         adjustedProps.value =
             adjustedProps.column.title || adjustedProps.column.name;
         adjustedProps.column.title = i18n.formatMessage({
