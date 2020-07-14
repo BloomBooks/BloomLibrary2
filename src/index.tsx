@@ -4,7 +4,6 @@ import "./index.css";
 import * as Sentry from "@sentry/browser";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-import { IntlProvider } from "react-intl";
 
 // these two firebase imports are strange, but not an error. See https://github.com/firebase/firebase-js-sdk/issues/1832
 import firebase from "firebase/app";
@@ -58,82 +57,9 @@ firebase.auth().onAuthStateChanged(() => {
     });
 });
 
-// const translationsForUsersLocale = defineMessages({
-//   collectionStatisticsHeader: {
-//     id: 'app.home.greeting',
-//     description: 'Bloom Collection Statistics',
-//     defaultMessage: 'Bloom Collection Statistics',
-//   },
-// });
+ReactDOM.render(<App />, document.getElementById("root"));
 
-const spanish = {
-    "stats.header": "Estadísticas de la colección Bloom",
-
-    "stats.overview": "Resumen",
-    books: "Libros",
-    topics: "Temas",
-    devices: "Aparatos",
-    "stats.devices.info":
-        "Conteo de aparatos para los cuales recibimos la noticia de que al menos un libro de esta colección había sido cargado.",
-    "stats.devices.bloomReader": "con Bloom Reader",
-    "stats.devices.mobile": "Móviles",
-    "stats.devices.pc": "PC",
-    "stats.reads": "Leídos",
-    "stats.reads.web": "Web",
-    "stats.reads.apps": "Apps",
-    bloomReader: "Bloom Reader",
-    downloads: "Descargas",
-    "downloads.forTranslation": "Para traducir",
-
-    "stats.bloomReaderSessions": "Sesiones de Bloom Reader",
-
-    "stats.booksRead": "Libros leídos",
-    language: "Idioma",
-    languages: "Idiomas",
-    "stats.booksRead.finishedCount": "Termindado(s)",
-    "stats.booksRead.startedCount": "Empezado(s)",
-
-    // comprehension
-    "stats.comprehensionQuestions": "Preguntas de comprensión",
-    bookTitle: "Título del libro",
-    branding: "Marcación",
-    "stats.questions": "Preguntas",
-    "stats.quizzesTaken": "Pruebas realizadas",
-    "stats.meanCorrect": "Media",
-    "stats.medianCorrect": "Mediana",
-
-    // query description
-    "stats.queryDescription.underCountingNote":
-        "Tenga en cuenta que los eventos que los aparatos y los navegadores intentan enviarnos son a veces detenidos por varios cortafuegos de red. Por lo tanto, los resultados pueden estar subestimados.",
-    "stats.queryDescription.about": "Sobre estos datos",
-    "stats.queryDescription.intro":
-        "Estas estadísticas son de eventos que recibimos que cumplen con los siguientes criterios:",
-    "stats.queryDescription.collection": "Libros actualmente en la colección:",
-    "stats.queryDescription.branding": "Libros con marcación:",
-    "stats.queryDescription.country": "De usuarios dentro del país:",
-    "stats.queryDescription.dateRange": "Rango de fechas:",
-
-    // range picker
-    "rangePicker.allTime": "Todas las fechas",
-    "rangePicker.today": "Hoy día",
-    "rangePicker.to": "Hasta",
-    "rangePicker.from": "Incluir los eventos desde",
-    "rangePicker.custom": "Personalizado",
-};
-
-function getUserLanguageFromBrowser() {
-    return navigator.languages && navigator.languages.length
-        ? navigator.languages[0]
-        : navigator.language ?? "en";
-}
-
-ReactDOM.render(
-    <IntlProvider locale={getUserLanguageFromBrowser()} messages={spanish}>
-        <App />
-    </IntlProvider>,
-    document.getElementById("root")
-);
-
+//   `Add Message to Bloom Library Strings:\n${s.id},${s.defaultMessage}`
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA

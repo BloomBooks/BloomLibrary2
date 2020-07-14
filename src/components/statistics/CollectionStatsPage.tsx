@@ -129,7 +129,6 @@ export const CollectionStatsPage: React.FunctionComponent<{
             `}
         >
             <h1>{collection?.label}</h1>
-
             <h2>
                 <FormattedMessage
                     id="stats.header"
@@ -185,6 +184,8 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     }}
                 ></DateRangePicker>
             </div>
+            {/* using the fact that no data has been registered with us to know when data is available */}
+
             {/* show this until data is available */}
             {waiting && (
                 <LinearProgress
