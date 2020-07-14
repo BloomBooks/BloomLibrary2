@@ -30,7 +30,10 @@ import { Routes } from "./components/Routes";
 import { Footer } from "./components/Footer";
 import { IntlProvider } from "react-intl";
 
-import { useGetLocalizations } from "./GetLocalizations";
+import {
+    useGetLocalizations,
+    getListOfPreferredLanguages as getListOfPreferredLanguageTags,
+} from "./GetLocalizations";
 interface ICachedTables {
     tags: string[];
     languagesByBookCount: ILanguage[];
@@ -60,22 +63,29 @@ export const App: React.FunctionComponent<{}> = (props) => {
     CachedTables.languagesByBookCount = languagesByBookCount;
 
     const embeddedMode = window.self !== window.top;
-    const [chosenLocale, setChosenLocale] = useState(
-        getUserLanguageFromBrowser()
-    );
-    const { closestLocale, stringsForThisLocale } = useGetLocalizations(
-        chosenLocale
-    );
+    const [
+        explicitlyChosenLanguageTag,
+        setExplicitlyChosenLanguageTag,
+    ] = useState<string | undefined>(undefined);
+
+    // Enhance: this assumes that for each string, you get it in that language or if we don't have
+    // a translation for it yet, then you get it in English.
+    // We could do better by doing our best for each string. We could give you the string in the language
+    // that best meets your needs according to your browser settings, which has an ordered list of languages.
+    const {
+        closestLanguage: languageTagWeAreUsing,
+        stringsForThisLanguage,
+    } = useGetLocalizations(explicitlyChosenLanguageTag);
 
     return (
         <IntlProvider
-            locale={chosenLocale}
-            messages={stringsForThisLocale}
+            locale={languageTagWeAreUsing}
+            messages={stringsForThisLanguage}
             onError={(s: any) => {
                 // TODO this isn't working yet. The idea is to only print a message for the dev if we're in english and it looks
                 // like we haven't registered the string in the Bloom Library Strings.csv file.
                 if (
-                    closestLocale === "en" &&
+                    languageTagWeAreUsing === "en" &&
                     s.code === "MISSING_TRANSLATION"
                 ) {
                     console.warn(
@@ -190,11 +200,5 @@ export const UnderConstruction: React.FunctionComponent<{}> = () => {
         </Snackbar>
     );
 };
-
-function getUserLanguageFromBrowser() {
-    return navigator.languages && navigator.languages.length
-        ? navigator.languages[0]
-        : navigator.language ?? "en";
-}
 
 export default App;

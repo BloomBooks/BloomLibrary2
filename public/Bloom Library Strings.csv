@@ -1,4 +1,5 @@
 Id,Context,Source,es,prs,am,ar,az,bn,my,zh-CN,kw,fr,ha,hi,id,quc,km,rw,lo,mam,ne-NP,pbu,pt-PT,fuc,ru,sw,tl,ta,te,th,tr,vi
+language.name,enter the name of your language like speakers would like to see it,English,Spanish,prs,am,ar,az,bn,my,zh-CN,kw,fr,ha,hi,id,quc,km,rw,lo,mam,ne-NP,pbu,pt-PT,fuc,ru,sw,tl,ta,te,th,tr,vi
 stats.header,,Bloom Collection Statistics,Estadísticas de la colección Bloom
 stats.overview,,Overview,Resumen
 books,,Books,Libros

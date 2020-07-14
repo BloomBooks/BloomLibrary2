@@ -5,24 +5,31 @@ const parsecsv = require("csv-parse/lib/sync");
 interface IStringMap {
     [id: string]: string;
 }
+interface IAnswer {
+    closestLanguage: string;
+    stringsForThisLanguage: any;
+}
 
 export function useGetLocalizations(
-    locale: string
-): { closestLocale: string; stringsForThisLocale: any } {
+    // explicitLanguageSetting is a language that the user has selected with our UI (not the browser's).
+    // If it is undefined  (this would be the normal case) or if we can't provide it for some reason we'll go and look at their browser languages.
+    explicitLanguageSetting: string | undefined // BCP 47
+): IAnswer {
     const { response } = useAxios({
-        url: "/Bloom Library strings.csv",
+        url: "/Bloom Library Strings.csv",
         method: "GET",
-        trigger: locale,
+        trigger: explicitLanguageSetting || "true",
     });
-    const answer: {
-        closestLocale: string;
-        stringsForThisLocale: any;
-    } = useMemo(() => {
-        const csv = response && response["data"] ? response["data"] : "";
-        console.log(JSON.stringify(csv));
+
+    const answer: IAnswer = useMemo<IAnswer>(() => {
+        const csv: string =
+            response && response["data"] ? response["data"] : "";
+        //console.log(JSON.stringify(csv));
+        const firstLine = csv.match(/^.*$/m)![0];
+        const languagesInCrowdin = firstLine.split(",").map((c) => c.trim());
 
         if (csv) {
-            const x: any[] = parsecsv(
+            const allStringRows: any[] = parsecsv(
                 csv,
                 //https://csv.js.org/parse/options/
                 {
@@ -32,37 +39,86 @@ export function useGetLocalizations(
                     relax_column_count: true, // not sure this is needed, but it seems reasonable
                 }
             );
-            console.log(JSON.stringify(x));
-            const y: IStringMap = {};
-            const closestLocale = getBestCodeForLocale(locale, x);
-            x.forEach((row: any) => {
-                y[row.Id] = row[closestLocale];
+            const mappingForOneLanguage: IStringMap = {};
+            const closestLanguage = chooseClosestLanguageWeActuallyHave(
+                explicitLanguageSetting,
+                languagesInCrowdin
+            );
+            allStringRows.forEach((allTranslationsOfOneString: any) => {
+                // Enhance: If we wanted to be able to have untranslated strings fallback to something other than English (),
+                // we would need to do the fall back here.
+                mappingForOneLanguage[allTranslationsOfOneString.Id] =
+                    allTranslationsOfOneString[
+                        closestLanguage
+                    ] /* the same as rowObject.es or rowObject.fr */;
             });
-            console.log("***");
-            console.log(JSON.stringify(y));
-            return { closestLocale, stringsForThisLocale: y };
+            return {
+                closestLanguage,
+                stringsForThisLanguage: mappingForOneLanguage,
+            };
         }
 
-        return { closestLocale: locale, stringsForThisLocale: [] };
-    }, [response, locale]);
+        // no csv available
+        return {
+            closestLanguage: "en",
+            // tslint:disable-next-line: no-object-literal-type-assertion
+            stringsForThisLanguage: {} as IStringMap,
+        };
+    }, [response, explicitLanguageSetting]);
 
     return answer;
 }
 
-function getBestCodeForLocale(locale: string, rows: any[]): string {
-    if (rows.length === 0) return "error";
-    const exampleRow = rows[0];
-    if (exampleRow[locale]) {
-        return locale;
+function chooseClosestLanguageWeActuallyHave(
+    preferredLanguageTag: string | undefined,
+    languagesWeHave: string[]
+): string {
+    if (languagesWeHave.length === 0) return "error";
+
+    const orderedListOfLanguagesToLookFor = [...getListOfPreferredLanguages()];
+    if (preferredLanguageTag) {
+        orderedListOfLanguagesToLookFor.unshift(preferredLanguageTag);
     }
-    let primary = locale.split("-")[0];
-    if (primary === "en") {
-        primary = "Source";
-    }
-    if (exampleRow[primary]) {
-        return primary;
-    }
-    // TODO: if someone wants Portuguese from Brazil, and we just have pt-PT, we should give them that
-    // couldn't find it
-    return locale;
+    let best = "en";
+    orderedListOfLanguagesToLookFor.find((tag: string) => {
+        if (languagesWeHave.includes(tag)) {
+            best = tag;
+            return true;
+        }
+        // strip off the region part of the tag, and see if we have a match for the primary part
+        const primary = tag.split("-")[0];
+        if (primary === "en") {
+            return true;
+        }
+
+        // FIRST: exact match
+        if (languagesWeHave.includes(primary)) {
+            best = primary;
+            return true;
+        }
+
+        // SECOND: match language but no dialect (Primary part of the BCP47 code). If someone wants Portuguese from Brazil, and we just have pt-PT, we should give them that.
+        // Note, this heuristic could be wrong. It could be that we shouldn't try and be smart, we should just trust that the user would explicitly tell his browser
+        // that, for example, he'd like pt-BR but if that's not available, he wants pt-PT.
+        const firstLanguageMatchingPrimaryPart = languagesWeHave.find(
+            (l) => l.split("-")[0] === primary
+        );
+        if (firstLanguageMatchingPrimaryPart) {
+            best = firstLanguageMatchingPrimaryPart;
+            return true;
+        }
+
+        return false; // go on to the next choices in the ordered list
+    });
+
+    return best;
+}
+
+// this is BCP 47
+// Enhance: the browser actually provides an ordered list of preferences. So then
+// someone who would like Portuguese but can settle for Spanish could get that.
+export function getListOfPreferredLanguages(): readonly string[] {
+    return navigator.languages && navigator.languages.length
+        ? navigator.languages
+        : [navigator.language] ?? ["en"];
 }
