@@ -120,7 +120,9 @@ export const DateRangePicker: React.FunctionComponent<{
                                     locale={l10n.locale}
                                     value={
                                         props.range.startDate
-                                            ? props.range.startDate
+                                            ? getFakeUtcDate(
+                                                  props.range.startDate
+                                              )
                                             : new Date(2010, 1, 1)
                                     }
                                     onChange={(start: any) => {
@@ -148,7 +150,9 @@ export const DateRangePicker: React.FunctionComponent<{
                                     locale={l10n.locale}
                                     value={
                                         props.range.endDate
-                                            ? props.range.endDate
+                                            ? getFakeUtcDate(
+                                                  props.range.endDate
+                                              )
                                             : new Date()
                                     }
                                     onChange={(d: Date | Date[]) => {
