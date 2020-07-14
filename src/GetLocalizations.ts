@@ -18,17 +18,19 @@ export function useGetLocalizations(
     const { response } = useAxios({
         url: "/Bloom Library Strings.csv",
         method: "GET",
-        trigger: explicitLanguageSetting || "true",
+        trigger: "true",
     });
 
     const answer: IAnswer = useMemo<IAnswer>(() => {
         const csv: string =
             response && response["data"] ? response["data"] : "";
-        //console.log(JSON.stringify(csv));
-        const firstLine = csv.match(/^.*$/m)![0];
-        const languagesInCrowdin = firstLine.split(",").map((c) => c.trim());
 
         if (csv) {
+            const firstLine = csv.match(/^.*$/m)![0];
+            const languagesInCrowdin = firstLine
+                .split(",")
+                .map((c) => c.trim());
+
             const allStringRows: any[] = parsecsv(
                 csv,
                 //https://csv.js.org/parse/options/
@@ -44,14 +46,23 @@ export function useGetLocalizations(
                 explicitLanguageSetting,
                 languagesInCrowdin
             );
-            allStringRows.forEach((allTranslationsOfOneString: any) => {
-                // Enhance: If we wanted to be able to have untranslated strings fallback to something other than English (),
-                // we would need to do the fall back here.
-                mappingForOneLanguage[allTranslationsOfOneString.Id] =
-                    allTranslationsOfOneString[
-                        closestLanguage
-                    ] /* the same as rowObject.es or rowObject.fr */;
-            });
+            const columnKey =
+                closestLanguage === "en"
+                    ? "Source" // the "Source" column is what holds the English
+                    : closestLanguage;
+
+            allStringRows.forEach(
+                (allTranslationsOfOneStringAsAnObject: any) => {
+                    // Enhance: If we wanted to be able to have untranslated strings fallback to something other than English (),
+                    // we would need to do the fall back here.
+                    mappingForOneLanguage[
+                        allTranslationsOfOneStringAsAnObject.Id
+                    ] =
+                        allTranslationsOfOneStringAsAnObject[
+                            columnKey
+                        ] /* the same as allTranslationsOfOneStringAsAnObject.es or allTranslationsOfOneStringAsAnObject.fr */;
+                }
+            );
             return {
                 closestLanguage,
                 stringsForThisLanguage: mappingForOneLanguage,
@@ -108,7 +119,7 @@ function chooseClosestLanguageWeActuallyHave(
             return true;
         }
 
-        return false; // go on to the next choices in the ordered list
+        return false; // go on to the next choice in the ordered list
     });
 
     return best;

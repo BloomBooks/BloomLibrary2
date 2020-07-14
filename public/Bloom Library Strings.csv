@@ -35,8 +35,8 @@ stats.queryDescription.collection,,Books currently in the collection:,Libros act
 stats.queryDescription.branding,,Books with branding:,Libros con marcación:
 stats.queryDescription.country,,From users inside of country:,De usuarios dentro del país:
 stats.queryDescription.dateRange,,Date range:,Rango de fechas:
-rangePicker.allTime,,,Todas las fechas
-rangePicker.today,,,Hoy día
-rangePicker.to,,,Hasta
-rangePicker.from,,,Incluir los eventos desde
-rangePicker.custom,,,Personalizado
+rangePicker.allTime,,All Time,Todas las fechas
+rangePicker.today,,Today,Hoy día
+rangePicker.to,,To,Hasta
+rangePicker.from,,Include Events From,Incluir los eventos desde
+rangePicker.custom,,Custom,Personalizado

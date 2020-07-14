@@ -77,20 +77,31 @@ export const App: React.FunctionComponent<{}> = (props) => {
         stringsForThisLanguage,
     } = useGetLocalizations(explicitlyChosenLanguageTag);
 
+    const slowerLanguageLookupToHelpErrorChecking =
+        window.location.hostname === "alpha.bloomlibrary.org" ||
+        window.location.hostname === "localhost";
     return (
         <IntlProvider
             locale={languageTagWeAreUsing}
             messages={stringsForThisLanguage}
+            defaultLocale={
+                slowerLanguageLookupToHelpErrorChecking ? "qaa" : undefined
+            }
             onError={(s: any) => {
                 // TODO this isn't working yet. The idea is to only print a message for the dev if we're in english and it looks
                 // like we haven't registered the string in the Bloom Library Strings.csv file.
-                if (
-                    languageTagWeAreUsing === "en" &&
-                    s.code === "MISSING_TRANSLATION"
-                ) {
-                    console.warn(
-                        `Add Message to Bloom Library Strings.csv:\n${s.descriptor.id},${s.descriptor.defaultMessage}`
-                    );
+                if (s.code === "MISSING_TRANSLATION") {
+                    if (languageTagWeAreUsing === "en") {
+                        if (Object.keys(stringsForThisLanguage).length > 0) {
+                            console.error(
+                                `Add Message to Bloom Library Strings.csv:\n${s.descriptor.id},${s.descriptor.defaultMessage}`
+                            );
+                        }
+                    } else {
+                        console.info(
+                            `Missing translation for '${s.descriptor.id}' in ${languageTagWeAreUsing}`
+                        );
+                    }
                 } else {
                     console.error(`${JSON.stringify(s)}`);
                 }
