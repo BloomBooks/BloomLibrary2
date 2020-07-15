@@ -134,7 +134,7 @@ export const ReadBookPage: React.FunctionComponent<{
 
     const langParam = contextLangIso ? `&lang=${contextLangIso}` : "";
 
-    const iframeSrc = `${bloomPlayerUrl}?url=${url}&showBackButton=true&useOriginalPageSize=true${langParam}`;
+    const iframeSrc = `${bloomPlayerUrl}?url=${url}&showBackButton=true&centerVertically=false&useOriginalPageSize=true${langParam}`;
 
     // This theme matches Bloom-player. It is supposed to help the full-screen button
     // better match the Bloom-player icons, whose toolbar it overlays. Not successful
