@@ -11,7 +11,7 @@ import { getUrlOfHtmlOfDigitalVersion } from "./BookDetail/ArtifactHelper";
 import { useHistory, useLocation } from "react-router-dom";
 import { useTrack } from "../analytics/Analytics";
 import { getBookAnalyticsInfo } from "../analytics/BookAnalyticsInfo";
-import { useDocumentTitle } from "./Routes";
+import { useDocumentTitle, splitPathname } from "./Routes";
 import FullscreenIcon from "@material-ui/icons/Fullscreen";
 import { ThemeProvider } from "@material-ui/styles";
 import {
@@ -97,7 +97,22 @@ export const ReadBookPage: React.FunctionComponent<{
                     // from the browser's point of view we're staying on the same page.
                     // Easiest just to call the function we want ourselves.
                     onPlayerUnloading();
-                    history.push(`/book/${id}`);
+                    // We don't want to use history.goBack() because we might have
+                    // come direct to the read-book page by following a URL, and
+                    // we want this arrow to give us a way into the Bloom site.
+                    let whereToGo = `/book/${id}`;
+                    // wish all this knowedge didn't have to be here
+                    if (lang) {
+                        whereToGo += `?lang=${lang}`;
+                    }
+                    const { embeddedSettingsUrlKey } = splitPathname(
+                        location.pathname
+                    );
+                    if (embeddedSettingsUrlKey) {
+                        whereToGo =
+                            `/embed/${embeddedSettingsUrlKey}` + whereToGo;
+                    }
+                    history.push(whereToGo);
                 } else if (r.messageType === "reportBookProperties") {
                     const canRotate = r.params?.canRotate as boolean;
                     const isLandscape = r.params?.landscape as boolean;

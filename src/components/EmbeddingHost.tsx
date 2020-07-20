@@ -86,11 +86,15 @@ export function useSetEmbeddedUrl() {
         let bloomLibraryLocation =
             location.pathname.substring(1) + location.search;
         if (!location.pathname.startsWith("/player/")) {
-            const { collectionName, breadcrumbs } = splitPathname(
+            const { collectionName, breadcrumbs, bookId } = splitPathname(
                 location.pathname
             );
             const p = breadcrumbs;
-            p.push(collectionName);
+            if (bookId) {
+                p.push(bookId);
+            } else {
+                p.push(collectionName);
+            }
             bloomLibraryLocation = p.join("/") + location.search;
         }
         window.parent.postMessage(
