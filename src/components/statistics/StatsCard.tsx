@@ -9,8 +9,9 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import { IItem, kDarkGrey } from "./StatsOverviewScreen";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
-import { IconButton, Tooltip } from "@material-ui/core";
+import { IconButton } from "@material-ui/core";
 import { kStatsPageGray } from "./CollectionStatsPage";
+import Tooltip from "react-tooltip-lite";
 
 export const StatsCard: React.FunctionComponent<{
     overrideTotal?: number;
@@ -41,8 +42,8 @@ export const StatsCard: React.FunctionComponent<{
                 flex-direction: column;
                 // get the info icon in the upper left
                 position: relative;
-                .MuiIconButton-root {
-                    position: absolute;
+                .infoTooltip {
+                    position: absolute !important;
                     top: 0;
                     right: 0;
                     span {
@@ -53,13 +54,10 @@ export const StatsCard: React.FunctionComponent<{
         >
             {props.info && (
                 <Tooltip
-                    title={props.info}
+                    className={"infoTooltip"}
+                    content={props.info}
                     arrow
-                    css={css`
-                        * {
-                            //background-color: yellow;
-                        }
-                    `}
+                    useDefaultStyles
                 >
                     <IconButton>
                         <InfoIcon></InfoIcon>
@@ -92,7 +90,6 @@ export const StatsCard: React.FunctionComponent<{
                               .reduce((t: number, i: number) => t + i, 0)
                 )}
             </div>
-
             <div
                 css={css`
                     display: flex;
