@@ -26,6 +26,7 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 import { BookReadingReport } from "./BookReadingReport";
 import { FormattedMessage, useIntl } from "react-intl";
 import { QueryDescription } from "./QueryDescription";
+import FormControl from "@material-ui/core/FormControl";
 
 export interface IScreen {
     label: string;
@@ -149,34 +150,31 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     justify-content: space-between;
                 `}
             >
-                <Select
-                    css={css`
-                        padding-left: 0;
-                        min-width: 300px;
-                        &,
-                        * {
-                            background-color: white !important;
-                        }
-                    `}
-                    native
-                    value={currentScreenIndex}
-                    onChange={(e) => {
-                        // clear the export function when we switch screens. Let the screen call us back with the new function
-                        setExportDataFn(undefined);
-                        setCurrentScreenIndex(e.target.value as number);
-                    }}
-                    inputProps={{
-                        name: "age",
-                        id: "age-native-simple",
-                    }}
-                >
-                    {screens.map((screen, index) => (
-                        <option key={index} value={index}>
-                            {screen.label}
-                        </option>
-                    ))}
-                </Select>
-
+                <FormControl variant="outlined">
+                    <Select
+                        css={css`
+                            padding-left: 0;
+                            min-width: 300px;
+                        `}
+                        native
+                        value={currentScreenIndex}
+                        onChange={(e) => {
+                            // clear the export function when we switch screens. Let the screen call us back with the new function
+                            setExportDataFn(undefined);
+                            setCurrentScreenIndex(e.target.value as number);
+                        }}
+                        inputProps={{
+                            name: "age",
+                            id: "age-native-simple",
+                        }}
+                    >
+                        {screens.map((screen, index) => (
+                            <option key={index} value={index}>
+                                {screen.label}
+                            </option>
+                        ))}
+                    </Select>
+                </FormControl>
                 <DateRangePicker
                     range={dateRange}
                     setRange={(range) => {
