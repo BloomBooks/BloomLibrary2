@@ -105,6 +105,11 @@ export const ReadBookPage: React.FunctionComponent<{
                     if (autoFullScreen) {
                         setupScreen(canRotate, isLandscape);
                     }
+                } else if (r.messageType === "fullScreen") {
+                    setupScreen(
+                        rotateParams.canRotate,
+                        rotateParams.isLandscape
+                    );
                 }
             } catch (err) {
                 console.log(`Got error with message: ${err}`);
@@ -134,7 +139,21 @@ export const ReadBookPage: React.FunctionComponent<{
 
     const langParam = contextLangIso ? `&lang=${contextLangIso}` : "";
 
-    const iframeSrc = `${bloomPlayerUrl}?url=${url}&showBackButton=true&centerVertically=false&useOriginalPageSize=true${langParam}`;
+    let iframeSrc = `${bloomPlayerUrl}?url=${url}&showBackButton=true&centerVertically=false&useOriginalPageSize=true${langParam}`;
+    if (!fullScreen) {
+        const extraButtonsObj = [
+            {
+                id: "fullScreen",
+                iconUrl:
+                    "https://s3.amazonaws.com/share.bloomlibrary.org/assets/Ic_fullscreen_48px_red.svg",
+                description: "full screen",
+            },
+        ];
+        const extraButtonsParam =
+            "&extraButtons=" +
+            encodeURIComponent(JSON.stringify(extraButtonsObj));
+        iframeSrc += extraButtonsParam;
+    }
 
     // This theme matches Bloom-player. It is supposed to help the full-screen button
     // better match the Bloom-player icons, whose toolbar it overlays. Not successful
@@ -163,47 +182,6 @@ export const ReadBookPage: React.FunctionComponent<{
                 src={iframeSrc}
                 //src={"https://google.com"}
             ></iframe>
-            {fullScreen || (
-                <div
-                    css={css`
-                        position: absolute !important;
-                        top: 8px;
-                        right: -6px;
-                        color: ${commonUI.colors.bloomRed};
-                    `}
-                >
-                    <ThemeProvider theme={theme}>
-                        <IconButton
-                            // doesn't help, something is not quite right...
-                            // possibly that VS Code lower-cases the style name on save!
-                            // css={css`
-                            //     &.MuiIconButton-colorSecondary:hover: {
-                            //         background-color: rgba(
-                            //             214,
-                            //             86,
-                            //             73,
-                            //             0.08
-                            //         ) !important;
-                            //     }
-                            // `}
-                            title="Full Screen"
-                            color="secondary"
-                            onClick={() => {
-                                setupScreen(
-                                    rotateParams.canRotate,
-                                    rotateParams.isLandscape
-                                );
-                            }}
-                        >
-                            <FullscreenIcon
-                                css={css`
-                                    color: ${commonUI.colors.bloomRed};
-                                `}
-                            />
-                        </IconButton>
-                    </ThemeProvider>
-                </div>
-            )}
         </React.Fragment>
     );
 };
