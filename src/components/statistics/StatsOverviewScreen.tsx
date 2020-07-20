@@ -47,6 +47,10 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
             `}
         >
             <StatsCard
+                //  I don't think we're ready for translation on this one yet...
+                info={
+                    "These statistics are for books that were read during the time period."
+                }
                 subitems={[
                     {
                         label: i18n.formatMessage({
@@ -105,6 +109,11 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
             </StatsCard>
 
             <StatsCard
+                info={i18n.formatMessage({
+                    id: "stats.reads.info",
+                    defaultMessage:
+                        "The number of times the book was read, in part or whole. We are currently only showing reads on Bloom Reader. We will soon add reads on the Web, in apps, and in the desktop.",
+                })}
                 subitems={[
                     // {
                     //     label: i18n.formatMessage({

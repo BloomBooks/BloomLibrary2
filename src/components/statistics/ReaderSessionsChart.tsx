@@ -75,7 +75,7 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
 
     sortAndComplete(mapData, byMonth);
 
-    // Items with values smaller than about this get zero pixels, and therfore
+    // Items with values smaller than about this get zero pixels, and therefore
     // no bar or label, so they are indistinguishable from empty bars.
     const minVal = Math.ceil(maxCount / 120); // map has a bit more than 120px.
 
@@ -204,9 +204,10 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
                 axisBottom={{
                     tickSize: 5,
                     tickPadding: 5,
-                    tickRotation: -45,
+                    tickRotation: -90,
                     legendPosition: "middle",
                     legendOffset: 60,
+                    //renderTick: () => <span>"x"</span>,
                 }}
             ></Bar>
         </div>
