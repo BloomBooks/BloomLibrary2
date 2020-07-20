@@ -49,7 +49,7 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
             <StatsCard
                 //  I don't think we're ready for translation on this one yet...
                 info={
-                    "These statistics are for books that were read during the time period."
+                    "These statistics are for books that were read during the time period. This may be different from the count of books in the collection, if some books were not read during the time period, or if some books were removed from the collection."
                 }
                 subitems={[
                     {
