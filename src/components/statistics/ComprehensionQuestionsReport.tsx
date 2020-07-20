@@ -6,12 +6,13 @@ import { jsx } from "@emotion/core";
 
 import { commonUI } from "../../theme";
 
+import { SortingState, IntegratedSorting } from "@devexpress/dx-react-grid";
 import {
     Grid,
-    TableHeaderRow,
     Table,
+    TableHeaderRow,
+    TableColumnResizing,
 } from "@devexpress/dx-react-grid-material-ui";
-import { SortingState, IntegratedSorting } from "@devexpress/dx-react-grid";
 import { IGridColumn } from "../Grid/GridColumns";
 import { useState } from "react";
 import { IStatsProps } from "./StatsInterfaces";
@@ -38,7 +39,7 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> 
         { name: "branding", title: "Branding", l10nId: "branding" },
         { name: "questions", title: "Questions" },
         { name: "quizzesTaken", title: "Quizzes Taken" },
-        { name: "meanCorrect", title: "Mean Percent Correct" },
+        //{ name: "meanCorrect", title: "Mean Percent Correct" },
         { name: "medianCorrect", title: "Median Percent Correct" },
     ];
     // localize
@@ -157,6 +158,13 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> 
                     <Table
                         columnExtensions={tableColumnExtensions}
                         cellComponent={CustomTableCell}
+                    />
+                    <TableColumnResizing
+                        resizingMode={"nextColumn"}
+                        defaultColumnWidths={columns.map((c) => ({
+                            columnName: c.name,
+                            width: "auto",
+                        }))}
                     />
                     <TableHeaderRow
                         cellComponent={CustomTableHeaderCell}
