@@ -4,13 +4,20 @@ import { ExportDataFn } from "./StatsInterfaces";
 // Tables and charts call this to provide a function that the parent screen can call in order
 // to export the data that is in the chart.
 export function useProvideDataForExport(
-    rows: object[] | undefined,
+    rows: object[] | undefined, // undefined if data not available
     props: any
 ) {
     useEffect(() => {
-        // clear out any previous fn until we get data
-        if (!rows || rows.length < 1) props.registerExportDataFn(undefined);
-        else
+        // getting an undefined rows collection indicates we don't have a query result yet.
+        // (possibly after starting a new axios call after changing params)
+        // Indicate that to the caller by passing waiting true.
+        if (!rows) props.registerExportDataFn(undefined, true);
+        else if (rows.length < 1) {
+            // We have no data, so can't export. But we aren't waiting any more;
+            // there is no data because the query found nothing.
+            props.registerExportDataFn(undefined, false);
+        } else {
+            // We have data, and this is how we can export it.
             props.registerExportDataFn(() => {
                 const headerRow = Object.keys(rows[0]);
                 const all: string[][] = [];
@@ -23,7 +30,8 @@ export function useProvideDataForExport(
                     all.push(valueRow);
                 });
                 return all;
-            });
+            }, false);
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         // eslint-disable-next-line react-hooks/exhaustive-deps

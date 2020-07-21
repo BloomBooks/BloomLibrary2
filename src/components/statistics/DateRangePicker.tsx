@@ -16,6 +16,7 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import DateRangeIcon from "@material-ui/icons/DateRange";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
+import { useIntl, FormattedMessage, IntlShape } from "react-intl";
 
 export type IDateBoundary = Date | undefined;
 
@@ -37,6 +38,9 @@ export const DateRangePicker: React.FunctionComponent<{
     setRange: (range: IDateRange) => void;
 }> = (props) => {
     const [open, setOpen] = useState(false);
+
+    const l10n = useIntl();
+
     return (
         <div>
             <Button
@@ -52,13 +56,7 @@ export const DateRangePicker: React.FunctionComponent<{
                         margin-left: 10px;
                     `}
                 >
-                    {props.range.startDate
-                        ? toUTCLocaleDateString(props.range.startDate)
-                        : "∞"}{" "}
-                    —{" "}
-                    {props.range.endDate
-                        ? toUTCLocaleDateString(props.range.endDate)
-                        : "Today"}
+                    {rangeToString(props.range, l10n)}
                 </span>
             </Button>
             {open && (
@@ -97,17 +95,34 @@ export const DateRangePicker: React.FunctionComponent<{
                                     disablePortal: true,
                                 }}
                             >
-                                <MenuItem value="∞">{"All Time"}</MenuItem>
+                                <MenuItem value="∞">
+                                    <FormattedMessage
+                                        id="rangePicker.allTime"
+                                        defaultMessage="All Time"
+                                    />
+                                </MenuItem>
                                 <MenuItem disabled={true} value="custom">
-                                    {"Custom"}
+                                    <FormattedMessage
+                                        id="rangePicker.custom"
+                                        defaultMessage="Custom"
+                                    />
                                 </MenuItem>
                             </Select>
                             <div>
-                                <h4>Include Events From</h4>
+                                <h4>
+                                    {" "}
+                                    <FormattedMessage
+                                        id="rangePicker.from"
+                                        defaultMessage="Include Events From"
+                                    />
+                                </h4>
                                 <Calendar
+                                    locale={l10n.locale}
                                     value={
                                         props.range.startDate
-                                            ? props.range.startDate
+                                            ? getFakeUtcDate(
+                                                  props.range.startDate
+                                              )
                                             : new Date(2010, 1, 1)
                                     }
                                     onChange={(start: any) => {
@@ -125,11 +140,19 @@ export const DateRangePicker: React.FunctionComponent<{
                                     margin-top: 10px;
                                 `}
                             >
-                                <h4>To</h4>{" "}
+                                <h4>
+                                    <FormattedMessage
+                                        id="rangePicker.to"
+                                        defaultMessage="To"
+                                    />
+                                </h4>
                                 <Calendar
+                                    locale={l10n.locale}
                                     value={
                                         props.range.endDate
-                                            ? props.range.endDate
+                                            ? getFakeUtcDate(
+                                                  props.range.endDate
+                                              )
                                             : new Date()
                                     }
                                     onChange={(d: Date | Date[]) => {
@@ -193,4 +216,20 @@ export function getFakeUtcDate(input: Date): Date {
 
 export function toUTCLocaleDateString(input: Date): string {
     return getFakeUtcDate(input).toLocaleDateString();
+}
+
+export function rangeToString(range: IDateRange, l10n: IntlShape): string {
+    return range.startDate || range.endDate
+        ? (range.startDate ? toUTCLocaleDateString(range.startDate) : "∞") +
+              " — " +
+              (range.endDate
+                  ? toUTCLocaleDateString(range.endDate)
+                  : l10n.formatMessage({
+                        id: "rangePicker.today",
+                        defaultMessage: "Today",
+                    }))
+        : l10n.formatMessage({
+              id: "rangePicker.allTime",
+              defaultMessage: "All Time",
+          });
 }

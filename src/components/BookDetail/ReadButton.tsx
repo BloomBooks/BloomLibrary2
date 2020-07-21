@@ -9,7 +9,8 @@ import Button from "@material-ui/core/Button";
 import ReadIcon from "./read.svg";
 import { commonUI } from "../../theme";
 import { Book } from "../../model/Book";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
+import { splitPathname } from "../Routes";
 
 interface IProps {
     book: Book;
@@ -18,7 +19,12 @@ interface IProps {
 }
 export const ReadButton: React.FunctionComponent<IProps> = (props) => {
     const history = useHistory();
-    const url = `player/${props.book.id}`;
+    const location = useLocation();
+    let url = `player/${props.book.id}`;
+    const { embeddedSettingsUrlKey } = splitPathname(location.pathname);
+    if (embeddedSettingsUrlKey) {
+        url = `embed/${embeddedSettingsUrlKey}/` + url;
+    }
     // This inserts breadcrumbs, embedding information, etc., which we don't want
     // since it interferes with the route for /player/X
     //const url = getUrlForTarget(`/player/${props.book.id}`);

@@ -1,0 +1,44 @@
+Id,Context,Source,es,prs,am,ar,az,bn,my,zh-CN,kw,fr,ha,hi,id,quc,km,rw,lo,mam,ne-NP,pbu,pt-PT,fuc,ru,sw,tl,ta,te,th,tr,vi
+language.name,enter the name of your language like speakers would like to see it,English,Spanish,prs,am,ar,az,bn,my,zh-CN,kw,fr,ha,hi,id,quc,km,rw,lo,mam,ne-NP,pbu,pt-PT,fuc,ru,sw,tl,ta,te,th,tr,vi
+stats.header,,Bloom Collection Statistics,Estadísticas de la colección Bloom
+stats.overview,,Overview,Resumen
+books,,Books,Libros
+topics,,Topics,Temas
+devices,,Devices,Aparatos
+stats.devices.info,,Count of devices for which we received notice that at least one book from this collection had been loaded.,Conteo de aparatos para los cuales recibimos la noticia de que al menos un libro de esta colección había sido cargado.
+stats.devices.bloomReader,,with Bloom Reader,con Bloom Reader
+stats.devices.mobile,,Mobile,Móviles
+stats.devices.pc,,PC,PC
+stats.reads,,Reads,Leídos
+stats.reads.web,,Web,Web
+stats.reads.apps,,Apps,Apps
+bloomReader,,Bloom Reader,Bloom Reader
+downloads,,Downloads,Descargas
+downloads.forTranslation,,For Translation,Para traducir
+stats.bloomReaderSessions,,Bloom Reader Sessions,Sesiones de Bloom Reader
+stats.booksRead,,Books Read,Libros leídos
+language,,Language,Idioma
+languages,,Languages,Idiomas
+stats.booksRead.finishedCount,,Finished,Termindado(s)
+stats.booksRead.startedCount,,Started,Empezado(s)
+stats.comprehensionQuestions,,Comprehension Questions,Preguntas de comprensión
+bookTitle,,Book TItle,Título del libro
+branding,,Branding,Marcación
+stats.questions,,Question,Preguntas
+stats.quizzesTaken,,Quizzes Taken,Pruebas realizadas
+stats.meanCorrect,,Mean Correct,Media
+stats.medianCorrect,,Median Correct,Mediana
+stats.queryDescription.underCountingNote,,Note that the events that devices and browsers try to send to us are sometimes stopped by various network firewalls. Therefore we may be under counting.,Tenga en cuenta que los eventos que los aparatos y los navegadores intentan enviarnos son a veces detenidos por varios cortafuegos de red.Por lo tanto los resultados pueden estar subestimados.
+stats.queryDescription.about,,About this data,Sobre estos datos
+stats.queryDescription.intro,,These statistic are from events we received which fit the following criteria:,Estas estadísticas son de eventos que recibimos que cumplen con los siguientes criterios:
+stats.queryDescription.collection,,Books currently in the collection:,Libros actualmente en la colección:
+stats.queryDescription.branding,,Books with branding:,Libros con marcación:
+stats.queryDescription.country,,From users inside of country:,De usuarios dentro del país:
+stats.queryDescription.dateRange,,Date range:,Rango de fechas:
+stats.options.By Month,,By Month
+stats.options.By Week,,By Week
+rangePicker.allTime,,All Time,Todas las fechas
+rangePicker.today,,Today,Hoy día
+rangePicker.to,,To,Hasta
+rangePicker.from,,Include Events From,Incluir los eventos desde
+rangePicker.custom,,Custom,Personalizado

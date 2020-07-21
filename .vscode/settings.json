@@ -4,6 +4,7 @@
         "Blorg",
         "Contentful",
         "domtoimage",
-        "kgray"
+        "kgray",
+        "parsecsv"
     ]
 }

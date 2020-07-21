@@ -11,6 +11,7 @@ import { UserMenu } from "../User/UserMenu";
 import { commonUI } from "../../theme";
 import { useMediaQuery, Tab, Tabs } from "@material-ui/core";
 import { useHistory, Link, useLocation } from "react-router-dom";
+import { FormattedMessage } from "react-intl";
 
 export const Header: React.FunctionComponent = () => {
     const location = useLocation();
@@ -133,6 +134,11 @@ export const Header: React.FunctionComponent = () => {
                     <SearchBox cssExtra="margin-left: auto; margin-right:10px; width:100%" />
                 </div>
             )}
+            {/* Language:
+            <FormattedMessage
+                id="language.name"
+                defaultMessage="DEFAULT"
+            ></FormattedMessage> */}
         </div>
     );
 };

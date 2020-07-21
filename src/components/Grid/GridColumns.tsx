@@ -25,6 +25,7 @@ export interface IGridColumn extends DevExpressColumn {
     // This happens regardless of whether the column uses a default (text box) filter or a custom filter control.
     addToFilter?: (filter: IFilter, value: string) => void;
     sortingEnabled?: boolean;
+    l10nId?: string; // the id to use for localization if it's a common one that we don't want to just fabricate for this context
 }
 
 // For some tags, we want to give them their own column. So we don't want to show them in the tags column.

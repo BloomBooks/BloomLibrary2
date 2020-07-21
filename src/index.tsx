@@ -19,7 +19,7 @@ try {
             dsn:
                 "https://f33c34679bd044ba93eebb6fdf2132e3@sentry.keyman.com/18",
             environment: window.location.hostname,
-            attachStacktrace: true
+            attachStacktrace: true,
         });
     }
 } catch (error) {
@@ -33,7 +33,7 @@ const firebaseConfig = {
     projectId: "sil-bloomlibrary",
     storageBucket: "sil-bloomlibrary.appspot.com",
     messagingSenderId: "481016061476",
-    appId: "1:481016061476:web:8c9905ffec02e8579b82b1"
+    appId: "1:481016061476:web:8c9905ffec02e8579b82b1",
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -48,7 +48,7 @@ firebase.auth().onAuthStateChanged(() => {
             // .then(result =>
             //     console.log("ConnectParseServer resolved with " + result)
             // )
-            .catch(err => {
+            .catch((err) => {
                 console.log(
                     "*** Signing out of firebase because of an error connecting to ParseServer"
                 );
@@ -59,6 +59,7 @@ firebase.auth().onAuthStateChanged(() => {
 
 ReactDOM.render(<App />, document.getElementById("root"));
 
+//   `Add Message to Bloom Library Strings:\n${s.id},${s.defaultMessage}`
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA

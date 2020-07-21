@@ -6,9 +6,6 @@ export class ArtifactVisibilitySettings {
     @observable public harvester: boolean | undefined;
     @observable public librarian: boolean | undefined;
     @observable public user: boolean | undefined;
-    private id = ArtifactVisibilitySettings.idCounter++;
-
-    private static idCounter = 0;
 
     constructor(
         harvester?: boolean | undefined,

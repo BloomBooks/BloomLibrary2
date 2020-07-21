@@ -9,11 +9,16 @@ export function useGetOverviewStats(
     if (response && response["data"] && response["data"]["stats"]) {
         const s = response["data"]["stats"][0];
 
+        // The parseInts are important.
+        // Without them, js will treat them like strings even though typescript knows they are numbers.
+        // Then the + operator will concatenate instead of add.
         return {
-            books: s.bookcount,
-            languages: s.languagecount,
+            books: parseInt(s.bookcount, 10),
+            languages: parseInt(s.languagecount, 10),
 
-            bloomPubDeviceMobile: s.devicecount,
+            bloomPubDeviceMobile: parseInt(s.devicecount, 10),
+
+            readsBloomReader: parseInt(s.bloomreaderreadcount, 10),
 
             // TODO: get these from the database
             topics: 0,
@@ -27,7 +32,6 @@ export function useGetOverviewStats(
 
             readsWeb: 0,
             readsApps: 0,
-            readsBloomReader: 0,
         };
     }
     return undefined;

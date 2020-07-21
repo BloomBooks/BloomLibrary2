@@ -11,14 +11,15 @@ import { getUrlOfHtmlOfDigitalVersion } from "./BookDetail/ArtifactHelper";
 import { useHistory, useLocation } from "react-router-dom";
 import { useTrack } from "../analytics/Analytics";
 import { getBookAnalyticsInfo } from "../analytics/BookAnalyticsInfo";
-import { useDocumentTitle } from "./Routes";
+import { useDocumentTitle, splitPathname } from "./Routes";
 import FullscreenIcon from "@material-ui/icons/Fullscreen";
+import { ThemeProvider } from "@material-ui/styles";
 import {
     sendPlayerClosingAnalytics,
     startingBook,
 } from "../analytics/BloomPlayerAnalytics";
 import { commonUI } from "../theme";
-import { useMediaQuery } from "@material-ui/core";
+import { useMediaQuery, IconButton, createMuiTheme } from "@material-ui/core";
 
 export const ReadBookPage: React.FunctionComponent<{
     id: string;
@@ -96,7 +97,22 @@ export const ReadBookPage: React.FunctionComponent<{
                     // from the browser's point of view we're staying on the same page.
                     // Easiest just to call the function we want ourselves.
                     onPlayerUnloading();
-                    history.push(`/book/${id}`);
+                    // We don't want to use history.goBack() because we might have
+                    // come direct to the read-book page by following a URL, and
+                    // we want this arrow to give us a way into the Bloom site.
+                    let whereToGo = `/book/${id}`;
+                    // wish all this knowedge didn't have to be here
+                    if (lang) {
+                        whereToGo += `?lang=${lang}`;
+                    }
+                    const { embeddedSettingsUrlKey } = splitPathname(
+                        location.pathname
+                    );
+                    if (embeddedSettingsUrlKey) {
+                        whereToGo =
+                            `/embed/${embeddedSettingsUrlKey}` + whereToGo;
+                    }
+                    history.push(whereToGo);
                 } else if (r.messageType === "reportBookProperties") {
                     const canRotate = r.params?.canRotate as boolean;
                     const isLandscape = r.params?.landscape as boolean;
@@ -104,6 +120,11 @@ export const ReadBookPage: React.FunctionComponent<{
                     if (autoFullScreen) {
                         setupScreen(canRotate, isLandscape);
                     }
+                } else if (r.messageType === "fullScreen") {
+                    setupScreen(
+                        rotateParams.canRotate,
+                        rotateParams.isLandscape
+                    );
                 }
             } catch (err) {
                 console.log(`Got error with message: ${err}`);
@@ -133,8 +154,37 @@ export const ReadBookPage: React.FunctionComponent<{
 
     const langParam = contextLangIso ? `&lang=${contextLangIso}` : "";
 
-    const iframeSrc = `${bloomPlayerUrl}?url=${url}&showBackButton=true&useOriginalPageSize=true${langParam}`;
+    let iframeSrc = `${bloomPlayerUrl}?url=${url}&showBackButton=true&centerVertically=false&useOriginalPageSize=true${langParam}`;
+    if (!fullScreen) {
+        const extraButtonsObj = [
+            {
+                id: "fullScreen",
+                iconUrl:
+                    "https://s3.amazonaws.com/share.bloomlibrary.org/assets/Ic_fullscreen_48px_red.svg",
+                description: "full screen",
+            },
+        ];
+        const extraButtonsParam =
+            "&extraButtons=" +
+            encodeURIComponent(JSON.stringify(extraButtonsObj));
+        iframeSrc += extraButtonsParam;
+    }
 
+    // This theme matches Bloom-player. It is supposed to help the full-screen button
+    // better match the Bloom-player icons, whose toolbar it overlays. Not successful
+    // in making the hover background color have the same transparency as bloom-player.
+    // Decided to keep it as (a) it may be helping somewhat (b) it may be a necessary
+    // part of a complete solution; there's an 'override' property in theme that can
+    // set styles for things.
+    const theme = createMuiTheme({
+        palette: {
+            primary: {
+                main: "#2e2e2e",
+                contrastText: commonUI.colors.bloomRed,
+            },
+            secondary: { main: commonUI.colors.bloomRed },
+        },
+    });
     return (
         <React.Fragment>
             <iframe
@@ -147,22 +197,6 @@ export const ReadBookPage: React.FunctionComponent<{
                 src={iframeSrc}
                 //src={"https://google.com"}
             ></iframe>
-            {fullScreen || (
-                <FullscreenIcon
-                    css={css`
-                        position: absolute;
-                        top: 20px;
-                        right: 8px;
-                        color: ${commonUI.colors.bloomRed};
-                    `}
-                    onClick={() => {
-                        setupScreen(
-                            rotateParams.canRotate,
-                            rotateParams.isLandscape
-                        );
-                    }}
-                />
-            )}
         </React.Fragment>
     );
 };

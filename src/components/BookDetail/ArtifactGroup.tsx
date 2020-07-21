@@ -138,7 +138,16 @@ export const ArtifactGroup: React.FunctionComponent<{
                                 }
                                 arrow={true}
                             >
-                                <IconButton>
+                                <IconButton
+                                    onClick={() => {
+                                        const params = getBookAnalyticsInfo(
+                                            props.book,
+                                            props.contextLangIso,
+                                            a.analyticsType
+                                        );
+                                        track("Download Book", params);
+                                    }}
+                                >
                                     {!a.enabled && (
                                         <div
                                             css={css`
@@ -154,14 +163,6 @@ export const ArtifactGroup: React.FunctionComponent<{
                                         // prevents page reloading!
                                         download={fileName}
                                         key={a.alt}
-                                        onClick={() => {
-                                            const params = getBookAnalyticsInfo(
-                                                props.book,
-                                                props.contextLangIso,
-                                                a.analyticsType
-                                            );
-                                            track("Download Book", params);
-                                        }}
                                     >
                                         <img src={a.icon} alt={a.alt} />
                                     </a>

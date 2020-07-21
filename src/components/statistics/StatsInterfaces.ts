@@ -3,11 +3,23 @@
 import { IDateRange } from "./DateRangePicker";
 import { ICollection } from "../../model/ContentInterfaces";
 
+export interface IScreenOption {
+    label: string;
+    value: any;
+}
+
 // In the future individual charts might have further settings, but it seems like then they should define new interfaces?
 export interface IStatsProps {
     collection: ICollection;
     dateRange: IDateRange;
-    registerExportDataFn: (fn: ExportDataFn | undefined) => void;
+    options: IScreenOption[];
+    registerExportDataFn: (
+        // undefined if we can't currently export data,
+        // either because we haven't gotten it yet, or because
+        // the query found nothing.
+        fn: ExportDataFn | undefined,
+        waiting: boolean // true if we are waiting for results.
+    ) => void;
 }
 
 export interface IOverviewStats {

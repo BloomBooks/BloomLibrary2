@@ -26,14 +26,12 @@ export const ByLanguageGroups: React.FunctionComponent<{
     // The combination of useRef and useEffect allows us to run the search once
     //    const rows = useRef<Map<string, { phash: string; book: IBasicBookInfo }>>(
     const [rows, setRows] = useState(new Map<string, IBasicBookInfo[]>());
-    const [totalBookCount, setTotalBookCount] = useState(0);
     const arbitraryMaxLangsPerBook = 20;
     const reportBooksAndLanguages = props.reportBooksAndLanguages; // to avoid useEffect depending on props.
     const waiting = searchResults.waiting;
     useEffect(() => {
         if (!waiting) {
             const newRows = new Map<string, IBasicBookInfo[]>();
-            let totalCount = 0;
             // for langIndex = 1... arbitraryMaxLangsPerBook
             // for b in books
             // lang = book.langs[langIndex]
@@ -51,7 +49,6 @@ export const ByLanguageGroups: React.FunctionComponent<{
                         const rowForLang = newRows.get(langCode);
                         if (!rowForLang) {
                             newRows.set(langCode, [book]);
-                            totalCount++;
                         } else {
                             if (
                                 key === undefined || // if we can't come up with a key, just add this book to the row
@@ -61,14 +58,12 @@ export const ByLanguageGroups: React.FunctionComponent<{
                                 )
                             ) {
                                 rowForLang.push(book);
-                                totalCount++;
                             }
                         }
                     }
                 });
             }
             setRows(newRows);
-            setTotalBookCount(totalCount);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
@@ -82,6 +77,7 @@ export const ByLanguageGroups: React.FunctionComponent<{
         waiting,
     ]);
     const langCount = rows.size;
+    const totalBookCount = searchResults.totalMatchingRecords;
     useEffect(() => {
         if (reportBooksAndLanguages && !waiting) {
             reportBooksAndLanguages(totalBookCount, langCount);

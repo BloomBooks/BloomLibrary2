@@ -3,7 +3,7 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 
 import { useGetCollection } from "../../model/Collections";
 
@@ -19,43 +19,81 @@ import Button from "@material-ui/core/Button";
 import { saveAs } from "file-saver";
 import DownloadPngIcon from "./download-png.svg";
 import DownloadCsvIcon from "./download-csv.svg";
-import { IStatsProps, ExportDataFn } from "./StatsInterfaces";
+import { IStatsProps, ExportDataFn, IScreenOption } from "./StatsInterfaces";
 import { useStorageState } from "react-storage-hooks";
 import { exportCsv } from "./exportData";
 import LinearProgress from "@material-ui/core/LinearProgress";
+import { BookReadingReport } from "./BookReadingReport";
+import { FormattedMessage, useIntl } from "react-intl";
+import { QueryDescription } from "./QueryDescription";
+import FormControl from "@material-ui/core/FormControl";
+import { ScreenOptionsSelect } from "./ScreenOptionsSelect";
 
 export interface IScreen {
     label: string;
     component: React.FunctionComponent<IStatsProps>;
+    options?: IScreenOption[];
 }
 export const Pretend: React.FunctionComponent<IStatsProps> = (props) => {
     return <h1>Pretend</h1>;
 };
-const screens: IScreen[] = [
-    {
-        label: "Overview",
-        component: (p: IStatsProps) => <StatsOverviewScreen {...p} />,
-    },
-    {
-        label: "Comprehension Questions",
-        component: (p: IStatsProps) => (
-            <ComprehensionQuestionsReport {...p}></ComprehensionQuestionsReport>
-        ),
-    },
-    {
-        label: "Bloom Reader Sessions",
-        component: (p: IStatsProps) => <ReaderSessionsChart {...p} />,
-    },
-];
 
 export const kStatsPageGray = "#ececec";
 export const CollectionStatsPage: React.FunctionComponent<{
     collectionName: string;
 }> = (props) => {
-    const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
+    const l10n = useIntl();
+    const [screenOptions, setScreenOptions] = useState<IScreenOption[]>([]);
+    const screens: IScreen[] = useMemo(() => {
+        const x = [
+            {
+                label: l10n.formatMessage({
+                    id: "stats.comprehensionQuestions",
+                    defaultMessage: "Comprehension Questions",
+                }),
+                component: (p: IStatsProps) => (
+                    <ComprehensionQuestionsReport
+                        {...p}
+                    ></ComprehensionQuestionsReport>
+                ),
+            },
+            {
+                label: l10n.formatMessage({
+                    id: "stats.bloomReaderSessions",
+                    defaultMessage: "Bloom Reader Sessions",
+                }),
+                component: (p: IStatsProps) => <ReaderSessionsChart {...p} />,
+                options: [
+                    { label: "By Week", value: "week" },
+                    { label: "By Month", value: "month" },
+                ],
+            },
+            {
+                label: l10n.formatMessage({
+                    id: "stats.booksRead",
+                    defaultMessage: "Books Read",
+                }),
+                component: (p: IStatsProps) => (
+                    <BookReadingReport {...p}></BookReadingReport>
+                ),
+            },
+        ].sort((a, b) => a.label.localeCompare(b.label));
+        // But keep the overview at the top, outside of the sort order
+        x.unshift({
+            label: l10n.formatMessage({
+                id: "stats.overview",
+                defaultMessage: "Overview",
+            }),
+            component: (p: IStatsProps) => <StatsOverviewScreen {...p} />,
+        });
+        return x;
+    }, [l10n]);
+
+    const [currentScreenIndex, setCurrentScreenIndex] = useState(1);
     const [exportDataFn, setExportDataFn] = useState<
         ExportDataFn | undefined
     >();
+    const [waiting, setWaiting] = useState(true);
     const [dateRange, setDateRange] = useStorageState<IDateRange>(
         localStorage,
         "analytics-date-range",
@@ -100,7 +138,12 @@ export const CollectionStatsPage: React.FunctionComponent<{
             `}
         >
             <h1>{collection?.label}</h1>
-            <h2>Bloom Collection Statistics</h2>
+            <h2>
+                <FormattedMessage
+                    id="stats.header"
+                    defaultMessage="Bloom Collection Statistics"
+                />
+            </h2>
             <div
                 css={css`
                     //background-color: ${kStatsPageGray};
@@ -115,34 +158,35 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     justify-content: space-between;
                 `}
             >
-                <Select
-                    css={css`
-                        padding-left: 0;
-                        min-width: 300px;
-                        &,
-                        * {
-                            background-color: white !important;
-                        }
-                    `}
-                    native
-                    value={currentScreenIndex}
-                    onChange={(e) => {
-                        // clear the export function when we switch screens. Let the screen call us back with the new function
-                        setExportDataFn(undefined);
-                        setCurrentScreenIndex(e.target.value as number);
-                    }}
-                    inputProps={{
-                        name: "age",
-                        id: "age-native-simple",
-                    }}
-                >
-                    {screens.map((screen, index) => (
-                        <option key={index} value={index}>
-                            {screen.label}
-                        </option>
-                    ))}
-                </Select>
+                <FormControl variant="outlined">
+                    <Select
+                        css={css`
+                            padding-left: 0;
+                            min-width: 300px;
 
+                            select {
+                                padding: 10px !important;
+                            }
+                        `}
+                        native
+                        value={currentScreenIndex}
+                        onChange={(e) => {
+                            // clear the export function when we switch screens. Let the screen call us back with the new function
+                            setExportDataFn(undefined);
+                            setCurrentScreenIndex(e.target.value as number);
+                        }}
+                        inputProps={{
+                            name: "age",
+                            id: "age-native-simple",
+                        }}
+                    >
+                        {screens.map((screen, index) => (
+                            <option key={index} value={index}>
+                                {screen.label}
+                            </option>
+                        ))}
+                    </Select>
+                </FormControl>
                 <DateRangePicker
                     range={dateRange}
                     setRange={(range) => {
@@ -151,7 +195,9 @@ export const CollectionStatsPage: React.FunctionComponent<{
                 ></DateRangePicker>
             </div>
             {/* using the fact that no data has been registered with us to know when data is available */}
-            {exportDataFn || (
+
+            {/* show this until data is available */}
+            {waiting && (
                 <LinearProgress
                     css={css`
                         margin-top: 50px;
@@ -162,7 +208,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
             <div
                 css={css`
                     /* don't display at all until we have data... in the meantime we are showing the progress bar*/
-                    display: ${exportDataFn ? "block" : "none"};
+                    display: ${waiting ? "none" : "block"};
                 `}
             >
                 <div
@@ -174,6 +220,11 @@ export const CollectionStatsPage: React.FunctionComponent<{
                         padding: ${kSideMarginPx}px;
                     `}
                 >
+                    <ScreenTitleBar
+                        screen={screens[currentScreenIndex]}
+                        screenOptions={screenOptions}
+                        setScreenOptions={setScreenOptions}
+                    />
                     <div
                         // This allows horizontal scrolling for the whole 'screen' element...
                         // the chosen block of data. Mainly useful for charts with many columns.
@@ -189,23 +240,18 @@ export const CollectionStatsPage: React.FunctionComponent<{
                                 //background-color: white; // this is important for image export, else it's transparent which will confuse people
                             `}
                         >
-                            <h3
-                                css={css`
-                                    margin-block-start: 0;
-                                `}
-                            >
-                                {screens[currentScreenIndex].label}
-                            </h3>
-
                             {screens[currentScreenIndex].component({
                                 collection,
                                 dateRange,
+                                options: screenOptions,
                                 registerExportDataFn: (
-                                    fn: ExportDataFn | undefined
+                                    fn: ExportDataFn | undefined,
+                                    waiting: boolean
                                 ) => {
                                     // this double function is to keep react's use state thing from *running* the function,
                                     // which is wants to do!
                                     setExportDataFn(() => fn);
+                                    setWaiting(waiting);
 
                                     // if (fn) {
                                     //     console.log(JSON.stringify(fn()));
@@ -246,35 +292,17 @@ export const CollectionStatsPage: React.FunctionComponent<{
                         </Button>
                     )}
                 </div>
-                {/*
-            <div
-                css={css`
-                    padding: 10px;
-                    height: 100px;
-                `}
-            >
-                <span
+
+                <div
                     css={css`
-                        font-size: 20px;
+                        padding: 10px;
                     `}
                 >
-                    🛈
-                </span>
-                <h3
-                    css={css`
-                        display: inline;
-                    `}
-                >
-                    {" "}
-                    About this screen
-                </h3>
-                <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Mauris praesent praesent pretium dictum ipsum. Consequat,
-                    dictumst et lacus condimentum aliquet consequat, vitae in
-                    placerat. Dolor ullamcorper.
-                </p>
-            </div> */}
+                    <QueryDescription
+                        collection={collection}
+                        dateRange={dateRange}
+                    ></QueryDescription>
+                </div>
             </div>
         </div>
     );
@@ -292,3 +320,38 @@ function downloadAsPng(el: HTMLElement, filename: string, scale: number) {
         saveAs(blob, filename);
     });
 }
+
+const ScreenTitleBar: React.FunctionComponent<{
+    screen: IScreen;
+    screenOptions: IScreenOption[];
+    setScreenOptions: (options: IScreenOption[]) => void;
+}> = (props) => {
+    return (
+        <div
+            css={css`
+                display: flex;
+                flex-direction: row;
+            `}
+        >
+            <h3
+                css={css`
+                    margin-block-start: 0;
+                `}
+            >
+                {props.screen.label}
+            </h3>
+            {props.screen.options && (
+                <ScreenOptionsSelect
+                    css={css`
+                        margin-left: auto !important;
+                    `}
+                    screen={props.screen}
+                    chosenOptions={props.screenOptions}
+                    onChange={(options: IScreenOption[]) => {
+                        props.setScreenOptions(options);
+                    }}
+                />
+            )}
+        </div>
+    );
+};

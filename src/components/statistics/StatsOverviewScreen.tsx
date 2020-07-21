@@ -8,6 +8,7 @@ import { IStatsProps } from "./StatsInterfaces";
 import { StatsCard } from "./StatsCard";
 import { useProvideDataForExport } from "./exportData";
 import { useGetOverviewStats } from "./useGetOverviewStats";
+import { FormattedMessage, useIntl } from "react-intl";
 
 //const gapWidth = "10px";
 export const kDarkGrey = "#5d5d5d";
@@ -20,6 +21,8 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
     props
 ) => {
     const stats = useGetOverviewStats(props);
+
+    const i18n = useIntl();
 
     useProvideDataForExport(stats ? [stats] : undefined, props);
 
@@ -44,56 +47,115 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
             `}
         >
             <StatsCard
+                //  I don't think we're ready for translation on this one yet...
+                info={
+                    "These statistics are for books that were read during the time period. This may be different from the count of books in the collection, if some books were not read during the time period, or if some books were removed from the collection."
+                }
                 subitems={[
-                    { label: "Languages", value: stats.languages },
-                    { label: "Topics", value: stats.topics },
+                    {
+                        label: i18n.formatMessage({
+                            id: "languages",
+                            defaultMessage: "Languages",
+                        }),
+                        value: stats.languages,
+                    },
+                    // {
+                    //     label: i18n.formatMessage({
+                    //         id: "topics",
+                    //         defaultMessage: "Topics",
+                    //     }),
+                    //     value: stats.topics,
+                    // },
                 ]}
                 overrideTotal={stats.books}
             >
-                Books
+                <FormattedMessage id="books" defaultMessage="Books" />
             </StatsCard>
 
             <StatsCard
-                info={
-                    "Count of devices where we received notice where at least on book from this collection had been loaded."
-                }
+                info={i18n.formatMessage({
+                    id: "stats.devices.info",
+                    defaultMessage:
+                        "Count of devices for which we received notice that at least one book from this collection had been loaded.",
+                })}
                 subitems={[
-                    { label: "Mobile", value: stats.bloomPubDeviceMobile },
-                    { label: "PC", value: stats.bloomPubDevicePC },
+                    {
+                        label: i18n.formatMessage({
+                            id: "stats.devices.mobile",
+                            defaultMessage: "Mobile",
+                        }),
+                        value: stats.bloomPubDeviceMobile,
+                    },
+                    // {
+                    //     label: i18n.formatMessage({
+                    //         id: "stats.devices.pc",
+                    //         defaultMessage: "PC",
+                    //     }),
+                    //     value: stats.bloomPubDevicePC,
+                    // },
                 ]}
             >
-                Devices
+                <FormattedMessage id="devices" defaultMessage="Devices" />
                 <div
                     css={css`
                         font-size: 12px;
                     `}
                 >
-                    with Bloom Reader
+                    <FormattedMessage
+                        id="stats.devices.bloomReader"
+                        defaultMessage="with Bloom Reader"
+                    />
                 </div>
             </StatsCard>
 
             <StatsCard
+                info={i18n.formatMessage({
+                    id: "stats.reads.info",
+                    defaultMessage:
+                        "The number of times the book was read, in part or whole. We are currently only showing reads on Bloom Reader. We will soon add reads on the Web, in apps, and in the desktop.",
+                })}
                 subitems={[
-                    { label: "Web", value: stats.readsWeb },
-                    { label: "Apps", value: stats.readsApps },
-                    { label: "Bloom Reader", value: stats.readsBloomReader },
+                    // {
+                    //     label: i18n.formatMessage({
+                    //         id: "stats.reads.web",
+                    //         defaultMessage: "Web",
+                    //     }),
+                    //     value: stats.readsWeb,
+                    // },
+                    // {
+                    //     label: i18n.formatMessage({
+                    //         id: "stats.reads.apps",
+                    //         defaultMessage: "Apps",
+                    //     }),
+                    //     value: stats.readsApps,
+                    // },
+                    {
+                        label: i18n.formatMessage({
+                            id: "bloomReader",
+                            defaultMessage: "Bloom Reader",
+                        }),
+                        value: stats.readsBloomReader,
+                    },
                 ]}
             >
-                Reads
+                <FormattedMessage id="stats.reads" defaultMessage="Reads" />
             </StatsCard>
-            <StatsCard
+            {/* <StatsCard
                 subitems={[
                     { label: "bloomPub", value: stats.downloadsBloomPub },
                     { label: "ePUB", value: stats.downloadsEpub },
                     { label: "PDF", value: stats.downloadsPDF },
                     {
-                        label: "For Translation",
+                        label: i18n.formatMessage({
+                            id: "downloads.forTranslation",
+                            defaultMessage: "For Translation",
+                        }),
                         value: stats.downloadsShellbooks,
                     },
                 ]}
             >
-                Downloads
-            </StatsCard>
+                <FormattedMessage id="downloads" defaultMessage="Downloads" />
+            </StatsCard> */}
         </div>
     );
 };

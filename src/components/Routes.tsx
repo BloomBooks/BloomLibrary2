@@ -78,6 +78,13 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         return <ReadBookPage id={match.params.id} />;
                     }}
                 />
+                <Route
+                    // It should be possible to combine this with the route above, but I can't make it work.
+                    path="/embed/:collectionId/player/:id"
+                    render={({ match }) => {
+                        return <ReadBookPage id={match.params.id} />;
+                    }}
+                />
                 <Route path="/about">
                     <ContentfulPage urlKey="about" />
                 </Route>
@@ -167,6 +174,7 @@ export function splitPathname(
     collectionName: string;
     filters: string[];
     breadcrumbs: string[];
+    bookId: string;
 } {
     const segments = trimLeft(pathname ?? "", "/").split("/");
     let embeddedSettings;
@@ -182,6 +190,7 @@ export function splitPathname(
         collectionSegmentIndex--;
     }
     let collectionName = segments[collectionSegmentIndex];
+    let bookId = "";
 
     if (
         collectionSegmentIndex < 0 ||
@@ -192,15 +201,17 @@ export function splitPathname(
         collectionName = "root.read";
     }
     if (collectionSegmentIndex >= 1) {
-        let previous = segments[collectionSegmentIndex - 1];
+        const previous = segments[collectionSegmentIndex - 1];
         if (previous === "player") {
             collectionName = ""; // we have no way of knowing it, but it's not the book ID.
+            bookId = segments[collectionSegmentIndex];
         }
         if (previous === "book") {
             collectionName =
                 collectionSegmentIndex >= 2
                     ? segments[collectionSegmentIndex - 2]
                     : "";
+            bookId = segments[collectionSegmentIndex];
         }
     }
 
@@ -211,6 +222,7 @@ export function splitPathname(
             .slice(collectionSegmentIndex + 1)
             .map((x) => x.substring(1)),
         breadcrumbs: segments.slice(0, Math.max(collectionSegmentIndex, 0)),
+        bookId,
     };
 }
 
