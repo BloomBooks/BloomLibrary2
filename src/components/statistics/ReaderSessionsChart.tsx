@@ -73,7 +73,7 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
         return { date: x, sessionCount: counts.get(x) };
     });
 
-    sortAndComplete(mapData, byMonth);
+    sortAndFillInMissingSteps(mapData, props.aggregationUnit === "month");
 
     // Items with values smaller than about this get zero pixels, and therefore
     // no bar or label, so they are indistinguishable from empty bars.
@@ -223,7 +223,7 @@ function getFirstDayOfWeekYyyyMmDd(date: Date): string {
     return toYyyyMmDd(sunday);
 }
 
-function sortAndComplete(
+function sortAndFillInMissingSteps(
     items: Array<{ date: string; sessionCount: number | undefined }>,
     byMonth: boolean
 ): void {
@@ -231,25 +231,32 @@ function sortAndComplete(
         if (a.date === b.date) return 0;
         return Date.parse(a.date) < Date.parse(b.date) ? -1 : 1;
     });
+
+    // Fill in missing steps and insert them so that it looks right in the time-based x-axis
     let i = 0;
+
     while (i < items.length - 1) {
         let nextDate = new Date(items[i].date);
+        let nextDateString: string; // the expected date for the next item on the x-axis
         if (byMonth) {
             if (nextDate.getUTCMonth() === 11) {
                 // untested
                 nextDate.setUTCFullYear(nextDate.getUTCFullYear() + 1);
                 nextDate.setUTCMonth(0);
             } else {
-                nextDate.setUTCMonth(nextDate.getMonth() + 1);
+                nextDate.setUTCMonth(nextDate.getUTCMonth() + 1);
             }
+            nextDateString = toMmmYyyy(nextDate);
         } else {
             nextDate = new Date(nextDate.getTime() + 1000 * 60 * 60 * 24 * 7); // add seven days of milliseconds
+            nextDateString = toYyyyMmDd(nextDate);
         }
         i++;
-        const nextDateString = toYyyyMmDd(nextDate);
+
         if (items[i].date === nextDateString) {
             continue;
         }
+        // not there yet, fill in another missing date and loop around
         items.splice(i, 0, { date: nextDateString, sessionCount: 0 });
     }
 }
