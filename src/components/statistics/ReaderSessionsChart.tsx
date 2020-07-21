@@ -50,14 +50,19 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
 
     if (!dayStats) return <h1>{"Loading..."}</h1>;
 
-    const byMonth = false;
     const counts = new Map<string, number>();
     let maxCount = 0;
+    // we are hardwired here to accept only a single option
+    const byMonth =
+        props.options &&
+        props.options.length > 0 &&
+        props.options[0].value === "month";
 
     dayStats.forEach((dailyInfo) => {
         // Since dateEventLocal is formatted YYYY-MM-DD, we can reliably expect it to
         // be parsed as a UTC date.
         const date = new Date(dailyInfo.dateEventLocal);
+
         const key = byMonth ? toMmmYyyy(date) : getFirstDayOfWeekYyyyMmDd(date);
 
         const count = counts.get(key) || 0;
@@ -65,15 +70,12 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
         maxCount = Math.max(maxCount, newCount);
         counts.set(key, newCount);
     });
-    // props.registerDataMatrixFn(() => {
-    //     return [[]];
-    // });
 
     const mapData = Array.from(counts.keys()).map((x) => {
         return { date: x, sessionCount: counts.get(x) };
     });
 
-    sortAndFillInMissingSteps(mapData, props.aggregationUnit === "month");
+    sortAndFillInMissingSteps(mapData, byMonth);
 
     // Items with values smaller than about this get zero pixels, and therefore
     // no bar or label, so they are indistinguishable from empty bars.

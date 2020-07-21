@@ -19,7 +19,7 @@ import Button from "@material-ui/core/Button";
 import { saveAs } from "file-saver";
 import DownloadPngIcon from "./download-png.svg";
 import DownloadCsvIcon from "./download-csv.svg";
-import { IStatsProps, ExportDataFn } from "./StatsInterfaces";
+import { IStatsProps, ExportDataFn, IScreenOption } from "./StatsInterfaces";
 import { useStorageState } from "react-storage-hooks";
 import { exportCsv } from "./exportData";
 import LinearProgress from "@material-ui/core/LinearProgress";
@@ -27,10 +27,12 @@ import { BookReadingReport } from "./BookReadingReport";
 import { FormattedMessage, useIntl } from "react-intl";
 import { QueryDescription } from "./QueryDescription";
 import FormControl from "@material-ui/core/FormControl";
+import { ScreenOptionsSelect } from "./ScreenOptionsSelect";
 
 export interface IScreen {
     label: string;
     component: React.FunctionComponent<IStatsProps>;
+    options?: IScreenOption[];
 }
 export const Pretend: React.FunctionComponent<IStatsProps> = (props) => {
     return <h1>Pretend</h1>;
@@ -41,6 +43,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
     collectionName: string;
 }> = (props) => {
     const l10n = useIntl();
+    const [screenOptions, setScreenOptions] = useState<IScreenOption[]>([]);
     const screens: IScreen[] = useMemo(() => {
         const x = [
             {
@@ -60,6 +63,10 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     defaultMessage: "Bloom Reader Sessions",
                 }),
                 component: (p: IStatsProps) => <ReaderSessionsChart {...p} />,
+                options: [
+                    { label: "by week", value: "week" },
+                    { label: "by month", value: "month" },
+                ],
             },
             {
                 label: l10n.formatMessage({
@@ -82,7 +89,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
         return x;
     }, [l10n]);
 
-    const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
+    const [currentScreenIndex, setCurrentScreenIndex] = useState(1);
     const [exportDataFn, setExportDataFn] = useState<
         ExportDataFn | undefined
     >();
@@ -156,6 +163,10 @@ export const CollectionStatsPage: React.FunctionComponent<{
                         css={css`
                             padding-left: 0;
                             min-width: 300px;
+
+                            select {
+                                padding: 10px !important;
+                            }
                         `}
                         native
                         value={currentScreenIndex}
@@ -209,6 +220,11 @@ export const CollectionStatsPage: React.FunctionComponent<{
                         padding: ${kSideMarginPx}px;
                     `}
                 >
+                    <ScreenTitleBar
+                        screen={screens[currentScreenIndex]}
+                        screenOptions={screenOptions}
+                        setScreenOptions={setScreenOptions}
+                    />
                     <div
                         // This allows horizontal scrolling for the whole 'screen' element...
                         // the chosen block of data. Mainly useful for charts with many columns.
@@ -224,17 +240,10 @@ export const CollectionStatsPage: React.FunctionComponent<{
                                 //background-color: white; // this is important for image export, else it's transparent which will confuse people
                             `}
                         >
-                            <h3
-                                css={css`
-                                    margin-block-start: 0;
-                                `}
-                            >
-                                {screens[currentScreenIndex].label}
-                            </h3>
-
                             {screens[currentScreenIndex].component({
                                 collection,
                                 dateRange,
+                                options: screenOptions,
                                 registerExportDataFn: (
                                     fn: ExportDataFn | undefined,
                                     waiting: boolean
@@ -311,3 +320,38 @@ function downloadAsPng(el: HTMLElement, filename: string, scale: number) {
         saveAs(blob, filename);
     });
 }
+
+const ScreenTitleBar: React.FunctionComponent<{
+    screen: IScreen;
+    screenOptions: IScreenOption[];
+    setScreenOptions: (options: IScreenOption[]) => void;
+}> = (props) => {
+    return (
+        <div
+            css={css`
+                display: flex;
+                flex-direction: row;
+            `}
+        >
+            <h3
+                css={css`
+                    margin-block-start: 0;
+                `}
+            >
+                {props.screen.label}
+            </h3>
+            {props.screen.options && (
+                <ScreenOptionsSelect
+                    css={css`
+                        margin-left: auto !important;
+                    `}
+                    screen={props.screen}
+                    chosenOptions={props.screenOptions}
+                    onChange={(options: IScreenOption[]) => {
+                        props.setScreenOptions(options);
+                    }}
+                />
+            )}
+        </div>
+    );
+};
