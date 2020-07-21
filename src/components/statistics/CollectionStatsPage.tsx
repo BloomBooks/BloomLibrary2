@@ -41,15 +41,8 @@ export const CollectionStatsPage: React.FunctionComponent<{
     collectionName: string;
 }> = (props) => {
     const l10n = useIntl();
-    const screens: IScreen[] = useMemo(
-        () => [
-            {
-                label: l10n.formatMessage({
-                    id: "stats.overview",
-                    defaultMessage: "Overview",
-                }),
-                component: (p: IStatsProps) => <StatsOverviewScreen {...p} />,
-            },
+    const screens: IScreen[] = useMemo(() => {
+        const x = [
             {
                 label: l10n.formatMessage({
                     id: "stats.comprehensionQuestions",
@@ -77,9 +70,17 @@ export const CollectionStatsPage: React.FunctionComponent<{
                     <BookReadingReport {...p}></BookReadingReport>
                 ),
             },
-        ],
-        [l10n]
-    );
+        ].sort((a, b) => a.label.localeCompare(b.label));
+        // But keep the overview at the top, outside of the sort order
+        x.unshift({
+            label: l10n.formatMessage({
+                id: "stats.overview",
+                defaultMessage: "Overview",
+            }),
+            component: (p: IStatsProps) => <StatsOverviewScreen {...p} />,
+        });
+        return x;
+    }, [l10n]);
 
     const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
     const [exportDataFn, setExportDataFn] = useState<
