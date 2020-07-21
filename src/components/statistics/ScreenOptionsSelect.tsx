@@ -8,6 +8,7 @@ import Select from "@material-ui/core/Select";
 import { IScreenOption } from "./StatsInterfaces";
 import FormControl from "@material-ui/core/FormControl";
 import { IScreen } from "./CollectionStatsPage";
+import { FormattedMessage, useIntl } from "react-intl";
 
 // A component that lists all the options of a particular screen, e.g. whether to show by month or year.
 export const ScreenOptionsSelect: React.FunctionComponent<{
@@ -16,6 +17,7 @@ export const ScreenOptionsSelect: React.FunctionComponent<{
     className?: string;
     onChange: (options: IScreenOption[]) => void;
 }> = (props) => {
+    const l10n = useIntl();
     // enhance: currently we can actually only handle a single chosen option
     // we would like to be able to provide groups of values, e.g. [day/month/year, everywhere/Guatemala]
     const optionValue =
@@ -39,7 +41,10 @@ export const ScreenOptionsSelect: React.FunctionComponent<{
             >
                 {props.screen.options!.map((option, index) => (
                     <option key={index} value={JSON.stringify(option)}>
-                        {option.label}
+                        {l10n.formatMessage({
+                            id: "stats.options." + option.label,
+                            defaultMessage: option.label,
+                        })}
                     </option>
                 ))}
             </Select>

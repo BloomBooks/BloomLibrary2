@@ -64,8 +64,8 @@ export const CollectionStatsPage: React.FunctionComponent<{
                 }),
                 component: (p: IStatsProps) => <ReaderSessionsChart {...p} />,
                 options: [
-                    { label: "by week", value: "week" },
-                    { label: "by month", value: "month" },
+                    { label: "By Week", value: "week" },
+                    { label: "By Month", value: "month" },
                 ],
             },
             {

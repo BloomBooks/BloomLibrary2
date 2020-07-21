@@ -94,7 +94,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                     if (languageTagWeAreUsing === "en") {
                         if (Object.keys(stringsForThisLanguage).length > 0) {
                             console.error(
-                                `Add Message to Bloom Library Strings.csv:\n${s.descriptor.id},${s.descriptor.defaultMessage}`
+                                `Add Message to Bloom Library Strings.csv:\n${s.descriptor.id},,${s.descriptor.defaultMessage}`
                             );
                         }
                     } else {
