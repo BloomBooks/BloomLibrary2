@@ -106,3 +106,8 @@ export function useSetEmbeddedUrl() {
         );
     }, [location]);
 }
+
+export function useIsEmbedded(): boolean {
+    const location = useLocation();
+    return location.pathname.startsWith("/embed/");
+}
