@@ -89,7 +89,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
         return x;
     }, [l10n]);
 
-    const [currentScreenIndex, setCurrentScreenIndex] = useState(1);
+    const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
     const [exportDataFn, setExportDataFn] = useState<
         ExportDataFn | undefined
     >();
