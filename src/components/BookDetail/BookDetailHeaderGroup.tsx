@@ -24,6 +24,7 @@ import { commonUI } from "../../theme";
 import { useGetBookCountRaw } from "../../connection/LibraryQueryHooks";
 import { getResultsOrMessageElement } from "../../connection/GetQueryResultsUI";
 import { getAnchorProps } from "../../embedded";
+import { useIsEmbedded } from "../EmbeddingHost";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{
     book: Book;
@@ -32,6 +33,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
     //so where possible we're going to preference that if this is a multilingual book
     contextLangIso?: string;
 }> = observer((props) => {
+    const isEmbedded = useIsEmbedded();
     const { bloomDesktopAvailable, bloomReaderAvailable } = useContext(
         OSFeaturesContext
     );
@@ -62,6 +64,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
         ArtifactType.shellbook
     );
     const showTranslateButton =
+        !isEmbedded && // BL-8698, a this point, people embed BL to publish books, not encourage translation.
         shellBookSettings &&
         shellBookSettings.decision && // it's OK to download and translate the book
         bloomDesktopAvailable; // and this platform can run the software for doing it

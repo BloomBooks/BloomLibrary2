@@ -1,5 +1,6 @@
 import useAxios from "@use-hooks/axios";
 import { useMemo } from "react";
+import * as voca from "voca";
 const parsecsv = require("csv-parse/lib/sync");
 
 interface IStringMap {
@@ -29,8 +30,9 @@ export function useGetLocalizations(
             const firstLine = csv.match(/^.*$/m)![0];
             const languagesInCrowdin = firstLine
                 .split(",")
-                .map((c) => c.trim());
-
+                .map((c) => voca.trim(c, '" '));
+            // remove first two columns, which are ID and Description
+            languagesInCrowdin.splice(0, 2);
             const allStringRows: any[] = parsecsv(
                 csv,
                 //https://csv.js.org/parse/options/

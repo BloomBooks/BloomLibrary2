@@ -205,6 +205,7 @@ export function splitPathname(
         if (previous === "player") {
             collectionName = ""; // we have no way of knowing it, but it's not the book ID.
             bookId = segments[collectionSegmentIndex];
+            collectionSegmentIndex--; // "player" is not a breadcrumb
         }
         if (previous === "book") {
             collectionName =
@@ -212,6 +213,7 @@ export function splitPathname(
                     ? segments[collectionSegmentIndex - 2]
                     : "";
             bookId = segments[collectionSegmentIndex];
+            collectionSegmentIndex--; // "book" is not a breadcrumb
         }
     }
 
@@ -259,18 +261,15 @@ export function getUrlForTarget(target: string) {
     if (pathCollectionName && collectionName !== pathCollectionName) {
         segments.push(pathCollectionName);
     }
-    if (target.startsWith("/player/")) {
-        // don't want breadcrumbs.
-        // TODO: we do want to allow this in embed mode, I believe.
-        // Hence, I've for the moment kept any embed prefixes.
-        // But, the route above for /player/ is not set up for it,
-        // so it won't work. Submitting this so at least
+    const trimmedTarget = trimLeft(target, "/");
+    if (trimmedTarget.startsWith("player/")) {
+        // don't want breadcrumbs, but may need to keep embedding prefixes.
         segments = [
             embeddedSettingsUrlKey ? "embed" : undefined,
             embeddedSettingsUrlKey,
         ].filter((s) => !!s);
     }
-    segments.push(trimLeft(target, "/"));
+    segments.push(trimmedTarget);
     // NB: we do not expect to get any of these in combination with /embed/
     if (
         segments[0] === "root.read" ||

@@ -106,3 +106,9 @@ export function useSetEmbeddedUrl() {
         );
     }, [location]);
 }
+
+// Currently this doesn't need to be a 'use' but I made it that way in case the
+// algorithm changes.
+export function useIsEmbedded(): boolean {
+    return window.self !== window.top;
+}

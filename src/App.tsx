@@ -166,7 +166,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                         </OSFeaturesContext.Provider>
                     </CachedTablesContext.Provider>
                 </ThemeProvider>
-                <LoginDialog /> {/* </React.StrictMode> */}
+                {embeddedMode || <LoginDialog />} {/* </React.StrictMode> */}
             </div>
         </IntlProvider>
     );

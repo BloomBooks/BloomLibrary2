@@ -10,7 +10,7 @@ import ReadIcon from "./read.svg";
 import { commonUI } from "../../theme";
 import { Book } from "../../model/Book";
 import { useHistory, useLocation } from "react-router-dom";
-import { splitPathname } from "../Routes";
+import { splitPathname, getUrlForTarget } from "../Routes";
 
 interface IProps {
     book: Book;
@@ -19,12 +19,7 @@ interface IProps {
 }
 export const ReadButton: React.FunctionComponent<IProps> = (props) => {
     const history = useHistory();
-    const location = useLocation();
-    let url = `player/${props.book.id}`;
-    const { embeddedSettingsUrlKey } = splitPathname(location.pathname);
-    if (embeddedSettingsUrlKey) {
-        url = `embed/${embeddedSettingsUrlKey}/` + url;
-    }
+    const url = getUrlForTarget(`player/${props.book.id}`);
     // This inserts breadcrumbs, embedding information, etc., which we don't want
     // since it interferes with the route for /player/X
     //const url = getUrlForTarget(`/player/${props.book.id}`);
