@@ -5,6 +5,7 @@
         "Contentful",
         "domtoimage",
         "kgray",
-        "parsecsv"
+        "parsecsv",
+        "voca"
     ]
 }
