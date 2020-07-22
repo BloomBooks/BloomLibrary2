@@ -36,26 +36,30 @@ const firebaseConfig = {
     appId: "1:481016061476:web:8c9905ffec02e8579b82b1",
 };
 
-firebase.initializeApp(firebaseConfig);
+// supports authentication, including automatic login if a cookie supports it.
+// We don't ever allow things to behave as logged-in in embedded Bloom Library instances.
+if (window.self === window.top) {
+    firebase.initializeApp(firebaseConfig);
 
-firebase.auth().onAuthStateChanged(() => {
-    const user = firebase.auth().currentUser;
-    if (!user || !user.emailVerified || !user.email) {
-        return;
-    }
-    user.getIdToken().then((idToken: string) => {
-        connectParseServer(idToken, user.email!)
-            // .then(result =>
-            //     console.log("ConnectParseServer resolved with " + result)
-            // )
-            .catch((err) => {
-                console.log(
-                    "*** Signing out of firebase because of an error connecting to ParseServer"
-                );
-                firebase.auth().signOut();
-            });
+    firebase.auth().onAuthStateChanged(() => {
+        const user = firebase.auth().currentUser;
+        if (!user || !user.emailVerified || !user.email) {
+            return;
+        }
+        user.getIdToken().then((idToken: string) => {
+            connectParseServer(idToken, user.email!)
+                // .then(result =>
+                //     console.log("ConnectParseServer resolved with " + result)
+                // )
+                .catch((err) => {
+                    console.log(
+                        "*** Signing out of firebase because of an error connecting to ParseServer"
+                    );
+                    firebase.auth().signOut();
+                });
+        });
     });
-});
+}
 
 ReactDOM.render(<App />, document.getElementById("root"));
 

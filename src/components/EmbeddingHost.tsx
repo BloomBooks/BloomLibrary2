@@ -107,7 +107,8 @@ export function useSetEmbeddedUrl() {
     }, [location]);
 }
 
+// Currently this doesn't need to be a 'use' but I made it that way in case the
+// algorithm changes.
 export function useIsEmbedded(): boolean {
-    const location = useLocation();
-    return location.pathname.startsWith("/embed/");
+    return window.self !== window.top;
 }
