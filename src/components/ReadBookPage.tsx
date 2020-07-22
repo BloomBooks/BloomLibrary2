@@ -11,7 +11,7 @@ import { getUrlOfHtmlOfDigitalVersion } from "./BookDetail/ArtifactHelper";
 import { useHistory, useLocation } from "react-router-dom";
 import { useTrack } from "../analytics/Analytics";
 import { getBookAnalyticsInfo } from "../analytics/BookAnalyticsInfo";
-import { useDocumentTitle, splitPathname } from "./Routes";
+import { useDocumentTitle, splitPathname, getUrlForTarget } from "./Routes";
 import FullscreenIcon from "@material-ui/icons/Fullscreen";
 import { ThemeProvider } from "@material-ui/styles";
 import {
@@ -105,14 +105,7 @@ export const ReadBookPage: React.FunctionComponent<{
                     if (lang) {
                         whereToGo += `?lang=${lang}`;
                     }
-                    const { embeddedSettingsUrlKey } = splitPathname(
-                        location.pathname
-                    );
-                    if (embeddedSettingsUrlKey) {
-                        whereToGo =
-                            `/embed/${embeddedSettingsUrlKey}` + whereToGo;
-                    }
-                    history.push(whereToGo);
+                    history.push(getUrlForTarget(whereToGo));
                 } else if (r.messageType === "reportBookProperties") {
                     const canRotate = r.params?.canRotate as boolean;
                     const isLandscape = r.params?.landscape as boolean;
