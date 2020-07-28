@@ -85,6 +85,7 @@ export const Breadcrumbs: React.FunctionComponent = () => {
     // breadcrumbs.
     if (
         collectionName &&
+        !breadcrumbs.includes(collectionName) &&
         !["root.read", "grid", "bulk"].includes(collectionName)
     ) {
         // Enhance: if there are no filters, this doesn't need to be a link.
