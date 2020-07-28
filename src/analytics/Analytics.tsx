@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Environment } from "../Environment";
 // This file contains code for sending analytics information to segment.io.
 
 // This block is boilerplate stuff from segment.io.  It is only modified by automatic line breaking and to pass typescript,
@@ -54,34 +55,26 @@ import { useEffect, useState } from "react";
                 var n = document.createElement("script");
                 n.type = "text/javascript";
                 n.async = !0;
-                // Todo: currently, this file is simply the "bloomlibrary test" (plYUfYSopTpXkUxNpV58oGwhPNRSyBzo)
-                // version of analytics.min.js, which would normally be obtained direct from cdn.segment.com
+                // This file would normally be obtained directly from cdn.segment.com
                 // as in the comment below, using a URL that depends on our 'e' argument, the ID of the segment.IO
                 // 'source' (e.g., plYUfYSopTpXkUxNpV58oGwhPNRSyBzo for bloomlibrary test).
                 // We don't want to fetch it from there because segment's URLs seem to be blocked in various
                 // places (e.g., PNG). So we are keeping a copy on our own server.
                 // We need distinct files, downloaded from the appropriate place
                 // in segment.io (see the commented out code below) for each destination (what segment.io
-                // calls a source). It's not clear to me yet whether we should try to have a different
-                // file with the same name in each branch (hard to prevent conflicts, and locks each branch
-                // to a particular 'source'), or have three files with different names and some way
-                // to choose between them here (or the code here could depend on the 'e' argument, and our caller
-                // below could choose). For now we're only doing test analytics in BL2 so this is fine.
-                // The old BL code switches between the three based on whether the URL is local, dev, or prod;
-                // if we want to keep that we need three separate versions of analytics.min.js, and to
-                // choose here which one to load.
-                // Another possible ToDo is to get this asset built with a hash in its name and put it in static,
+                // calls a source).
+                // A possible ToDo is to get this asset built with a hash in its name and put it in static,
                 // so clients can cache it indefinitely, but if we publish a new version it will have a new hash
                 // and the new version will automatically be used. For now I'm just focusing on getting it to
                 // work. But at 343K it would be nice to allow this asset to be cached.
-                // Note that this version of analytics.min.js is also special (as is the one currently on
+                // Note that this version of analytics{.*}.min.js is also special (as is the one currently on
                 // cdn.segment.com) in that, by our request, it sends data to analytics.bloomlibrary.org
                 // which is our proxy for api.segment.io. This also helps work around segment.io being blocked.
                 // We tried using a proxy to retrieve analytics.min.js, but it doesn't work, because
                 // the file comes back with segment.io certificates which the browser notes are not
                 // correct for a file supposedly coming from analytics-cdn.bloomlibrary.org. Possibly this
                 // could be worked around with an enterprise CloudFlare subscription.
-                n.src = "/analytics.min.js";
+                n.src = "/" + getAnalyticsJsFileName();
                 // original version, where the current segment.io version of this lives.
                 // "https://cdn.segment.com/analytics.js/v1/" +
                 // e +
@@ -95,17 +88,9 @@ import { useEffect, useState } from "react";
 })();
 /* tslint:enable */
 /* eslint-enable */
-// Possible "sources" to send data to.
-// Note that a Segment.io "source" is the (intermediate) destination that we send stuff TO.
-// Development: vidljptawu, Production: a6nswpue7x, bloomlibrary test: plYUfYSopTpXkUxNpV58oGwhPNRSyBzo
-// Todo: use something like this to only make analytics in production and only if user has not disabled it.
-// The old code below is taken from the original BL and based on an angularjs service.
-//prettier-ignore
-//analytics.load(!sharedService.isProductionSite || localStorageService.get('trackLiveAnalytics') === "false" ? "vidljptawu" : "a6nswpue7x");
-// This is for the segment.io 'source' "BloomLibrary Test".
 // (Note: window.analytics here is typically the array created in the immediately-invokved function above
 // to save events that happen before the script in that object's load method is loaded.
-(window as any).analytics.load("plYUfYSopTpXkUxNpV58oGwhPNRSyBzo");
+(window as any).analytics.load(getSourceKey());
 export function track(event: string, params: object) {
     // Note that once the script created in the load() function above is loaded,
     // window.analytics is an object defined in that script, not the object
@@ -144,4 +129,48 @@ export function useTrack(event: string, params: object, sendIt: boolean) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [event, paramsString, sendIt]
     );
+}
+
+function getEnvironment(): Environment {
+    if (
+        window.location.hostname === "bloomlibrary.org" ||
+        window.location.hostname === "next.bloomlibrary.org" ||
+        window.location.hostname === "embed.bloomlibrary.org"
+    ) {
+        return Environment.Test;
+        // ToDo: Use this when we really switch
+        return Environment.Prod;
+    } else if (window.location.hostname === "localhost") {
+        return Environment.Test;
+    }
+    return Environment.Dev;
+}
+
+// Possible "sources" to send data to.
+// Note that a Segment.io "source" is the (intermediate) destination that we send stuff TO.
+// Development: vidljptawu, Production: a6nswpue7x, bloomlibrary test: plYUfYSopTpXkUxNpV58oGwhPNRSyBzo
+// Todo: allow user (or developers and testers) to send analytics to dev or test
+function getSourceKey(): string {
+    switch (getEnvironment()) {
+        case Environment.Prod:
+            return "a6nswpue7x";
+        case Environment.Dev:
+            return "vidljptawu";
+        default:
+            return "plYUfYSopTpXkUxNpV58oGwhPNRSyBzo";
+    }
+}
+
+// Each of these are our own hosted version of https://cdn.segment.com/analytics.js/v1/X/analytics.min.js
+// where X is the source key (as in getSourceKey above).
+// See further explanation in the comment in the analytics.load function above.
+function getAnalyticsJsFileName(): string {
+    switch (getEnvironment()) {
+        case Environment.Prod:
+            return "analytics.min.js";
+        case Environment.Dev:
+            return "analytics.dev.min.js";
+        default:
+            return "analytics.test.min.js";
+    }
 }
