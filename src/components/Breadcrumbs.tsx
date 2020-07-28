@@ -72,16 +72,6 @@ export const Breadcrumbs: React.FunctionComponent = () => {
     ) {
         breadcrumbs.splice(0, 1);
     }
-    // book and player urls end in /book/id or /player/id, which puts the ID in the collectionName
-    // slot and "book" or "player" in the last breadcrumb. Currently only book ones have prior breadcrumbs,
-    // and player urls don't show breadcrumbs at all, but this logic works either way.
-    if (
-        breadcrumbs[breadcrumbs.length - 1] === "book" ||
-        breadcrumbs[breadcrumbs.length - 1] === "player"
-    ) {
-        isBook = true;
-        breadcrumbs.pop();
-    }
     breadcrumbs.forEach((c, i) => {
         crumbs.push(
             <CollectionCrumb
@@ -91,7 +81,12 @@ export const Breadcrumbs: React.FunctionComponent = () => {
             />
         );
     });
-    if (!isBook && !["root.read", "grid", "bulk"].includes(collectionName)) {
+    // We may not have a collection name, especially for a book or player url without
+    // breadcrumbs.
+    if (
+        collectionName &&
+        !["root.read", "grid", "bulk"].includes(collectionName)
+    ) {
         // Enhance: if there are no filters, this doesn't need to be a link.
         crumbs.push(
             <CollectionCrumb
