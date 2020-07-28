@@ -54,10 +54,38 @@ import { useEffect, useState } from "react";
                 var n = document.createElement("script");
                 n.type = "text/javascript";
                 n.async = !0;
-                n.src =
-                    "https://cdn.segment.com/analytics.js/v1/" +
-                    e +
-                    "/analytics.min.js";
+                // Todo: currently, this file is simply the "bloomlibrary test" (plYUfYSopTpXkUxNpV58oGwhPNRSyBzo)
+                // version of analytics.min.js, which would normally be obtained direct from cdn.segment.com
+                // as in the comment below, using a URL that depends on our 'e' argument, the ID of the segment.IO
+                // 'source' (e.g., plYUfYSopTpXkUxNpV58oGwhPNRSyBzo for bloomlibrary test).
+                // We don't want to fetch it from there because segment's URLs seem to be blocked in various
+                // places (e.g., PNG). So we are keeping a copy on our own server.
+                // We need distinct files, downloaded from the appropriate place
+                // in segment.io (see the commented out code below) for each destination (what segment.io
+                // calls a source). It's not clear to me yet whether we should try to have a different
+                // file with the same name in each branch (hard to prevent conflicts, and locks each branch
+                // to a particular 'source'), or have three files with different names and some way
+                // to choose between them here (or the code here could depend on the 'e' argument, and our caller
+                // below could choose). For now we're only doing test analytics in BL2 so this is fine.
+                // The old BL code switches between the three based on whether the URL is local, dev, or prod;
+                // if we want to keep that we need three separate versions of analytics.min.js, and to
+                // choose here which one to load.
+                // Another possible ToDo is to get this asset built with a hash in its name and put it in static,
+                // so clients can cache it indefinitely, but if we publish a new version it will have a new hash
+                // and the new version will automatically be used. For now I'm just focusing on getting it to
+                // work. But at 343K it would be nice to allow this asset to be cached.
+                // Note that this version of analytics.min.js is also special (as is the one currently on
+                // cdn.segment.com) in that, by our request, it sends data to analytics.bloomlibrary.org
+                // which is our proxy for api.segment.io. This also helps work around segment.io being blocked.
+                // We tried using a proxy to retrieve analytics.min.js, but it doesn't work, because
+                // the file comes back with segment.io certificates which the browser notes are not
+                // correct for a file supposedly coming from analytics-cdn.bloomlibrary.org. Possibly this
+                // could be worked around with an enterprise CloudFlare subscription.
+                n.src = "/analytics.min.js";
+                // original version, where the current segment.io version of this lives.
+                // "https://cdn.segment.com/analytics.js/v1/" +
+                // e +
+                // "/analytics.min.js";
                 var a = document.getElementsByTagName("script")[0] as any;
                 a.parentNode.insertBefore(n, a);
                 analytics._loadOptions = t;

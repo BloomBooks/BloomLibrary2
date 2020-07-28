@@ -105,7 +105,7 @@ export const ReadBookPage: React.FunctionComponent<{
                     if (lang) {
                         whereToGo += `?lang=${lang}`;
                     }
-                    history.push(getUrlForTarget(whereToGo));
+                    history.push("/" + getUrlForTarget(whereToGo));
                 } else if (r.messageType === "reportBookProperties") {
                     const canRotate = r.params?.canRotate as boolean;
                     const isLandscape = r.params?.landscape as boolean;

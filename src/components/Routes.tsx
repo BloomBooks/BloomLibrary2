@@ -182,11 +182,18 @@ export function splitPathname(
         embeddedSettings = segments[1];
         segments.splice(0, 2);
     }
+    // these two variables move roughly in sync, however, firstFilterIndex
+    // (if less than collection length) is always exactly the index of the
+    // first thing starting with a colon (after this loop exits).
+    // collectionSegmentIndex gets adjusted in various special cases, so it
+    // does not always stay the index of the last segment with no colon.
     let collectionSegmentIndex = segments.length - 1;
+    let firstFilterIndex = segments.length;
     while (collectionSegmentIndex >= 0) {
         if (!segments[collectionSegmentIndex].startsWith(":")) {
             break;
         }
+        firstFilterIndex = collectionSegmentIndex;
         collectionSegmentIndex--;
     }
     let collectionName = segments[collectionSegmentIndex];
@@ -220,9 +227,7 @@ export function splitPathname(
     return {
         embeddedSettingsUrlKey: embeddedSettings,
         collectionName,
-        filters: segments
-            .slice(collectionSegmentIndex + 1)
-            .map((x) => x.substring(1)),
+        filters: segments.slice(firstFilterIndex).map((x) => x.substring(1)),
         breadcrumbs: segments.slice(0, Math.max(collectionSegmentIndex, 0)),
         bookId,
     };
