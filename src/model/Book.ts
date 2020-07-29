@@ -7,6 +7,7 @@ import { ArtifactVisibilitySettingsGroup } from "./ArtifactVisibilitySettings";
 import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
 import { ILanguage } from "./Language";
 import { removePunctuation } from "../Utilities";
+import { axios } from "@use-hooks/axios";
 const stem = require("wink-porter2-stemmer");
 
 export function createBookFromParseServerData(pojo: any): Book {
@@ -23,6 +24,23 @@ export function createBookFromParseServerData(pojo: any): Book {
     b.finishCreationFromParseServerData(pojo.objectId);
 
     return b;
+}
+
+export interface ICountrySpec {
+    countryCode: string; // two-letter code
+}
+
+export interface IInternetLimits {
+    // if present, the book can only be downloaded or read in the specified country
+    viewContentsInAnyWay?: ICountrySpec;
+    // if present, can only be downloaded in any form in the specified country
+    downloadAnything?: ICountrySpec;
+    // if present, can only be downloaded to bloom desktop in the specified country
+    downloadShell?: ICountrySpec;
+    // Note: Only one of these should be provided. Odd results may follow if
+    // multiple ones are present with different countries; for example, it
+    // may be possible to read it (but not download it) in one country, and
+    // vice versa in another.
 }
 
 // This is basically the data object we get from Parse Server about a book.
@@ -45,6 +63,7 @@ export class Book {
     public harvestState: string = "";
     public phashOfFirstContentImage: string = "";
     public bookInstanceId: string = "";
+    public internetLimits: IInternetLimits = {};
 
     // things that can be edited on the site are observable so that the rest of the UI will update if they are changed.
     @observable public title: string = "";
@@ -166,6 +185,9 @@ export class Book {
         Book.sanitizeFeaturesArray(this.features);
 
         this.keywordsText = this.getKeywordsText();
+        if (!this.internetLimits) {
+            this.internetLimits = {}; // reduces null/undefined checks
+        }
     }
 
     // Modifies the given array of features in place.
@@ -280,6 +302,70 @@ export class Book {
     public getBestTitle(langISO?: string): string {
         const t = langISO ? this.allTitles.get(langISO) : this.title;
         return t || this.title; // if we couldn't get this lang out of allTitles, use the official title
+    }
+
+    // Passed a restrictionType that is one of the field names in IInternetLlimits
+    // Returns an empty string if the book may be used in the way indicated by the restrictionType
+    // in the country where the browser is located.
+    // If the book may not be so used, returns a string that may be used to describe what it is
+    // restricted to, currently a country name, e.g., "Papua New Guinea".
+    // This string is intended to be inserted into messages like
+    // "Sorry, the uploader of this book has restricted shellbook download to <return value from this method>"
+    public async checkCountryPermissions(
+        restrictionType: string
+    ): Promise<string> {
+        const limits = this.internetLimits;
+        let requiredCountry = "";
+        switch (restrictionType) {
+            case "downloadShell":
+                if (limits.downloadShell) {
+                    requiredCountry = limits.downloadShell.countryCode;
+                    break;
+                }
+            // deliberate fall-through, downloadShell is restricted by the other two also.
+            // eslint-disable-next-line no-fallthrough
+            case "downloadAnything":
+                if (limits.downloadAnything) {
+                    requiredCountry = limits.downloadAnything.countryCode;
+                    break;
+                }
+            // deliberate fall-through, download is restricted by viewContentsInAnyway, too.
+            // eslint-disable-next-line no-fallthrough
+            case "viewContentsInAnyWay":
+                if (limits.viewContentsInAnyWay) {
+                    requiredCountry = limits.viewContentsInAnyWay.countryCode;
+                    break;
+                }
+                // there's no relevant restriction, we can can immediately permit the action.
+                return Promise.resolve("");
+        }
+        return axios
+            .get(
+                // AWS API Gateway which is a passthrough to ipinfo.io
+                "https://58nig3vzci.execute-api.us-east-2.amazonaws.com/Production"
+            )
+            .then(
+                (data) => {
+                    const geoInfo = data.data;
+                    if (geoInfo && geoInfo.country) {
+                        if (geoInfo.country === requiredCountry) {
+                            return "";
+                        }
+                    }
+                    // Unless we know we're in that country, we can't use the book in this way.
+                    // Get a nice name for the country.
+                    return axios
+                        .get(
+                            `https://restcountries.eu/rest/v2/alpha/${requiredCountry}?fields=name`
+                        )
+                        .then((response) => response.data.name);
+                },
+                (error) => {
+                    console.error(error);
+                    // If something went wrong with figuring out where we are, just allow the access.
+                    return "";
+                }
+            );
     }
 }
 

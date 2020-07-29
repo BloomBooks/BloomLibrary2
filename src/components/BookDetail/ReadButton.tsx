@@ -47,19 +47,29 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
                 float: right;
             `}
             onClick={() => {
-                // It's important to use react-dom's history here, becuase just setting
-                // the window's location will reload the page, and that will defeat
-                // the ReadBookPage's attempt to go full screen, because the browser
-                // thinks there has been no interaction with the page.
-                history.push(
-                    "/" +
-                        url +
-                        "?title=" +
-                        encodeURI(props.book.title) +
-                        (props.contextLangIso
-                            ? "&lang=" + props.contextLangIso
-                            : "")
-                );
+                props.book
+                    .checkCountryPermissions("viewContentsInAnyWay")
+                    .then((otherCountryRequired) => {
+                        if (otherCountryRequired) {
+                            alert(
+                                `Sorry, the uploader of this book has restricted reading it to ${otherCountryRequired}`
+                            );
+                        } else {
+                            // It's important to use react-dom's history here, becuase just setting
+                            // the window's location will reload the page, and that will defeat
+                            // the ReadBookPage's attempt to go full screen, because the browser
+                            // thinks there has been no interaction with the page.
+                            history.push(
+                                "/" +
+                                    url +
+                                    "?title=" +
+                                    encodeURI(props.book.title) +
+                                    (props.contextLangIso
+                                        ? "&lang=" + props.contextLangIso
+                                        : "")
+                            );
+                        }
+                    });
             }}
         >
             <h1
