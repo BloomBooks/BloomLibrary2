@@ -12,6 +12,7 @@ import { Book } from "../../model/Book";
 import { commonUI } from "../../theme";
 import { track } from "../../analytics/Analytics";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
+import { Alert } from "@material-ui/lab";
 
 export const TranslateButton: React.FunctionComponent<{
     book: Book;
@@ -41,15 +42,33 @@ export const TranslateButton: React.FunctionComponent<{
                 <img alt="Download Translation Icon" src={TranslationIcon} />
             }
             onClick={() => {
-                const params = getBookAnalyticsInfo(
-                    props.book,
-                    props.contextLangIso,
-                    "shell"
-                );
-                track("Download Book", params);
+                props.book
+                    .checkCountryPermissions("downloadShell")
+                    .then((countryError) => {
+                        if (countryError) {
+                            alert(
+                                `Sorry, the uploader of this book has restricted shellbook download to ${countryError}`
+                            );
+                        } else {
+                            const params = getBookAnalyticsInfo(
+                                props.book,
+                                props.contextLangIso,
+                                "shell"
+                            );
+                            track("Download Book", params);
+                            followUrl(
+                                getArtifactUrl(
+                                    props.book,
+                                    ArtifactType.shellbook
+                                )
+                            );
+                        }
+                    });
             }}
             /* TODO: give some UI around this. See BL-8111 */
-            href={getArtifactUrl(props.book, ArtifactType.shellbook)}
+            // It would be nicer, and perhaps more accessible, to use an href here.
+            // But then we can't impose conditions on downloading the shell.
+            //href={getArtifactUrl(props.book, ArtifactType.shellbook)}
         >
             <div
                 css={css`
@@ -83,3 +102,21 @@ export const TranslateButton: React.FunctionComponent<{
         </Button>
     );
 };
+
+// See comments on ArtifactGroup/downloadFile
+function followUrl(url: string) {
+    // Create an invisible A element
+    const a = document.createElement("a");
+    a.style.display = "none";
+    document.body.appendChild(a);
+
+    // Set the HREF to the url we want the browser to think we clicked
+    a.href = url;
+
+    // Simulate a click to make the effect actually happen
+    a.click();
+
+    // Cleanup
+    window.URL.revokeObjectURL(a.href); // from copied example, not sure why
+    document.body.removeChild(a);
+}
