@@ -98,14 +98,14 @@ export const BookStats: React.FunctionComponent<{
                 {l10n.formatMessage({
                     id: "stats.book.summaryString.range",
                     defaultMessage:
-                        "This range for these statistics begin in mid-2020. They are updated every 24 hours.",
+                        "This starting date for these statistics vary by when we started recording them. They are updated every 24 hours.",
                 })}
             </p>
             <p>
                 {l10n.formatMessage({
                     id: "stats.book.summaryString.furtherStats",
                     defaultMessage:
-                        "Enterprise customers can get a complete set of charts and downloadable data which includes information on all of their books, including where books are being read and growth over time.",
+                        "Enterprise customers can get a set of charts and downloadable data which includes information on all of their books, including where books are being read and growth over time.",
                 })}
             </p>
         </div>
