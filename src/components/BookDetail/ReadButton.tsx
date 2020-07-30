@@ -9,8 +9,8 @@ import Button from "@material-ui/core/Button";
 import ReadIcon from "./read.svg";
 import { commonUI } from "../../theme";
 import { Book } from "../../model/Book";
-import { useHistory, useLocation } from "react-router-dom";
-import { splitPathname, getUrlForTarget } from "../Routes";
+import { useHistory } from "react-router-dom";
+import { getUrlForTarget } from "../Routes";
 
 interface IProps {
     book: Book;
