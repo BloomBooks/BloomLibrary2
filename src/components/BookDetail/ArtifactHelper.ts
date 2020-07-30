@@ -19,7 +19,7 @@ export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
         case ArtifactType.readOnline:
             return `/readBook/${book.id}`;
         case ArtifactType.bloomReader:
-            url = getDownloadUrl(book, "bloomd");
+            url = getDownloadUrl(book, "bloompub");
             break;
         case ArtifactType.shellbook:
             url = book.bookOrder;
@@ -217,7 +217,7 @@ function getDownloadUrl(book: Book, fileType: string): string | undefined {
     const bookName = getBookNameFromUrl(book.baseUrl);
 
     if (bookName) {
-        if (fileType === "bloomd") {
+        if (fileType === "bloompub") {
             return harvesterBaseUrl + bookName + "." + fileType;
         }
         return harvesterBaseUrl + fileType + "/" + bookName + "." + fileType;

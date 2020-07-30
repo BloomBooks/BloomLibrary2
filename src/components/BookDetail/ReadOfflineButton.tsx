@@ -34,7 +34,7 @@ export const ReadOfflineButton: React.FunctionComponent<IProps> = (props) => {
                 const params = getBookAnalyticsInfo(
                     props.book,
                     props.contextLangIso,
-                    "bloomd"
+                    "bloompub"
                 );
                 track("Download Book", params);
             }}
