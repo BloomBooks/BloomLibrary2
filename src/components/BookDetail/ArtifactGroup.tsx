@@ -140,12 +140,31 @@ export const ArtifactGroup: React.FunctionComponent<{
                             >
                                 <IconButton
                                     onClick={() => {
-                                        const params = getBookAnalyticsInfo(
-                                            props.book,
-                                            props.contextLangIso,
-                                            a.analyticsType
-                                        );
-                                        track("Download Book", params);
+                                        props.book
+                                            .checkCountryPermissions(
+                                                "downloadAnything"
+                                            )
+                                            .then((otherCountryRequired) => {
+                                                if (otherCountryRequired) {
+                                                    alert(
+                                                        `Sorry, the uploader of this book has restricted downloading it to ${otherCountryRequired}`
+                                                    );
+                                                } else {
+                                                    followUrl(
+                                                        artifactUrl,
+                                                        fileName
+                                                    );
+                                                    const params = getBookAnalyticsInfo(
+                                                        props.book,
+                                                        props.contextLangIso,
+                                                        a.analyticsType
+                                                    );
+                                                    track(
+                                                        "Download Book",
+                                                        params
+                                                    );
+                                                }
+                                            });
                                     }}
                                 >
                                     {!a.enabled && (
@@ -158,14 +177,11 @@ export const ArtifactGroup: React.FunctionComponent<{
                                             `}
                                         ></div>
                                     )}
-                                    <a
-                                        href={artifactUrl}
-                                        // prevents page reloading!
-                                        download={fileName}
-                                        key={a.alt}
-                                    >
+                                    {/* We'd like this to be a link, but then the compiler insists it must
+                                    have an href, and then we can't impose conditions on doing the download. */}
+                                    <span role="link" key={a.alt}>
                                         <img src={a.icon} alt={a.alt} />
-                                    </a>
+                                    </span>
                                 </IconButton>
                             </Tooltip>
                         )
@@ -175,3 +191,36 @@ export const ArtifactGroup: React.FunctionComponent<{
         </div>
     );
 });
+
+// There ought to be an easier way of doing this, but I can't find it.
+// https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/downloads/download
+// indicates that there is an api browser.downloads.download, but it's not supported on at least
+// one browser, so this is safer.
+// Appreciation to https://davidwalsh.name/javascript-download for this idea.
+// The idea is to do whatever the browser would normally do when a link is clicked,
+// if the link has the specified url as its href, and (optionally) the specified fileName
+// as its download attribute. With a filename, the user will be given a chance to
+// save the specified file from the URL. Without one, potentially we might navigate to the
+// link, but the other main use case besides a simple file download is downloading to Bloom desktop,
+//  where the URL is a special one that causes Bloom Desktop to be launched to handle the download.
+export function followUrl(url: string, fileName?: string) {
+    // Create an invisible A element
+    const a = document.createElement("a");
+    a.style.display = "none";
+    document.body.appendChild(a);
+
+    // Set the HREF to the thing we want to download.
+    a.href = url;
+
+    // Use download attribute to specify filename and prevent actually navigating
+    if (fileName) {
+        a.setAttribute("download", fileName);
+    }
+
+    // Trigger the download by simulating click
+    a.click();
+
+    // Cleanup
+    window.URL.revokeObjectURL(a.href); // from copied example, not sure why
+    document.body.removeChild(a);
+}
