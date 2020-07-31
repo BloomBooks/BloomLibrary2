@@ -20,6 +20,7 @@ import { ErrorBoundary } from "./ErrorBoundary";
 import { IEmbedSettings } from "../model/ContentInterfaces";
 import { EmbeddingHost, useSetEmbeddedUrl } from "./EmbeddingHost";
 import { CollectionStatsPage } from "./statistics/CollectionStatsPage";
+import { TestEmbeddingPage } from "./TestEmbedding";
 
 // The main set of switches that loads different things into the main content area of Blorg
 // based on the current window location.
@@ -29,6 +30,12 @@ export const Routes: React.FunctionComponent<{}> = () => {
     return (
         <ErrorBoundary url={location.pathname}>
             <Switch>
+                <Route
+                    path="/test-embedding/:code*"
+                    render={({ match }) => {
+                        return <TestEmbeddingPage code={match.params.code} />;
+                    }}
+                ></Route>
                 {/* Alias from legacy blorg */}
                 <Route path={"/browse"}>
                     <Redirect to="/create" />
@@ -71,7 +78,6 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         return <BookDetail id={match.params.id} />;
                     }}
                 />
-
                 <Route
                     path="/player/:id"
                     render={({ match }) => {
@@ -94,7 +100,6 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         return <GridPage filters={match.params.filter} />;
                     }}
                 />
-
                 <Route path="/bulk">
                     <BulkEditPage />
                 </Route>
@@ -117,7 +122,6 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         );
                     }}
                 ></Route>
-
                 {/* the colon here is not literally there in the url */}
                 <Route
                     path={"/:collectionName/stats"}
@@ -134,7 +138,6 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         );
                     }}
                 ></Route>
-
                 {/* Must come last, this matches anything, including the home path with nothing at all. */}
                 <Route
                     path={"/:segments*"}
