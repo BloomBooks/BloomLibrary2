@@ -11,15 +11,12 @@ import { getUrlOfHtmlOfDigitalVersion } from "./BookDetail/ArtifactHelper";
 import { useHistory, useLocation } from "react-router-dom";
 import { useTrack } from "../analytics/Analytics";
 import { getBookAnalyticsInfo } from "../analytics/BookAnalyticsInfo";
-import { useDocumentTitle, splitPathname, getUrlForTarget } from "./Routes";
-import FullscreenIcon from "@material-ui/icons/Fullscreen";
-import { ThemeProvider } from "@material-ui/styles";
+import { useDocumentTitle, getUrlForTarget } from "./Routes";
 import {
     sendPlayerClosingAnalytics,
     startingBook,
 } from "../analytics/BloomPlayerAnalytics";
-import { commonUI } from "../theme";
-import { useMediaQuery, IconButton, createMuiTheme } from "@material-ui/core";
+import { useMediaQuery } from "@material-ui/core";
 
 export const ReadBookPage: React.FunctionComponent<{
     id: string;
@@ -169,15 +166,15 @@ export const ReadBookPage: React.FunctionComponent<{
     // Decided to keep it as (a) it may be helping somewhat (b) it may be a necessary
     // part of a complete solution; there's an 'override' property in theme that can
     // set styles for things.
-    const theme = createMuiTheme({
-        palette: {
-            primary: {
-                main: "#2e2e2e",
-                contrastText: commonUI.colors.bloomRed,
-            },
-            secondary: { main: commonUI.colors.bloomRed },
-        },
-    });
+    // const theme = createMuiTheme({
+    //     palette: {
+    //         primary: {
+    //             main: "#2e2e2e",
+    //             contrastText: commonUI.colors.bloomRed,
+    //         },
+    //         secondary: { main: commonUI.colors.bloomRed },
+    //     },
+    // });
     return (
         <React.Fragment>
             <iframe

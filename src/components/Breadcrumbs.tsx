@@ -56,7 +56,6 @@ export const Breadcrumbs: React.FunctionComponent = () => {
             </Link>
         </li>
     );
-    let isBook = false;
     const { breadcrumbs, collectionName, filters } = splitPathname(
         location.pathname
     );

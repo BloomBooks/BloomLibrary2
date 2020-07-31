@@ -30,10 +30,7 @@ import { Routes } from "./components/Routes";
 import { Footer } from "./components/Footer";
 import { IntlProvider } from "react-intl";
 
-import {
-    useGetLocalizations,
-    getListOfPreferredLanguages as getListOfPreferredLanguageTags,
-} from "./GetLocalizations";
+import { useGetLocalizations } from "./GetLocalizations";
 interface ICachedTables {
     tags: string[];
     languagesByBookCount: ILanguage[];
@@ -63,10 +60,9 @@ export const App: React.FunctionComponent<{}> = (props) => {
     CachedTables.languagesByBookCount = languagesByBookCount;
 
     const embeddedMode = window.self !== window.top;
-    const [
-        explicitlyChosenLanguageTag,
-        setExplicitlyChosenLanguageTag,
-    ] = useState<string | undefined>(undefined);
+    const [explicitlyChosenLanguageTag] = useState<string | undefined>(
+        undefined
+    );
 
     // Enhance: this assumes that for each string, you get it in that language or if we don't have
     // a translation for it yet, then you get it in English.
