@@ -8,7 +8,7 @@ import Select from "@material-ui/core/Select";
 import { IScreenOption } from "./StatsInterfaces";
 import FormControl from "@material-ui/core/FormControl";
 import { IScreen } from "./CollectionStatsPage";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
 
 // A component that lists all the options of a particular screen, e.g. whether to show by month or year.
 export const ScreenOptionsSelect: React.FunctionComponent<{

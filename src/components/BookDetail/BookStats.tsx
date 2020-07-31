@@ -1,9 +1,16 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import React from "react";
 import useAxios from "@use-hooks/axios";
-import { Tooltip } from "@material-ui/core";
+import Tooltip from "react-tooltip-lite";
 
 import infoIcon from "../../assets/info.png";
 import { Book } from "../../model/Book";
+import { useIntl } from "react-intl";
 
 // The casing here is unfortunate, but that's what the database gives us no matter what we do there.
 // Could be enhanced by remapping all the fields in the Azure function or here, but those
@@ -50,29 +57,87 @@ export const BookStats: React.FunctionComponent<{
         return getInitialBookStats();
     }
 
-    function shouldDisplayBookStats(stats: IBookStats): boolean {
-        return (
-            stats.totaldownloads > 0 ||
-            stats.totalreads > 0 ||
-            stats.libraryviews > 0
-        );
-    }
-
+    const l10n = useIntl();
     const bookStats = useGetBookStats(props.book);
+
+    const tooltipcontents = (
+        <div>
+            <ul
+                css={css`
+                    list-style: disc;
+                    margin-left: 13px;
+                    li {
+                        margin-bottom: 1em;
+                    }
+                `}
+            >
+                <li>
+                    {l10n.formatMessage({
+                        id: "stats.book.summaryString.readExplanation",
+                        defaultMessage:
+                            "'reads' is a count of how many times someone has read this book in a digital form from which we receive analytics. We cannot currently get analytics from epub versions. Because books can be read offline, we may not have a record of all reads.",
+                    })}
+                </li>
+                <li>
+                    {l10n.formatMessage({
+                        id: "stats.book.summaryString.deviceExplanation",
+                        defaultMessage:
+                            "'devices' is a count of how many phones/tablets/computers have this book installed in Bloom Reader.",
+                    })}
+                </li>
+                <li>
+                    {l10n.formatMessage({
+                        id:
+                            "stats.book.summaryString.downloadForTranslationExplanation",
+                        defaultMessage:
+                            "'downloads for translation' is a count of how times someone has clicked 'Translate into your own language' in order to load the book into Bloom for translation.",
+                    })}
+                </li>
+            </ul>
+            <p>
+                {l10n.formatMessage({
+                    id: "stats.book.summaryString.range",
+                    defaultMessage:
+                        "This starting date for these statistics vary by when we started recording them. They are updated every 24 hours.",
+                })}
+            </p>
+            <p>
+                {l10n.formatMessage({
+                    id: "stats.book.summaryString.furtherStats",
+                    defaultMessage:
+                        "Enterprise customers can get a set of charts and downloadable data which includes information on all of their books, including where books are being read and growth over time.",
+                })}
+            </p>
+        </div>
+    );
+    // just show the stats that we have values for
+    const statStrings = [];
+    if (bookStats.totalreads) statStrings.push(`${bookStats.totalreads} reads`);
+    if (bookStats.devicecount)
+        statStrings.push(`${bookStats.devicecount} devices`);
+    if (bookStats.shelldownloads)
+        statStrings.push(
+            `${bookStats.shelldownloads} downloads for translation`
+        );
+    const statsSummary = statStrings.join(", ");
+
+    // fade in the stats with an info icon once we have some stats
     return (
-        <div style={{ display: "flex" }}>
-            {shouldDisplayBookStats(bookStats) ? (
-                <div>{`${bookStats.libraryviews || 0} views, ${
-                    bookStats.totalreads || 0
-                } reads, ${bookStats.devicecount || 0} devices, ${
-                    bookStats.shelldownloads || 0
-                } shell downloads`}</div>
-            ) : (
-                <div>Statistics not available yet</div>
-            )}
+        <div
+            css={css`
+                display: flex;
+                //visibility: ${statStrings.length > 0 ? "visible" : "hidden"};
+                opacity: ${statStrings.length > 0 ? 1 : 0};
+                transition: opacity 1s ease-in;
+            `}
+        >
+            <div>{statsSummary}</div>
+
             <Tooltip
-                title="Statistics beginning mid-2020. They are updated every 24 hours."
-                arrow={true}
+                className={"infoTooltip"}
+                content={tooltipcontents}
+                arrow
+                useDefaultStyles
             >
                 <img
                     src={infoIcon}

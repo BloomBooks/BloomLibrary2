@@ -2,7 +2,7 @@ import { Book } from "../../model/Book";
 import { IBasicBookInfo } from "../../connection/LibraryQueryHooks";
 import {
     ArtifactVisibilitySettings,
-    ArtifactVisibilitySettingsGroup
+    ArtifactVisibilitySettingsGroup,
 } from "../../model/ArtifactVisibilitySettings";
 
 export enum ArtifactType {
@@ -10,7 +10,7 @@ export enum ArtifactType {
     epub = "epub",
     bloomReader = "bloomReader",
     readOnline = "readOnline",
-    shellbook = "shellbook"
+    shellbook = "shellbook",
 }
 
 export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
@@ -19,7 +19,7 @@ export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
         case ArtifactType.readOnline:
             return `/readBook/${book.id}`;
         case ArtifactType.bloomReader:
-            url = getDownloadUrl(book, "bloomd");
+            url = getDownloadUrl(book, "bloompub");
             break;
         case ArtifactType.shellbook:
             url = book.bookOrder;
@@ -150,8 +150,8 @@ function getHarvesterBaseUrl(book: Book | IBasicBookInfo): string | undefined {
 
 function getBookNameFromUrl(baseUrl: string): string | undefined {
     const lastSlashIndex = baseUrl.lastIndexOf("%2f");
-    let leadin = baseUrl.substring(0, lastSlashIndex);
-    let slashBeforeBookName = leadin.lastIndexOf("%2f");
+    const leadin = baseUrl.substring(0, lastSlashIndex);
+    const slashBeforeBookName = leadin.lastIndexOf("%2f");
     if (slashBeforeBookName < 0) {
         return undefined;
     }
@@ -185,7 +185,7 @@ export function getHarvesterProducedThumbnailUrl(
         // Book, IBasicBookInfo, and the keys for BookGroup queries.)
         return undefined;
     }
-    let harvesterBaseUrl = getHarvesterBaseUrl(book);
+    const harvesterBaseUrl = getHarvesterBaseUrl(book);
     if (!harvesterBaseUrl) {
         return undefined;
     }
@@ -204,21 +204,21 @@ export function getThumbnailUrl(
     if (h) return { thumbnailUrl: h, isModernThumbnail: true };
     return {
         thumbnailUrl: getLegacyThumbnailUrl(book),
-        isModernThumbnail: false
+        isModernThumbnail: false,
     };
 }
 
 function getDownloadUrl(book: Book, fileType: string): string | undefined {
-    let harvesterBaseUrl = getHarvesterBaseUrl(book);
+    const harvesterBaseUrl = getHarvesterBaseUrl(book);
     if (!harvesterBaseUrl) {
         return undefined;
     }
 
-    let bookName = getBookNameFromUrl(book.baseUrl);
+    const bookName = getBookNameFromUrl(book.baseUrl);
 
     if (bookName) {
-        if (fileType === "bloomd") {
-            return harvesterBaseUrl + bookName + "." + fileType;
+        if (fileType === "bloompub") {
+            return harvesterBaseUrl + bookName + ".bloomd";
         }
         return harvesterBaseUrl + fileType + "/" + bookName + "." + fileType;
     }
