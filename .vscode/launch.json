@@ -32,6 +32,7 @@
             "webRoot": "${workspaceRoot}/src",
             "runtimeExecutable": "/usr/bin/chromium-browser",
             "runtimeArgs": [
+                "--disable-web-security",
                 "--remote-debugging-port=9222",
                 "--user-data-dir=/tmp/chrome-debug"
             ],
