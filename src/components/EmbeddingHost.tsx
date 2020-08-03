@@ -85,17 +85,29 @@ export function useSetEmbeddedUrl() {
     useEffect(() => {
         let bloomLibraryLocation =
             location.pathname.substring(1) + location.search;
-        if (!location.pathname.startsWith("/player/")) {
-            const { collectionName, breadcrumbs, bookId } = splitPathname(
-                location.pathname
+        const {
+            collectionName,
+            breadcrumbs,
+            bookId,
+            isPlayerUrl,
+        } = splitPathname(location.pathname);
+        const p = breadcrumbs;
+        if (bookId) {
+            p.push(isPlayerUrl ? "player" : "book");
+            p.push(bookId);
+        } else {
+            p.push(collectionName);
+        }
+        bloomLibraryLocation = p.join("/") + location.search;
+        if (p[0] === "embed") {
+            // splitPathname should strip these off, AFAIK it would only happen if the
+            // input pathname is embed/X/embed/... and I don't know how that can happen.
+            // But if it does, let's not make it permanent in the host URL.
+            console.log(
+                "useSetEmbeddedUrl found double embed/X in location pathname; not saving " +
+                    location.pathname
             );
-            const p = breadcrumbs;
-            if (bookId) {
-                p.push(bookId);
-            } else {
-                p.push(collectionName);
-            }
-            bloomLibraryLocation = p.join("/") + location.search;
+            return;
         }
         window.parent.postMessage(
             {

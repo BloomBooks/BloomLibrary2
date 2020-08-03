@@ -178,8 +178,10 @@ export function splitPathname(
     filters: string[];
     breadcrumbs: string[];
     bookId: string;
+    isPlayerUrl: boolean;
 } {
     const segments = trimLeft(pathname ?? "", "/").split("/");
+    let isPlayerUrl = false;
     let embeddedSettings;
     if (segments.length > 1 && segments[0] === "embed") {
         embeddedSettings = segments[1];
@@ -213,6 +215,7 @@ export function splitPathname(
     if (collectionSegmentIndex >= 1) {
         const previous = segments[collectionSegmentIndex - 1];
         if (previous === "player") {
+            isPlayerUrl = true;
             collectionName = ""; // we have no way of knowing it, but it's not the book ID.
             bookId = segments[collectionSegmentIndex];
             collectionSegmentIndex--; // "player" is not a breadcrumb
@@ -233,6 +236,7 @@ export function splitPathname(
         filters: segments.slice(firstFilterIndex).map((x) => x.substring(1)),
         breadcrumbs: segments.slice(0, Math.max(collectionSegmentIndex, 0)),
         bookId,
+        isPlayerUrl,
     };
 }
 
