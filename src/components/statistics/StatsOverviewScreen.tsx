@@ -59,13 +59,13 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
                         }),
                         value: stats.languages,
                     },
-                    // {
-                    //     label: i18n.formatMessage({
-                    //         id: "topics",
-                    //         defaultMessage: "Topics",
-                    //     }),
-                    //     value: stats.topics,
-                    // },
+                    {
+                        label: i18n.formatMessage({
+                            id: "topics",
+                            defaultMessage: "Topics",
+                        }),
+                        value: stats.topics,
+                    },
                 ]}
                 overrideTotal={stats.books}
             >
@@ -78,22 +78,23 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
                     defaultMessage:
                         "Count of devices for which we received notice that at least one book from this collection had been loaded.",
                 })}
-                subitems={[
-                    {
-                        label: i18n.formatMessage({
-                            id: "stats.devices.mobile",
-                            defaultMessage: "Mobile",
-                        }),
-                        value: stats.bloomPubDeviceMobile,
-                    },
-                    // {
-                    //     label: i18n.formatMessage({
-                    //         id: "stats.devices.pc",
-                    //         defaultMessage: "PC",
-                    //     }),
-                    //     value: stats.bloomPubDevicePC,
-                    // },
-                ]}
+                overrideTotal={stats.bloomPubDeviceMobile}
+                // subitems={[
+                //     {
+                //         label: i18n.formatMessage({
+                //             id: "stats.devices.mobile",
+                //             defaultMessage: "Mobile",
+                //         }),
+                //         value: stats.bloomPubDeviceMobile,
+                //     },
+                // {
+                //     label: i18n.formatMessage({
+                //         id: "stats.devices.pc",
+                //         defaultMessage: "PC",
+                //     }),
+                //     value: stats.bloomPubDevicePC,
+                // },
+                // ]}
             >
                 <FormattedMessage id="devices" defaultMessage="Devices" />
                 <div
@@ -115,13 +116,13 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
                         "The number of times the book was read, in part or whole. We are currently only showing reads on Bloom Reader. We will soon add reads on the Web, in apps, and in the desktop.",
                 })}
                 subitems={[
-                    // {
-                    //     label: i18n.formatMessage({
-                    //         id: "stats.reads.web",
-                    //         defaultMessage: "Web",
-                    //     }),
-                    //     value: stats.readsWeb,
-                    // },
+                    {
+                        label: i18n.formatMessage({
+                            id: "stats.reads.web",
+                            defaultMessage: "Web",
+                        }),
+                        value: stats.readsWeb,
+                    },
                     // {
                     //     label: i18n.formatMessage({
                     //         id: "stats.reads.apps",
@@ -140,7 +141,7 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
             >
                 <FormattedMessage id="stats.reads" defaultMessage="Reads" />
             </StatsCard>
-            {/* <StatsCard
+            <StatsCard
                 subitems={[
                     { label: "bloomPub", value: stats.downloadsBloomPub },
                     { label: "ePUB", value: stats.downloadsEpub },
@@ -155,7 +156,7 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
                 ]}
             >
                 <FormattedMessage id="downloads" defaultMessage="Downloads" />
-            </StatsCard> */}
+            </StatsCard>
         </div>
     );
 };

@@ -15,23 +15,19 @@ export function useGetOverviewStats(
         return {
             books: parseInt(s.bookcount, 10),
             languages: parseInt(s.languagecount, 10),
+            topics: parseInt(s.topiccount, 10),
 
-            bloomPubDeviceMobile: parseInt(s.devicecount, 10),
+            bloomPubDeviceMobile: parseInt(s.devicemobilecount, 10),
+            bloomPubDevicePC: parseInt(s.devicepccount, 10),
 
-            readsBloomReader: parseInt(s.bloomreaderreadcount, 10),
+            downloadsEpub: parseInt(s.downloadsepubcount, 10),
+            downloadsBloomPub: parseInt(s.downloadsbloompubcount, 10),
+            downloadsPDF: parseInt(s.downloadspdfcount, 10),
+            downloadsShellbooks: parseInt(s.downloadsshellbookscount, 10),
 
-            // TODO: get these from the database
-            topics: 0,
-
-            bloomPubDevicePC: 0,
-
-            downloadsEpub: 0,
-            downloadsBloomPub: 0,
-            downloadsPDF: 0,
-            downloadsShellbooks: 0,
-
-            readsWeb: 0,
-            readsApps: 0,
+            readsBloomReader: parseInt(s.readsbloomreadercount, 10),
+            readsWeb: parseInt(s.readswebcount, 10),
+            readsApps: parseInt(s.readsappscount, 10),
         };
     }
     return undefined;
