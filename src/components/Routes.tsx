@@ -124,17 +124,20 @@ export const Routes: React.FunctionComponent<{}> = () => {
                 ></Route>
                 {/* the colon here is not literally there in the url */}
                 <Route
-                    path={"/:collectionName/stats"}
+                    path={"/:segments*/stats"}
                     render={({ match }) => {
                         if (window.self !== window.top) {
                             throw new Error(
                                 "Stats not available in embedding."
                             );
                         }
+                        const { collectionName } = splitPathname(
+                            match.params.segments
+                        );
                         return (
                             <CollectionStatsPage
-                                collectionName={match.params.collectionName}
-                            ></CollectionStatsPage>
+                                collectionName={collectionName}
+                            />
                         );
                     }}
                 ></Route>
