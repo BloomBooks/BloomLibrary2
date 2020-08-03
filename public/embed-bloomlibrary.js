@@ -6,20 +6,26 @@ window.onload = function () {
     // restore the location within the embedded library if the url parameters contain that information
     var libraryLocation = window.location.search.split("blorg=")[1];
     if (libraryLocation) {
+        // typical locations passed in don't include /embed/embed-settings-name
+        // e.g. enabling-writers/nigeria (a collection)
+        // enabling-writers/nigeria/book/abcdfg (a book's details)
+        // player/abdfg (reading the book)
         libraryLocation = decodeURIComponent(libraryLocation);
         var libraryIFrame = document.getElementById("bloomlibrary");
+        // the src onload is typically something like /embed/embed-test/rise-png?blorg=....
         var segments = libraryIFrame.src.split("/");
-        if (libraryLocation.startsWith("player/")) {
-            // reading a book doesn't require (nor permit) the leading embed information
-            const embedIndex = segments.findIndex((x) => x === "embed");
-            segments.splice(embedIndex, segments.length - embedIndex);
+        // drop the initial collection parameter (it will be replaced by what we have)
+        segments.splice(segments.length - 1, 1);
+        if (segments[0] === "embed") {
+            console.error(
+                "window loaded with blorg param unexpectedly starting with 'embed': " +
+                    libraryLocation
+            );
         } else {
-            // drop the initial collection parameter (it will be replaced by what we have)
-            segments.splice(segments.length - 1, 1);
+            // normal operation, add on what we have
+            libraryIFrame.src = segments.join("/") + "/" + libraryLocation;
+            console.log("Set iframe src to " + libraryIFrame.src);
         }
-        // add on what we have
-        libraryIFrame.src = segments.join("/") + "/" + libraryLocation;
-        console.log("Set iframe src to " + libraryIFrame.src);
     }
     window.addEventListener("message", receiveBloomLibraryMessage, false);
 };
@@ -29,6 +35,14 @@ function receiveBloomLibraryMessage(e) {
     // bookmark and share a url to certain place, for example a certain book.
     if (e.data.event === "addBloomLibraryLocationToUrl") {
         var searchParams = new URLSearchParams(window.location.search);
+        if (e.data.data.startsWith("embed/")) {
+            // some timing thing seems to cause this sometimes; better not to save
+            // inner location than to save one that will break.
+            console.error(
+                "called receiveBloomLibraryMessage with " + e.data.data
+            );
+            return;
+        }
         searchParams.set("blorg", e.data.data);
         window.history.replaceState(null, null, "?" + searchParams.toString());
     }
