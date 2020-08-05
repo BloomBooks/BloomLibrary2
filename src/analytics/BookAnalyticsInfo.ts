@@ -13,6 +13,7 @@ export interface IBookAnalyticsInfo {
     eventType?: string;
     source?: string;
     bookInstanceId?: string;
+    brandingProjectName?: string;
 }
 
 // Get the analytics information we'd like to send to segment.io for
@@ -61,6 +62,9 @@ export function getBookAnalyticsInfo(
         const pathParts = filters.map((x) => ":" + x);
         pathParts.splice(0, 0, collectionName);
         result.source = pathParts.join("/");
+    }
+    if (book?.brandingProjectName) {
+        result.brandingProjectName = book.brandingProjectName;
     }
     return result;
 }

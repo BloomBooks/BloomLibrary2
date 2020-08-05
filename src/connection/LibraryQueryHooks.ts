@@ -190,7 +190,7 @@ export const bookDetailFields =
     "title,allTitles,baseUrl,bookOrder,inCirculation,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
     "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits," +
     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount," +
-    "harvestStartedAt,bookshelves,publisher,originalPublisher,keywords,bookInstanceId";
+    "harvestStartedAt,bookshelves,publisher,originalPublisher,keywords,bookInstanceId,brandingProjectName";
 export function useGetBookDetail(bookId: string): Book | undefined | null {
     const { response, loading, error } = useAxios({
         url: `${getConnection().url}classes/books`,
@@ -558,7 +558,7 @@ export function useCollectionStats(
             // These are the specific keys we want parse to look up and provide to postgresql
             keys: "objectId,bookInstanceId",
         };
-        const limit = undefined;
+        const limit = 1000000; // default is 100
         const skip = undefined;
         // If we don't have a filter, typically because we had to call the hook before
         // conditional logic testing for whether we had already retrieved a collection
@@ -591,6 +591,8 @@ export function useCollectionStats(
     }
 
     const url = `${getBloomApiUrl()}/v1/stats/${urlSuffix}`;
+    // Use this when debugging changes to the Azure function
+    //const url = `http://localhost:7071/v1/stats/${urlSuffix}`;
 
     return useAxios({
         url,
