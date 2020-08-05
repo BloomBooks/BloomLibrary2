@@ -12,9 +12,9 @@ window.onload = function () {
         // player/abdfg (reading the book)
         libraryLocation = decodeURIComponent(libraryLocation);
         var libraryIFrame = document.getElementById("bloomlibrary");
-        // the src onload is typically something like /embed/embed-test/rise-png?blorg=....
+        // the original src of the iframe is typically something like /embed/embed-test/rise-png
         var segments = libraryIFrame.src.split("/");
-        // drop the initial collection parameter (it will be replaced by what we have)
+        // drop the initial collection segment (it will be replaced by what came from the blorg search param)
         segments.splice(segments.length - 1, 1);
         if (segments[0] === "embed") {
             console.error(
