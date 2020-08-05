@@ -20,6 +20,7 @@ import { ErrorBoundary } from "./ErrorBoundary";
 import { IEmbedSettings } from "../model/ContentInterfaces";
 import { EmbeddingHost, useSetEmbeddedUrl } from "./EmbeddingHost";
 import { CollectionStatsPage } from "./statistics/CollectionStatsPage";
+import { TestEmbeddingPage } from "./TestEmbedding";
 
 // The main set of switches that loads different things into the main content area of Blorg
 // based on the current window location.
@@ -29,6 +30,12 @@ export const Routes: React.FunctionComponent<{}> = () => {
     return (
         <ErrorBoundary url={location.pathname}>
             <Switch>
+                <Route
+                    path="/test-embedding/:code*"
+                    render={({ match }) => {
+                        return <TestEmbeddingPage code={match.params.code} />;
+                    }}
+                ></Route>
                 {/* Alias from legacy blorg */}
                 <Route path={"/browse"}>
                     <Redirect to="/create" />
@@ -71,7 +78,6 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         return <BookDetail id={match.params.id} />;
                     }}
                 />
-
                 <Route
                     path="/player/:id"
                     render={({ match }) => {
@@ -94,7 +100,6 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         return <GridPage filters={match.params.filter} />;
                     }}
                 />
-
                 <Route path="/bulk">
                     <BulkEditPage />
                 </Route>
@@ -117,24 +122,25 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         );
                     }}
                 ></Route>
-
                 {/* the colon here is not literally there in the url */}
                 <Route
-                    path={"/:collectionName/stats"}
+                    path={"/:segments*/stats"}
                     render={({ match }) => {
                         if (window.self !== window.top) {
                             throw new Error(
                                 "Stats not available in embedding."
                             );
                         }
+                        const { collectionName } = splitPathname(
+                            match.params.segments
+                        );
                         return (
                             <CollectionStatsPage
-                                collectionName={match.params.collectionName}
-                            ></CollectionStatsPage>
+                                collectionName={collectionName}
+                            />
                         );
                     }}
                 ></Route>
-
                 {/* Must come last, this matches anything, including the home path with nothing at all. */}
                 <Route
                     path={"/:segments*"}
@@ -175,8 +181,10 @@ export function splitPathname(
     filters: string[];
     breadcrumbs: string[];
     bookId: string;
+    isPlayerUrl: boolean;
 } {
     const segments = trimLeft(pathname ?? "", "/").split("/");
+    let isPlayerUrl = false;
     let embeddedSettings;
     if (segments.length > 1 && segments[0] === "embed") {
         embeddedSettings = segments[1];
@@ -210,6 +218,7 @@ export function splitPathname(
     if (collectionSegmentIndex >= 1) {
         const previous = segments[collectionSegmentIndex - 1];
         if (previous === "player") {
+            isPlayerUrl = true;
             collectionName = ""; // we have no way of knowing it, but it's not the book ID.
             bookId = segments[collectionSegmentIndex];
             collectionSegmentIndex--; // "player" is not a breadcrumb
@@ -230,6 +239,7 @@ export function splitPathname(
         filters: segments.slice(firstFilterIndex).map((x) => x.substring(1)),
         breadcrumbs: segments.slice(0, Math.max(collectionSegmentIndex, 0)),
         bookId,
+        isPlayerUrl,
     };
 }
 
