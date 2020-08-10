@@ -56,6 +56,26 @@ export const BookReadingReport: React.FunctionComponent<IStatsProps> = (
             title: "Started",
             l10nId: "stats.booksRead.startedCount",
         },
+        {
+            name: "shellDownloads",
+            title: "Shell Downloads",
+            l10nId: "stats.booksRead.shellDownloads",
+        },
+        {
+            name: "pdfDownloads",
+            title: "PDF Downloads",
+            l10nId: "stats.booksRead.pdfDownloads",
+        },
+        {
+            name: "epubDownloads",
+            title: "EPUB Downloads",
+            l10nId: "stats.booksRead.epubDownloads",
+        },
+        {
+            name: "bloomPubDownloads",
+            title: "BloomPUB Downloads",
+            l10nId: "stats.booksRead.bloomPubDownloads",
+        },
     ];
     // localize
     columns.forEach((c) => {
