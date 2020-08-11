@@ -21,7 +21,7 @@ import { CachedTablesContext } from "../../App";
 import { getLanguageNamesFromCode } from "../../model/Language";
 import { useIntl } from "react-intl";
 
-export const BookReadingReport: React.FunctionComponent<IStatsProps> = (
+export const BookStatsReport: React.FunctionComponent<IStatsProps> = (
     props
 ) => {
     const l10n = useIntl();
