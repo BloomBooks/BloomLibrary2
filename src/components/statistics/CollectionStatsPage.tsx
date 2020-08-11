@@ -23,7 +23,7 @@ import { IStatsProps, ExportDataFn, IScreenOption } from "./StatsInterfaces";
 import { useStorageState } from "react-storage-hooks";
 import { exportCsv } from "./exportData";
 import LinearProgress from "@material-ui/core/LinearProgress";
-import { BookReadingReport } from "./BookReadingReport";
+import { BookStatsReport } from "./BookStatsReport";
 import { FormattedMessage, useIntl } from "react-intl";
 import { QueryDescription } from "./QueryDescription";
 import FormControl from "@material-ui/core/FormControl";
@@ -70,11 +70,11 @@ export const CollectionStatsPage: React.FunctionComponent<{
             },
             {
                 label: l10n.formatMessage({
-                    id: "stats.booksRead",
-                    defaultMessage: "Books Read",
+                    id: "stats.bookStatistics",
+                    defaultMessage: "Book Statistics",
                 }),
                 component: (p: IStatsProps) => (
-                    <BookReadingReport {...p}></BookReadingReport>
+                    <BookStatsReport {...p}></BookStatsReport>
                 ),
             },
         ].sort((a, b) => a.label.localeCompare(b.label));
