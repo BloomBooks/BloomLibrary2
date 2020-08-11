@@ -5150,9 +5150,9 @@ block-stream@*:
     inherits "~2.0.0"
 
 bloom-player@^1.1.63:
-  version "1.1.84"
-  resolved "https://registry.yarnpkg.com/bloom-player/-/bloom-player-1.1.84.tgz#969d2e3160905a6411f66ed68f02235f8e8749e0"
-  integrity sha512-VUXVbF7SfhxpiJewmijFAMbnE6gg7yUutiwoI4fEr7w2nHaDXEorFA+85DCvM/kzSTrJe/Rs1g6Fo+O6uZ/qgg==
+  version "1.1.89"
+  resolved "https://registry.yarnpkg.com/bloom-player/-/bloom-player-1.1.89.tgz#9903f189da7631ce85a8a2a46c220481d03895d7"
+  integrity sha512-og5YMCTQYsr+x8yIyMr1Lv1hSN8w34g7KUx0RRO7Zsi39RadZfuSR5fCSqG95GaD/H4A8yHWXL9Nk6AfgeVH+w==
   dependencies:
     dynamic-import-polyfill "^0.1.1"
 
