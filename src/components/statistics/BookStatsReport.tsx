@@ -103,8 +103,13 @@ export const BookStatsReport: React.FunctionComponent<IStatsProps> = (
         // don't have that sort of smarts. This is enough for the Spanish labels,
         // which are wider than English.
         { columnName: "finishedCount", width: "130px", align: "right" },
-
         { columnName: "startedCount", width: "130px", align: "right" },
+
+        // Have to include these to get the alignment set to right
+        { columnName: "shellDownloads", align: "right" },
+        { columnName: "pdfDownloads", align: "right" },
+        { columnName: "epubDownloads", align: "right" },
+        { columnName: "bloomPubDownloads", align: "right" },
     ] as Table.ColumnExtension[]);
 
     // This table might not need this...no column headers need wrapping?
