@@ -336,7 +336,7 @@ function useBookQueryInternal(
     filter: IFilter, // this is *which* records to return
     limit?: number, //pagination
     skip?: number, //pagination
-    doNotRunActuallyQuery?: boolean
+    doNotActuallyRunQuery?: boolean
 ): IAxiosAnswer {
     const { tags } = useContext(CachedTablesContext);
     const axiosParams = makeBookQueryAxiosParams(
@@ -344,7 +344,7 @@ function useBookQueryInternal(
         filter,
         limit,
         skip,
-        doNotRunActuallyQuery,
+        doNotActuallyRunQuery,
         tags
     );
 
@@ -489,7 +489,7 @@ interface ISimplifiedAxiosResult {
 export function useSearchBooks(
     params: {}, // this is the order, which fields, limits, etc.
     filter: IFilter, // this is *which* books to return
-    doNotRunActuallyQuery?: boolean
+    doNotActuallyRunQuery?: boolean
 ): ISearchBooksResult {
     const fullParams = {
         count: 1,
@@ -503,7 +503,7 @@ export function useSearchBooks(
         filter,
         undefined,
         undefined,
-        doNotRunActuallyQuery
+        doNotActuallyRunQuery
     );
     const simplifiedResultStatus = processAxiosStatus(bookResultsStatus);
 
@@ -1011,6 +1011,31 @@ export function constructParseBookQuery(
         const [, keywordStems] = Book.getKeywordsAndStems(f.keywordsText);
         params.where.keywordStems = {
             $all: keywordStems,
+        };
+    }
+
+    delete params.where.publisher;
+    if (f.publisher) {
+        params.where.publisher = f.publisher;
+    }
+    delete params.where.originalPublisher;
+    if (f.originalPublisher) {
+        params.where.originalPublisher = f.originalPublisher;
+    }
+
+    delete params.where.parentCollectionFilter;
+    delete params.where.bookLineageArray;
+    if (f.parentCollectionFilter) {
+        const innerWhere = (constructParseBookQuery(
+            {},
+            f.parentCollectionFilter,
+            allTagsFromDatabase
+        ) as any).where;
+        params.where.bookLineageArray = {
+            $select: {
+                query: { className: "books", where: innerWhere },
+                key: "bookInstanceId",
+            },
         };
     }
 
