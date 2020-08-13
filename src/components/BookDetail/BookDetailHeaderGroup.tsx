@@ -25,6 +25,7 @@ import { useGetBookCountRaw } from "../../connection/LibraryQueryHooks";
 import { getResultsOrMessageElement } from "../../connection/GetQueryResultsUI";
 import { getAnchorProps } from "../../embedded";
 import { useIsEmbedded } from "../EmbeddingHost";
+import { FormattedMessage } from "react-intl";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{
     book: Book;
@@ -95,10 +96,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
             css={css`
                 display: flex;
                 justify-content: space-between;
-                max-width: calc(
-                    100vw - ${commonUI.detailViewMargin} -
-                        ${commonUI.detailViewMargin}
-                );
+                max-width: calc(100vw - ${commonUI.detailViewMargin}*2);
                 @media (max-width: ${props.breakToColumn}) {
                     flex-direction: column;
                 }
@@ -188,12 +186,24 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                                             {...getAnchorProps(
                                                 `/phash:${sanitizedPhashOfFirstContentImage}`
                                             )}
-                                        >{`${countOfBooksWithMatchingPhash} books that may be translations`}</Link>
+                                        >
+                                            <FormattedMessage
+                                                id="book.detail.translations"
+                                                defaultMessage="{matches} books that may be translations"
+                                                values={{
+                                                    matches: countOfBooksWithMatchingPhash,
+                                                }}
+                                            />
+                                        </Link>
                                     </li>
                                 )}
                             </ul>
-                        )) ||
-                            "Picture Book (no text)"}
+                        )) || (
+                            <FormattedMessage
+                                id="book.detail.pictureBook"
+                                defaultMessage="Picture Book (no text)"
+                            />
+                        )}
                     </div>
                 </div>
                 <div

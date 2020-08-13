@@ -8,6 +8,7 @@ import GitHubLogo from "../assets/GitHub-Mark-Light-32px.png";
 import React from "react";
 import { Link } from "@material-ui/core";
 import { Link as RouterLink, useLocation } from "react-router-dom";
+import { FormattedMessage } from "react-intl";
 
 //import { Link } from "react-router-dom";
 export const Footer: React.FunctionComponent = () => {
@@ -114,13 +115,33 @@ export const Footer: React.FunctionComponent = () => {
                     display: flex;
                 `}
             >
-                <BlorgLink href="/page/support">Support</BlorgLink>
+                <BlorgLink href="/page/support">
+                    <FormattedMessage
+                        id="footer.support"
+                        defaultMessage="Support"
+                    />
+                </BlorgLink>
                 {separator}
-                <BlorgLink href="/page/create/downloads">Downloads</BlorgLink>
+                <BlorgLink href="/page/create/downloads">
+                    <FormattedMessage
+                        id="downloads"
+                        defaultMessage="Downloads"
+                    />
+                </BlorgLink>
                 {separator}
-                <BlorgLink href="/page/termsOfUse">Terms of Use</BlorgLink>
+                <BlorgLink href="/page/termsOfUse">
+                    <FormattedMessage
+                        id="footer.terms"
+                        defaultMessage="Terms of Use"
+                    />
+                </BlorgLink>
                 {separator}
-                <BlorgLink href="/page/privacyNotice">Privacy Policy</BlorgLink>
+                <BlorgLink href="/page/privacyNotice">
+                    <FormattedMessage
+                        id="footer.privacy"
+                        defaultMessage="Privacy Policy"
+                    />
+                </BlorgLink>
             </div>
 
             <div

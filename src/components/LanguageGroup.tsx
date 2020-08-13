@@ -14,6 +14,7 @@ import { ILanguage } from "../model/Language";
 import { commonUI } from "../theme";
 import { CardSwiper } from "./CardSwiper";
 import { Redirect } from "react-router-dom";
+import { FormattedMessage } from "react-intl";
 
 export const LanguageGroup: React.FunctionComponent = () => {
     const { languagesByBookCount: languages } = useContext(CachedTablesContext);
@@ -62,7 +63,13 @@ export const LanguageGroup: React.FunctionComponent = () => {
                         padding-top: 10px;
                         font-size: 0.8rem;
                     `}
-                >{`We could not find any book with languages matching '${filter}'`}</div>
+                >
+                    <FormattedMessage
+                        id="error.noLanguageMatch"
+                        defaultMessage="We could not find any book with languages matching {searchString}"
+                        values={{ searchString: filter }}
+                    />
+                </div>
             );
         }
     };
@@ -82,7 +89,12 @@ export const LanguageGroup: React.FunctionComponent = () => {
                 margin-top: 30px;
             `}
         >
-            <h1>Find Books By Language</h1>
+            <h1>
+                <FormattedMessage
+                    id="components.findBooks"
+                    defaultMessage="Find Books By Language"
+                />
+            </h1>
 
             {(languages.length && (
                 /* Downshift handles telling us when to recompute the list of matching items.
@@ -136,7 +148,13 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                     css={css`
                                         margin-top: 4px;
                                     `}
-                                >{`${languages.length} Languages`}</div>
+                                >
+                                    <FormattedMessage
+                                        id="components.languagesCount"
+                                        defaultMessage="{count} Languages"
+                                        values={{ count: languages.length }}
+                                    />
+                                </div>
                             </div>
                             {getFilterLanguagesUI(
                                 currentInputBoxText,
@@ -152,7 +170,10 @@ export const LanguageGroup: React.FunctionComponent = () => {
                         height: 100px;
                     `}
                 >
-                    Loading...
+                    <FormattedMessage
+                        id="error.loading"
+                        defaultMessage="Loading..."
+                    />
                 </div>
             )}
         </li>

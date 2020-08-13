@@ -22,6 +22,7 @@ import { OSFeaturesContext } from "../../components/OSFeaturesContext";
 import { ArtifactVisibilitySettings } from "../../model/ArtifactVisibilitySettings";
 import { track } from "../../analytics/Analytics";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
+import { useIntl } from "react-intl";
 
 interface IArtifactUI {
     icon: string;
@@ -37,6 +38,7 @@ export const ArtifactGroup: React.FunctionComponent<{
     book: Book;
     contextLangIso?: string;
 }> = observer((props) => {
+    const l10n = useIntl();
     const { bloomReaderAvailable, cantUseBloomD, mobile } = useContext(
         OSFeaturesContext
     );
@@ -93,7 +95,10 @@ export const ArtifactGroup: React.FunctionComponent<{
                 {[
                     {
                         icon: pdfIcon,
-                        alt: "Download PDF",
+                        alt: l10n.formatMessage({
+                            id: "book.artifacts.pdf",
+                            defaultMessage: "Download PDF",
+                        }),
                         type: ArtifactType.pdf,
                         settings: pdfSettings,
                         enabled: pdfSettings?.decision === true,
@@ -102,7 +107,10 @@ export const ArtifactGroup: React.FunctionComponent<{
                     },
                     {
                         icon: ePUBIcon,
-                        alt: "Download ePUB",
+                        alt: l10n.formatMessage({
+                            id: "book.artifacts.epub",
+                            defaultMessage: "Download ePUB",
+                        }),
                         type: ArtifactType.epub,
                         settings: epubSettings,
                         enabled:
@@ -113,8 +121,11 @@ export const ArtifactGroup: React.FunctionComponent<{
                     },
                     {
                         icon: bloomPubIcon,
-                        alt:
-                            "Download BloomPUB for Bloom Reader or BloomPub Viewer",
+                        alt: l10n.formatMessage({
+                            id: "book.artifacts.bloompub",
+                            defaultMessage:
+                                "Download BloomPUB for Bloom Reader or BloomPub Viewer",
+                        }),
                         type: ArtifactType.bloomReader,
                         settings: bloomReaderSettings,
                         enabled:

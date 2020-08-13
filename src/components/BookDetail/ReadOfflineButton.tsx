@@ -12,6 +12,7 @@ import { getArtifactUrl, ArtifactType } from "./ArtifactHelper";
 import { Book } from "../../model/Book";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { track } from "../../analytics/Analytics";
+import { FormattedMessage } from "react-intl";
 
 interface IProps {
     book: Book;
@@ -76,7 +77,14 @@ export const ReadOfflineButton: React.FunctionComponent<IProps> = (props) => {
                                 line-height: 19px;
                             `}
                         >
-                            READ OFFLINE
+                            <FormattedMessage
+                                id="book.detail.readButton"
+                                defaultMessage="READ"
+                            />{" "}
+                            <FormattedMessage
+                                id="book.detail.offline"
+                                defaultMessage="OFFLINE"
+                            />
                         </p>
                     </h1>
                     <p

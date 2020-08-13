@@ -26,17 +26,27 @@ import { useTrack } from "../../analytics/Analytics";
 import { splitPathname, useDocumentTitle } from "../Routes";
 import { useLocation } from "react-router-dom";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
+import { FormattedMessage, useIntl } from "react-intl";
 
 interface IProps {
     id: string;
 }
 const BookDetail: React.FunctionComponent<IProps> = (props) => {
+    const l10n = useIntl();
     const id = props.id;
     const book = useGetBookDetail(id);
     const location = useLocation();
     const query = new URLSearchParams(location.search);
     const contextLangIso = getContextLang(query);
-    useDocumentTitle("About - " + book?.title);
+    useDocumentTitle(
+        l10n.formatMessage(
+            {
+                id: "book.detail.tabLabel",
+                defaultMessage: "About - {title}",
+            },
+            { title: book?.title }
+        )
+    );
     const { collectionName } = splitPathname(location.pathname);
     useTrack(
         "Book Detail",
@@ -44,9 +54,23 @@ const BookDetail: React.FunctionComponent<IProps> = (props) => {
         !!book
     );
     if (book === undefined) {
-        return <div>Loading...</div>;
+        return (
+            <div>
+                <FormattedMessage
+                    id="error.loading"
+                    defaultMessage="Loading..."
+                />
+            </div>
+        );
     } else if (book === null) {
-        return <div>Sorry, we could not find that book.</div>;
+        return (
+            <div>
+                <FormattedMessage
+                    id="error.cantFind"
+                    defaultMessage="Sorry, we could not find that book."
+                />
+            </div>
+        );
     } else {
         return (
             <React.StrictMode>

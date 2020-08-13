@@ -16,6 +16,7 @@ import { logout as logoutFromParseServer } from "../../connection/ParseServerCon
 import Avatar from "react-avatar";
 import { track } from "../../analytics/Analytics";
 import * as Sentry from "@sentry/browser";
+import { FormattedMessage } from "react-intl";
 
 // This React component displays a button for functions related to the user who may
 // be logged in. If no user is logged in, it displays a generic icon with pull-down
@@ -167,7 +168,10 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
                         `}
                     >
                         <MenuItem onClick={handleLogin}>
-                            Sign In / Sign Up
+                            <FormattedMessage
+                                id="usermenu.signIn"
+                                defaultMessage="Sign In / Sign Up"
+                            />
                         </MenuItem>
                     </Menu>
                 </React.Fragment>
@@ -242,12 +246,23 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
                             )}
                         </MenuItem>
                         <MenuItem onClick={handleNotImplemented}>
-                            Profile
+                            <FormattedMessage
+                                id="usermenu.profile"
+                                defaultMessage="Profile"
+                            />
                         </MenuItem>
                         <MenuItem onClick={handleNotImplemented}>
-                            My Books
+                            <FormattedMessage
+                                id="usermenu.myBooks"
+                                defaultMessage="My Books"
+                            />
                         </MenuItem>
-                        <MenuItem onClick={handleLogout}>Log Out</MenuItem>
+                        <MenuItem onClick={handleLogout}>
+                            <FormattedMessage
+                                id="usermenu.logout"
+                                defaultMessage="Log Out"
+                            />
+                        </MenuItem>
                     </Menu>
                 </React.Fragment>
             )}

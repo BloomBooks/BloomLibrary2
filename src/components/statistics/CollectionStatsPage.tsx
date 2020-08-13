@@ -137,7 +137,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
                 }
             `}
         >
-            <h1>{collection?.label}</h1>
+            <h1>{collection.label}</h1>
             <h2>
                 <FormattedMessage
                     id="stats.header"
