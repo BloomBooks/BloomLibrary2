@@ -29,13 +29,6 @@ export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
                 book.baseUrl
             )}.pdf`.replace(/%2f/g, "/");
             break;
-        case ArtifactType.epub:
-            // book o0OtJgb2dC, "Cellphone" is actually on S3 without the quotation marks, so I
-            // presume somewhere bloom code (harvester?) removes them.
-            const titleWithoutQuotes = book.title.replace(/"/g, "").trim();
-            const urlEncodedName = encodeURIComponent(titleWithoutQuotes);
-            url = `https://api.bloomlibrary.org/v1/fs/harvest/${book.id}/epub/${urlEncodedName}.epub`;
-            break;
         default:
             url = getDownloadUrl(book, artifactType);
             break;
