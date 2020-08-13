@@ -120,7 +120,14 @@ export const ReadBookPage: React.FunctionComponent<{
                 console.log(`Got error with message: ${err}`);
             }
         },
-        [history, id, autoFullScreen]
+        [
+            autoFullScreen,
+            history,
+            id,
+            lang,
+            rotateParams.canRotate,
+            rotateParams.isLandscape,
+        ]
     );
 
     useEffect(() => {

@@ -11,6 +11,7 @@ import { commonUI } from "../../theme";
 import { Book } from "../../model/Book";
 import { useHistory } from "react-router-dom";
 import { getUrlForTarget } from "../Routes";
+import { FormattedMessage, useIntl } from "react-intl";
 
 interface IProps {
     book: Book;
@@ -18,6 +19,7 @@ interface IProps {
     contextLangIso?: string;
 }
 export const ReadButton: React.FunctionComponent<IProps> = (props) => {
+    const l10n = useIntl();
     const history = useHistory();
     const url = getUrlForTarget(`player/${props.book.id}`);
     // This inserts breadcrumbs, embedding information, etc., which we don't want
@@ -30,7 +32,10 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
             startIcon={
                 <img
                     src={ReadIcon}
-                    alt="read"
+                    alt={l10n.formatMessage({
+                        id: "book.detail.readButton",
+                        defaultMessage: "READ",
+                    })}
                     css={css`
                         width: 35px;
                         margin-right: 10px;
@@ -55,7 +60,7 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
                                 `Sorry, the uploader of this book has restricted reading it to ${otherCountryRequired}`
                             );
                         } else {
-                            // It's important to use react-dom's history here, becuase just setting
+                            // It's important to use react-dom's history here, because just setting
                             // the window's location will reload the page, and that will defeat
                             // the ReadBookPage's attempt to go full screen, because the browser
                             // thinks there has been no interaction with the page.
@@ -77,7 +82,10 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
                     margin-bottom: 15px; /*hack without which, the text is not in the vertical center of the button with the icon*/
                 `}
             >
-                READ
+                <FormattedMessage
+                    id="book.detail.readButton"
+                    defaultMessage="READ"
+                />
             </h1>
         </Button>
     );

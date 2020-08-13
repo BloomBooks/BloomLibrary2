@@ -14,6 +14,7 @@ import "firebase/auth";
 import { DialogTitle } from "@material-ui/core";
 import Dialog from "@material-ui/core/Dialog";
 import * as Sentry from "@sentry/browser";
+import { FormattedMessage } from "react-intl";
 
 //import { staticUser } from "./User";
 
@@ -80,7 +81,12 @@ export const LoginDialog: React.FunctionComponent<{}> = (props) => {
             onClose={() => setIsOpen(false)}
             aria-labelledby="title"
         >
-            <DialogTitle id="title">Sign In / Sign Up</DialogTitle>
+            <DialogTitle id="title">
+                <FormattedMessage
+                    id="usermenu.signIn"
+                    defaultMessage="Sign In / Sign Up"
+                />
+            </DialogTitle>
             <div css={css``}>
                 {/* <Button
                     variant="outlined"
