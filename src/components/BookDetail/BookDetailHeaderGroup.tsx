@@ -25,6 +25,7 @@ import { useGetBookCountRaw } from "../../connection/LibraryQueryHooks";
 import { getResultsOrMessageElement } from "../../connection/GetQueryResultsUI";
 import { getAnchorProps } from "../../embedded";
 import { useIsEmbedded } from "../EmbeddingHost";
+import { FormattedMessage, useIntl } from "react-intl";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{
     book: Book;
@@ -33,6 +34,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
     //so where possible we're going to preference that if this is a multilingual book
     contextLangIso?: string;
 }> = observer((props) => {
+    const l10n = useIntl();
     const isEmbedded = useIsEmbedded();
     const { bloomDesktopAvailable, bloomReaderAvailable } = useContext(
         OSFeaturesContext
@@ -95,10 +97,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
             css={css`
                 display: flex;
                 justify-content: space-between;
-                max-width: calc(
-                    100vw - ${commonUI.detailViewMargin} -
-                        ${commonUI.detailViewMargin}
-                );
+                max-width: calc(100vw - ${commonUI.detailViewMargin}*2);
                 @media (max-width: ${props.breakToColumn}) {
                     flex-direction: column;
                 }
@@ -123,7 +122,10 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                     `}
                 >
                     <img
-                        alt="book thumbnail"
+                        alt={l10n.formatMessage({
+                            id: "book.detail.thumbnail",
+                            defaultMessage: "book thumbnail",
+                        })}
                         src={thumbnailUrl}
                         onError={(ev) => {
                             // This is unlikely to be necessary now, as we have what we think is a reliable
@@ -188,12 +190,24 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                                             {...getAnchorProps(
                                                 `/phash:${sanitizedPhashOfFirstContentImage}`
                                             )}
-                                        >{`${countOfBooksWithMatchingPhash} books that may be translations`}</Link>
+                                        >
+                                            <FormattedMessage
+                                                id="book.detail.translations"
+                                                defaultMessage="{count} books that may be translations"
+                                                values={{
+                                                    count: countOfBooksWithMatchingPhash,
+                                                }}
+                                            />
+                                        </Link>
                                     </li>
                                 )}
                             </ul>
-                        )) ||
-                            "Picture Book (no text)"}
+                        )) || (
+                            <FormattedMessage
+                                id="book.detail.pictureBook"
+                                defaultMessage="Picture Book (no text)"
+                            />
+                        )}
                     </div>
                 </div>
                 <div

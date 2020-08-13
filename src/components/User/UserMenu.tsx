@@ -16,6 +16,7 @@ import { logout as logoutFromParseServer } from "../../connection/ParseServerCon
 import Avatar from "react-avatar";
 import { track } from "../../analytics/Analytics";
 import * as Sentry from "@sentry/browser";
+import { FormattedMessage, useIntl } from "react-intl";
 
 // This React component displays a button for functions related to the user who may
 // be logged in. If no user is logged in, it displays a generic icon with pull-down
@@ -30,6 +31,7 @@ interface IProps extends React.HTMLProps<HTMLDivElement> {
 }
 
 export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
+    const l10n = useIntl();
     // This variable is used according to an apparently standard but rather
     // obscure convention for managing Material button/menu combinations.
     // When the menu is hidden, it is null. When the menu is showing, it
@@ -153,7 +155,10 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
                             css={css`
                                 width: ${props.buttonHeight};
                             `}
-                            alt="login"
+                            alt={l10n.formatMessage({
+                                id: "usermenu.loginButton",
+                                defaultMessage: "login",
+                            })}
                         ></img>
                     </Button>
                     <Menu
@@ -167,7 +172,10 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
                         `}
                     >
                         <MenuItem onClick={handleLogin}>
-                            Sign In / Sign Up
+                            <FormattedMessage
+                                id="usermenu.signIn"
+                                defaultMessage="Sign In / Sign Up"
+                            />
                         </MenuItem>
                     </Menu>
                 </React.Fragment>
@@ -201,7 +209,10 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
                             {loggedInUser.photoURL && (
                                 <img
                                     src={loggedInUser.photoURL}
-                                    alt="user"
+                                    alt={l10n.formatMessage({
+                                        id: "usermenu.avatar",
+                                        defaultMessage: "user",
+                                    })}
                                     css={css`
                                         width: ${props.buttonHeight};
                                     `}
@@ -230,7 +241,10 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
                             {loggedInUser && loggedInUser.photoURL && (
                                 <img
                                     src={loggedInUser.photoURL}
-                                    alt="user"
+                                    alt={l10n.formatMessage({
+                                        id: "usermenu.avatar",
+                                        defaultMessage: "user",
+                                    })}
                                     css={css`
                                         width: ${props.buttonHeight};
                                         margin-right: 15px;
@@ -242,12 +256,23 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
                             )}
                         </MenuItem>
                         <MenuItem onClick={handleNotImplemented}>
-                            Profile
+                            <FormattedMessage
+                                id="usermenu.profile"
+                                defaultMessage="Profile"
+                            />
                         </MenuItem>
                         <MenuItem onClick={handleNotImplemented}>
-                            My Books
+                            <FormattedMessage
+                                id="usermenu.myBooks"
+                                defaultMessage="My Books"
+                            />
                         </MenuItem>
-                        <MenuItem onClick={handleLogout}>Log Out</MenuItem>
+                        <MenuItem onClick={handleLogout}>
+                            <FormattedMessage
+                                id="usermenu.logout"
+                                defaultMessage="Log Out"
+                            />
+                        </MenuItem>
                     </Menu>
                 </React.Fragment>
             )}

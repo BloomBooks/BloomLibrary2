@@ -64,8 +64,20 @@ export const CollectionStatsPage: React.FunctionComponent<{
                 }),
                 component: (p: IStatsProps) => <ReaderSessionsChart {...p} />,
                 options: [
-                    { label: "By Week", value: "week" },
-                    { label: "By Month", value: "month" },
+                    {
+                        label: l10n.formatMessage({
+                            id: "stats.options.By Week",
+                            defaultMessage: "By Week",
+                        }),
+                        value: "week",
+                    },
+                    {
+                        label: l10n.formatMessage({
+                            id: "stats.options.By Month",
+                            defaultMessage: "By Month",
+                        }),
+                        value: "month",
+                    },
                 ],
             },
             {
@@ -118,7 +130,14 @@ export const CollectionStatsPage: React.FunctionComponent<{
     useDocumentTitle(collection?.label + " statistics");
 
     if (!collection) {
-        return <div>Collection not found</div>;
+        return (
+            <div>
+                <FormattedMessage
+                    id="error.collectionNotFound"
+                    defaultMessage="Collection not found"
+                />
+            </div>
+        );
     }
     const kSideMarginPx = 20;
     return (
@@ -137,7 +156,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
                 }
             `}
         >
-            <h1>{collection?.label}</h1>
+            <h1>{collection.label}</h1>
             <h2>
                 <FormattedMessage
                     id="stats.header"
@@ -277,7 +296,13 @@ export const CollectionStatsPage: React.FunctionComponent<{
                         }}
                         aria-label="download PNG image"
                     >
-                        <img alt="download PNG" src={DownloadPngIcon} />
+                        <img
+                            alt={l10n.formatMessage({
+                                id: "stats.download.pngIcon",
+                                defaultMessage: "download PNG",
+                            })}
+                            src={DownloadPngIcon}
+                        />
                     </Button>
                     {exportDataFn && (
                         <Button
@@ -288,7 +313,13 @@ export const CollectionStatsPage: React.FunctionComponent<{
                                 )
                             }
                         >
-                            <img alt="download CSV" src={DownloadCsvIcon} />
+                            <img
+                                alt={l10n.formatMessage({
+                                    id: "stats.download.csvIcon",
+                                    defaultMessage: "download CSV",
+                                })}
+                                src={DownloadCsvIcon}
+                            />
                         </Button>
                     )}
                 </div>

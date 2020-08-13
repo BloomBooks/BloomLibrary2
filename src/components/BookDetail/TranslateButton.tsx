@@ -13,12 +13,14 @@ import { commonUI } from "../../theme";
 import { track } from "../../analytics/Analytics";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { followUrl } from "./ArtifactGroup";
+import { FormattedMessage, useIntl } from "react-intl";
 
 export const TranslateButton: React.FunctionComponent<{
     book: Book;
     fullWidth?: boolean;
     contextLangIso?: string;
 }> = (props) => {
+    const l10n = useIntl();
     return (
         <Button
             variant="outlined"
@@ -39,7 +41,13 @@ export const TranslateButton: React.FunctionComponent<{
                     0px 1px 5px 0px rgba(0, 0, 0, 0.12);
             `}
             startIcon={
-                <img alt="Download Translation Icon" src={TranslationIcon} />
+                <img
+                    alt={l10n.formatMessage({
+                        id: "book.detail.translateButton.downloadIcon",
+                        defaultMessage: "Download Translation Icon",
+                    })}
+                    src={TranslationIcon}
+                />
             }
             onClick={() => {
                 props.book
@@ -86,7 +94,16 @@ export const TranslateButton: React.FunctionComponent<{
                         margin-bottom: 0;
                     `}
                 >
-                    {"Translate into"} <em>your</em> {"language!"}
+                    {l10n.formatMessage(
+                        {
+                            id: "book.detail.translateButton.translate",
+                            defaultMessage:
+                                "Translate into <emphasis>your</emphasis> language!",
+                        },
+                        {
+                            emphasis: (str) => <em>{str}</em>,
+                        }
+                    )}
                 </p>
                 <p
                     css={css`
@@ -96,7 +113,10 @@ export const TranslateButton: React.FunctionComponent<{
                         margin-top: 2px;
                     `}
                 >
-                    Download into Bloom Editor
+                    <FormattedMessage
+                        id="book.detail.translateButton.download"
+                        defaultMessage="Download into Bloom Editor"
+                    />
                 </p>
             </div>
         </Button>

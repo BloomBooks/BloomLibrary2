@@ -8,6 +8,7 @@ import React from "react";
 import { Book } from "../../model/Book";
 import ReportIcon from "@material-ui/icons/Flag";
 import { Link } from "@material-ui/core";
+import { FormattedMessage } from "react-intl";
 
 export const ReportButton: React.FunctionComponent<{
     book: Book;
@@ -39,6 +40,8 @@ export const ReportButton: React.FunctionComponent<{
                 margin-right: 3px;
             `}
         />
-        <div>Report</div>
+        <div>
+            <FormattedMessage id="book.report" defaultMessage="Report" />
+        </div>
     </Link>
 );

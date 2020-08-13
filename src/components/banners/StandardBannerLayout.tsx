@@ -11,6 +11,7 @@ import { ICollection, IBanner } from "../../model/ContentInterfaces";
 import { ImgWithCredits } from "../../ImgWithCredits";
 import { Blurb } from "./Blurb";
 import { useMediaQuery } from "@material-ui/core";
+import { useIntl } from "react-intl";
 
 export const StandardBannerLayout: React.FunctionComponent<{
     collection: ICollection;
@@ -109,6 +110,7 @@ export const LogoOnBanner: React.FunctionComponent<{
     banner: IBanner;
     cssExtra?: string;
 }> = (props) => {
+    const l10n = useIntl();
     const logo = props.banner.logo
         ? props.banner.logo
         : props.collection.iconForCardAndDefaultBanner;
@@ -120,7 +122,15 @@ export const LogoOnBanner: React.FunctionComponent<{
                 alt={
                     logo.altText
                         ? logo.altText
-                        : "logo for " + props.banner.title
+                        : l10n.formatMessage(
+                              {
+                                  id: "bannerLogo",
+                                  defaultMessage: "logo for {name}",
+                              },
+                              {
+                                  name: props.banner.title,
+                              }
+                          )
                 }
                 // complicated stuff is going on here with the display:flex on the
                 // parent div, particularly in row mode. FlexBox has an unobvious idea

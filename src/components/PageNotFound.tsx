@@ -6,6 +6,7 @@ import { jsx } from "@emotion/core";
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
+import { FormattedMessage } from "react-intl";
 
 export const PageNotFound: React.FunctionComponent = () => (
     <div
@@ -23,6 +24,11 @@ export const PageNotFound: React.FunctionComponent = () => (
     >
         <div>Oops!</div>
         <br />
-        <div> We can't seem to find the page you're looking for.</div>
+        <div>
+            <FormattedMessage
+                id="error.pageNotFound"
+                defaultMessage="We can't seem to find the page you're looking for."
+            />
+        </div>
     </div>
 );
