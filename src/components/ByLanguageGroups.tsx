@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState, useMemo } from "react";
 import { IFilter } from "../IFilter";
 import { CachedTablesContext } from "../App";
-import { getLanguageNames } from "../model/Language";
+import { getDisplayNamesForLanguage } from "../model/Language";
 import {
     useSearchBooks,
     IBasicBookInfo,
@@ -93,8 +93,10 @@ export const ByLanguageGroups: React.FunctionComponent<{
                     } else return true;
                 })
                 .sort((x, y) =>
-                    getLanguageNames(x).displayNameWithAutonym.localeCompare(
-                        getLanguageNames(y).displayNameWithAutonym
+                    getDisplayNamesForLanguage(
+                        x
+                    ).displayNameWithAutonym.localeCompare(
+                        getDisplayNamesForLanguage(y).displayNameWithAutonym
                     )
                 ),
         [languagesByBookCount, props.excludeLanguages]
@@ -114,7 +116,7 @@ export const ByLanguageGroups: React.FunctionComponent<{
                     <BookGroup
                         key={l.isoCode}
                         title={`${props.titlePrefix} ${
-                            getLanguageNames(l).displayNameWithAutonym
+                            getDisplayNamesForLanguage(l).displayNameWithAutonym
                         }`}
                         predeterminedBooks={books}
                         contextLangIso={l.isoCode}

@@ -6,13 +6,15 @@ import { jsx } from "@emotion/core";
 
 import React from "react";
 import { CheapCard } from "./CheapCard";
-import { ILanguage, getLanguageNames } from "../model/Language";
+import { ILanguage, getDisplayNamesForLanguage } from "../model/Language";
 import { commonUI } from "../theme";
 import { useTheme } from "@material-ui/core";
 
 export const LanguageCard: React.FunctionComponent<ILanguage> = (props) => {
     const theme = useTheme();
-    const { displayName: languageName, autonym } = getLanguageNames(props);
+    const { displayName: languageName, autonym } = getDisplayNamesForLanguage(
+        props
+    );
 
     const {
         name,
