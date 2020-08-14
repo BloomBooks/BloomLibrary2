@@ -60,6 +60,13 @@ export const App: React.FunctionComponent<{}> = (props) => {
     CachedTables.languagesByBookCount = languagesByBookCount;
 
     const embeddedMode = window.self !== window.top;
+
+    const showUnderConstruction =
+        window.location.hostname !== "bloomlibrary.org" &&
+        window.location.hostname !== "embed.bloomlibrary.org" &&
+        window.location.hostname !== "dev.bloomlibrary.org" &&
+        window.location.hostname !== "localhost";
+
     const [explicitlyChosenLanguageTag] = useState<string | undefined>(
         undefined
     );
@@ -141,9 +148,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                 mobile,
                             }}
                         >
-                            {window.location.hostname === "localhost" || (
-                                <UnderConstruction />
-                            )}
+                            {showUnderConstruction && <UnderConstruction />}
 
                             <Router>
                                 {embeddedMode || <Header />}
@@ -193,7 +198,6 @@ export const UnderConstruction: React.FunctionComponent<{}> = () => {
                 >
                     Thanks for previewing this "next" version of Bloom Library.
                     If you run into problems, head back to{" "}
-                    {/* <a href="https://bloomlibrary.org">bloomlibrary.org</a> */}
                     <a
                         css={css`
                             color: white;
