@@ -18,7 +18,7 @@ import { IStatsProps } from "./StatsInterfaces";
 import { useGetBookStats } from "./useGetBookStats";
 import { useProvideDataForExport } from "./exportData";
 import { CachedTablesContext } from "../../App";
-import { getLanguageNamesFromCode } from "../../model/Language";
+import { getDisplayNamesFromLanguageCode } from "../../model/Language";
 import { useIntl } from "react-intl";
 
 export const BookStatsReport: React.FunctionComponent<IStatsProps> = (
@@ -31,7 +31,7 @@ export const BookStatsReport: React.FunctionComponent<IStatsProps> = (
 
     if (stats) {
         for (const stat of stats) {
-            const languageDisplayName = getLanguageNamesFromCode(
+            const languageDisplayName = getDisplayNamesFromLanguageCode(
                 stat.language,
                 languages
             )?.displayNameWithAutonym;
