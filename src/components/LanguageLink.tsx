@@ -1,10 +1,7 @@
 import React from "react";
 
 import { Link } from "@material-ui/core";
-import {
-    ILanguage,
-    getLanguageNames as getLanguageDisplayNames,
-} from "../model/Language";
+import { ILanguage, getDisplayNamesForLanguage } from "../model/Language";
 import { getAnchorProps } from "../embedded";
 
 export const LanguageLink: React.FunctionComponent<{
@@ -47,5 +44,5 @@ export function getLanguageNames(languages: ILanguage[]): string[] {
 // For languages where the name differs in English, we are currently
 // showing the autonym followed by English in parentheses.
 export function getNameDisplay(l: ILanguage) {
-    return getLanguageDisplayNames(l).displayNameWithAutonym;
+    return getDisplayNamesForLanguage(l).displayNameWithAutonym;
 }

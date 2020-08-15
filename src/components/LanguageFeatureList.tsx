@@ -3,14 +3,16 @@ import css from "@emotion/css/macro";
 // these two make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React from "react";
+import React, { useState } from "react";
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
 import {
     getFeaturesAvailableForOneLanguageOfBook,
     featureIconHeight,
 } from "./FeatureHelper";
-import { getUniqueLanguages, getNameDisplay } from "./LanguageLink";
+import { getUniqueLanguages } from "./LanguageLink";
 import { useTheme } from "@material-ui/core";
+import TruncateMarkup from "react-truncate-markup";
+import { getDisplayNamesForLanguage } from "../model/Language";
 
 interface IProps {
     basicBookInfo: IBasicBookInfo;
@@ -25,35 +27,49 @@ interface IProps {
 export const LanguageFeatureList: React.FunctionComponent<IProps> = (props) => {
     const theme = useTheme();
 
-    // Now figure out what to show in the language list area. It's a mix
-    // of simple text nodes and possibly feature icons.
-    const languageElements = [];
-    for (const language of getUniqueLanguages(props.basicBookInfo.languages)) {
-        languageElements.push(getNameDisplay(language));
-        // Looking for features that the book has with this language code attached,
-        // such as talkingBook:en
-        const langFeatures = getFeaturesAvailableForOneLanguageOfBook(
-            props.basicBookInfo.features,
-            language.isoCode
-        );
-        // Now make the actual icons, one for each langFeature that occurs for
-        // the current language.
-        for (const feature of langFeatures) {
+    // Figure out what to show in the language list area.
+    // It's a mix of simple text nodes and possibly feature icons.
+    const uniqueLanguages = getUniqueLanguages(props.basicBookInfo.languages);
+    function getLanguageElements(showOneNamePerLanguage: boolean) {
+        const languageElements: any[] = [];
+        for (const language of uniqueLanguages) {
+            const languageDisplayNames = getDisplayNamesForLanguage(language);
             languageElements.push(
-                feature.icon({
-                    key: language.isoCode + feature.featureKey,
-                    fill: theme.palette.secondary.main,
-                    style: {
-                        height: featureIconHeight + "px",
-                        width: featureIconHeight + "px",
-                        marginLeft: "2px",
-                    },
-                })
+                showOneNamePerLanguage
+                    ? languageDisplayNames.displayName
+                    : languageDisplayNames.displayNameWithAutonym
             );
+
+            // Looking for features that the book has with this language code attached,
+            // such as talkingBook:en
+            const langFeatures = getFeaturesAvailableForOneLanguageOfBook(
+                props.basicBookInfo.features,
+                language.isoCode
+            );
+            // Now make the actual icons, one for each langFeature that occurs for
+            // the current language.
+            for (const feature of langFeatures) {
+                languageElements.push(
+                    feature.icon({
+                        key: language.isoCode + feature.featureKey,
+                        fill: theme.palette.secondary.main,
+                        style: {
+                            height: featureIconHeight + "px",
+                            width: featureIconHeight + "px",
+                            marginLeft: "2px",
+                        },
+                    })
+                );
+            }
+            languageElements.push(", ");
         }
-        languageElements.push(", ");
+        languageElements.pop(); // remove last separator (if any)
+        return languageElements;
     }
-    languageElements.pop(); // remove last separator (if any)
+    const [languageElementsDisplay, setLanguageElementsDisplay] = useState<
+        Array<string | JSX.Element>
+    >(getLanguageElements(false));
+
     return (
         <div
             css={css`
@@ -65,7 +81,22 @@ export const LanguageFeatureList: React.FunctionComponent<IProps> = (props) => {
                 max-height: calc(2em + 4px);
             `}
         >
-            {languageElements}
+            <TruncateMarkup
+                lines={2}
+                // Per the docs:
+                // To prevent infinite loops, onTruncate callback gets called only after the
+                // initial run (on mount), any subsequent props/children updates will trigger a recomputation,
+                // but onTruncate won't get called for these updates.
+                onTruncate={(wasTruncated: boolean) => {
+                    if (wasTruncated) {
+                        // If the normal list which includes autonyms gets truncated,
+                        // replace it with a list which has one name per language.
+                        setLanguageElementsDisplay(getLanguageElements(true));
+                    }
+                }}
+            >
+                <span>{languageElementsDisplay}</span>
+            </TruncateMarkup>
         </div>
     );
 };

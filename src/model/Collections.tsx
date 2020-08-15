@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { getLanguageNamesFromCode, ILanguage } from "./Language";
+import { getDisplayNamesFromLanguageCode, ILanguage } from "./Language";
 import { CachedTablesContext } from "../App";
 import { ICollection } from "./ContentInterfaces";
 import { convertContentfulCollectionToICollection } from "./Contentful";
@@ -184,8 +184,10 @@ export function makeLanguageCollection(
     langCode: string,
     languages: ILanguage[]
 ): ICollection {
-    let languageDisplayName = getLanguageNamesFromCode(langCode!, languages)
-        ?.displayNameWithAutonym;
+    let languageDisplayName = getDisplayNamesFromLanguageCode(
+        langCode!,
+        languages
+    )?.displayNameWithAutonym;
     if (!languageDisplayName) languageDisplayName = langCode;
 
     // We need the label in [Template Language Collection] to be $1.
