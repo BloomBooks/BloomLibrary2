@@ -14,6 +14,7 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import { withStyles } from "@material-ui/styles";
 import { giveFreeLearningCsv } from "../export/freeLearningIO";
 import { useLocation, useHistory } from "react-router-dom";
+import { useIntl } from "react-intl";
 
 // NB: I tried a bunch of iterations over 2 days with forwardRefs and stuff trying to get this search box
 // to have both the html tooltip AND stop losing focus every time a letter was typed. The upshot was this
@@ -50,6 +51,7 @@ export const SearchBox: React.FunctionComponent<{
         .split("/")
         .filter((x) => x.startsWith(":search:"))[0];
 
+    const l10n = useIntl();
     let initialSearchString = search
         ? decodeURIComponent(search.substring(":search:".length))
         : "";
@@ -214,7 +216,10 @@ export const SearchBox: React.FunctionComponent<{
                 css={css`
                     font-size: 1.45rem !important;
                 `}
-                placeholder="search for books"
+                placeholder={l10n.formatMessage({
+                    id: "search.forBooks",
+                    defaultMessage: "search for books",
+                })}
                 inputProps={{ "aria-label": "search for books" }}
                 value={searchString}
                 onChange={(event) =>

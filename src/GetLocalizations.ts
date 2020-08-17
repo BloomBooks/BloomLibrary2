@@ -60,6 +60,9 @@ export function useGetLocalizations(
                     mappingForOneLanguage[
                         allTranslationsOfOneStringAsAnObject.Id
                     ] =
+                        // Uncomment the next line for testing. Each translated string will be prefixed by *_
+                        //(columnKey !== "en" ? "*_" : "") +
+                        // *** Do not commit the above line uncommented ***
                         allTranslationsOfOneStringAsAnObject[
                             columnKey
                         ] /* the same as allTranslationsOfOneStringAsAnObject.es or allTranslationsOfOneStringAsAnObject.fr */;

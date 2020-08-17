@@ -23,7 +23,7 @@ export const TestEmbeddingPage: React.FunctionComponent<{ code: string }> = (
         return () => {
             document.body.removeChild(script);
         };
-    }, []);
+    }, [root]);
     const iframeSrc = `${root}/embed/${props.code}`;
     const badUrl = !props.code || props.code.split("/").length < 2;
     return (

@@ -9,6 +9,7 @@ import { CheapCard } from "./CheapCard";
 import { ILanguage, getDisplayNamesForLanguage } from "../model/Language";
 import { commonUI } from "../theme";
 import { useTheme } from "@material-ui/core";
+import { FormattedMessage } from "react-intl";
 
 export const LanguageCard: React.FunctionComponent<ILanguage> = (props) => {
     const theme = useTheme();
@@ -73,7 +74,15 @@ export const LanguageCard: React.FunctionComponent<ILanguage> = (props) => {
                     margin-top: auto;
                 `}
             >
-                {props.usageCount ? `${props.usageCount} Books` : ""}
+                {props.usageCount ? (
+                    <FormattedMessage
+                        id="bookCount"
+                        defaultMessage="{count} Books"
+                        values={{ count: props.usageCount }}
+                    />
+                ) : (
+                    ""
+                )}
             </div>
         </CheapCard>
     );

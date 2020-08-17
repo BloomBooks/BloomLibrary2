@@ -8,9 +8,11 @@ import GitHubLogo from "../assets/GitHub-Mark-Light-32px.png";
 import React from "react";
 import { Link } from "@material-ui/core";
 import { Link as RouterLink, useLocation } from "react-router-dom";
+import { FormattedMessage, useIntl } from "react-intl";
 
 //import { Link } from "react-router-dom";
 export const Footer: React.FunctionComponent = () => {
+    const l10n = useIntl();
     const location = useLocation();
     const hideFooter = location.pathname.startsWith("/player/");
     if (hideFooter) return <React.Fragment></React.Fragment>;
@@ -41,7 +43,13 @@ export const Footer: React.FunctionComponent = () => {
                 }
             `}
         >
-            <img src={SILLogo} alt={"SIL Logo"} />
+            <img
+                src={SILLogo}
+                alt={l10n.formatMessage({
+                    id: "footer.silLogo",
+                    defaultMessage: "SIL Logo",
+                })}
+            />
             <div
                 css={css`
                     margin-left: 10px;
@@ -64,7 +72,10 @@ export const Footer: React.FunctionComponent = () => {
                     height: 32px !important;
                 `}
                 src={GitHubLogo}
-                alt={"Github Logo"}
+                alt={l10n.formatMessage({
+                    id: "footer.githubLogo",
+                    defaultMessage: "Github Logo",
+                })}
             />
         </a>
     );
@@ -80,7 +91,10 @@ export const Footer: React.FunctionComponent = () => {
         >
             <img
                 src="https://images.ctfassets.net/fo9twyrwpveg/7Htleo27dKYua8gio8UEUy/0797152a2d2f8e41db49ecbf1ccffdaa/PoweredByContentful_DarkBackground_MonochromeLogo.svg"
-                alt="Powered by Contentful"
+                alt={l10n.formatMessage({
+                    id: "footer.contentful",
+                    defaultMessage: "Powered by Contentful",
+                })}
             />
         </a>
     );
@@ -114,13 +128,33 @@ export const Footer: React.FunctionComponent = () => {
                     display: flex;
                 `}
             >
-                <BlorgLink href="/page/support">Support</BlorgLink>
+                <BlorgLink href="/page/support">
+                    <FormattedMessage
+                        id="footer.support"
+                        defaultMessage="Support"
+                    />
+                </BlorgLink>
                 {separator}
-                <BlorgLink href="/page/create/downloads">Downloads</BlorgLink>
+                <BlorgLink href="/page/create/downloads">
+                    <FormattedMessage
+                        id="downloads"
+                        defaultMessage="Downloads"
+                    />
+                </BlorgLink>
                 {separator}
-                <BlorgLink href="/page/termsOfUse">Terms of Use</BlorgLink>
+                <BlorgLink href="/page/termsOfUse">
+                    <FormattedMessage
+                        id="footer.terms"
+                        defaultMessage="Terms of Use"
+                    />
+                </BlorgLink>
                 {separator}
-                <BlorgLink href="/page/privacyNotice">Privacy Policy</BlorgLink>
+                <BlorgLink href="/page/privacyNotice">
+                    <FormattedMessage
+                        id="footer.privacy"
+                        defaultMessage="Privacy Policy"
+                    />
+                </BlorgLink>
             </div>
 
             <div
