@@ -594,6 +594,14 @@ export function useCollectionStats(
     // Use this when debugging changes to the Azure function
     //const url = `http://localhost:7071/v1/stats/${urlSuffix}`;
 
+    // Just below here, axios is going to decide whether or not to send another
+    // query based on the values in apiFilter (the trigger parameter).
+    // On a new page load, if the user is logged in, the value of X-Parse-Session-Token is going
+    // to get added which will cause duplicate sequential requests with the page not loading until the
+    // second one completes. Since we don't care if the user is logged in or not in this case,
+    // just delete it here to prevent the problem.
+    delete apiFilter.parseDBQuery.options.headers["X-Parse-Session-Token"];
+
     return useAxios({
         url,
         method: "POST",
