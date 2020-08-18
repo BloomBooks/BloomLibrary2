@@ -600,7 +600,9 @@ export function useCollectionStats(
     // to get added which will cause duplicate sequential requests with the page not loading until the
     // second one completes. Since we don't care if the user is logged in or not in this case,
     // just delete it here to prevent the problem.
-    delete apiFilter.parseDBQuery.options.headers["X-Parse-Session-Token"];
+    const apiFilterClone = JSON.parse(JSON.stringify(apiFilter));
+    delete apiFilterClone.parseDBQuery.options.headers["X-Parse-Session-Token"];
+    const trigger = url + JSON.stringify(apiFilterClone);
 
     return useAxios({
         url,
@@ -610,8 +612,7 @@ export function useCollectionStats(
                 filter: apiFilter,
             },
         },
-
-        trigger: url + JSON.stringify(apiFilter),
+        trigger,
     });
 }
 
