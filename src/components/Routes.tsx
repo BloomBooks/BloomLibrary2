@@ -22,11 +22,17 @@ import { EmbeddingHost, useSetEmbeddedUrl } from "./EmbeddingHost";
 import { CollectionStatsPage } from "./statistics/CollectionStatsPage";
 import { TestEmbeddingPage } from "./TestEmbedding";
 
+export let previousPathname = "";
+let currentPathname = "";
 // The main set of switches that loads different things into the main content area of Blorg
 // based on the current window location.
 export const Routes: React.FunctionComponent<{}> = () => {
     const location = useLocation();
     useSetEmbeddedUrl();
+    if (currentPathname !== location.pathname) {
+        previousPathname = currentPathname;
+        currentPathname = location.pathname;
+    }
     return (
         <ErrorBoundary url={location.pathname}>
             <Switch>
