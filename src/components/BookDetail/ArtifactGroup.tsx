@@ -144,8 +144,10 @@ export const ArtifactGroup: React.FunctionComponent<{
                                 key={a.alt}
                                 aria-label={`${a.alt} is not available`}
                                 title={
-                                    a.settings?.reasonForHiding(props.book) ||
-                                    a.alt
+                                    a.settings?.reasonForHiding(
+                                        props.book,
+                                        l10n
+                                    ) || a.alt
                                 }
                                 arrow={true}
                             >

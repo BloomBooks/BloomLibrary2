@@ -1,6 +1,6 @@
 import { observable, computed } from "mobx";
 import { Book } from "../model/Book";
-import { useIntl } from "react-intl";
+import { useIntl, IntlShape } from "react-intl";
 
 // This is related to the "show" column on book in ParseServer
 export class ArtifactVisibilitySettings {
@@ -50,20 +50,18 @@ export class ArtifactVisibilitySettings {
         return this.user !== undefined;
     };
 
-    private l10n = useIntl();
-
     // returns undefined if it's not hidden and should be available
-    public reasonForHiding(book: Book): string | undefined {
+    public reasonForHiding(book: Book, l10n: IntlShape): string | undefined {
         switch (book.harvestState) {
             case "Updated":
             case "New":
-                return this.l10n.formatMessage({
+                return l10n.formatMessage({
                     id: "book.artifacts.visibility.new",
                     defaultMessage:
                         "Our system has not yet generated this format.",
                 });
             case "Failed":
-                return this.l10n.formatMessage({
+                return l10n.formatMessage({
                     id: "book.artifacts.visibility.fail",
                     defaultMessage:
                         "Our system ran into a problem while trying to generate this format.",
@@ -71,19 +69,19 @@ export class ArtifactVisibilitySettings {
             case "Done":
                 return (
                     (this.isUserHide() &&
-                        this.l10n.formatMessage({
+                        l10n.formatMessage({
                             id: "book.artifacts.visibility.userHidden",
                             defaultMessage:
                                 "This format has been hidden by the person who uploaded this book.",
                         })) ||
                     (this.isLibrarianHide() &&
-                        this.l10n.formatMessage({
+                        l10n.formatMessage({
                             id: "book.artifacts.visibility.librarianHidden",
                             defaultMessage:
                                 "This format has been hidden by a site moderator.",
                         })) ||
                     (this.isHarvesterHide() &&
-                        this.l10n.formatMessage({
+                        l10n.formatMessage({
                             id: "book.artifacts.visibility.scaling",
                             defaultMessage:
                                 "Our system was not confident about scaling the book to this format.",
