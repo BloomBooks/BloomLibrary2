@@ -141,7 +141,7 @@ function fields(book: Book, isoCode: string): Array<string | undefined> {
             book.getBestLevel() || "", // book.getTagValue("computedLevel") || "", //
             book.uploadDate?.toISOString() || "",
             book.publisher || "",
-            book.license || "Unknown License",
+            book.license.toUpperCase() + "-4.0", // SPDX requires this
             `https://bloomlibrary.org/readBook/${book.id}?bookLang=${isoCode}`,
             valueForEpubLine,
         ];
