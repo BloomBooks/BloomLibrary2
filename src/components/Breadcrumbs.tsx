@@ -5,10 +5,11 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React from "react";
+import React, { useContext } from "react";
 import { useLocation, Link } from "react-router-dom";
-import { useGetCollection } from "../model/Collections";
+import { getCollection } from "../model/Collections";
 import { splitPathname } from "./Routes";
+import { CachedTablesContext } from "../App";
 
 export const Breadcrumbs: React.FunctionComponent = () => {
     const location = useLocation();
@@ -157,7 +158,14 @@ const CollectionCrumb: React.FunctionComponent<{
     collectionName: string;
     previousBreadcrumbs: string[];
 }> = (props) => {
-    const { collection } = useGetCollection(props.collectionName);
+    const { languagesByBookCount: languages, collections } = useContext(
+        CachedTablesContext
+    );
+    const { collection } = getCollection(
+        props.collectionName,
+        collections,
+        languages
+    );
 
     let text = props.collectionName;
     if (collection) {

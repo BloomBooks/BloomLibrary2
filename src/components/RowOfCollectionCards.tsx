@@ -1,15 +1,23 @@
-import React from "react";
-import { useGetCollection } from "../model/Collections";
+import React, { useContext } from "react";
+import { getCollection } from "../model/Collections";
 import { CardGroup } from "./CardGroup";
 import { CollectionCard } from "./CollectionCard";
 import { BookCardGroup } from "./BookCardGroup";
 import { PageNotFound } from "./PageNotFound";
 import { ICollection } from "../model/ContentInterfaces";
+import { CachedTablesContext } from "../App";
 
 export const RowOfCollectionCardsForKey: React.FunctionComponent<{
     urlKey: string;
 }> = (props) => {
-    const { collection, loading } = useGetCollection(props.urlKey);
+    const { languagesByBookCount: languages, collections } = useContext(
+        CachedTablesContext
+    );
+    const { collection, loading } = getCollection(
+        props.urlKey,
+        collections,
+        languages
+    );
     if (loading) {
         return null;
     }

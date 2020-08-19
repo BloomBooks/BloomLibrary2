@@ -3,15 +3,12 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { ListOfBookGroups } from "./ListOfBookGroups";
 import { ByLevelGroups, makeCollectionForLevel } from "./ByLevelGroups";
 import { BookCardGroup } from "./BookCardGroup";
-import {
-    makeCollectionForSearch,
-    useGetCollection,
-} from "../model/Collections";
+import { makeCollectionForSearch, getCollection } from "../model/Collections";
 import { makeCollectionForTopic, ByTopicsGroups } from "./ByTopicsGroups";
 import { ICollection } from "../model/ContentInterfaces";
 import { getCollectionAnalyticsInfo } from "../analytics/CollectionAnalyticsInfo";
@@ -19,6 +16,7 @@ import { track } from "../analytics/Analytics";
 import { BookCount } from "./BookCount";
 import { setBloomLibraryTitle } from "./Routes";
 import { NoSearchResults } from "./NoSearchResults";
+import { CachedTablesContext } from "../App";
 
 // Given a collection and a string like level:1/topic:anthropology/search:dogs,
 // creates a corresponding collection by adding appropriate filters.
@@ -83,7 +81,14 @@ export const CollectionSubsetPage: React.FunctionComponent<{
     collectionName: string; // may have tilde's, after last tilde is a contentful collection urlKey
     filters: string[]; // may result in automatically-created subcollections. Might be multiple ones slash-delimited
 }> = (props) => {
-    const { collection, loading } = useGetCollection(props.collectionName);
+    const { languagesByBookCount: languages, collections } = useContext(
+        CachedTablesContext
+    );
+    const { collection, loading } = getCollection(
+        props.collectionName,
+        collections,
+        languages
+    );
     // Can't use here, we want title information based on subcollection.
     //useDocumentTitle(props.collectionName);
 

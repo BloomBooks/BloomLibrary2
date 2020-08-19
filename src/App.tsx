@@ -31,22 +31,27 @@ import { Footer } from "./components/Footer";
 import { IntlProvider } from "react-intl";
 
 import { useGetLocalizations } from "./GetLocalizations";
+import { IRawCollection } from "./model/ContentInterfaces";
+import { useGetCollections } from "./model/Collections";
 interface ICachedTables {
     tags: string[];
     languagesByBookCount: ILanguage[];
     bookshelves: IBookshelfResult[];
+    collections: IRawCollection[];
 }
 // for use when we aren't in a react context with hooks
 export const CachedTables: ICachedTables = {
     tags: [],
     languagesByBookCount: [],
     bookshelves: [],
+    collections: [],
 };
 
 export const CachedTablesContext = React.createContext<ICachedTables>({
     tags: [],
     languagesByBookCount: [],
     bookshelves: [],
+    collections: [],
 });
 
 //console.log("getUserLanguageFromBrowser() " + getUserLanguageFromBrowser());
@@ -55,9 +60,11 @@ export const App: React.FunctionComponent<{}> = (props) => {
     const tags = useGetTagList();
     const languagesByBookCount = useGetCleanedAndOrderedLanguageList();
     const bookshelves = useGetBookshelvesByCategory();
+    const collections = useGetCollections();
     CachedTables.bookshelves = bookshelves;
     CachedTables.tags = tags;
     CachedTables.languagesByBookCount = languagesByBookCount;
+    CachedTables.collections = collections;
 
     const embeddedMode = window.self !== window.top;
 
@@ -138,6 +145,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                             tags,
                             languagesByBookCount,
                             bookshelves,
+                            collections,
                         }}
                     >
                         <OSFeaturesContext.Provider

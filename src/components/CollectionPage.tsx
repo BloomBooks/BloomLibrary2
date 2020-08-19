@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 
 import { ContentfulBanner } from "./banners/ContentfulBanner";
-import { useGetCollection } from "../model/Collections";
+import { getCollection } from "../model/Collections";
 import { RowOfCollectionCardsForKey } from "./RowOfCollectionCards";
 import { ByLevelGroups } from "./ByLevelGroups";
 import { ListOfBookGroups } from "./ListOfBookGroups";
@@ -14,6 +14,8 @@ import { useTrack } from "../analytics/Analytics";
 import { IEmbedSettings } from "../model/ContentInterfaces";
 import { useDocumentTitle } from "./Routes";
 import { getCollectionAnalyticsInfo } from "../analytics/CollectionAnalyticsInfo";
+import { CachedTablesContext } from "../App";
+import { FormattedMessage } from "react-intl";
 
 export const CollectionPage: React.FunctionComponent<{
     collectionName: string;
@@ -21,7 +23,15 @@ export const CollectionPage: React.FunctionComponent<{
 }> = (props) => {
     // remains empty (and unused) except in byLanguageGroups mode, when a callback sets it.
     const [booksAndLanguages, setBooksAndLanguages] = useState("");
-    const { collection, loading } = useGetCollection(props.collectionName);
+    const { languagesByBookCount: languages, collections } = useContext(
+        CachedTablesContext
+    );
+
+    const { collection, loading } = getCollection(
+        props.collectionName,
+        collections,
+        languages
+    );
     const { params, sendIt } = getCollectionAnalyticsInfo(collection);
     useDocumentTitle(collection?.label);
     useTrack("Open Collection", params, sendIt);
@@ -30,7 +40,14 @@ export const CollectionPage: React.FunctionComponent<{
     }
 
     if (!collection) {
-        return <div>Collection not found</div>;
+        return (
+            <div>
+                <FormattedMessage
+                    id="error.collectionNotFound"
+                    defaultMessage="Collection not found"
+                />
+            </div>
+        );
     }
 
     const collectionRows = collection.childCollections.map((c) => {

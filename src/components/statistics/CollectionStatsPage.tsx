@@ -3,9 +3,9 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useContext } from "react";
 
-import { useGetCollection } from "../../model/Collections";
+import { getCollection } from "../../model/Collections";
 
 import { useDocumentTitle } from "../Routes";
 import Select from "@material-ui/core/Select";
@@ -28,6 +28,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { QueryDescription } from "./QueryDescription";
 import FormControl from "@material-ui/core/FormControl";
 import { ScreenOptionsSelect } from "./ScreenOptionsSelect";
+import { CachedTablesContext } from "../../App";
 
 export interface IScreen {
     label: string;
@@ -123,11 +124,21 @@ export const CollectionStatsPage: React.FunctionComponent<{
         dateRange.endDate = new Date(dateRange.endDate);
     }
 
+    const { languagesByBookCount: languages, collections } = useContext(
+        CachedTablesContext
+    );
+
     // remains empty (and unused) except in byLanguageGroups mode, when a callback sets it.
     //const [booksAndLanguages, setBooksAndLanguages] = useState("");
-    const { collection } = useGetCollection(props.collectionName);
+    const { collection, loading } = getCollection(
+        props.collectionName,
+        collections,
+        languages
+    );
     //const { params, sendIt } = getCollectionAnalyticsInfo(collection);
     useDocumentTitle(collection?.label + " statistics");
+
+    if (loading) return null;
 
     if (!collection) {
         return (
