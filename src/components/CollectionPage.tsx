@@ -14,6 +14,7 @@ import { useTrack } from "../analytics/Analytics";
 import { IEmbedSettings } from "../model/ContentInterfaces";
 import { useDocumentTitle } from "./Routes";
 import { getCollectionAnalyticsInfo } from "../analytics/CollectionAnalyticsInfo";
+import { FormattedMessage } from "react-intl";
 
 export const CollectionPage: React.FunctionComponent<{
     collectionName: string;
@@ -30,7 +31,14 @@ export const CollectionPage: React.FunctionComponent<{
     }
 
     if (!collection) {
-        return <div>Collection not found</div>;
+        return (
+            <div>
+                <FormattedMessage
+                    id="error.collectionNotFound"
+                    defaultMessage="Collection not found"
+                />
+            </div>
+        );
     }
 
     const collectionRows = collection.childCollections.map((c) => {

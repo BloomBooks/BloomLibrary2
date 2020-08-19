@@ -1,5 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { getContentfulClient } from "../ContentfulContext";
+
+const contentfulCache: any = {};
 
 export function useContentful(
     query: any
@@ -15,11 +17,19 @@ export function useContentful(
         /*unused*/ dummyToThrowStuffToErrorBoundaryInsideAHook,
     ] = useState();
 
+    const cache = useMemo(() => contentfulCache, []);
+
     const queryString = JSON.stringify(query);
     useEffect(() => {
+        if (cache[queryString]) {
+            setResults({ queryString, result: cache[queryString] });
+            return;
+        }
+
         getContentfulClient()
             .getEntries({ include: 10, ...query })
             .then((entries: any) => {
+                cache[queryString] = entries.items;
                 setResults({ queryString, result: entries.items });
             })
             .catch((err: Error) => {
