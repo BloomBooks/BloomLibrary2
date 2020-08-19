@@ -763,6 +763,8 @@ function regex(value: string) {
     };
 }
 
+let reportedDerivativeProblem = false;
+
 export function constructParseBookQuery(
     params: any,
     filter: IFilter,
@@ -1031,21 +1033,56 @@ export function constructParseBookQuery(
     if (f.originalPublisher) {
         params.where.originalPublisher = f.originalPublisher;
     }
+    delete params.where.brandingProjectName;
+    if (f.brandingProjectName) {
+        params.where.brandingProjectName = f.brandingProjectName;
+    }
 
     delete params.where.parentCollectionFilter;
     delete params.where.bookLineageArray;
     if (f.parentCollectionFilter) {
+        // this wants to be something like {$not: {where: innerWhere}}
+        // but I can't find any variation of that which works.
+        // For now, we just support these three kinds of parent filters
+        // (and only bookshelf ones that are simple, exact matches).
+        let nonParentFilter: any;
+        const parentBookShelf = f.parentCollectionFilter.bookshelf;
+        if (parentBookShelf) {
+            nonParentFilter = { bookshelves: { $ne: parentBookShelf } };
+        } else if (f.parentCollectionFilter.publisher) {
+            nonParentFilter = {
+                publisher: { $ne: f.parentCollectionFilter.publisher },
+            };
+        } else if (f.parentCollectionFilter.brandingProjectName) {
+            nonParentFilter = {
+                brandingProjectName: {
+                    $ne: f.parentCollectionFilter.brandingProjectName,
+                },
+            };
+        } else if (!reportedDerivativeProblem) {
+            reportedDerivativeProblem = true;
+            alert(
+                "derivatives collection may include items from original collection"
+            );
+        }
         const innerWhere = (constructParseBookQuery(
             {},
             f.parentCollectionFilter,
             allTagsFromDatabase
         ) as any).where;
-        params.where.bookLineageArray = {
-            $select: {
-                query: { className: "books", where: innerWhere },
-                key: "bookInstanceId",
+        params.where.$and = [
+            {
+                bookLineageArray: {
+                    $select: {
+                        query: { className: "books", where: innerWhere },
+                        key: "bookInstanceId",
+                    },
+                },
             },
-        };
+        ];
+        if (nonParentFilter) {
+            params.where.$and.push(nonParentFilter);
+        }
     }
 
     return params;
