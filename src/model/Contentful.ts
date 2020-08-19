@@ -18,42 +18,44 @@ export function convertContentfulBannerToIBanner(fields: any): IBanner {
 }
 
 export function convertContentfulCollectionToICollection(
-    fields: any
+    item: any
 ): ICollection {
-    // if (!fields || !fields.urlKey) {
+    // if (!fields || !item.fields.urlKey) {
     //     return undefined;
     // }
     let order: string | undefined;
-    switch (fields.bookSortOrder) {
+    switch (item.fields.bookSortOrder) {
         case "newest-first":
             order = "-createdAt";
             break;
     }
-    let bannerId = fields.banner?.sys?.id;
+    let bannerId = item.fields.banner?.sys?.id;
     if (!bannerId) {
-        if (fields.urlKey.startsWith("language:")) {
+        if (item.fields.urlKey.startsWith("language:")) {
             bannerId = "7v95c68TL9uJBe4pP5KTN0"; // also in makeLanguageCollection
-        } else if (fields.urlKey.startsWith("topic:")) {
+        } else if (item.fields.urlKey.startsWith("topic:")) {
             bannerId = "7E1IHa5mYvLLSToJYh5vfW"; // also in makeTopicCollection
         } else {
             bannerId = "Qm03fkNd1PWGX3KGxaZ2v";
         }
     }
     const icon = convertContentfulMediaToIMedia(
-        fields?.iconForCardAndDefaultBanner
+        item.fields?.iconForCardAndDefaultBanner
     );
     const result: ICollection = {
-        urlKey: fields.urlKey as string,
-        label: fields.label,
-        richTextLabel: fields.richTextLabel,
-        filter: fields.filter,
-        statisticsQuerySpec: fields.statisticsQuerySpec,
+        urlKey: item.fields.urlKey as string,
+        label: item.fields.label,
+        richTextLabel: item.fields.richTextLabel,
+        filter: item.fields.filter,
+        statisticsQuerySpec: item.fields.statisticsQuerySpec,
         iconForCardAndDefaultBanner: icon,
-        hideLabelOnCardAndDefaultBanner: fields.hideLabelOnCardAndDefaultBanner,
-        childCollections: getSubCollections(fields.childCollections),
+        hideLabelOnCardAndDefaultBanner:
+            item.fields.hideLabelOnCardAndDefaultBanner,
+        childCollections: getSubCollections(item.fields.childCollections),
         bannerId,
-        layout: fields.layout?.fields?.name || "by-level",
+        layout: item.fields.layout?.fields?.name || "by-level",
         order,
+        type: item.sys.contentType.sys.id,
     };
 
     return result;
@@ -114,7 +116,7 @@ function getSubCollections(childCollections: any[]): ICollection[] {
     // the undefined elements yields a collection without any undefineds.
     return (
         childCollections
-            .map((x: any) => convertContentfulCollectionToICollection(x.fields))
+            .map((x: any) => convertContentfulCollectionToICollection(x))
             //.filter((y) => y)
             .map((z) => z!)
     );

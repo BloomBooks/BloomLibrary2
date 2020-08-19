@@ -24,6 +24,7 @@ import { TestEmbeddingPage } from "./TestEmbedding";
 
 export let previousPathname = "";
 let currentPathname = "";
+
 // The main set of switches that loads different things into the main content area of Blorg
 // based on the current window location.
 export const Routes: React.FunctionComponent<{}> = () => {
@@ -188,6 +189,7 @@ export function splitPathname(
     breadcrumbs: string[];
     bookId: string;
     isPlayerUrl: boolean;
+    isPageUrl: boolean;
 } {
     const segments = trimLeft(pathname ?? "", "/").split("/");
     let isPlayerUrl = false;
@@ -196,6 +198,8 @@ export function splitPathname(
         embeddedSettings = segments[1];
         segments.splice(0, 2);
     }
+    const isPageUrl = segments[0] === "page";
+
     // these two variables move roughly in sync, however, firstFilterIndex
     // (if less than collection length) is always exactly the index of the
     // first thing starting with a colon (after this loop exits).
@@ -246,6 +250,7 @@ export function splitPathname(
         breadcrumbs: segments.slice(0, Math.max(collectionSegmentIndex, 0)),
         bookId,
         isPlayerUrl,
+        isPageUrl,
     };
 }
 
@@ -278,7 +283,10 @@ export function getUrlForTarget(target: string) {
         ...breadcrumbs,
     ].filter((s) => !!s);
 
-    const { collectionName } = splitPathname(target);
+    const { collectionName, isPageUrl } = splitPathname(target);
+    if (isPageUrl) {
+        segments.push("page");
+    }
     if (pathCollectionName && collectionName !== pathCollectionName) {
         segments.push(pathCollectionName);
     }

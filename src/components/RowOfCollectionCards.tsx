@@ -39,7 +39,10 @@ export const RowOfCollectionCards: React.FunctionComponent<{
     );
     const cards: JSX.Element[] = childCollections.map((childCollection1) => {
         const childCollection = childCollection1!; // can't persuade typescript that this can't be null.
-        const key = childCollection!.urlKey;
+        const key =
+            childCollection.type === "page"
+                ? `page/${childCollection!.urlKey}`
+                : childCollection!.urlKey;
         return (
             <CollectionCard
                 key={key}
