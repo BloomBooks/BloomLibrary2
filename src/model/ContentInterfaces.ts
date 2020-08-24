@@ -44,6 +44,11 @@ export interface ICollection {
     secondaryFilter?: (basicBookInfo: IBasicBookInfo) => boolean;
 }
 
+// A "raw" collection freshly obtained from Contentful before processing into an ICollection
+export interface IRawCollection {
+    fields: any;
+}
+
 export interface IEmbedSettings {
     urlKey: string; // localized will be something like this: { [key: string]: string };
     enabled: boolean;

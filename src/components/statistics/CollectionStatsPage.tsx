@@ -125,9 +125,11 @@ export const CollectionStatsPage: React.FunctionComponent<{
 
     // remains empty (and unused) except in byLanguageGroups mode, when a callback sets it.
     //const [booksAndLanguages, setBooksAndLanguages] = useState("");
-    const { collection } = useGetCollection(props.collectionName);
+    const { collection, loading } = useGetCollection(props.collectionName);
     //const { params, sendIt } = getCollectionAnalyticsInfo(collection);
     useDocumentTitle(collection?.label + " statistics");
+
+    if (loading) return null;
 
     if (!collection) {
         return (

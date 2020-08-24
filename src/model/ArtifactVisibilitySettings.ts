@@ -1,6 +1,6 @@
 import { observable, computed } from "mobx";
 import { Book } from "../model/Book";
-import { useIntl, IntlShape } from "react-intl";
+import { IntlShape } from "react-intl";
 
 // This is related to the "show" column on book in ParseServer
 export class ArtifactVisibilitySettings {
