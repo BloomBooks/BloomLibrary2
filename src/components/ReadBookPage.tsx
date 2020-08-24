@@ -37,8 +37,6 @@ export const ReadBookPage: React.FunctionComponent<{
         isLandscape: false,
     });
     const contextLangIso = lang ? lang : undefined;
-    // Determine whether (on this render) we are actually in full-screen mode.
-    const fullScreen = !!document.fullscreenElement;
     const fullScreenChangeHandler = () => {
         setCounter((oldCount) => oldCount + 1); // force a render
     };
@@ -165,21 +163,7 @@ export const ReadBookPage: React.FunctionComponent<{
     // Here, it does not 'go back' but pushes the detail view as a new history entry.)
     const showBackButton = previousPathname.indexOf(`/book/${id}`) < 0;
 
-    let iframeSrc = `${bloomPlayerUrl}?url=${url}&showBackButton=${showBackButton}&centerVertically=false&useOriginalPageSize=true${langParam}`;
-    if (!fullScreen) {
-        const extraButtonsObj = [
-            {
-                id: "fullScreen",
-                iconUrl:
-                    "https://s3.amazonaws.com/share.bloomlibrary.org/assets/Ic_fullscreen_48px_red.svg",
-                description: "full screen",
-            },
-        ];
-        const extraButtonsParam =
-            "&extraButtons=" +
-            encodeURIComponent(JSON.stringify(extraButtonsObj));
-        iframeSrc += extraButtonsParam;
-    }
+    const iframeSrc = `${bloomPlayerUrl}?url=${url}&showBackButton=${showBackButton}&centerVertically=false&useOriginalPageSize=true${langParam}&hideFullScreenButton=${autoFullScreen}`;
 
     // This theme matches Bloom-player. It is supposed to help the full-screen button
     // better match the Bloom-player icons, whose toolbar it overlays. Not successful
