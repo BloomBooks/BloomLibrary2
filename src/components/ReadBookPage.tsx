@@ -191,6 +191,9 @@ export const ReadBookPage: React.FunctionComponent<{
                 `}
                 src={iframeSrc}
                 //src={"https://google.com"}
+                // both of these attributes are needed to handle new and old browsers
+                allow="fullscreen"
+                allowFullScreen={true}
             ></iframe>
         </React.Fragment>
     );
