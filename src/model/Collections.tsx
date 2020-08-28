@@ -83,12 +83,10 @@ export function useGetCollection(
     collections.forEach((item: IRawCollection) => {
         if (item.fields.urlKey === templateKey) {
             templateFacetCollection = convertContentfulCollectionToICollection(
-                item.fields
+                item
             );
         } else if (item.fields.urlKey === collectionName) {
-            explicitCollection = convertContentfulCollectionToICollection(
-                item.fields
-            );
+            explicitCollection = convertContentfulCollectionToICollection(item);
         }
     });
     // console.log(`nameparts = ${JSON.stringify(nameParts)}`);
@@ -293,6 +291,7 @@ export function getDummyCollectionForPreview(bannerId: string): ICollection {
         bannerId,
         iconForCardAndDefaultBanner: undefined,
         layout: "by-level",
+        type: "collection",
     };
 }
 // These are just for cards. At this point it would not be possible to override what we see on a topic
@@ -308,6 +307,7 @@ function makeTopicCollectionsForCards(): ICollection[] {
                 filter: { topic: t },
                 bannerId: "", // this will never be used because it's just for the card
                 layout: "by-level", // this will never be used because it's just for the card
+                type: "collection",
             },
             undefined,
             t
