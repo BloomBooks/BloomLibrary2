@@ -17,4 +17,5 @@ export interface IFilter {
     search?: string;
     keywordsText?: string;
     parentCollectionFilter?: IFilter;
+    brandingProjectName?: string;
 }
