@@ -163,7 +163,9 @@ export const ReadBookPage: React.FunctionComponent<{
     // Here, it does not 'go back' but pushes the detail view as a new history entry.)
     const showBackButton = previousPathname.indexOf(`/book/${id}`) < 0;
 
-    const iframeSrc = `${bloomPlayerUrl}?url=${url}&showBackButton=${showBackButton}&centerVertically=false&useOriginalPageSize=true${langParam}&hideFullScreenButton=${autoFullScreen}`;
+    const iframeSrc =
+        `${bloomPlayerUrl}?url=${url}&showBackButton=${showBackButton}&centerVertically=false&useOriginalPageSize=true` +
+        `${langParam}&hideFullScreenButton=${autoFullScreen}&independent=false&host=bloomlibrary`;
 
     // This theme matches Bloom-player. It is supposed to help the full-screen button
     // better match the Bloom-player icons, whose toolbar it overlays. Not successful
