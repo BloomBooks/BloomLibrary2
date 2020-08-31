@@ -16,6 +16,7 @@ export interface IFilter {
     inCirculation?: InCirculationOptions;
     search?: string;
     keywordsText?: string;
-    parentCollectionFilter?: IFilter;
     brandingProjectName?: string;
+    derivedFrom?: IFilter;
+    derivedFromCollectionName?: string;
 }
