@@ -16,6 +16,16 @@ export interface IFilter {
     inCirculation?: InCirculationOptions;
     search?: string;
     keywordsText?: string;
-    parentCollectionFilter?: IFilter;
     brandingProjectName?: string;
+
+    // Derivative collections can be defined one of two ways.
+    // 1) derivedFrom - a filter which defines the books you want derivatives of.
+    // 2) derivedFromCollectionName - the name of a collection which contains the books you want derivatives of.
+    // External definitions (such as Contentful) will prefer the latter as it will keep in sync if the parent collection definition changes.
+    // But it is possible to provide the former.
+    // Internally, if derivedFromCollectionName is provided, we look up the collection's filter and populate derivedFrom from that.
+    // If both are set externally, derivedFromCollectionName will win.
+    // See limitations on derivative collections in LibraryQueryHooks.processDerivedFrom().
+    derivedFrom?: IFilter;
+    derivedFromCollectionName?: string;
 }
