@@ -601,7 +601,16 @@ export function useCollectionStats(
     // second one completes. Since we don't care if the user is logged in or not in this case,
     // just delete it here to prevent the problem.
     const apiFilterClone = JSON.parse(JSON.stringify(apiFilter));
-    delete apiFilterClone.parseDBQuery.options.headers["X-Parse-Session-Token"];
+    if (
+        apiFilterClone &&
+        apiFilterClone.parseDBQuery &&
+        apiFilterClone.parseDBQuery.options &&
+        apiFilterClone.parseDBQuery.options.headers
+    ) {
+        delete apiFilterClone.parseDBQuery.options.headers[
+            "X-Parse-Session-Token"
+        ];
+    }
     const trigger = url + JSON.stringify(apiFilterClone);
 
     return useAxios({
