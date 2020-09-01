@@ -332,8 +332,14 @@ function CombineGridAndSearchBoxFilter(
     routerFilter: IFilter,
     languages: ILanguage[]
 ): IFilter {
+    // The result of the search box is encoded. We need it decoded in order to search correctly
+    // (e.g.) on things like "topic:math", where the colon would be encoded otherwise.
+    const decodedFilter = routerFilter;
+    if (decodedFilter.search) {
+        decodedFilter.search = decodeURIComponent(decodedFilter.search);
+    }
     const f: IFilter = {
-        ...routerFilter,
+        ...decodedFilter,
         inCirculation: InCirculationOptions.All,
     };
     gridFilters.forEach((g) => {
