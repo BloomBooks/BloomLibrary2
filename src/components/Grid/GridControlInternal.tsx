@@ -261,9 +261,9 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
 
                     <SortingState
                         defaultSorting={[]}
-                        onSortingChange={(sortings) => {
-                            console.log(JSON.stringify(sortings));
-                            setSortings(sortings);
+                        onSortingChange={(sorting) => {
+                            console.log(JSON.stringify(sorting));
+                            setSortings(sorting);
                         }}
                         columnExtensions={bookGridColumnDefinitions.map(
                             (c: IGridColumn) => ({

@@ -17,9 +17,16 @@ import { AssignOriginalPublisherPanel } from "./AssignOriginalPublisherPanel";
 
 // The Bulk Edit page is for moderators; it has a series of panels for making changes, followed by a grid
 // for selecting what books will be changed.
-export const BulkEditPage: React.FunctionComponent<{}> = () => {
+export const BulkEditPage: React.FunctionComponent<{ filters: string }> = (
+    props
+) => {
     const [refreshIndex, setRefreshIndex] = useState(0);
     useDocumentTitle("Bulk Edit");
+    let contextFilter: IFilter = {};
+    if (props.filters && props.filters.startsWith(":search:")) {
+        const search = props.filters.split("/")[0].substring(":search:".length);
+        contextFilter = { search };
+    }
     return (
         <div
             css={css`
@@ -51,6 +58,7 @@ export const BulkEditPage: React.FunctionComponent<{}> = () => {
                 showFilterSpec={true}
                 // the need to preserve the grid's filter state this way this is related to the problem described on the comment above class FilterHolder
                 initialGridFilters={staticCurrentFilter.gridColumnFilters}
+                contextFilter={contextFilter}
                 setCurrentFilter={(
                     f: IFilter,
                     gridColumnFilters: GridFilter[]
