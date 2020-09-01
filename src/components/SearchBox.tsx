@@ -70,8 +70,6 @@ export const SearchBox: React.FunctionComponent<{
     useEffect(() => setSearchString(initialSearchString), [
         initialSearchString,
     ]);
-    // search string when user clicks Enter.
-    const [enteredSearch, setEnteredSearch] = useState("");
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [showTooltip, setShowTooltip] = useState(true);
 
@@ -108,14 +106,63 @@ export const SearchBox: React.FunctionComponent<{
             giveFreeLearningCsv();
             return;
         }
-
-        if (searchString.length > 0) {
-            setSearchString("");
-            setEnteredSearch(searchString);
-        } else {
+        if (searchString.length === 0) {
             // delete everything and press enter is the same as "cancel"
             cancelSearch();
+            return;
         }
+        // N.B. These 'grid' and 'covid' things need to be called from within 'handleSearch' to avoid
+        // React errors about updating during state transitions.
+        // enhance: we should just have a set of these keyword-->special page searches, not code for each.
+        if (searchString === "grid") {
+            // review: this replaces current history element...should we push instead? (Also below)
+            history.push("/grid");
+        } else if (
+            ["covid", "covid19", "coronavirus", "cov19"].includes(
+                searchString.toLowerCase()
+            )
+        ) {
+            history.push("/covid19");
+        } else if (searchString) {
+            // We always get one empty string from before the leading slash.
+            // We may get one at the end, too, if the path ends with a slash.
+            // In particular if the path is just a slash (at the root), we start out with two empty strings.
+            const pathParts = location.pathname.split("/").filter((x) => x);
+            const existingSearchIndex = pathParts.findIndex((p) =>
+                p.startsWith(":search:")
+            );
+            // we don't think it's useful to keep in history states that are just different searches.
+            const replaceInHistory =
+                existingSearchIndex >= 0 &&
+                existingSearchIndex === pathParts.length - 1;
+            // Commented out code allows search to be relative to current collection or subset
+            // if (existingSearchIndex >= 0) {
+            //     // remove the existing one and everything after it.
+            //     pathParts.splice(
+            //         existingSearchIndex,
+            //         pathParts.length - existingSearchIndex
+            //     );
+            // }
+            // pathParts.push(":search:" + encodeURIComponent(enteredSearch));
+            // const newUrl = "/" + pathParts.join("/");
+
+            // special case that when in create or grid mode, we don't want to leave it.
+            const prefix =
+                ["/create", "/grid", "/bulk"].find((x) =>
+                    history.location.pathname.startsWith(x)
+                ) || "";
+            const newUrl =
+                prefix + "/:search:" + encodeURIComponent(searchString);
+            if (replaceInHistory) {
+                history.replace(newUrl);
+            } else {
+                history.push(newUrl);
+            }
+        }
+        // This doesn't affect regular searches as the search string will be updated by the new url,
+        // but it ensures that special cases like 'grid' and 'covid19' disappear from the search box
+        // when the new page appears.
+        setSearchString("");
     };
 
     const handleEnter = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -136,54 +183,6 @@ export const SearchBox: React.FunctionComponent<{
         }
     };
 
-    // enhance: we should just have a set of these keyword-->special page searches, not code for each.
-    if (enteredSearch === "grid") {
-        setEnteredSearch(""); // otherwise we get no search box when rendered in new page
-        // review: this replaces current history element...should we push instead? (Also below)
-        history.push("/grid");
-    } else if (
-        ["covid", "covid19", "coronavirus", "cov19"].includes(
-            enteredSearch.toLowerCase()
-        )
-    ) {
-        setEnteredSearch(""); // otherwise we get no search box when rendered in new page
-        history.push("/covid19");
-    } else if (enteredSearch) {
-        // We always get one empty string from before the leading slash.
-        // We may get one at the end, too, if the path ends with a slash.
-        // In particular if the path is just a slash (at the root), we start out with two empty strings.
-        const pathParts = location.pathname.split("/").filter((x) => x);
-        const existingSearchIndex = pathParts.findIndex((p) =>
-            p.startsWith(":search:")
-        );
-        // we don't think it's useful to keep in history states that are just different searches.
-        const replaceInHistory =
-            existingSearchIndex >= 0 &&
-            existingSearchIndex === pathParts.length - 1;
-        // Commented out code allows search to be relative to current collection or subset
-        // if (existingSearchIndex >= 0) {
-        //     // remove the existing one and everything after it.
-        //     pathParts.splice(
-        //         existingSearchIndex,
-        //         pathParts.length - existingSearchIndex
-        //     );
-        // }
-        // pathParts.push(":search:" + encodeURIComponent(enteredSearch));
-        // const newUrl = "/" + pathParts.join("/");
-
-        // special case that when in create or grid mode, we don't want to leave it.
-        const prefix =
-            ["/create", "/grid", "/bulk"].find((x) =>
-                history.location.pathname.startsWith(x)
-            ) || "";
-        const newUrl = prefix + "/:search:" + encodeURIComponent(enteredSearch);
-        setEnteredSearch(""); // otherwise we get an infinite loop when rendered as part of the new page
-        if (replaceInHistory) {
-            history.replace(newUrl);
-        } else {
-            history.push(newUrl);
-        }
-    }
     const searchTextField: JSX.Element = (
         <Paper
             key="searchField"
