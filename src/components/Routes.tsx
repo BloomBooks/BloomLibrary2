@@ -107,9 +107,12 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         return <GridPage filters={match.params.filter} />;
                     }}
                 />
-                <Route path="/bulk">
-                    <BulkEditPage />
-                </Route>
+                <Route
+                    path="/bulk/:filter*"
+                    render={({ match }) => {
+                        return <BulkEditPage filters={match.params.filter} />;
+                    }}
+                />
                 <Route
                     path="/page/:breadcrumbs*/:pageName"
                     render={({ match }) => {
