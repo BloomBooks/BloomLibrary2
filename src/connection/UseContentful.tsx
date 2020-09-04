@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import { getContentfulClient } from "../ContentfulContext";
 
+// Basically a map of queryString (created from query) to the raw Contentful query result.
+// This may be the entire set of collections or a single banner definition or any other
+// query result from Contentful.
+const contentfulCache: any = {};
+
 export function useContentful(
     query: any
 ): { loading: boolean; result: any[] | undefined } {
@@ -17,9 +22,15 @@ export function useContentful(
 
     const queryString = JSON.stringify(query);
     useEffect(() => {
+        if (contentfulCache[queryString]) {
+            setResults({ queryString, result: contentfulCache[queryString] });
+            return;
+        }
+
         getContentfulClient()
             .getEntries({ include: 10, ...query })
             .then((entries: any) => {
+                contentfulCache[queryString] = entries.items;
                 setResults({ queryString, result: entries.items });
             })
             .catch((err: Error) => {

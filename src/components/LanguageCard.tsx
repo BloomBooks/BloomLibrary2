@@ -6,13 +6,16 @@ import { jsx } from "@emotion/core";
 
 import React from "react";
 import { CheapCard } from "./CheapCard";
-import { ILanguage, getLanguageNames } from "../model/Language";
+import { ILanguage, getDisplayNamesForLanguage } from "../model/Language";
 import { commonUI } from "../theme";
 import { useTheme } from "@material-ui/core";
+import { FormattedMessage } from "react-intl";
 
 export const LanguageCard: React.FunctionComponent<ILanguage> = (props) => {
     const theme = useTheme();
-    const { displayName: languageName, autonym } = getLanguageNames(props);
+    const { displayName: languageName, autonym } = getDisplayNamesForLanguage(
+        props
+    );
 
     const {
         name,
@@ -71,7 +74,15 @@ export const LanguageCard: React.FunctionComponent<ILanguage> = (props) => {
                     margin-top: auto;
                 `}
             >
-                {props.usageCount ? `${props.usageCount} Books` : ""}
+                {props.usageCount ? (
+                    <FormattedMessage
+                        id="bookCount"
+                        defaultMessage="{count} Books"
+                        values={{ count: props.usageCount }}
+                    />
+                ) : (
+                    ""
+                )}
             </div>
         </CheapCard>
     );

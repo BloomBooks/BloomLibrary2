@@ -7,7 +7,7 @@ export interface ILanguage {
     objectId: string;
 }
 
-export function getLanguageNamesFromCode(
+export function getDisplayNamesFromLanguageCode(
     languageCode: string,
     languages: ILanguage[]
 ):
@@ -18,11 +18,11 @@ export function getLanguageNamesFromCode(
       }
     | undefined {
     const language = languages.find((l) => l.isoCode === languageCode);
-    if (language) return getLanguageNames(language);
+    if (language) return getDisplayNamesForLanguage(language);
     return undefined;
 }
 
-export function getLanguageNames(
+export function getDisplayNamesForLanguage(
     language: ILanguage
 ): {
     displayName: string;

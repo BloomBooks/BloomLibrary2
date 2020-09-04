@@ -229,5 +229,8 @@ storiesOf("Embedding", module).add("Should Work", () => (
         title="embed test"
         height="600px"
         width="600px"
+        // both of these are needed to handle older and newer browsers
+        allow="fullscreen"
+        allowFullScreen={true}
     ></iframe>
 ));

@@ -15,7 +15,7 @@ import { FeatureLevelBar } from "./FeatureLevelBar";
 import { LanguageFeatureList } from "./LanguageFeatureList";
 import { getBestBookTitle } from "../model/Book";
 
-import Truncate from "react-truncate";
+import TruncateMarkup from "react-truncate-markup";
 
 const BookCardWidth = 140;
 
@@ -129,13 +129,12 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                 {title.length < 30 ? (
                     title
                 ) : (
-                    <Truncate
+                    <TruncateMarkup
                         // test false positives css={css`color: red;`}
-                        width={BookCardWidth - 2 * titlePadding}
                         lines={2}
                     >
-                        {title}
-                    </Truncate>
+                        <span>{title}</span>
+                    </TruncateMarkup>
                 )}
             </div>
             <LanguageFeatureList basicBookInfo={props.basicBookInfo} />

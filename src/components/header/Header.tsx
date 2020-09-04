@@ -11,6 +11,7 @@ import { UserMenu } from "../User/UserMenu";
 import { commonUI } from "../../theme";
 import { useMediaQuery, Tab, Tabs } from "@material-ui/core";
 import { useHistory, Link, useLocation } from "react-router-dom";
+import { useIntl } from "react-intl";
 
 export const Header: React.FunctionComponent = () => {
     const location = useLocation();
@@ -26,6 +27,7 @@ export const Header: React.FunctionComponent = () => {
     } else if (showSearchBelow) {
         toolbarHeight = "100px";
     }
+    const l10n = useIntl();
     // review: should this be a prop?
     const hideHeader = location.pathname.startsWith("/player/");
     if (hideHeader) return <React.Fragment></React.Fragment>;
@@ -64,8 +66,20 @@ export const Header: React.FunctionComponent = () => {
                 }
             `}
         >
-            <Tab label={"Read"} css={tabStyle}></Tab>
-            <Tab label={"Create"} css={tabStyle}></Tab>
+            <Tab
+                label={l10n.formatMessage({
+                    id: "header.read",
+                    defaultMessage: "Read",
+                })}
+                css={tabStyle}
+            ></Tab>
+            <Tab
+                label={l10n.formatMessage({
+                    id: "header.create",
+                    defaultMessage: "Create",
+                })}
+                css={tabStyle}
+            ></Tab>
         </Tabs>
     );
     return (
@@ -96,9 +110,18 @@ export const Header: React.FunctionComponent = () => {
                         margin-top: auto !important;
                     `}
                     to="/"
-                    title="Home"
+                    title={l10n.formatMessage({
+                        id: "header.home",
+                        defaultMessage: "Home",
+                    })}
                 >
-                    <img src={logo} alt={"Bloom Logo"} />
+                    <img
+                        src={logo}
+                        alt={l10n.formatMessage({
+                            id: "header.bloomLogo",
+                            defaultMessage: "Bloom Logo",
+                        })}
+                    />
                 </Link>
                 {showReadCreateBelow || readCreateTabs}
                 {showSearchBelow || (

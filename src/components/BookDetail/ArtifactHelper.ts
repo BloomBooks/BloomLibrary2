@@ -25,7 +25,10 @@ export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
             url = book.bookOrder;
             break;
         case ArtifactType.pdf:
-            url = `${book.baseUrl}${getBookNameFromUrl(
+            // We need the raw book name here, because we're going for the PDF
+            // the Bloom uploaded, and it doesn't apply the same cleanup as the
+            // harvester.
+            url = `${book.baseUrl}${getRawBookNameFromUrl(
                 book.baseUrl
             )}.pdf`.replace(/%2f/g, "/");
             break;
@@ -148,7 +151,7 @@ function getHarvesterBaseUrl(book: Book | IBasicBookInfo): string | undefined {
     // Otherwise, the filename can be something like ken@example.com_007b3c03-52b7-4689-80bd-06fd4b6f9f28_Fox+and+Frog.bloomd
 }
 
-function getBookNameFromUrl(baseUrl: string): string | undefined {
+export function getRawBookNameFromUrl(baseUrl: string): string | undefined {
     const lastSlashIndex = baseUrl.lastIndexOf("%2f");
     const leadin = baseUrl.substring(0, lastSlashIndex);
     const slashBeforeBookName = leadin.lastIndexOf("%2f");
@@ -156,6 +159,33 @@ function getBookNameFromUrl(baseUrl: string): string | undefined {
         return undefined;
     }
     return leadin.substring(slashBeforeBookName + 3); // includes leading slash (%2f)
+}
+export function getBookNameFromUrl(baseUrl: string): string | undefined {
+    const baseFileName = getRawBookNameFromUrl(baseUrl);
+    if (!baseFileName) {
+        return undefined;
+    }
+    // This code mimics Bloom Desktop's SanitizeNameForFileSystem() function,
+    // mainly the logic in RemoveDangerousCharacters(). This is how the harvester comes
+    // up with the name to save artifacts under.
+    let result = baseFileName.replace(/["<>|:*?\\/\u00a0&'{},;()$@]/g, " ");
+    while (
+        result.startsWith(".") ||
+        result.startsWith(" ") ||
+        result.startsWith("\t")
+    ) {
+        result = result.substring(1);
+    }
+    result = result.trim();
+    while (result.endsWith(".")) {
+        result = result.substring(0, result.length - 1);
+        result = result.trim();
+    }
+    if (!result) {
+        // The Bloom algorithm actually answers the current localization of "Book".
+        result = "Book";
+    }
+    return result;
 }
 
 // Get the URL where we find book thumbnails if they have not been harvested recently

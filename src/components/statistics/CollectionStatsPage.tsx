@@ -23,7 +23,7 @@ import { IStatsProps, ExportDataFn, IScreenOption } from "./StatsInterfaces";
 import { useStorageState } from "react-storage-hooks";
 import { exportCsv } from "./exportData";
 import LinearProgress from "@material-ui/core/LinearProgress";
-import { BookReadingReport } from "./BookReadingReport";
+import { BookStatsReport } from "./BookStatsReport";
 import { FormattedMessage, useIntl } from "react-intl";
 import { QueryDescription } from "./QueryDescription";
 import FormControl from "@material-ui/core/FormControl";
@@ -64,17 +64,29 @@ export const CollectionStatsPage: React.FunctionComponent<{
                 }),
                 component: (p: IStatsProps) => <ReaderSessionsChart {...p} />,
                 options: [
-                    { label: "By Week", value: "week" },
-                    { label: "By Month", value: "month" },
+                    {
+                        label: l10n.formatMessage({
+                            id: "stats.options.By Week",
+                            defaultMessage: "By Week",
+                        }),
+                        value: "week",
+                    },
+                    {
+                        label: l10n.formatMessage({
+                            id: "stats.options.By Month",
+                            defaultMessage: "By Month",
+                        }),
+                        value: "month",
+                    },
                 ],
             },
             {
                 label: l10n.formatMessage({
-                    id: "stats.booksRead",
-                    defaultMessage: "Books Read",
+                    id: "stats.bookStatistics",
+                    defaultMessage: "Book Statistics",
                 }),
                 component: (p: IStatsProps) => (
-                    <BookReadingReport {...p}></BookReadingReport>
+                    <BookStatsReport {...p}></BookStatsReport>
                 ),
             },
         ].sort((a, b) => a.label.localeCompare(b.label));
@@ -113,12 +125,21 @@ export const CollectionStatsPage: React.FunctionComponent<{
 
     // remains empty (and unused) except in byLanguageGroups mode, when a callback sets it.
     //const [booksAndLanguages, setBooksAndLanguages] = useState("");
-    const { collection } = useGetCollection(props.collectionName);
+    const { collection, loading } = useGetCollection(props.collectionName);
     //const { params, sendIt } = getCollectionAnalyticsInfo(collection);
     useDocumentTitle(collection?.label + " statistics");
 
+    if (loading) return null;
+
     if (!collection) {
-        return <div>Collection not found</div>;
+        return (
+            <div>
+                <FormattedMessage
+                    id="error.collectionNotFound"
+                    defaultMessage="Collection not found"
+                />
+            </div>
+        );
     }
     const kSideMarginPx = 20;
     return (
@@ -137,7 +158,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
                 }
             `}
         >
-            <h1>{collection?.label}</h1>
+            <h1>{collection.label}</h1>
             <h2>
                 <FormattedMessage
                     id="stats.header"
@@ -277,7 +298,13 @@ export const CollectionStatsPage: React.FunctionComponent<{
                         }}
                         aria-label="download PNG image"
                     >
-                        <img alt="download PNG" src={DownloadPngIcon} />
+                        <img
+                            alt={l10n.formatMessage({
+                                id: "stats.download.pngIcon",
+                                defaultMessage: "download PNG",
+                            })}
+                            src={DownloadPngIcon}
+                        />
                     </Button>
                     {exportDataFn && (
                         <Button
@@ -288,7 +315,13 @@ export const CollectionStatsPage: React.FunctionComponent<{
                                 )
                             }
                         >
-                            <img alt="download CSV" src={DownloadCsvIcon} />
+                            <img
+                                alt={l10n.formatMessage({
+                                    id: "stats.download.csvIcon",
+                                    defaultMessage: "download CSV",
+                                })}
+                                src={DownloadCsvIcon}
+                            />
                         </Button>
                     )}
                 </div>

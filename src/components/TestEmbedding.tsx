@@ -23,7 +23,7 @@ export const TestEmbeddingPage: React.FunctionComponent<{ code: string }> = (
         return () => {
             document.body.removeChild(script);
         };
-    }, []);
+    }, [root]);
     const iframeSrc = `${root}/embed/${props.code}`;
     const badUrl = !props.code || props.code.split("/").length < 2;
     return (
@@ -79,6 +79,9 @@ export const TestEmbeddingPage: React.FunctionComponent<{ code: string }> = (
                     title="embed test"
                     height="100%"
                     width="100%"
+                    // both of these are needed to handle older and newer browsers
+                    allow="fullscreen"
+                    allowFullScreen={true}
                 ></iframe>
             </div>
         )

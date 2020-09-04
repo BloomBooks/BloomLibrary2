@@ -19,6 +19,7 @@ import { useGetRelatedBooks } from "../../connection/LibraryQueryHooks";
 import { Bookshelf } from "../../model/Bookshelf";
 import { KeywordLinks } from "./KeywordLinks";
 import { getAnchorProps } from "../../embedded";
+import { FormattedMessage } from "react-intl";
 
 export const MetadataGroup: React.FunctionComponent<{
     book: Book;
@@ -32,10 +33,7 @@ export const MetadataGroup: React.FunctionComponent<{
             id={"details"}
             css={css`
                 display: flex;
-                max-width: calc(
-                    100vw - ${commonUI.detailViewMargin} -
-                        ${commonUI.detailViewMargin}
-                );
+                max-width: calc(100vw - ${commonUI.detailViewMargin}*2);
                 @media (max-width: ${props.breakToColumn}) {
                     flex-direction: column-reverse;
                 }
@@ -47,20 +45,49 @@ export const MetadataGroup: React.FunctionComponent<{
                     flex-grow: 1;
                 `}
             >
-                {props.book.level && <div>{`Level ${props.book.level}`}</div>}
-                <div>{`${props.book.pageCount} Pages`}</div>
+                {props.book.level && (
+                    <div>
+                        <FormattedMessage
+                            id="book.metadata.level"
+                            defaultMessage="Level {levelNumber}"
+                            values={{ levelNumber: props.book.level }}
+                        />
+                    </div>
+                )}
+                <div>
+                    <FormattedMessage
+                        id="book.metadata.pages"
+                        defaultMessage="{count} Pages"
+                        values={{ count: props.book.pageCount }}
+                    />
+                </div>
                 <div>{props.book.copyright}</div>
                 <div>
-                    {"License: "}
+                    <FormattedMessage
+                        id="book.metadata.license"
+                        defaultMessage="License:"
+                    />{" "}
                     <LicenseLink book={props.book} />
                 </div>
                 <div>
-                    {"Uploaded "}
-                    {`${props.book.uploadDate!.toLocaleDateString()} by ${obfuscateEmail(
-                        props.book.uploader
-                    )}`}
+                    <FormattedMessage
+                        id="book.metadata.uploadedBy"
+                        defaultMessage="Uploaded {date} by {email}"
+                        values={{
+                            date: props.book.uploadDate!.toLocaleDateString(),
+                            email: obfuscateEmail(props.book.uploader),
+                        }}
+                    />
                 </div>
-                <div>{`Last updated on ${props.book.updateDate!.toLocaleDateString()}`}</div>
+                <div>
+                    <FormattedMessage
+                        id="book.metadata.lastUpdated"
+                        defaultMessage="Last updated on {date}"
+                        values={{
+                            date: props.book.updateDate!.toLocaleDateString(),
+                        }}
+                    />
+                </div>
                 {props.book.importedBookSourceUrl &&
                     props.book.importedBookSourceUrl.length > 0 && (
                         <div>
@@ -90,7 +117,10 @@ export const MetadataGroup: React.FunctionComponent<{
                 `}
             >
                 <div>
-                    {"Features: "}
+                    <FormattedMessage
+                        id="book.metadata.features"
+                        defaultMessage="Features:"
+                    />{" "}
                     {props.book.features
                         ? props.book.features
                               // Don't display the language-specific ones since we always have a generic one to go with it.
@@ -103,7 +133,10 @@ export const MetadataGroup: React.FunctionComponent<{
                         : []}
                 </div>
                 <div>
-                    {"Tags: "}
+                    <FormattedMessage
+                        id="book.metadata.tags"
+                        defaultMessage="Tags:"
+                    />{" "}
                     {props.book.tags
                         .filter((t) =>
                             // Whitelist only these tags. So that removes system, bookshelf, level, computedLevel, etc.
@@ -115,11 +148,17 @@ export const MetadataGroup: React.FunctionComponent<{
                         .join(", ")}
                 </div>
                 <div>
-                    {"Keywords: "}
+                    <FormattedMessage
+                        id="book.metadata.keywords"
+                        defaultMessage="Keywords:"
+                    />{" "}
                     <KeywordLinks book={props.book}></KeywordLinks>
                 </div>
                 <div>
-                    {"Bookshelves: "}
+                    <FormattedMessage
+                        id="book.metadata.bookshelves"
+                        defaultMessage="Bookshelves:"
+                    />{" "}
                     {props.book.bookshelves
                         .map(
                             (shelfKey) =>
@@ -132,7 +171,10 @@ export const MetadataGroup: React.FunctionComponent<{
                 </div>
                 {relatedBooks?.length > 0 && (
                     <div>
-                        {"Related Books: "}
+                        <FormattedMessage
+                            id="book.metadata.related"
+                            defaultMessage="Related Books:"
+                        />{" "}
                         <ul
                             css={css`
                                 margin: 0;
