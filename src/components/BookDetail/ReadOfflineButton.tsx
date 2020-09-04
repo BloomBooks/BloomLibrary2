@@ -12,6 +12,7 @@ import { getArtifactUrl, ArtifactType } from "./ArtifactHelper";
 import { Book } from "../../model/Book";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { track } from "../../analytics/Analytics";
+import { FormattedMessage, useIntl } from "react-intl";
 
 interface IProps {
     book: Book;
@@ -19,6 +20,7 @@ interface IProps {
     contextLangIso?: string;
 }
 export const ReadOfflineButton: React.FunctionComponent<IProps> = (props) => {
+    const l10n = useIntl();
     const artifactUrl = getArtifactUrl(props.book, ArtifactType.bloomReader);
     const parts = artifactUrl.split("/");
     const fileName = parts[parts.length - 1];
@@ -45,7 +47,10 @@ export const ReadOfflineButton: React.FunctionComponent<IProps> = (props) => {
                 startIcon={
                     <img
                         src={BloomPubIcon}
-                        alt="bloom reader document"
+                        alt={l10n.formatMessage({
+                            id: "book.detail.readOfflineIcon",
+                            defaultMessage: "bloom reader document",
+                        })}
                         css={css`
                             width: 60px;
                             margin-right: 10px;
@@ -76,7 +81,10 @@ export const ReadOfflineButton: React.FunctionComponent<IProps> = (props) => {
                                 line-height: 19px;
                             `}
                         >
-                            READ OFFLINE
+                            <FormattedMessage
+                                id="book.detail.readOfflineButton"
+                                defaultMessage="READ OFFLINE"
+                            />
                         </p>
                     </h1>
                     <p
@@ -87,7 +95,10 @@ export const ReadOfflineButton: React.FunctionComponent<IProps> = (props) => {
                             text-transform: none;
                         `}
                     >
-                        Download into Bloom Reader
+                        <FormattedMessage
+                            id="book.detail.readOfflineText"
+                            defaultMessage="Download into Bloom Reader"
+                        />
                     </p>
                 </div>
             </Button>

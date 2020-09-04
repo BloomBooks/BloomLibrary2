@@ -18,10 +18,10 @@ import { IStatsProps } from "./StatsInterfaces";
 import { useGetBookStats } from "./useGetBookStats";
 import { useProvideDataForExport } from "./exportData";
 import { CachedTablesContext } from "../../App";
-import { getLanguageNamesFromCode } from "../../model/Language";
+import { getDisplayNamesFromLanguageCode } from "../../model/Language";
 import { useIntl } from "react-intl";
 
-export const BookReadingReport: React.FunctionComponent<IStatsProps> = (
+export const BookStatsReport: React.FunctionComponent<IStatsProps> = (
     props
 ) => {
     const l10n = useIntl();
@@ -31,7 +31,7 @@ export const BookReadingReport: React.FunctionComponent<IStatsProps> = (
 
     if (stats) {
         for (const stat of stats) {
-            const languageDisplayName = getLanguageNamesFromCode(
+            const languageDisplayName = getDisplayNamesFromLanguageCode(
                 stat.language,
                 languages
             )?.displayNameWithAutonym;
@@ -55,6 +55,26 @@ export const BookReadingReport: React.FunctionComponent<IStatsProps> = (
             name: "startedCount",
             title: "Started",
             l10nId: "stats.booksRead.startedCount",
+        },
+        {
+            name: "shellDownloads",
+            title: "Downloads for Translation",
+            l10nId: "stats.booksRead.downloadsForTranslation",
+        },
+        {
+            name: "pdfDownloads",
+            title: "PDF Downloads",
+            l10nId: "stats.booksRead.pdfDownloads",
+        },
+        {
+            name: "epubDownloads",
+            title: "ePUB Downloads",
+            l10nId: "stats.booksRead.epubDownloads",
+        },
+        {
+            name: "bloomPubDownloads",
+            title: "bloomPub Downloads",
+            l10nId: "stats.booksRead.bloomPubDownloads",
         },
     ];
     // localize
@@ -83,8 +103,13 @@ export const BookReadingReport: React.FunctionComponent<IStatsProps> = (
         // don't have that sort of smarts. This is enough for the Spanish labels,
         // which are wider than English.
         { columnName: "finishedCount", width: "130px", align: "right" },
-
         { columnName: "startedCount", width: "130px", align: "right" },
+
+        // Have to include these to get the alignment set to right
+        { columnName: "shellDownloads", align: "right" },
+        { columnName: "pdfDownloads", align: "right" },
+        { columnName: "epubDownloads", align: "right" },
+        { columnName: "bloomPubDownloads", align: "right" },
     ] as Table.ColumnExtension[]);
 
     // This table might not need this...no column headers need wrapping?

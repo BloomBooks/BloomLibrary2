@@ -10,6 +10,7 @@ import {
     getResultsOrMessageElement,
     getNoResultsElement,
 } from "../connection/GetQueryResultsUI";
+import { FormattedMessage } from "react-intl";
 
 interface IProps {
     message?: string;
@@ -103,9 +104,15 @@ const BookCountInternal: React.FunctionComponent<IProps> = (props) => {
                     margin-top: auto;
                 `}
             >
-                {props.message
-                    ? props.message.replace("{0}", count)
-                    : `${count} Books`}
+                {props.message ? (
+                    props.message.replace("{0}", count)
+                ) : (
+                    <FormattedMessage
+                        id="bookCount"
+                        defaultMessage="{count} Books"
+                        values={{ count }}
+                    />
+                )}
             </span>
         )
     );

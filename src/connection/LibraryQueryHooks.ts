@@ -336,7 +336,7 @@ function useBookQueryInternal(
     filter: IFilter, // this is *which* records to return
     limit?: number, //pagination
     skip?: number, //pagination
-    doNotRunActuallyQuery?: boolean
+    doNotActuallyRunQuery?: boolean
 ): IAxiosAnswer {
     const { tags } = useContext(CachedTablesContext);
     const axiosParams = makeBookQueryAxiosParams(
@@ -344,7 +344,7 @@ function useBookQueryInternal(
         filter,
         limit,
         skip,
-        doNotRunActuallyQuery,
+        doNotActuallyRunQuery,
         tags
     );
 
@@ -489,7 +489,7 @@ interface ISimplifiedAxiosResult {
 export function useSearchBooks(
     params: {}, // this is the order, which fields, limits, etc.
     filter: IFilter, // this is *which* books to return
-    doNotRunActuallyQuery?: boolean
+    doNotActuallyRunQuery?: boolean
 ): ISearchBooksResult {
     const fullParams = {
         count: 1,
@@ -503,7 +503,7 @@ export function useSearchBooks(
         filter,
         undefined,
         undefined,
-        doNotRunActuallyQuery
+        doNotActuallyRunQuery
     );
     const simplifiedResultStatus = processAxiosStatus(bookResultsStatus);
 
@@ -594,6 +594,25 @@ export function useCollectionStats(
     // Use this when debugging changes to the Azure function
     //const url = `http://localhost:7071/v1/stats/${urlSuffix}`;
 
+    // Just below here, axios is going to decide whether or not to send another
+    // query based on the values in apiFilter (the trigger parameter).
+    // On a new page load, if the user is logged in, the value of X-Parse-Session-Token is going
+    // to get added which will cause duplicate sequential requests with the page not loading until the
+    // second one completes. Since we don't care if the user is logged in or not in this case,
+    // just delete it here to prevent the problem.
+    const apiFilterClone = JSON.parse(JSON.stringify(apiFilter));
+    if (
+        apiFilterClone &&
+        apiFilterClone.parseDBQuery &&
+        apiFilterClone.parseDBQuery.options &&
+        apiFilterClone.parseDBQuery.options.headers
+    ) {
+        delete apiFilterClone.parseDBQuery.options.headers[
+            "X-Parse-Session-Token"
+        ];
+    }
+    const trigger = url + JSON.stringify(apiFilterClone);
+
     return useAxios({
         url,
         method: "POST",
@@ -602,8 +621,7 @@ export function useCollectionStats(
                 filter: apiFilter,
             },
         },
-
-        trigger: url + JSON.stringify(apiFilter),
+        trigger,
     });
 }
 
@@ -753,6 +771,8 @@ function regex(value: string) {
         ...caseInsensitive,
     };
 }
+
+let reportedDerivativeProblem = false;
 
 export function constructParseBookQuery(
     params: any,
@@ -1012,6 +1032,66 @@ export function constructParseBookQuery(
         params.where.keywordStems = {
             $all: keywordStems,
         };
+    }
+
+    delete params.where.publisher;
+    if (f.publisher) {
+        params.where.publisher = f.publisher;
+    }
+    delete params.where.originalPublisher;
+    if (f.originalPublisher) {
+        params.where.originalPublisher = f.originalPublisher;
+    }
+    delete params.where.brandingProjectName;
+    if (f.brandingProjectName) {
+        params.where.brandingProjectName = f.brandingProjectName;
+    }
+
+    delete params.where.parentCollectionFilter;
+    delete params.where.bookLineageArray;
+    if (f.parentCollectionFilter) {
+        // this wants to be something like {$not: {where: innerWhere}}
+        // but I can't find any variation of that which works.
+        // For now, we just support these three kinds of parent filters
+        // (and only bookshelf ones that are simple, exact matches).
+        let nonParentFilter: any;
+        const parentBookShelf = f.parentCollectionFilter.bookshelf;
+        if (parentBookShelf) {
+            nonParentFilter = { bookshelves: { $ne: parentBookShelf } };
+        } else if (f.parentCollectionFilter.publisher) {
+            nonParentFilter = {
+                publisher: { $ne: f.parentCollectionFilter.publisher },
+            };
+        } else if (f.parentCollectionFilter.brandingProjectName) {
+            nonParentFilter = {
+                brandingProjectName: {
+                    $ne: f.parentCollectionFilter.brandingProjectName,
+                },
+            };
+        } else if (!reportedDerivativeProblem) {
+            reportedDerivativeProblem = true;
+            alert(
+                "derivatives collection may include items from original collection"
+            );
+        }
+        const innerWhere = (constructParseBookQuery(
+            {},
+            f.parentCollectionFilter,
+            allTagsFromDatabase
+        ) as any).where;
+        params.where.$and = [
+            {
+                bookLineageArray: {
+                    $select: {
+                        query: { className: "books", where: innerWhere },
+                        key: "bookInstanceId",
+                    },
+                },
+            },
+        ];
+        if (nonParentFilter) {
+            params.where.$and.push(nonParentFilter);
+        }
     }
 
     return params;

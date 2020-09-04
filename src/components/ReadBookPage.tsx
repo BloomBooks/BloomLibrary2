@@ -11,7 +11,7 @@ import { getUrlOfHtmlOfDigitalVersion } from "./BookDetail/ArtifactHelper";
 import { useHistory, useLocation } from "react-router-dom";
 import { useTrack } from "../analytics/Analytics";
 import { getBookAnalyticsInfo } from "../analytics/BookAnalyticsInfo";
-import { useDocumentTitle, getUrlForTarget } from "./Routes";
+import { useDocumentTitle, getUrlForTarget, previousPathname } from "./Routes";
 import {
     sendPlayerClosingAnalytics,
     startingBook,
@@ -37,8 +37,6 @@ export const ReadBookPage: React.FunctionComponent<{
         isLandscape: false,
     });
     const contextLangIso = lang ? lang : undefined;
-    // Determine whether (on this render) we are actually in full-screen mode.
-    const fullScreen = !!document.fullscreenElement;
     const fullScreenChangeHandler = () => {
         setCounter((oldCount) => oldCount + 1); // force a render
     };
@@ -120,7 +118,14 @@ export const ReadBookPage: React.FunctionComponent<{
                 console.log(`Got error with message: ${err}`);
             }
         },
-        [history, id, autoFullScreen]
+        [
+            autoFullScreen,
+            history,
+            id,
+            lang,
+            rotateParams.canRotate,
+            rotateParams.isLandscape,
+        ]
     );
 
     useEffect(() => {
@@ -144,21 +149,23 @@ export const ReadBookPage: React.FunctionComponent<{
 
     const langParam = contextLangIso ? `&lang=${contextLangIso}` : "";
 
-    let iframeSrc = `${bloomPlayerUrl}?url=${url}&showBackButton=true&centerVertically=false&useOriginalPageSize=true${langParam}`;
-    if (!fullScreen) {
-        const extraButtonsObj = [
-            {
-                id: "fullScreen",
-                iconUrl:
-                    "https://s3.amazonaws.com/share.bloomlibrary.org/assets/Ic_fullscreen_48px_red.svg",
-                description: "full screen",
-            },
-        ];
-        const extraButtonsParam =
-            "&extraButtons=" +
-            encodeURIComponent(JSON.stringify(extraButtonsObj));
-        iframeSrc += extraButtonsParam;
-    }
+    // This is an attempt to determine whether we came here directly from the detail view (of the same book).
+    // If so, the user can easily get back there using the browser back button.
+    // If not, we want to show a button for getting to the detail view. It provides lots of helpful
+    // information that might be hard to find if the Read view is our first glimpse of this book.
+    // This strategy for determining whether we 'came from' detail view is not perfect; we can only really
+    // know where we came from within our own SPA. For example, if the user hits Refresh while in this screen
+    // having come from detail view, the button will appear, as the reloaded page has no record of...no access
+    // to...the prior history, even though 'back' will in fact also go to the detail view (but popping the
+    // history stack rather than pushing onto it).
+    // (Note: historically, this was a 'back' button in BloomPlayer; but currently its appearance is three
+    // dots meaning 'more' when BP is embedded in an iframe, and the back arrow only occurs in Bloom Reader.
+    // Here, it does not 'go back' but pushes the detail view as a new history entry.)
+    const showBackButton = previousPathname.indexOf(`/book/${id}`) < 0;
+
+    const iframeSrc =
+        `${bloomPlayerUrl}?url=${url}&showBackButton=${showBackButton}&centerVertically=false&useOriginalPageSize=true` +
+        `${langParam}&hideFullScreenButton=${autoFullScreen}&independent=false&host=bloomlibrary`;
 
     // This theme matches Bloom-player. It is supposed to help the full-screen button
     // better match the Bloom-player icons, whose toolbar it overlays. Not successful
@@ -186,6 +193,9 @@ export const ReadBookPage: React.FunctionComponent<{
                 `}
                 src={iframeSrc}
                 //src={"https://google.com"}
+                // both of these attributes are needed to handle new and old browsers
+                allow="fullscreen"
+                allowFullScreen={true}
             ></iframe>
         </React.Fragment>
     );

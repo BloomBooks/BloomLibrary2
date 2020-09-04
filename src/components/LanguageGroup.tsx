@@ -14,8 +14,10 @@ import { ILanguage } from "../model/Language";
 import { commonUI } from "../theme";
 import { CardSwiper } from "./CardSwiper";
 import { Redirect } from "react-router-dom";
+import { FormattedMessage, useIntl } from "react-intl";
 
 export const LanguageGroup: React.FunctionComponent = () => {
+    const l10n = useIntl();
     const { languagesByBookCount: languages } = useContext(CachedTablesContext);
     // setting this to a language code causes a <Redirect> to render and open the page
     // for that code (currently when the user has selected a language by typing and pressing Enter)
@@ -62,7 +64,13 @@ export const LanguageGroup: React.FunctionComponent = () => {
                         padding-top: 10px;
                         font-size: 0.8rem;
                     `}
-                >{`We could not find any book with languages matching '${filter}'`}</div>
+                >
+                    <FormattedMessage
+                        id="noLanguageMatch"
+                        defaultMessage="We could not find any book with languages matching {searchString}"
+                        values={{ searchString: filter }}
+                    />
+                </div>
             );
         }
     };
@@ -82,7 +90,12 @@ export const LanguageGroup: React.FunctionComponent = () => {
                 margin-top: 30px;
             `}
         >
-            <h1>Find Books By Language</h1>
+            <h1>
+                <FormattedMessage
+                    id="findBooksByLanguage"
+                    defaultMessage="Find Books By Language"
+                />
+            </h1>
 
             {(languages.length && (
                 /* Downshift handles telling us when to recompute the list of matching items.
@@ -129,14 +142,26 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                             // that the wrong card is selected.
                                         }}
                                     />
-                                    <img src={searchIcon} alt="Search" />
+                                    <img
+                                        src={searchIcon}
+                                        alt={l10n.formatMessage({
+                                            id: "search",
+                                            defaultMessage: "Search",
+                                        })}
+                                    />
                                 </div>
 
                                 <div
                                     css={css`
                                         margin-top: 4px;
                                     `}
-                                >{`${languages.length} Languages`}</div>
+                                >
+                                    <FormattedMessage
+                                        id="languagesCount"
+                                        defaultMessage="{count} Languages"
+                                        values={{ count: languages.length }}
+                                    />
+                                </div>
                             </div>
                             {getFilterLanguagesUI(
                                 currentInputBoxText,
@@ -152,7 +177,10 @@ export const LanguageGroup: React.FunctionComponent = () => {
                         height: 100px;
                     `}
                 >
-                    Loading...
+                    <FormattedMessage
+                        id="loading"
+                        defaultMessage="Loading..."
+                    />
                 </div>
             )}
         </li>

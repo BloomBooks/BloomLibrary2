@@ -10,7 +10,7 @@ import Tooltip from "react-tooltip-lite";
 
 import infoIcon from "../../assets/info.png";
 import { Book } from "../../model/Book";
-import { useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 // The casing here is unfortunate, but that's what the database gives us no matter what we do there.
 // Could be enhanced by remapping all the fields in the Azure function or here, but those
@@ -57,7 +57,6 @@ export const BookStats: React.FunctionComponent<{
         return getInitialBookStats();
     }
 
-    const l10n = useIntl();
     const bookStats = useGetBookStats(props.book);
 
     const tooltipcontents = (
@@ -72,52 +71,70 @@ export const BookStats: React.FunctionComponent<{
                 `}
             >
                 <li>
-                    {l10n.formatMessage({
-                        id: "stats.book.summaryString.readExplanation",
-                        defaultMessage:
-                            "'reads' is a count of how many times someone has read this book in a digital form from which we receive analytics. We cannot currently get analytics from epub versions. Because books can be read offline, we may not have a record of all reads.",
-                    })}
+                    <FormattedMessage
+                        id="stats.book.summaryString.readExplanation"
+                        defaultMessage="'reads' is a count of how many times someone has read this book in a digital form from which we receive analytics. We cannot currently get analytics from epub versions. Because books can be read offline, we may not have a record of all reads."
+                    />
                 </li>
                 <li>
-                    {l10n.formatMessage({
-                        id: "stats.book.summaryString.deviceExplanation",
-                        defaultMessage:
-                            "'devices' is a count of how many phones/tablets/computers have this book installed in Bloom Reader.",
-                    })}
+                    <FormattedMessage
+                        id="stats.book.summaryString.deviceExplanation"
+                        defaultMessage="'devices' is a count of how many phones/tablets/computers have this book installed in Bloom Reader."
+                    />
                 </li>
                 <li>
-                    {l10n.formatMessage({
-                        id:
-                            "stats.book.summaryString.downloadForTranslationExplanation",
-                        defaultMessage:
-                            "'downloads for translation' is a count of how times someone has clicked 'Translate into your own language' in order to load the book into Bloom for translation.",
-                    })}
+                    <FormattedMessage
+                        id="stats.book.summaryString.downloadForTranslationExplanation"
+                        defaultMessage="'downloads for translation' is a count of how times someone has clicked 'Translate into your own language' in order to load the book into Bloom for translation."
+                    />
                 </li>
             </ul>
             <p>
-                {l10n.formatMessage({
-                    id: "stats.book.summaryString.range",
-                    defaultMessage:
-                        "This starting date for these statistics vary by when we started recording them. They are updated every 24 hours.",
-                })}
+                <FormattedMessage
+                    id="stats.book.summaryString.range"
+                    defaultMessage="This starting date for these statistics vary by when we started recording them. They are updated every 24 hours."
+                />
             </p>
             <p>
-                {l10n.formatMessage({
-                    id: "stats.book.summaryString.furtherStats",
-                    defaultMessage:
-                        "Enterprise customers can get a set of charts and downloadable data which includes information on all of their books, including where books are being read and growth over time.",
-                })}
+                <FormattedMessage
+                    id="stats.book.summaryString.furtherStats"
+                    defaultMessage="Enterprise customers can get a set of charts and downloadable data which includes information on all of their books, including where books are being read and growth over time."
+                />
             </p>
         </div>
     );
     // just show the stats that we have values for
+    const l10n = useIntl();
     const statStrings = [];
-    if (bookStats.totalreads) statStrings.push(`${bookStats.totalreads} reads`);
+    if (bookStats.totalreads)
+        statStrings.push(
+            l10n.formatMessage(
+                {
+                    id: "stats.book.reads",
+                    defaultMessage: "{count} reads",
+                },
+                { count: bookStats.totalreads }
+            )
+        );
     if (bookStats.devicecount)
-        statStrings.push(`${bookStats.devicecount} devices`);
+        statStrings.push(
+            l10n.formatMessage(
+                {
+                    id: "stats.book.devices",
+                    defaultMessage: "{count} devices",
+                },
+                { count: bookStats.devicecount }
+            )
+        );
     if (bookStats.shelldownloads)
         statStrings.push(
-            `${bookStats.shelldownloads} downloads for translation`
+            l10n.formatMessage(
+                {
+                    id: "stats.book.downloads",
+                    defaultMessage: "{count} downloads for translation",
+                },
+                { count: bookStats.shelldownloads }
+            )
         );
     const statsSummary = statStrings.join(", ");
 

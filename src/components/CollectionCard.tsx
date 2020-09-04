@@ -13,6 +13,8 @@ import booksIcon from "../assets/books.svg";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { Document } from "@contentful/rich-text-types";
 import { ImgWithCredits } from "../ImgWithCredits";
+import { useIntl } from "react-intl";
+
 interface IProps {
     title: string;
     richTextLabel?: Document;
@@ -27,6 +29,7 @@ interface IProps {
 
 // Show a card with the name, icon, count, etc. of the collection. If the user clicks on it, they go to a page showing the collection.
 export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
+    const l10n = useIntl();
     let titleElement = <React.Fragment />;
     let titleElementIfNoImage = <div>{props.title}</div>;
     if (!props.hideTitle) {
@@ -82,7 +85,10 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
                     height: 40px;
                     margin-bottom: 10px;
                 `}
-                alt="A stack of generic books"
+                alt={l10n.formatMessage({
+                    id: "card.genericBooks",
+                    defaultMessage: "A stack of generic books",
+                })}
             ></img>
         );
     } else if (props.imageUrl !== "none") {

@@ -7,6 +7,7 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import { CheapCard } from "./CheapCard";
 import { ICollection } from "../model/ContentInterfaces";
+import { FormattedMessage } from "react-intl";
 
 // const image = css`
 //     height: 100px;
@@ -35,7 +36,10 @@ export const MoreCard: React.FunctionComponent<IProps> = (props) => {
             `}
             target={href}
         >
-            {`See more of these books.`}
+            <FormattedMessage
+                id="card.seeMore"
+                defaultMessage="See more of these books."
+            />
         </CheapCard>
     );
 };

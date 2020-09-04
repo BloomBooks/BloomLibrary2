@@ -9,10 +9,31 @@ export function useGetOverviewStats(
     if (response && response["data"] && response["data"]["stats"]) {
         const s = response["data"]["stats"][0];
 
+        if (!s) {
+            const defaultResult: IOverviewStats = {
+                books: 0,
+                languages: 0,
+                topics: 0,
+
+                bloomPubDeviceMobile: 0,
+                bloomPubDevicePC: 0,
+
+                downloadsEpub: 0,
+                downloadsBloomPub: 0,
+                downloadsPDF: 0,
+                downloadsShellbooks: 0,
+
+                readsBloomReader: 0,
+                readsWeb: 0,
+                readsApps: 0,
+            };
+            return defaultResult;
+        }
+
         // The parseInts are important.
         // Without them, js will treat them like strings even though typescript knows they are numbers.
         // Then the + operator will concatenate instead of add.
-        return {
+        const result: IOverviewStats = {
             books: parseInt(s.bookcount, 10),
             languages: parseInt(s.languagecount, 10),
             topics: parseInt(s.topiccount, 10),
@@ -29,6 +50,7 @@ export function useGetOverviewStats(
             readsWeb: parseInt(s.readswebcount, 10),
             readsApps: parseInt(s.readsappscount, 10),
         };
+        return result;
     }
     return undefined;
 }
