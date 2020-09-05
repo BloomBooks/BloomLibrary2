@@ -57,7 +57,9 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
                               a: {
                                   component: Link,
                               },
-                        },
+                              WindowsInstallerDownload: {
+                                  component: WindowsInstallerDownloads,
+                              },
                           },
                       },
                       children: markdownContent,
