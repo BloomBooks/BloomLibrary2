@@ -1,12 +1,13 @@
-import { createMuiTheme } from "@material-ui/core";
+import { createMuiTheme, MuiThemeProvider } from "@material-ui/core";
 
+import React from "react";
 export const commonUI = {
     colors: {
         bloomRed: "#D65649",
         bloomBlue: "#1d94a4",
         bloomBlueTransparent: "#1d94a438",
         dialogTopBottomGray: "#F1F3F4",
-        createArea: "#509E2F", // this is the SIL Intl green
+        creationArea: "#509E2F", // this is the SIL Intl green
         createAreaTextOnWhite: "#226B04", // a bit darker for contrast
     },
 
@@ -73,3 +74,15 @@ const theme = createMuiTheme({
 });
 
 export default theme;
+
+const creationPalette = {
+    primary: { main: commonUI.colors.creationArea, light: "white" },
+};
+const creationTheme = createMuiTheme({ ...theme, palette: creationPalette });
+export function CreationThemeProvider(props: any) {
+    return (
+        <MuiThemeProvider theme={creationTheme}>
+            {props.children}
+        </MuiThemeProvider>
+    );
+}
