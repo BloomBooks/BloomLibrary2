@@ -6,8 +6,9 @@ import { jsx } from "@emotion/core";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { useContentful } from "../connection/UseContentful";
 import { useDocumentTitle } from "./Routes";
-import Markdown, { MarkdownProps } from "markdown-to-jsx";
+import Markdown from "markdown-to-jsx";
 import { WindowsInstallerDownloads } from "./WindowsInstallerDownloads";
+import { BloomReaderVersionNumber } from "./BloomReaderVersionNumber";
 import { CreationThemeProvider } from "../theme";
 import Link from "@material-ui/core/Link";
 import { useLocation } from "react-router-dom";
@@ -59,6 +60,9 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
                               },
                               WindowsInstallerDownload: {
                                   component: WindowsInstallerDownloads,
+                              },
+                              BloomReaderVersionNumber: {
+                                  component: BloomReaderVersionNumber,
                               },
                           },
                       },
