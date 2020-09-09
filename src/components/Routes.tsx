@@ -55,6 +55,13 @@ export const Routes: React.FunctionComponent<{}> = () => {
                 >
                     <Redirect to="/page/create/downloads" />
                 </Route>
+                <Route
+                    path={[
+                        "/artofreading", // We have published this link in various places (like the WeSay page)
+                    ]}
+                >
+                    <Redirect to="/page/create/page/art-of-reading" />
+                </Route>
                 {/* At contentful.com, when you work on something, there is a "Preview" button
                                         which takes you to our site so you can see how your content will actually be
                                         displayed. For banners, we configured contentful to set you to this url. */}
