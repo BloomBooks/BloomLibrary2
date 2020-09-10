@@ -54,6 +54,7 @@ export function convertContentfulCollectionToICollection(
         childCollections: getSubCollections(item.fields.childCollections),
         bannerId,
         layout: item.fields.layout?.fields?.name || "by-level",
+        rows: item.fields.rows,
         order,
         type: item.sys.contentType.sys.id,
     };

@@ -26,6 +26,7 @@ export interface IBanner {
 export interface ICollection {
     bannerId: string; // contentful ID of banner object. (fields.banner.id)
     layout: string; // from layout.fields.name
+    rows?: number;
     order?: string; // suitable for parse server order: param (e.g., -createdAt)
 
     urlKey: string; // used in react router urls; can be used to look up in contentful
