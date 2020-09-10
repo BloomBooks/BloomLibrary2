@@ -82,7 +82,10 @@ export const ReadBookPage: React.FunctionComponent<{
                 fullScreenChangeHandler
             );
         };
-    }, []);
+        // I don't actually want all the above to happen more than once.
+        // But Lint insists it should depend on history, and I don't think
+        // history will ever change, so doing so should be harmless.
+    }, [history]);
     useEffect(() => startingBook(), [id]);
 
     // We don't use rotateParams here, because one caller wants to call it
