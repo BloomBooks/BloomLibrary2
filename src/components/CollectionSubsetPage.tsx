@@ -143,13 +143,14 @@ export const CollectionSubsetPage: React.FunctionComponent<{
     let subList = <ByLevelGroups collection={subcollection} />;
     if ((props.collectionName + props.filters).indexOf("level:") >= 0) {
         subList = <ByTopicsGroups collection={subcollection} />;
+        const maxRows: number | undefined = subcollection.rows; // can be undefined, in which case it's the default
         // If we had previously gone down a topic trail, then just show them all.
         if ((props.collectionName + props.filters).indexOf("topic:") >= 0) {
             subList = (
                 <BookCardGroup
                     title={subcollection.label}
                     collection={subcollection}
-                    rows={20}
+                    rows={maxRows}
                     skip={skip}
                 />
             );
