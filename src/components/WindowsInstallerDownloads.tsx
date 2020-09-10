@@ -72,11 +72,16 @@ export const WindowsInstallerDownloads: React.FunctionComponent<{
                     `}
                 >
                     <div>{`Version ${versionNumber} ${info.date}`}</div>
-                    <Link href={info.releaseNotes}>What's New</Link>
-                    <br />
-                    <Link href={"page/create/bloom-windows-requirements"}>
-                        Requirements
-                    </Link>
+                    {info.releaseNotes && (
+                        <div>
+                            <Link href={info.releaseNotes}>What's New</Link>
+                        </div>
+                    )}
+                    <div>
+                        <Link href={"/page/create/bloom-windows-requirements"}>
+                            Requirements
+                        </Link>
+                    </div>
                 </div>
             </div>
         </React.Fragment>
