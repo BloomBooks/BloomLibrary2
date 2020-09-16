@@ -10,6 +10,7 @@ import { processRegExp } from "../Utilities";
 import { kTopicList } from "../model/ClosedVocabularies";
 import { IStatsProps } from "../components/statistics/StatsInterfaces";
 import { toYyyyMmDd } from "../components/statistics/ReaderSessionsChart";
+import { useGetCollection } from "../model/Collections";
 
 // For things other than books, which should use `useBookQuery()`
 function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
@@ -339,16 +340,38 @@ function useBookQueryInternal(
     doNotActuallyRunQuery?: boolean
 ): IAxiosAnswer {
     const { tags } = useContext(CachedTablesContext);
+
+    const collectionReady = useProcessDerivativeFilter(filter);
     const axiosParams = makeBookQueryAxiosParams(
         params,
         filter,
         limit,
         skip,
-        doNotActuallyRunQuery,
+        doNotActuallyRunQuery || !collectionReady,
         tags
     );
 
     return useAxios(axiosParams);
+}
+
+// Convert from derivedFromCollectionName to derivedFrom.
+// We have to do this as a hook because the collection information is available to us via hook.
+// The logic here is much complicated by the rules of hooks which state hooks must be called unconditionally.
+//
+// returns true if either we have retrieved the needed filter from the collection named in filter.derivedFromCollectionName,
+//  or we do not need to retrieve it because none is named.
+function useProcessDerivativeFilter(filter: IFilter): boolean {
+    const collectionName = filter?.derivedFromCollectionName || "";
+    const { collection: derivedFromCollection, loading } = useGetCollection(
+        collectionName
+    );
+    if (!collectionName) return true;
+    if (loading) return false;
+    if (!filter.derivedFrom) {
+        filter.derivedFrom = derivedFromCollection?.filter;
+    }
+    delete filter.derivedFromCollectionName;
+    return true;
 }
 
 // Creates a partial Axios params object with the url and connection headers filled in.
@@ -361,13 +384,17 @@ function makeBookQueryAxiosParams(
     doNotActuallyRunQuery?: boolean,
     tags?: string[]
 ): IParams<any> {
-    const finalParams = constructParseBookQuery(
-        params,
-        filter,
-        tags || [],
-        limit,
-        skip
-    );
+    let finalParams: object = { where: {} };
+    // No reason to construct the query if we aren't going to run it...
+    if (!doNotActuallyRunQuery) {
+        finalParams = constructParseBookQuery(
+            params,
+            filter,
+            tags || [],
+            limit,
+            skip
+        );
+    }
     //console.log("finalParams: " + JSON.stringify(finalParams));
 
     return {
@@ -552,6 +579,10 @@ export function useCollectionStats(
     statsProps: IStatsProps,
     urlSuffix: string
 ): IAxiosAnswer {
+    const collectionReady = useProcessDerivativeFilter(
+        statsProps.collection.filter
+    );
+
     let apiFilter: any;
     if (!statsProps.collection.statisticsQuerySpec) {
         const params = {
@@ -570,7 +601,7 @@ export function useCollectionStats(
             statsProps.collection.filter || {},
             limit,
             skip,
-            doNotRunQuery
+            doNotRunQuery || !collectionReady
         );
         apiFilter = {
             parseDBQuery: bookQueryParams,
@@ -781,6 +812,14 @@ export function constructParseBookQuery(
     limit?: number, //pagination
     skip?: number //pagination
 ): object {
+    if (filter.derivedFromCollectionName) {
+        // We should have already converted from derivedFromCollectionName to derivedFrom by now. See useProcessDerivativeFilter().
+        alert("Attempted to load books with an invalid filter.");
+        console.error(
+            `Called constructParseBookQuery with a filter containing truthy derivedFromCollectionName (${filter.derivedFromCollectionName}). See useProcessDerivativeFilter().`
+        );
+    }
+
     // todo: I don't know why this is undefined
     console.assert(filter, "Filter is unexpectedly falsey. Investigate why.");
     const f: IFilter = filter ? filter : {};
@@ -1047,54 +1086,64 @@ export function constructParseBookQuery(
         params.where.brandingProjectName = f.brandingProjectName;
     }
 
-    delete params.where.parentCollectionFilter;
+    delete params.where.derivedFrom;
     delete params.where.bookLineageArray;
-    if (f.parentCollectionFilter) {
-        // this wants to be something like {$not: {where: innerWhere}}
-        // but I can't find any variation of that which works.
-        // For now, we just support these three kinds of parent filters
-        // (and only bookshelf ones that are simple, exact matches).
-        let nonParentFilter: any;
-        const parentBookShelf = f.parentCollectionFilter.bookshelf;
-        if (parentBookShelf) {
-            nonParentFilter = { bookshelves: { $ne: parentBookShelf } };
-        } else if (f.parentCollectionFilter.publisher) {
-            nonParentFilter = {
-                publisher: { $ne: f.parentCollectionFilter.publisher },
-            };
-        } else if (f.parentCollectionFilter.brandingProjectName) {
-            nonParentFilter = {
-                brandingProjectName: {
-                    $ne: f.parentCollectionFilter.brandingProjectName,
-                },
-            };
-        } else if (!reportedDerivativeProblem) {
-            reportedDerivativeProblem = true;
-            alert(
-                "derivatives collection may include items from original collection"
-            );
-        }
-        const innerWhere = (constructParseBookQuery(
-            {},
-            f.parentCollectionFilter,
-            allTagsFromDatabase
-        ) as any).where;
-        params.where.$and = [
-            {
-                bookLineageArray: {
-                    $select: {
-                        query: { className: "books", where: innerWhere },
-                        key: "bookInstanceId",
-                    },
-                },
-            },
-        ];
-        if (nonParentFilter) {
-            params.where.$and.push(nonParentFilter);
-        }
+    if (f.derivedFrom) {
+        processDerivedFrom(f, allTagsFromDatabase, params);
     }
 
     return params;
+}
+
+function processDerivedFrom(
+    f: IFilter,
+    allTagsFromDatabase: string[],
+    params: any
+) {
+    if (!f || !f.derivedFrom) return;
+
+    // this wants to be something like {$not: {where: innerWhere}}
+    // but I can't find any variation of that which works.
+    // For now, we just support these three kinds of parent filters
+    // (and only bookshelf ones that are simple, exact matches).
+    let nonParentFilter: any;
+    const parentBookShelf = f.derivedFrom.bookshelf;
+    if (parentBookShelf) {
+        nonParentFilter = { bookshelves: { $ne: parentBookShelf } };
+    } else if (f.derivedFrom.publisher) {
+        nonParentFilter = {
+            publisher: { $ne: f.derivedFrom.publisher },
+        };
+    } else if (f.derivedFrom.brandingProjectName) {
+        nonParentFilter = {
+            brandingProjectName: {
+                $ne: f.derivedFrom.brandingProjectName,
+            },
+        };
+    } else if (!reportedDerivativeProblem) {
+        reportedDerivativeProblem = true;
+        alert(
+            "derivatives collection may include items from original collection"
+        );
+    }
+    const innerWhere = (constructParseBookQuery(
+        {},
+        f.derivedFrom,
+        allTagsFromDatabase
+    ) as any).where;
+    params.where.$and = [
+        {
+            bookLineageArray: {
+                $select: {
+                    query: { className: "books", where: innerWhere },
+                    key: "bookInstanceId",
+                },
+            },
+        },
+    ];
+    if (nonParentFilter) {
+        params.where.$and.push(nonParentFilter);
+    }
 }
 
 export function getCountString(queryResult: any): string {
