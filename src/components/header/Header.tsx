@@ -35,7 +35,7 @@ export const Header: React.FunctionComponent = () => {
     const minTabWidth = showReadCreateNarrower ? "min-width:110px" : "";
 
     const backgroundColor = createTabSelected
-        ? commonUI.colors.createArea
+        ? commonUI.colors.creationArea
         : commonUI.colors.bloomRed;
     const tabStyle = css`
         color: white !important;

@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useEffect, useCallback, useState } from "react";
+import React, { useEffect, useCallback, useState, useRef } from "react";
 import { useGetBookDetail } from "../connection/LibraryQueryHooks";
 import { Book } from "../model/Book";
 import { getUrlOfHtmlOfDigitalVersion } from "./BookDetail/ArtifactHelper";
@@ -40,25 +40,52 @@ export const ReadBookPage: React.FunctionComponent<{
     const fullScreenChangeHandler = () => {
         setCounter((oldCount) => oldCount + 1); // force a render
     };
+
+    // This variable and function work with the first line of the following
+    // useEffect to help us get notified when the user leaves this page to
+    // go to another page INSIDE our own SPA, usually by hitting the back button.
+    // See the comment in the useEffect.
+    const unregisterHistory = useRef<(() => void) | undefined>();
+    const unloadToOwnSpa = () => {
+        onPlayerUnloading();
+        unregisterHistory.current!();
+        unregisterHistory.current = undefined;
+    };
+
     // We need to do various things when the user stops reading the book.
     // Note that it's usually possible in an SPA to change pages without raising
     // this event. If that becomes possible here, anything that does it should call
     // this function. But it's not a problem currently.
     useEffect(() => {
+        // The normal thing to do is to save this function locally and call it in the
+        // function we return. But if we do that, the listener never gets called.
+        // I suppose it must be removed before the code that invokes it runs.
+        // Instead, leave the listener active until it gets called. If we load
+        // some new page, everything gets cleared; if we stay in the SPA and go
+        // somewhere else, it eventually gets called and cleared (in the
+        // unloadToOwnSpa() function itself). And so we can track events that don't
+        // trigger beforeunload because we're not, from the browser's
+        // point of view, leaving the current page.
+        unregisterHistory.current = history.listen(unloadToOwnSpa);
         window.addEventListener("beforeunload", onPlayerUnloading);
         // This works in Android browser (Android 6, at least), but not in Chrome. I think Chrome
         // considers it a security issue for the app to know when the user
         // uses escape to exit full screen mode, so there is no way
         // we can find out we need to put the button back.
         document.addEventListener("fullscreenchange", fullScreenChangeHandler);
+        const unregisterCallback = history.listen(onPlayerUnloading);
         return () => {
+            unregisterCallback();
             window.removeEventListener("beforeunload", onPlayerUnloading);
             document.removeEventListener(
                 "fullscreenchange",
                 fullScreenChangeHandler
             );
         };
-    }, []);
+        // I don't actually want all the above to happen more than once.
+        // But Lint insists it should depend on history, and I don't think
+        // history will ever change, so doing so should be harmless.
+    }, [history]);
     useEffect(() => startingBook(), [id]);
 
     // We don't use rotateParams here, because one caller wants to call it

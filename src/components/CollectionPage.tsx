@@ -62,11 +62,7 @@ export const CollectionPage: React.FunctionComponent<{
                 booksComponent = (
                     <BookCardGroup
                         collection={collection}
-                        rows={
-                            collection.urlKey === "new-arrivals"
-                                ? 10
-                                : undefined
-                        }
+                        rows={collection.rows}
                     />
                 );
                 break;

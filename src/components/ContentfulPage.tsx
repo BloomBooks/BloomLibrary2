@@ -4,14 +4,22 @@ import React from "react"; // see https://github.com/emotion-js/emotion/issues/1
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
-import ReactMarkdown from "react-markdown";
 import { useContentful } from "../connection/UseContentful";
 import { useDocumentTitle } from "./Routes";
+import Markdown from "markdown-to-jsx";
+import { WindowsInstallerDownloads } from "./WindowsInstallerDownloads";
+import { BloomReaderVersionNumber } from "./BloomReaderVersionNumber";
+import { CreationThemeProvider } from "../theme";
+import Link from "@material-ui/core/Link";
+import { useLocation } from "react-router-dom";
 
 export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
     props
 ) => {
     useDocumentTitle(props.urlKey);
+    const inCreate =
+        useLocation().pathname.toLowerCase().indexOf("create") > -1;
+
     const { loading, result: data } = useContentful({
         content_type: "page",
         "fields.urlKey": `${props.urlKey}`,
@@ -26,8 +34,8 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
     }
 
     const page = data[0];
-
-    return (
+    const markdownContent = page.fields.markdownBody as string;
+    const innards = (
         <div
             css={css`
                 margin-left: 30px;
@@ -40,12 +48,33 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
                 }
             `}
         >
-            <ReactMarkdown
-                escapeHtml={false}
-                source={page.fields.markdownBody}
-            />
-            {/* Maybe we're going to remove this Richtext option entirely? Depend if we can get people to work in Markdown */}
-            {documentToReactComponents(page.fields.body)}
+            {/* Insert our custom components when the markdown has HTML that calls for them */}
+            {/* Could not get this to compile <Markdown> {markdownContent} </Markdown> */}
+            {/* {options:{overrides:{h1:{component:WindowsInstallerDownloads, props:{}}}}} */}
+            {markdownContent
+                ? React.createElement(Markdown, {
+                      options: {
+                          overrides: {
+                              a: {
+                                  component: Link,
+                              },
+                              WindowsInstallerDownload: {
+                                  component: WindowsInstallerDownloads,
+                              },
+                              BloomReaderVersionNumber: {
+                                  component: BloomReaderVersionNumber,
+                              },
+                          },
+                      },
+                      children: markdownContent,
+                  })
+                : documentToReactComponents(page.fields.body)}
         </div>
     );
+
+    if (inCreate) {
+        return <CreationThemeProvider>{innards}</CreationThemeProvider>;
+    } else {
+        return <React.Fragment>{innards}</React.Fragment>;
+    }
 };
