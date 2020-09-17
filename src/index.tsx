@@ -4,7 +4,7 @@ import "./index.css";
 import * as Sentry from "@sentry/browser";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-
+import { createBrowserHistory } from "history";
 // these two firebase imports are strange, but not an error. See https://github.com/firebase/firebase-js-sdk/issues/1832
 import firebase from "firebase/app";
 import "firebase/auth";
@@ -59,6 +59,45 @@ if (window.self === window.top) {
                 });
         });
     });
+}
+
+/*  So this is a Single Page App with an internal router. That means, e.g. bloomlibrary.org/foobar doesn't actually have a page. It's
+    just supposed to go to bloomlibrary.org, find the index.htm, and the let react-router figure out what to do with "/foo".
+    To make this work, in the AWS S3 bucket for this site, we tell it that if it can't find a page (e.g. "foobar") it should
+    send us back to index.htm.
+    And this works as far as the user sees, but this is actually throwing a 404 error which messes up Google indexing and lowers our score.
+    Previously, you could see the 404 errors in the network tab if you go to page other than the home page and do a REFRESH.
+    It also prevents Chrome Lighthouse from doing some accessibility inspections.
+    To fix this, we have the S3 bucket taking the part after the domain name and inserting a "#!" in there, so that it looks like an anchor
+    into the page, so we don't get a 404. We put this in the bucket's Redirection Rules
+    <RoutingRules>
+        <RoutingRule>
+            <Condition>
+                <HttpErrorCodeReturnedEquals>404</HttpErrorCodeReturnedEquals>
+            </Condition>
+            <Redirect>
+                <HostName>alpha.bloomlibrary.org</HostName>
+                <ReplaceKeyPrefixWith>#!/</ReplaceKeyPrefixWith>
+            </Redirect>
+        </RoutingRule>
+        <RoutingRule>
+            <Condition>
+                <HttpErrorCodeReturnedEquals>403</HttpErrorCodeReturnedEquals>
+            </Condition>
+            <Redirect>
+                <HostName>alpha.bloomlibrary.org</HostName>
+                <ReplaceKeyPrefixWith>#!/</ReplaceKeyPrefixWith>
+            </Redirect>
+        </RoutingRule>
+    </RoutingRules>
+    You can see the whole S3 bucket setup here: https://i.imgur.com/mLgf0Gk.png
+    Then this code removes that /#!/ so we are back to a simple bloomlibrary.og/foobar.
+    This technique is described here: https://viastudio.com/hosting-a-reactjs-app-with-routing-on-aws-s3/
+*/
+const history = createBrowserHistory();
+const path = (/#!(\/.*)$/.exec(window.location.hash) || [])[1];
+if (path) {
+    history.replace(path);
 }
 
 ReactDOM.render(<App />, document.getElementById("root"));
