@@ -332,10 +332,12 @@ export function useDocumentTitle(title: string | undefined) {
             // we support titles coming in from the URL to support book playback
             // (I'm not sure why that's different, but it is).
             const urlParams = new URLSearchParams(location.search);
+
+            // urlParams.get() automatically decodes it for us.
+            // Be careful not to decode it again. Applying decoding multiple times can change the result
+            // (possibly generating invalid URLs), especially if the title contains '%' characters.
             const titleFromUrl = urlParams.get("title");
-            setBloomLibraryTitle(
-                titleFromUrl ? decodeURI(titleFromUrl) : title
-            );
+            setBloomLibraryTitle(titleFromUrl ? titleFromUrl : title);
         }
     }, [title, location]);
 }
