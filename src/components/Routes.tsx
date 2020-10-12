@@ -47,6 +47,10 @@ export const Routes: React.FunctionComponent<{}> = () => {
                 <Route path={"/browse"}>
                     <Redirect to="/create" />
                 </Route>
+                {/* One of the links from BloomDesktop goes here */}
+                <Route path={"/books"}>
+                    <Redirect to="/create" />
+                </Route>
                 <Route
                     path={[
                         "/downloads", // Alias for convenience when telling people where to get Bloom
