@@ -14,6 +14,7 @@ import { documentToReactComponents } from "@contentful/rich-text-react-renderer"
 import { Document } from "@contentful/rich-text-types";
 import { ImgWithCredits } from "../ImgWithCredits";
 import { useIntl } from "react-intl";
+import { propsToHideAccessibilityElement } from "../Utilities";
 
 interface IProps {
     title: string;
@@ -30,12 +31,11 @@ interface IProps {
 // Show a card with the name, icon, count, etc. of the collection. If the user clicks on it, they go to a page showing the collection.
 export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
     const l10n = useIntl();
-    let titleElement = <React.Fragment />;
-    let titleElementIfNoImage = <div>{props.title}</div>;
-    if (!props.hideTitle) {
-        titleElementIfNoImage = <React.Fragment />; // showing title anyway, don't need it in place of image
-        titleElement = (
-            <Fragment>
+    // if showing title anyway, don't need it in place of image
+    const titleElementIfNoImage = props.hideTitle? <React.Fragment /> : <div>{props.title}</div>;
+    // We want the title to be there even if props tell us to hide it, so screeen readers can find it.
+    const extraPropsIfHidingTitle = props.hideTitle ? propsToHideAccessibilityElement : "";
+    const titleElement = (
                 <div
                     css={css`
                         text-align: center;
@@ -43,24 +43,27 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
                         font-weight: bold;
                         flex-grow: 1; // push the rest to the bottom
                         margin-bottom: 5px;
+                        ${extraPropsIfHidingTitle}
                         // For the sake of uniformity, the only styling we allow in richTextLabel is normal, h1, h2, and h3.
+                        // Cards are currently always displayed as second-level objects, therefore we reduce heading
+                        // levels to h2, h3, h4.
                         // Here we define what they will look like.
-                        h1,
                         h2,
                         h3,
+                        h4,
                         p {
                             text-align: center;
                             margin-bottom: 0;
                             margin-top: 0;
                             font-weight: bold;
                         }
-                        h1 {
+                        h2 {
                             font-size: 16px;
                         }
-                        h2 {
+                        h3 {
                             font-size: 14px;
                         }
-                        h3 {
+                        h4 {
                             font-size: 12px;
                         }
                         p {
@@ -69,12 +72,10 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
                     `}
                 >
                     {props.richTextLabel
-                        ? documentToReactComponents(props.richTextLabel)
-                        : props.title}
+                        ? documentToReactComponents(reduceHeadingLevel(props.richTextLabel))
+                        : <h2>{props.title}</h2>}
                 </div>
-            </Fragment>
         );
-    }
 
     let imgElement = <React.Fragment />;
     if (!props.imageUrl) {
@@ -150,3 +151,32 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
         </CheapCard>
     );
 };
+
+// Reduce heading levels throughout the input document.
+// Currently assumes document is from contentful, where we permit only h1, h2, h3
+// This is for accessibility: semantically, cards in a collection are second-level,
+// so (for example) keyboard navigation through level 1 headings should skip them.
+function reduceHeadingLevel(input: Document): Document {
+    const result = reduceHeadingLevelInternal({...input}) as Document;
+    return result;
+}
+
+function reduceHeadingLevelInternal(input: object) : object {
+    if (input.hasOwnProperty("content") && input.hasOwnProperty("nodeType")) {
+        const result:any = {...input};
+        result.content = result.content.map((x:object) => reduceHeadingLevelInternal(x));
+        result.nodeType = reduceHeadingLevelInString(result.nodeType);
+        return result;
+    }
+    return input;
+}
+
+function reduceHeadingLevelInString(input:string) :string {
+    switch(input) {
+        case "heading-1": return "heading-2";
+        case "heading-2": return "heading-3";
+        case "heading-3": return "heading-4";
+        default:
+            return input;
+    }
+}

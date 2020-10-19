@@ -13,6 +13,7 @@ interface IProps {
 }
 
 export const CardGroup: React.FunctionComponent<IProps> = (props) => {
+    const rowHeight = 258; // todo derive from commonui.something
     return (
         // Enhance: LazyLoad has parameters (height and offset) that should help
         // but so far I haven't got them to work well. It has many other
@@ -23,8 +24,15 @@ export const CardGroup: React.FunctionComponent<IProps> = (props) => {
         // If the params are good, this list will grow as you scroll.
         // If the params are bad, some groups at the end will NEVER show.
 
+        // Set offset to keep one more item expanded, so keyboard shortcuts can find them
+        // Set placeholder so that ul child items are of correct accessible class.
+        // Note that explicit placeholders must control their own height.
+
         /* Note, this currently breaks strict mode. See app.tsx */
-        <LazyLoad height={258 /* todo derive from commonui.something */}>
+        <LazyLoad height={rowHeight}
+             offset={rowHeight}
+             placeholder={<li className="placeholder" style={{height:`${rowHeight}px`}}></li>}
+             >
             <li
                 css={css`
                     margin-top: 30px;
