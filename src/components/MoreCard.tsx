@@ -27,8 +27,7 @@ export const MoreCard: React.FunctionComponent<IProps> = (props) => {
     const href =
         "/" +
         [props.collection.urlKey] +
-        (props.skip ? "/:skip:" + props.skip : "");
-
+        (props.skip !== undefined ? "/:skip:" + props.skip : "");
     return (
         <CheapCard
             css={css`
