@@ -143,9 +143,12 @@ export const CollectionSubsetPage: React.FunctionComponent<{
     let subList = <ByLevelGroups collection={subcollection} />;
     if ((props.collectionName + props.filters).indexOf("level:") >= 0) {
         subList = <ByTopicsGroups collection={subcollection} />;
-        const maxRows: number | undefined = subcollection.rows; // can be undefined, in which case it's the default
+        let maxRows: number | undefined = subcollection.rows; // can be undefined, in which case it's the default
         // If we had previously gone down a topic trail, then just show them all.
         if ((props.collectionName + props.filters).indexOf("topic:") >= 0) {
+            if (!maxRows) {
+                maxRows = 1000; // show all of the books (or 5000 of them anyway)
+            }
             subList = (
                 <BookCardGroup
                     title={subcollection.label}

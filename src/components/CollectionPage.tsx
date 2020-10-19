@@ -62,7 +62,7 @@ export const CollectionPage: React.FunctionComponent<{
                 booksComponent = (
                     <BookCardGroup
                         collection={collection}
-                        rows={collection.rows}
+                        rows={collection.rows ? collection.rows : 1000} // all-books = all books
                     />
                 );
                 break;
