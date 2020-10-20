@@ -8,6 +8,7 @@ import { useContentful } from "../connection/UseContentful";
 import { useDocumentTitle } from "./Routes";
 import Markdown from "markdown-to-jsx";
 import { WindowsInstallerDownloads } from "./WindowsInstallerDownloads";
+import { WindowsInstallerLinks } from "./WindowsInstallerLinks";
 import { BloomReaderVersionNumber } from "./BloomReaderVersionNumber";
 import { CreationThemeProvider } from "../theme";
 import Link from "@material-ui/core/Link";
@@ -57,6 +58,9 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
                           overrides: {
                               a: {
                                   component: Link,
+                              },
+                              WindowsInstallerLink: {
+                                  component: WindowsInstallerLinks,
                               },
                               WindowsInstallerDownload: {
                                   component: WindowsInstallerDownloads,

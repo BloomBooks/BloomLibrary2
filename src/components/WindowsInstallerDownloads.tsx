@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 
 import React from "react";
 import Button from "@material-ui/core/Button";
-import useAxios from "@use-hooks/axios";
+import useAxios, { IReturns } from "@use-hooks/axios";
 import Link from "@material-ui/core/Link";
 import { commonUI } from "../theme";
 export const WindowsInstallerDownloads: React.FunctionComponent<{
@@ -18,10 +18,7 @@ export const WindowsInstallerDownloads: React.FunctionComponent<{
         trigger: "true",
     });
 
-    const info =
-        versionRequest && versionRequest.response
-            ? versionRequest.response.data
-            : {};
+    const info = getInstallerInfo(versionRequest);
     const versionNumber = info.version ?? "0.0.0";
     return (
         <React.Fragment>
@@ -87,3 +84,9 @@ export const WindowsInstallerDownloads: React.FunctionComponent<{
         </React.Fragment>
     );
 };
+
+export function getInstallerInfo(request: IReturns<any>): any {
+    return request && request.response
+            ? request.response.data
+            : {};
+}
