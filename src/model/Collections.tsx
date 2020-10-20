@@ -303,7 +303,7 @@ export function getDummyCollectionForPreview(bannerId: string): ICollection {
 // card. But once you click the card, then you're going to topic:foo and we would pick up any explicit
 // "topic:foo" collection.
 function makeTopicCollectionsForCards(): ICollection[] {
-    return kTopicList.map((t) =>
+    return [...kTopicList].sort().map((t) =>
         makeTopicCollection(
             {
                 urlKey: "topic:" + t,
