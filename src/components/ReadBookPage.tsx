@@ -191,7 +191,9 @@ export const ReadBookPage: React.FunctionComponent<{
     const showBackButton = previousPathname.indexOf(`/book/${id}`) < 0;
 
     const iframeSrc =
-        `${bloomPlayerUrl}?url=${url}&showBackButton=${showBackButton}&centerVertically=false&useOriginalPageSize=true` +
+        `${bloomPlayerUrl}?url=${encodeURIComponent(
+            url
+        )}&showBackButton=${showBackButton}&centerVertically=false&useOriginalPageSize=true` +
         `${langParam}&hideFullScreenButton=${autoFullScreen}&independent=false&host=bloomlibrary`;
 
     // This theme matches Bloom-player. It is supposed to help the full-screen button

@@ -34,9 +34,13 @@ export const RowOfCollectionCards: React.FunctionComponent<{
     ) {
         return null;
     }
-    const childCollections = props.collection.childCollections.sort((x, y) =>
-        x.label.localeCompare(y.label)
-    );
+    // https://issues.bloomlibrary.org/youtrack/issue/BL-9089 likely we do want some kinds of rows
+    // sorted, and others not sorted. For now, let's require the librarian to hand-sort the ones
+    // she wants sorted
+    // const childCollections = props.collection.childCollections.sort((x, y) =>
+    //     x.label.localeCompare(y.label)
+    // );
+    const childCollections = props.collection.childCollections;
     const cards: JSX.Element[] = childCollections.map((childCollection1) => {
         const childCollection = childCollection1!; // can't persuade typescript that this can't be null.
         const key =
