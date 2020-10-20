@@ -27,6 +27,7 @@ export const CardSwiper: React.FunctionComponent<{
         threshold: 10, // drag of less than 10px not recognized, therefore acts as normal click.
         //preventClicks: false, // Even a long drag activates the link
         watchOverflow: true, // prevents sliding and showing arrows when all cards fit
+        a11y: true, // supposed to provide default accessibility behavior, but seems to do nothing.
     };
 
     const [swiper, setSwiper] = useState<any | null>(null);
