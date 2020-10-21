@@ -125,7 +125,16 @@ export const TagsChooser: React.FunctionComponent<{
                     .sort()
             }
             setSelectedValues={(items: string[]) => {
-                props.book.tags = items;
+                // Force a default prefix of "tag:" if the user does not provide one.
+                // Otherwise, the prefix will default to "topic:", which isn't necessarily wanted.
+                // See https://issues.bloomlibrary.org/youtrack/issue/BL-8990.
+                const xitems = items.map(item => {
+                    if (item.includes(":")) {
+                        return item;
+                    }
+                    return "tag:" + item;
+                })
+                props.book.tags = xitems;
             }}
             getStylingForValue={(t: string) => {
                 const defaultStyle = {
