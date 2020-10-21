@@ -17,3 +17,9 @@ export function removePunctuation(text: string): string {
     const punctuationRegEx = /[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-./:;<=>?@[\]^_`{|}~]/g;
     return text.replace(punctuationRegEx, "");
 }
+
+// We want some elements to be there but not seen, so screeen readers can find them.
+// https://www.accessibility-developer-guide.com/examples/hiding-elements/visually/ says this is the best way to
+// hide them visully while still letting the screen reader find them.
+export const propsToHideAccessibilityElement =
+    "position:absolute;left_-10000px;top:auto;width:1px;height:1px;overflow:hidden;";
