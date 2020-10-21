@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { Fragment } from "react";
+import React from "react";
 import { CheapCard } from "./CheapCard";
 import { IFilter } from "../IFilter";
 import { BookCount } from "./BookCount";
