@@ -31,7 +31,11 @@ interface IProps {
     contextLangIso?: string;
 }
 
-export const BookCardGroup: React.FunctionComponent<IProps> = (props) => (
+export const BookCardGroup: React.FunctionComponent<IProps> = (props) => {
+        const rowHeight = (props.rows ?? 1) * commonUI.bookCardHeightPx +
+            commonUI.bookGroupTopMarginPx;
+    return (
+
     // Enhance: this has parameters, height and offset, that should help
     // but so far I haven't got them to work well. It has many other
     // parameters too that someone should look into. Make sure to test
@@ -47,13 +51,17 @@ export const BookCardGroup: React.FunctionComponent<IProps> = (props) => (
             /* note, if the number of cards is too small to fill up those rows, this will expect
                     to be taller than it is, but then when it is replaced by the actual content, the
                     scrollbar will adjust, so no big deal?*/
-            (props.rows ?? 1) * commonUI.bookCardHeightPx +
-            commonUI.bookGroupTopMarginPx
+            rowHeight
         }
+        // Set offset to keep one more item expanded, so keyboard shortcuts can find them
+        // Set placeholder so that ul child items are of correct accessible class.
+        // Note that explicit placeholders must control their own height.
+        offset={rowHeight}
+        placeholder={<li className="placeholder" style={{height:`${rowHeight}px`}}></li>}
     >
         <CollectionGroupInner {...props} />
     </LazyLoad>
-);
+)};
 export const CollectionGroupInner: React.FunctionComponent<IProps> = (
     props
 ) => {
