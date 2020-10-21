@@ -44,6 +44,11 @@ export function getConnection(): IConnection {
         // change to true when testing with local database
         return local;
     }
+    if (false && // Change to true to test localhost:3000 with dev instead of prod
+        window.location.hostname === "localhost" &&
+        window.location.port === "3000") {
+        return dev;
+        }
     if (
         window.location.hostname === "bloomlibrary.org" ||
         window.location.hostname === "next.bloomlibrary.org" ||
