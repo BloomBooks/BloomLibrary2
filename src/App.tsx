@@ -64,7 +64,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
     const showUnderConstruction =
         window.location.hostname !== "bloomlibrary.org" &&
         window.location.hostname !== "embed.bloomlibrary.org" &&
-        window.location.hostname !== "dev.bloomlibrary.org" &&
+        !window.location.hostname.startsWith("dev") &&
         window.location.hostname !== "localhost";
 
     const [explicitlyChosenLanguageTag] = useState<string | undefined>(
@@ -82,6 +82,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
 
     const slowerLanguageLookupToHelpErrorChecking =
         window.location.hostname === "alpha.bloomlibrary.org" ||
+        window.location.hostname === "dev-alpha.bloomlibrary.org" ||
         window.location.hostname === "localhost";
     return (
         <IntlProvider

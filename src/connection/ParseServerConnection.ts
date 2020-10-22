@@ -31,6 +31,7 @@ const dev: IConnection = {
     url: "https://bloom-parse-server-develop.azurewebsites.net/parse/",
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const local: IConnection = {
     headers: {
         "Content-Type": "text/json",
@@ -40,39 +41,26 @@ const local: IConnection = {
 };
 
 export function getConnection(): IConnection {
-    if (false) {
-        // change to true when testing with local database
-        return local;
-    }
-    if (false && // Change to true to test localhost:3000 with dev instead of prod
-        window.location.hostname === "localhost" &&
-        window.location.port === "3000") {
-        return dev;
-        }
     if (
         window.location.hostname === "bloomlibrary.org" ||
         window.location.hostname === "next.bloomlibrary.org" ||
-        window.location.hostname === "cf-next.bloomlibrary.org" ||
+        window.location.hostname === "embed.bloomlibrary.org" ||
         window.location.hostname === "alpha.bloomlibrary.org"
     ) {
         return prod;
     }
-    if (
-        window.location.hostname === "dev.bloomlibrary.org" ||
-        window.location.hostname === "dev-next.bloomlibrary.org"
-    ) {
+
+    if (window.location.hostname.startsWith("dev")) {
         return dev;
     }
 
-    // Storybook is currently configured to look at development
-    // Uncomment this to point it at production
-    // if (
-    //     window.location.hostname === "localhost" &&
-    //     window.location.port === "9009"
-    // ) {
+    if (window.location.hostname === "localhost") {
+        return prod;
+        // return dev;
+        // return local;
+    }
+
     return prod;
-    // }
-    //return dev;
 }
 
 // This should only be called when there is a current user logged in.
