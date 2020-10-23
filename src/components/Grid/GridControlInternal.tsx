@@ -58,6 +58,7 @@ import { IGridControlProps } from "./GridControl";
 import { CachedTablesContext } from "../../App";
 import { ILanguage } from "../../model/Language";
 import matchSorter from "match-sorter";
+import { useGetCollection } from "../../model/Collections";
 
 // we need the observer in order to get the logged in user, which may not be immediately available
 const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer(
@@ -334,9 +335,26 @@ function CombineGridAndSearchBoxFilter(
 ): IFilter {
     // The result of the search box is encoded. We need it decoded in order to search correctly
     // (e.g.) on things like "topic:math", where the colon would be encoded otherwise.
-    const decodedFilter = routerFilter;
+    let decodedFilter = routerFilter;
+    // If the search box filter starts with "collectionName:", we need to get the named
+    // collection and substitute its filter here.  This is useful because the collection
+    // filter may not be expressible with our column filtering setup or with other search
+    // expressions.
+    let collectionName;
     if (decodedFilter.search) {
         decodedFilter.search = decodeURIComponent(decodedFilter.search);
+        if (decodedFilter.search.toLowerCase().startsWith("collectionname:")) {
+            collectionName = decodedFilter.search.substr(15);
+        }
+    }
+    // Being a hook, useGetCollection cannot be called conditionally.  But its argument
+    // can be undefined, so we can call it whether or not we have a collection specified.
+    const contentfulCollect = useGetCollection(collectionName);
+    if (collectionName && contentfulCollect) {
+        if (contentfulCollect.collection?.filter) {
+            // replace the original search filter with the desired collection filter.
+            decodedFilter = contentfulCollect.collection.filter;
+        }
     }
     const f: IFilter = {
         ...decodedFilter,
