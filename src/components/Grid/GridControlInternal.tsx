@@ -34,6 +34,7 @@ import {
 import {
     useGetBookCount,
     useGetBooksForGrid,
+    useProcessDerivativeFilter,
 } from "../../connection/LibraryQueryHooks";
 
 import {
@@ -347,6 +348,7 @@ function CombineGridAndSearchBoxFilter(
             collectionName = decodedFilter.search.substr(11);
         }
     }
+    const originalDecodedFilter = decodedFilter;
     // Being a hook, useGetCollection cannot be called conditionally.  But its argument
     // can be undefined, so we can call it whether or not we have a collection specified.
     const contentfulCollect = useGetCollection(collectionName);
@@ -356,6 +358,12 @@ function CombineGridAndSearchBoxFilter(
             decodedFilter = contentfulCollect.collection.filter;
         }
     }
+    if (!useProcessDerivativeFilter(decodedFilter)) {
+        // Things are still loading: return the original search filter so that we don't
+        // get an error popping up.  This will get called again as things settle down...
+        decodedFilter = originalDecodedFilter;
+    }
+
     const f: IFilter = {
         ...decodedFilter,
         inCirculation: InCirculationOptions.All,

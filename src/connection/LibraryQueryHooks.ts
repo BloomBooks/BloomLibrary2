@@ -360,7 +360,7 @@ function useBookQueryInternal(
 //
 // returns true if either we have retrieved the needed filter from the collection named in filter.derivedFromCollectionName,
 //  or we do not need to retrieve it because none is named.
-function useProcessDerivativeFilter(filter: IFilter): boolean {
+export function useProcessDerivativeFilter(filter: IFilter): boolean {
     const collectionName = filter?.derivedFromCollectionName || "";
     const { collection: derivedFromCollection, loading } = useGetCollection(
         collectionName
