@@ -39,6 +39,7 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
     const innards = (
         <div
             css={css`
+                max-width: 1000px;
                 margin-left: 30px;
                 margin-right: 30px;
                 h1 {
