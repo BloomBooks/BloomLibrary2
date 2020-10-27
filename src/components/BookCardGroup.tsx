@@ -195,7 +195,7 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
                         <span
                             css={css`
                                 font-size: 9pt;
-                                color: gray;
+                                color: ${commonUI.colors.minContrastGray};
                                 margin-left: 1em;
                             `}
                         >

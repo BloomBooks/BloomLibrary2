@@ -41,14 +41,15 @@ export const CardGroup: React.FunctionComponent<IProps> = (props) => {
                 aria-label={props.title}
             >
                 <h1>{props.title}</h1>
-                <ul
+                <div
+                    // We want this to be a UL. But accessibility checker insists UL may have
+                    // only LI as children, and a couple of layers of Swiper divs get in the way.
                     css={css`
-                        list-style: none;
                         padding-left: 0;
                     `}
                 >
-                    <CardSwiper>{props.children}</CardSwiper>
-                </ul>
+                    <CardSwiper wrapperRole="list">{props.children}</CardSwiper>
+                </div>
             </li>
         </LazyLoad>
     );

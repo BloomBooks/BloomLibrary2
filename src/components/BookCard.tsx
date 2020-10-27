@@ -57,6 +57,7 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                 `book/${props.basicBookInfo.objectId}` +
                 (props.contextLangIso ? "?lang=" + props.contextLangIso : "")
             }
+            role="listitem"
             // onClick={() =>
             //     router!.pushBook(
             //         props.basicBookInfo.objectId,

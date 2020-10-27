@@ -134,6 +134,7 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
                 ${height}
             `}
             target={props.target}
+            role="listitem"
         >
             {titleElement}
             {imgElement}

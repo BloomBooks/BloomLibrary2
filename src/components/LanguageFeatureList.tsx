@@ -13,6 +13,7 @@ import { getUniqueLanguages } from "./LanguageLink";
 import { useTheme } from "@material-ui/core";
 import TruncateMarkup from "react-truncate-markup";
 import { getDisplayNamesForLanguage } from "../model/Language";
+import { commonUI } from "../theme";
 
 interface IProps {
     basicBookInfo: IBasicBookInfo;
@@ -73,7 +74,7 @@ export const LanguageFeatureList: React.FunctionComponent<IProps> = (props) => {
     return (
         <div
             css={css`
-                color: gray;
+                color: ${commonUI.colors.minContrastGray}
                 font-size: 9pt;
                 margin-top: auto;
                 padding: 3px;

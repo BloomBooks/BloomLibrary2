@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 interface IProps extends React.HTMLProps<HTMLDivElement> {
     className?: string;
     target?: string; // what we're calling "target" is the last part of url, where the url is <breadcrumb stuff>/<target>
+    role?: string;
 }
 
 // just a wrapper around the children you provide, made to look like a card and responsive to a click.
@@ -22,6 +23,7 @@ export const CheapCard: React.FunctionComponent<IProps> = (props) => {
             className={`cheapCard ${props.className}`}
             css={cardStyle}
             to={`/${url}`}
+            role={props.role}
         >
             {props.children}
         </Link>

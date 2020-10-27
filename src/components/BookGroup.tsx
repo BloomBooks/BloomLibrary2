@@ -43,6 +43,13 @@ export const BookGroup: React.FunctionComponent<IProps> = (props) => {
     if (props.predeterminedBooks && props.rows !== 1) {
         rowCount = Math.ceil(props.predeterminedBooks.length / 5); // still rough, but better than just using the max.
     }
+
+    // note, if the number of cards is too small to fill up those rows, this will expect
+    // to be taller than it is, but then when it is replaced by the actual content, the
+    // scrollbar will adjust, so no big deal?
+    const rowHeight = rowCount * commonUI.bookCardHeightPx +
+                commonUI.bookGroupTopMarginPx;
+
     // Enhance: this has parameters, height and offset, that should help
     // but so far I haven't got them to work well. It has many other
     // parameters too that someone should look into. Make sure to test
@@ -56,12 +63,9 @@ export const BookGroup: React.FunctionComponent<IProps> = (props) => {
     return (
         <LazyLoad
             height={
-                /* note, if the number of cards is too small to fill up those rows, this will expect
-                    to be taller than it is, but then when it is replaced by the actual content, the
-                    scrollbar will adjust, so no big deal?*/
-                rowCount * commonUI.bookCardHeightPx +
-                commonUI.bookGroupTopMarginPx
+                rowHeight
             }
+            placeholder={<li className="placeholder" style={{height:`${rowHeight}px`}}></li>}
         >
             <BookGroupInner {...props} />
         </LazyLoad>
@@ -137,7 +141,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
     // }
 
     const bookList = showInOneRow ? (
-        <CardSwiper>{cards}</CardSwiper>
+        <CardSwiper wrapperRole="list">{cards}</CardSwiper>
     ) : (
         <div
             css={css`
@@ -177,7 +181,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
                     <span
                         css={css`
                             font-size: 9pt;
-                            color: gray;
+                            color: ${commonUI.colors.minContrastGray};
                             margin-left: 1em;
                         `}
                     >
