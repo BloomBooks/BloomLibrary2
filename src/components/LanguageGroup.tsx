@@ -88,7 +88,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
     // This is working around the fact that our typedefs do not know that GetRootPropsOptions
     // is allowed to have a role property. The effect is to prevent the root div that contains
     // the type-ahead box getting the combobox role and related aria declarations that cause
-    // NVDA to skip it in browse mode (no, I don't know why it would skip combo boxes!)
+    // NVDA to skip it in browse mode (no, I don't know why it would skip combo boxes!  )
     const rootPropsOptions:GetRootPropsOptions = {refKey:"ref"};
     (rootPropsOptions as any).role = undefined;
 
@@ -99,6 +99,8 @@ export const LanguageGroup: React.FunctionComponent = () => {
             css={css`
                 margin-top: 30px;
             `}
+            role="region"
+            aria-labelledby="findBooksByLanguage"
         >
             <h1>
                 <FormattedMessage

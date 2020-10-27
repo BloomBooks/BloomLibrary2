@@ -65,6 +65,7 @@ export const Header: React.FunctionComponent = () => {
                     ${minTabWidth}
                 }
             `}
+            role="navigation"
         >
             <Tab
                 label={l10n.formatMessage({
@@ -94,6 +95,7 @@ export const Header: React.FunctionComponent = () => {
                 padding-left: 20px;
                 box-sizing: content-box;
             `}
+            role="banner"
         >
             <div
                 css={css`
