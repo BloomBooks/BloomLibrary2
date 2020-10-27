@@ -14,7 +14,8 @@ import { CollectionSubsetPage } from "./CollectionSubsetPage";
 import { ContentfulBanner } from "./banners/ContentfulBanner";
 import { CollectionPage } from "./CollectionPage";
 import { Footer } from "./Footer";
-import { ContentfulPage } from "./ContentfulPage";
+import { ContentfulPage } from "./pages/ContentfulPage";
+import { ContentfulMultiPartPage } from "./pages/ContentfulMultiPartPage";
 import { getDummyCollectionForPreview } from "../model/Collections";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { IEmbedSettings } from "../model/ContentInterfaces";
@@ -109,8 +110,11 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         return <ReadBookPage id={match.params.id} />;
                     }}
                 />
-                <Route path="/about">
+                {/* <Route path="/about">
                     <ContentfulPage urlKey="about" />
+                </Route> */}
+                <Route path="/about">
+                    <ContentfulMultiPartPage urlKey="new-about" />
                 </Route>
                 <Route
                     path="/grid/:filter*"

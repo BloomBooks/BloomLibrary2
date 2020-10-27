@@ -4,13 +4,13 @@ import React from "react"; // see https://github.com/emotion-js/emotion/issues/1
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
-import { useContentful } from "../connection/UseContentful";
-import { useDocumentTitle } from "./Routes";
+import { useContentful } from "../../connection/UseContentful";
+import { useDocumentTitle } from "../Routes";
 import Markdown from "markdown-to-jsx";
-import { WindowsInstallerDownload } from "./WindowsInstallerDownload";
-import { WindowsInstallerLink } from "./WindowsInstallerLink";
-import { BloomReaderVersionNumber } from "./BloomReaderVersionNumber";
-import { CreationThemeProvider } from "../theme";
+import { WindowsInstallerDownload } from "../WindowsInstallerDownload";
+import { WindowsInstallerLink } from "../WindowsInstallerLink";
+import { BloomReaderVersionNumber } from "../BloomReaderVersionNumber";
+import { CreationThemeProvider } from "../../theme";
 import Link from "@material-ui/core/Link";
 import { useLocation } from "react-router-dom";
 
