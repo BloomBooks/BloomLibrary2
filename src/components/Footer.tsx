@@ -120,6 +120,7 @@ export const Footer: React.FunctionComponent = () => {
 
                 background-color: #525252;
             `}
+            role="contentinfo" // standard role for footers
         >
             {/* Top Row */}
             <div

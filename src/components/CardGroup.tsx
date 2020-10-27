@@ -37,6 +37,8 @@ export const CardGroup: React.FunctionComponent<IProps> = (props) => {
                 css={css`
                     margin-top: 30px;
                 `}
+                role="region"
+                aria-label={props.title}
             >
                 <h1>{props.title}</h1>
                 <ul

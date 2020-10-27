@@ -160,6 +160,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                     css={css`
                                         flex: 1 0 auto;
                                     `}
+                                    role="main"
                                 >
                                     <Routes />
                                 </div>

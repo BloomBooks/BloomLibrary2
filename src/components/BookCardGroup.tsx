@@ -174,6 +174,7 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
     if (countToShow < maxCardsToRetrieve) {
         countToShow = books.length;
     }
+    const label = props.title ?? props.collection.label;
     return (
         //We just don't show the row if there are no matches, e.g., no Health books for this project
         // (ZeroBooksMatchedElement will be an empty pseudo-element that satisfies the 'or' but shows nothing)
@@ -185,9 +186,11 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
                     min-height: ${commonUI.bookCardHeightPx +
                     commonUI.bookGroupTopMarginPx}px;
                 `}
+                role="region"
+                aria-label={label}
             >
                 <h1>
-                    {props.title ?? props.collection.label}
+                    {label}
                     {props.collection.urlKey === "new-arrivals" || (
                         <span
                             css={css`

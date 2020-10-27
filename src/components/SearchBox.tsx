@@ -206,6 +206,7 @@ export const SearchBox: React.FunctionComponent<{
             onFocus={() => setShowTooltip(true)}
             component="form"
             elevation={0}
+            role="search"
         >
             <IconButton
                 aria-label="search with Enter"

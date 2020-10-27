@@ -169,6 +169,8 @@ export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
                     min-height: ${commonUI.bookCardHeightPx +
                     commonUI.bookGroupTopMarginPx}px;
                 `}
+                role="region"
+                aria-label={props.title}
             >
                 <h1>
                     {props.title}
