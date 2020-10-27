@@ -4,11 +4,16 @@ import React from "react";
 export const commonUI = {
     colors: {
         bloomRed: "#D65649",
-        bloomBlue: "#1d94a4",
+        // would prefer "#1d94a4", but insufficient contrast for text on white according to accessibility rules.
+        // Got this color by reducing the "V" value in the HSV equivalent of "#1d94a4"
+        // from 64 to 56, which according to https://juicystudio.com/services/luminositycontrastratio.php#specify
+        // yields a contrast ratio of 4.58.
+        bloomBlue: "#1a818f",
         bloomBlueTransparent: "#1d94a438",
         dialogTopBottomGray: "#F1F3F4",
         creationArea: "#509E2F", // this is the SIL Intl green
         createAreaTextOnWhite: "#226B04", // a bit darker for contrast
+        minContrastGray:"#767676", // lightest grey that is accessible on white background"
     },
 
     // Some of these aren't very global, but this is a convenient place to put

@@ -37,9 +37,10 @@ export const Header: React.FunctionComponent = () => {
     const backgroundColor = createTabSelected
         ? commonUI.colors.creationArea
         : commonUI.colors.bloomRed;
+    // 14pt bold is the minimum size for white text on bloom-red to be considered accessible
     const tabStyle = css`
         color: white !important;
-        font-size: 18px !important;
+        font-size: 14pt !important;
         font-weight: bold !important;
         flex-shrink: 2;
     `;
@@ -55,14 +56,22 @@ export const Header: React.FunctionComponent = () => {
                 //     value ? "/create" : "/read"
                 // );
             }}
+            // The margin-right generally grows and may well be much bigger than 30px.
+            // The low value allows things to get tight without the text being cut off by the margin.
+            // The opacity of 1 defeats the default MUI behavior of dimming the unselected tab text,
+            // which leaves us without sufficient contrast between text and background for
+            // accessibility.
             css={css`
                 margin-left: ${showReadCreateBelow ? "0" : "30px"};
-                margin-right: 30px;
+                margin-right: 13px;
                 .MuiTabs-indicator {
                     background-color: white !important;
                 }
                 .MuiTab-root {
                     ${minTabWidth}
+                }
+                .MuiTab-textColorInherit {
+                    opacity: 1;
                 }
             `}
             role="navigation"
