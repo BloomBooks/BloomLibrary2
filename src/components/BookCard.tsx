@@ -82,7 +82,8 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                 // swiper-lazy-loading which hides it alltogether until swiper sets the src.
                 // And then fairly soon after that, hopefully we see the image.
                 // But to avoid an ugly flash of this message, we wait half a second before letting it have a value.
-                alt={readyToAddAltText ? "book thumbnail" : ""}
+                // Don't provide an alt unless the src is missing.  See BL-8963.
+                alt={readyToAddAltText && !thumbnailUrl ? "book thumbnail" : ""}
                 // NB: if you're not getting an image, e.g. in Storybook, it might be because it's not inside of a swiper,
                 // but wasn't told to 'handle its own laziness'.
                 src={props.handleYourOwnLaziness ? thumbnailUrl : undefined}

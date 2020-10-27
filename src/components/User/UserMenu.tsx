@@ -254,10 +254,8 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
                             {loggedInUser && loggedInUser.photoURL && (
                                 <img
                                     src={loggedInUser.photoURL}
-                                    alt={l10n.formatMessage({
-                                        id: "usermenu.avatar",
-                                        defaultMessage: "user",
-                                    })}
+                                    // This use of the avatar image is decorative, not informational.  See BL-8963.
+                                    alt=""
                                     css={css`
                                         width: ${props.buttonHeight};
                                         margin-right: 15px;

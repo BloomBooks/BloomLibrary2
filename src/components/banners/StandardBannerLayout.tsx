@@ -119,19 +119,8 @@ export const LogoOnBanner: React.FunctionComponent<{
             <ImgWithCredits
                 credits={logo.credits}
                 src={logo.url}
-                alt={
-                    logo.altText
-                        ? logo.altText
-                        : l10n.formatMessage(
-                              {
-                                  id: "bannerLogo",
-                                  defaultMessage: "logo for {name}",
-                              },
-                              {
-                                  name: props.banner.title,
-                              }
-                          )
-                }
+                // If the logo doesn't supply an altText, don't add one.  See BL-8963.
+                alt={logo.altText ? logo.altText : ""}
                 // complicated stuff is going on here with the display:flex on the
                 // parent div, particularly in row mode. FlexBox has an unobvious idea
                 // of the natural and minimum size of various things. By default an img
