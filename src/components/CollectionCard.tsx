@@ -112,11 +112,10 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
                 loader={titleElementIfNoImage}
                 // If we could not get an image, show the text title
                 unloader={titleElementIfNoImage}
-                // If we have an explicit altText, use it. Otherwise,
-                // if we're hiding the title, we'd better have it as alt-text.
-                // If we're showing the title anyway, the image adds no useful content,
-                // so display an explicit empty alt text to indicate it is only decorative.
-                alt={props.altText || (props.hideTitle ? props.title : "")}
+                // If we have an explicit altText, use it.
+                // An explicit empty alt text indicates it is only decorative, at
+                // least from the viewpoint of a screen reader (BL-8963).
+                alt={props.altText ?? ""}
             />
         );
     }
@@ -173,10 +172,13 @@ function reduceHeadingLevelInternal(input: object) : object {
 }
 
 function reduceHeadingLevelInString(input:string) :string {
-    switch(input) {
-        case "heading-1": return "heading-2";
-        case "heading-2": return "heading-3";
-        case "heading-3": return "heading-4";
+    switch (input) {
+        case "heading-1":
+            return "heading-2";
+        case "heading-2":
+            return "heading-3";
+        case "heading-3":
+            return "heading-4";
         default:
             return input;
     }
