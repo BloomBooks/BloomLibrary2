@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 
 import React, { useContext, useState } from "react";
 import { LanguageCard } from "./LanguageCard";
-import Downshift, { GetItemPropsOptions, GetRootPropsOptions } from "downshift";
+import Downshift, { GetItemPropsOptions, GetMenuPropsOptions, GetRootPropsOptions } from "downshift";
 import matchSorter from "match-sorter";
 import searchIcon from "../search.png";
 import { CachedTablesContext } from "../App";
@@ -34,11 +34,13 @@ export const LanguageGroup: React.FunctionComponent = () => {
     };
     const getFilterLanguagesUI = (
         filter: string | null,
-        getItemProps: (options: GetItemPropsOptions<any>) => {}
+        getItemProps: (options: GetItemPropsOptions<any>) => {},
+        getMenuProps: (options: GetMenuPropsOptions) => {}
     ) => {
         filteredLanguages = getFilteredLanguages(filter);
         if (filteredLanguages.length) {
             return (
+                <div {...getMenuProps({})}>
                 <CardSwiper>
                     {filteredLanguages.map((l: any, index: number) => (
                         // JohnnT: I think this comment is wrong; getLabelProps is actually to do with a label for
@@ -53,9 +55,11 @@ export const LanguageGroup: React.FunctionComponent = () => {
                             usageCount={l.usageCount}
                             isoCode={l.isoCode}
                             objectId={l.objectId}
+                            role="option"
                         />
                     ))}
                 </CardSwiper>
+                </div>
             );
         } else {
             return (
@@ -102,7 +106,11 @@ export const LanguageGroup: React.FunctionComponent = () => {
             role="region"
             aria-labelledby="findBooksByLanguage"
         >
-            <h1>
+            <h1
+                // This has an ID to match the aria-labelledby above.
+                // The FormattedMessage has an ID to look up the message, but its ID does not
+                // appear in the generated document so there is no confusion.
+                id="findBooksByLanguage">
                 <FormattedMessage
                     id="findBooksByLanguage"
                     defaultMessage="Find Books By Language"
@@ -121,6 +129,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                         getLabelProps,
                         getItemProps,
                         getRootProps,
+                        getMenuProps,
                         inputValue: currentInputBoxText,
                     }) => (
                         <div>
@@ -188,7 +197,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                             </div>
                             {getFilterLanguagesUI(
                                 currentInputBoxText,
-                                getItemProps
+                                getItemProps, getMenuProps
                             )}
                         </div>
                     )}

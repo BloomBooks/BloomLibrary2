@@ -3,6 +3,13 @@ import Swiper from "react-id-swiper";
 
 export const CardSwiper: React.FunctionComponent<{
     children: ReactElement[];
+    // Typically the swiper is a list. I can't find a way to configure it so that the element containing
+    // the cards is a UL, but by setting this to 'list' and making items with role listitem we achieve
+    // the same accessibility goals. This role becomes the value of the role attribute of the swiper
+    // wrapper element, which is the immediate parent of the items. Note that it's not always a list, e.g.,
+    // in the LanguageGroup a further-out element is a listbox and the items have role 'option'.
+    // If you set a wrapperRole, make sure the children you pass have role listitem.
+    wrapperRole?:string;
 }> = (props) => {
     const swiperConfig = {
         preloadImages: false,
@@ -41,6 +48,9 @@ export const CardSwiper: React.FunctionComponent<{
             // This check is just for optimization.
             if (swiper.activeIndex !== 0) {
                 swiper.slideTo(0);
+            }
+            if (props.wrapperRole) {
+                swiper.wrapperEl.setAttribute("role", props.wrapperRole);
             }
         }
     }, [props.children.length, swiper]);
