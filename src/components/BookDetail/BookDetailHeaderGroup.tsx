@@ -122,10 +122,15 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                     `}
                 >
                     <img
-                        alt={l10n.formatMessage({
-                            id: "book.detail.thumbnail",
-                            defaultMessage: "book thumbnail",
-                        })}
+                        // Don't provide an alt unless the src is missing.  See BL-8963.
+                        alt={
+                            thumbnailUrl
+                                ? ""
+                                : l10n.formatMessage({
+                                      id: "book.detail.thumbnail",
+                                      defaultMessage: "book thumbnail",
+                                  })
+                        }
                         src={thumbnailUrl}
                         onError={(ev) => {
                             // This is unlikely to be necessary now, as we have what we think is a reliable
