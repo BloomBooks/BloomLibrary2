@@ -22,6 +22,14 @@ export interface IFeatureSpec {
     // This is only used in some contexts (e.g. CategoryCard).
     //iconScale?: number;
     languageDependent: boolean;
+    // Is the feature present (in some collection of features...this is never set
+    // in the mater list declared here, but only in results of
+    // getAllFeaturesWithTheseMarkedPresent())
+    isPresent?: boolean;
+    // By default, a contentful collection of books with this feature may be obtained
+    // with href "/" followed by featureKey. If that isn't right, collectionHref provides the
+    // correct href (not including the leading slash).
+    collectionHref?: string;
 }
 
 export const featureIconHeight = 12;
@@ -71,6 +79,7 @@ export const featureSpecs: IFeatureSpec[] = [
         ),
         //iconScale: 85,
         languageDependent: true,
+        collectionHref:"talking-books",
     },
     {
         featureKey: "blind",
@@ -104,6 +113,7 @@ export const featureSpecs: IFeatureSpec[] = [
             <ComicIcon title={"Comic Book"} {...props}></ComicIcon>
         ),
         languageDependent: false,
+        collectionHref:"comics",
     },
     {
         featureKey: "motion",
@@ -160,6 +170,7 @@ export const featureSpecs: IFeatureSpec[] = [
             ></SignLanguageIcon>
         ),
         languageDependent: true,
+        collectionHref:"sign-language"
     },
     {
         featureKey: "activity",
@@ -179,8 +190,26 @@ export const featureSpecs: IFeatureSpec[] = [
             ></ActivityIcon>
         ),
         languageDependent: false,
+        collectionHref:"activities",
     },
 ];
+
+// Gets a list of all the features. Those in the list passed will have isPresent true.
+export function getAllFeaturesWithTheseMarkedPresent(features: string[] | undefined
+): IFeatureSpec[] {
+    return featureSpecs.map((f) => {
+        const result = {...f};
+        if (!features) {
+            return result;
+        }
+        for (const featureName of features) {
+            if (f.featureKey === featureName) {
+                result.isPresent = true;
+            }
+        }
+        return result;
+    });
+}
 
 export function getNonLanguageFeatures(
     features: string[] | undefined
