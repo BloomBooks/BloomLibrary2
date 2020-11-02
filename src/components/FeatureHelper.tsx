@@ -22,6 +22,13 @@ export interface IFeatureSpec {
     // This is only used in some contexts (e.g. CategoryCard).
     //iconScale?: number;
     languageDependent: boolean;
+    // Not present in the featureSpecs exported directly, this can be used when
+    // we want to distinguish which features occur in the current book
+    inCurrentBook?: boolean;
+    // By default, a contentful collection of books with this feature may be obtained
+    // with href "/" followed by featureKey. If that isn't right, collectionHref provides the
+    // correct href (not including the leading slash).
+    collectionHref?: string;
 }
 
 export const featureIconHeight = 12;
@@ -71,6 +78,7 @@ export const featureSpecs: IFeatureSpec[] = [
         ),
         //iconScale: 85,
         languageDependent: true,
+        collectionHref:"talking-books",
     },
     {
         featureKey: "blind",
@@ -104,6 +112,7 @@ export const featureSpecs: IFeatureSpec[] = [
             <ComicIcon title={"Comic Book"} {...props}></ComicIcon>
         ),
         languageDependent: false,
+        collectionHref:"comics",
     },
     {
         featureKey: "motion",
@@ -160,6 +169,7 @@ export const featureSpecs: IFeatureSpec[] = [
             ></SignLanguageIcon>
         ),
         languageDependent: true,
+        collectionHref:"sign-language"
     },
     {
         featureKey: "activity",
@@ -179,8 +189,30 @@ export const featureSpecs: IFeatureSpec[] = [
             ></ActivityIcon>
         ),
         languageDependent: false,
+        collectionHref:"activities",
     },
 ];
+
+// Gets a list of all the features. Those in the list passed will have inCurrentBook true.
+export function getAllFeaturesWithTheseMarkedPresent(features: string[] | undefined
+): IFeatureSpec[] {
+    return featureSpecs.map((f) => {
+        const result = {...f};
+        if (!features) {
+            return result;
+        }
+        for (const featureName of features) {
+            const indexOfColon = featureName.indexOf(":");
+            if (indexOfColon > 0) {
+                continue;
+            }
+            if (f.featureKey === featureName) {
+                result.inCurrentBook = true;
+            }
+        }
+        return result;
+    });
+}
 
 export function getNonLanguageFeatures(
     features: string[] | undefined
