@@ -28,9 +28,6 @@ export const Header: React.FunctionComponent = () => {
         toolbarHeight = "100px";
     }
     const l10n = useIntl();
-    // review: should this be a prop?
-    const hideHeader = location.pathname.startsWith("/player/");
-    if (hideHeader) return <React.Fragment></React.Fragment>;
 
     const minTabWidth = showReadCreateNarrower ? "min-width:110px" : "";
 

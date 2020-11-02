@@ -13,9 +13,6 @@ import { FormattedMessage, useIntl } from "react-intl";
 //import { Link } from "react-router-dom";
 export const Footer: React.FunctionComponent = () => {
     const l10n = useIntl();
-    const location = useLocation();
-    const hideFooter = location.pathname.startsWith("/player/");
-    if (hideFooter) return <React.Fragment></React.Fragment>;
     const separator = (
         <span
             css={css`
