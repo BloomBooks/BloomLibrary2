@@ -61,6 +61,11 @@ export const Routes: React.FunctionComponent<{}> = () => {
                     <Redirect to="/page/create/downloads" />
                 </Route>
                 <Route
+                    path={"/page/create/about"}
+                >
+                    <ContentfulMultiPartPage urlKey="new-about" />
+                </Route>
+                <Route
                     path={[
                         "/artofreading", // We have published this link in various places (like the WeSay page)
                     ]}
