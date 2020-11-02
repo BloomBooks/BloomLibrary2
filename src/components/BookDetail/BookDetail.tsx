@@ -27,6 +27,7 @@ import { splitPathname, useDocumentTitle } from "../Routes";
 import { useLocation } from "react-router-dom";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { FormattedMessage, useIntl } from "react-intl";
+import { FeaturesGroup } from "./FeaturesGroup";
 
 interface IProps {
     id: string;
@@ -160,6 +161,9 @@ export const BookDetailInternal: React.FunctionComponent<{
                         </p>
                     </div>
                 )}
+                {divider}
+                <FeaturesGroup
+                book={props.book}/>
                 {divider}
                 <MetadataGroup
                     book={props.book}
