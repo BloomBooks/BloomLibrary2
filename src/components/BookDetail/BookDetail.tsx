@@ -198,7 +198,12 @@ export const BookDetailInternal: React.FunctionComponent<{
                             <DeleteButton book={props.book} />
                         </div>
                         {/* Enhance, maybe, add this and wire to some message <HowToPrintButton />*/}
-                        {bloomDesktopAvailable || (
+                        {/* This was previously and erroneously || instead of &&, which made it show up
+                        only when blook desktop is NOT available, that is, on mobile. Keeping it around
+                        because we might actually want it on desktop...BL-9201 is not clear. But, if so,
+                        we need a different, probably contentful, page and href, because the one below
+                        doens't work.
+                            {bloomDesktopAvailable && (
                             <Link
                                 color="secondary"
                                 target="_blank"
@@ -239,7 +244,7 @@ export const BookDetailInternal: React.FunctionComponent<{
                                     </div>
                                 </div>
                             </Link>
-                        )}
+                        )} */}
                         <ArtifactGroup book={props.book} />
                     </div>
                 </div>
