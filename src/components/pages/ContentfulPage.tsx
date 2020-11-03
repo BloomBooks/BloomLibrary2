@@ -33,7 +33,7 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
             {/* Could not get this to compile <Markdown> {markdownContent} </Markdown> */}
             {/* {options:{overrides:{h1:{component:WindowsInstallerDownloads, props:{}}}}} */}
             {markdownContent
-                ? <ContentfulMarkdownPart markdown={markdownContent} />
+                ? <ContentfulMarkdownPart markdown={markdownContent} flexValue={1}/>
                 : documentToReactComponents(page.fields.body)}
         </div>
     );

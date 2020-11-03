@@ -16,6 +16,8 @@ export const ContentfulMultiPartPage: React.FunctionComponent<{
         return null;
     }
 
+    const backgroundColors = ["#b0dee4", "#e5e5e5"]; // light blue and light gray for color-banded sections.
+
     const innards = (
         <div css={css`
             max-width: 1000px;
@@ -24,9 +26,21 @@ export const ContentfulMultiPartPage: React.FunctionComponent<{
             h1 {
                 font-size: 2rem;
             }
+            table {
+                margin-top: 36px;
+            }
+            thead th {
+                width: 30%;
+            }
             img {
-                width: 100%;
-                max-width: 620px;
+                max-width: 250px;
+            }
+            td {
+                vertical-align: top;
+            }
+            td img {
+                height: 150px;
+                width: auto;
             }
             ul {
                 list-style: inside;
@@ -37,12 +51,18 @@ export const ContentfulMultiPartPage: React.FunctionComponent<{
                 list-style-type: circle;
             }`}
         >
-            {page.fields.parts.map((part: any) => (
-                <div>
-                    <ContentfulMarkdownPart markdown={part.fields.primary} />
+            {page.fields.parts.map((part: any, index: number) => (
+                <div css={css`
+                    display: flex;
+                    flex-direction: row;
+                    padding-top: 32px;
+                    background-color: ${(index % 2) ? backgroundColors[0] : backgroundColors[1]}
+                `}>
+                    <ContentfulMarkdownPart markdown={part.fields.primary} flexValue={3}/>
                     {part.fields.secondary && (
                         <ContentfulMarkdownPart
                             markdown={part.fields.secondary}
+                            flexValue={2}
                         />
                     )}
                 </div>
