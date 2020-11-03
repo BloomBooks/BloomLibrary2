@@ -168,6 +168,11 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         );
                     }}
                 ></Route>
+                <Route
+                    path="/sponsorship" // From legacy blorg
+                >
+                    <ContentfulPage urlKey="sponsorship" />
+                </Route>
                 {/* Must come last, this matches anything, including the home path with nothing at all. */}
                 <Route
                     path={"/:segments*"}
