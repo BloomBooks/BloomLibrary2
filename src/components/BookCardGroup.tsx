@@ -34,6 +34,10 @@ interface IProps {
 export const BookCardGroup: React.FunctionComponent<IProps> = (props) => {
         const rowHeight = (props.rows ?? 1) * commonUI.bookCardHeightPx +
             commonUI.bookGroupTopMarginPx;
+    if (!props.collection.filter) {
+        // this happens for example if there are no "published" the cards in the row
+        return null; // otherwise we would just get all the books in the library
+    }
     return (
 
     // Enhance: this has parameters, height and offset, that should help

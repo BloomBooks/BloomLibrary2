@@ -117,7 +117,11 @@ function getSubCollections(childCollections: any[]): ICollection[] {
     // the undefined elements yields a collection without any undefineds.
     return (
         childCollections
-            .map((x: any) => convertContentfulCollectionToICollection(x))
+            .map((x: any) => {
+                // if a collection is linked to but isn't "published" yet (or has been unpublished)
+                // then it doesn't have a fields property. Just skip it.
+                return (x && x.fields)? convertContentfulCollectionToICollection(x):undefined;
+            }).filter(y=>y)
             //.filter((y) => y)
             .map((z) => z!)
     );
