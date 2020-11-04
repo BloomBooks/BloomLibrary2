@@ -15,7 +15,12 @@ const contentfulClientPreview = Contentful.createClient({
 });
 
 export function getContentfulClient(): Contentful.ContentfulClientApi {
-    return window.location.pathname.indexOf("_preview") > -1
+    // On alpha an localhost, we want to see things that are not in the "Published"
+    // state on Contentful
+    return window.location.hostname.indexOf("alpha.bloomlibrary.org") > -1 ||
+        // Note: if you want to test locally without preview mode,
+        // use http://127.0.0.1:3000 instead of http://localhost:3000
+        window.location.hostname.indexOf("localhost") > -1
         ? contentfulClientPreview
         : contentfulClientPublished;
 }
