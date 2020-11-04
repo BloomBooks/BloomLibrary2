@@ -11,7 +11,6 @@ import { ICollection, IBanner } from "../../model/ContentInterfaces";
 import { ImgWithCredits } from "../../ImgWithCredits";
 import { Blurb } from "./Blurb";
 import { useMediaQuery } from "@material-ui/core";
-import { useIntl } from "react-intl";
 
 export const StandardBannerLayout: React.FunctionComponent<{
     collection: ICollection;
@@ -110,7 +109,6 @@ export const LogoOnBanner: React.FunctionComponent<{
     banner: IBanner;
     cssExtra?: string;
 }> = (props) => {
-    const l10n = useIntl();
     const logo = props.banner.logo
         ? props.banner.logo
         : props.collection.iconForCardAndDefaultBanner;

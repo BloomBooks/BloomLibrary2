@@ -16,7 +16,7 @@ import { LanguageFeatureList } from "./LanguageFeatureList";
 import { getBestBookTitle } from "../model/Book";
 
 import TruncateMarkup from "react-truncate-markup";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
 
 const BookCardWidth = 140;
 

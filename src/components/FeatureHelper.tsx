@@ -79,7 +79,7 @@ export const featureSpecs: IFeatureSpec[] = [
         ),
         //iconScale: 85,
         languageDependent: true,
-        collectionHref:"talking-books",
+        collectionHref: "talking-books",
     },
     {
         featureKey: "blind",
@@ -113,7 +113,7 @@ export const featureSpecs: IFeatureSpec[] = [
             <ComicIcon title={"Comic Book"} {...props}></ComicIcon>
         ),
         languageDependent: false,
-        collectionHref:"comics",
+        collectionHref: "comics",
     },
     {
         featureKey: "motion",
@@ -170,7 +170,7 @@ export const featureSpecs: IFeatureSpec[] = [
             ></SignLanguageIcon>
         ),
         languageDependent: true,
-        collectionHref:"sign-language"
+        collectionHref: "sign-language",
     },
     {
         featureKey: "activity",
@@ -190,15 +190,16 @@ export const featureSpecs: IFeatureSpec[] = [
             ></ActivityIcon>
         ),
         languageDependent: false,
-        collectionHref:"activities",
+        collectionHref: "activities",
     },
 ];
 
 // Gets a list of all the features. Those in the list passed will have isPresent true.
-export function getAllFeaturesWithTheseMarkedPresent(features: string[] | undefined
+export function getAllFeaturesWithTheseMarkedPresent(
+    features: string[] | undefined
 ): IFeatureSpec[] {
     return featureSpecs.map((f) => {
-        const result = {...f};
+        const result = { ...f };
         if (!features) {
             return result;
         }

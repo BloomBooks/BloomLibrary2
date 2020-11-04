@@ -9,7 +9,7 @@ export const CardSwiper: React.FunctionComponent<{
     // wrapper element, which is the immediate parent of the items. Note that it's not always a list, e.g.,
     // in the LanguageGroup a further-out element is a listbox and the items have role 'option'.
     // If you set a wrapperRole, make sure the children you pass have role listitem.
-    wrapperRole?:string;
+    wrapperRole?: string;
 }> = (props) => {
     const swiperConfig = {
         preloadImages: false,
@@ -53,7 +53,7 @@ export const CardSwiper: React.FunctionComponent<{
                 swiper.wrapperEl.setAttribute("role", props.wrapperRole);
             }
         }
-    }, [props.children.length, swiper]);
+    }, [props.children.length, props.wrapperRole, swiper]);
 
     return (
         <Swiper {...swiperConfig} getSwiper={setSwiper}>
