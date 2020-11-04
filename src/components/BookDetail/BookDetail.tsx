@@ -194,7 +194,7 @@ export const BookDetailInternal: React.FunctionComponent<{
                                 display: flex;
                             `}
                         >
-                            <ReportButton book={props.book} />
+                            <ReportButton book={props.book} contextLangIso={props.contextLangIso}/>
                             <DeleteButton book={props.book} />
                         </div>
                         {/* Enhance, maybe, add this and wire to some message <HowToPrintButton />*/}

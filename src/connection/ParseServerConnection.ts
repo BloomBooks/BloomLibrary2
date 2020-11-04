@@ -195,3 +195,25 @@ export function logout() {
             LoggedInUser.current = undefined;
         });
 }
+
+export async function sendConcernEmail(
+    fromAddress: string,
+    content: string,
+    bookId: string
+) {
+    const connection = getConnection();
+    // Run a cloud code function (sendConcernEmail) which sends an email to process.env.EMAIL_REPORT_BOOK_RECIPIENT as defined on the server.
+    // Currently, that is concerns@bloomlibrary.org for prod and bloom-team@lsdev.flowdock.com for dev.
+    return axios.post(
+        `${connection.url}functions/sendConcernEmail`,
+        {
+            fromAddress,
+            content,
+            bookId,
+        },
+
+        {
+            headers: connection.headers,
+        }
+    );
+}
