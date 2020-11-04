@@ -26,6 +26,7 @@ import { getResultsOrMessageElement } from "../../connection/GetQueryResultsUI";
 import { getAnchorProps } from "../../embedded";
 import { useIsEmbedded } from "../EmbeddingHost";
 import { FormattedMessage, useIntl } from "react-intl";
+import { BookThumbnail } from "./BookThumbnail";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{
     book: Book;
@@ -121,40 +122,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                         margin-bottom: 1em;
                     `}
                 >
-                    <img
-                        // Don't provide an alt unless the src is missing.  See BL-8963.
-                        alt={
-                            thumbnailUrl
-                                ? ""
-                                : l10n.formatMessage({
-                                      id: "book.detail.thumbnail",
-                                      defaultMessage: "book thumbnail",
-                                  })
-                        }
-                        src={thumbnailUrl}
-                        onError={(ev) => {
-                            // This is unlikely to be necessary now, as we have what we think is a reliable
-                            // way to know whether the harvester has created a thumbnail.
-                            // And eventually all books should simply have harvester thumbnails.
-                            // Keeping the fall-back just in case it occasionally helps.
-                            if (
-                                (ev.target as any).src !== legacyStyleThumbnail
-                            ) {
-                                (ev.target as any).src = legacyStyleThumbnail;
-                            } else {
-                                console.log(
-                                    "ugh! no thumbnail in either place"
-                                );
-                            }
-                        }}
-                        css={css`
-                            max-width: 125px;
-                            max-height: 120px;
-
-                            object-fit: contain; //cover will crop, but fill up nicely
-                            margin-right: 16px;
-                        `}
-                    />
+                    <BookThumbnail book={props.book}/>
                     <div>
                         <h1
                             css={css`

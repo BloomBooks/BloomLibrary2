@@ -118,3 +118,12 @@
 "footer.githubLogo","Priority - Low","Github Logo","Logotipo de Github","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo","Github Logo"
 "footer.contentful","Priority - Low","Powered by Contentful","Ejecutado con Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful","Powered by Contentful"
 version.number.parenthetical,,(version {versionNumber})
+"book.repliesWillBeSent","","Replies will be sent to the email address you provided when you signed up:"
+"common.cancel","","Cancel"
+"send","","Send"
+"common.close","","Close"
+"book.concerns","","What concerns do you have about this book?"
+"book.summary","","Summary"
+"pleaseSignIn","","Please Sign In"
+"toUseThisSignIn","Your translation should contain two slashes. The part between will become a button or hot link for signing in","To use this function, please /Sign In to Bloom Library/"
+"concernReported","","Your concern has been reported."
