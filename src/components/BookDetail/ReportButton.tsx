@@ -4,15 +4,19 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React from "react";
+import React, { useState } from "react";
 import { Book } from "../../model/Book";
 import ReportIcon from "@material-ui/icons/Flag";
 import { Link } from "@material-ui/core";
 import { FormattedMessage } from "react-intl";
+import { ReportDialog } from "./ReportDialog";
 
 export const ReportButton: React.FunctionComponent<{
     book: Book;
-}> = (props) => (
+    contextLangIso?: string;
+}> = (props) => {
+    const [dialogOpen, setDialogOpen] = useState(false);
+    return (
     // <Button
     //     color="secondary"
     //     css={css`
@@ -22,6 +26,7 @@ export const ReportButton: React.FunctionComponent<{
     //     `}
     //     onClick={() => alert("not implemented yet")}
     // >
+    <React.Fragment>
     <Link
         color="secondary"
         target="_blank"
@@ -33,7 +38,7 @@ export const ReportButton: React.FunctionComponent<{
             align-items: center;
             margin-top: 10px !important;
         `}
-        onClick={() => alert("not implemented yet")}
+        onClick={() => setDialogOpen(true)}
     >
         <ReportIcon
             css={css`
@@ -44,4 +49,12 @@ export const ReportButton: React.FunctionComponent<{
             <FormattedMessage id="book.report" defaultMessage="Report" />
         </div>
     </Link>
-);
+    <ReportDialog
+        book={props.book}
+        open={dialogOpen}
+        close={() => {
+            setDialogOpen(false);
+            }}
+        contextLangIso={props.contextLangIso}/>
+    </React.Fragment>
+)};
