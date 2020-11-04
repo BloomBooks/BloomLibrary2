@@ -99,13 +99,14 @@ to apply it to does not support our inline css */
     padding-right: 30px;
 }
 
-.base-contentful-page h1 {
-    font-size: 2rem;
+.base-contentful-page ul {
+    /* revert the rules set above for all ul */
+    list-style: revert;
+    padding: revert;
 }
 
-/* Rules applying only to ContentfulPage. */
-.contentful-page img {
-    width: 200px;
+.base-contentful-page h1 {
+    font-size: 2rem;
 }
 
 /* Rules applying only to ContentfulMultiPartPage. */
@@ -168,4 +169,9 @@ to apply it to does not support our inline css */
 .multipart-contentful-page.new-about td img {
     height: 150px;
     width: auto;
+}
+
+/* Bloom Reader page rules */
+.contentful-page.bloom-reader img {
+    width: 200px;
 }
