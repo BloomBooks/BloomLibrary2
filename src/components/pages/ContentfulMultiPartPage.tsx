@@ -1,10 +1,6 @@
-import css from "@emotion/css/macro";
 import React from "react"; // see https://github.com/emotion-js/emotion/issues/1156
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
 import { ContentfulBasePage, useContentfulPage } from "./ContentfulBasePage";
-import { ContentfulMarkdownPart } from "../ContentfulMarkdownPart";
+import { ContentfulMarkdownPart, Column } from "../ContentfulMarkdownPart";
 
 // This is used (as of the time of this writing) just for the About Bloom page with all its
 // color-banded sections describing Bloom.
@@ -17,32 +13,14 @@ export const ContentfulMultiPartPage: React.FunctionComponent<{
     }
 
     const innards = (
-        <div css={css`
-            max-width: 1000px;
-            margin-left: 30px;
-            margin-right: 30px;
-            h1 {
-                font-size: 2rem;
-            }
-            img {
-                width: 100%;
-                max-width: 620px;
-            }
-            ul {
-                list-style: inside;
-                margin-left: 20px;
-                list-style-type: square;
-            }
-            ul ul {
-                list-style-type: circle;
-            }`}
-        >
-            {page.fields.parts.map((part: any) => (
+        <div className={`base-contentful-page multipart-contentful-page ${props.urlKey}`}>
+            {page.fields.parts.map((part: any, index: number) => (
                 <div>
-                    <ContentfulMarkdownPart markdown={part.fields.primary} />
+                    <ContentfulMarkdownPart markdown={part.fields.primary} column={Column.leftColumn}/>
                     {part.fields.secondary && (
                         <ContentfulMarkdownPart
                             markdown={part.fields.secondary}
+                            column={Column.rightColumn}
                         />
                     )}
                 </div>
