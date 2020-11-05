@@ -9,7 +9,6 @@ import { Book } from "../../model/Book";
 import { observer } from "mobx-react";
 import { LicenseLink } from "./LicenseLink";
 //NB: v3.0 of title-case has a new API, but don't upgrade: it doesn't actually work like v2.x does, where it can take fooBar and give us "Foo Bar"
-import titleCase from "title-case";
 import { Link, useTheme } from "@material-ui/core";
 import { commonUI } from "../../theme";
 import { BookStats } from "./BookStats";
@@ -116,22 +115,6 @@ export const MetadataGroup: React.FunctionComponent<{
                     }
                 `}
             >
-                <div>
-                    <FormattedMessage
-                        id="book.metadata.features"
-                        defaultMessage="Features:"
-                    />{" "}
-                    {props.book.features
-                        ? props.book.features
-                              // Don't display the language-specific ones since we always have a generic one to go with it.
-                              // e.g. We might have [blind, blind:en]. Only display "Blind."
-                              .filter((f) => f.indexOf(":") < 0)
-                              .map((f) => {
-                                  return titleCase(f);
-                              })
-                              .join(", ")
-                        : []}
-                </div>
                 <div>
                     <FormattedMessage
                         id="book.metadata.tags"

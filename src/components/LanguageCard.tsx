@@ -11,7 +11,11 @@ import { commonUI } from "../theme";
 import { useTheme } from "@material-ui/core";
 import { FormattedMessage } from "react-intl";
 
-export const LanguageCard: React.FunctionComponent<ILanguage> = (props) => {
+interface ILanguageWithRole extends ILanguage  {
+    role?:string; // accessibility role, passed on as part of propsToPassDown
+}
+
+export const LanguageCard: React.FunctionComponent<ILanguageWithRole> = (props) => {
     const theme = useTheme();
     const { displayName: languageName, autonym } = getDisplayNamesForLanguage(
         props

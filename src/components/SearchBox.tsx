@@ -176,10 +176,15 @@ export const SearchBox: React.FunctionComponent<{
 
     const cancelSearch = () => {
         setSearchString("");
-        // at the moment, the only search we allow is over the whole library, so
-        // when we cancel, we return to the whole library.
-        if (location.pathname.indexOf(":search:") >= 0) {
-            history.push("/");
+        // searches can occur in /bulk as well as the main library, so
+        // ensure we return whence we came.
+        const searchIdx = location.pathname.indexOf("/:search:");
+        if (searchIdx >= 0) {
+            let newLocationPath = location.pathname.substr(0, searchIdx);
+            if (newLocationPath.length === 0) {
+                newLocationPath = "/";
+            }
+            history.push(newLocationPath);
         }
     };
 
@@ -201,6 +206,7 @@ export const SearchBox: React.FunctionComponent<{
             onFocus={() => setShowTooltip(true)}
             component="form"
             elevation={0}
+            role="search"
         >
             <IconButton
                 aria-label="search with Enter"

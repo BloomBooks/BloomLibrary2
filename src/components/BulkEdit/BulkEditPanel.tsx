@@ -46,6 +46,9 @@ export const BulkEditPanel: React.FunctionComponent<{
         !!props.filterHolder.completeFilter.bookshelf ||
         !!props.filterHolder.completeFilter.otherTags ||
         !!props.filterHolder.completeFilter.language ||
+        !!props.filterHolder.completeFilter.derivedFrom ||
+        !!props.filterHolder.completeFilter.feature ||
+        !!props.filterHolder.completeFilter.brandingProjectName ||
         // lots of other fields, e.g. copyright, end up as part of search (e.g. search:"copyright:foo")
         !!props.filterHolder.completeFilter.search
     );

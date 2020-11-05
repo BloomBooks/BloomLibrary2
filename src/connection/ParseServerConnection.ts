@@ -31,6 +31,7 @@ const dev: IConnection = {
     url: "https://bloom-parse-server-develop.azurewebsites.net/parse/",
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const local: IConnection = {
     headers: {
         "Content-Type": "text/json",
@@ -40,34 +41,26 @@ const local: IConnection = {
 };
 
 export function getConnection(): IConnection {
-    if (false) {
-        // change to true when testing with local database
-        return local;
-    }
     if (
         window.location.hostname === "bloomlibrary.org" ||
         window.location.hostname === "next.bloomlibrary.org" ||
-        window.location.hostname === "cf-next.bloomlibrary.org" ||
+        window.location.hostname === "embed.bloomlibrary.org" ||
         window.location.hostname === "alpha.bloomlibrary.org"
     ) {
         return prod;
     }
-    if (
-        window.location.hostname === "dev.bloomlibrary.org" ||
-        window.location.hostname === "dev-next.bloomlibrary.org"
-    ) {
+
+    if (window.location.hostname.startsWith("dev")) {
         return dev;
     }
 
-    // Storybook is currently configured to look at development
-    // Uncomment this to point it at production
-    // if (
-    //     window.location.hostname === "localhost" &&
-    //     window.location.port === "9009"
-    // ) {
+    if (window.location.hostname === "localhost") {
+        return prod;
+        // return dev;
+        // return local;
+    }
+
     return prod;
-    // }
-    //return dev;
 }
 
 // This should only be called when there is a current user logged in.
@@ -201,4 +194,26 @@ export function logout() {
             delete connection.headers["X-Parse-Session-Token"];
             LoggedInUser.current = undefined;
         });
+}
+
+export async function sendConcernEmail(
+    fromAddress: string,
+    content: string,
+    bookId: string
+) {
+    const connection = getConnection();
+    // Run a cloud code function (sendConcernEmail) which sends an email to process.env.EMAIL_REPORT_BOOK_RECIPIENT as defined on the server.
+    // Currently, that is concerns@bloomlibrary.org for prod and bloom-team@lsdev.flowdock.com for dev.
+    return axios.post(
+        `${connection.url}functions/sendConcernEmail`,
+        {
+            fromAddress,
+            content,
+            bookId,
+        },
+
+        {
+            headers: connection.headers,
+        }
+    );
 }

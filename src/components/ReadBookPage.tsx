@@ -231,7 +231,7 @@ export const ReadBookPage: React.FunctionComponent<{
 };
 
 function onPlayerUnloading() {
-    window.screen.orientation.unlock();
+    window.screen.orientation?.unlock();
     document.exitFullscreen().catch((e) => console.log(e));
     sendPlayerClosingAnalytics();
 }
