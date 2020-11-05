@@ -107,6 +107,7 @@ to apply it to does not support our inline css */
 
 .base-contentful-page h1 {
     font-size: 2rem;
+    text-align: center;
 }
 
 /* Rules applying only to ContentfulMultiPartPage. */
@@ -131,11 +132,11 @@ to apply it to does not support our inline css */
 
 /* Light blue and light gray for banded sections */
 .multipart-contentful-page.new-about > div:nth-child(even) {
-    background-color: #b0dee4;
+    background-color: #b1e29d;
 }
 
 .multipart-contentful-page.new-about > div:nth-child(odd) {
-    background-color: #e5e5e5;
+    background-color: none;
 }
 
 .multipart-contentful-page.new-about img {
