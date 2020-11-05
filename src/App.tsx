@@ -31,6 +31,7 @@ import { Footer } from "./components/Footer";
 import { IntlProvider } from "react-intl";
 
 import { useGetLocalizations } from "./GetLocalizations";
+import { useIsEmbedded } from "./components/EmbeddingHost";
 interface ICachedTables {
     tags: string[];
     languagesByBookCount: ILanguage[];
@@ -56,7 +57,7 @@ export const CachedTablesContext = React.createContext<ICachedTables>({
 const RouterContent: React.FunctionComponent<{}> = (props) => {
     const location = useLocation();
     const showingPlayer = location.pathname.startsWith("/player/");
-    const embeddedMode = window.self !== window.top;
+    const embeddedMode = useIsEmbedded();
     return <React.Fragment>
         {embeddedMode || showingPlayer || <Header />}
         {/* This div takes up all the space available so that the footer
