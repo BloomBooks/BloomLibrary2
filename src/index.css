@@ -123,6 +123,10 @@ to apply it to does not support our inline css */
     padding-right: unset;
 }
 
+.multipart-contentful-page.new-about h1 {
+    text-align: center;
+}
+
 /* We need our padding at just the right level in order to get the color bands to be full width. */
 .multipart-contentful-page.new-about > div {
     padding-left: 30px;
@@ -131,11 +135,11 @@ to apply it to does not support our inline css */
 
 /* Light blue and light gray for banded sections */
 .multipart-contentful-page.new-about > div:nth-child(even) {
-    background-color: #b0dee4;
+    background-color: #b1e29d;
 }
 
 .multipart-contentful-page.new-about > div:nth-child(odd) {
-    background-color: #e5e5e5;
+    background-color: none;
 }
 
 .multipart-contentful-page.new-about img {
