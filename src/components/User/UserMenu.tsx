@@ -17,6 +17,7 @@ import Avatar from "react-avatar";
 import { track } from "../../analytics/Analytics";
 import * as Sentry from "@sentry/browser";
 import { FormattedMessage, useIntl } from "react-intl";
+import { useHistory } from "react-router-dom";
 
 // This React component displays a button for functions related to the user who may
 // be logged in. If no user is logged in, it displays a generic icon with pull-down
@@ -45,6 +46,8 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
     const [loggedInUser, setLoggedInUser] = useState(
         firebase.auth().currentUser
     );
+
+    const history = useHistory(); // used to jump to My Books
 
     /*useEffect(() => {
         firebase
@@ -129,6 +132,16 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
             .signOut()
             .then(() => logoutFromParseServer());
     };
+    const handleMyBooks = () => {
+        closeMenu();
+        const userEmail = !!loggedInUser ? loggedInUser.email : undefined;
+        if (userEmail) {
+            history.push("/my-books");
+        } else {
+            // This shouldn't happen. But if it does, we might as well log them out and do nothing else.
+            handleLogout();
+        }
+    }
     // split out buttonHeight else react complains because it doesn't apply to <div>s
     const { buttonHeight, ...otherProps } = props;
     return (
@@ -241,10 +254,8 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
                             {loggedInUser && loggedInUser.photoURL && (
                                 <img
                                     src={loggedInUser.photoURL}
-                                    alt={l10n.formatMessage({
-                                        id: "usermenu.avatar",
-                                        defaultMessage: "user",
-                                    })}
+                                    // This use of the avatar image is decorative, not informational.  See BL-8963.
+                                    alt=""
                                     css={css`
                                         width: ${props.buttonHeight};
                                         margin-right: 15px;
@@ -261,7 +272,7 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
                                 defaultMessage="Profile"
                             />
                         </MenuItem>
-                        <MenuItem onClick={handleNotImplemented}>
+                        <MenuItem onClick={handleMyBooks}>
                             <FormattedMessage
                                 id="usermenu.myBooks"
                                 defaultMessage="My Books"

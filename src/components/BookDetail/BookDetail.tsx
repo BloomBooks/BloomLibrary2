@@ -27,6 +27,7 @@ import { splitPathname, useDocumentTitle } from "../Routes";
 import { useLocation } from "react-router-dom";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { FormattedMessage, useIntl } from "react-intl";
+import { FeaturesGroup } from "./FeaturesGroup";
 
 interface IProps {
     id: string;
@@ -161,6 +162,9 @@ export const BookDetailInternal: React.FunctionComponent<{
                     </div>
                 )}
                 {divider}
+                <FeaturesGroup
+                book={props.book}/>
+                {divider}
                 <MetadataGroup
                     book={props.book}
                     breakToColumn={breakToColumn}
@@ -190,11 +194,15 @@ export const BookDetailInternal: React.FunctionComponent<{
                                 display: flex;
                             `}
                         >
-                            <ReportButton book={props.book} />
+                            <ReportButton book={props.book} contextLangIso={props.contextLangIso}/>
                             <DeleteButton book={props.book} />
                         </div>
                         {/* Enhance, maybe, add this and wire to some message <HowToPrintButton />*/}
-                        {bloomDesktopAvailable || (
+                        {/* This link is supposed to be an explanation of how to get Bloom desktop etc.
+                        so you can translate the book. A such only needed where the Translate button
+                        is missing, e.g., mobile and Mac. But we haven't created the page it should link
+                        to yet, so we're not showing it anywhere.
+                            {bloomDesktopAvailable || (
                             <Link
                                 color="secondary"
                                 target="_blank"
@@ -235,7 +243,7 @@ export const BookDetailInternal: React.FunctionComponent<{
                                     </div>
                                 </div>
                             </Link>
-                        )}
+                        )} */}
                         <ArtifactGroup book={props.book} />
                     </div>
                 </div>

@@ -46,6 +46,15 @@ export async function AddTagAllBooksInFilter(
     newTag: string,
     refresh: () => void
 ) {
+    if (!newTag.includes(":")) {
+        // Provide a default prefix if none is provided.  Otherwise a "topic" prefix is
+        // chosen for us.  See https://issues.bloomlibrary.org/youtrack/issue/BL-8990.
+        if (newTag.startsWith("-")) {
+            newTag = "-tag:" + newTag.substr(1);
+        } else {
+            newTag = "tag:" + newTag;
+        }
+    }
     const finalParams = constructParseBookQuery({}, filter, CachedTables.tags);
     const headers = getConnection().headers;
     const books = await axios.get(`${getConnection().url}classes/books`, {

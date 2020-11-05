@@ -34,6 +34,10 @@ interface IProps {
 export const BookCardGroup: React.FunctionComponent<IProps> = (props) => {
         const rowHeight = (props.rows ?? 1) * commonUI.bookCardHeightPx +
             commonUI.bookGroupTopMarginPx;
+    if (!props.collection.filter) {
+        // this happens for example if there are no "published" the cards in the row
+        return null; // otherwise we would just get all the books in the library
+    }
     return (
 
     // Enhance: this has parameters, height and offset, that should help
@@ -174,6 +178,7 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
     if (countToShow < maxCardsToRetrieve) {
         countToShow = books.length;
     }
+    const label = props.title ?? props.collection.label;
     return (
         //We just don't show the row if there are no matches, e.g., no Health books for this project
         // (ZeroBooksMatchedElement will be an empty pseudo-element that satisfies the 'or' but shows nothing)
@@ -185,14 +190,16 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
                     min-height: ${commonUI.bookCardHeightPx +
                     commonUI.bookGroupTopMarginPx}px;
                 `}
+                role="region"
+                aria-label={label}
             >
                 <h1>
-                    {props.title ?? props.collection.label}
+                    {label}
                     {props.collection.urlKey === "new-arrivals" || (
                         <span
                             css={css`
                                 font-size: 9pt;
-                                color: gray;
+                                color: ${commonUI.colors.minContrastGray};
                                 margin-left: 1em;
                             `}
                         >

@@ -14,7 +14,8 @@ import { CollectionSubsetPage } from "./CollectionSubsetPage";
 import { ContentfulBanner } from "./banners/ContentfulBanner";
 import { CollectionPage } from "./CollectionPage";
 import { Footer } from "./Footer";
-import { ContentfulPage } from "./ContentfulPage";
+import { ContentfulPage } from "./pages/ContentfulPage";
+import { ContentfulMultiPartPage } from "./pages/ContentfulMultiPartPage";
 import { getDummyCollectionForPreview } from "../model/Collections";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { IEmbedSettings } from "../model/ContentInterfaces";
@@ -58,6 +59,11 @@ export const Routes: React.FunctionComponent<{}> = () => {
                     ]}
                 >
                     <Redirect to="/page/create/downloads" />
+                </Route>
+                <Route
+                    path={"/page/create/about"}
+                >
+                    <ContentfulMultiPartPage urlKey="new-about" />
                 </Route>
                 <Route
                     path={[
@@ -110,7 +116,7 @@ export const Routes: React.FunctionComponent<{}> = () => {
                     }}
                 />
                 <Route path="/about">
-                    <ContentfulPage urlKey="about" />
+                    <ContentfulMultiPartPage urlKey="new-about" />
                 </Route>
                 <Route
                     path="/grid/:filter*"
@@ -162,6 +168,11 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         );
                     }}
                 ></Route>
+                <Route
+                    path="/sponsorship" // From legacy blorg
+                >
+                    <ContentfulPage urlKey="sponsorship" />
+                </Route>
                 {/* Must come last, this matches anything, including the home path with nothing at all. */}
                 <Route
                     path={"/:segments*"}

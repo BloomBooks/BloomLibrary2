@@ -16,6 +16,7 @@ import { LanguageFeatureList } from "./LanguageFeatureList";
 import { getBestBookTitle } from "../model/Book";
 
 import TruncateMarkup from "react-truncate-markup";
+import { useIntl } from "react-intl";
 
 const BookCardWidth = 140;
 
@@ -29,6 +30,7 @@ interface IProps {
 }
 
 export const BookCard: React.FunctionComponent<IProps> = (props) => {
+    const l10n = useIntl();
     const legacyStyleThumbnail = getLegacyThumbnailUrl(props.basicBookInfo);
     const [readyToAddAltText, setReadyToAddAltText] = useState(false);
     const { thumbnailUrl, isModernThumbnail } = getThumbnailUrl(
@@ -57,6 +59,7 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                 `book/${props.basicBookInfo.objectId}` +
                 (props.contextLangIso ? "?lang=" + props.contextLangIso : "")
             }
+            role="listitem"
             // onClick={() =>
             //     router!.pushBook(
             //         props.basicBookInfo.objectId,
@@ -82,7 +85,15 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                 // swiper-lazy-loading which hides it alltogether until swiper sets the src.
                 // And then fairly soon after that, hopefully we see the image.
                 // But to avoid an ugly flash of this message, we wait half a second before letting it have a value.
-                alt={readyToAddAltText ? "book thumbnail" : ""}
+                // Don't provide an alt unless the src is missing.  See BL-8963.
+                alt={
+                    readyToAddAltText && !thumbnailUrl
+                        ? l10n.formatMessage({
+                              id: "book.detail.thumbnail",
+                              defaultMessage: "book thumbnail",
+                          })
+                        : ""
+                }
                 // NB: if you're not getting an image, e.g. in Storybook, it might be because it's not inside of a swiper,
                 // but wasn't told to 'handle its own laziness'.
                 src={props.handleYourOwnLaziness ? thumbnailUrl : undefined}

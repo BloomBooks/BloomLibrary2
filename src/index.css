@@ -91,3 +91,87 @@ to apply it to does not support our inline css */
 .swiper-container:not(:hover) .swiper-button {
     display: none;
 }
+
+/* Rules applying to ContentfulPage AND ContentfulMultiPartPage. */
+.base-contentful-page {
+    max-width: 1000px;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.base-contentful-page ul {
+    /* revert the rules set above for all ul */
+    list-style: revert;
+    padding: revert;
+}
+
+.base-contentful-page h1 {
+    font-size: 2rem;
+}
+
+/* Rules applying only to ContentfulMultiPartPage. */
+.multipart-contentful-page > div {
+    display: flex;
+    flex-direction: row;
+    padding-top: 32px;
+    padding-bottom: 32px;
+}
+
+/* Rules for the new ContentfulMultiPartPage About page. */
+.multipart-contentful-page.new-about {
+    padding-left: unset;
+    padding-right: unset;
+}
+
+/* We need our padding at just the right level in order to get the color bands to be full width. */
+.multipart-contentful-page.new-about > div {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+/* Light blue and light gray for banded sections */
+.multipart-contentful-page.new-about > div:nth-child(even) {
+    background-color: #b0dee4;
+}
+
+.multipart-contentful-page.new-about > div:nth-child(odd) {
+    background-color: #e5e5e5;
+}
+
+.multipart-contentful-page.new-about img {
+    max-width: 250px;
+}
+
+/* Get the multi-layered list of features looking right. */
+.multipart-contentful-page.new-about ul {
+    list-style: inside;
+    margin-left: 20px;
+    list-style-type: square;
+}
+
+.multipart-contentful-page.new-about ul ul {
+    list-style-type: circle;
+}
+
+/* New About page feature table rules */
+.multipart-contentful-page.new-about table {
+    margin-top: 36px;
+}
+
+.multipart-contentful-page.new-about thead th {
+    width: 30%;
+}
+
+.multipart-contentful-page.new-about td {
+    vertical-align: top;
+}
+
+.multipart-contentful-page.new-about td img {
+    height: 150px;
+    width: auto;
+}
+
+/* Bloom Reader page rules */
+.contentful-page.bloom-reader img {
+    width: 200px;
+}

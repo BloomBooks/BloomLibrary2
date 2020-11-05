@@ -6,6 +6,8 @@ import { convertContentfulCollectionToICollection } from "./Contentful";
 import { kTopicList } from "./ClosedVocabularies";
 import { strict as assert } from "assert";
 import { useContentful } from "../connection/UseContentful";
+import { useGetLoggedInUser } from "../connection/LoggedInUser";
+import { IFilter } from "../IFilter";
 
 /* From original design: Each collection has
     id
@@ -56,9 +58,16 @@ export function useGetCollection(
 ): IContentfulCollectionQueryResponse {
     const collections = useGetContentfulCollections();
     const { languagesByBookCount: languages } = useContext(CachedTablesContext);
+    const user = useGetLoggedInUser(); // for collection 'my-books'
 
     if (!collectionName) {
         return { loading: false };
+    }
+
+    if (!user && collectionName === "my-books") {
+        // There must be a logged in user for the 'my-books' option to be available.
+        // But we can get here if the 'useGetLoggedInUser()' call hasn't returned yet.
+        return { loading: true };
     }
 
     if (!collections.length || !languages.length) {
@@ -121,6 +130,16 @@ export function useGetCollection(
             // whole block and instead populate the "Topics" collection on
             // Contentful
             explicitCollection.childCollections = makeTopicCollectionsForCards();
+        }
+        if (explicitCollection.urlKey === "my-books") {
+            if (user) {
+                const email = user.email;
+                if (email) {
+                    const filterOnUserAsUploader: IFilter = {};
+                    filterOnUserAsUploader.search = `uploader:${email}`;
+                    explicitCollection.filter = filterOnUserAsUploader;
+                }
+            }
         }
         collection = explicitCollection;
     }
