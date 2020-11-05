@@ -119,6 +119,10 @@ to apply it to does not support our inline css */
     padding-right: unset;
 }
 
+.multipart-contentful-page.new-about h1 {
+    text-align: center;
+}
+
 /* We need our padding at just the right level in order to get the color bands to be full width. */
 .multipart-contentful-page.new-about > div {
     padding-left: 30px;
@@ -127,11 +131,11 @@ to apply it to does not support our inline css */
 
 /* Light blue and light gray for banded sections */
 .multipart-contentful-page.new-about > div:nth-child(even) {
-    background-color: #b0dee4;
+    background-color: #b1e29d;
 }
 
 .multipart-contentful-page.new-about > div:nth-child(odd) {
-    background-color: #e5e5e5;
+    background-color: none;
 }
 
 .multipart-contentful-page.new-about img {
@@ -165,6 +169,29 @@ to apply it to does not support our inline css */
 .multipart-contentful-page.new-about td img {
     height: 150px;
     width: auto;
+}
+
+/*
+    These next two rules setup CSS that differs by which column this "Part" is for.
+    "justify-content" handles vertical alignment. The left column needs to align to the top
+    and the right column looks better if it's centered vertically.
+    "align-items" handles the horizontal alignment. The left column needs to align left and
+    the right columns needs to be center aligned.
+*/
+.new-about .contentful-markdown-part {
+    display: flex;
+    flex-direction: column;
+    padding-right: 20px;
+    flex: 1;
+    justify-content: start;
+    align-items: flex-start;
+    padding-left: 0;
+}
+
+.new-about .contentful-markdown-part.rightColumn {
+    justify-content: center;
+    align-items: center;
+    padding-left: 40px;
 }
 
 /* Bloom Reader page rules */
