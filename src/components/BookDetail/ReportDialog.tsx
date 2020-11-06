@@ -54,22 +54,14 @@ export const ReportDialog: React.FunctionComponent<{
                         font-size: 18pt;
                         margin-top: 0;
                         margin-bottom: 12px;
+                        color: black;
                     `}
                 >
                     {props.book.getBestTitle(props.contextLangIso)}
                 </h1>
                 {props.book.summary && (<div>{l10n.formatMessage({id: "book.summary", defaultMessage: "Summary:"}) +" " + props.book.summary}</div>)}
-                <div>
-                <div>{props.book.copyright}</div>
-                <FormattedMessage
-                    id="book.metadata.license"
-                    defaultMessage="License:"
-                />{" "}
-                <LicenseLink book={props.book} />
-                </div>
-                <div css={css`margin-top:30px;`}>
-                <FormattedMessage
-
+                <div css={css`margin-top:30px;color: black;`}>
+                    <FormattedMessage
                         id="book.concerns"
                         defaultMessage="What concerns do you have about this book?"
                     />
@@ -110,6 +102,7 @@ export const ReportDialog: React.FunctionComponent<{
                 {loggedIn ? l10n.formatMessage({id: "common.cancel", defaultMessage:"Cancel"}) : l10n.formatMessage({id: "common.close", defaultMessage:"Close"})}
             </Button>
             {loggedIn && (<Button variant="contained"
+                disabled={!reportContent}
                 onClick={() => {
                     sendConcernEmail( user!.email, reportContent, props.book.id ).then(() => {
                         alert(l10n.formatMessage({id: "concernReported",defaultMessage:"Your concern has been reported."}));
