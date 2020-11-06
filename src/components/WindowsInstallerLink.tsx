@@ -19,7 +19,9 @@ export const WindowsInstallerLink: React.FunctionComponent<{
 
     const info = getInstallerInfo(versionRequest);
     const versionNumber = info.version ?? "0.0.0";
-    const linkText = props.children!.toString().replace("{version}", versionNumber)
+    const linkText = props
+        .children!.toString()
+        .replace("{version}", versionNumber);
     return (
         <React.Fragment>
             <div
@@ -27,6 +29,7 @@ export const WindowsInstallerLink: React.FunctionComponent<{
                     display: flex;
                     flex-direction: row;
                     margin-top: 14px;
+                    margin-bottom: 1em;
                     align-items: start;
                 `}
             >
