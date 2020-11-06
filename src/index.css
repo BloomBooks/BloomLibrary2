@@ -10,7 +10,9 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
-
+p {
+    line-height: 1.5em;
+}
 code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
         monospace;
@@ -89,15 +91,13 @@ to apply it to does not support our inline css */
 
 /* Rules applying to ContentfulPage AND ContentfulMultiPartPage. */
 .base-contentful-page {
-    max-width: 800px; /* TODO this need to vary by screen width */
+    /* max-width: 800px; /* TODO this need to vary by screen width
     margin-left: auto;
-    margin-right: auto;
+    margin-right: auto; */
     margin-bottom: 2em;
 }
 
 .base-contentful-page ul {
-    /* revert the rules set above for all ul */
-    list-style: revert;
     padding: revert;
 }
 
