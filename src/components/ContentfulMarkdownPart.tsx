@@ -38,23 +38,13 @@ export const ContentfulMarkdownPart: React.FunctionComponent<{
     // and the right column looks better if it's centered vertically.
     // "alignment" handles the horizontal alignment. The left column needs to align left and
     // the right columns needs to be center aligned.
-    const flexValue = !props.column ? 1 : 1;
-    const justification = !props.column ? "start" : "center";
-    const alignment = !props.column ? "flex-start" : "center";
-    const leftPadding = !props.column ? "0" : "40px";
+    // const flexValue = !props.column ? 1 : 1;
+    // const justification = !props.column ? "start" : "center";
+    // const alignment = !props.column ? "flex-start" : "center";
+    // const leftPadding = !props.column ? "0" : "40px";
 
     return (
-        <div
-            css={css`
-                /* display: flex;
-                flex-direction: column;
-                flex: ${flexValue};
-                justify-content: ${justification};
-                align-items: ${alignment};
-                padding-right: 20px;
-                padding-left: ${leftPadding}; */
-            `}
-        >
+        <div>
             <Markdown options={options}>{props.markdown}</Markdown>
         </div>
     );
