@@ -97,10 +97,6 @@ to apply it to does not support our inline css */
     margin-bottom: 2em;
 }
 
-.base-contentful-page ul {
-    padding: revert;
-}
-
 .base-contentful-page h1 {
     font-size: 2rem;
 }
