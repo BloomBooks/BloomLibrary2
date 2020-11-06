@@ -5,7 +5,7 @@ import { ContentfulMarkdownPart } from "../ContentfulMarkdownPart";
 
 export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
     props
-) =>{
+) => {
     const page = useContentfulPage("page", props.urlKey);
     if (!page) {
         return null;
@@ -22,5 +22,7 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
         </div>
     );
 
-    return (<ContentfulBasePage urlKey={props.urlKey}>{innards}</ContentfulBasePage>);
+    return (
+        <ContentfulBasePage urlKey={props.urlKey}>{innards}</ContentfulBasePage>
+    );
 };

@@ -35,11 +35,6 @@ h2 {
     font-weight: bold;
 }
 
-ul {
-    list-style: none;
-    padding: 0;
-}
-
 a:hover {
     text-decoration: underline;
     cursor: pointer;
@@ -94,9 +89,10 @@ to apply it to does not support our inline css */
 
 /* Rules applying to ContentfulPage AND ContentfulMultiPartPage. */
 .base-contentful-page {
-    max-width: 1000px;
-    padding-left: 30px;
-    padding-right: 30px;
+    max-width: 800px; /* TODO this need to vary by screen width */
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 2em;
 }
 
 .base-contentful-page ul {

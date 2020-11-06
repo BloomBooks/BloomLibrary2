@@ -8,6 +8,7 @@ import { BloomReaderVersionNumber } from "./BloomReaderVersionNumber";
 import { WindowsInstallerDownload } from "./WindowsInstallerDownload";
 import { WindowsInstallerLink } from "./WindowsInstallerLink";
 import Link from "@material-ui/core/Link";
+import { Feature, FeatureGroup, FeatureMatrix } from "./FeatureMatrix";
 
 export enum Column {
     leftColumn,
@@ -32,6 +33,11 @@ export const ContentfulMarkdownPart: React.FunctionComponent<{
                 BloomReaderVersionNumber: {
                     component: BloomReaderVersionNumber,
                 },
+                FeatureMatrix: {
+                    component: FeatureMatrix,
+                },
+                Feature: Feature,
+                FeatureGroup: FeatureGroup,
             },
         };
 
