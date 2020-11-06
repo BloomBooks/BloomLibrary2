@@ -58,11 +58,11 @@ export const CollectionPage: React.FunctionComponent<{
                 break;
             case "no-books": // leave it null
                 break;
-            case "all-books": // untested
+            case "all-books": // used by at least RISE-PNG
                 booksComponent = (
                     <BookCardGroup
                         collection={collection}
-                        rows={collection.rows}
+                        rows={collection.rows ? collection.rows : 1000} // all-books = all books
                     />
                 );
                 break;
