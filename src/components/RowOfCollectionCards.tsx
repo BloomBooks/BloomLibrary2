@@ -49,6 +49,11 @@ export const RowOfCollectionCards: React.FunctionComponent<{
                 : childCollection!.urlKey;
         return (
             <CollectionCard
+                kind={
+                    props.collection.layout === "row-of-cards-with-just-labels"
+                        ? "short"
+                        : undefined
+                }
                 key={key}
                 title={childCollection.label || ""}
                 richTextLabel={childCollection.richTextLabel}
