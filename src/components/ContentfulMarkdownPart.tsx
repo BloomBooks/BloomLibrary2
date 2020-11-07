@@ -4,7 +4,8 @@ import { BloomReaderVersionNumber } from "./BloomReaderVersionNumber";
 import { WindowsInstallerDownload } from "./WindowsInstallerDownload";
 import { WindowsInstallerLink } from "./WindowsInstallerLink";
 import Link from "@material-ui/core/Link";
-import { Feature, FeatureGroup, FeatureMatrix } from "./FeatureMatrix";
+import { Feature, FeatureGroup, FeatureMatrix } from "./pages/FeatureMatrix";
+import { QuoteCard, QuoteSource, Quote } from "./pages/QuoteCard";
 
 export enum Column {
     leftColumn,
@@ -26,6 +27,9 @@ export const ContentfulMarkdownPart: React.FunctionComponent<{
             FeatureMatrix,
             Feature,
             FeatureGroup,
+            QuoteCard,
+            Quote,
+            QuoteSource,
         },
     };
 
