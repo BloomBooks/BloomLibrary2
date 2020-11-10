@@ -113,7 +113,6 @@ export const App: React.FunctionComponent<{}> = (props) => {
         window.location.hostname === "alpha.bloomlibrary.org" ||
         window.location.hostname === "dev-alpha.bloomlibrary.org" ||
         window.location.hostname === "localhost";
-
     return (
         <IntlProvider
             locale={languageTagWeAreUsing}
@@ -142,7 +141,6 @@ export const App: React.FunctionComponent<{}> = (props) => {
             }}
         >
             <div
-                className="app-container"
                 css={css`
                     display: flex;
                     flex-direction: column;
