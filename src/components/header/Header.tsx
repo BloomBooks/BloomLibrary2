@@ -20,6 +20,8 @@ export const Header: React.FunctionComponent = () => {
     const showSearchBelow = !useMediaQuery("(min-width:975px)");
     const showReadCreateBelow = !useMediaQuery("(min-width:560px)");
     const showReadCreateNarrower = !useMediaQuery("(min-width:640px)");
+    // At widths less than 300px, the User Menu sticks out to the right and causes horizontal scrolling.
+    const showUserMenu = useMediaQuery("(min-width:300px)");
     const normalToobarHeight = "48px";
     let toolbarHeight = normalToobarHeight;
     if (showReadCreateBelow) {
@@ -146,12 +148,14 @@ export const Header: React.FunctionComponent = () => {
                         <SearchBox />
                     </div>
                 )}
-                <UserMenu
-                    buttonHeight={normalToobarHeight}
-                    css={css`
-                        ${showSearchBelow ? "margin-left: auto" : ""};
-                    `}
-                />
+                {showUserMenu && (
+                    <UserMenu
+                        buttonHeight={normalToobarHeight}
+                        css={css`
+                            ${showSearchBelow ? "margin-left: auto" : ""};
+                        `}
+                    />
+                )}
             </div>
             {showReadCreateBelow && readCreateTabs}
             {showSearchBelow && (
