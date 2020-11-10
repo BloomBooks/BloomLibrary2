@@ -137,7 +137,12 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                         {book.credits}
                     </p> */}
                         {(props.book.languages.length && (
-                            <ul>
+                            <ul
+                                css={css`
+                                    list-style: none;
+                                    padding: 0;
+                                `}
+                            >
                                 {props.book.languages.map((l: ILanguage) => (
                                     <li key={l.isoCode}>
                                         <LanguageLink language={l} />

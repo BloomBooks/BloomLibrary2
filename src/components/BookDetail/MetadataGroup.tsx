@@ -161,6 +161,8 @@ export const MetadataGroup: React.FunctionComponent<{
                         <ul
                             css={css`
                                 margin: 0;
+                                list-style: none;
+                                padding-left: 10px;
                             `}
                         >
                             {relatedBooks.map((b: Book) => {

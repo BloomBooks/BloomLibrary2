@@ -90,6 +90,8 @@ export const ArtifactGroup: React.FunctionComponent<{
                     margin-left: -12px;
                     margin-right: -12px;
                     margin-top: ${showMoreDownloadsHeading ? "-10px" : "0"};
+                    list-style: none;
+                    padding: 0;
                 `}
             >
                 {[
