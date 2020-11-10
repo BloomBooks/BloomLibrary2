@@ -72,6 +72,8 @@ export const ButtonRow: React.FunctionComponent<{
         <ul
             css={css`
                 margin-bottom: 0;
+                list-style: none;
+                padding: 0;
             `}
         >
             {buttons}
