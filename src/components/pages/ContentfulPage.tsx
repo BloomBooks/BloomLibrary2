@@ -11,14 +11,13 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
     if (!page) {
         return null;
     }
-    const markdownContent = page.fields.markdownBody as string;
     const innards = (
         <div className={`base-contentful-page contentful-page ${props.urlKey}`}>
             {/* Insert our custom components when the markdown has HTML that calls for them */}
             {/* Could not get this to compile <Markdown> {markdownContent} </Markdown> */}
             {/* {options:{overrides:{h1:{component:WindowsInstallerDownloads, props:{}}}}} */}
-            {markdownContent ? (
-                <ContentfulMarkdownPart markdown={markdownContent} />
+            {page.markdownContent ? (
+                <ContentfulMarkdownPart markdown={page.markdownContent} />
             ) : (
                 documentToReactComponents(page.fields.body)
             )}
