@@ -38,7 +38,7 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
     ) : (
         <div>{props.title}</div>
     );
-    // We want the title to be there even if props tell us to hide it, so screeen readers can find it.
+    // We want the title to be there even if props tell us to hide it, so screen readers can find it.
     const extraPropsIfHidingTitle = props.hideTitle
         ? propsToHideAccessibilityElement
         : "";

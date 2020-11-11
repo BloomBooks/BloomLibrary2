@@ -3,12 +3,28 @@ import { useContentful } from "../../connection/UseContentful";
 import { useDocumentTitle } from "../Routes";
 import { CreationThemeProvider } from "../../theme";
 import { useLocation } from "react-router-dom";
+import { convertContentfulMediaToIMedia } from "../../model/Contentful";
+import { IMedia } from "../../model/ContentInterfaces";
 
 export interface IContentfulPage {
-    urlKey: string,
+    urlKey: string;
+    // The text label we show on the card
+    label: string;
+    markdownContent: string;
+
+    // A sentence that is shown when we're showing a story card
+    excerpt?: string;
+    // A card that  is shown when we're showing a story card
+    cardImage?: IMedia;
+    // A grey-text like the name of the country or some other topic for stories
+    category: string;
+
+    // NB: purposefully missing here are "body" and "parts" which are probably going away.
+    // For now, those can be accessed via the raw fields tag
+    fields: any;
 }
 
-export const ContentfulBasePage: React.FunctionComponent<IContentfulPage> = (
+export const ContentfulBasePage: React.FunctionComponent<{ urlKey: string }> = (
     props
 ) => {
     useDocumentTitle(props.urlKey);
@@ -22,7 +38,10 @@ export const ContentfulBasePage: React.FunctionComponent<IContentfulPage> = (
     }
 };
 
-export function useContentfulPage(contentType: string, urlKey: string): any | null {
+export function useContentfulPage(
+    contentType: string,
+    urlKey: string
+): IContentfulPage | undefined {
     const { loading, result: data } = useContentful({
         content_type: `${contentType}`,
         "fields.urlKey": `${urlKey}`,
@@ -30,12 +49,28 @@ export function useContentfulPage(contentType: string, urlKey: string): any | nu
     });
 
     if (loading || !data) {
-        return null;
+        return undefined;
     }
 
     if (!data || data.length === 0) {
         throw Error("404: " + urlKey);
     }
-
-    return data[0];
+    const p = data[0];
+    if (!p) {
+        return undefined;
+    }
+    return {
+        urlKey: p.fields.urlKey,
+        label: p.fields.label,
+        markdownContent: p.fields.markdownContent,
+        fields: p.fields,
+        // the following are used when we are showing a "story card" (like for blog posts)
+        cardImage: p.fields.iconForCardAndDefaultBanner
+            ? convertContentfulMediaToIMedia(
+                  p.fields.iconForCardAndDefaultBanner // note, despite the name,this isn't necessarily an icon... can be any image
+              )
+            : undefined,
+        excerpt: p.fields.excerpt,
+        category: p.fields.category,
+    };
 }
