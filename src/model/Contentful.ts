@@ -77,7 +77,7 @@ interface IContentfulMedia {
         };
     };
 }
-function convertContentfulMediaToIMedia(
+export function convertContentfulMediaToIMedia(
     media: IContentfulMedia
 ): IMedia | undefined {
     if (!media) return undefined;
