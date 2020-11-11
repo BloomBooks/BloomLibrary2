@@ -42,6 +42,17 @@ export function convertContentfulCollectionToICollection(
     const icon = convertContentfulMediaToIMedia(
         item.fields?.iconForCardAndDefaultBanner
     );
+
+    // Internally, we need tags to be named "otherTags" in the filter.
+    // This is awkward as an external API name from contentful. So let's just allow "tag",
+    // which matches the name on this field in the UI we present to the librarian & staff.
+    // Here we rename "tag" to "otherTags"
+     if(item.fields.filter?.tag)
+    {
+         item.fields.filter.otherTags =  item.fields.filter.tag;
+         delete item.fields.filter.tag;
+    }
+
     const result: ICollection = {
         urlKey: item.fields.urlKey as string,
         label: item.fields.label,
@@ -58,7 +69,6 @@ export function convertContentfulCollectionToICollection(
         order,
         type: item.sys.contentType.sys.id,
     };
-
     return result;
 }
 
