@@ -9,11 +9,38 @@ import { CardSwiper } from "./CardSwiper";
 
 interface IProps {
     title: string;
+    layout: string;
     children: ReactElement[];
 }
 
 export const CardGroup: React.FunctionComponent<IProps> = (props) => {
     const rowHeight = 258; // todo derive from commonui.something
+    const cards = (
+        <div
+            // We want this to be a UL. But accessibility checker insists UL may have
+            // only LI as children, and a couple of layers of Swiper divs get in the way.
+            css={css`
+                padding-left: 0;
+            `}
+        >
+            <CardSwiper wrapperRole="list">{props.children}</CardSwiper>
+        </div>
+    );
+
+    let group;
+    switch (props.layout) {
+        case "layout: description-followed-by-row-of-books":
+            break;
+        default:
+            group = (
+                <React.Fragment>
+                    <h1>{props.title}</h1>
+                    {cards}
+                </React.Fragment>
+            );
+            break;
+    }
+
     return (
         // Enhance: LazyLoad has parameters (height and offset) that should help
         // but so far I haven't got them to work well. It has many other
@@ -29,10 +56,16 @@ export const CardGroup: React.FunctionComponent<IProps> = (props) => {
         // Note that explicit placeholders must control their own height.
 
         /* Note, this currently breaks strict mode. See app.tsx */
-        <LazyLoad height={rowHeight}
-             offset={rowHeight}
-             placeholder={<li className="placeholder" style={{height:`${rowHeight}px`}}></li>}
-             >
+        <LazyLoad
+            height={rowHeight}
+            offset={rowHeight}
+            placeholder={
+                <li
+                    className="placeholder"
+                    style={{ height: `${rowHeight}px` }}
+                ></li>
+            }
+        >
             <li
                 css={css`
                     margin-top: 30px;
@@ -40,16 +73,7 @@ export const CardGroup: React.FunctionComponent<IProps> = (props) => {
                 role="region"
                 aria-label={props.title}
             >
-                <h1>{props.title}</h1>
-                <div
-                    // We want this to be a UL. But accessibility checker insists UL may have
-                    // only LI as children, and a couple of layers of Swiper divs get in the way.
-                    css={css`
-                        padding-left: 0;
-                    `}
-                >
-                    <CardSwiper wrapperRole="list">{props.children}</CardSwiper>
-                </div>
+                {group}
             </li>
         </LazyLoad>
     );

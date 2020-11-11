@@ -82,5 +82,12 @@ const RowOfCardsInternal: React.FunctionComponent<{
                 );
         }
     });
-    return <CardGroup title={props.collection.label}>{cards}</CardGroup>;
+    return (
+        <CardGroup
+            title={props.collection.label}
+            layout={props.collection.layout}
+        >
+            {cards}
+        </CardGroup>
+    );
 };

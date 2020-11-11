@@ -57,6 +57,7 @@ export function convertContentfulCollectionToICollection(
         urlKey: item.fields.urlKey as string,
         label: item.fields.label,
         richTextLabel: item.fields.richTextLabel,
+        description: item.fields.description,
         filter: item.fields.filter,
         statisticsQuerySpec: item.fields.statisticsQuerySpec,
         iconForCardAndDefaultBanner: icon,

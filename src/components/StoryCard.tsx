@@ -5,16 +5,6 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React from "react";
-import { CheapCard } from "./CheapCard";
-import { IFilter } from "../IFilter";
-import { BookCount } from "./BookCount";
-//import teamIcon from "../assets/team.svg";
-import booksIcon from "../assets/books.svg";
-import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
-import { Document } from "@contentful/rich-text-types";
-import { ImgWithCredits } from "../ImgWithCredits";
-import { useIntl } from "react-intl";
-import { propsToHideAccessibilityElement } from "../Utilities";
 import { ICollection } from "../model/ContentInterfaces";
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
@@ -22,7 +12,7 @@ import CardMedia from "@material-ui/core/CardMedia";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import { useContentfulPage } from "./pages/ContentfulBasePage";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { getUrlForTarget } from "./Routes";
 export const StoryCard: React.FunctionComponent<{ story: ICollection }> = (
     props
@@ -36,6 +26,8 @@ export const StoryCard: React.FunctionComponent<{ story: ICollection }> = (
         <Card
             css={css`
                 width: 240px;
+                // I don't know why, but without this, the edges get cut off
+                margin: 1px;
             `}
         >
             <CardActionArea component={Link} to={`${url}`}>
@@ -45,7 +37,6 @@ export const StoryCard: React.FunctionComponent<{ story: ICollection }> = (
                         height: 160px;
                     `}
                     image={page.cardImage?.url}
-                    title="Contemplative Reptile"
                 />
                 <CardContent>
                     <Typography color="textSecondary" gutterBottom>

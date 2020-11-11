@@ -33,7 +33,7 @@ export const Blurb: React.FunctionComponent<{
                     font-weight: normal;
                     max-width: 600px;
                     margin-bottom: 10px;
-                    overflow: auto;
+                    overflow: hidden;
                 `}
             >
                 {documentToReactComponents(
