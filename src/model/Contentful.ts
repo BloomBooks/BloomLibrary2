@@ -68,7 +68,7 @@ export function convertContentfulCollectionToICollection(
         layout: item.fields.layout?.fields?.name || "by-level",
         rows: item.fields.rows,
         order,
-        type: item.sys.contentType.sys.id,
+        type: item.fields.urlKey.startsWith("http") ? "link" : item.sys.contentType.sys.id,
     };
     return result;
 }
