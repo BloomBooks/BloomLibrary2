@@ -60,9 +60,7 @@ export const Routes: React.FunctionComponent<{}> = () => {
                 >
                     <Redirect to="/page/create/downloads" />
                 </Route>
-                <Route
-                    path={"/page/create/about"}
-                >
+                <Route path={"/page/create/about"}>
                     <ContentfulMultiPartPage urlKey="new-about" />
                 </Route>
                 <Route
@@ -297,6 +295,8 @@ export function splitPathname(
 // See https://docs.google.com/document/d/1cA9-9tMSydZ6Euo-hKmdHo_JlO0aLW8Fi9v293oIHK0/edit#heading=h.3b7gegy9uie8
 // for more of the logic.
 export function getUrlForTarget(target: string) {
+    if (target.startsWith("http")) return target;
+
     const {
         embeddedSettingsUrlKey,
         breadcrumbs,

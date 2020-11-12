@@ -45,9 +45,9 @@ const RowOfCardsInternal: React.FunctionComponent<{
     const childCollections = props.collection.childCollections;
     const cards: JSX.Element[] = childCollections.map((childCollection1) => {
         const childCollection = childCollection1!; // can't persuade typescript that this can't be null.
-        const key =
+        const target =
             childCollection.type === "page"
-                ? `page/${childCollection!.urlKey}`
+                ? `/page/${childCollection!.urlKey}`
                 : childCollection!.urlKey;
 
         switch (props.collection.layout) {
@@ -62,7 +62,7 @@ const RowOfCardsInternal: React.FunctionComponent<{
                                 ? "short"
                                 : undefined
                         }
-                        key={key}
+                        key={target}
                         title={childCollection.label || ""}
                         richTextLabel={childCollection.richTextLabel}
                         hideTitle={
@@ -70,7 +70,7 @@ const RowOfCardsInternal: React.FunctionComponent<{
                         }
                         bookCount="??"
                         filter={childCollection.filter}
-                        target={`/${key}`}
+                        target={target}
                         //pageType={props.bookShelfCategory}
                         imageUrl={
                             childCollection.iconForCardAndDefaultBanner?.url ||

@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import { commonUI } from "../theme";
 import { getUrlForTarget } from "./Routes";
-import { Link } from "react-router-dom";
+import { BlorgLink } from "./BlorgLink";
 
 interface IProps extends React.HTMLProps<HTMLDivElement> {
     className?: string;
@@ -19,7 +19,7 @@ interface IProps extends React.HTMLProps<HTMLDivElement> {
 export const CheapCard: React.FunctionComponent<IProps> = (props) => {
     const url = getUrlForTarget(props.target || "");
     return (
-        <Link
+        <BlorgLink
             //{...props}
             className={`cheapCard ${props.className}`}
             css={css`
@@ -61,10 +61,10 @@ export const CheapCard: React.FunctionComponent<IProps> = (props) => {
                     color: black;
                 }
             `}
-            to={`/${url}`}
+            to={url}
             role={props.role}
         >
             {props.children}
-        </Link>
+        </BlorgLink>
     );
 };
