@@ -41,7 +41,7 @@ export function makeCollectionForTopic(
     let label = baseCollection.label + " - " + topic;
     const urlKey = baseCollection.urlKey + "/:topic:" + topic;
     if (topic === "empty") {
-        label = baseCollection.label + " - (missing a topic)";
+        label = baseCollection.label + " - Other";
     }
     // Enhance: how can we append "- topic" to title, given that it's some unknown
     // contentful representation of a rich text?
