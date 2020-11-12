@@ -11,9 +11,9 @@ import CardActionArea from "@material-ui/core/CardActionArea";
 import CardMedia from "@material-ui/core/CardMedia";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
-import { useContentfulPage } from "./pages/ContentfulBasePage";
 import { Link } from "react-router-dom";
 import { getUrlForTarget } from "./Routes";
+import { useContentfulPage } from "./pages/ContentfulPage";
 export const StoryCard: React.FunctionComponent<{ story: ICollection }> = (
     props
 ) => {

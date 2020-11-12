@@ -1,6 +1,7 @@
 import React from "react"; // see https://github.com/emotion-js/emotion/issues/1156
-import { ContentfulBasePage, useContentfulPage } from "./ContentfulBasePage";
+import { ThemeForLocation } from "./ThemeForLocation";
 import { ContentfulMarkdownPart, Column } from "../ContentfulMarkdownPart";
+import { useContentfulPage } from "./ContentfulPage";
 
 // This is used (as of the time of this writing) just for the About Bloom page with all its
 // color-banded sections describing Bloom.
@@ -13,10 +14,15 @@ export const ContentfulMultiPartPage: React.FunctionComponent<{
     }
 
     const innards = (
-        <div className={`base-contentful-page multipart-contentful-page ${props.urlKey}`}>
+        <div
+            className={`base-contentful-page multipart-contentful-page ${props.urlKey}`}
+        >
             {page.fields.parts.map((part: any, index: number) => (
                 <div>
-                    <ContentfulMarkdownPart markdown={part.fields.primary} column={Column.leftColumn}/>
+                    <ContentfulMarkdownPart
+                        markdown={part.fields.primary}
+                        column={Column.leftColumn}
+                    />
                     {part.fields.secondary && (
                         <ContentfulMarkdownPart
                             markdown={part.fields.secondary}
@@ -28,5 +34,5 @@ export const ContentfulMultiPartPage: React.FunctionComponent<{
         </div>
     );
 
-    return (<ContentfulBasePage urlKey={props.urlKey}>{innards}</ContentfulBasePage>);
+    return <ThemeForLocation urlKey={props.urlKey}>{innards}</ThemeForLocation>;
 };
