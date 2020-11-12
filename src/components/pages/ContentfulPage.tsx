@@ -32,8 +32,19 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
     if (!page) {
         return null;
     }
+
+    // This feels like a bit of a hack, but I'm not sure what we want to do.
+    // Note that strictly, we're just looking for something starting with an h1,
+    // which could be something other than the title.
+    const titleIfDocDoesNotSeemToHaveOne =
+        page.markdownBody && !page.markdownBody.startsWith("#") ? (
+            <h1>{page.label}</h1>
+        ) : undefined;
+
     const innards = (
         <div className={`base-contentful-page contentful-page ${props.urlKey}`}>
+            {titleIfDocDoesNotSeemToHaveOne}
+
             {/* Insert our custom components when the markdown has HTML that calls for them */}
             {/* Could not get this to compile <Markdown> {markdownContent} </Markdown> */}
             {/* {options:{overrides:{h1:{component:WindowsInstallerDownloads, props:{}}}}} */}
