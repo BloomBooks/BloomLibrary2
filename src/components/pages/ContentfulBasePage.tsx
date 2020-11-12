@@ -10,7 +10,7 @@ export interface IContentfulPage {
     urlKey: string;
     // The text label we show on the card
     label: string;
-    markdownContent: string;
+    markdownBody: string;
 
     // A sentence that is shown when we're showing a story card
     excerpt?: string;
@@ -62,7 +62,7 @@ export function useContentfulPage(
     return {
         urlKey: p.fields.urlKey,
         label: p.fields.label,
-        markdownContent: p.fields.markdownContent,
+        markdownBody: p.fields.markdownBody,
         fields: p.fields,
         // the following are used when we are showing a "story card" (like for blog posts)
         cardImage: p.fields.iconForCardAndDefaultBanner

@@ -28,6 +28,8 @@ export const StoryCard: React.FunctionComponent<{ story: ICollection }> = (
                 width: 240px;
                 // I don't know why, but without this, the edges get cut off
                 margin: 1px;
+                // enhance: really we just want this margin in-between cards
+                margin-right: 20px;
             `}
         >
             <CardActionArea component={Link} to={`${url}`}>

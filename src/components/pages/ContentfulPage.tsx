@@ -16,8 +16,8 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
             {/* Insert our custom components when the markdown has HTML that calls for them */}
             {/* Could not get this to compile <Markdown> {markdownContent} </Markdown> */}
             {/* {options:{overrides:{h1:{component:WindowsInstallerDownloads, props:{}}}}} */}
-            {page.markdownContent ? (
-                <ContentfulMarkdownPart markdown={page.markdownContent} />
+            {page.markdownBody ? (
+                <ContentfulMarkdownPart markdown={page.markdownBody} />
             ) : (
                 documentToReactComponents(page.fields.body)
             )}
