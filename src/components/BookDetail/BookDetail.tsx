@@ -115,6 +115,9 @@ export const BookDetailInternal: React.FunctionComponent<{
             css={css`
                 margin-left: auto;
                 margin-right: auto;
+                // the left/right auto margins are great but when the screen is small and we go to zero, we still want a little margin,
+                // so we add this padding. And the top padding looks good anyhow. The "1em" is arbitrary, though.
+                padding: 1em;
                 label: BookDetail;
                 max-width: 800px;
             `}
@@ -129,11 +132,7 @@ export const BookDetailInternal: React.FunctionComponent<{
             >
                 {embeddedMode || <Breadcrumbs />}
             </div>
-            <div
-                css={css`
-                    margin: ${commonUI.detailViewMargin};
-                `}
-            >
+            <div>
                 <BookDetailHeaderGroup
                     book={props.book}
                     breakToColumn={breakToColumn}
