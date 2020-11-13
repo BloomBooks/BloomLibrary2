@@ -155,9 +155,7 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
                     text-align: center;
                 `}
             >
-                {props.filter && (
-                    <BookCount message={`{0} Books`} filter={props.filter} />
-                )}
+                {props.filter && <BookCount filter={props.filter} />}
             </div>
         </CheapCard>
     );
