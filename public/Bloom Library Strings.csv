@@ -127,3 +127,7 @@ version.number.parenthetical,,(version {versionNumber})
 "pleaseSignIn","","Please Sign In"
 "toUseThisSignIn","Your translation should contain two slashes. The part between will become a button or hot link for signing in","To use this function, please /Sign In to Bloom Library/"
 "concernReported","","Your concern has been reported."
+delete,,Delete
+delete.book.confirm.title,,Delete this book?
+delete.book.confirm.button,,Permanently delete this book
+delete.book.confirm.message,,"If you continue, this version of the book <em>{title}</em> will be removed from BloomLibrary.org. There is no way to undo this except by uploading it again."

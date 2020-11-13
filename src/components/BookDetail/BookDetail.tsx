@@ -18,7 +18,6 @@ import { ArtifactGroup } from "./ArtifactGroup";
 import { BookDetailHeaderGroup } from "./BookDetailHeaderGroup";
 import { DeleteButton } from "./DeleteButton";
 import { ReportButton } from "./ReportButton";
-import { commonUI } from "../../theme";
 import { Breadcrumbs } from "../Breadcrumbs";
 import { useTrack } from "../../analytics/Analytics";
 import { splitPathname, useDocumentTitle } from "../Routes";
