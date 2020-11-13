@@ -6,26 +6,24 @@ window.onload = function () {
     // restore the location within the embedded library if the url parameters contain that information
     var libraryLocation = window.location.search.split("blorg=")[1];
     if (libraryLocation) {
-        // typical locations passed in don't include /embed/embed-settings-name
+        // typical locations passed in don't include a full URL, just the pathname.
         // e.g. enabling-writers/nigeria (a collection)
-        // enabling-writers/nigeria/book/abcdfg (a book's details)
+        // book/abcdfg (a book's details)
         // player/abdfg (reading the book)
         libraryLocation = decodeURIComponent(libraryLocation);
         var libraryIFrame = document.getElementById("bloomlibrary");
-        // the original src of the iframe is typically something like /embed/embed-test/rise-png
+        // the original src of the iframe is typically something like https://embed.bloomlibrary.org/rise-png
         var segments = libraryIFrame.src.split("/");
-        // drop the initial collection segment (it will be replaced by what came from the blorg search param)
+        // drop the last segment which should be the collection name (it will be replaced by what came from the blorg
+        // search param, which may or may not start with the same collection name).
+        // Note that this won't necessarily work right if the src has more than one element after the host, e.g.,
+        // if src is https://embed.bloomlibrary.org/enabling-writers/ew-nabu and libraryLocation is player/bookId,
+        // this process will produce https://embed.bloomlibrary.org/enabling-writers/player/bookId, which won't work.
+        // However, there's no obvious reason for embed URLs with more than a single collection ID.
         segments.splice(segments.length - 1, 1);
-        if (segments[0] === "embed") {
-            console.error(
-                "window loaded with blorg param unexpectedly starting with 'embed': " +
-                    libraryLocation
-            );
-        } else {
-            // normal operation, add on what we have
-            libraryIFrame.src = segments.join("/") + "/" + libraryLocation;
-            console.log("Set iframe src to " + libraryIFrame.src);
-        }
+
+        libraryIFrame.src = segments.join("/") + "/" + libraryLocation;
+        console.log("Set iframe src to " + libraryIFrame.src);
     }
     window.addEventListener("message", receiveBloomLibraryMessage, false);
 };

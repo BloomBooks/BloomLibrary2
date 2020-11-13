@@ -223,9 +223,9 @@ storiesOf("Harvester Artifact Control", module)
 Just load testembed.htm in a browser to test that. */
 storiesOf("Embedding", module).add("Should Work", () => (
     <iframe
-        //note, this last bit ("rise-png") must match what is in the Contentful "embed-test" object. If that changes, you'll get
-        // an error here.
-        src={"http://localhost:3000/embed/embed-test/rise-png"}
+        // note, this requires a ContentFul Embedded Settings object with key "embed-rise-png" object that authorizes the rise-png
+        // collection. If that changes, you'll get an error here.
+        src={"http://localhost:3000/rise-png"}
         title="embed test"
         height="600px"
         width="600px"

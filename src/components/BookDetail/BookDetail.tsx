@@ -4,12 +4,11 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useGetBookDetail } from "../../connection/LibraryQueryHooks";
 import { Book } from "../../model/Book";
 import WarningIcon from "@material-ui/icons/Warning";
-import TranslationIcon from "./translation.svg";
-import { IconButton, Divider, Link } from "@material-ui/core";
+import { IconButton, Divider } from "@material-ui/core";
 import { Alert } from "../Alert";
 
 import { observer } from "mobx-react";
@@ -19,7 +18,6 @@ import { ArtifactGroup } from "./ArtifactGroup";
 import { BookDetailHeaderGroup } from "./BookDetailHeaderGroup";
 import { DeleteButton } from "./DeleteButton";
 import { ReportButton } from "./ReportButton";
-import { OSFeaturesContext } from "../../components/OSFeaturesContext";
 import { commonUI } from "../../theme";
 import { Breadcrumbs } from "../Breadcrumbs";
 import { useTrack } from "../../analytics/Analytics";
@@ -28,6 +26,7 @@ import { useLocation } from "react-router-dom";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { FormattedMessage, useIntl } from "react-intl";
 import { FeaturesGroup } from "./FeaturesGroup";
+import { useIsEmbedded } from "../EmbeddingHost";
 
 interface IProps {
     id: string;
@@ -93,11 +92,9 @@ export const BookDetailInternal: React.FunctionComponent<{
     book: Book;
     contextLangIso?: string;
 }> = observer((props) => {
-    const l10n = useIntl();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { bloomDesktopAvailable, bloomReaderAvailable } = useContext(
-        OSFeaturesContext
-    );
+    // const { bloomDesktopAvailable } = useContext(
+    //     OSFeaturesContext
+    // );
     const showHarvesterWarning =
         props.book.getHarvestLog().indexOf("Warning") >= 0;
     const divider = (
@@ -112,13 +109,16 @@ export const BookDetailInternal: React.FunctionComponent<{
     );
     const [alertText, setAlertText] = useState<string | null>(null);
     const breakToColumn = "540px";
-    const embeddedMode = window.location.pathname.startsWith("/embed/");
+    const embeddedMode = useIsEmbedded();
     return (
         <div
             // had width:800px, but that destroys responsiveness
             css={css`
                 margin-left: auto;
                 margin-right: auto;
+                // the left/right auto margins are great but when the screen is small and we go to zero, we still want a little margin,
+                // so we add this padding. And the top padding looks good anyhow. The "1em" is arbitrary, though.
+                padding: 1em;
                 label: BookDetail;
                 max-width: 800px;
             `}
@@ -133,11 +133,7 @@ export const BookDetailInternal: React.FunctionComponent<{
             >
                 {embeddedMode || <Breadcrumbs />}
             </div>
-            <div
-                css={css`
-                    margin: ${commonUI.detailViewMargin};
-                `}
-            >
+            <div>
                 <BookDetailHeaderGroup
                     book={props.book}
                     breakToColumn={breakToColumn}
@@ -162,8 +158,7 @@ export const BookDetailInternal: React.FunctionComponent<{
                     </div>
                 )}
                 {divider}
-                <FeaturesGroup
-                book={props.book}/>
+                <FeaturesGroup book={props.book} />
                 {divider}
                 <MetadataGroup
                     book={props.book}
@@ -194,7 +189,10 @@ export const BookDetailInternal: React.FunctionComponent<{
                                 display: flex;
                             `}
                         >
-                            <ReportButton book={props.book} contextLangIso={props.contextLangIso}/>
+                            <ReportButton
+                                book={props.book}
+                                contextLangIso={props.contextLangIso}
+                            />
                             <DeleteButton book={props.book} />
                         </div>
                         {/* Enhance, maybe, add this and wire to some message <HowToPrintButton />*/}
@@ -202,6 +200,7 @@ export const BookDetailInternal: React.FunctionComponent<{
                         so you can translate the book. A such only needed where the Translate button
                         is missing, e.g., mobile and Mac. But we haven't created the page it should link
                         to yet, so we're not showing it anywhere.
+                        (bloomDesktopAvailable definition is commented above)
                             {bloomDesktopAvailable || (
                             <Link
                                 color="secondary"

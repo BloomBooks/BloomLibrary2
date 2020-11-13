@@ -8,10 +8,13 @@ export const TestEmbeddingPage: React.FunctionComponent<{ code: string }> = (
     props
 ) => {
     console.log("code:" + props.code);
+    const s3location = window.location.hostname.startsWith("alpha")
+        ? "https://share.bloomlibrary.org/alpha-assets"
+        : "https://share.bloomlibrary.org/assets";
     const root =
         window.location.hostname === "localhost"
             ? "http://" + window.location.host
-            : "https://embed.bloomlibrary.org";
+            : s3location;
     useEffect(() => {
         const script = document.createElement("script");
 
@@ -24,16 +27,14 @@ export const TestEmbeddingPage: React.FunctionComponent<{ code: string }> = (
             document.body.removeChild(script);
         };
     }, [root]);
-    const iframeSrc = `${root}/embed/${props.code}`;
-    const badUrl = !props.code || props.code.split("/").length < 2;
+    const iframeSrc = `${root}/${props.code}`;
+    const badUrl = !props.code || props.code.split("/").length < 1;
     return (
         (badUrl && (
             <h1>
-                To use this test embedding page, you need to add both the
-                Contentful "Embedding Settings" Key and the Contentful
+                To use this test embedding page, you need to add the Contentful
                 "Collection" Key of the embedding. E.g., your URL should look
-                like
-                "http://localhost:3000/test-embedding/embed-chetana/chetana"
+                like "http://localhost:3000/test-embedding/chetana"
             </h1>
         )) || (
             <div

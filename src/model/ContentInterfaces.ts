@@ -33,6 +33,7 @@ export interface ICollection {
     label: string; // used in subheadings and cards
     // enhance: maybe instead provide a function that would return the react nodes, so we could hide this Contentful-specific type?
     richTextLabel?: any; // NB: here we are leaking the Contentful "Document", which does not have an exported type
+    description: string;
     filter: IFilter;
     statisticsQuerySpec?: IStatisticsQuerySpec;
     iconForCardAndDefaultBanner?: IMedia;
@@ -40,7 +41,7 @@ export interface ICollection {
     iconAltText?: string;
     hideLabelOnCardAndDefaultBanner?: boolean;
     childCollections: ICollection[]; // only the top level will have these
-    type: "collection" | "page";
+    type: "collection" | "page" |"link";
     // When the filter cannot be fully defined as simple json in a Contentful collection (interpreted by ParseServer).
     // E.g., we need to run code like getBestLevelStringOrEmpty() to get at the filter
     secondaryFilter?: (basicBookInfo: IBasicBookInfo) => boolean;

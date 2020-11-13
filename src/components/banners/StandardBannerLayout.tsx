@@ -95,6 +95,7 @@ export const StandardBannerLayout: React.FunctionComponent<{
                 </div>
 
                 {props.collection?.urlKey !== "new-arrivals" &&
+                    props.collection?.urlKey !== "create" &&
                     (props.bookCount || (
                         <BookCount filter={props.filter || {}} />
                     ))}

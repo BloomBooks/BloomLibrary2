@@ -10,12 +10,7 @@ import { observer } from "mobx-react";
 import { ReadButton } from "./ReadButton";
 import { TranslateButton } from "./TranslateButton";
 import { LanguageLink } from "../LanguageLink";
-import {
-    getArtifactVisibilitySettings,
-    ArtifactType,
-    getThumbnailUrl,
-    getLegacyThumbnailUrl,
-} from "./ArtifactHelper";
+import { getArtifactVisibilitySettings, ArtifactType } from "./ArtifactHelper";
 import { ILanguage } from "../../model/Language";
 import { ReadOfflineButton } from "./ReadOfflineButton";
 import { useMediaQuery, Link } from "@material-ui/core";
@@ -25,7 +20,7 @@ import { useGetBookCountRaw } from "../../connection/LibraryQueryHooks";
 import { getResultsOrMessageElement } from "../../connection/GetQueryResultsUI";
 import { getAnchorProps } from "../../embedded";
 import { useIsEmbedded } from "../EmbeddingHost";
-import { FormattedMessage, useIntl } from "react-intl";
+import { FormattedMessage } from "react-intl";
 import { BookThumbnail } from "./BookThumbnail";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{
@@ -35,7 +30,6 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
     //so where possible we're going to preference that if this is a multilingual book
     contextLangIso?: string;
 }> = observer((props) => {
-    const l10n = useIntl();
     const isEmbedded = useIsEmbedded();
     const { bloomDesktopAvailable, bloomReaderAvailable } = useContext(
         OSFeaturesContext
@@ -86,9 +80,6 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
         `(max-width:${props.breakToColumn})`
     );
 
-    const { thumbnailUrl } = getThumbnailUrl(props.book);
-    const legacyStyleThumbnail = getLegacyThumbnailUrl(props.book);
-
     return (
         <div
             id={"primaryInfoAndButtons"}
@@ -122,7 +113,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                         margin-bottom: 1em;
                     `}
                 >
-                    <BookThumbnail book={props.book}/>
+                    <BookThumbnail book={props.book} />
                     <div>
                         <h1
                             css={css`
@@ -146,7 +137,12 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                         {book.credits}
                     </p> */}
                         {(props.book.languages.length && (
-                            <ul>
+                            <ul
+                                css={css`
+                                    list-style: none;
+                                    padding: 0;
+                                `}
+                            >
                                 {props.book.languages.map((l: ILanguage) => (
                                     <li key={l.isoCode}>
                                         <LanguageLink language={l} />
