@@ -24,16 +24,15 @@ export const TestEmbeddingPage: React.FunctionComponent<{ code: string }> = (
             document.body.removeChild(script);
         };
     }, [root]);
-    const iframeSrc = `${root}/embed/${props.code}`;
-    const badUrl = !props.code || props.code.split("/").length < 2;
+    const iframeSrc = `${root}/${props.code}`;
+    const badUrl = !props.code || props.code.split("/").length < 1;
     return (
         (badUrl && (
             <h1>
-                To use this test embedding page, you need to add both the
-                Contentful "Embedding Settings" Key and the Contentful
-                "Collection" Key of the embedding. E.g., your URL should look
+                To use this test embedding page, you need to add the
+                Contentful "Collection" Key of the embedding. E.g., your URL should look
                 like
-                "http://localhost:3000/test-embedding/embed-chetana/chetana"
+                "http://localhost:3000/test-embedding/chetana"
             </h1>
         )) || (
             <div

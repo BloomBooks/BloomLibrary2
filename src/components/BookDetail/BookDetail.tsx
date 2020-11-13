@@ -26,6 +26,7 @@ import { useLocation } from "react-router-dom";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { FormattedMessage, useIntl } from "react-intl";
 import { FeaturesGroup } from "./FeaturesGroup";
+import { useIsEmbedded } from "../EmbeddingHost";
 
 interface IProps {
     id: string;
@@ -108,7 +109,7 @@ export const BookDetailInternal: React.FunctionComponent<{
     );
     const [alertText, setAlertText] = useState<string | null>(null);
     const breakToColumn = "540px";
-    const embeddedMode = window.location.pathname.startsWith("/embed/");
+    const embeddedMode = useIsEmbedded();
     return (
         <div
             // had width:800px, but that destroys responsiveness

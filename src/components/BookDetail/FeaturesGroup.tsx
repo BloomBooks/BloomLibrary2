@@ -9,6 +9,8 @@ import { Book } from "../../model/Book";
 import { FormattedMessage } from "react-intl";
 import { getAllFeaturesWithTheseMarkedPresent } from "../FeatureHelper";
 import { commonUI } from "../../theme";
+import { getAnchorProps } from "../../embedded";
+import { Link } from "@material-ui/core";
 
 // Shows all the possible features, each as its icon, with a title that is its name.
 // Each functions as a button to go to a collection of books with the features.
@@ -41,7 +43,7 @@ export const FeaturesGroup: React.FunctionComponent<{
                 />
             </div>
             {features.map((feature) => (
-                <a href={"/" + (feature.collectionHref || feature.featureKey)}>
+                <Link {...getAnchorProps("/" + (feature.collectionHref || feature.featureKey))} key={feature.featureKey}>
                     {feature.icon({
                         key: feature.featureKey,
                         fill: feature.isPresent
@@ -60,7 +62,7 @@ export const FeaturesGroup: React.FunctionComponent<{
                             marginTop: "2px",
                         },
                     })}
-                </a>
+                </Link>
             ))}
         </div>
     );
