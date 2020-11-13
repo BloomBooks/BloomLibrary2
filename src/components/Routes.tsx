@@ -19,7 +19,7 @@ import { ContentfulMultiPartPage } from "./pages/ContentfulMultiPartPage";
 import { getDummyCollectionForPreview } from "../model/Collections";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { IEmbedSettings } from "../model/ContentInterfaces";
-import { EmbeddingHost, useSetEmbeddedUrl } from "./EmbeddingHost";
+import { EmbeddingHost, isEmbedded, useSetEmbeddedUrl } from "./EmbeddingHost";
 import { CollectionStatsPage } from "./statistics/CollectionStatsPage";
 import { TestEmbeddingPage } from "./TestEmbedding";
 
@@ -60,9 +60,7 @@ export const Routes: React.FunctionComponent<{}> = () => {
                 >
                     <Redirect to="/page/create/downloads" />
                 </Route>
-                <Route
-                    path={"/page/create/about"}
-                >
+                <Route path={"/page/create/about"}>
                     <ContentfulMultiPartPage urlKey="new-about" />
                 </Route>
                 <Route
@@ -108,13 +106,6 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         return <ReadBookPage id={match.params.id} />;
                     }}
                 />
-                <Route
-                    // It should be possible to combine this with the route above, but I can't make it work.
-                    path="/embed/:collectionId/player/:id"
-                    render={({ match }) => {
-                        return <ReadBookPage id={match.params.id} />;
-                    }}
-                />
                 <Route path="/about">
                     <ContentfulMultiPartPage urlKey="new-about" />
                 </Route>
@@ -138,17 +129,6 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         );
                     }}
                 />
-                <Route
-                    path={"/embed/:embedSettings/:segments*"}
-                    render={({ match, location }) => {
-                        return (
-                            <EmbeddingHost
-                                settingsUrlKey={match.params.embedSettings}
-                                urlSegments={location.pathname}
-                            ></EmbeddingHost>
-                        );
-                    }}
-                ></Route>
                 {/* the colon here is not literally there in the url */}
                 <Route
                     path={"/:segments*/stats"}
@@ -178,8 +158,10 @@ export const Routes: React.FunctionComponent<{}> = () => {
                     path={"/:segments*"}
                     render={({ match }) => {
                         if (window.self !== window.top) {
-                            throw new Error(
-                                "Embedding is only possible with an embed-* path."
+                            return (
+                                <EmbeddingHost
+                                    urlSegments={location.pathname}
+                                ></EmbeddingHost>
                             );
                         }
                         return (
@@ -218,11 +200,6 @@ export function splitPathname(
 } {
     const segments = trimLeft(pathname ?? "", "/").split("/");
     let isPlayerUrl = false;
-    let embeddedSettings;
-    if (segments.length > 1 && segments[0] === "embed") {
-        embeddedSettings = segments[1];
-        segments.splice(0, 2);
-    }
     const isPageUrl = segments[0] === "page";
 
     // these two variables move roughly in sync, however, firstFilterIndex
@@ -268,6 +245,8 @@ export function splitPathname(
         }
     }
 
+    const embeddedSettings = isEmbedded() ? "embed-" + collectionName : "";
+
     return {
         embeddedSettingsUrlKey: embeddedSettings,
         collectionName,
@@ -297,16 +276,15 @@ export function splitPathname(
 // See https://docs.google.com/document/d/1cA9-9tMSydZ6Euo-hKmdHo_JlO0aLW8Fi9v293oIHK0/edit#heading=h.3b7gegy9uie8
 // for more of the logic.
 export function getUrlForTarget(target: string) {
+    if (target.startsWith("http")) return target;
+
     const {
-        embeddedSettingsUrlKey,
         breadcrumbs,
         collectionName: pathCollectionName,
     } = splitPathname(window.location.pathname);
     let segments = [
-        embeddedSettingsUrlKey ? "embed" : undefined,
-        embeddedSettingsUrlKey,
         ...breadcrumbs,
-    ].filter((s) => !!s);
+    ];
 
     const { collectionName, isPageUrl } = splitPathname(target);
     if (isPageUrl) {
@@ -317,14 +295,11 @@ export function getUrlForTarget(target: string) {
     }
     const trimmedTarget = trimLeft(target, "/");
     if (trimmedTarget.startsWith("player/")) {
-        // don't want breadcrumbs, but may need to keep embedding prefixes.
-        segments = [
-            embeddedSettingsUrlKey ? "embed" : undefined,
-            embeddedSettingsUrlKey,
-        ].filter((s) => !!s);
+        // don't want breadcrumbs
+        segments = [];
     }
     segments.push(trimmedTarget);
-    // NB: we do not expect to get any of these in combination with /embed/
+
     if (
         segments[0] === "root.read" ||
         segments[0] === "read" ||

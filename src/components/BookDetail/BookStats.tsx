@@ -64,7 +64,8 @@ export const BookStats: React.FunctionComponent<{
             <ul
                 css={css`
                     list-style: disc;
-                    margin-left: 13px;
+                    margin-left: 16px;
+                    padding: 0;
                     li {
                         margin-bottom: 1em;
                     }

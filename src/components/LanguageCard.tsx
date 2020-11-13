@@ -10,16 +10,16 @@ import { ILanguage, getDisplayNamesForLanguage } from "../model/Language";
 import { commonUI } from "../theme";
 import { useTheme } from "@material-ui/core";
 import { FormattedMessage } from "react-intl";
+import TruncateMarkup from "react-truncate-markup";
 
-interface ILanguageWithRole extends ILanguage  {
-    role?:string; // accessibility role, passed on as part of propsToPassDown
+interface ILanguageWithRole extends ILanguage {
+    role?: string; // accessibility role, passed on as part of propsToPassDown
 }
 
-export const LanguageCard: React.FunctionComponent<ILanguageWithRole> = (props) => {
+export const LanguageCard: React.FunctionComponent<ILanguageWithRole> = (
+    props
+) => {
     const theme = useTheme();
-    const { displayName: languageName, autonym } = getDisplayNamesForLanguage(
-        props
-    );
 
     const {
         name,
@@ -28,22 +28,50 @@ export const LanguageCard: React.FunctionComponent<ILanguageWithRole> = (props) 
         englishName,
         ...propsToPassDown
     } = props; // Prevent React warnings
+    const cardPadding = "14px";
+    const { displayName: languageName, autonym } = getDisplayNamesForLanguage(
+        props
+    );
+    const languageCodeAndAlternateName = (props.isoCode.indexOf("-") > -1 &&
+    props.isoCode !== props.englishName
+        ? [props.isoCode, autonym]
+        : [autonym]
+    ).join(" ");
 
     return (
         <CheapCard
             {...propsToPassDown} // makes swiper work
             css={css`
-                text-align: center;
-                width: 120px;
+                //text-align: center;
+                width: 140px;
                 height: ${commonUI.languageCardHeightInPx}px;
-                padding-bottom: 3px;
+                padding: ${cardPadding};
             `}
             target={`/language:${props.isoCode}`}
             onClick={undefined} // we just want to follow the href, whatever might be in propsToPassDown
         >
+            <div
+                css={css`
+                    font-size: 0.9rem;
+                    // allows the child, the actual secondary name, to be absolute positioned to the bottom
+                    position: relative;
+                    height: 35px; // push the next name, the primary name, into the center of the card
+                `}
+            >
+                <div
+                    css={css`
+                        margin-top: auto;
+                        position: absolute;
+                        bottom: 0;
+                        color: ${commonUI.colors.minContrastGray};
+                    `}
+                >
+                    {languageCodeAndAlternateName}
+                </div>
+            </div>
             <h2
                 css={css`
-                    text-align: center;
+                    //text-align: center;
                     max-height: 40px;
                     margin-top: 0;
                     margin-bottom: 0;
@@ -51,31 +79,19 @@ export const LanguageCard: React.FunctionComponent<ILanguageWithRole> = (props) 
                     margin-block-end: 0;
                 `}
             >
-                {languageName}
+                <TruncateMarkup
+                    // test false positives css={css`color: red;`}
+                    lines={2}
+                >
+                    <span> {languageName} </span>
+                </TruncateMarkup>
             </h2>
-            {props.isoCode.indexOf("-") > -1 &&
-                props.isoCode !== props.englishName && (
-                    <div
-                        css={css`
-                            font-size: 0.7rem;
-                        `}
-                    >
-                        {props.isoCode}
-                    </div>
-                )}
             <div
                 css={css`
-                    font-size: 0.9rem;
-                    margin-top: 5px;
-                `}
-            >
-                {autonym}
-            </div>
-            <div
-                css={css`
-                    font-size: 0.8rem;
+                    font-size: 0.7rem;
                     color: ${theme.palette.secondary.main};
-                    margin-top: auto;
+                    position: absolute;
+                    bottom: ${cardPadding};
                 `}
             >
                 {props.usageCount ? (

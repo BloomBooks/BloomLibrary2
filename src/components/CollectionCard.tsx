@@ -26,25 +26,32 @@ interface IProps {
     imageUrl: string;
     credits?: string;
     altText?: string;
+    kind?: "short" | undefined;
 }
 
 // Show a card with the name, icon, count, etc. of the collection. If the user clicks on it, they go to a page showing the collection.
 export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
     const l10n = useIntl();
     // if showing title anyway, don't need it in place of image
-    const titleElementIfNoImage = props.hideTitle? <React.Fragment /> : <div>{props.title}</div>;
-    // We want the title to be there even if props tell us to hide it, so screeen readers can find it.
-    const extraPropsIfHidingTitle = props.hideTitle ? propsToHideAccessibilityElement : "";
+    const titleElementIfNoImage = props.hideTitle ? (
+        <React.Fragment />
+    ) : (
+        <div>{props.title}</div>
+    );
+    // We want the title to be there even if props tell us to hide it, so screen readers can find it.
+    const extraPropsIfHidingTitle = props.hideTitle
+        ? propsToHideAccessibilityElement
+        : "";
     const titleElement = (
-                <div
-                    css={css`
-                        text-align: center;
-                        font-size: 12pt; // from chrome default for h2, which this element used to be
-                        font-weight: bold;
-                        flex-grow: 1; // push the rest to the bottom
-                        margin-bottom: 5px;
-                        ${extraPropsIfHidingTitle}
-                        // For the sake of uniformity, the only styling we allow in richTextLabel is normal, h1, h2, and h3.
+        <div
+            css={css`
+                text-align: center;
+                font-size: 12pt; // from chrome default for h2, which this element used to be
+                font-weight: bold;
+                flex-grow: 1; // push the rest to the bottom
+                margin-bottom: 5px;
+                ${extraPropsIfHidingTitle}
+                // For the sake of uniformity, the only styling we allow in richTextLabel is normal, h1, h2, and h3.
                         // Cards are currently always displayed as second-level objects, therefore we reduce heading
                         // levels to h2, h3, h4.
                         // Here we define what they will look like.
@@ -52,30 +59,34 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
                         h3,
                         h4,
                         p {
-                            text-align: center;
-                            margin-bottom: 0;
-                            margin-top: 0;
-                            font-weight: bold;
-                        }
-                        h2 {
-                            font-size: 16px;
-                        }
-                        h3 {
-                            font-size: 14px;
-                        }
-                        h4 {
-                            font-size: 12px;
-                        }
-                        p {
-                            font-size: 10px;
-                        }
-                    `}
-                >
-                    {props.richTextLabel
-                        ? documentToReactComponents(reduceHeadingLevel(props.richTextLabel))
-                        : <h2>{props.title}</h2>}
-                </div>
-        );
+                    text-align: center;
+                    margin-bottom: 0;
+                    margin-top: 0;
+                    font-weight: bold;
+                }
+                h2 {
+                    font-size: 16px;
+                }
+                h3 {
+                    font-size: 14px;
+                }
+                h4 {
+                    font-size: 12px;
+                }
+                p {
+                    font-size: 10px;
+                }
+            `}
+        >
+            {props.richTextLabel ? (
+                documentToReactComponents(
+                    reduceHeadingLevel(props.richTextLabel)
+                )
+            ) : (
+                <h2>{props.title}</h2>
+            )}
+        </div>
+    );
 
     let imgElement = <React.Fragment />;
     if (!props.imageUrl) {
@@ -136,7 +147,7 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
             role="listitem"
         >
             {titleElement}
-            {imgElement}
+            {props.kind !== "short" && imgElement}
 
             <div
                 css={css`
@@ -157,21 +168,23 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
 // This is for accessibility: semantically, cards in a collection are second-level,
 // so (for example) keyboard navigation through level 1 headings should skip them.
 function reduceHeadingLevel(input: Document): Document {
-    const result = reduceHeadingLevelInternal({...input}) as Document;
+    const result = reduceHeadingLevelInternal({ ...input }) as Document;
     return result;
 }
 
-function reduceHeadingLevelInternal(input: object) : object {
+function reduceHeadingLevelInternal(input: object): object {
     if (input.hasOwnProperty("content") && input.hasOwnProperty("nodeType")) {
-        const result:any = {...input};
-        result.content = result.content.map((x:object) => reduceHeadingLevelInternal(x));
+        const result: any = { ...input };
+        result.content = result.content.map((x: object) =>
+            reduceHeadingLevelInternal(x)
+        );
         result.nodeType = reduceHeadingLevelInString(result.nodeType);
         return result;
     }
     return input;
 }
 
-function reduceHeadingLevelInString(input:string) :string {
+function reduceHeadingLevelInString(input: string): string {
     switch (input) {
         case "heading-1":
             return "heading-2";

@@ -1,13 +1,16 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
 import css from "@emotion/css/macro";
-import React from "react";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
+
+import React from "react";
 import Markdown from "markdown-to-jsx";
 import { BloomReaderVersionNumber } from "./BloomReaderVersionNumber";
 import { WindowsInstallerDownload } from "./WindowsInstallerDownload";
 import { WindowsInstallerLink } from "./WindowsInstallerLink";
 import Link from "@material-ui/core/Link";
+import { Feature, FeatureGroup, FeatureMatrix } from "./FeatureMatrix";
 
 export enum Column {
     leftColumn,
@@ -18,49 +21,40 @@ export const ContentfulMarkdownPart: React.FunctionComponent<{
     markdown: string;
     column?: Column;
 }> = (props) => {
-    const options =
-        {overrides: {
-                a: {
-                    component: Link,
-                },
-                WindowsInstallerDownload: {
-                    component: WindowsInstallerDownload,
-                },
-                WindowsInstallerLink: {
-                    component: WindowsInstallerLink,
-                },
-                BloomReaderVersionNumber: {
-                    component: BloomReaderVersionNumber,
-                },
+    const options = {
+        overrides: {
+            a: {
+                component: Link,
             },
-        };
-
-    // These next few lines setup CSS that differs by which column this "Part" is for.
-    // "justification" handles vertical alignment. The left column needs to align to the top
-    // and the right column looks better if it's centered vertically.
-    // "alignment" handles the horizontal alignment. The left column needs to align left and
-    // the right columns needs to be center aligned.
-    const flexValue = !props.column ? 1 : 1;
-    const justification = !props.column ? "start" : "center";
-    const alignment = !props.column ? "flex-start" : "center";
-    const leftPadding = !props.column ? "0" : "40px";
+            WindowsInstallerDownload,
+            WindowsInstallerLink,
+            BloomReaderVersionNumber,
+            FeatureMatrix,
+            Feature,
+            FeatureGroup,
+        },
+    };
 
     return (
-        <div css=
-            {css`
-                display: flex;
-                flex-direction: column;
-                flex: ${flexValue};
-                justify-content: ${justification};
-                align-items: ${alignment};
-                padding-right: 20px;
-                padding-left: ${leftPadding};
-            `}>
-            <Markdown
-                options={options}
-            >
-                {props.markdown}
-            </Markdown>
+        <div
+            css={css`
+                img {
+                    // prevent images in stories from being wider than the container
+                    max-width: 100%;
+                    // Conceivably these rules should only apply to stories? If they start to
+                    // mess up other kinds of pages, then we can deal with that.
+                    margin-top: 14px;
+                    margin-bottom: 14px;
+                    display: block; // makes the following centering rules work
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+            `}
+            className={`contentful-markdown-part ${
+                props.column === Column.rightColumn ? "rightColumn" : ""
+            }`}
+        >
+            <Markdown options={options}>{props.markdown}</Markdown>
         </div>
     );
 };

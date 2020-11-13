@@ -99,6 +99,8 @@ export const Footer: React.FunctionComponent = () => {
         <div
             css={css`
                 padding: 20px;
+                overflow-x: hidden; // At small screen widths, the Footer can cause horizontal scrolling.
+                min-height: 120px;
                 *,
                 a,
                 a:visited {

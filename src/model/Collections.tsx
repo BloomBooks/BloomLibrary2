@@ -316,6 +316,7 @@ export function getDummyCollectionForPreview(bannerId: string): ICollection {
         iconForCardAndDefaultBanner: undefined,
         layout: "by-level",
         type: "collection",
+        description: "",
     };
 }
 // These are just for cards. At this point it would not be possible to override what we see on a topic
@@ -332,6 +333,7 @@ function makeTopicCollectionsForCards(): ICollection[] {
                 bannerId: "", // this will never be used because it's just for the card
                 layout: "by-level", // this will never be used because it's just for the card
                 type: "collection",
+                description: "",
             },
             undefined,
             t

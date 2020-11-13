@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { ContentfulBanner } from "./banners/ContentfulBanner";
 import { useGetCollection } from "../model/Collections";
-import { RowOfCollectionCardsForKey } from "./RowOfCollectionCards";
+import { RowOfCards } from "./RowOfCards";
 import { ByLevelGroups } from "./ByLevelGroups";
 import { ListOfBookGroups } from "./ListOfBookGroups";
 import { LanguageGroup } from "./LanguageGroup";
@@ -45,7 +45,7 @@ export const CollectionPage: React.FunctionComponent<{
         if (c.urlKey === "language-chooser") {
             return <LanguageGroup key="lang" />;
         }
-        return <RowOfCollectionCardsForKey key={c.urlKey} urlKey={c.urlKey} />;
+        return <RowOfCards key={c.urlKey} urlKey={c.urlKey} />;
     });
 
     let booksComponent: React.ReactElement | null = null;
@@ -58,11 +58,11 @@ export const CollectionPage: React.FunctionComponent<{
                 break;
             case "no-books": // leave it null
                 break;
-            case "all-books": // untested
+            case "all-books": // used by at least RISE-PNG
                 booksComponent = (
                     <BookCardGroup
                         collection={collection}
-                        rows={collection.rows}
+                        rows={collection.rows ? collection.rows : 1000} // all-books = all books
                     />
                 );
                 break;

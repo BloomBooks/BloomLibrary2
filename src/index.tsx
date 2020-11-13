@@ -11,6 +11,7 @@ import "firebase/auth";
 
 //import * as firebaseui from "firebaseui";
 import { connectParseServer } from "./connection/ParseServerConnection";
+import { isEmbedded } from "./components/EmbeddingHost";
 
 try {
     // we're sending errors so long as we're not running on localhost
@@ -38,7 +39,7 @@ const firebaseConfig = {
 
 // supports authentication, including automatic login if a cookie supports it.
 // We don't ever allow things to behave as logged-in in embedded Bloom Library instances.
-if (window.self === window.top) {
+if (!isEmbedded()) {
     firebase.initializeApp(firebaseConfig);
 
     firebase.auth().onAuthStateChanged(() => {

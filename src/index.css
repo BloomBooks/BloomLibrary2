@@ -11,6 +11,9 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+p {
+    line-height: 1.5em;
+}
 code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
         monospace;
@@ -33,11 +36,6 @@ h2 {
     text-align: left;
     font-size: 12pt;
     font-weight: bold;
-}
-
-ul {
-    list-style: none;
-    padding: 0;
 }
 
 a:hover {
@@ -94,15 +92,10 @@ to apply it to does not support our inline css */
 
 /* Rules applying to ContentfulPage AND ContentfulMultiPartPage. */
 .base-contentful-page {
-    max-width: 1000px;
-    padding-left: 30px;
-    padding-right: 30px;
-}
-
-.base-contentful-page ul {
-    /* revert the rules set above for all ul */
-    list-style: revert;
-    padding: revert;
+    /* max-width: 800px; /* TODO this need to vary by screen width
+    margin-left: auto;
+    margin-right: auto; */
+    margin-bottom: 2em;
 }
 
 .base-contentful-page h1 {
@@ -123,6 +116,10 @@ to apply it to does not support our inline css */
     padding-right: unset;
 }
 
+.multipart-contentful-page.new-about h1 {
+    text-align: center;
+}
+
 /* We need our padding at just the right level in order to get the color bands to be full width. */
 .multipart-contentful-page.new-about > div {
     padding-left: 30px;
@@ -131,11 +128,11 @@ to apply it to does not support our inline css */
 
 /* Light blue and light gray for banded sections */
 .multipart-contentful-page.new-about > div:nth-child(even) {
-    background-color: #b0dee4;
+    background-color: #b1e29d;
 }
 
 .multipart-contentful-page.new-about > div:nth-child(odd) {
-    background-color: #e5e5e5;
+    background-color: none;
 }
 
 .multipart-contentful-page.new-about img {
@@ -169,6 +166,29 @@ to apply it to does not support our inline css */
 .multipart-contentful-page.new-about td img {
     height: 150px;
     width: auto;
+}
+
+/*
+    These next two rules setup CSS that differs by which column this "Part" is for.
+    "justify-content" handles vertical alignment. The left column needs to align to the top
+    and the right column looks better if it's centered vertically.
+    "align-items" handles the horizontal alignment. The left column needs to align left and
+    the right columns needs to be center aligned.
+*/
+.new-about .contentful-markdown-part {
+    display: flex;
+    flex-direction: column;
+    padding-right: 20px;
+    flex: 1;
+    justify-content: start;
+    align-items: flex-start;
+    padding-left: 0;
+}
+
+.new-about .contentful-markdown-part.rightColumn {
+    justify-content: center;
+    align-items: center;
+    padding-left: 40px;
 }
 
 /* Bloom Reader page rules */

@@ -18,6 +18,7 @@ import { BookCard } from "./BookCard";
 import { MoreCard } from "./MoreCard";
 import { CardSwiper } from "./CardSwiper";
 import { ICollection } from "../model/ContentInterfaces";
+import Typography from "@material-ui/core/Typography";
 
 interface IProps {
     title?: string;
@@ -32,40 +33,46 @@ interface IProps {
 }
 
 export const BookCardGroup: React.FunctionComponent<IProps> = (props) => {
-        const rowHeight = (props.rows ?? 1) * commonUI.bookCardHeightPx +
-            commonUI.bookGroupTopMarginPx;
+    const rowHeight =
+        (props.rows ?? 1) * commonUI.bookCardHeightPx +
+        commonUI.bookGroupTopMarginPx;
     if (!props.collection.filter) {
         // this happens for example if there are no "published" the cards in the row
         return null; // otherwise we would just get all the books in the library
     }
     return (
+        // Enhance: this has parameters, height and offset, that should help
+        // but so far I haven't got them to work well. It has many other
+        // parameters too that someone should look into. Make sure to test
+        // with the phone sizes in the browser debugger, and have the network
+        // tab open, set to "XHR". That will show you when a new query happens
+        // because this has loaded a new BookGroupInner.
+        // If the params are good, this list will grow as you scroll.
+        // If the params are bad, some groups at the end will NEVER show.
 
-    // Enhance: this has parameters, height and offset, that should help
-    // but so far I haven't got them to work well. It has many other
-    // parameters too that someone should look into. Make sure to test
-    // with the phone sizes in the browser debugger, and have the network
-    // tab open, set to "XHR". That will show you when a new query happens
-    // because this has loaded a new BookGroupInner.
-    // If the params are good, this list will grow as you scroll.
-    // If the params are bad, some groups at the end will NEVER show.
-
-    /* Note, this currently breaks strict mode. See app.tsx */
-    <LazyLoad
-        height={
-            /* note, if the number of cards is too small to fill up those rows, this will expect
+        /* Note, this currently breaks strict mode. See app.tsx */
+        <LazyLoad
+            height={
+                /* note, if the number of cards is too small to fill up those rows, this will expect
                     to be taller than it is, but then when it is replaced by the actual content, the
                     scrollbar will adjust, so no big deal?*/
-            rowHeight
-        }
-        // Set offset to keep one more item expanded, so keyboard shortcuts can find them
-        // Set placeholder so that ul child items are of correct accessible class.
-        // Note that explicit placeholders must control their own height.
-        offset={rowHeight}
-        placeholder={<li className="placeholder" style={{height:`${rowHeight}px`}}></li>}
-    >
-        <CollectionGroupInner {...props} />
-    </LazyLoad>
-)};
+                rowHeight
+            }
+            // Set offset to keep one more item expanded, so keyboard shortcuts can find them
+            // Set placeholder so that ul child items are of correct accessible class.
+            // Note that explicit placeholders must control their own height.
+            offset={rowHeight}
+            placeholder={
+                <li
+                    className="placeholder"
+                    style={{ height: `${rowHeight}px` }}
+                ></li>
+            }
+        >
+            <CollectionGroupInner {...props} />
+        </LazyLoad>
+    );
+};
 export const CollectionGroupInner: React.FunctionComponent<IProps> = (
     props
 ) => {
@@ -179,6 +186,66 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
         countToShow = books.length;
     }
     const label = props.title ?? props.collection.label;
+
+    let group;
+    switch (props.collection.layout) {
+        case "layout: description-followed-by-row-of-books":
+            group = (
+                <React.Fragment>
+                    <div
+                        css={css`
+                            display: flex;
+                            flex-direction: row;
+                            // The default margin-left is "auto"
+                            .swiper-container {
+                                margin-left: 0;
+                            }
+                        `}
+                    >
+                        <div
+                            css={css`
+                                width: 200px;
+                                margin-right: 20px;
+                            `}
+                        >
+                            <h1>{label}</h1>
+                            <Typography
+                                variant="body2"
+                                color="textSecondary"
+                                component="p"
+                            >
+                                {props.collection.description}
+                            </Typography>
+                        </div>
+                        {search.waiting || bookList}
+                    </div>
+                </React.Fragment>
+            );
+
+            break;
+        default:
+            group = (
+                <React.Fragment>
+                    <h1>
+                        {label}
+                        {props.collection.urlKey === "new-arrivals" || (
+                            <span
+                                css={css`
+                                    font-size: 9pt;
+                                    color: ${commonUI.colors.minContrastGray};
+                                    margin-left: 1em;
+                                `}
+                            >
+                                {countToShow}
+                            </span>
+                        )}
+                    </h1>
+                    {search.waiting || bookList}
+                </React.Fragment>
+            );
+            break;
+    }
+
     return (
         //We just don't show the row if there are no matches, e.g., no Health books for this project
         // (ZeroBooksMatchedElement will be an empty pseudo-element that satisfies the 'or' but shows nothing)
@@ -193,21 +260,7 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
                 role="region"
                 aria-label={label}
             >
-                <h1>
-                    {label}
-                    {props.collection.urlKey === "new-arrivals" || (
-                        <span
-                            css={css`
-                                font-size: 9pt;
-                                color: ${commonUI.colors.minContrastGray};
-                                margin-left: 1em;
-                            `}
-                        >
-                            {countToShow}
-                        </span>
-                    )}
-                </h1>
-                {search.waiting || bookList}
+                {group}
             </li>
         )
     );

@@ -13,12 +13,12 @@ export const commonUI = {
         dialogTopBottomGray: "#F1F3F4",
         creationArea: "#509E2F", // this is the SIL Intl green
         createAreaTextOnWhite: "#226B04", // a bit darker for contrast
-        minContrastGray:"#767676", // lightest grey that is accessible on white background"
+        minContrastGray: "#767676", // lightest grey that is accessible on white background"
     },
 
     // Some of these aren't very global, but this is a convenient place to put
     // constants shared by various components to keep them consistent
-    languageCardHeightInPx: 100,
+    languageCardHeightInPx: 120,
     cheapCardMarginBottomInPx: 10,
     bookGroupTopMarginPx: 30,
     bookCardHeightPx: 200,

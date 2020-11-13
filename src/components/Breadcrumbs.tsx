@@ -15,6 +15,7 @@ export const Breadcrumbs: React.FunctionComponent = () => {
     // TODO: this doesn't look good on a narrow screen (phone) when the breadcrumbs get very long.
     const breadcrumbsStyle = css`
         display: flex;
+        list-style: none;
         padding: 0;
         margin: 0; // better to let the consumer decide our margin
         //padding-left: 20px;
