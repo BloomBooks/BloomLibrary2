@@ -194,4 +194,5 @@ to apply it to does not support our inline css */
 /* Bloom Reader page rules */
 .contentful-page.bloom-reader img {
     width: 200px;
+    margin: -12px;
 }
