@@ -42,9 +42,10 @@ export function generateCollectionFromFilters(
                     );
                     break;
                 case "topic":
+                    // TODO: Figure out a way to localize the topic name here.
                     filteredCollection = makeCollectionForTopic(
                         filteredCollection,
-                        parts[1]
+                        { key: parts[1], displayName: parts[1] }
                     );
                     break;
                 case "search":
