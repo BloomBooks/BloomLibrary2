@@ -25,7 +25,6 @@ import { BookThumbnail } from "./BookThumbnail";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{
     book: Book;
-    breakToColumn: string;
     // sometimes in the UI, we know what language the user is interested in,
     //so where possible we're going to preference that if this is a multilingual book
     contextLangIso?: string;
@@ -77,7 +76,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
         bloomReaderAvailable; // and we're on a platform that supports bloom reader
 
     const fullWidthButtons = useMediaQuery(
-        `(max-width:${props.breakToColumn})`
+        `(max-width:${commonUI.detailViewBreakpointForTwoColumns})`
     );
 
     return (
@@ -90,7 +89,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                 display: flex;
                 justify-content: space-between;
                 max-width: calc(100vw - ${commonUI.detailViewMargin}*2);
-                @media (max-width: ${props.breakToColumn}) {
+                @media (max-width: ${commonUI.detailViewBreakpointForTwoColumns}) {
                     flex-direction: column;
                 }
             `}
@@ -101,7 +100,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                     margin-bottom: 1em;
                     flex-direction: column;
                     margin-right: 1em;
-                    @media (max-width: ${props.breakToColumn}) {
+                    @media (max-width: ${commonUI.detailViewBreakpointForTwoColumns}) {
                         margin-right: 0;
                     }
                 `}
