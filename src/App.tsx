@@ -30,6 +30,10 @@ import { Routes } from "./components/Routes";
 import { Footer } from "./components/Footer";
 import { IntlProvider } from "react-intl";
 
+import {
+    useInternationalizedTopics,
+    ITopic,
+} from "./model/useInternationalizedTopics";
 import { useGetLocalizations } from "./GetLocalizations";
 import { useIsEmbedded } from "./components/EmbeddingHost";
 interface ICachedTables {
@@ -50,17 +54,30 @@ export const CachedTablesContext = React.createContext<ICachedTables>({
     bookshelves: [],
 });
 
+interface ICachedTopics {
+    topics: ITopic[];
+}
+
+// The useInternationalizedTopics() hook must be used inside of IntlProvider (i.e. inside of RouterContent).
+export let CachedTopics: ITopic[] = [];
+export const CachedTopicsContext = React.createContext<ICachedTopics>({
+    topics: [],
+});
+
 //console.log("getUserLanguageFromBrowser() " + getUserLanguageFromBrowser());
 
 // What we want inside the <Router> component. Has to be its own component so that we can have
 // useLocation(), which only works inside the Router.
 const RouterContent: React.FunctionComponent<{}> = (props) => {
     const location = useLocation();
+    const topics = useInternationalizedTopics();
+    CachedTopics = topics;
     const showingPlayer = location.pathname.startsWith("/player/");
     const embeddedMode = useIsEmbedded();
-    return <React.Fragment>
-        {embeddedMode || showingPlayer || <Header />}
-        {/* This div takes up all the space available so that the footer
+    return (
+        <CachedTopicsContext.Provider value={{ topics }}>
+            {embeddedMode || showingPlayer || <Header />}
+            {/* This div takes up all the space available so that the footer
         is either at the bottom or pushed off screen. If we're showing the player,
         we don't have a header or footer. In most browsers, flex 1 0 auto would
         still work, and the one and only child div would take all the space.
@@ -68,17 +85,18 @@ const RouterContent: React.FunctionComponent<{}> = (props) => {
         height. In Safari (grrrrrr!), it doesn't work to make an iframe 100%
         of the height of a parent whose height is determined by flex grow.
         So, in that one case, we simply make this div have height 100%.*/}
-        <div
-            id="expandableContent"
-            css={css`
-                ${showingPlayer ? "height: 100%;" : "flex: 1 0 auto;"}
-            `}
-            role="main"
-        >
-            <Routes />
-        </div>
-        {embeddedMode || showingPlayer || <Footer />}
-    </React.Fragment>
+            <div
+                id="expandableContent"
+                css={css`
+                    ${showingPlayer ? "height: 100%;" : "flex: 1 0 auto;"}
+                `}
+                role="main"
+            >
+                <Routes />
+            </div>
+            {embeddedMode || showingPlayer || <Footer />}
+        </CachedTopicsContext.Provider>
+    );
 };
 
 export const App: React.FunctionComponent<{}> = (props) => {
@@ -182,7 +200,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                             {showUnderConstruction && <UnderConstruction />}
 
                             <Router>
-                               <RouterContent/>
+                                <RouterContent />
                             </Router>
                         </OSFeaturesContext.Provider>
                     </CachedTablesContext.Provider>
@@ -192,8 +210,6 @@ export const App: React.FunctionComponent<{}> = (props) => {
         </IntlProvider>
     );
 };
-
-
 
 export const UnderConstruction: React.FunctionComponent<{}> = () => {
     const [open, setOpen] = React.useState(true);

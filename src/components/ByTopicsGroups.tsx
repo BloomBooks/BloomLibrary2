@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { ICollection } from "../model/ContentInterfaces";
 import { BookCardGroup } from "./BookCardGroup";
-import { kTopicList } from "../model/ClosedVocabularies";
+import { ITopic } from "../model/useInternationalizedTopics";
+import { CachedTopicsContext } from "../App";
 
 // For each topic, show a row of books for that topic.
 // Note: very similar to ByLevelsGroup, possibly we can factor out something common.
@@ -11,11 +12,18 @@ export const ByTopicsGroups: React.FunctionComponent<{
     const contextLangIso = props.collection.urlKey.startsWith("language:")
         ? props.collection.urlKey.substring("language:".length)
         : undefined;
+
+    const topics = useContext(CachedTopicsContext).topics;
+
+    const otherTopic = topics.find(
+        (topic: ITopic) => topic.key === "Other"
+    ) as ITopic;
+
     return (
         <React.Fragment>
-            {kTopicList.map((topic) => (
+            {topics.map((topic) => (
                 <BookCardGroup
-                    key={topic}
+                    key={topic.key}
                     collection={makeCollectionForTopic(props.collection, topic)}
                     contextLangIso={contextLangIso}
                 />
@@ -26,7 +34,10 @@ export const ByTopicsGroups: React.FunctionComponent<{
             constructParseBookQuery() */}
             <BookCardGroup
                 rows={99}
-                collection={makeCollectionForTopic(props.collection, "empty")}
+                collection={makeCollectionForTopic(props.collection, {
+                    key: "empty",
+                    displayName: otherTopic.displayName,
+                })}
                 contextLangIso={contextLangIso}
             />
         </React.Fragment>
@@ -35,14 +46,12 @@ export const ByTopicsGroups: React.FunctionComponent<{
 
 export function makeCollectionForTopic(
     baseCollection: ICollection,
-    topic: string
+    topic: ITopic
 ): ICollection {
-    const filter = { ...baseCollection.filter, topic: topic };
-    let label = baseCollection.label + " - " + topic;
-    const urlKey = baseCollection.urlKey + "/:topic:" + topic;
-    if (topic === "empty") {
-        label = baseCollection.label + " - Other";
-    }
+    const filter = { ...baseCollection.filter, topic: topic.key };
+    const localizedTopic = topic.displayName;
+    const label = baseCollection.label + ` - ${localizedTopic}`;
+    const urlKey = baseCollection.urlKey + "/:topic:" + topic.key;
     // Enhance: how can we append "- topic" to title, given that it's some unknown
     // contentful representation of a rich text?
     const result = {
