@@ -19,6 +19,7 @@ import { track } from "../analytics/Analytics";
 import { BookCount } from "./BookCount";
 import { setBloomLibraryTitle } from "./Routes";
 import { NoSearchResults } from "./NoSearchResults";
+import { CachedTables } from "../model/InternationalizedContent";
 
 // Given a collection and a string like level:1/topic:anthropology/search:dogs,
 // creates a corresponding collection by adding appropriate filters.
@@ -42,9 +43,18 @@ export function generateCollectionFromFilters(
                     );
                     break;
                 case "topic":
+                    const topicKey = parts[1];
+                    const localizedTopic = CachedTables.topics.find(
+                        (topic) => topic.key === topicKey
+                    );
                     filteredCollection = makeCollectionForTopic(
                         filteredCollection,
-                        parts[1]
+                        {
+                            key: topicKey,
+                            displayName: localizedTopic
+                                ? localizedTopic.displayName
+                                : topicKey,
+                        }
                     );
                     break;
                 case "search":
