@@ -18,7 +18,7 @@ import {
     ArtifactType,
     getArtifactVisibilitySettings,
 } from "./ArtifactHelper";
-import { OSFeaturesContext } from "../../components/OSFeaturesContext";
+import { OSFeaturesContext } from "../OSFeaturesContext";
 import { ArtifactVisibilitySettings } from "../../model/ArtifactVisibilitySettings";
 import { track } from "../../analytics/Analytics";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
@@ -34,7 +34,7 @@ interface IArtifactUI {
     analyticsType: string;
 }
 
-export const ArtifactGroup: React.FunctionComponent<{
+export const DownloadsGroup: React.FunctionComponent<{
     book: Book;
     contextLangIso?: string;
 }> = observer((props) => {

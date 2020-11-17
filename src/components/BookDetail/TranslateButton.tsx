@@ -12,7 +12,7 @@ import { Book } from "../../model/Book";
 import { commonUI } from "../../theme";
 import { track } from "../../analytics/Analytics";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
-import { followUrl } from "./ArtifactGroup";
+import { followUrl } from "./DownloadsGroup";
 import { FormattedMessage, useIntl } from "react-intl";
 
 export const TranslateButton: React.FunctionComponent<{

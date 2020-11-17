@@ -14,7 +14,7 @@ import { Alert } from "../Alert";
 import { observer } from "mobx-react";
 import { BookExtraPanels } from "./BookExtraPanels";
 import { MetadataGroup } from "./MetadataGroup";
-import { ArtifactGroup } from "./ArtifactGroup";
+import { DownloadsGroup } from "./DownloadsGroup";
 import { BookDetailHeaderGroup } from "./BookDetailHeaderGroup";
 import { DeleteButton } from "./DeleteButton";
 import { ReportButton } from "./ReportButton";
@@ -242,7 +242,7 @@ export const BookDetailInternal: React.FunctionComponent<{
                                 </div>
                             </Link>
                         )} */}
-                        <ArtifactGroup book={props.book} />
+                        <DownloadsGroup book={props.book} />
                     </div>
                 </div>
 
