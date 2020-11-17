@@ -19,6 +19,7 @@ import { track } from "../analytics/Analytics";
 import { BookCount } from "./BookCount";
 import { setBloomLibraryTitle } from "./Routes";
 import { NoSearchResults } from "./NoSearchResults";
+import { ITopic } from "../model/useInternationalizedTopics";
 
 // Given a collection and a string like level:1/topic:anthropology/search:dogs,
 // creates a corresponding collection by adding appropriate filters.
@@ -42,9 +43,10 @@ export function generateCollectionFromFilters(
                     );
                     break;
                 case "topic":
+                    // TODO: Figure out a way to localize the topic name here.
                     filteredCollection = makeCollectionForTopic(
                         filteredCollection,
-                        parts[1]
+                        { key: parts[1], displayName: parts[1] }
                     );
                     break;
                 case "search":
