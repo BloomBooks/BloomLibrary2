@@ -29,14 +29,7 @@ export const LanguageCard: React.FunctionComponent<ILanguageWithRole> = (
         ...propsToPassDown
     } = props; // Prevent React warnings
     const cardPadding = "14px";
-    const { displayName: languageName, autonym } = getDisplayNamesForLanguage(
-        props
-    );
-    const languageCodeAndAlternateName = (props.isoCode.indexOf("-") > -1 &&
-    props.isoCode !== props.englishName
-        ? [props.isoCode, autonym]
-        : [autonym]
-    ).join(" ");
+    const { primary, secondary } = getDisplayNamesForLanguage(props);
 
     return (
         <CheapCard
@@ -66,7 +59,7 @@ export const LanguageCard: React.FunctionComponent<ILanguageWithRole> = (
                         color: ${commonUI.colors.minContrastGray};
                     `}
                 >
-                    {languageCodeAndAlternateName}
+                    {secondary}
                 </div>
             </div>
             <h2
@@ -83,7 +76,7 @@ export const LanguageCard: React.FunctionComponent<ILanguageWithRole> = (
                     // test false positives css={css`color: red;`}
                     lines={2}
                 >
-                    <span> {languageName} </span>
+                    <span> {primary} </span>
                 </TruncateMarkup>
             </h2>
             <div
