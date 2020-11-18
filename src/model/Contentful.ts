@@ -65,7 +65,7 @@ export function convertContentfulCollectionToICollection(
             item.fields.hideLabelOnCardAndDefaultBanner,
         childCollections: getSubCollections(item.fields.childCollections),
         bannerId,
-        layout: item.fields.layout?.fields?.name || "by-level",
+        layout: item.fields.layout?.fields?.name || "by-topic",
         rows: item.fields.rows,
         order,
         type: item.fields.urlKey.startsWith("http") ? "link" : item.sys.contentType.sys.id,
