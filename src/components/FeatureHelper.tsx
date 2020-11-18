@@ -194,6 +194,15 @@ export const featureSpecs: IFeatureSpec[] = [
     },
 ];
 
+export function featureIsLanguageDependent(featureKey: string): boolean {
+    for (const f of featureSpecs) {
+        if (f.featureKey === featureKey) {
+            return f.languageDependent;
+        }
+    }
+    return false; // rather arbitrary default; shouldn't happen
+}
+
 // Gets a list of all the features. Those in the list passed will have isPresent true.
 export function getAllFeaturesWithTheseMarkedPresent(
     features: string[] | undefined
@@ -224,6 +233,16 @@ export function getNonLanguageFeatures(
                 )[0]
         )
         .filter((f) => !!f);
+}
+
+export function bookHasFeatureInLanguage(
+    featureInfoOfBook: string[] | undefined,
+    feature: string,
+    lang: string
+): boolean {
+    if (!featureInfoOfBook) return false;
+    let target = feature + ":" + lang;
+    return featureInfoOfBook.indexOf(target) >= 0;
 }
 
 // Get a FeatureOption (and thus icon-creating function) for each
