@@ -25,6 +25,8 @@ export const FeaturesGroup: React.FunctionComponent<{
     const features = getAllFeaturesWithTheseMarkedPresent(
         props.book.features.filter((f) => f.indexOf(":") < 0)
     );
+    const featureRightMargin = "10px";
+    const disabledFeatureColor = "#DDD";
     return (
         <div css={css``}>
             <div
@@ -44,6 +46,7 @@ export const FeaturesGroup: React.FunctionComponent<{
                 css={css`
                     // eyeball this about to the middle of the download icons
                     margin-top: 15px;
+                    display: flex;
                 `}
             >
                 {features.map((feature) => (
@@ -53,24 +56,55 @@ export const FeaturesGroup: React.FunctionComponent<{
                         )}
                         key={feature.featureKey}
                     >
-                        {feature.icon({
-                            key: feature.featureKey,
-                            fill: feature.isPresent
-                                ? commonUI.colors.bloomBlue
-                                : "#DDD", // They must have a color specified or will be transparent
-                            // I can't figure out how to make emotion CSS work here.
-                            style: {
-                                // I'd prefer to just specify a height and let width be automatic.
-                                // But then the browser keeps the original width of the SVG and pads
-                                // with (too much) white space.
-                                // I was afraid specifying both would mess up aspect ratios but
-                                // it doesn't seem to.
-                                height: featureIconHeight + "px",
-                                width: featureIconHeight + "px",
-                                marginRight: "10px",
-                                //marginTop: "2px",
-                            },
-                        })}
+                        <div
+                            css={css`
+                                position: relative;
+                            `}
+                        >
+                            {feature.icon({
+                                key: feature.featureKey,
+                                fill: feature.isPresent
+                                    ? commonUI.colors.bloomBlue
+                                    : disabledFeatureColor, // They must have a color specified or will be transparent
+                                // I can't figure out how to make emotion CSS work here.
+                                style: {
+                                    // I'd prefer to just specify a height and let width be automatic.
+                                    // But then the browser keeps the original width of the SVG and pads
+                                    // with (too much) white space.
+                                    // I was afraid specifying both would mess up aspect ratios but
+                                    // it doesn't seem to.
+                                    height: featureIconHeight + "px",
+                                    width: featureIconHeight + "px",
+                                    marginRight: featureRightMargin,
+                                    //marginTop: "2px",
+                                },
+                            })}
+                            {feature.isPresent || (
+                                <div
+                                    // Trick taken from https://stackoverflow.com/questions/18012420/draw-diagonal-lines-in-div-background-with-css
+                                    // the gradient somehow draws a diagonal line across the div.
+                                    css={css`
+                                        position: absolute;
+                                        top: 0;
+                                        bottom: 0;
+                                        left: 0;
+                                        right: ${featureRightMargin};
+                                        // behind the icon, so as not to interfere with hover displaying icon title
+                                        // Seems we should be able to achieve this by putting it before the icon,
+                                        // but that didn't work.
+                                        z-index: -1;
+                                        background: linear-gradient(
+                                            to top left,
+                                            rgba(0, 0, 0, 0) 0%,
+                                            rgba(0, 0, 0, 0) calc(50% - 0.8px),
+                                            ${disabledFeatureColor} 50%,
+                                            rgba(0, 0, 0, 0) calc(50% + 0.8px),
+                                            rgba(0, 0, 0, 0) 100%
+                                        );
+                                    `}
+                                ></div>
+                            )}
+                        </div>
                     </Link>
                 ))}
             </div>
