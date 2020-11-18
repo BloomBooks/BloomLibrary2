@@ -34,7 +34,7 @@ export const BookStatsReport: React.FunctionComponent<IStatsProps> = (
             const languageDisplayName = getDisplayNamesFromLanguageCode(
                 stat.language,
                 languages
-            )?.displayNameWithAutonym;
+            )?.combined;
             if (languageDisplayName) {
                 stat.language = languageDisplayName;
             }

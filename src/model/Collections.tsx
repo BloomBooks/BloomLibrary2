@@ -216,7 +216,7 @@ export function makeLanguageCollection(
     let languageDisplayName = getDisplayNamesFromLanguageCode(
         langCode!,
         languages
-    )?.displayNameWithAutonym;
+    )?.combined;
     if (!languageDisplayName) languageDisplayName = langCode;
 
     // We need the label in [Template Language Collection] to be $1.

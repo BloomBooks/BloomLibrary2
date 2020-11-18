@@ -93,10 +93,8 @@ export const ByLanguageGroups: React.FunctionComponent<{
                     } else return true;
                 })
                 .sort((x, y) =>
-                    getDisplayNamesForLanguage(
-                        x
-                    ).displayNameWithAutonym.localeCompare(
-                        getDisplayNamesForLanguage(y).displayNameWithAutonym
+                    getDisplayNamesForLanguage(x).combined.localeCompare(
+                        getDisplayNamesForLanguage(y).combined
                     )
                 ),
         [languagesByBookCount, props.excludeLanguages]
@@ -116,7 +114,7 @@ export const ByLanguageGroups: React.FunctionComponent<{
                     <BookGroup
                         key={l.isoCode}
                         title={`${props.titlePrefix} ${
-                            getDisplayNamesForLanguage(l).displayNameWithAutonym
+                            getDisplayNamesForLanguage(l).combined
                         }`}
                         predeterminedBooks={books}
                         contextLangIso={l.isoCode}

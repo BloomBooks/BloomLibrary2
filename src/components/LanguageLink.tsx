@@ -44,5 +44,5 @@ export function getLanguageNames(languages: ILanguage[]): string[] {
 // For languages where the name differs in English, we are currently
 // showing the autonym followed by English in parentheses.
 export function getNameDisplay(l: ILanguage) {
-    return getDisplayNamesForLanguage(l).displayNameWithAutonym;
+    return getDisplayNamesForLanguage(l).combined;
 }

@@ -12,9 +12,9 @@ export function getDisplayNamesFromLanguageCode(
     languages: ILanguage[]
 ):
     | {
-          displayName: string;
-          autonym: string | undefined;
-          displayNameWithAutonym: string;
+          primary: string;
+          secondary: string | undefined;
+          combined: string;
       }
     | undefined {
     const language = languages.find((l) => l.isoCode === languageCode);
@@ -25,22 +25,51 @@ export function getDisplayNamesFromLanguageCode(
 export function getDisplayNamesForLanguage(
     language: ILanguage
 ): {
-    displayName: string;
-    autonym: string | undefined;
-    displayNameWithAutonym: string;
+    primary: string;
+    secondary: string | undefined;
+    combined: string;
 } {
-    let displayName: string;
-    let autonym: string | undefined;
-    let displayNameWithAutonym: string;
-    if (language.englishName && language.englishName !== language.name) {
-        autonym = language.name;
-        displayName = language.englishName;
-        displayNameWithAutonym = `${autonym} (${displayName})`;
-    } else {
-        displayName = language.name;
-        displayNameWithAutonym = displayName;
+    // don't bother showing "zh-CN"... it's not a variant, it's the norm
+    if (language.isoCode === "zh-CN") {
+        return navigator.language === "zh-CN"
+            ? {
+                  secondary: "Chinese",
+                  primary: "简体中文",
+                  combined: "简体中文 (Chinese)",
+              }
+            : {
+                  primary: "Chinese",
+                  secondary: "简体中文",
+                  combined: "Chinese (简体中文)",
+              };
     }
-    return { displayName, autonym, displayNameWithAutonym };
+    let primary: string;
+    let secondary: string | undefined;
+
+    if (language.englishName && language.englishName !== language.name) {
+        if (navigator.language === language.isoCode) {
+            primary = language.name;
+            secondary = language.englishName;
+        } else {
+            primary = language.englishName;
+            secondary = language.name;
+        }
+    } else {
+        primary = language.name;
+    }
+    // if it looks like this is a variant, add that to the secondary
+
+    if (
+        language.isoCode &&
+        language.isoCode.indexOf("-") > -1 &&
+        language.isoCode !== language.englishName &&
+        language.isoCode !== language.name
+    )
+        secondary = [secondary, language.isoCode].join(" ");
+
+    const combined = primary + (secondary ? `(${secondary})` : "");
+
+    return { primary, secondary, combined };
 }
 
 export function getCleanedAndOrderedLanguageList(
