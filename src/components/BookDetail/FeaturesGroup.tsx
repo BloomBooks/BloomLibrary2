@@ -11,6 +11,7 @@ import { getAllFeaturesWithTheseMarkedPresent } from "../FeatureHelper";
 import { commonUI } from "../../theme";
 import { getAnchorProps } from "../../embedded";
 import { Link } from "@material-ui/core";
+import Typography from "@material-ui/core/Typography/Typography";
 
 // Shows all the possible features, each as its icon, with a title that is its name.
 // Each functions as a button to go to a collection of books with the features.
@@ -25,45 +26,54 @@ export const FeaturesGroup: React.FunctionComponent<{
         props.book.features.filter((f) => f.indexOf(":") < 0)
     );
     return (
-        <div
-            css={css`
-                display: flex;
-                justify-content: flex-end;
-            `}
-        >
+        <div css={css``}>
             <div
                 css={css`
-                    display: inline-block;
-                    margin-top: 12px;
+                    /* display: inline-block;
+                    margin-top: 12px;*/
                 `}
             >
-                <FormattedMessage
-                    id="book.metadata.features"
-                    defaultMessage="Features:"
-                />
+                <Typography variant="caption">
+                    <FormattedMessage
+                        id="book.metadata.features"
+                        defaultMessage="Features"
+                    />
+                </Typography>
             </div>
-            {features.map((feature) => (
-                <Link {...getAnchorProps("/" + (feature.collectionHref || feature.featureKey))} key={feature.featureKey}>
-                    {feature.icon({
-                        key: feature.featureKey,
-                        fill: feature.isPresent
-                            ? commonUI.colors.bloomBlue
-                            : "#DDD", // They must have a color specified or will be transparent
-                        // I can't figure out how to make emotion CSS work here.
-                        style: {
-                            // I'd prefer to just specify a height and let width be automatic.
-                            // But then the browser keeps the original width of the SVG and pads
-                            // with (too much) white space.
-                            // I was afraid specifying both would mess up aspect ratios but
-                            // it doesn't seem to.
-                            height: featureIconHeight + "px",
-                            width: featureIconHeight + "px",
-                            marginLeft: "10px",
-                            marginTop: "2px",
-                        },
-                    })}
-                </Link>
-            ))}
+            <div
+                css={css`
+                    // eyeball this about to the middle of the download icons
+                    margin-top: 15px;
+                `}
+            >
+                {features.map((feature) => (
+                    <Link
+                        {...getAnchorProps(
+                            "/" + (feature.collectionHref || feature.featureKey)
+                        )}
+                        key={feature.featureKey}
+                    >
+                        {feature.icon({
+                            key: feature.featureKey,
+                            fill: feature.isPresent
+                                ? commonUI.colors.bloomBlue
+                                : "#DDD", // They must have a color specified or will be transparent
+                            // I can't figure out how to make emotion CSS work here.
+                            style: {
+                                // I'd prefer to just specify a height and let width be automatic.
+                                // But then the browser keeps the original width of the SVG and pads
+                                // with (too much) white space.
+                                // I was afraid specifying both would mess up aspect ratios but
+                                // it doesn't seem to.
+                                height: featureIconHeight + "px",
+                                width: featureIconHeight + "px",
+                                marginRight: "10px",
+                                //marginTop: "2px",
+                            },
+                        })}
+                    </Link>
+                ))}
+            </div>
         </div>
     );
 };
