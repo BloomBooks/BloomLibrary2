@@ -128,12 +128,17 @@ export const TagsChooser: React.FunctionComponent<{
                 // Force a default prefix of "tag:" if the user does not provide one.
                 // Otherwise, the prefix will default to "topic:", which isn't necessarily wanted.
                 // See https://issues.bloomlibrary.org/youtrack/issue/BL-8990.
-                const xitems = items.map(item => {
-                    if (item.includes(":")) {
-                        return item;
-                    }
-                    return "tag:" + item;
-                })
+                const xitems = items.map((item: string) => {
+                    const result = item.includes(":") ? item : "tag:" + item;
+
+                    // Adding the new tag here lets us use it throughout the site (other books, grid filtering, etc.)
+                    //  even before the site reloads. That's because we are modifying the underlying array,
+                    //  the same one in CachedTablesContext.
+                    // When the site reloads, the new tag will be in the array when it is loaded from parse.
+                    if (!tagChoices.includes(result)) tagChoices.push(result);
+
+                    return result;
+                });
                 props.book.tags = xitems;
             }}
             getStylingForValue={(t: string) => {
