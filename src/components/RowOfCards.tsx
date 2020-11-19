@@ -52,7 +52,7 @@ const RowOfCardsInternal: React.FunctionComponent<{
 
         switch (props.collection.layout) {
             case "row-of-story-cards":
-                return <StoryCard story={childCollection} />;
+                return <StoryCard story={childCollection} key={target} />;
             default:
                 return (
                     <CollectionCard

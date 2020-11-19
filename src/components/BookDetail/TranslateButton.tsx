@@ -94,16 +94,11 @@ export const TranslateButton: React.FunctionComponent<{
                         margin-bottom: 0;
                     `}
                 >
-                    {l10n.formatMessage(
-                        {
-                            id: "book.detail.translateButton.translate",
-                            defaultMessage:
-                                "Translate into <emphasis>your</emphasis> language!",
-                        },
-                        {
-                            emphasis: (str) => <em>{str}</em>,
-                        }
-                    )}
+                    <FormattedMessage
+                        id="book.detail.translateButton.translate"
+                        defaultMessage="Translate into <emphasis>your</emphasis> language!"
+                        values={{ emphasis: (str: string) => <em>{str}</em> }}
+                    />
                 </p>
                 <p
                     css={css`
