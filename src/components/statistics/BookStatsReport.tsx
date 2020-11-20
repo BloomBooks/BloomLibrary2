@@ -17,7 +17,7 @@ import { useState, useContext } from "react";
 import { IStatsProps } from "./StatsInterfaces";
 import { useGetBookStats } from "./useGetBookStats";
 import { useProvideDataForExport } from "./exportData";
-import { CachedTablesContext } from "../../App";
+import { CachedTablesContext } from "../../model/InternationalizedContent";
 import { getDisplayNamesFromLanguageCode } from "../../model/Language";
 import { useIntl } from "react-intl";
 

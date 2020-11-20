@@ -15,7 +15,7 @@ import { Book } from "../../model/Book";
 import QueryString from "qs";
 import titleCase from "title-case";
 import { IFilter, InCirculationOptions } from "../../IFilter";
-import { CachedTables } from "../../App";
+import { CachedTables } from "../../model/InternationalizedContent";
 
 export interface IGridColumn extends DevExpressColumn {
     moderatorOnly?: boolean;

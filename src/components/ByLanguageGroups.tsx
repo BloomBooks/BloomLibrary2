@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState, useMemo } from "react";
 import { IFilter } from "../IFilter";
-import { CachedTablesContext } from "../App";
+import { CachedTablesContext } from "../model/InternationalizedContent";
 import { getDisplayNamesForLanguage } from "../model/Language";
 import {
     useSearchBooks,

@@ -5,97 +5,18 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React, { useState } from "react";
-import { BrowserRouter as Router, useLocation } from "react-router-dom";
 
 import theme from "./theme";
-import { ThemeProvider, Snackbar } from "@material-ui/core";
+import { ThemeProvider } from "@material-ui/core";
 import { LoginDialog } from "./components/User/LoginDialog";
-import {
-    useGetTagList,
-    useGetCleanedAndOrderedLanguageList,
-    IBookshelfResult,
-    useGetBookshelvesByCategory,
-} from "./connection/LibraryQueryHooks";
-import { ILanguage } from "./model/Language";
-import {
-    OSFeaturesContext,
-    bloomDesktopAvailable,
-    bloomReaderAvailable,
-    cantUseBloomD,
-    mobile,
-} from "./components/OSFeaturesContext";
-import { Alert, AlertTitle } from "@material-ui/lab";
-import { Header } from "./components/header/Header";
-import { Routes } from "./components/Routes";
-import { Footer } from "./components/Footer";
+import InternationalizedContent from "./model/InternationalizedContent";
 import { IntlProvider } from "react-intl";
-
 import { useGetLocalizations } from "./GetLocalizations";
-import { useIsEmbedded } from "./components/EmbeddingHost";
-interface ICachedTables {
-    tags: string[];
-    languagesByBookCount: ILanguage[];
-    bookshelves: IBookshelfResult[];
-}
-// for use when we aren't in a react context with hooks
-export const CachedTables: ICachedTables = {
-    tags: [],
-    languagesByBookCount: [],
-    bookshelves: [],
-};
-
-export const CachedTablesContext = React.createContext<ICachedTables>({
-    tags: [],
-    languagesByBookCount: [],
-    bookshelves: [],
-});
 
 //console.log("getUserLanguageFromBrowser() " + getUserLanguageFromBrowser());
 
-// What we want inside the <Router> component. Has to be its own component so that we can have
-// useLocation(), which only works inside the Router.
-const RouterContent: React.FunctionComponent<{}> = (props) => {
-    const location = useLocation();
-    const showingPlayer = location.pathname.startsWith("/player/");
-    const embeddedMode = useIsEmbedded();
-    return <React.Fragment>
-        {embeddedMode || showingPlayer || <Header />}
-        {/* This div takes up all the space available so that the footer
-        is either at the bottom or pushed off screen. If we're showing the player,
-        we don't have a header or footer. In most browsers, flex 1 0 auto would
-        still work, and the one and only child div would take all the space.
-        However, at the next level, we want the player iframe to fill the available
-        height. In Safari (grrrrrr!), it doesn't work to make an iframe 100%
-        of the height of a parent whose height is determined by flex grow.
-        So, in that one case, we simply make this div have height 100%.*/}
-        <div
-            id="expandableContent"
-            css={css`
-                ${showingPlayer ? "height: 100%;" : "flex: 1 0 auto;"}
-            `}
-            role="main"
-        >
-            <Routes />
-        </div>
-        {embeddedMode || showingPlayer || <Footer />}
-    </React.Fragment>
-};
-
 export const App: React.FunctionComponent<{}> = (props) => {
-    const tags = useGetTagList();
-    const languagesByBookCount = useGetCleanedAndOrderedLanguageList();
-    const bookshelves = useGetBookshelvesByCategory();
-    CachedTables.bookshelves = bookshelves;
-    CachedTables.tags = tags;
-    CachedTables.languagesByBookCount = languagesByBookCount;
-
     const embeddedMode = window.self !== window.top;
-
-    const showUnderConstruction =
-        window.location.hostname !== "bloomlibrary.org" &&
-        window.location.hostname !== "embed.bloomlibrary.org" &&
-        !window.location.hostname.startsWith("dev") &&
-        window.location.hostname !== "localhost";
 
     const [explicitlyChosenLanguageTag] = useState<string | undefined>(
         undefined
@@ -164,73 +85,11 @@ export const App: React.FunctionComponent<{}> = (props) => {
         See also https://github.com/facebook/react/issues/16362
 */}
                 <ThemeProvider theme={theme}>
-                    <CachedTablesContext.Provider
-                        value={{
-                            tags,
-                            languagesByBookCount,
-                            bookshelves,
-                        }}
-                    >
-                        <OSFeaturesContext.Provider
-                            value={{
-                                bloomDesktopAvailable,
-                                bloomReaderAvailable,
-                                cantUseBloomD,
-                                mobile,
-                            }}
-                        >
-                            {showUnderConstruction && <UnderConstruction />}
-
-                            <Router>
-                               <RouterContent/>
-                            </Router>
-                        </OSFeaturesContext.Provider>
-                    </CachedTablesContext.Provider>
+                    <InternationalizedContent />
                 </ThemeProvider>
                 {embeddedMode || <LoginDialog />} {/* </React.StrictMode> */}
             </div>
         </IntlProvider>
-    );
-};
-
-
-
-export const UnderConstruction: React.FunctionComponent<{}> = () => {
-    const [open, setOpen] = React.useState(true);
-    const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
-        if (reason === "clickaway") {
-            return;
-        }
-
-        setOpen(false);
-    };
-    return (
-        <Snackbar open={open} onClose={handleClose}>
-            <Alert
-                variant="filled"
-                severity="info"
-                elevation={6}
-                onClose={handleClose}
-            >
-                <AlertTitle>Under Construction</AlertTitle>
-                <div
-                    css={css`
-                        display: inline;
-                    `}
-                >
-                    Thanks for previewing this "next" version of Bloom Library.
-                    If you run into problems, head back to{" "}
-                    <a
-                        css={css`
-                            color: white;
-                        `}
-                        href="https://bloomlibrary.org"
-                    >
-                        bloomlibrary.org
-                    </a>
-                </div>
-            </Alert>
-        </Snackbar>
     );
 };
 
