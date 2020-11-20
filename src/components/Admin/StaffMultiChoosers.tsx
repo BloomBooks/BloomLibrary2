@@ -135,7 +135,10 @@ export const TagsChooser: React.FunctionComponent<{
                     //  even before the site reloads. That's because we are modifying the underlying array,
                     //  the same one in CachedTablesContext.
                     // When the site reloads, the new tag will be in the array when it is loaded from parse.
-                    if (!tagChoices.includes(result)) tagChoices.push(result);
+                    if (!tagChoices.includes(result)) {
+                        tagChoices.push(result);
+                        tagChoices.sort();
+                    }
 
                     return result;
                 });
