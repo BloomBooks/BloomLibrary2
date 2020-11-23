@@ -1,0 +1,7 @@
+{
+  "spaceId":"72i7e2mqidxz",
+  "content-file":"contentful-export.json",
+  "skip-content-model": "true",
+  "skip-roles":"true",
+  "query-entries":"content_type=collection"
+}
