@@ -91,12 +91,16 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             },
             getCustomFilterComponent: (props: TableFilterRow.CellProps) => (
                 <ChoicesFilterCell
-                    choices={CachedTables.tags.filter(
-                        (t) =>
-                            !kTagsToFilterOutOfTagsList.find((tagToFilterOut) =>
-                                t.startsWith(tagToFilterOut)
-                            )
-                    )}
+                    choices={[
+                        "", // Clear
+                        ...CachedTables.tags.filter(
+                            (t) =>
+                                !kTagsToFilterOutOfTagsList.find(
+                                    (tagToFilterOut) =>
+                                        t.startsWith(tagToFilterOut)
+                                )
+                        ),
+                    ]}
                     {...props}
                 />
             ),
