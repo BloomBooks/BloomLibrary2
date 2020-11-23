@@ -20,12 +20,19 @@ import {
     ITopic,
 } from "../model/useInternationalizedTopics";
 import { ILanguage } from "../model/Language";
+import { useGetLocalizedFeatureLabels } from "../components/FeatureHelper";
+
+export interface ILocalizedString {
+    english: string;
+    localizedString: string;
+}
 
 interface ICachedTables {
     tags: string[];
     languagesByBookCount: ILanguage[];
     bookshelves: IBookshelfResult[];
     topics: ITopic[];
+    featureLabels: ILocalizedString[];
 }
 // for use when we aren't in a react context with hooks
 export const CachedTables: ICachedTables = {
@@ -33,6 +40,7 @@ export const CachedTables: ICachedTables = {
     languagesByBookCount: [],
     bookshelves: [],
     topics: [],
+    featureLabels: [],
 };
 
 export const CachedTablesContext = React.createContext<ICachedTables>({
@@ -40,20 +48,18 @@ export const CachedTablesContext = React.createContext<ICachedTables>({
     languagesByBookCount: [],
     bookshelves: [],
     topics: [],
+    featureLabels: [],
 });
 
 // This needs to be a separate component because 'useInternationalizedTopics()' must be inside of
 // IntlProvider (which is the top level component of App.tsx). By moving all the CachedTables stuff inside
 // here, we are able to add topics and (eventually) features to that cached system as well.
 export const InternationalizedContent: React.FunctionComponent = () => {
-    const tags = useGetTagList();
-    const languagesByBookCount = useGetCleanedAndOrderedLanguageList();
-    const bookshelves = useGetBookshelvesByCategory();
-    const topics = useInternationalizedTopics();
-    CachedTables.bookshelves = bookshelves;
-    CachedTables.tags = tags;
-    CachedTables.languagesByBookCount = languagesByBookCount;
-    CachedTables.topics = topics;
+    CachedTables.bookshelves = useGetBookshelvesByCategory();
+    CachedTables.tags = useGetTagList();
+    CachedTables.languagesByBookCount = useGetCleanedAndOrderedLanguageList();
+    CachedTables.topics = useInternationalizedTopics();
+    CachedTables.featureLabels = useGetLocalizedFeatureLabels();
 
     const showUnderConstruction =
         window.location.hostname !== "bloomlibrary.org" &&
@@ -62,14 +68,7 @@ export const InternationalizedContent: React.FunctionComponent = () => {
         window.location.hostname !== "localhost";
 
     return (
-        <CachedTablesContext.Provider
-            value={{
-                tags,
-                languagesByBookCount,
-                bookshelves,
-                topics,
-            }}
-        >
+        <CachedTablesContext.Provider value={CachedTables}>
             <OSFeaturesContext.Provider
                 value={{
                     bloomDesktopAvailable,
