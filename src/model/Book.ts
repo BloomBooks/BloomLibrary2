@@ -77,6 +77,7 @@ export class Book {
     @observable public originalPublisher: string = "";
     @observable public features: string[] = [];
     @observable public bookshelves: string[] = [];
+    @observable public edition: string = "";
 
     // This scalar string format is easier for the user/UI to modify,
     // but in the database, we store it as an array of strings instead
@@ -237,6 +238,7 @@ export class Book {
             title: this.title?.trim(),
             keywords: this.keywords,
             keywordStems: this.keywordStems,
+            edition: this.edition,
         });
     }
 

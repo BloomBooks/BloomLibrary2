@@ -147,7 +147,9 @@ export const ByLanguageGroups: React.FunctionComponent<{
 
 function ComparisonKey(book: IBasicBookInfo): string | undefined {
     return book.phashOfFirstContentImage
-        ? book.phashOfFirstContentImage + book.pageCount
+        ? book.phashOfFirstContentImage +
+              book.pageCount +
+              (book.edition ? book.edition : "")
         : // undefined indicates that we can't reliably do a comparison
           undefined;
 }
