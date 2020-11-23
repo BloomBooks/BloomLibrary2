@@ -337,21 +337,27 @@ export function getDummyCollectionForPreview(bannerId: string): ICollection {
 // card. But once you click the card, then you're going to topic:foo and we would pick up any explicit
 // "topic:foo" collection.
 function makeTopicCollectionsForCards(): ICollection[] {
-    return [...CachedTables.topics].sort(topicSort).map((t: ITopic) =>
-        makeTopicCollection(
-            {
-                urlKey: "topic:" + t.key,
-                label: t.displayName,
-                childCollections: [],
-                filter: { topic: t.key },
-                bannerId: "", // this will never be used because it's just for the card
-                layout: "by-level", // this will never be used because it's just for the card
-                type: "collection",
-                description: "",
-            },
-            undefined,
-            t
-        )
+    return (
+        [...CachedTables.topics]
+            // Don't need an "Other" topic when displaying various topics on the home page
+            .filter((t: ITopic) => t.key !== "Other")
+            .sort(topicSort)
+            .map((t: ITopic) =>
+                makeTopicCollection(
+                    {
+                        urlKey: "topic:" + t.key,
+                        label: t.displayName,
+                        childCollections: [],
+                        filter: { topic: t.key },
+                        bannerId: "", // this will never be used because it's just for the card
+                        layout: "by-level", // this will never be used because it's just for the card
+                        type: "collection",
+                        description: "",
+                    },
+                    undefined,
+                    t
+                )
+            )
     );
 }
 
