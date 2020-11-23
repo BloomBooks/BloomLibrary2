@@ -53,7 +53,7 @@ export const CachedTablesContext = React.createContext<ICachedTables>({
 
 // This needs to be a separate component because 'useInternationalizedTopics()' must be inside of
 // IntlProvider (which is the top level component of App.tsx). By moving all the CachedTables stuff inside
-// here, we are able to add topics and (eventually) features to that cached system as well.
+// here, we are able to add topics and features to that cached system as well.
 export const InternationalizedContent: React.FunctionComponent = () => {
     CachedTables.bookshelves = useGetBookshelvesByCategory();
     CachedTables.tags = useGetTagList();
