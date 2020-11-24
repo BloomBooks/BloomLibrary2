@@ -41,7 +41,7 @@ const RowOfCardsInternal: React.FunctionComponent<{
     // See if our strings file has a translation for the label (e.g. Topics)
     const originalLabel = props.collection.label;
     const label = l10n.formatMessage({
-        id: originalLabel.toLowerCase(),
+        id: "collection." + originalLabel.toLowerCase(),
         defaultMessage: originalLabel,
     });
     // https://issues.bloomlibrary.org/youtrack/issue/BL-9089 likely we do want some kinds of rows
@@ -91,7 +91,11 @@ const RowOfCardsInternal: React.FunctionComponent<{
         }
     });
     return (
-        <CardGroup title={label} layout={props.collection.layout}>
+        <CardGroup
+            title={label}
+            collectionUrlKey={props.collection.urlKey}
+            layout={props.collection.layout}
+        >
             {cards}
         </CardGroup>
     );

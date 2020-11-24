@@ -16,7 +16,7 @@ import * as fs from "fs-extra";
 //import * as Retry from "async-retry";
 const Retry = require("async-retry");
 
-const kTargetDirectory = "./build/translations";
+const kTargetDirectory = "./public/translations";
 
 const crowdinApiToken: string = process.env.bloomCrowdinApiToken || "";
 const kCrowdinProjectId = 261564;
@@ -142,3 +142,6 @@ async function go() {
 }
 
 go();
+
+// this is bogus but it makes TS decide that we are module and thus are allowed to use "import()"
+export default go;

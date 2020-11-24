@@ -6,14 +6,17 @@ import { jsx } from "@emotion/core";
 import React, { ReactElement } from "react";
 import LazyLoad from "react-lazyload";
 import { CardSwiper } from "./CardSwiper";
+import { useIntl } from "react-intl";
 
 interface IProps {
     title: string;
+    collectionUrlKey: string;
     layout: string;
     children: ReactElement[];
 }
 
 export const CardGroup: React.FunctionComponent<IProps> = (props) => {
+    const l10n = useIntl();
     const rowHeight = 258; // todo derive from commonui.something
     const cards = (
         <div
@@ -34,7 +37,14 @@ export const CardGroup: React.FunctionComponent<IProps> = (props) => {
         default:
             group = (
                 <React.Fragment>
-                    <h1>{props.title}</h1>
+                    <h1>
+                        {l10n.formatMessage({
+                            id:
+                                "collection." +
+                                props.collectionUrlKey.toLowerCase(),
+                            defaultMessage: props.title,
+                        })}
+                    </h1>
                     {cards}
                 </React.Fragment>
             );

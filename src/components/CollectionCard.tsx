@@ -83,7 +83,12 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
                     reduceHeadingLevel(props.richTextLabel)
                 )
             ) : (
-                <h2>{props.title}</h2>
+                <h2>
+                    {l10n.formatMessage({
+                        id: "collection." + props.target.toLowerCase(),
+                        defaultMessage: props.title,
+                    })}
+                </h2>
             )}
         </div>
     );

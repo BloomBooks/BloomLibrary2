@@ -1,88 +1,124 @@
 import useAxios from "@use-hooks/axios";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import * as voca from "voca";
 const parsecsv = require("csv-parse/lib/sync");
 
 interface IStringMap {
     [id: string]: string;
 }
-interface IAnswer {
+
+interface IFilenamesToL10nJson {
+    [id: string]: IStringMap;
+}
+
+interface ILocalizations {
     closestLanguage: string;
-    stringsForThisLanguage: any;
+    stringsForThisLanguage: IStringMap;
 }
 
 export function useGetLocalizations(
     // explicitLanguageSetting is a language that the user has selected with our UI (not the browser's).
     // If it is undefined  (this would be the normal case) or if we can't provide it for some reason we'll go and look at their browser languages.
     explicitLanguageSetting: string | undefined // BCP 47
-): IAnswer {
-    const { response } = useAxios({
-        url: "/Bloom Library Strings.csv",
-        method: "GET",
-        trigger: "true",
-    });
+): ILocalizations {
+    const files = [
+        "Contentful High Priority.json",
+        "Contentful Low Priority.json",
+        "Contentful Bible Terms.json",
+    ];
+    const [translationFiles] = useState<IFilenamesToL10nJson>({});
 
-    const answer: IAnswer = useMemo<IAnswer>(() => {
-        const csv: string =
-            response && response["data"] ? response["data"] : "";
+    const closestLanguage = useMemo<string>(() => {
+        return chooseClosestLanguageWeActuallyHave(
+            explicitLanguageSetting,
+            // enhance: how do we come up with this list? Putting aside what it means to "have",
+            // we could have the crowdin-sync leave us with a list. But it's not totally clear what this buys us...
+            // if we request a language that isn't there, well we just fall back to English anyways?
+            // Note that chooseClosestLanguageWeActuallyHave() is really just looking at codes, it doesn't have a fallback hierarchy...
+            // we could just have a manual mapping. So any "es" goes to "es-ES" until someone makes a different spanish.
+            ["es-ES", "fr", "id", "ru", "zh-CN"]
+        );
+    }, [explicitLanguageSetting]);
 
-        if (csv) {
-            const firstLine = csv.match(/^.*$/m)![0];
-            const languagesInCrowdin = firstLine
-                .split(",")
-                .map((c) => voca.trim(c, '" '));
-            // remove first two columns, which are ID and Description
-            languagesInCrowdin.splice(0, 2);
-            const allStringRows: any[] = parsecsv(
-                csv,
-                //https://csv.js.org/parse/options/
-                {
-                    columns: true,
-                    skip_empty_lines: true,
-                    trim: true,
-                    relax_column_count: true, // not sure this is needed, but it seems reasonable
-                }
+    for (const filename of files) {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const { response: jsonResponse } = useAxios({
+            url: `translations/${closestLanguage}/BloomLibrary.org/${encodeURIComponent(
+                filename
+            )}`,
+            method: "GET",
+            trigger: "true",
+        });
+        const json: any =
+            jsonResponse && jsonResponse["data"] ? jsonResponse["data"] : "";
+        if (json && !translationFiles[filename]) {
+            translationFiles[filename] = getJsonLocalizations(
+                json,
+                closestLanguage
             );
-            const mappingForOneLanguage: IStringMap = {};
-            const closestLanguage = chooseClosestLanguageWeActuallyHave(
-                explicitLanguageSetting,
-                languagesInCrowdin
-            );
-            const columnKey =
-                closestLanguage === "en"
-                    ? "Source" // the "Source" column is what holds the English
-                    : closestLanguage;
-
-            allStringRows.forEach(
-                (allTranslationsOfOneStringAsAnObject: any) => {
-                    // Enhance: If we wanted to be able to have untranslated strings fallback to something other than English (),
-                    // we would need to do the fall back here.
-                    mappingForOneLanguage[
-                        allTranslationsOfOneStringAsAnObject.Id
-                    ] =
-                        // Uncomment the next line for testing. Each translated string will be prefixed by *_
-                        //(columnKey !== "en" ? "*_" : "") +
-                        // *** Do not commit the above line uncommented ***
-                        allTranslationsOfOneStringAsAnObject[
-                            columnKey
-                        ] /* the same as allTranslationsOfOneStringAsAnObject.es or allTranslationsOfOneStringAsAnObject.fr */;
-                }
-            );
-            return {
-                closestLanguage,
-                stringsForThisLanguage: mappingForOneLanguage,
-            };
         }
+    }
 
-        // no csv available
-        return {
-            closestLanguage: "en",
-            // tslint:disable-next-line: no-object-literal-type-assertion
-            stringsForThisLanguage: {} as IStringMap,
-        };
-    }, [response, explicitLanguageSetting]);
+    let translations: IStringMap = {};
+    for (const filename of files) {
+        translations = { ...translations, ...translationFiles[filename] };
+    }
+    return {
+        closestLanguage,
+        stringsForThisLanguage: translations,
+    };
+}
 
-    return answer;
+// Here we are transforming "Chrome JSON" format into the key:value format expected by our L10n framework
+function getJsonLocalizations(json: any, languageCode: string): IStringMap {
+    const translations: IStringMap = {};
+    Object.keys(json).forEach((k) => {
+        translations[k.toLowerCase()] = json[k].message;
+    });
+    return translations;
+}
+
+/*
+ */
+
+function getCSVLocalizations(csv: string, languageCode: string): IStringMap {
+    const stringsInThisFileForThisLanguage: IStringMap = {};
+    const firstLine = csv.match(/^.*$/m)![0];
+    const languagesInCrowdin = firstLine
+        .split(",")
+        .map((c) => voca.trim(c, '" '));
+    // remove first two columns, which are ID and Description
+    languagesInCrowdin.splice(0, 2);
+    const allStringRows: any[] = parsecsv(
+        csv,
+        //https://csv.js.org/parse/options/
+        {
+            columns: true,
+            skip_empty_lines: true,
+            trim: true,
+            relax_column_count: true,
+        }
+    );
+
+    const columnKey =
+        languageCode === "en"
+            ? "Source" // the "Source" column is what holds the English
+            : languageCode;
+
+    allStringRows.forEach((allTranslationsOfOneStringAsAnObject: any) => {
+        // Enhance: If we wanted to be able to have untranslated strings fallback to something other than English (),
+        // we would need to do the fall back here.
+        stringsInThisFileForThisLanguage[
+            allTranslationsOfOneStringAsAnObject.Id
+        ] =
+            // Uncomment the next line for testing. Each translated string will be prefixed by *_
+            //(columnKey !== "en" ? "*_" : "") +
+            // *** Do not commit the above line uncommented ***
+            allTranslationsOfOneStringAsAnObject[
+                columnKey
+            ] /* the same as allTranslationsOfOneStringAsAnObject.es or allTranslationsOfOneStringAsAnObject.fr */;
+    });
+    return stringsInThisFileForThisLanguage;
 }
 
 function chooseClosestLanguageWeActuallyHave(
