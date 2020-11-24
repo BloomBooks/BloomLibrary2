@@ -16,6 +16,7 @@ import { deleteBook } from "../../connection/LibraryQueryHooks";
 import { useHistory } from "react-router-dom";
 import { splitPathname } from "../Routes";
 import { ConfirmationDialog } from "../ConfirmationDialog";
+import { FormattedMessage, useIntl } from "react-intl";
 
 // Needs to be observer to see log in/out
 export const DeleteButton: React.FunctionComponent<{
@@ -24,6 +25,7 @@ export const DeleteButton: React.FunctionComponent<{
     const user = LoggedInUser.current;
     const userIsUploader = user?.username === props.book.uploader?.username;
 
+    const l10n = useIntl();
     const history = useHistory();
 
     const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
@@ -84,18 +86,28 @@ export const DeleteButton: React.FunctionComponent<{
                             margin-right: 3px;
                         `}
                     />
-                    <div>Delete</div>
+                    <FormattedMessage id="delete" defaultMessage="Delete" />
                 </Link>
                 <ConfirmationDialog
-                    title={"Delete this book?"}
-                    confirmButtonText={"Permanently delete this book"}
+                    title={l10n.formatMessage({
+                        id: "delete.book.confirm.title",
+                        defaultMessage: "Delete this book?",
+                    })}
+                    confirmButtonText={l10n.formatMessage({
+                        id: "delete.book.confirm.button",
+                        defaultMessage: "Permanently delete this book",
+                    })}
                     open={confirmationDialogOpen}
                     onClose={handleCloseConfirmationDialog}
                 >
-                    If you continue, this version of the book{" "}
-                    <em>{props.book.title}</em> will be removed from
-                    BloomLibrary.org. There is no way to undo this except by
-                    uploading it again.
+                    <FormattedMessage
+                        id="delete.book.confirm.message"
+                        defaultMessage="If you continue, this version of the book <em>{title}</em> will be removed from BloomLibrary.org. There is no way to undo this except by uploading it again."
+                        values={{
+                            em: (chunks: string) => <em>{chunks}</em>,
+                            title: props.book.title,
+                        }}
+                    />
                 </ConfirmationDialog>
             </Fragment>
         );

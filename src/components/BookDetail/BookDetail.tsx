@@ -13,12 +13,11 @@ import { Alert } from "../Alert";
 
 import { observer } from "mobx-react";
 import { BookExtraPanels } from "./BookExtraPanels";
-import { MetadataGroup } from "./MetadataGroup";
-import { ArtifactGroup } from "./ArtifactGroup";
+import { LeftMetadata, RightMetadata } from "./MetadataGroup";
+import { DownloadsGroup } from "./DownloadsGroup";
 import { BookDetailHeaderGroup } from "./BookDetailHeaderGroup";
 import { DeleteButton } from "./DeleteButton";
 import { ReportButton } from "./ReportButton";
-import { commonUI } from "../../theme";
 import { Breadcrumbs } from "../Breadcrumbs";
 import { useTrack } from "../../analytics/Analytics";
 import { splitPathname, useDocumentTitle } from "../Routes";
@@ -27,11 +26,11 @@ import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { FormattedMessage, useIntl } from "react-intl";
 import { FeaturesGroup } from "./FeaturesGroup";
 import { useIsEmbedded } from "../EmbeddingHost";
+import { commonUI } from "../../theme";
 
-interface IProps {
+const BookDetail: React.FunctionComponent<{
     id: string;
-}
-const BookDetail: React.FunctionComponent<IProps> = (props) => {
+}> = (props) => {
     const l10n = useIntl();
     const id = props.id;
     const book = useGetBookDetail(id);
@@ -108,7 +107,7 @@ export const BookDetailInternal: React.FunctionComponent<{
         />
     );
     const [alertText, setAlertText] = useState<string | null>(null);
-    const breakToColumn = "540px";
+
     const embeddedMode = useIsEmbedded();
     return (
         <div
@@ -136,7 +135,6 @@ export const BookDetailInternal: React.FunctionComponent<{
             <div>
                 <BookDetailHeaderGroup
                     book={props.book}
-                    breakToColumn={breakToColumn}
                     contextLangIso={props.contextLangIso}
                 />
                 {props.book.inCirculation || (
@@ -158,12 +156,15 @@ export const BookDetailInternal: React.FunctionComponent<{
                     </div>
                 )}
                 {divider}
-                <FeaturesGroup book={props.book} />
+                <Detail2ColumnRow>
+                    <FeaturesGroup book={props.book} />
+                    <DownloadsGroup book={props.book} />
+                </Detail2ColumnRow>
                 {divider}
-                <MetadataGroup
-                    book={props.book}
-                    breakToColumn={breakToColumn}
-                />
+                <Detail2ColumnRow>
+                    <LeftMetadata book={props.book} />
+                    <RightMetadata book={props.book} />
+                </Detail2ColumnRow>
                 {divider}
                 <div
                     css={css`
@@ -178,7 +179,7 @@ export const BookDetailInternal: React.FunctionComponent<{
                             justify-content: space-between;
                             flex-wrap: wrap;
                             align-items: center;
-                            @media (max-width: ${breakToColumn}) {
+                            @media (max-width: ${commonUI.detailViewBreakpointForTwoColumns}) {
                                 flex-direction: column-reverse;
                                 align-items: flex-start;
                             }
@@ -243,10 +244,8 @@ export const BookDetailInternal: React.FunctionComponent<{
                                 </div>
                             </Link>
                         )} */}
-                        <ArtifactGroup book={props.book} />
                     </div>
                 </div>
-
                 {showHarvesterWarning && (
                     <IconButton
                         aria-label="harvester warning"
@@ -255,7 +254,6 @@ export const BookDetailInternal: React.FunctionComponent<{
                         <WarningIcon />
                     </IconButton>
                 )}
-
                 <BookExtraPanels book={props.book} />
                 <Alert
                     open={alertText != null}
@@ -268,6 +266,41 @@ export const BookDetailInternal: React.FunctionComponent<{
         </div>
     );
 });
+
+// Shows two groups side by side, unless the screen is too narrow.
+// This is used by both the feature/download section and the metadata, so that
+// the second column in each has the same left edge.
+const Detail2ColumnRow: React.FunctionComponent<React.HTMLProps<
+    HTMLDivElement
+>> = (props) => {
+    return (
+        <div
+            css={css`
+                display: flex;
+                justify-content: space-between;
+                max-width: calc(100vw - ${commonUI.detailViewMargin}*2);
+                @media (max-width: ${commonUI.detailViewBreakpointForTwoColumns}) {
+                    flex-direction: column-reverse;
+                }
+            `}
+        >
+            <div
+                css={css`
+                    margin-right: 10px; // when the screen is getting thinner, keep some distance from the right column
+                `}
+            >
+                {React.Children.toArray(props.children)[0]}
+            </div>
+            <div
+                css={css`
+                    width: 300px;
+                `}
+            >
+                {React.Children.toArray(props.children)[1]}
+            </div>
+        </div>
+    );
+};
 
 // though we normally don't like to export defaults, this is required for react.lazy (code splitting)
 export default BookDetail;

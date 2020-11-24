@@ -27,6 +27,7 @@ export const Breadcrumbs: React.FunctionComponent = () => {
             font-weight: bold;
         }*/
         li {
+            line-height: 1em; // without this, "Chinese (简体中文)" doe not align with the part before it
             margin-right: 3px;
             //color: whitesmoke;
 

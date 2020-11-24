@@ -12,7 +12,7 @@ import { Book } from "../../model/Book";
 import { commonUI } from "../../theme";
 import { track } from "../../analytics/Analytics";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
-import { followUrl } from "./ArtifactGroup";
+import { followUrl } from "./DownloadsGroup";
 import { FormattedMessage, useIntl } from "react-intl";
 
 export const TranslateButton: React.FunctionComponent<{
@@ -94,16 +94,11 @@ export const TranslateButton: React.FunctionComponent<{
                         margin-bottom: 0;
                     `}
                 >
-                    {l10n.formatMessage(
-                        {
-                            id: "book.detail.translateButton.translate",
-                            defaultMessage:
-                                "Translate into <emphasis>your</emphasis> language!",
-                        },
-                        {
-                            emphasis: (str) => <em>{str}</em>,
-                        }
-                    )}
+                    <FormattedMessage
+                        id="book.detail.translateButton.translate"
+                        defaultMessage="Translate into <emphasis>your</emphasis> language!"
+                        values={{ emphasis: (str: string) => <em>{str}</em> }}
+                    />
                 </p>
                 <p
                     css={css`

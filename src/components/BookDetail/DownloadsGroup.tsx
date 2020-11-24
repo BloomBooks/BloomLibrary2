@@ -18,11 +18,12 @@ import {
     ArtifactType,
     getArtifactVisibilitySettings,
 } from "./ArtifactHelper";
-import { OSFeaturesContext } from "../../components/OSFeaturesContext";
+import { OSFeaturesContext } from "../OSFeaturesContext";
 import { ArtifactVisibilitySettings } from "../../model/ArtifactVisibilitySettings";
 import { track } from "../../analytics/Analytics";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
-import { useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
+import Typography from "@material-ui/core/Typography/Typography";
 
 interface IArtifactUI {
     icon: string;
@@ -34,7 +35,7 @@ interface IArtifactUI {
     analyticsType: string;
 }
 
-export const ArtifactGroup: React.FunctionComponent<{
+export const DownloadsGroup: React.FunctionComponent<{
     book: Book;
     contextLangIso?: string;
 }> = observer((props) => {
@@ -78,7 +79,23 @@ export const ArtifactGroup: React.FunctionComponent<{
         (!hidePdfButton || !hideEpubButton);
     return (
         <div>
-            {showMoreDownloadsHeading && <div>More downloads</div>}
+            {/* {showMoreDownloadsHeading && ( */}
+            <div
+                css={css`
+                    /* width: 300px; */
+                    /* display: inline-block;
+                    margin-top: 12px; */
+                    //margin-bottom: 1em;
+                `}
+            >
+                <Typography variant="caption">
+                    <FormattedMessage
+                        id="book.metadata.download"
+                        defaultMessage="Download"
+                    />
+                </Typography>
+            </div>
+            {/* )} */}
             <ul
                 // margin-left defeats the padding built into mui-buttons, so the
                 // row can be left-aligned when in mobile layout where it is on the left.

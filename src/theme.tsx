@@ -26,6 +26,7 @@ export const commonUI = {
     detailViewMargin: "1em",
     detailViewMainButtonWidth: "250px",
     detailViewMainButtonHeight: "80px",
+    detailViewBreakpointForTwoColumns: "540px",
 };
 
 // lots of examples: https://github.com/search?q=createMuiTheme&type=Code

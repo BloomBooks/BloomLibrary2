@@ -56,7 +56,7 @@ import StaffPanel from "../Admin/StaffPanel";
 import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 import { observer } from "mobx-react";
 import { IGridControlProps } from "./GridControl";
-import { CachedTablesContext } from "../../App";
+import { CachedTablesContext } from "../../model/InternationalizedContent";
 import { ILanguage } from "../../model/Language";
 import matchSorter from "match-sorter";
 import { useGetCollection } from "../../model/Collections";

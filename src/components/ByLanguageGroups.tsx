@@ -1,12 +1,16 @@
 import React, { useContext, useEffect, useState, useMemo } from "react";
 import { IFilter } from "../IFilter";
-import { CachedTablesContext } from "../App";
+import { CachedTablesContext } from "../model/InternationalizedContent";
 import { getDisplayNamesForLanguage } from "../model/Language";
 import {
     useSearchBooks,
     IBasicBookInfo,
 } from "../connection/LibraryQueryHooks";
 import { BookGroup } from "./BookGroup";
+import {
+    bookHasFeatureInLanguage,
+    featureIsLanguageDependent,
+} from "./FeatureHelper";
 
 export const ByLanguageGroups: React.FunctionComponent<{
     titlePrefix: string;
@@ -29,6 +33,9 @@ export const ByLanguageGroups: React.FunctionComponent<{
     const arbitraryMaxLangsPerBook = 20;
     const reportBooksAndLanguages = props.reportBooksAndLanguages; // to avoid useEffect depending on props.
     const waiting = searchResults.waiting;
+    const needLangCheck =
+        props.filter.feature &&
+        featureIsLanguageDependent(props.filter.feature);
     useEffect(() => {
         if (!waiting) {
             const newRows = new Map<string, IBasicBookInfo[]>();
@@ -46,6 +53,18 @@ export const ByLanguageGroups: React.FunctionComponent<{
                     const key = ComparisonKey(book);
                     const langCode = book.languages[langIndex]?.isoCode;
                     if (langCode) {
+                        // When filtering by feature, a book only gets added to the list for a given language
+                        // if it has the feature IN THAT LANGUAGE (BL-9257)
+                        if (
+                            needLangCheck &&
+                            !bookHasFeatureInLanguage(
+                                book.features,
+                                props.filter.feature!,
+                                langCode
+                            )
+                        ) {
+                            return; // from this iteration of forEach; don't want this book.
+                        }
                         const rowForLang = newRows.get(langCode);
                         if (!rowForLang) {
                             newRows.set(langCode, [book]);
@@ -93,10 +112,8 @@ export const ByLanguageGroups: React.FunctionComponent<{
                     } else return true;
                 })
                 .sort((x, y) =>
-                    getDisplayNamesForLanguage(
-                        x
-                    ).displayNameWithAutonym.localeCompare(
-                        getDisplayNamesForLanguage(y).displayNameWithAutonym
+                    getDisplayNamesForLanguage(x).combined.localeCompare(
+                        getDisplayNamesForLanguage(y).combined
                     )
                 ),
         [languagesByBookCount, props.excludeLanguages]
@@ -116,7 +133,7 @@ export const ByLanguageGroups: React.FunctionComponent<{
                     <BookGroup
                         key={l.isoCode}
                         title={`${props.titlePrefix} ${
-                            getDisplayNamesForLanguage(l).displayNameWithAutonym
+                            getDisplayNamesForLanguage(l).combined
                         }`}
                         predeterminedBooks={books}
                         contextLangIso={l.isoCode}
@@ -130,7 +147,9 @@ export const ByLanguageGroups: React.FunctionComponent<{
 
 function ComparisonKey(book: IBasicBookInfo): string | undefined {
     return book.phashOfFirstContentImage
-        ? book.phashOfFirstContentImage + book.pageCount
+        ? book.phashOfFirstContentImage +
+              book.pageCount +
+              (book.edition ? book.edition : "")
         : // undefined indicates that we can't reliably do a comparison
           undefined;
 }

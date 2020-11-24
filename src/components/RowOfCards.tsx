@@ -6,6 +6,7 @@ import { BookCardGroup } from "./BookCardGroup";
 import { PageNotFound } from "./PageNotFound";
 import { ICollection } from "../model/ContentInterfaces";
 import { StoryCard } from "./StoryCard";
+import { useIntl } from "react-intl";
 
 // These can be a group of book cards, collection cards, story page cards, or generic page cards
 export const RowOfCards: React.FunctionComponent<{
@@ -30,12 +31,19 @@ export const RowOfCards: React.FunctionComponent<{
 const RowOfCardsInternal: React.FunctionComponent<{
     collection: ICollection;
 }> = (props) => {
+    const l10n = useIntl();
     if (
         !props.collection.childCollections ||
         props.collection.childCollections.length === 0
     ) {
         return null;
     }
+    // See if our strings file has a translation for the label (e.g. Topics)
+    const originalLabel = props.collection.label;
+    const label = l10n.formatMessage({
+        id: originalLabel.toLowerCase(),
+        defaultMessage: originalLabel,
+    });
     // https://issues.bloomlibrary.org/youtrack/issue/BL-9089 likely we do want some kinds of rows
     // sorted, and others not sorted. For now, let's require the librarian to hand-sort the ones
     // she wants sorted
@@ -52,7 +60,7 @@ const RowOfCardsInternal: React.FunctionComponent<{
 
         switch (props.collection.layout) {
             case "row-of-story-cards":
-                return <StoryCard story={childCollection} />;
+                return <StoryCard story={childCollection} key={target} />;
             default:
                 return (
                     <CollectionCard
@@ -83,10 +91,7 @@ const RowOfCardsInternal: React.FunctionComponent<{
         }
     });
     return (
-        <CardGroup
-            title={props.collection.label}
-            layout={props.collection.layout}
-        >
+        <CardGroup title={label} layout={props.collection.layout}>
             {cards}
         </CardGroup>
     );

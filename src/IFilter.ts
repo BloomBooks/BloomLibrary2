@@ -28,4 +28,5 @@ export interface IFilter {
     // See limitations on derivative collections in LibraryQueryHooks.processDerivedFrom().
     derivedFrom?: IFilter;
     derivedFromCollectionName?: string;
+    edition?: string;
 }

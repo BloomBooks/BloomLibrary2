@@ -109,7 +109,7 @@ const BookCountInternal: React.FunctionComponent<IProps> = (props) => {
                 ) : (
                     <FormattedMessage
                         id="bookCount"
-                        defaultMessage="{count} Books"
+                        defaultMessage="{count} books"
                         values={{ count }}
                     />
                 )}

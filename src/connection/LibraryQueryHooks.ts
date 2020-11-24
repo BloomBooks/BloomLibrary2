@@ -4,10 +4,12 @@ import { getConnection } from "./ParseServerConnection";
 import { getBloomApiUrl } from "./ApiConnection";
 import { Book, createBookFromParseServerData } from "../model/Book";
 import { useContext, useMemo, useEffect, useState } from "react";
-import { CachedTablesContext } from "../App";
+import {
+    CachedTables,
+    CachedTablesContext,
+} from "../model/InternationalizedContent";
 import { getCleanedAndOrderedLanguageList, ILanguage } from "../model/Language";
 import { processRegExp } from "../Utilities";
-import { kTopicList } from "../model/ClosedVocabularies";
 import { IStatsProps } from "../components/statistics/StatsInterfaces";
 import { toYyyyMmDd } from "../components/statistics/ReaderSessionsChart";
 import { useGetCollection } from "../model/Collections";
@@ -191,7 +193,7 @@ export const bookDetailFields =
     "title,allTitles,baseUrl,bookOrder,inCirculation,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
     "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits," +
     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount," +
-    "harvestStartedAt,bookshelves,publisher,originalPublisher,keywords,bookInstanceId,brandingProjectName";
+    "harvestStartedAt,bookshelves,publisher,originalPublisher,keywords,bookInstanceId,brandingProjectName,edition";
 export function useGetBookDetail(bookId: string): Book | undefined | null {
     const { response, loading, error } = useAxios({
         url: `${getConnection().url}classes/books`,
@@ -286,7 +288,7 @@ export function useGetBooksForGrid(
                 keys:
                     "title,baseUrl,license,licenseNotes,inCirculation,summary,copyright,harvestState,harvestLog," +
                     "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits,bookshelves," +
-                    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher,originalPublisher,keywords",
+                    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher,originalPublisher,keywords,edition",
                 // fluff up fields that reference other tables
                 include: "uploader,langPointers",
                 ...query,
@@ -464,6 +466,7 @@ export interface IBasicBookInfo {
     createdAt: string;
     country?: string;
     phashOfFirstContentImage?: string;
+    edition: string;
 }
 // uses the human "level:" tag if present, otherwise falls back to computedLevel
 export function getBestLevelStringOrEmpty(basicBookInfo: IBasicBookInfo) {
@@ -522,7 +525,7 @@ export function useSearchBooks(
         count: 1,
         keys:
             // this should be all the fields of IBasicBookInfo
-            "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles",
+            "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition",
         ...params,
     };
     const bookResultsStatus: IAxiosAnswer = useBookQueryInternal(
@@ -868,6 +871,7 @@ export function constructParseBookQuery(
                 case "country":
                 case "publisher":
                 case "originalPublisher":
+                case "edition":
                     params.where[facetLabel] = regex(facetValue);
                     break;
                 case "uploader":
@@ -1007,7 +1011,7 @@ export function constructParseBookQuery(
             // optimize: is it more efficient to try to come up with a regex that will
             // fail if it finds topic:?
             tagParts.push({
-                $nin: kTopicList.map((t) => "topic:" + t),
+                $nin: CachedTables.topics.map((t) => "topic:" + t.key),
             });
         } else if (f.topic.indexOf(",") >= 0) {
             const topicsRegex = f.topic
@@ -1080,6 +1084,10 @@ export function constructParseBookQuery(
     delete params.where.originalPublisher;
     if (f.originalPublisher) {
         params.where.originalPublisher = f.originalPublisher;
+    }
+    delete params.where.edition;
+    if (f.edition) {
+        params.where.edition = f.edition;
     }
     delete params.where.brandingProjectName;
     if (f.brandingProjectName) {

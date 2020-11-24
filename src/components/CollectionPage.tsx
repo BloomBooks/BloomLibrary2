@@ -53,8 +53,7 @@ export const CollectionPage: React.FunctionComponent<{
         // "layout" is a choice that we can set in Contentful
         switch (collection.layout) {
             default:
-                //"by-level": I'd like to have this case here for clarity, but lint chokes
-                booksComponent = <ByLevelGroups collection={collection} />;
+                booksComponent = <ByTopicsGroups collection={collection} />;
                 break;
             case "no-books": // leave it null
                 break;
@@ -65,6 +64,9 @@ export const CollectionPage: React.FunctionComponent<{
                         rows={collection.rows ? collection.rows : 1000} // all-books = all books
                     />
                 );
+                break;
+            case "by-level":
+                booksComponent = <ByLevelGroups collection={collection} />;
                 break;
             case "by-language":
                 // enhance: may want to use reportBooksAndLanguages callback so we can insert
