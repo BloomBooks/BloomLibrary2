@@ -15,11 +15,13 @@ import { useGetLocalizations } from "./GetLocalizations";
 
 //console.log("getUserLanguageFromBrowser() " + getUserLanguageFromBrowser());
 
-export const App: React.FunctionComponent<{}> = (props) => {
+export const App: React.FunctionComponent<{ uiLanguage?: string }> = (
+    props
+) => {
     const embeddedMode = window.self !== window.top;
 
     const [explicitlyChosenLanguageTag] = useState<string | undefined>(
-        undefined
+        props.uiLanguage
     );
 
     // Enhance: this assumes that for each string, you get it in that language or if we don't have

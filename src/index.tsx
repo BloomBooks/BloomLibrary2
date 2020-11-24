@@ -101,7 +101,12 @@ if (path) {
     history.replace(path);
 }
 
-ReactDOM.render(<App />, document.getElementById("root"));
+let uilang = new URLSearchParams(window.location.search).get("uilang");
+
+ReactDOM.render(
+    <App uiLanguage={uilang ?? undefined} />,
+    document.getElementById("root")
+);
 
 //   `Add Message to Bloom Library Strings:\n${s.id},${s.defaultMessage}`
 // If you want your app to work offline and load faster, you can change
