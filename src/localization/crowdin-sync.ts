@@ -34,6 +34,7 @@ async function requestAndWaitForCrowdinBuild(): Promise<number | undefined> {
                 // NOTE: there is a problem with these... they may be ignored: https://github.com/crowdin/crowdin-api-client-js/issues/85
                 exportApprovedOnly: true, /// TODO
                 skipUntranslatedStrings: true,
+                // ENHANCE use this?: branchId
             }
         );
         console.log(JSON.stringify(buildRequestResult, null, 4));
@@ -113,6 +114,62 @@ async function downloadAndUnpackCrowdinBuild(crowdinBuildId: number) {
     }
 }
 
+async function updateCrowdinFile(path: string) {
+    const filename = Path.basename(path);
+    const fileId = await getCrowdinFileId(filename);
+    console.log(`Search for ${filename} gave ${fileId}`);
+    if (fileId < 0) {
+        throw Error(`Could not find ${filename} on Crowdin.`);
+    }
+
+    const json = fs.readFileSync(path);
+    if (json.indexOf("description") === -1) {
+        throw Error("Failed json sanity check");
+    }
+    const crowdinAccess = new crowdin({
+        token: crowdinApiToken,
+    });
+
+    crowdinAccess.uploadStorageApi
+        .addStorage(filename, json)
+        .then((response) => {
+            console.log(`new storage id: ${response.data.id}`);
+            crowdinAccess.sourceFilesApi
+                .updateOrRestoreFile(kCrowdinProjectId, fileId, {
+                    storageId: response.data.id,
+                })
+                .then((updateResponse) =>
+                    console.log(
+                        `crowdin update response: ${JSON.stringify(
+                            updateResponse
+                        )}`
+                    )
+                )
+                .catch((error) => {
+                    console.error(error);
+                });
+        });
+}
+
+async function getCrowdinFileId(filename: string): Promise<number> {
+    const crowdinAccess = new crowdin({
+        token: crowdinApiToken,
+    });
+    console.log(`Listing files on crowdin...`);
+    const result = await crowdinAccess.sourceFilesApi.listProjectFiles(
+        kCrowdinProjectId,
+        {}
+    );
+
+    for (const entry of result.data) {
+        const file = entry.data;
+        console.log(file.name);
+        if (file.name === filename) return file.id;
+    }
+
+    return -1;
+}
+
 /**
  * Remove directory recursively
  * @param {string} directory
@@ -133,12 +190,16 @@ function rimraf(directory: string) {
 }
 
 async function go() {
-    if (fs.pathExistsSync(kTargetDirectory)) rimraf(kTargetDirectory);
-    const buildId = await requestAndWaitForCrowdinBuild();
-    console.log("build id: " + buildId);
-    if (buildId) {
-        downloadAndUnpackCrowdinBuild(buildId);
-    }
+    // NB: we haven't implemented using crowdin branches yet, but I *think* the copy of "Code Strings.json" in each branch will have a unique id
+    //const kCodeStringsCrowdinId = 110; // how to get these numbers from a browser: https://i.imgur.com/vgYhj4a.png
+
+    updateCrowdinFile("Code Strings.json");
+    // if (fs.pathExistsSync(kTargetDirectory)) rimraf(kTargetDirectory);
+    // const buildId = await requestAndWaitForCrowdinBuild();
+    // console.log("build id: " + buildId);
+    // if (buildId) {
+    //     downloadAndUnpackCrowdinBuild(buildId);
+    // }
 }
 
 go();
