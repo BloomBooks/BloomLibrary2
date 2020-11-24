@@ -387,6 +387,18 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                         setModified(true);
                     }}
                 ></TextField>
+                <TextField
+                    label="Edition"
+                    variant="outlined"
+                    css={css`
+                        background-color: white;
+                    `}
+                    value={props.book.edition}
+                    onChange={(event) => {
+                        props.book.edition = event.target.value;
+                        setModified(true);
+                    }}
+                ></TextField>
             </div>
             <HideBookControl book={props.book} setModified={setModified} />
             <div

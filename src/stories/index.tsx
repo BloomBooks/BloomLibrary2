@@ -81,6 +81,7 @@ storiesOf("BookCard", module).add("simple", () => {
         copyright: "",
         pageCount: "",
         createdAt: "",
+        edition: "",
     };
 
     return <BookCard handleYourOwnLaziness={false} basicBookInfo={book} />;
