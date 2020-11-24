@@ -10,7 +10,7 @@ import { FormattedMessage } from "react-intl";
 import { getAllFeaturesWithTheseMarkedPresent } from "../FeatureHelper";
 import { commonUI } from "../../theme";
 import { getAnchorProps } from "../../embedded";
-import { Link } from "@material-ui/core";
+import { BlorgLink as Link } from "../BlorgLink";
 import Typography from "@material-ui/core/Typography/Typography";
 
 // Shows all the possible features, each as its icon, with a title that is its name.

@@ -6,9 +6,10 @@ import { jsx } from "@emotion/core";
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useGetCollection } from "../model/Collections";
 import { splitPathname } from "./Routes";
+import { BlorgLink as Link } from "../components/BlorgLink";
 
 export const Breadcrumbs: React.FunctionComponent = () => {
     const location = useLocation();

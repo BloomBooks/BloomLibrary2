@@ -4,6 +4,10 @@ import { Link, LinkProps } from "react-router-dom";
 // for a discussion around how react-router link doesn't handle
 // external links, see https://github.com/ReactTraining/react-router/issues/1147
 
+// BL-9259 I wish LinkProps didn't require a "to" prop. Since it does, our callers of BlorgLink will
+// frequently need to use 'getAnchorProps' to keep from duplicating props. Happily this also ensures
+// that any caller of BlorgLink should handle the external/embedded cases automatically.
+
 export const BlorgLink: React.FunctionComponent<LinkProps> = (props) => {
     return isExternal(props.to as string) ? (
         <a

@@ -6,7 +6,8 @@ import { jsx } from "@emotion/core";
 
 import React, { Fragment, useState } from "react";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { Link } from "@material-ui/core";
+import { BlorgLink as Link } from "../BlorgLink";
+import { getAnchorProps } from "../../embedded";
 import { observer } from "mobx-react";
 import * as Sentry from "@sentry/browser";
 
@@ -70,8 +71,6 @@ export const DeleteButton: React.FunctionComponent<{
             <Fragment>
                 <Link
                     color="secondary"
-                    target="_blank"
-                    rel="noopener noreferrer" // copied from LicenseLink
                     css={css`
                         flex-shrink: 1;
                         margin-right: 20px !important;
@@ -80,6 +79,7 @@ export const DeleteButton: React.FunctionComponent<{
                         margin-top: 10px !important;
                     `}
                     onClick={handleDelete}
+                    {...getAnchorProps("")}
                 >
                     <DeleteIcon
                         css={css`

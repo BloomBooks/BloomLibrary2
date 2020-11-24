@@ -10,7 +10,9 @@ import {
     TableFilterRow,
 } from "@devexpress/dx-react-grid";
 
-import { Checkbox, Link, TableCell, Select, MenuItem } from "@material-ui/core";
+import { Checkbox, TableCell, Select, MenuItem } from "@material-ui/core";
+import { BlorgLink as Link } from "../BlorgLink";
+import { getAnchorProps } from "../../embedded";
 import { Book } from "../../model/Book";
 import QueryString from "qs";
 import titleCase from "title-case";
@@ -48,13 +50,12 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             sortingEnabled: true,
             getCellValue: (b: Book) => (
                 <Link
-                    href={`/book/${b.id}`}
                     css={css`
                         color: ${b.inCirculation
                             ? "black !important"
                             : "grey !important"};
                     `}
-                    target="_blank"
+                    {...getAnchorProps(`/book/${b.id}`)}
                 >
                     {b.title}
                 </Link>
@@ -274,7 +275,7 @@ export const GridSearchLink: React.FunctionComponent<{
             css={css`
                 color: black !important;
             `}
-            href={url}
+            {...getAnchorProps(url)}
         >
             {props.children}
         </Link>

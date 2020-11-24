@@ -1,5 +1,5 @@
 import { Book } from "../../model/Book";
-import { Link } from "@material-ui/core";
+import { BlorgLink as Link } from "../BlorgLink";
 import { observer } from "mobx-react";
 import React from "react";
 import { getAnchorProps } from "../../embedded";

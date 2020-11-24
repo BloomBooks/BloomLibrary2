@@ -7,7 +7,8 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import Button from "@material-ui/core/Button";
 import useAxios, { IReturns } from "@use-hooks/axios";
-import Link from "@material-ui/core/Link";
+import { BlorgLink as Link } from "./BlorgLink";
+import { getAnchorProps } from "../embedded";
 import { commonUI } from "../theme";
 export const WindowsInstallerDownload: React.FunctionComponent<{
     channel: string;
@@ -71,11 +72,17 @@ export const WindowsInstallerDownload: React.FunctionComponent<{
                     <div>{`Version ${versionNumber} ${info.date}`}</div>
                     {info.releaseNotes && (
                         <div>
-                            <Link href={info.releaseNotes}>What's New</Link>
+                            <Link {...getAnchorProps(info.releaseNotes)}>
+                                What's New
+                            </Link>
                         </div>
                     )}
                     <div>
-                        <Link href={"/page/create/bloom-windows-requirements"}>
+                        <Link
+                            {...getAnchorProps(
+                                "/page/create/bloom-windows-requirements"
+                            )}
+                        >
                             Requirements
                         </Link>
                     </div>
@@ -86,7 +93,5 @@ export const WindowsInstallerDownload: React.FunctionComponent<{
 };
 
 export function getInstallerInfo(request: IReturns<any>): any {
-    return request && request.response
-            ? request.response.data
-            : {};
+    return request && request.response ? request.response.data : {};
 }

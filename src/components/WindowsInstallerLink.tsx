@@ -6,7 +6,8 @@ import { jsx } from "@emotion/core";
 
 import React from "react";
 import useAxios from "@use-hooks/axios";
-import Link from "@material-ui/core/Link";
+import { BlorgLink as Link } from "./BlorgLink";
+import { getAnchorProps } from "../embedded";
 import { getInstallerInfo } from "./WindowsInstallerDownload";
 export const WindowsInstallerLink: React.FunctionComponent<{
     channel: string;
@@ -33,7 +34,7 @@ export const WindowsInstallerLink: React.FunctionComponent<{
                     align-items: start;
                 `}
             >
-                <Link href={info.url}>{linkText}</Link>
+                <Link {...getAnchorProps(info.url)}>{linkText}</Link>
             </div>
         </React.Fragment>
     );

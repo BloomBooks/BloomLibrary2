@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Link } from "@material-ui/core";
+import { BlorgLink as Link } from "./BlorgLink";
 import { ILanguage, getDisplayNamesForLanguage } from "../model/Language";
 import { getAnchorProps } from "../embedded";
 

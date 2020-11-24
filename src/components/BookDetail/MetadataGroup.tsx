@@ -9,7 +9,8 @@ import { Book } from "../../model/Book";
 import { observer } from "mobx-react";
 import { LicenseLink } from "./LicenseLink";
 //NB: v3.0 of title-case has a new API, but don't upgrade: it doesn't actually work like v2.x does, where it can take fooBar and give us "Foo Bar"
-import { Link, useTheme } from "@material-ui/core";
+import { useTheme } from "@material-ui/core";
+import { BlorgLink as Link } from "../BlorgLink";
 import { BookStats } from "./BookStats";
 import { CachedTablesContext } from "../../model/InternationalizedContent";
 import { getTagDisplayName } from "../../model/Tag";
@@ -76,7 +77,7 @@ export const LeftMetadata: React.FunctionComponent<{
                     Imported from&nbsp;
                     <Link
                         color="secondary"
-                        href={props.book.importedBookSourceUrl}
+                        {...getAnchorProps(props.book.importedBookSourceUrl)}
                     >
                         {new URL(props.book.importedBookSourceUrl).host}
                     </Link>

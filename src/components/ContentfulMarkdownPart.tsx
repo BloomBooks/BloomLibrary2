@@ -9,7 +9,7 @@ import Markdown from "markdown-to-jsx";
 import { BloomReaderVersionNumber } from "./BloomReaderVersionNumber";
 import { WindowsInstallerDownload } from "./WindowsInstallerDownload";
 import { WindowsInstallerLink } from "./WindowsInstallerLink";
-import Link from "@material-ui/core/Link";
+import { BlorgLink as Link } from "./BlorgLink";
 import { Feature, FeatureGroup, FeatureMatrix } from "./FeatureMatrix";
 
 export enum Column {

@@ -1,11 +1,24 @@
 import { isEmbedded } from "./components/EmbeddingHost";
 
-export function getAnchorProps(href: string): object {
+export interface IAnchorProps {
+    href: string;
+    to: string;
+    target?: string;
+    rel?: string;
+}
+
+export function getAnchorProps(href: string): IAnchorProps {
     const externalLink = href.startsWith("http");
     const embeddedMode = isEmbedded();
+    const toLoc = href.length > 0 ? href : "/";
     if (externalLink || embeddedMode) {
-        return { href, target: "_blank", rel: "noopener noreferrer" };
+        return {
+            href,
+            to: toLoc,
+            target: "_blank",
+            rel: "noopener noreferrer",
+        };
     } else {
-        return { href };
+        return { href, to: toLoc };
     }
 }

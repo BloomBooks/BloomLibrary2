@@ -1,21 +1,20 @@
 import { Book } from "../../model/Book";
-import { Link } from "@material-ui/core";
+import { BlorgLink as Link } from "../BlorgLink";
+import { getAnchorProps } from "../../embedded";
 import React from "react";
 export const LicenseLink: React.FunctionComponent<{
     book: Book;
-}> = props => {
+}> = (props) => {
     return props.book.license ? (
         <Link
             color="secondary"
-            target="_blank"
-            rel="noopener noreferrer"
-            href={
+            {...getAnchorProps(
                 // enhance: can we point to the actual version?
                 `https://creativecommons.org/licenses/${props.book.license.replace(
                     "cc-",
                     ""
                 )}/4.0/`
-            }
+            )}
         >
             {props.book.license}
         </Link>

@@ -6,11 +6,10 @@ import { jsx } from "@emotion/core";
 import SILLogo from "../assets/SIL.png";
 import GitHubLogo from "../assets/GitHub-Mark-Light-32px.png";
 import React from "react";
-import { Link } from "@material-ui/core";
-import { Link as RouterLink } from "react-router-dom";
+import { BlorgLink as Link } from "./BlorgLink";
+import { getAnchorProps } from "../embedded";
 import { FormattedMessage, useIntl } from "react-intl";
 
-//import { Link } from "react-router-dom";
 export const Footer: React.FunctionComponent = () => {
     const l10n = useIntl();
     const separator = (
@@ -27,11 +26,7 @@ export const Footer: React.FunctionComponent = () => {
     );
 
     const sil = (
-        <a
-            href="https://www.sil.org"
-            rel="noopener"
-            // eslint-disable-next-line react/jsx-no-target-blank
-            target="_blank"
+        <Link
             css={css`
                 display: flex;
                 * {
@@ -39,6 +34,7 @@ export const Footer: React.FunctionComponent = () => {
                     margin-bottom: auto;
                 }
             `}
+            {...getAnchorProps("https://www.sil.org")}
         >
             <img
                 src={SILLogo}
@@ -54,16 +50,11 @@ export const Footer: React.FunctionComponent = () => {
             >
                 {"© 2020 SIL International"}
             </div>
-        </a>
+        </Link>
     );
 
     const github = (
-        <a
-            href="https://github.com/bloombooks"
-            rel="noopener"
-            // eslint-disable-next-line react/jsx-no-target-blank
-            target="_blank"
-        >
+        <Link {...getAnchorProps("https://github.com/bloombooks")}>
             <img
                 css={css`
                     height: 32px !important;
@@ -74,17 +65,14 @@ export const Footer: React.FunctionComponent = () => {
                     defaultMessage: "Github Logo",
                 })}
             />
-        </a>
+        </Link>
     );
     const contentful = (
-        <a
-            href="https://www.contentful.com/"
-            rel="noopener"
-            // eslint-disable-next-line react/jsx-no-target-blank
-            target="_blank"
+        <Link
             css={css`
                 margin-left: auto;
             `}
+            {...getAnchorProps("https://github.com/bloombooks")}
         >
             <img
                 src="https://images.ctfassets.net/fo9twyrwpveg/7Htleo27dKYua8gio8UEUy/0797152a2d2f8e41db49ecbf1ccffdaa/PoweredByContentful_DarkBackground_MonochromeLogo.svg"
@@ -93,7 +81,7 @@ export const Footer: React.FunctionComponent = () => {
                     defaultMessage: "Powered by Contentful",
                 })}
             />
-        </a>
+        </Link>
     );
     return (
         <div
@@ -128,33 +116,33 @@ export const Footer: React.FunctionComponent = () => {
                     display: flex;
                 `}
             >
-                <BlorgLink href="/page/support">
+                <Link href="/page/support" to="/page/support">
                     <FormattedMessage
                         id="footer.support"
                         defaultMessage="Support"
                     />
-                </BlorgLink>
+                </Link>
                 {separator}
-                <BlorgLink href="/page/create/downloads">
+                <Link href="/page/create/downloads" to="/page/create/downloads">
                     <FormattedMessage
                         id="downloads"
                         defaultMessage="Downloads"
                     />
-                </BlorgLink>
+                </Link>
                 {separator}
-                <BlorgLink href="/page/termsOfUse">
+                <Link href="/page/termsOfUse" to="/page/termsOfUse">
                     <FormattedMessage
                         id="footer.terms"
                         defaultMessage="Terms of Use"
                     />
-                </BlorgLink>
+                </Link>
                 {separator}
-                <BlorgLink href="/page/privacyNotice">
+                <Link href="/page/privacyNotice" to="/page/privacyNotice">
                     <FormattedMessage
                         id="footer.privacy"
                         defaultMessage="Privacy Policy"
                     />
-                </BlorgLink>
+                </Link>
             </div>
 
             <div
@@ -182,17 +170,5 @@ export const Footer: React.FunctionComponent = () => {
                 {github}
             </div>
         </div>
-    );
-};
-
-const BlorgLink: React.FunctionComponent<{ href: string }> = (props) => {
-    return (
-        <Link
-            // use the react-router link instead an an <a> element, so that we don't reload the page when we follow the href
-            component={RouterLink}
-            to={props.href}
-        >
-            <span>{props.children}</span>
-        </Link>
     );
 };
