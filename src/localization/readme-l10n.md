@@ -17,3 +17,7 @@ If you want to run `yarn crowdin-sync` locally, you'll need to enter your API to
 # About `Code Strings.json`.
 
 Strings that are hard-coded into this source have to be entered into this file. When the `crowdin-sync` script runs, it uploads this to crowdin, replacing whatever was there. Later in the script, it downloads all the latest translations of the file.
+
+# Testing languages
+
+If you add `?uilang=<code>` to the url, BloomLibrary should attempt to show the UI in that language. E.g., `?uilang=es` will show Spanish.

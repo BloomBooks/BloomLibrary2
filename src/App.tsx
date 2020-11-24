@@ -46,14 +46,21 @@ export const App: React.FunctionComponent<{ uiLanguage?: string }> = (
             }
             onError={(s: any) => {
                 // TODO this isn't working yet. The idea is to only print a message for the dev if we're in english and it looks
-                // like we haven't registered the string in the Bloom Library Strings.csv file.
+                // like we haven't registered the string in the "Code Strings.json" file.
                 if (s.code === "MISSING_TRANSLATION") {
                     if (languageTagWeAreUsing === "en") {
-                        if (Object.keys(stringsForThisLanguage).length > 0) {
-                            console.error(
-                                `Add Message to Bloom Library Strings.csv:\n"${s.descriptor.id}","","${s.descriptor.defaultMessage}"`
-                            );
-                        }
+                        //if (Object.keys(stringsForThisLanguage).length > 0) {
+                        console.error(
+                            `Add Message to Code Strings.json:\n"${
+                                s.descriptor.id
+                            }":{"message":"${s.descriptor.defaultMessage}"
+                            ${
+                                s.descriptor.description
+                                    ? ', "description":"${s.descriptor.description}"'
+                                    : ""
+                            }}`
+                        );
+                        //}
                     } else {
                         console.info(
                             `Missing translation for '${s.descriptor.id}' in ${languageTagWeAreUsing}`

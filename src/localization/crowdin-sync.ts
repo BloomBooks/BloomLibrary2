@@ -193,13 +193,13 @@ async function go() {
     // NB: we haven't implemented using crowdin branches yet, but I *think* the copy of "Code Strings.json" in each branch will have a unique id
     //const kCodeStringsCrowdinId = 110; // how to get these numbers from a browser: https://i.imgur.com/vgYhj4a.png
 
-    updateCrowdinFile("Code Strings.json");
-    // if (fs.pathExistsSync(kTargetDirectory)) rimraf(kTargetDirectory);
-    // const buildId = await requestAndWaitForCrowdinBuild();
-    // console.log("build id: " + buildId);
-    // if (buildId) {
-    //     downloadAndUnpackCrowdinBuild(buildId);
-    // }
+    updateCrowdinFile("src/localization/Code Strings.json");
+    if (fs.pathExistsSync(kTargetDirectory)) rimraf(kTargetDirectory);
+    const buildId = await requestAndWaitForCrowdinBuild();
+    console.log("build id: " + buildId);
+    if (buildId) {
+        downloadAndUnpackCrowdinBuild(buildId);
+    }
 }
 
 go();
