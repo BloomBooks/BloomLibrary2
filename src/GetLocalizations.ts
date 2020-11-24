@@ -1,7 +1,5 @@
 import useAxios from "@use-hooks/axios";
 import { useMemo, useState } from "react";
-import * as voca from "voca";
-const parsecsv = require("csv-parse/lib/sync");
 
 interface IStringMap {
     [id: string]: string;
@@ -22,6 +20,10 @@ export function useGetLocalizations(
     explicitLanguageSetting: string | undefined // BCP 47
 ): ILocalizations {
     const files = [
+        // enhance: we could have crowdin-sync leave us with a list that it generated
+        // This gets manually maintained (as of Nov 2020) and uploaded to crowdin by crowdin-sync
+        "Code Strings.json",
+        // these are generated and put on Crowdin by an Azure Function that runs daily
         "Contentful High Priority.json",
         "Contentful Low Priority.json",
         "Contentful Bible Terms.json",
@@ -70,55 +72,13 @@ export function useGetLocalizations(
 }
 
 // Here we are transforming "Chrome JSON" format into the key:value format expected by our L10n framework
+// Note that if we did this in crowdin-sync instead, we could avoid the cost of transporting any descriptions, which are unused at runtime.
 function getJsonLocalizations(json: any, languageCode: string): IStringMap {
     const translations: IStringMap = {};
     Object.keys(json).forEach((k) => {
         translations[k.toLowerCase()] = json[k].message;
     });
     return translations;
-}
-
-/*
- */
-
-function getCSVLocalizations(csv: string, languageCode: string): IStringMap {
-    const stringsInThisFileForThisLanguage: IStringMap = {};
-    const firstLine = csv.match(/^.*$/m)![0];
-    const languagesInCrowdin = firstLine
-        .split(",")
-        .map((c) => voca.trim(c, '" '));
-    // remove first two columns, which are ID and Description
-    languagesInCrowdin.splice(0, 2);
-    const allStringRows: any[] = parsecsv(
-        csv,
-        //https://csv.js.org/parse/options/
-        {
-            columns: true,
-            skip_empty_lines: true,
-            trim: true,
-            relax_column_count: true,
-        }
-    );
-
-    const columnKey =
-        languageCode === "en"
-            ? "Source" // the "Source" column is what holds the English
-            : languageCode;
-
-    allStringRows.forEach((allTranslationsOfOneStringAsAnObject: any) => {
-        // Enhance: If we wanted to be able to have untranslated strings fallback to something other than English (),
-        // we would need to do the fall back here.
-        stringsInThisFileForThisLanguage[
-            allTranslationsOfOneStringAsAnObject.Id
-        ] =
-            // Uncomment the next line for testing. Each translated string will be prefixed by *_
-            //(columnKey !== "en" ? "*_" : "") +
-            // *** Do not commit the above line uncommented ***
-            allTranslationsOfOneStringAsAnObject[
-                columnKey
-            ] /* the same as allTranslationsOfOneStringAsAnObject.es or allTranslationsOfOneStringAsAnObject.fr */;
-    });
-    return stringsInThisFileForThisLanguage;
 }
 
 function chooseClosestLanguageWeActuallyHave(
