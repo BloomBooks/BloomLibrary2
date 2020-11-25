@@ -101,20 +101,9 @@ if (path) {
     history.replace(path);
 }
 
-//If you add `?uilang=<code>` to the url, BloomLibrary should attempt to show the UI in that language. E.g., `?uilang=es` will show Spanish.
-const uilang =
-    new URLSearchParams(window.location.search).get("uilang") ||
-    getTopBrowserUILanguage();
-
-ReactDOM.render(<App uiLanguage={uilang} />, document.getElementById("root"));
+ReactDOM.render(<App />, document.getElementById("root"));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
-
-function getTopBrowserUILanguage(): string {
-    return navigator.languages && navigator.languages.length
-        ? navigator.languages[0]
-        : navigator.language ?? "en";
-}
