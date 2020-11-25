@@ -17,7 +17,10 @@ export const LocalizationContext: React.FunctionComponent<{}> = (props) => {
         closestLanguage: languageTagWeAreUsing,
         stringsForThisLanguage,
     } = useGetLocalizations(uilang);
-
+    // console.log(
+    //     "stringsForThisLanguage:" +
+    //         JSON.stringify(stringsForThisLanguage, null, 4)
+    // );
     const slowerLanguageLookupToHelpErrorChecking =
         window.location.hostname === "alpha.bloomlibrary.org" ||
         window.location.hostname === "dev-alpha.bloomlibrary.org" ||
@@ -36,8 +39,8 @@ export const LocalizationContext: React.FunctionComponent<{}> = (props) => {
                     if (languageTagWeAreUsing === "en") {
                         //if (Object.keys(stringsForThisLanguage).length > 0) {
                         console.info(
-                            //`Add Message to Code Strings.json:\n"
-                            `"${s.descriptor.id}":{"message":"${
+                            `Add Message to Code Strings.json:\n"
+                            "${s.descriptor.id}":{"message":"${
                                 s.descriptor.defaultMessage
                             }"
                             ${

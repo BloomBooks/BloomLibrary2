@@ -1,5 +1,6 @@
 import useAxios from "@use-hooks/axios";
 import { useMemo, useState } from "react";
+import { setUserInterfaceTag } from "../model/Language";
 import files from "./crowdin-file-names.json";
 
 interface IStringMap {
@@ -22,16 +23,18 @@ export function useGetLocalizations(
 ): ILocalizations {
     const [translationFiles] = useState<IFilenamesToL10nJson>({});
 
-    const closestLanguage = useMemo<string>(() => {
+    const userInterfaceLanguageTag = useMemo<string>(() => {
         return chooseLanguageWeAreGoingToAskFor(
             explicitLanguageSetting || "en"
         );
     }, [explicitLanguageSetting]);
 
+    setUserInterfaceTag(userInterfaceLanguageTag);
+
     for (const filename of files) {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         const { response: jsonResponse } = useAxios({
-            url: `translations/${closestLanguage}/BloomLibrary.org/${encodeURIComponent(
+            url: `translations/${userInterfaceLanguageTag}/BloomLibrary.org/${encodeURIComponent(
                 filename
             )}`,
             method: "GET",
@@ -49,7 +52,7 @@ export function useGetLocalizations(
         translations = { ...translations, ...translationFiles[filename] };
     }
     return {
-        closestLanguage,
+        closestLanguage: userInterfaceLanguageTag,
         stringsForThisLanguage: translations,
     };
 }
@@ -59,7 +62,7 @@ export function useGetLocalizations(
 function getJsonLocalizations(json: any): IStringMap {
     const translations: IStringMap = {};
     Object.keys(json).forEach((k) => {
-        translations[k.toLowerCase()] = json[k].message;
+        translations[k] = json[k].message;
     });
     return translations;
 }

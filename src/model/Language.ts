@@ -22,6 +22,12 @@ export function getDisplayNamesFromLanguageCode(
     return undefined;
 }
 
+//  it's tempting to use navigator.language, but we also want to support other ways of choosing the current UI language
+// This is essentially a global (accessed via a setter function) because it's not worth it to me to do a tone of plumbing.
+let userInterfaceTagWeAreUsing: string = "en";
+export function setUserInterfaceTag(tag: string) {
+    userInterfaceTagWeAreUsing = tag;
+}
 export function getDisplayNamesForLanguage(
     language: ILanguage
 ): {
@@ -47,7 +53,7 @@ export function getDisplayNamesForLanguage(
     let secondary: string | undefined;
 
     if (language.englishName && language.englishName !== language.name) {
-        if (navigator.language === language.isoCode) {
+        if (userInterfaceTagWeAreUsing === language.isoCode) {
             primary = language.name;
             secondary = language.englishName;
         } else {
