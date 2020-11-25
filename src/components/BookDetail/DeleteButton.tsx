@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 
 import React, { Fragment, useState } from "react";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { Link } from "@material-ui/core";
+import { IconButton } from "@material-ui/core";
 import { observer } from "mobx-react";
 import * as Sentry from "@sentry/browser";
 
@@ -68,10 +68,9 @@ export const DeleteButton: React.FunctionComponent<{
     if (user?.moderator || userIsUploader)
         return (
             <Fragment>
-                <Link
+                <IconButton
                     color="secondary"
-                    target="_blank"
-                    rel="noopener noreferrer" // copied from LicenseLink
+                    size="small"
                     css={css`
                         flex-shrink: 1;
                         margin-right: 20px !important;
@@ -87,7 +86,7 @@ export const DeleteButton: React.FunctionComponent<{
                         `}
                     />
                     <FormattedMessage id="delete" defaultMessage="Delete" />
-                </Link>
+                </IconButton>
                 <ConfirmationDialog
                     title={l10n.formatMessage({
                         id: "delete.book.confirm.title",

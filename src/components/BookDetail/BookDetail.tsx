@@ -200,10 +200,10 @@ export const BookDetailInternal: React.FunctionComponent<{
                         {/* This link is supposed to be an explanation of how to get Bloom desktop etc.
                         so you can translate the book. A such only needed where the Translate button
                         is missing, e.g., mobile and Mac. But we haven't created the page it should link
-                        to yet, so we're not showing it anywhere.
+                        to yet, so we're not showing it anywhere. And if we ever do, switch to BlorgLink!
                         (bloomDesktopAvailable definition is commented above)
                             {bloomDesktopAvailable || (
-                            <Link
+                            <BlorgLink
                                 color="secondary"
                                 target="_blank"
                                 rel="noopener noreferrer" // copied from LicenseLink
@@ -242,7 +242,7 @@ export const BookDetailInternal: React.FunctionComponent<{
                                         />
                                     </div>
                                 </div>
-                            </Link>
+                            </BlorgLink>
                         )} */}
                     </div>
                 </div>
@@ -270,9 +270,9 @@ export const BookDetailInternal: React.FunctionComponent<{
 // Shows two groups side by side, unless the screen is too narrow.
 // This is used by both the feature/download section and the metadata, so that
 // the second column in each has the same left edge.
-const Detail2ColumnRow: React.FunctionComponent<React.HTMLProps<
-    HTMLDivElement
->> = (props) => {
+const Detail2ColumnRow: React.FunctionComponent<
+    React.HTMLProps<HTMLDivElement>
+> = (props) => {
     return (
         <div
             css={css`

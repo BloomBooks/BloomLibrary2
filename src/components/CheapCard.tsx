@@ -20,7 +20,6 @@ export const CheapCard: React.FunctionComponent<IProps> = (props) => {
     const url = getUrlForTarget(props.target || "");
     return (
         <BlorgLink
-            //{...props}
             className={`cheapCard ${props.className}`}
             css={css`
                 overflow-wrap: break-word; /* helps with titles that have super long words, else they scroll */
@@ -61,7 +60,7 @@ export const CheapCard: React.FunctionComponent<IProps> = (props) => {
                     color: black;
                 }
             `}
-            to={url}
+            href={url}
             role={props.role}
         >
             {props.children}

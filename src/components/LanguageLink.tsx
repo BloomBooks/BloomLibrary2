@@ -1,20 +1,22 @@
+import { useTheme } from "@material-ui/core";
 import React from "react";
 
-import { Link } from "@material-ui/core";
 import { ILanguage, getDisplayNamesForLanguage } from "../model/Language";
-import { getAnchorProps } from "../embedded";
+import { BlorgLink } from "./BlorgLink";
 
 export const LanguageLink: React.FunctionComponent<{
     language: ILanguage;
 }> = (props) => {
+    const theme = useTheme();
     const displayName = getNameDisplay(props.language);
     return (
-        <Link
-            color="secondary"
-            {...getAnchorProps("/language:" + props.language.isoCode)}
+        <BlorgLink
+            newTabIfEmbedded={true}
+            color={theme.palette.secondary.main}
+            href={"/language:" + props.language.isoCode}
         >
             {displayName}
-        </Link>
+        </BlorgLink>
     );
 };
 

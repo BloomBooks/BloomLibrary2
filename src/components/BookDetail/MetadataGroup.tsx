@@ -9,82 +9,85 @@ import { Book } from "../../model/Book";
 import { observer } from "mobx-react";
 import { LicenseLink } from "./LicenseLink";
 //NB: v3.0 of title-case has a new API, but don't upgrade: it doesn't actually work like v2.x does, where it can take fooBar and give us "Foo Bar"
-import { Link, useTheme } from "@material-ui/core";
+import { useTheme } from "@material-ui/core";
 import { BookStats } from "./BookStats";
 import { CachedTablesContext } from "../../model/InternationalizedContent";
 import { getTagDisplayName } from "../../model/Tag";
 import { useGetRelatedBooks } from "../../connection/LibraryQueryHooks";
 import { Bookshelf } from "../../model/Bookshelf";
 import { KeywordLinks } from "./KeywordLinks";
-import { getAnchorProps } from "../../embedded";
 import { FormattedMessage } from "react-intl";
+import { BlorgLink } from "../BlorgLink";
 
 export const LeftMetadata: React.FunctionComponent<{
     book: Book;
-}> = observer((props) => (
-    <div
-        css={css`
-            flex-grow: 1;
-        `}
-    >
-        {props.book.level && (
-            <div>
-                <FormattedMessage
-                    id="book.metadata.level"
-                    defaultMessage="Level {levelNumber}"
-                    values={{ levelNumber: props.book.level }}
-                />
-            </div>
-        )}
-        <div>
-            <FormattedMessage
-                id="book.metadata.pages"
-                defaultMessage="{count} Pages"
-                values={{ count: props.book.pageCount }}
-            />
-        </div>
-        <div>{props.book.copyright}</div>
-        <div>
-            <FormattedMessage
-                id="book.metadata.license"
-                defaultMessage="License:"
-            />{" "}
-            <LicenseLink book={props.book} />
-        </div>
-        <div>
-            <FormattedMessage
-                id="book.metadata.uploadedBy"
-                defaultMessage="Uploaded {date} by {email}"
-                values={{
-                    date: props.book.uploadDate!.toLocaleDateString(),
-                    email: obfuscateEmail(props.book.uploader),
-                }}
-            />
-        </div>
-        <div>
-            <FormattedMessage
-                id="book.metadata.lastUpdated"
-                defaultMessage="Last updated on {date}"
-                values={{
-                    date: props.book.updateDate!.toLocaleDateString(),
-                }}
-            />
-        </div>
-        {props.book.importedBookSourceUrl &&
-            props.book.importedBookSourceUrl.length > 0 && (
+}> = observer((props) => {
+    const theme = useTheme();
+    return (
+        <div
+            css={css`
+                flex-grow: 1;
+            `}
+        >
+            {props.book.level && (
                 <div>
-                    Imported from&nbsp;
-                    <Link
-                        color="secondary"
-                        href={props.book.importedBookSourceUrl}
-                    >
-                        {new URL(props.book.importedBookSourceUrl).host}
-                    </Link>
+                    <FormattedMessage
+                        id="book.metadata.level"
+                        defaultMessage="Level {levelNumber}"
+                        values={{ levelNumber: props.book.level }}
+                    />
                 </div>
             )}
-        <BookStats book={props.book} />
-    </div>
-));
+            <div>
+                <FormattedMessage
+                    id="book.metadata.pages"
+                    defaultMessage="{count} Pages"
+                    values={{ count: props.book.pageCount }}
+                />
+            </div>
+            <div>{props.book.copyright}</div>
+            <div>
+                <FormattedMessage
+                    id="book.metadata.license"
+                    defaultMessage="License:"
+                />{" "}
+                <LicenseLink book={props.book} />
+            </div>
+            <div>
+                <FormattedMessage
+                    id="book.metadata.uploadedBy"
+                    defaultMessage="Uploaded {date} by {email}"
+                    values={{
+                        date: props.book.uploadDate!.toLocaleDateString(),
+                        email: obfuscateEmail(props.book.uploader),
+                    }}
+                />
+            </div>
+            <div>
+                <FormattedMessage
+                    id="book.metadata.lastUpdated"
+                    defaultMessage="Last updated on {date}"
+                    values={{
+                        date: props.book.updateDate!.toLocaleDateString(),
+                    }}
+                />
+            </div>
+            {props.book.importedBookSourceUrl &&
+                props.book.importedBookSourceUrl.length > 0 && (
+                    <div>
+                        Imported from&nbsp;
+                        <BlorgLink
+                            color={theme.palette.secondary.main}
+                            href={props.book.importedBookSourceUrl}
+                        >
+                            {new URL(props.book.importedBookSourceUrl).host}
+                        </BlorgLink>
+                    </div>
+                )}
+            <BookStats book={props.book} />
+        </div>
+    );
+});
 
 export const RightMetadata: React.FunctionComponent<{
     book: Book;
@@ -145,15 +148,13 @@ export const RightMetadata: React.FunctionComponent<{
                         {relatedBooks.map((b: Book) => {
                             return (
                                 <li key={b.id}>
-                                    <Link
-                                        css={css`
-                                            color: ${theme.palette.secondary
-                                                .main} !important;
-                                        `}
-                                        {...getAnchorProps(`/book/${b.id}`)}
+                                    <BlorgLink
+                                        newTabIfEmbedded={true}
+                                        color={theme.palette.secondary.main}
+                                        href={`/book/${b.id}`}
                                     >
                                         {b.title}
-                                    </Link>
+                                    </BlorgLink>
                                 </li>
                             );
                         })}

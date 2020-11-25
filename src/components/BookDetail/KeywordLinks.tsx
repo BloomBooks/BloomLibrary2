@@ -1,12 +1,13 @@
 import { Book } from "../../model/Book";
-import { Link } from "@material-ui/core";
 import { observer } from "mobx-react";
 import React from "react";
-import { getAnchorProps } from "../../embedded";
+import { useTheme } from "@material-ui/core";
+import { BlorgLink } from "../BlorgLink";
 
 export const KeywordLinks: React.FunctionComponent<{
     book: Book;
 }> = observer((props) => {
+    const theme = useTheme();
     if (props.book.keywords?.length > 0) {
         return (
             <span>
@@ -24,16 +25,17 @@ export const KeywordLinks: React.FunctionComponent<{
 
                         return (
                             <span>
-                                <Link
-                                    color="secondary"
+                                <BlorgLink
+                                    newTabIfEmbedded={true}
+                                    color={theme.palette.secondary.main}
                                     // we decided not to do this href={`/:keyword:${keyword}`}
                                     // because we think it's more helpful to show *all* the books that might
                                     // have this word in their title or summary, not just the ones that we
                                     // have so far marked with this keyword
-                                    {...getAnchorProps(`/:search:${keyword}`)}
+                                    href={`/:search:${keyword}`}
                                 >
                                     {keyword}
-                                </Link>
+                                </BlorgLink>
                                 {delimiter}
                             </span>
                         );

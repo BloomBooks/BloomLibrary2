@@ -6,9 +6,10 @@ import { jsx } from "@emotion/core";
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useGetCollection } from "../model/Collections";
 import { splitPathname } from "./Routes";
+import { BlorgLink } from "./BlorgLink";
 
 export const Breadcrumbs: React.FunctionComponent = () => {
     const location = useLocation();
@@ -45,17 +46,17 @@ export const Breadcrumbs: React.FunctionComponent = () => {
     const crumbs: React.ReactElement[] = [];
     crumbs.push(
         <li key="home">
-            <Link
+            <BlorgLink
                 css={css`
                     text-decoration: none !important;
                     &:hover {
                         text-decoration: underline !important;
                     }
                 `}
-                to="/"
+                href="/"
             >
                 Home
-            </Link>
+            </BlorgLink>
         </li>
     );
     const { breadcrumbs, collectionName, filters } = splitPathname(
@@ -113,14 +114,14 @@ export const Breadcrumbs: React.FunctionComponent = () => {
         crumbs.push(
             <li key={item}>
                 {decodeURIComponent(label)}
-                {/* enhance: reinstate if we come up with a destination for the link.<Link
+                {/* enhance: reinstate if we come up with a destination for the link.<BlorgLink
                     css={css`
                         text-decoration: none !important;
                     `}
                     to="/"
                 >
                     {label}
-                </Link> */}
+                </BlorgLink> */}
             </li>
         );
     }
@@ -169,17 +170,17 @@ const CollectionCrumb: React.FunctionComponent<{
     path.push(props.collectionName);
     return (
         <li>
-            <Link
+            <BlorgLink
                 css={css`
                     text-decoration: none !important;
                     &:hover {
                         text-decoration: underline !important;
                     }
                 `}
-                to={"/" + path.join("/")}
+                href={"/" + path.join("/")}
             >
                 {text}
-            </Link>
+            </BlorgLink>
         </li>
     );
 };
