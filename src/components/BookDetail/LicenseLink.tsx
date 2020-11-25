@@ -1,14 +1,14 @@
 import { Book } from "../../model/Book";
-import { Link } from "@material-ui/core";
 import React from "react";
+import { BlorgLink } from "../BlorgLink";
+import { useTheme } from "@material-ui/core";
 export const LicenseLink: React.FunctionComponent<{
     book: Book;
-}> = props => {
+}> = (props) => {
+    const theme = useTheme();
     return props.book.license ? (
-        <Link
-            color="secondary"
-            target="_blank"
-            rel="noopener noreferrer"
+        <BlorgLink
+            color={theme.palette.secondary.main}
             href={
                 // enhance: can we point to the actual version?
                 `https://creativecommons.org/licenses/${props.book.license.replace(
@@ -18,7 +18,7 @@ export const LicenseLink: React.FunctionComponent<{
             }
         >
             {props.book.license}
-        </Link>
+        </BlorgLink>
     ) : (
         <span>???</span>
     );

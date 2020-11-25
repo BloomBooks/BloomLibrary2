@@ -13,15 +13,15 @@ import { LanguageLink } from "../LanguageLink";
 import { getArtifactVisibilitySettings, ArtifactType } from "./ArtifactHelper";
 import { ILanguage } from "../../model/Language";
 import { ReadOfflineButton } from "./ReadOfflineButton";
-import { useMediaQuery, Link } from "@material-ui/core";
+import { useMediaQuery, useTheme } from "@material-ui/core";
 import { OSFeaturesContext } from "../../components/OSFeaturesContext";
 import { commonUI } from "../../theme";
 import { useGetBookCountRaw } from "../../connection/LibraryQueryHooks";
 import { getResultsOrMessageElement } from "../../connection/GetQueryResultsUI";
-import { getAnchorProps } from "../../embedded";
 import { useIsEmbedded } from "../EmbeddingHost";
 import { FormattedMessage } from "react-intl";
 import { BookThumbnail } from "./BookThumbnail";
+import { BlorgLink } from "../BlorgLink";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{
     book: Book;
@@ -30,6 +30,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
     contextLangIso?: string;
 }> = observer((props) => {
     const isEmbedded = useIsEmbedded();
+    const theme = useTheme();
     const { bloomDesktopAvailable, bloomReaderAvailable } = useContext(
         OSFeaturesContext
     );
@@ -150,14 +151,13 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
 
                                 {countOfBooksWithMatchingPhash > 0 && (
                                     <li>
-                                        <Link
+                                        <BlorgLink
                                             css={css`
                                                 font-size: 9pt;
                                             `}
-                                            color={"secondary"}
-                                            {...getAnchorProps(
-                                                `/phash:${sanitizedPhashOfFirstContentImage}`
-                                            )}
+                                            newTabIfEmbedded={true}
+                                            color={theme.palette.secondary.main}
+                                            href={`/phash:${sanitizedPhashOfFirstContentImage}`}
                                         >
                                             <FormattedMessage
                                                 id="book.detail.translations"
@@ -166,7 +166,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                                                     count: countOfBooksWithMatchingPhash,
                                                 }}
                                             />
-                                        </Link>
+                                        </BlorgLink>
                                     </li>
                                 )}
                             </ul>
