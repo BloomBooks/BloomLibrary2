@@ -1,19 +1,17 @@
 /*
-Upload the localization source file(s) to Crowdin, request a wait for a build
-from Crowdin, then download the build and unpack it into the build/translations
-directory.
-
-Normally this is run on our CI build server using `yarn ts-node ./build/crowdin-sync.ts`
+For more information, see readme-l10.md
 */
 
-import crowdin from "@crowdin/crowdin-api-client";
+import crowdin, {
+    ResponseObject,
+    SourceFilesModel,
+} from "@crowdin/crowdin-api-client";
 import download from "download";
 import tempDirectory from "temp-dir";
 import decompress from "decompress";
 import * as Path from "path";
 import * as fs from "fs-extra";
 
-//import * as Retry from "async-retry";
 const Retry = require("async-retry");
 
 const kTargetDirectory = "./public/translations";
@@ -32,7 +30,7 @@ async function requestAndWaitForCrowdinBuild(): Promise<number | undefined> {
             kCrowdinProjectId,
             {
                 // NOTE: there is a problem with these... they may be ignored: https://github.com/crowdin/crowdin-api-client-js/issues/85
-                exportApprovedOnly: true, /// TODO
+                exportApprovedOnly: true,
                 skipUntranslatedStrings: true,
                 // ENHANCE use this?: branchId
             }
@@ -114,73 +112,80 @@ async function downloadAndUnpackCrowdinBuild(crowdinBuildId: number) {
     }
 }
 
-async function updateCrowdinFile(path: string) {
+async function updateCrowdinFile(
+    fileList: Array<SourceFilesModel.File>,
+    path: string
+) {
     const filename = Path.basename(path);
-    const fileId = await getCrowdinFileId(filename);
-    console.log(`Search for ${filename} gave ${fileId}`);
-    if (fileId < 0) {
-        throw Error(`Could not find ${filename} on Crowdin.`);
-    }
-
+    const fileId = getCrowdinFileId(fileList, filename);
     const json = fs.readFileSync(path);
-    if (json.indexOf("description") === -1) {
-        throw Error("Failed json sanity check");
+    if (json.indexOf("message") === -1) {
+        throw Error(`Failed json sanity check: no "message" in ${path}`);
     }
     const crowdinAccess = new crowdin({
         token: crowdinApiToken,
     });
 
+    // Crowdin requires that you first upload to a new storage object, and then
+    // make a second call to replace the existing file with that storage object.
     crowdinAccess.uploadStorageApi
         .addStorage(filename, json)
         .then((response) => {
-            console.log(`new storage id: ${response.data.id}`);
+            console.log(`Uploaded "${filename}"`);
             crowdinAccess.sourceFilesApi
                 .updateOrRestoreFile(kCrowdinProjectId, fileId, {
                     storageId: response.data.id,
                 })
                 .then((updateResponse) =>
-                    console.log(
-                        `crowdin update response: ${JSON.stringify(
-                            updateResponse
-                        )}`
-                    )
+                    console.log(`Update complete for "${filename}"`)
                 )
                 .catch((error) => {
                     console.error(error);
+                    throw error;
                 });
+        })
+        .catch((error) => {
+            console.error(error);
+            throw error;
         });
 }
 
-async function getCrowdinFileId(filename: string): Promise<number> {
+async function getListOfFilesOnCrowdin(): Promise<
+    Array<SourceFilesModel.File>
+> {
     const crowdinAccess = new crowdin({
         token: crowdinApiToken,
     });
-    console.log(`Listing files on crowdin...`);
+    console.log(`Getting file ids from...`);
     const result = await crowdinAccess.sourceFilesApi.listProjectFiles(
         kCrowdinProjectId,
         {}
     );
+    return result.data.map((record) => record.data);
+}
 
-    for (const entry of result.data) {
-        const file = entry.data;
-        console.log(file.name);
+function getCrowdinFileId(
+    fileList: Array<SourceFilesModel.File>,
+    filename: string
+): number {
+    for (const file of fileList) {
+        //console.log(file.name);
         if (file.name === filename) return file.id;
     }
 
-    return -1;
+    throw Error(`Could not find ${filename} on Crowdin.`);
 }
 
 /**
  * Remove directory recursively
- * @param {string} directory
  * @see https://stackoverflow.com/a/42505874/3027390
  */
-function rimraf(directory: string) {
+function deleteDirectory(directory: string) {
     if (fs.existsSync(directory)) {
         fs.readdirSync(directory).forEach((entry) => {
             const entryPath = Path.join(directory, entry);
             if (fs.lstatSync(entryPath).isDirectory()) {
-                rimraf(entryPath);
+                deleteDirectory(entryPath);
             } else {
                 fs.unlinkSync(entryPath);
             }
@@ -190,15 +195,37 @@ function rimraf(directory: string) {
 }
 
 async function go() {
-    // NB: we haven't implemented using crowdin branches yet, but I *think* the copy of "Code Strings.json" in each branch will have a unique id
-    //const kCodeStringsCrowdinId = 110; // how to get these numbers from a browser: https://i.imgur.com/vgYhj4a.png
+    const options = [process.argv[2], process.argv[3]];
+    if (options.includes("upload")) {
+        // NB: we haven't implemented using crowdin branches yet, but I *think* the copy of "Code Strings.json" in each branch will have a unique id
+        const fileList = await getListOfFilesOnCrowdin();
+        for (const filename of fileList.filter(
+            (f) => f.name.toLocaleLowerCase().indexOf("contentful") < 0
+        )) {
+            updateCrowdinFile(fileList, "src/localization/" + filename);
+        }
+    }
+    if (options.includes("download")) {
+        if (fs.pathExistsSync(kTargetDirectory))
+            deleteDirectory(kTargetDirectory);
+        const buildId = await requestAndWaitForCrowdinBuild();
+        console.log("build id: " + buildId);
+        if (buildId) {
+            downloadAndUnpackCrowdinBuild(buildId);
+        }
 
-    updateCrowdinFile("src/localization/Code Strings.json");
-    if (fs.pathExistsSync(kTargetDirectory)) rimraf(kTargetDirectory);
-    const buildId = await requestAndWaitForCrowdinBuild();
-    console.log("build id: " + buildId);
-    if (buildId) {
-        downloadAndUnpackCrowdinBuild(buildId);
+        // write out a list of files for code to use
+        const fileList = await getListOfFilesOnCrowdin();
+        fs.writeFileSync(
+            "./src/localization/crowdin-file-names.json",
+            "[" +
+                fileList
+                    .filter((f) => f.directoryId === 90)
+                    .filter((f) => f.name !== "Bloom Library Strings.csv") //deprecated
+                    .map((f) => `"${f.name}"`)
+                    .join(",") +
+                "]"
+        );
     }
 }
 

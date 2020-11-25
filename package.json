@@ -16,7 +16,8 @@
         "build-storybook": "build-storybook -s public",
         "build-harvesterArtifactControl": "yarn webpack --config webpack.harvesterArtifactUserControl.config.js --mode='production'",
         "corsChrome": "chrome http://localhost:3000/ --disable-web-security --auto-open-devtools-for-tabs --user-data-dir=%temp%/chromeTemp",
-        "crowdin-sync": "ts-node --compiler-options \"{\\\"module\\\": \\\"commonjs\\\"}\" src/localization/crowdin-sync"
+        "crowdin-dangerous-upload": "ts-node --compiler-options \"{\\\"module\\\": \\\"commonjs\\\"}\" src/localization/crowdin-sync -- upload",
+        "crowdin-download": "ts-node --compiler-options \"{\\\"module\\\": \\\"commonjs\\\"}\" src/localization/crowdin-sync -- download"
     },
     "dependencies": {
         "@contentful/rich-text-react-renderer": "^13.4.0",

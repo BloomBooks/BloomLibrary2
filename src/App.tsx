@@ -11,18 +11,14 @@ import { ThemeProvider } from "@material-ui/core";
 import { LoginDialog } from "./components/User/LoginDialog";
 import InternationalizedContent from "./model/InternationalizedContent";
 import { IntlProvider } from "react-intl";
-import { useGetLocalizations } from "./GetLocalizations";
+import { useGetLocalizations } from "./localization/GetLocalizations";
 
 //console.log("getUserLanguageFromBrowser() " + getUserLanguageFromBrowser());
 
-export const App: React.FunctionComponent<{ uiLanguage?: string }> = (
-    props
-) => {
+export const App: React.FunctionComponent<{ uiLanguage: string }> = (props) => {
     const embeddedMode = window.self !== window.top;
 
-    const [explicitlyChosenLanguageTag] = useState<string | undefined>(
-        props.uiLanguage
-    );
+    const [explicitlyChosenLanguageTag] = useState<string>(props.uiLanguage);
 
     // Enhance: this assumes that for each string, you get it in that language or if we don't have
     // a translation for it yet, then you get it in English.
@@ -50,10 +46,11 @@ export const App: React.FunctionComponent<{ uiLanguage?: string }> = (
                 if (s.code === "MISSING_TRANSLATION") {
                     if (languageTagWeAreUsing === "en") {
                         //if (Object.keys(stringsForThisLanguage).length > 0) {
-                        console.error(
-                            `Add Message to Code Strings.json:\n"${
-                                s.descriptor.id
-                            }":{"message":"${s.descriptor.defaultMessage}"
+                        console.info(
+                            //`Add Message to Code Strings.json:\n"
+                            `"${s.descriptor.id}":{"message":"${
+                                s.descriptor.defaultMessage
+                            }"
                             ${
                                 s.descriptor.description
                                     ? ', "description":"${s.descriptor.description}"'

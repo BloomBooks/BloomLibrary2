@@ -1,0 +1,65 @@
+{
+    "topic.Agriculture": {
+        "message": "Agriculture"
+    },
+    "topic.Animal Stories": {
+        "message": "Animal Stories"
+    },
+    "topic.Business": {
+        "message": "Business"
+    },
+    "topic.Dictionary": {
+        "message": "Dictionary"
+    },
+    "topic.Environment": {
+        "message": "Environment"
+    },
+    "topic.Primer": {
+        "message": "Primer"
+    },
+    "topic.Math": {
+        "message": "Math"
+    },
+    "topic.Culture": {
+        "message": "Culture"
+    },
+    "topic.Science": {
+        "message": "Science"
+    },
+    "topic.Story Book": {
+        "message": "Story Book"
+    },
+    "topic.Traditional Story": {
+        "message": "Traditional Story"
+    },
+    "topic.Health": {
+        "message": "Health"
+    },
+    "topic.Personal Development": {
+        "message": "Personal Development"
+    },
+    "topic.Spiritual": {
+        "message": "Spiritual"
+    },
+    "topic.Other": {
+        "message": "Other"
+    },
+    "feature.talkingBook.label": {
+        "message": "Talking Book"
+    },
+    "feature.blind.label": {
+        "message": "Features for the Visually Impaired"
+    },
+    "feature.comic.label": {
+        "message": "Comic Book"
+    },
+    "feature.motion.label": {
+        "message": "Motion Book"
+    },
+    "feature.signLanguage.label": {
+        "message": "Sign Language"
+    },
+    "feature.activity.label": {
+        "message": "Interactive Activity"
+    }
+}

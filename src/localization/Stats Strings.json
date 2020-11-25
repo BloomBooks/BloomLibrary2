@@ -1,0 +1,196 @@
+{
+
+    "**** About this file":{
+        "message":"Most people should not translate this file",
+        "description": "BloomLibrary has a function that shows charts and tables about collections, e.g. https://next.bloomlibrary.org/covid19/stats. Most visitors to BloomLibrary.org will never see this, and those that do can probably make do with the English, Spanish, or French translations. Therefore, please don't spend your time on Crowdin translating this file unless you know that it is important to someone that they be able to use the statistics screens in the language you are translating to."
+    },
+    "stats.questions": {
+    "description": "",
+    "message": "Question"
+  },
+  "stats.quizzesTaken": {
+    "description": "",
+    "message": "Quizzes Taken"
+  },
+  "stats.meanCorrect": {
+    "description": "",
+    "message": "Mean Correct"
+  },
+  "stats.medianCorrect": {
+    "description": "",
+    "message": "Median Correct"
+  },
+  "stats.queryDescription.underCountingNote": {
+    "description": "",
+    "message": "Note that the events that devices and browsers try to send to us are sometimes stopped by various network firewalls. Therefore we may be under counting."
+  },
+  "stats.queryDescription.about": {
+    "description": "",
+    "message": "About this data"
+  },
+  "stats.queryDescription.intro": {
+    "description": "",
+    "message": "These statistic are from events we received which fit the following criteria:"
+  },
+  "stats.queryDescription.collection": {
+    "description": "",
+    "message": "Books currently in the collection:"
+  },
+  "stats.queryDescription.branding": {
+    "description": "",
+    "message": "Books with branding:"
+  },
+  "stats.queryDescription.country": {
+    "description": "",
+    "message": "From users inside of country:"
+  },
+  "stats.queryDescription.dateRange": {
+    "description": "",
+    "message": "Date range:"
+  },
+  "stats.options.By Month": {
+    "description": "",
+    "message": "By Month"
+  },
+  "stats.options.By Week": {
+    "description": "",
+    "message": "By Week"
+  },
+  "stats.book.summaryString.readExplanation": {
+    "description": "",
+    "message": "'reads' is a count of how many times someone has read this book in a digital form from which we receive analytics. We cannot currently get analytics from epub versions. Because books can be read offline, we may not have a record of all reads."
+  },
+  "stats.book.summaryString.deviceExplanation": {
+    "description": "",
+    "message": "'devices' is a count of how many phones/tablets/computers have this book installed in Bloom Reader."
+  },
+  "stats.book.summaryString.downloadForTranslationExplanation": {
+    "description": "",
+    "message": "'downloads for translation' is a count of how times someone has clicked 'Translate into your own language' in order to load the book into Bloom for translation."
+  },
+  "stats.book.summaryString.range": {
+    "description": "",
+    "message": "This starting date for these statistics vary by when we started recording them. They are updated every 24 hours."
+  },
+  "stats.book.summaryString.furtherStats": {
+    "description": "",
+    "message": "Enterprise customers can get a set of charts and downloadable data which includes information on all of their books, including where books are being read and growth over time."
+  },
+  "stats.book.reads": {
+    "description": "",
+    "message": "{count} reads"
+  },
+  "stats.book.devices": {
+    "description": "",
+    "message": "{count} devices"
+  },
+  "stats.book.downloads": {
+    "description": "",
+    "message": "{count} downloads for translation"
+  },
+  "rangePicker.allTime": {
+    "description": "",
+    "message": "All Time"
+  },
+  "rangePicker.today": {
+    "description": "",
+    "message": "Today"
+  },
+  "rangePicker.to": {
+    "description": "",
+    "message": "To"
+  },
+  "rangePicker.from": {
+    "description": "",
+    "message": "Include Events From"
+  },
+  "rangePicker.custom": {
+    "description": "",
+    "message": "Custom"
+  },
+ "stats.booksRead.finishedCount": {
+    "description": "",
+    "message": "Finished"
+  },
+  "stats.booksRead.startedCount": {
+    "description": "",
+    "message": "Started"
+  },
+  "stats.booksRead.downloadsForTranslation": {
+    "description": "",
+    "message": "Downloads for Translation"
+  },
+  "stats.booksRead.pdfDownloads": {
+    "description": "",
+    "message": "PDF Downloads"
+  },
+  "stats.booksRead.epubDownloads": {
+    "description": "",
+    "message": "ePUB Downloads"
+  },
+  "stats.booksRead.bloomPubDownloads": {
+    "description": "",
+    "message": "bloomPub Downloads"
+  },
+  "stats.bookStatistics": {
+    "description": "",
+    "message": "Book Statistics"
+  },
+  "stats.comprehensionQuestions": {
+    "description": "",
+    "message": "Comprehension Questions"
+  },"devices": {
+    "description": "",
+    "message": "Devices"
+  },
+  "stats.devices.info": {
+    "description": "",
+    "message": "Count of devices for which we received notice that at least one book from this collection had been loaded."
+  },
+  "stats.devices.bloomReader": {
+    "description": "",
+    "message": "with Bloom Reader"
+  },
+  "stats.devices.mobile": {
+    "description": "",
+    "message": "Mobile"
+  },
+  "stats.devices.pc": {
+    "description": "",
+    "message": "PC"
+  },
+  "stats.reads": {
+    "description": "",
+    "message": "Reads"
+  },
+  "stats.reads.info": {
+    "description": "",
+    "message": "The number of times the book was read, in part or whole. We are currently only showing reads on Bloom Reader. We will soon add reads on the Web, in apps, and in the desktop."
+  },
+  "stats.reads.web": {
+    "description": "",
+    "message": "Web"
+  },
+  "stats.reads.apps": {
+    "description": "",
+    "message": "Apps"
+  },  "stats.bloomReaderSessions": {
+    "description": "",
+    "message": "Bloom Reader Sessions"
+  },
+  "stats.header": {
+    "description": "",
+    "message": "Bloom Collection Statistics"
+  },
+  "stats.overview": {
+    "description": "",
+    "message": "Overview"
+  },
+  "stats.download.pngIcon": {
+    "description": "Priority - Low",
+    "message": "download PNG"
+  },
+  "stats.download.csvIcon": {
+    "description": "Priority - Low",
+    "message": "download CSV"
+  }}
