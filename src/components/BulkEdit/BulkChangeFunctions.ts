@@ -2,7 +2,7 @@ import { IFilter } from "../../IFilter";
 import { getConnection } from "../../connection/ParseServerConnection";
 import { axios } from "@use-hooks/axios";
 import { constructParseBookQuery } from "../../connection/LibraryQueryHooks";
-import { CachedTables } from "../../model/InternationalizedContent";
+import { CachedTables } from "../../model/CacheProvider";
 
 export async function ChangeColumnValueForAllBooksInFilter(
     filter: IFilter,

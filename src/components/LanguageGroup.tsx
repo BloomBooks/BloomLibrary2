@@ -13,7 +13,7 @@ import Downshift, {
 } from "downshift";
 import matchSorter from "match-sorter";
 import searchIcon from "../search.png";
-import { CachedTablesContext } from "../model/InternationalizedContent";
+import { CachedTablesContext } from "../model/CacheProvider";
 import { ILanguage } from "../model/Language";
 import { commonUI } from "../theme";
 import { CardSwiper } from "./CardSwiper";

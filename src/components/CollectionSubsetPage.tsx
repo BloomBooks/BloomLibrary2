@@ -19,7 +19,7 @@ import { track } from "../analytics/Analytics";
 import { BookCount } from "./BookCount";
 import { setBloomLibraryTitle } from "./Routes";
 import { NoSearchResults } from "./NoSearchResults";
-import { CachedTables } from "../model/InternationalizedContent";
+import { CachedTables } from "../model/CacheProvider";
 
 // Given a collection and a string like level:1/topic:anthropology/search:dogs,
 // creates a corresponding collection by adding appropriate filters.

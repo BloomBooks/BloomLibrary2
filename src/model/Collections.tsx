@@ -1,16 +1,12 @@
 import { useContext } from "react";
 import { getDisplayNamesFromLanguageCode, ILanguage } from "./Language";
-import {
-    CachedTablesContext,
-    CachedTables,
-} from "../model/InternationalizedContent";
+import { CachedTablesContext, CachedTables } from "./CacheProvider";
 import { ICollection, IRawCollection } from "./ContentInterfaces";
 import { convertContentfulCollectionToICollection } from "./Contentful";
 import { strict as assert } from "assert";
 import { useContentful } from "../connection/UseContentful";
 import { useGetLoggedInUser } from "../connection/LoggedInUser";
 import { IFilter } from "../IFilter";
-import { ITopic } from "./useInternationalizedTopics";
 
 /* From original design: Each collection has
     id

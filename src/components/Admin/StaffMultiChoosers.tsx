@@ -1,6 +1,6 @@
 import { Book } from "../../model/Book";
 import React, { useContext } from "react";
-import { CachedTablesContext } from "../../model/InternationalizedContent";
+import { CachedTablesContext } from "../../model/CacheProvider";
 
 import { featureSpecs } from "../FeatureHelper";
 import { commonUI } from "../../theme";

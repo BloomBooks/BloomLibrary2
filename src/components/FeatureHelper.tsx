@@ -11,7 +11,7 @@ import {
     CachedTables,
     CachedTablesContext,
     ILocalizedString,
-} from "../model/InternationalizedContent";
+} from "../model/CacheProvider";
 
 // Information about features (like talking book, motion) that supports the display of
 // features in the bar under the picture on book cards. Previously also supported Feature

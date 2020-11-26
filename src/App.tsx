@@ -9,11 +9,29 @@ import React from "react";
 import theme from "./theme";
 import { ThemeProvider } from "@material-ui/core";
 import { LoginDialog } from "./components/User/LoginDialog";
-import InternationalizedContent from "./model/InternationalizedContent";
+import CacheProvider from "./model/CacheProvider";
 import { LocalizationContext } from "./localization/LocalizationContext";
+import UnderConstruction from "./components/UnderConstruction";
+import { BrowserRouter as Router } from "react-router-dom";
+
+import {
+    OSFeaturesContext,
+    bloomDesktopAvailable,
+    bloomReaderAvailable,
+    cantUseBloomD,
+    mobile,
+} from "./components/OSFeaturesContext";
+import { RouterContent } from "./model/RouterContent";
 
 export const App: React.FunctionComponent<{}> = (props) => {
     const embeddedMode = window.self !== window.top;
+
+    const showUnderConstruction =
+        window.location.hostname !== "bloomlibrary.org" &&
+        window.location.hostname !== "embed.bloomlibrary.org" &&
+        !window.location.hostname.startsWith("dev") &&
+        window.location.hostname !== "localhost";
+
     return (
         <LocalizationContext>
             <div
@@ -39,7 +57,22 @@ export const App: React.FunctionComponent<{}> = (props) => {
                 See also https://github.com/facebook/react/issues/16362
                 */}
                 <ThemeProvider theme={theme}>
-                    <InternationalizedContent />
+                    <CacheProvider>
+                        <OSFeaturesContext.Provider
+                            value={{
+                                bloomDesktopAvailable,
+                                bloomReaderAvailable,
+                                cantUseBloomD,
+                                mobile,
+                            }}
+                        >
+                            {props.children}
+                            {showUnderConstruction && <UnderConstruction />}
+                            <Router>
+                                <RouterContent />
+                            </Router>
+                        </OSFeaturesContext.Provider>
+                    </CacheProvider>
                 </ThemeProvider>
                 {embeddedMode || <LoginDialog />} {/* </React.StrictMode> */}
             </div>

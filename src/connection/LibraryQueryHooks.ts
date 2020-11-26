@@ -4,10 +4,7 @@ import { getConnection } from "./ParseServerConnection";
 import { getBloomApiUrl } from "./ApiConnection";
 import { Book, createBookFromParseServerData } from "../model/Book";
 import { useContext, useMemo, useEffect, useState } from "react";
-import {
-    CachedTables,
-    CachedTablesContext,
-} from "../model/InternationalizedContent";
+import { CachedTables, CachedTablesContext } from "../model/CacheProvider";
 import { getCleanedAndOrderedLanguageList, ILanguage } from "../model/Language";
 import { processRegExp } from "../Utilities";
 import { IStatsProps } from "../components/statistics/StatsInterfaces";

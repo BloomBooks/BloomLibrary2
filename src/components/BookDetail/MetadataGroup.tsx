@@ -11,7 +11,7 @@ import { LicenseLink } from "./LicenseLink";
 //NB: v3.0 of title-case has a new API, but don't upgrade: it doesn't actually work like v2.x does, where it can take fooBar and give us "Foo Bar"
 import { useTheme } from "@material-ui/core";
 import { BookStats } from "./BookStats";
-import { CachedTablesContext } from "../../model/InternationalizedContent";
+import { CachedTablesContext } from "../../model/CacheProvider";
 import { getTagDisplayName } from "../../model/Tag";
 import { useGetRelatedBooks } from "../../connection/LibraryQueryHooks";
 import { Bookshelf } from "../../model/Bookshelf";

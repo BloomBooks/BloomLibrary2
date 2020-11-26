@@ -3,7 +3,7 @@ import React, { useState, useContext } from "react";
 import Select from "react-select";
 import FormControl from "@material-ui/core/FormControl/FormControl";
 import { FormLabel } from "@material-ui/core";
-import { CachedTablesContext } from "../../model/InternationalizedContent";
+import { CachedTablesContext } from "../../model/CacheProvider";
 
 interface IOption {
     value: string;
