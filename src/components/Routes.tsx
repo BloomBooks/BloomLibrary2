@@ -278,13 +278,10 @@ export function splitPathname(
 export function getUrlForTarget(target: string) {
     if (target.startsWith("http")) return target;
 
-    const {
-        breadcrumbs,
-        collectionName: pathCollectionName,
-    } = splitPathname(window.location.pathname);
-    let segments = [
-        ...breadcrumbs,
-    ];
+    const { breadcrumbs, collectionName: pathCollectionName } = splitPathname(
+        window.location.pathname
+    );
+    let segments = [...breadcrumbs];
 
     const { collectionName, isPageUrl } = splitPathname(target);
     if (isPageUrl) {

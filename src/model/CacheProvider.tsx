@@ -34,10 +34,28 @@ export const CacheProvider: React.FunctionComponent = (props) => {
     CachedTables.languagesByBookCount = useGetCleanedAndOrderedLanguageList();
 
     return (
-        <CachedTablesContext.Provider value={CachedTables}>
+        <CachedTablesContext.Provider
+            value={{
+                bookshelves: CachedTables.bookshelves,
+                languagesByBookCount: CachedTables.languagesByBookCount,
+                tags: CachedTables.tags,
+            }}
+        >
             {props.children}
         </CachedTablesContext.Provider>
     );
 };
+
+// export const CacheProvider: React.FunctionComponent<{value}> = (props) => {
+//     CachedTables.bookshelves = useGetBookshelvesByCategory();
+//     CachedTables.tags = useGetTagList();
+//     CachedTables.languagesByBookCount = useGetCleanedAndOrderedLanguageList();
+
+//     return (
+//         <CachedTablesContext.Provider value={props.value}>
+//             {props.children}
+//         </CachedTablesContext.Provider>
+//     );
+// };
 
 export default CacheProvider;

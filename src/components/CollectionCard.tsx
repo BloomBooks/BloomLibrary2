@@ -42,6 +42,19 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
     const extraPropsIfHidingTitle = props.hideTitle
         ? propsToHideAccessibilityElement
         : "";
+
+    let localizedTitle = l10n.formatMessage({
+        id: "collection." + props.target.toLowerCase(),
+        defaultMessage: props.title,
+    });
+    if (props.target.indexOf("topic") > -1) {
+        localizedTitle = l10n.formatMessage({
+            id: props.target.replace(":", "."), // topic:Health --> topic.Health
+            defaultMessage: props.title,
+        });
+    }
+
+    console.log("target " + props.target);
     const titleElement = (
         <div
             css={css`
@@ -83,12 +96,7 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
                     reduceHeadingLevel(props.richTextLabel)
                 )
             ) : (
-                <h2>
-                    {l10n.formatMessage({
-                        id: "collection." + props.target.toLowerCase(),
-                        defaultMessage: props.title,
-                    })}
-                </h2>
+                <h2>{localizedTitle}</h2>
             )}
         </div>
     );

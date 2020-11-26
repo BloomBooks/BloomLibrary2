@@ -3,7 +3,7 @@ import { IntlProvider } from "react-intl";
 import { useGetLocalizations } from "./GetLocalizations";
 
 // This component sets up the react-intl <IntlProvider> to use our translations. The guts of the app should be given as its children
-export const LocalizationContext: React.FunctionComponent<{}> = (props) => {
+export const LocalizationProvider: React.FunctionComponent<{}> = (props) => {
     //If you add `?uilang=<code>` to the url, BloomLibrary should attempt to show the UI in that language. E.g., `?uilang=es` will show Spanish.
     const uilang =
         new URLSearchParams(window.location.search).get("uilang") ||
@@ -17,10 +17,10 @@ export const LocalizationContext: React.FunctionComponent<{}> = (props) => {
         closestLanguage: languageTagWeAreUsing,
         stringsForThisLanguage,
     } = useGetLocalizations(uilang);
-    // console.log(
-    //     "stringsForThisLanguage:" +
-    //         JSON.stringify(stringsForThisLanguage, null, 4)
-    // );
+    console.log(
+        "stringsForThisLanguage:" +
+            JSON.stringify(stringsForThisLanguage, null, 4)
+    );
     const slowerLanguageLookupToHelpErrorChecking =
         window.location.hostname === "alpha.bloomlibrary.org" ||
         window.location.hostname === "dev-alpha.bloomlibrary.org" ||
@@ -38,17 +38,17 @@ export const LocalizationContext: React.FunctionComponent<{}> = (props) => {
                 if (s.code === "MISSING_TRANSLATION") {
                     if (languageTagWeAreUsing === "en") {
                         //if (Object.keys(stringsForThisLanguage).length > 0) {
-                        // console.info(
-                        //     `Add Message to Code Strings.json:\n"
-                        //     "${s.descriptor.id}":{"message":"${
-                        //         s.descriptor.defaultMessage
-                        //     }"
-                        //     ${
-                        //         s.descriptor.description
-                        //             ? `, "description":"${s.descriptor.description}"`
-                        //             : ""
-                        //     }}`
-                        // );
+                        console.info(
+                            `Add Message to Code Strings.json:\n"
+                            "${s.descriptor.id}":{"message":"${
+                                s.descriptor.defaultMessage
+                            }"
+                            ${
+                                s.descriptor.description
+                                    ? `, "description":"${s.descriptor.description}"`
+                                    : ""
+                            }}`
+                        );
                         //}
                     } else {
                         console.info(

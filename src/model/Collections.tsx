@@ -34,6 +34,7 @@ interface IContentfulCollectionQueryResponse {
 // A hook function for retrieving collections from contentful.
 function useGetContentfulCollections(): IRawCollection[] {
     // Get every collection in Contentful
+
     const { loading, result } = useContentful({
         content_type: "collection",
         include: 10, // depth

@@ -9,6 +9,12 @@ import { Alert, AlertTitle } from "@material-ui/lab";
 import { Snackbar } from "@material-ui/core";
 
 export const UnderConstruction: React.FunctionComponent<{}> = () => {
+    const showUnderConstruction =
+        window.location.hostname !== "bloomlibrary.org" &&
+        window.location.hostname !== "embed.bloomlibrary.org" &&
+        !window.location.hostname.startsWith("dev") &&
+        window.location.hostname !== "localhost";
+
     const [open, setOpen] = React.useState(true);
     const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
         if (reason === "clickaway") {
@@ -17,7 +23,7 @@ export const UnderConstruction: React.FunctionComponent<{}> = () => {
 
         setOpen(false);
     };
-    return (
+    return showUnderConstruction ? (
         <Snackbar open={open} onClose={handleClose}>
             <Alert
                 variant="filled"
@@ -44,6 +50,8 @@ export const UnderConstruction: React.FunctionComponent<{}> = () => {
                 </div>
             </Alert>
         </Snackbar>
+    ) : (
+        <React.Fragment />
     );
 };
 

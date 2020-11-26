@@ -5,35 +5,21 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React from "react";
-
 import theme from "./theme";
 import { ThemeProvider } from "@material-ui/core";
 import { LoginDialog } from "./components/User/LoginDialog";
-import CacheProvider from "./model/CacheProvider";
-import { LocalizationContext } from "./localization/LocalizationContext";
+import { LocalizationProvider } from "./localization/LocalizationProvider";
 import UnderConstruction from "./components/UnderConstruction";
 import { BrowserRouter as Router } from "react-router-dom";
-
-import {
-    OSFeaturesContext,
-    bloomDesktopAvailable,
-    bloomReaderAvailable,
-    cantUseBloomD,
-    mobile,
-} from "./components/OSFeaturesContext";
 import { RouterContent } from "./model/RouterContent";
+import CacheProvider from "./model/CacheProvider";
+import { OSFeaturesProvider } from "./components/OSFeaturesContext";
 
 export const App: React.FunctionComponent<{}> = (props) => {
     const embeddedMode = window.self !== window.top;
 
-    const showUnderConstruction =
-        window.location.hostname !== "bloomlibrary.org" &&
-        window.location.hostname !== "embed.bloomlibrary.org" &&
-        !window.location.hostname.startsWith("dev") &&
-        window.location.hostname !== "localhost";
-
     return (
-        <LocalizationContext>
+        <LocalizationProvider>
             <div
                 css={css`
                     display: flex;
@@ -58,24 +44,17 @@ export const App: React.FunctionComponent<{}> = (props) => {
                 */}
                 <ThemeProvider theme={theme}>
                     <CacheProvider>
-                        <OSFeaturesContext.Provider
-                            value={{
-                                bloomDesktopAvailable,
-                                bloomReaderAvailable,
-                                cantUseBloomD,
-                                mobile,
-                            }}
-                        >
-                            {showUnderConstruction && <UnderConstruction />}
+                        <OSFeaturesProvider>
+                            <UnderConstruction />
                             <Router>
                                 <RouterContent />
                             </Router>
-                        </OSFeaturesContext.Provider>
+                        </OSFeaturesProvider>
                     </CacheProvider>
                 </ThemeProvider>
                 {embeddedMode || <LoginDialog />} {/* </React.StrictMode> */}
             </div>
-        </LocalizationContext>
+        </LocalizationProvider>
     );
 };
 
