@@ -31,6 +31,13 @@ export function useGetLocalizations(
 
     setUserInterfaceTag(userInterfaceLanguageTag);
 
+    if (userInterfaceLanguageTag === "en")
+        // TODO IF ENGLISH, DON'T ACTUALLY DO THE AXIOS GET, BUT INSTEAD EITHER RETURN NOTHING (SHOULD WORK FINE BUT GIVE BOGUS CONSOLE ERRORS)
+        // OR ACTUALLY CONSTRUCT THE JSON FROM OUR SOURCE CODE FILES SO THAT THE LOCALIZATIONPROVIDER CAN MAKE HELPFUL CONSOLE MESSAGES WHERE THEY ARE MISSING
+        return {
+            closestLanguage: userInterfaceLanguageTag,
+            stringsForThisLanguage: {},
+        };
     for (const filename of files) {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         const { response: jsonResponse } = useAxios({

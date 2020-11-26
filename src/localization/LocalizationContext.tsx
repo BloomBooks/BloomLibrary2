@@ -38,17 +38,17 @@ export const LocalizationContext: React.FunctionComponent<{}> = (props) => {
                 if (s.code === "MISSING_TRANSLATION") {
                     if (languageTagWeAreUsing === "en") {
                         //if (Object.keys(stringsForThisLanguage).length > 0) {
-                        console.info(
-                            `Add Message to Code Strings.json:\n"
-                            "${s.descriptor.id}":{"message":"${
-                                s.descriptor.defaultMessage
-                            }"
-                            ${
-                                s.descriptor.description
-                                    ? ', "description":"${s.descriptor.description}"'
-                                    : ""
-                            }}`
-                        );
+                        // console.info(
+                        //     `Add Message to Code Strings.json:\n"
+                        //     "${s.descriptor.id}":{"message":"${
+                        //         s.descriptor.defaultMessage
+                        //     }"
+                        //     ${
+                        //         s.descriptor.description
+                        //             ? `, "description":"${s.descriptor.description}"`
+                        //             : ""
+                        //     }}`
+                        // );
                         //}
                     } else {
                         console.info(

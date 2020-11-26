@@ -1,8 +1,9 @@
 import { useContext } from "react";
 import { getDisplayNamesFromLanguageCode, ILanguage } from "./Language";
-import { CachedTablesContext, CachedTables } from "./CacheProvider";
+import { CachedTablesContext } from "./CacheProvider";
 import { ICollection, IRawCollection } from "./ContentInterfaces";
 import { convertContentfulCollectionToICollection } from "./Contentful";
+import { kTopicList } from "./ClosedVocabularies";
 import { strict as assert } from "assert";
 import { useContentful } from "../connection/UseContentful";
 import { useGetLoggedInUser } from "../connection/LoggedInUser";
@@ -179,22 +180,13 @@ function getFacetCollection(
             );
 
         case "topic":
-            let currentTopic = CachedTables.topics.find(
-                (topic) => topic.key === value
-            );
-            if (!currentTopic) {
-                currentTopic = {
-                    key: value,
-                    displayName: value,
-                };
-            }
             // topic collections currently are generated from the fixed list above.
             // the master "topics" collection is real (so it can be included at the
             // right place in its parent) but its children are inserted by another special case.
             return makeTopicCollection(
                 templateCollection,
                 explicitCollection,
-                currentTopic
+                value
             );
 
         // case "keyword":
@@ -249,7 +241,7 @@ export function makeLanguageCollection(
 export function makeTopicCollection(
     templateCollection: ICollection,
     explicitCollection: ICollection | undefined,
-    topic: ITopic
+    topicName: string
 ): ICollection {
     // last wins
     return {
@@ -260,11 +252,9 @@ export function makeTopicCollection(
         },
         ...templateCollection,
         ...explicitCollection,
-        urlKey: "topic:" + topic.key,
-        label:
-            templateCollection.label.replace("$1", topic.displayName) ||
-            topic.displayName,
-        filter: { topic: topic.key },
+        urlKey: "topic:" + topicName,
+        label: templateCollection.label.replace("$1", topicName) || topicName,
+        filter: { topic: topicName },
     };
 }
 
@@ -333,37 +323,22 @@ export function getDummyCollectionForPreview(bannerId: string): ICollection {
 // card. But once you click the card, then you're going to topic:foo and we would pick up any explicit
 // "topic:foo" collection.
 function makeTopicCollectionsForCards(): ICollection[] {
-    return (
-        [...CachedTables.topics]
-            // Don't need an "Other" topic when displaying various topics on the home page
-            .filter((t: ITopic) => t.key !== "Other")
-            .sort(topicSort)
-            .map((t: ITopic) =>
-                makeTopicCollection(
-                    {
-                        urlKey: "topic:" + t.key,
-                        label: t.displayName,
-                        childCollections: [],
-                        filter: { topic: t.key },
-                        bannerId: "", // this will never be used because it's just for the card
-                        layout: "by-level", // this will never be used because it's just for the card
-                        type: "collection",
-                        description: "",
-                    },
-                    undefined,
-                    t
-                )
-            )
+    return [...kTopicList].sort().map((t) =>
+        makeTopicCollection(
+            {
+                urlKey: "topic:" + t,
+                label: t,
+                childCollections: [],
+                filter: { topic: t },
+                bannerId: "", // this will never be used because it's just for the card
+                layout: "by-level", // this will never be used because it's just for the card
+                type: "collection",
+                description: "",
+            },
+            undefined,
+            t
+        )
     );
-}
-
-function topicSort(a: ITopic, b: ITopic): number {
-    const key1 = a.displayName;
-    const key2 = b.displayName;
-    if (key1 === key2) {
-        return 0;
-    }
-    return key1 > key2 ? 1 : -1;
 }
 
 /* We're thinking (but not certain) that we just want to treat keyword lookups as searches (which will of course

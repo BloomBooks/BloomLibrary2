@@ -66,7 +66,6 @@ export const App: React.FunctionComponent<{}> = (props) => {
                                 mobile,
                             }}
                         >
-                            {props.children}
                             {showUnderConstruction && <UnderConstruction />}
                             <Router>
                                 <RouterContent />

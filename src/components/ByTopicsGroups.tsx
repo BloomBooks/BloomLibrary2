@@ -2,6 +2,7 @@ import React from "react";
 import { MessageDescriptor, useIntl } from "react-intl";
 import { ICollection } from "../model/ContentInterfaces";
 import { BookCardGroup } from "./BookCardGroup";
+import { kTopicList } from "../model/ClosedVocabularies";
 
 export const TopicsList = [
     "Agriculture",
@@ -35,7 +36,7 @@ export const ByTopicsGroups: React.FunctionComponent<{
     const formatMessage = useIntl().formatMessage;
     return (
         <React.Fragment>
-            {TopicsList.map((topic) => (
+            {kTopicList.map((topic) => (
                 <BookCardGroup
                     key={topic}
                     collection={makeCollectionForTopic(
@@ -54,9 +55,10 @@ export const ByTopicsGroups: React.FunctionComponent<{
                 rows={99}
                 collection={makeCollectionForTopic(
                     props.collection,
-                    "Other",
+                    "empty",
                     formatMessage
                 )}
+                contextLangIso={contextLangIso}
             />
         </React.Fragment>
     );

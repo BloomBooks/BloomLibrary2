@@ -4,9 +4,10 @@ import { getConnection } from "./ParseServerConnection";
 import { getBloomApiUrl } from "./ApiConnection";
 import { Book, createBookFromParseServerData } from "../model/Book";
 import { useContext, useMemo, useEffect, useState } from "react";
-import { CachedTables, CachedTablesContext } from "../model/CacheProvider";
+import { CachedTablesContext } from "../model/CacheProvider";
 import { getCleanedAndOrderedLanguageList, ILanguage } from "../model/Language";
 import { processRegExp } from "../Utilities";
+import { kTopicList } from "../model/ClosedVocabularies";
 import { IStatsProps } from "../components/statistics/StatsInterfaces";
 import { toYyyyMmDd } from "../components/statistics/ReaderSessionsChart";
 import { useGetCollection } from "../model/Collections";
@@ -1008,7 +1009,7 @@ export function constructParseBookQuery(
             // optimize: is it more efficient to try to come up with a regex that will
             // fail if it finds topic:?
             tagParts.push({
-                $nin: CachedTables.topics.map((t) => "topic:" + t.key),
+                $nin: kTopicList.map((t) => "topic:" + t),
             });
         } else if (f.topic.indexOf(",") >= 0) {
             const topicsRegex = f.topic
