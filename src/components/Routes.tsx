@@ -22,6 +22,7 @@ import { IEmbedSettings } from "../model/ContentInterfaces";
 import { EmbeddingHost, isEmbedded, useSetEmbeddedUrl } from "./EmbeddingHost";
 import { CollectionStatsPage } from "./statistics/CollectionStatsPage";
 import { TestEmbeddingPage } from "./TestEmbedding";
+import { setLanguageOverride } from "../localization/LocalizationProvider";
 
 export let previousPathname = "";
 let currentPathname = "";
@@ -35,6 +36,7 @@ export const Routes: React.FunctionComponent<{}> = () => {
         previousPathname = currentPathname;
         currentPathname = location.pathname;
     }
+
     return (
         <ErrorBoundary url={location.pathname}>
             <Switch>

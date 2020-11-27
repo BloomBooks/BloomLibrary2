@@ -54,7 +54,6 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
         });
     }
 
-    console.log("target " + props.target);
     const titleElement = (
         <div
             css={css`

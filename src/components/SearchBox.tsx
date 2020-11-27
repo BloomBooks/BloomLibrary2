@@ -15,6 +15,7 @@ import { withStyles } from "@material-ui/styles";
 import { giveFreeLearningCsv } from "../export/freeLearningIO";
 import { useLocation, useHistory } from "react-router-dom";
 import { useIntl } from "react-intl";
+import { setLanguageOverride } from "../localization/LocalizationProvider";
 
 // NB: I tried a bunch of iterations over 2 days with forwardRefs and stuff trying to get this search box
 // to have both the html tooltip AND stop losing focus every time a letter was typed. The upshot was this
@@ -106,6 +107,10 @@ export const SearchBox: React.FunctionComponent<{
             giveFreeLearningCsv();
             return;
         }
+        // Allow developers/testers to switch the uilang by typing "uilang=fr". Only marginally useful
+        // because you loose it when you refresh. But it was going to be a pain to preserve it as
+        // a url parameter. Note that you can change your lang in browser settings pretty easily for a
+        // more permanent effect.
         if (searchString.length === 0) {
             // delete everything and press enter is the same as "cancel"
             cancelSearch();
@@ -117,6 +122,8 @@ export const SearchBox: React.FunctionComponent<{
         if (searchString === "grid") {
             // review: this replaces current history element...should we push instead? (Also below)
             history.push("/grid");
+        } else if (searchString.indexOf("uilang=") === 0) {
+            setLanguageOverride(searchString.split("=")[1]);
         } else if (
             ["covid", "covid19", "coronavirus", "cov19"].includes(
                 searchString.toLowerCase()

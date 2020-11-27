@@ -1,13 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { IntlProvider } from "react-intl";
 import { useGetLocalizations } from "./GetLocalizations";
 
+let setLanguageOverride: (tag: string) => void = () => {};
+export { setLanguageOverride };
+
 // This component sets up the react-intl <IntlProvider> to use our translations. The guts of the app should be given as its children
 export const LocalizationProvider: React.FunctionComponent<{}> = (props) => {
-    //If you add `?uilang=<code>` to the url, BloomLibrary should attempt to show the UI in that language. E.g., `?uilang=es` will show Spanish.
-    const uilang =
-        new URLSearchParams(window.location.search).get("uilang") ||
-        getTopBrowserUILanguage();
+    const [uilang, setUilang] = useState(getTopBrowserUILanguage());
+    setLanguageOverride = setUilang;
+    console.log("uilang is " + uilang);
+    // //If you add `?uilang=<code>` to the url, BloomLibrary should attempt to show the UI in that language. E.g., `?uilang=es` will show Spanish.
+    // const uilang =
+    //     languageTagOverride || //new URLSearchParams(window.location.search).get("uilang") ||
+    //     getTopBrowserUILanguage();
 
     // Enhance: this assumes that for each string, you get it in that language or if we don't have
     // a translation for it yet, then you get it in English.
