@@ -6,17 +6,19 @@ import { jsx } from "@emotion/core";
 import React, { ReactElement } from "react";
 import LazyLoad from "react-lazyload";
 import { CardSwiper } from "./CardSwiper";
-import { useIntl } from "react-intl";
+import { ICollection } from "../model/ContentInterfaces";
+import {
+    CollectionLabel,
+    useGetLocalizedCollectionLabel,
+} from "../localization/CollectionLabel";
 
 interface IProps {
-    title: string;
-    collectionUrlKey: string;
+    collection: ICollection;
     layout: string;
     children: ReactElement[];
 }
 
 export const CardGroup: React.FunctionComponent<IProps> = (props) => {
-    const l10n = useIntl();
     const rowHeight = 258; // todo derive from commonui.something
     const cards = (
         <div
@@ -38,18 +40,16 @@ export const CardGroup: React.FunctionComponent<IProps> = (props) => {
             group = (
                 <React.Fragment>
                     <h1>
-                        {l10n.formatMessage({
-                            id:
-                                "collection." +
-                                props.collectionUrlKey.toLowerCase(),
-                            defaultMessage: props.title,
-                        })}
+                        <CollectionLabel
+                            collection={props.collection}
+                        ></CollectionLabel>
                     </h1>
                     {cards}
                 </React.Fragment>
             );
             break;
     }
+    const collectionLabel = useGetLocalizedCollectionLabel(props.collection);
 
     return (
         // Enhance: LazyLoad has parameters (height and offset) that should help
@@ -81,7 +81,7 @@ export const CardGroup: React.FunctionComponent<IProps> = (props) => {
                     margin-top: 30px;
                 `}
                 role="region"
-                aria-label={props.title}
+                aria-label={collectionLabel}
             >
                 {group}
             </li>

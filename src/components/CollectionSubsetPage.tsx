@@ -48,8 +48,7 @@ export function generateCollectionFromFilters(
 
                     filteredCollection = makeCollectionForTopic(
                         filteredCollection,
-                        topicKey,
-                        formatMessage
+                        topicKey
                     );
                     break;
                 case "search":

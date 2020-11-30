@@ -11,6 +11,8 @@ import { useGetCollection } from "../model/Collections";
 import { splitPathname } from "./Routes";
 import { ICollection } from "../model/ContentInterfaces";
 import { useIntl } from "react-intl";
+import { kNameToL10NKey } from "../model/CloseVocabularies";
+import { CollectionLabel } from "../localization/CollectionLabel";
 
 export const Breadcrumbs: React.FunctionComponent = () => {
     const location = useLocation();
@@ -183,27 +185,9 @@ const CollectionCrumb: React.FunctionComponent<{
                 {collection ? (
                     <CollectionLabel collection={collection}></CollectionLabel>
                 ) : (
-                    text
+                    ""
                 )}
             </BlorgLink>
         </li>
     );
-};
-
-const CollectionLabel: React.FunctionComponent<{
-    collection: ICollection;
-}> = (props) => {
-    const l10n = useIntl();
-    const label =
-        props.collection.urlKey.indexOf("topic") > -1
-            ? l10n.formatMessage({
-                  id: "topic." + props.collection.label,
-                  defaultMessage: props.collection.label,
-              })
-            : l10n.formatMessage({
-                  id: "topic." + props.collection.label,
-                  defaultMessage: props.collection.label,
-              });
-
-    return <React.Fragment>{label}</React.Fragment>;
 };

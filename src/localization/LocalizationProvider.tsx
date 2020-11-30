@@ -23,14 +23,16 @@ export const LocalizationProvider: React.FunctionComponent<{}> = (props) => {
         closestLanguage: languageTagWeAreUsing,
         stringsForThisLanguage,
     } = useGetLocalizations(uilang);
-    console.log(
-        "stringsForThisLanguage:" +
-            JSON.stringify(stringsForThisLanguage, null, 4)
-    );
+    // console.log(
+    //     "stringsForThisLanguage:" +
+    //         JSON.stringify(stringsForThisLanguage, null, 4)
+    // );
     const slowerLanguageLookupToHelpErrorChecking =
         window.location.hostname === "alpha.bloomlibrary.org" ||
         window.location.hostname === "dev-alpha.bloomlibrary.org" ||
         window.location.hostname === "localhost";
+
+    const waitingForLocalizations = stringsForThisLanguage === undefined;
     return (
         <IntlProvider
             locale={languageTagWeAreUsing}
@@ -41,32 +43,43 @@ export const LocalizationProvider: React.FunctionComponent<{}> = (props) => {
             onError={(s: any) => {
                 // TODO this isn't working yet. The idea is to only print a message for the dev if we're in english and it looks
                 // like we haven't registered the string in the "Code Strings.json" file.
-                if (s.code === "MISSING_TRANSLATION") {
-                    if (languageTagWeAreUsing === "en") {
-                        //if (Object.keys(stringsForThisLanguage).length > 0) {
-                        console.info(
-                            `Add Message to Code Strings.json:\n"
-                            "${s.descriptor.id}":{"message":"${
-                                s.descriptor.defaultMessage
-                            }"
-                            ${
-                                s.descriptor.description
-                                    ? `, "description":"${s.descriptor.description}"`
-                                    : ""
-                            }}`
-                        );
-                        //}
-                    } else {
-                        console.info(
-                            `Missing translation for '${s.descriptor.id}' in ${languageTagWeAreUsing}`
-                        );
-                    }
-                } else {
-                    console.error(`${JSON.stringify(s)}`);
-                }
+                // if (s.code === "MISSING_TRANSLATION") {
+                //     if (languageTagWeAreUsing === "en") {
+                //         //if (Object.keys(stringsForThisLanguage).length > 0) {
+                //         console.info(
+                //             `Add Message to Code Strings.json:\n"
+                //             "${s.descriptor.id}":{"message":"${
+                //                 s.descriptor.defaultMessage
+                //             }"
+                //             ${
+                //                 s.descriptor.description
+                //                     ? `, "description":"${s.descriptor.description}"`
+                //                     : ""
+                //             }}`
+                //         );
+                //         //}
+                //     } else {
+                //         console.info(
+                //             `Missing translation for '${s.descriptor.id}' in ${languageTagWeAreUsing}`
+                //         );
+                //     }
+                // } else {
+                //     console.error(`${JSON.stringify(s)}`);
+                // }
             }}
         >
-            {props.children}
+            {/* Getting the localizations happens asynchronously. We could show English while we're waiting. We could
+            show whatever strings have come in translated, while we're waiting for other string files to arrive. Instead,
+            We decided to not show anything until we have all localizations, or decided to fall back to English. This
+            then allows us to make the simplifying assumption in  the rest of the UI code that we do not need to be
+            able to re-render when/if the localization data arrives. We can still re-render if setUILang() is called.
+            That assumption, in turn, solves the problem of getting localizations from functions which are not hooks.
+
+            This delay in rendering is also an optimization, because else we could be re-rendering for each l10n file
+            (currently there are 5). */}
+            {waitingForLocalizations
+                ? "Loading translations..."
+                : props.children}
         </IntlProvider>
     );
 };

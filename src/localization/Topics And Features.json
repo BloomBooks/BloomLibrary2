@@ -44,22 +44,22 @@
     "topic.Other": {
         "message": "Other"
     },
-    "feature.talkingBook.label": {
+    "feature.talkingBook": {
         "message": "Talking Book"
     },
-    "feature.blind.label": {
+    "feature.blind": {
         "message": "Features for the Visually Impaired"
     },
-    "feature.comic.label": {
+    "feature.comic": {
         "message": "Comic Book"
     },
-    "feature.motion.label": {
+    "feature.motion": {
         "message": "Motion Book"
     },
-    "feature.signLanguage.label": {
+    "feature.signLanguage": {
         "message": "Sign Language"
     },
-    "feature.activity.label": {
+    "feature.activity": {
         "message": "Interactive Activity"
     }
 }

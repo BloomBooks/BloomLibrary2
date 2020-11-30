@@ -806,6 +806,8 @@ function regex(value: string) {
 
 let reportedDerivativeProblem = false;
 
+export const kNameOfNoTopicCollection = "Other";
+
 export function constructParseBookQuery(
     params: any,
     filter: IFilter,
@@ -1005,7 +1007,7 @@ export function constructParseBookQuery(
     // take `f.topic` to be a comma-separated list
     if (f.topic) {
         delete params.where.topic;
-        if (f.topic === "empty") {
+        if (f.topic === kNameOfNoTopicCollection) {
             // optimize: is it more efficient to try to come up with a regex that will
             // fail if it finds topic:?
             tagParts.push({
