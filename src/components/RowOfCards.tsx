@@ -46,39 +46,26 @@ const RowOfCardsInternal: React.FunctionComponent<{
     const childCollections = props.collection.childCollections;
     const cards: JSX.Element[] = childCollections.map((childCollection1) => {
         const childCollection = childCollection1!; // can't persuade typescript that this can't be null.
-        const target =
-            childCollection.type === "page"
-                ? `/page/${childCollection!.urlKey}`
-                : childCollection!.urlKey;
 
         switch (props.collection.layout) {
             case "row-of-story-cards":
-                return <StoryCard story={childCollection} key={target} />;
+                return (
+                    <StoryCard
+                        story={childCollection}
+                        key={childCollection!.urlKey}
+                    />
+                );
             default:
                 return (
                     <CollectionCard
+                        collection={childCollection}
                         kind={
                             props.collection.layout ===
                             "row-of-cards-with-just-labels"
                                 ? "short"
                                 : undefined
                         }
-                        key={target}
-                        title={childCollection.label || ""}
-                        richTextLabel={childCollection.richTextLabel}
-                        hideTitle={
-                            childCollection.hideLabelOnCardAndDefaultBanner
-                        }
-                        bookCount="??"
-                        filter={childCollection.filter}
-                        target={target}
-                        //pageType={props.bookShelfCategory}
-                        imageUrl={
-                            childCollection.iconForCardAndDefaultBanner?.url ||
-                            ""
-                        }
-                        credits={childCollection.iconCredits}
-                        altText={childCollection.iconAltText}
+                        key={childCollection!.urlKey}
                     />
                 );
         }

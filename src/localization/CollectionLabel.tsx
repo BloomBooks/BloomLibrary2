@@ -13,7 +13,6 @@ export function useGetLocalizedCollectionLabel(collection: ICollection) {
     const l10n = useIntl();
     const k = kNameToL10NKey[collection.urlKey];
     const id = k ? k : "collection." + collection.urlKey;
-    console.log(`xxxx id:${id}  k:${k}`);
     return l10n.formatMessage({
         id,
         defaultMessage: collection.label,
