@@ -6,6 +6,7 @@ import { ReactComponent as SignLanguageIcon } from "../assets/Sign Language.svg"
 import { ReactComponent as TalkingBookIcon } from "../assets/Talking Book.svg";
 import { ReactComponent as VisuallyImpairedIcon } from "../assets/Visually Impaired.svg";
 import { IFilter } from "../IFilter";
+import { getTranslation } from "../localization/GetLocalizations";
 
 // Information about features (like talking book, motion) that supports the display of
 // features in the bar under the picture on book cards. Previously also supported Feature
@@ -13,7 +14,7 @@ import { IFilter } from "../IFilter";
 
 export interface IFeatureSpec {
     featureKey: string;
-    featureTitle: string;
+    // wasn't being used featureTitle: string;
     filter: IFilter;
     //description: JSX.Element;
     icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
@@ -51,7 +52,7 @@ export const featureIconHeight = 12;
 export const featureSpecs: IFeatureSpec[] = [
     {
         featureKey: "talkingBook",
-        featureTitle: "Talking Books",
+        // featureTitle: "Talking Books",
         filter: { feature: "talkingBook" },
         // description: (
         //     <div>
@@ -73,7 +74,7 @@ export const featureSpecs: IFeatureSpec[] = [
         // ),
         icon: (props) => (
             <TalkingBookIcon
-                title={"Talking Book"}
+                title={getTranslation("feature.talkingBook", "Talking Book")}
                 {...props}
             ></TalkingBookIcon>
         ),
@@ -83,7 +84,7 @@ export const featureSpecs: IFeatureSpec[] = [
     },
     {
         featureKey: "blind",
-        featureTitle: "Books for the Visually Impaired",
+        // featureTitle: "Books for the Visually Impaired",
         filter: { feature: "blind" },
         // description: (
         //     <div>
@@ -93,7 +94,10 @@ export const featureSpecs: IFeatureSpec[] = [
         // ),
         icon: (props) => (
             <VisuallyImpairedIcon
-                title={"Features for the Visually Impaired"}
+                title={getTranslation(
+                    "feature.blind",
+                    "Features for the Visually Impaired"
+                )}
                 {...props}
             ></VisuallyImpairedIcon>
         ),
@@ -101,7 +105,7 @@ export const featureSpecs: IFeatureSpec[] = [
     },
     {
         featureKey: "comic",
-        featureTitle: "Comic Books",
+        //featureTitle: "Comic Books",
         filter: { feature: "comic" },
         // description: (
         //     <div>
@@ -110,14 +114,17 @@ export const featureSpecs: IFeatureSpec[] = [
         //     </div>
         // ),
         icon: (props) => (
-            <ComicIcon title={"Comic Book"} {...props}></ComicIcon>
+            <ComicIcon
+                title={getTranslation("feature.comic", "Comic Book")}
+                {...props}
+            ></ComicIcon>
         ),
         languageDependent: false,
         collectionHref: "comics",
     },
     {
         featureKey: "motion",
-        featureTitle: "Motion Books",
+        //featureTitle: "Motion Books",
         filter: { feature: "motion" },
         // description: (
         //     <div>
@@ -147,14 +154,17 @@ export const featureSpecs: IFeatureSpec[] = [
         //     </div>
         //),
         icon: (props) => (
-            <MotionIcon title={"Motion Book"} {...props}></MotionIcon>
+            <MotionIcon
+                title={getTranslation("feature.motion", "Motion Book")}
+                {...props}
+            ></MotionIcon>
         ),
         //iconScale: 125,
         languageDependent: false,
     },
     {
         featureKey: "signLanguage",
-        featureTitle: "Sign Language Books",
+        //featureTitle: "Sign Language Books",
         filter: { feature: "signLanguage" },
         // description: (
         //     <div>
@@ -165,7 +175,7 @@ export const featureSpecs: IFeatureSpec[] = [
         // ),
         icon: (props) => (
             <SignLanguageIcon
-                title={"Sign Language"}
+                title={getTranslation("feature.signLanguage", "Sign Language")}
                 {...props}
             ></SignLanguageIcon>
         ),
@@ -174,7 +184,7 @@ export const featureSpecs: IFeatureSpec[] = [
     },
     {
         featureKey: "activity",
-        featureTitle: "Books with Interactive Activities",
+        //featureTitle: "Books with Interactive Activities",
         filter: { feature: "activity OR quiz" },
         // description: (
         //     <div>
@@ -185,7 +195,10 @@ export const featureSpecs: IFeatureSpec[] = [
         // ),
         icon: (props) => (
             <ActivityIcon
-                title={"Interactive Activity"}
+                title={getTranslation(
+                    "feature.activity",
+                    "Interactive Activity"
+                )}
                 {...props}
             ></ActivityIcon>
         ),
