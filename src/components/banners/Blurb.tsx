@@ -7,6 +7,7 @@ import { jsx } from "@emotion/core";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { ICollection, IBanner } from "../../model/ContentInterfaces";
 import { ButtonRow } from "../ButtonRow";
+import { CollectionLabel } from "../../localization/CollectionLabel";
 
 export const Blurb: React.FunctionComponent<{
     collection: ICollection;
@@ -76,9 +77,12 @@ const CollectionTitle: React.FunctionComponent<{
         // enhance: move to IBanner.useCollectionLabel
         if (props.collection?.label) {
             bannerTitle = (
-                <React.Fragment>{props.collection.label}</React.Fragment>
+                <CollectionLabel
+                    collection={props.collection}
+                ></CollectionLabel>
             );
         }
+        // Currently we don't have a way (or plans) to translate rich text titles
         if (props.collection?.richTextLabel) {
             bannerTitle = documentToReactComponents(
                 props.collection.richTextLabel
