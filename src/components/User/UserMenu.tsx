@@ -111,10 +111,6 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
         setAnchorEl(ev.target as Element);
     };
     const closeMenu = () => setAnchorEl(null);
-    const handleNotImplemented = () => {
-        closeMenu();
-        alert("not implemented yet");
-    };
     const handleLogin = () => {
         closeMenu();
         //loginWithRedirect();
@@ -141,7 +137,7 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
             // This shouldn't happen. But if it does, we might as well log them out and do nothing else.
             handleLogout();
         }
-    }
+    };
     // split out buttonHeight else react complains because it doesn't apply to <div>s
     const { buttonHeight, ...otherProps } = props;
     return (
@@ -266,12 +262,13 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
                                 <> {loggedInUser.email}</>
                             )}
                         </MenuItem>
+                        {/* BL-9280 remove unimplemented Profile
                         <MenuItem onClick={handleNotImplemented}>
                             <FormattedMessage
                                 id="usermenu.profile"
                                 defaultMessage="Profile"
                             />
-                        </MenuItem>
+                        </MenuItem> */}
                         <MenuItem onClick={handleMyBooks}>
                             <FormattedMessage
                                 id="usermenu.myBooks"
