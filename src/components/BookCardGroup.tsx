@@ -204,7 +204,10 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
                     >
                         <div
                             css={css`
+                                // I don't know why width was being ignored, so here it's more locked down
                                 width: 200px;
+                                min-width: 200px;
+                                max-width: 200px;
                                 margin-right: 20px;
                             `}
                         >
