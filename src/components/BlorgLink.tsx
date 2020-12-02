@@ -1,21 +1,25 @@
 import * as React from "react";
-import { Link, LinkProps } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 // for a discussion around how react-router link doesn't handle
 // external links, see https://github.com/ReactTraining/react-router/issues/1147
 
-export const BlorgLink: React.FunctionComponent<LinkProps> = (props) => {
-    return isExternal(props.to as string) ? (
-        <a
-            href={props.to as string}
-            target={"_blank"}
-            rel="noopener noreferrer"
-            {...props}
-        >
+export interface IBlorgLinkProps
+    extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+    newTabIfEmbedded?: boolean;
+}
+
+export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
+    const isInIframe = window.self !== window.top;
+    return isExternal(props.href as string) ||
+        (isInIframe && props.newTabIfEmbedded) ? (
+        // We've decided for now to always open a new tab for external websites.
+        // Some links should open a new tab if we are embedded in an iframe.
+        <a target={"_blank"} rel="noopener noreferrer" {...props}>
             {props.children}
         </a>
     ) : (
-        <Link {...props} />
+        <Link to={props.href!} {...props} />
     );
 };
 

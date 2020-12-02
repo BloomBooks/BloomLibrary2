@@ -10,8 +10,9 @@ import { SearchBox } from "../SearchBox";
 import { UserMenu } from "../User/UserMenu";
 import { commonUI } from "../../theme";
 import { useMediaQuery, Tab, Tabs } from "@material-ui/core";
-import { useHistory, Link, useLocation } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { useIntl } from "react-intl";
+import { BlorgLink } from "../BlorgLink";
 
 export const Header: React.FunctionComponent = () => {
     const location = useLocation();
@@ -115,11 +116,11 @@ export const Header: React.FunctionComponent = () => {
                     flex-direction: row;
                 `}
             >
-                <Link
+                <BlorgLink
                     css={css`
                         margin-top: auto !important;
                     `}
-                    to="/"
+                    href="/"
                     title={l10n.formatMessage({
                         id: "header.home",
                         defaultMessage: "Home",
@@ -132,7 +133,7 @@ export const Header: React.FunctionComponent = () => {
                             defaultMessage: "Bloom Logo",
                         })}
                     />
-                </Link>
+                </BlorgLink>
                 {showReadCreateBelow || readCreateTabs}
                 {showSearchBelow || (
                     <div
@@ -168,11 +169,6 @@ export const Header: React.FunctionComponent = () => {
                     <SearchBox cssExtra="margin-left: auto; margin-right:10px; width:100%" />
                 </div>
             )}
-            {/* Language:
-            <FormattedMessage
-                id="language.name"
-                defaultMessage="DEFAULT"
-            ></FormattedMessage> */}
         </div>
     );
 };
