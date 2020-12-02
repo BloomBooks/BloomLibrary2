@@ -146,10 +146,26 @@ export const ByLanguageGroups: React.FunctionComponent<{
 };
 
 function ComparisonKey(book: IBasicBookInfo): string | undefined {
-    return book.phashOfFirstContentImage
-        ? book.phashOfFirstContentImage +
-              book.pageCount +
-              (book.edition ? book.edition : "")
-        : // undefined indicates that we can't reliably do a comparison
-          undefined;
+    const phash = book.phashOfFirstContentImage;
+    if (!phash) {
+        return undefined; // undefined indicates that we can't reliably do a comparison
+    }
+    const featureHash = HashStringArray(book.features.sort());
+    return phash + book.pageCount + featureHash + book.edition;
+}
+
+// based on https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript
+function HashStringArray(arrayOfStrings: string[]): string {
+    let hash = 0;
+    for (const element of arrayOfStrings) {
+        for (let i = 0; i < element.length; i++) {
+            const chr = element.charCodeAt(i);
+            // tslint:disable-next-line: no-bitwise
+            hash = (hash << 5) - hash + chr;
+            // tslint:disable-next-line: no-bitwise
+            hash |= 0; // Convert to 32bit integer
+        }
+    }
+    // The minimal result will be "0", if the array is empty or only contains empty strings.
+    return hash.toString(10);
 }
