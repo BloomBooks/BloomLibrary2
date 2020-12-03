@@ -1,5 +1,4 @@
 import React from "react";
-import { MessageDescriptor, useIntl } from "react-intl";
 import { ICollection } from "../model/ContentInterfaces";
 import { BookCardGroup } from "./BookCardGroup";
 import { kTopicList } from "../model/ClosedVocabularies";

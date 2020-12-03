@@ -1,12 +1,15 @@
-import useAxios from "axios-hooks";
+import UseAxios from "axios-hooks";
 import { useMemo, useState } from "react";
 import { setUserInterfaceTag } from "../model/Language";
 import files from "./crowdin-file-names.json";
 import * as Sentry from "@sentry/browser";
+import englishCodeStrings from "./Code Strings.json";
+import englishStatsStrings from "./Stats Strings.json";
+import englishTopicsAndFeaturesStrings from "./Topics And Features.json";
+
 export interface IStringMap {
     [id: string]: string;
 }
-import englishCodeStrings from "./Code Strings.json";
 
 let static_translationsToCurrentLanguage: IStringMap;
 
@@ -52,7 +55,9 @@ export function useGetLocalizations(
 
     for (const filename of files) {
         // eslint-disable-next-line react-hooks/rules-of-hooks
-        const [{ response: jsonResponse, error, loading }] = useAxios(
+        // NOTE that we're using a different "UseAxios" here; this one has this `manual` option we need
+        // in order to skip trying to download English without violating the rule of hooks.
+        const [{ response: jsonResponse, error, loading }] = UseAxios(
             {
                 url: `translations/${userInterfaceLanguageTag}/BloomLibrary.org/${encodeURIComponent(
                     filename
@@ -67,7 +72,11 @@ export function useGetLocalizations(
         if (loading) {
             countStillWaiting++;
         }
-        if (error) {
+        if (
+            error &&
+            // crowdin doesn't give us these because we only enable it for some languages
+            filename !== "Contentful Bible Terms.json"
+        ) {
             justUseEnglish = true;
             // this will happen when we ask for a language that is missing at least one of the files.
             if (error.response?.status === 404) {
@@ -90,7 +99,20 @@ export function useGetLocalizations(
         static_translationsToCurrentLanguage = {};
         return {
             closestLanguage: userInterfaceLanguageTag,
-            stringsForThisLanguage: {},
+            // Note, the system works perfectly well if we just set this to {}.
+            // When we're using localhost, we go ahead and load the strings only
+            // so that we can detect strings that have not been placed in these
+            // files by a developer yet and print out an error on the console.
+            stringsForThisLanguage:
+                window.location.hostname === "localhost"
+                    ? {
+                          ...getJsonLocalizations(englishCodeStrings),
+                          ...getJsonLocalizations(englishStatsStrings),
+                          ...getJsonLocalizations(
+                              englishTopicsAndFeaturesStrings
+                          ),
+                      }
+                    : {},
         };
     }
     if (countStillWaiting > 0) {

@@ -9,7 +9,7 @@ export { setLanguageOverride };
 export const LocalizationProvider: React.FunctionComponent<{}> = (props) => {
     const [uilang, setUilang] = useState(getTopBrowserUILanguage());
     setLanguageOverride = setUilang;
-    console.log("uilang is " + uilang);
+
     // //If you add `?uilang=<code>` to the url, BloomLibrary should attempt to show the UI in that language. E.g., `?uilang=es` will show Spanish.
     // const uilang =
     //     languageTagOverride || //new URLSearchParams(window.location.search).get("uilang") ||
@@ -46,19 +46,21 @@ export const LocalizationProvider: React.FunctionComponent<{}> = (props) => {
                 // like we haven't registered the string in the "Code Strings.json" file.
                 if (s.code === "MISSING_TRANSLATION") {
                     if (
-                        languageTagWeAreUsing === "en" &&
-                        !stringIDsThatWeHaveAlreadyWarnedAbout.includes(
-                            s.descriptor.id
-                        )
+                        s.descriptor.id.indexOf("collection.") === -1 &&
+                        s.descriptor.id.indexOf("banner.") === -1 &&
+                        s.descriptor.id.indexOf("topic.") === -1 &&
+                        s.descriptor.id.indexOf("feature.") === -1
                     ) {
-                        stringIDsThatWeHaveAlreadyWarnedAbout.push(
-                            s.descriptor.id
-                        );
                         if (
-                            s.descriptor.id.indexOf("collection.") === -1 &&
-                            s.descriptor.id.indexOf("banner.") === -1 &&
-                            s.descriptor.id.indexOf("topic.") === -1
+                            languageTagWeAreUsing === "en" &&
+                            !stringIDsThatWeHaveAlreadyWarnedAbout.includes(
+                                s.descriptor.id
+                            )
                         ) {
+                            stringIDsThatWeHaveAlreadyWarnedAbout.push(
+                                s.descriptor.id
+                            );
+
                             console.warn(
                                 `Add Message to Code Strings.json:\n
                                     "${s.descriptor.id}":{
@@ -71,11 +73,11 @@ export const LocalizationProvider: React.FunctionComponent<{}> = (props) => {
                                             : ""
                                     }}`
                             );
+                        } else {
+                            console.info(
+                                `Missing translation for '${s.descriptor.id}' in ${languageTagWeAreUsing}`
+                            );
                         }
-                    } else {
-                        console.info(
-                            `Missing translation for '${s.descriptor.id}' in ${languageTagWeAreUsing}`
-                        );
                     }
                 } else {
                     console.error(`${JSON.stringify(s)}`);
