@@ -23,7 +23,8 @@ import { IFilter } from "../IFilter";
         ID
         Background Image (optional) We use the “card icon” if this is missing (e.g. all publishers)
         Image Credits
-        Blurb
+        Description
+        Blurb (deprecated)
 */
 
 interface IContentfulCollectionQueryResponse {

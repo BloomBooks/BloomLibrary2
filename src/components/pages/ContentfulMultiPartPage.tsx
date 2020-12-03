@@ -1,6 +1,6 @@
 import React from "react"; // see https://github.com/emotion-js/emotion/issues/1156
 import { ThemeForLocation } from "./ThemeForLocation";
-import { ContentfulMarkdownPart, Column } from "../ContentfulMarkdownPart";
+import { BlorgMarkdown, Column } from "../BlorgMarkdown";
 import { useContentfulPage } from "./ContentfulPage";
 
 // This is used (as of the time of this writing) just for the About Bloom page with all its
@@ -19,12 +19,12 @@ export const ContentfulMultiPartPage: React.FunctionComponent<{
         >
             {page.fields.parts.map((part: any, index: number) => (
                 <div key={index}>
-                    <ContentfulMarkdownPart
+                    <BlorgMarkdown
                         markdown={part.fields.primary}
                         column={Column.leftColumn}
                     />
                     {part.fields.secondary && (
-                        <ContentfulMarkdownPart
+                        <BlorgMarkdown
                             markdown={part.fields.secondary}
                             column={Column.rightColumn}
                         />

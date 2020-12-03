@@ -52,8 +52,11 @@ export function getDisplayNamesForLanguage(
     let primary: string;
     let secondary: string | undefined;
 
+    // the browser/crowdin language may be overly specific. E.g. "es-ES" --> "es"
+    const uilang = userInterfaceTagWeAreUsing.split("-")[0];
+
     if (language.englishName && language.englishName !== language.name) {
-        if (userInterfaceTagWeAreUsing === language.isoCode) {
+        if (uilang === language.isoCode) {
             primary = language.name;
             secondary = language.englishName;
         } else {

@@ -1,13 +1,14 @@
-import useAxios from "@use-hooks/axios";
+import useAxios from "axios-hooks";
 import { useMemo, useState } from "react";
 import { setUserInterfaceTag } from "../model/Language";
 import files from "./crowdin-file-names.json";
-
+import * as Sentry from "@sentry/browser";
 export interface IStringMap {
     [id: string]: string;
 }
+import englishCodeStrings from "./Code Strings.json";
 
-let translationsToCurrentLanguage: IStringMap;
+let static_translationsToCurrentLanguage: IStringMap;
 
 // This is an alternative to doing `const l10=useIntl(); l10.formatMessage()`,
 // for places where we are not in react component and so can't use that hook. It
@@ -16,7 +17,7 @@ let translationsToCurrentLanguage: IStringMap;
 // and other functions. If we did need those, there are other libraries that can
 // provide those functions to us.
 export function getTranslation(id: string, defaultMessage: string) {
-    return translationsToCurrentLanguage[id] || defaultMessage;
+    return static_translationsToCurrentLanguage[id] || defaultMessage;
 }
 
 interface IFilenamesToL10nJson {
@@ -46,18 +47,37 @@ export function useGetLocalizations(
     setUserInterfaceTag(userInterfaceLanguageTag);
 
     let countStillWaiting = 0;
+
+    let justUseEnglish = userInterfaceLanguageTag === "en";
+
     for (const filename of files) {
         // eslint-disable-next-line react-hooks/rules-of-hooks
-        const { response: jsonResponse, error, loading } = useAxios({
-            url: `translations/${userInterfaceLanguageTag}/BloomLibrary.org/${encodeURIComponent(
-                filename
-            )}`,
-            method: "GET",
-            trigger: (userInterfaceLanguageTag !== "en").toString(),
-        });
+        const [{ response: jsonResponse, error, loading }] = useAxios(
+            {
+                url: `translations/${userInterfaceLanguageTag}/BloomLibrary.org/${encodeURIComponent(
+                    filename
+                )}`,
+                method: "GET",
+            },
+            {
+                manual: userInterfaceLanguageTag === "en", // true means don't actually do the query (but still be rule-of-hooks compatible)
+            }
+        );
 
         if (loading) {
             countStillWaiting++;
+        }
+        if (error) {
+            justUseEnglish = true;
+            // this will happen when we ask for a language that is missing at least one of the files.
+            if (error.response?.status === 404) {
+                console.warn(
+                    `Could not find at least one localization file for ${userInterfaceLanguageTag}. Will fall back to English.`
+                );
+            } else {
+                console.error(error);
+                Sentry.captureException(error);
+            }
         }
         const translationsJson: any =
             jsonResponse && jsonResponse["data"] ? jsonResponse["data"] : "";
@@ -65,27 +85,27 @@ export function useGetLocalizations(
             translationFiles[filename] = getJsonLocalizations(translationsJson);
         }
     }
+
+    if (justUseEnglish) {
+        static_translationsToCurrentLanguage = {};
+        return {
+            closestLanguage: userInterfaceLanguageTag,
+            stringsForThisLanguage: {},
+        };
+    }
     if (countStillWaiting > 0) {
         return {
             closestLanguage: userInterfaceLanguageTag,
             stringsForThisLanguage: undefined,
         };
     }
-    if (userInterfaceLanguageTag === "en") {
-        // If English, the axios.get above is a no-op (but needed for the rule-of-hooks.)
-        return {
-            closestLanguage: userInterfaceLanguageTag,
-            stringsForThisLanguage: {},
-        };
-    }
-
     let translations: IStringMap = {};
 
     for (const filename of files) {
         translations = { ...translations, ...translationFiles[filename] };
     }
 
-    translationsToCurrentLanguage = translations;
+    static_translationsToCurrentLanguage = translations;
     return {
         closestLanguage: userInterfaceLanguageTag,
         stringsForThisLanguage: translations,

@@ -44,28 +44,6 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
     const extraPropsIfHidingTitle = hideTitle
         ? propsToHideAccessibilityElement
         : "";
-
-    /*                         filter={childCollection.filter}
-                        //pageType={props.bookShelfCategory}
-                        imageUrl={
-                            childCollection.iconForCardAndDefaultBanner?.url ||
-                            ""
-                        }
-                        credits={childCollection.iconCredits}
-                        altText={childCollection.iconAltText}
-                        kind={
-                            props.collection.layout ===
-                            "row-of-cards-with-just-labels"
-                                ? "short"
-                                : undefined
-                        }
-                        key={target}
-                        title={childCollection.label || ""}
-                        richTextLabel={childCollection.richTextLabel}
-                        hideTitle={
-                            childCollection.hideLabelOnCardAndDefaultBanner
-                        }
-*/
     const titleElement = (
         <div
             css={css`

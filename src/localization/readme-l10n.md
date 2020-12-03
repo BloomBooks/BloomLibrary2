@@ -8,7 +8,7 @@ For Contentful, we have a [function on Azure](https://github.com/BloomBooks/bloo
 
 # About `crowdin-sync.ts`
 
-Our CI server calls this script whenever the "alpha" version of Bloom Library is built. You can invoke the download portion while developing with `yarn crowdin-download`. You'll need to enter your API token in the environment variable "bloomCrowdinApiToken".
+Our CI server calls this script whenever the "alpha" version of Bloom Library is built. You can invoke the download portion while developing with `yarn crowdin-download`. You'll need to enter your API token in the environment variable "bloomCrowdinApiToken". Note: doing a "build" on crowdin takes time, and this command will print the progress. If you see no progress messages, that means that crowdin is giving you a cached version. Take that into consideration if you don't seem to be getting what you expect to get. You can force a new build on crowding via their web interface.
 
 IMPORTANT:
 
@@ -28,4 +28,7 @@ To add a new file:
 
 # Testing languages
 
-If you add `?uilang=<code>` to the url, BloomLibrary should attempt to show the UI in that language. E.g., `?uilang=es` will show Spanish.
+-   you will need to create local language files with `yarn crowdin-download` to get the files locally
+-   You can just to change your browser settings.
+-   You can add `?uilang=<code>` to the url (but this gets lost)
+-   You can enter `uilang=<code>` in the search box

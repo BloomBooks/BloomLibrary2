@@ -33,6 +33,7 @@ export const LocalizationProvider: React.FunctionComponent<{}> = (props) => {
         window.location.hostname === "localhost";
 
     const waitingForLocalizations = stringsForThisLanguage === undefined;
+    const stringIDsThatWeHaveAlreadyWarnedAbout: string[] = [];
     return (
         <IntlProvider
             locale={languageTagWeAreUsing}
@@ -43,29 +44,42 @@ export const LocalizationProvider: React.FunctionComponent<{}> = (props) => {
             onError={(s: any) => {
                 // TODO this isn't working yet. The idea is to only print a message for the dev if we're in english and it looks
                 // like we haven't registered the string in the "Code Strings.json" file.
-                // if (s.code === "MISSING_TRANSLATION") {
-                //     if (languageTagWeAreUsing === "en") {
-                //         //if (Object.keys(stringsForThisLanguage).length > 0) {
-                //         console.info(
-                //             `Add Message to Code Strings.json:\n"
-                //             "${s.descriptor.id}":{"message":"${
-                //                 s.descriptor.defaultMessage
-                //             }"
-                //             ${
-                //                 s.descriptor.description
-                //                     ? `, "description":"${s.descriptor.description}"`
-                //                     : ""
-                //             }}`
-                //         );
-                //         //}
-                //     } else {
-                //         console.info(
-                //             `Missing translation for '${s.descriptor.id}' in ${languageTagWeAreUsing}`
-                //         );
-                //     }
-                // } else {
-                //     console.error(`${JSON.stringify(s)}`);
-                // }
+                if (s.code === "MISSING_TRANSLATION") {
+                    if (
+                        languageTagWeAreUsing === "en" &&
+                        !stringIDsThatWeHaveAlreadyWarnedAbout.includes(
+                            s.descriptor.id
+                        )
+                    ) {
+                        stringIDsThatWeHaveAlreadyWarnedAbout.push(
+                            s.descriptor.id
+                        );
+                        if (
+                            s.descriptor.id.indexOf("collection.") === -1 &&
+                            s.descriptor.id.indexOf("banner.") === -1 &&
+                            s.descriptor.id.indexOf("topic.") === -1
+                        ) {
+                            console.warn(
+                                `Add Message to Code Strings.json:\n
+                                    "${s.descriptor.id}":{
+                                        "message":"${
+                                            s.descriptor.defaultMessage
+                                        }"
+                                    ${
+                                        s.descriptor.description
+                                            ? `, "description":"${s.descriptor.description}"`
+                                            : ""
+                                    }}`
+                            );
+                        }
+                    } else {
+                        console.info(
+                            `Missing translation for '${s.descriptor.id}' in ${languageTagWeAreUsing}`
+                        );
+                    }
+                } else {
+                    console.error(`${JSON.stringify(s)}`);
+                }
             }}
         >
             {/* Getting the localizations happens asynchronously. We could show English while we're waiting. We could
