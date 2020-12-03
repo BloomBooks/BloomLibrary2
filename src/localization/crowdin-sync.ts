@@ -2,10 +2,7 @@
 For more information, see readme-l10.md
 */
 
-import crowdin, {
-    ResponseObject,
-    SourceFilesModel,
-} from "@crowdin/crowdin-api-client";
+import crowdin, { SourceFilesModel } from "@crowdin/crowdin-api-client";
 import download from "download";
 import tempDirectory from "temp-dir";
 import decompress from "decompress";
@@ -113,7 +110,7 @@ async function downloadAndUnpackCrowdinBuild(crowdinBuildId: number) {
 }
 
 async function updateCrowdinFile(
-    fileList: Array<SourceFilesModel.File>,
+    fileList: SourceFilesModel.File[],
     path: string
 ) {
     const filename = Path.basename(path);
@@ -150,9 +147,7 @@ async function updateCrowdinFile(
         });
 }
 
-async function getListOfFilesOnCrowdin(): Promise<
-    Array<SourceFilesModel.File>
-> {
+async function getListOfFilesOnCrowdin(): Promise<SourceFilesModel.File[]> {
     const crowdinAccess = new crowdin({
         token: crowdinApiToken,
     });
@@ -165,7 +160,7 @@ async function getListOfFilesOnCrowdin(): Promise<
 }
 
 function getCrowdinFileId(
-    fileList: Array<SourceFilesModel.File>,
+    fileList: SourceFilesModel.File[],
     filename: string
 ): number {
     for (const file of fileList) {
@@ -200,9 +195,15 @@ async function go() {
         // NB: we haven't implemented using crowdin branches yet, but I *think* the copy of "Code Strings.json" in each branch will have a unique id
         const fileList = await getListOfFilesOnCrowdin();
         for (const filename of fileList.filter(
-            (f) => f.name.toLocaleLowerCase().indexOf("contentful") < 0
+            (f) =>
+                f.name.toLocaleLowerCase().indexOf("contentful") < 0 &&
+                f.name.toLocaleLowerCase().indexOf(".csv") < 0 &&
+                f.path.indexOf("BloomLibrary.org") > -1
         )) {
-            updateCrowdinFile(fileList, "src/localization/" + filename);
+            updateCrowdinFile(
+                fileList,
+                "src/localization/" + Path.basename(filename.path)
+            );
         }
     }
     if (options.includes("download")) {
