@@ -6,9 +6,14 @@ import { jsx } from "@emotion/core";
 import React, { ReactElement } from "react";
 import LazyLoad from "react-lazyload";
 import { CardSwiper } from "./CardSwiper";
+import { ICollection } from "../model/ContentInterfaces";
+import {
+    CollectionLabel,
+    useGetLocalizedCollectionLabel,
+} from "../localization/CollectionLabel";
 
 interface IProps {
-    title: string;
+    collection: ICollection;
     layout: string;
     children: ReactElement[];
 }
@@ -34,12 +39,17 @@ export const CardGroup: React.FunctionComponent<IProps> = (props) => {
         default:
             group = (
                 <React.Fragment>
-                    <h1>{props.title}</h1>
+                    <h1>
+                        <CollectionLabel
+                            collection={props.collection}
+                        ></CollectionLabel>
+                    </h1>
                     {cards}
                 </React.Fragment>
             );
             break;
     }
+    const collectionLabel = useGetLocalizedCollectionLabel(props.collection);
 
     return (
         // Enhance: LazyLoad has parameters (height and offset) that should help
@@ -71,7 +81,7 @@ export const CardGroup: React.FunctionComponent<IProps> = (props) => {
                     margin-top: 30px;
                 `}
                 role="region"
-                aria-label={props.title}
+                aria-label={collectionLabel}
             >
                 {group}
             </li>

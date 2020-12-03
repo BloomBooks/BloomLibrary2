@@ -11,13 +11,12 @@ import { LicenseLink } from "./LicenseLink";
 //NB: v3.0 of title-case has a new API, but don't upgrade: it doesn't actually work like v2.x does, where it can take fooBar and give us "Foo Bar"
 import { useTheme } from "@material-ui/core";
 import { BookStats } from "./BookStats";
-import { CachedTablesContext } from "../../model/InternationalizedContent";
-import { getTagDisplayName } from "../../model/Tag";
+import { CachedTablesContext } from "../../model/CacheProvider";
 import { useGetRelatedBooks } from "../../connection/LibraryQueryHooks";
 import { Bookshelf } from "../../model/Bookshelf";
 import { KeywordLinks } from "./KeywordLinks";
-import { FormattedMessage } from "react-intl";
 import { BlorgLink } from "../BlorgLink";
+import { FormattedMessage, useIntl } from "react-intl";
 
 export const LeftMetadata: React.FunctionComponent<{
     book: Book;
@@ -95,6 +94,8 @@ export const RightMetadata: React.FunctionComponent<{
     const { bookshelves } = useContext(CachedTablesContext);
     const relatedBooks = useGetRelatedBooks(props.book.id);
     const theme = useTheme();
+    const l10n = useIntl();
+
     return (
         <div css={css``}>
             <div>
@@ -108,7 +109,17 @@ export const RightMetadata: React.FunctionComponent<{
                         ["topic", "region"].includes(t.split(":")[0])
                     )
                     .map((t) => {
-                        return getTagDisplayName(t);
+                        const parts = t.split(":");
+                        const prefix = parts[0];
+                        const tag = parts[1];
+                        if (prefix === "topic") {
+                            return l10n.formatMessage({
+                                id: "topic." + tag,
+                                defaultMessage: tag,
+                            });
+                        } else {
+                            return tag;
+                        }
                     })
                     .join(", ")}
             </div>

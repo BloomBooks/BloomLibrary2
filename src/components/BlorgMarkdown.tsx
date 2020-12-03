@@ -17,13 +17,14 @@ export enum Column {
     rightColumn,
 }
 
-export const ContentfulMarkdownPart: React.FunctionComponent<{
+export const BlorgMarkdown: React.FunctionComponent<{
     markdown: string;
     column?: Column;
 }> = (props) => {
     const options = {
         overrides: {
             a: {
+                // this causes the link to be colored according to the theme (e.g. green in the Create area)
                 component: Link,
             },
             WindowsInstallerDownload,

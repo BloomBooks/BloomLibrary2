@@ -23,9 +23,9 @@ export const Banner: React.FunctionComponent<{
                 * {
                     color: ${props.banner.textColor || defaultTextColor};
                 }
-                a {
+                /* a {
                     font-size: 14pt;
-                }
+                } */
                 a:visited {
                     text-decoration: underline;
                 }

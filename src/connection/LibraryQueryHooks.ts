@@ -4,12 +4,10 @@ import { getConnection } from "./ParseServerConnection";
 import { getBloomApiUrl } from "./ApiConnection";
 import { Book, createBookFromParseServerData } from "../model/Book";
 import { useContext, useMemo, useEffect, useState } from "react";
-import {
-    CachedTables,
-    CachedTablesContext,
-} from "../model/InternationalizedContent";
+import { CachedTablesContext } from "../model/CacheProvider";
 import { getCleanedAndOrderedLanguageList, ILanguage } from "../model/Language";
 import { processRegExp } from "../Utilities";
+import { kTopicList } from "../model/ClosedVocabularies";
 import { IStatsProps } from "../components/statistics/StatsInterfaces";
 import { toYyyyMmDd } from "../components/statistics/ReaderSessionsChart";
 import { useGetCollection } from "../model/Collections";
@@ -808,6 +806,8 @@ function regex(value: string) {
 
 let reportedDerivativeProblem = false;
 
+export const kNameOfNoTopicCollection = "Other";
+
 export function constructParseBookQuery(
     params: any,
     filter: IFilter,
@@ -1007,11 +1007,11 @@ export function constructParseBookQuery(
     // take `f.topic` to be a comma-separated list
     if (f.topic) {
         delete params.where.topic;
-        if (f.topic === "empty") {
+        if (f.topic === kNameOfNoTopicCollection) {
             // optimize: is it more efficient to try to come up with a regex that will
             // fail if it finds topic:?
             tagParts.push({
-                $nin: CachedTables.topics.map((t) => "topic:" + t.key),
+                $nin: kTopicList.map((t) => "topic:" + t),
             });
         } else if (f.topic.indexOf(",") >= 0) {
             const topicsRegex = f.topic

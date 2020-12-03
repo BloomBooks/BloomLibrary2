@@ -9,6 +9,7 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 import { useGetCollection } from "../model/Collections";
 import { splitPathname } from "./Routes";
+import { CollectionLabel } from "../localization/CollectionLabel";
 import { BlorgLink } from "./BlorgLink";
 
 export const Breadcrumbs: React.FunctionComponent = () => {
@@ -162,10 +163,6 @@ const CollectionCrumb: React.FunctionComponent<{
 }> = (props) => {
     const { collection } = useGetCollection(props.collectionName);
 
-    let text = props.collectionName;
-    if (collection) {
-        text = collection.label;
-    }
     const path = [...props.previousBreadcrumbs];
     path.push(props.collectionName);
     return (
@@ -179,7 +176,11 @@ const CollectionCrumb: React.FunctionComponent<{
                 `}
                 href={"/" + path.join("/")}
             >
-                {text}
+                {collection ? (
+                    <CollectionLabel collection={collection}></CollectionLabel>
+                ) : (
+                    ""
+                )}
             </BlorgLink>
         </li>
     );
