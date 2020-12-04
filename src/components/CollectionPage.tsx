@@ -14,12 +14,13 @@ import { useTrack } from "../analytics/Analytics";
 import { IEmbedSettings } from "../model/ContentInterfaces";
 import { useDocumentTitle } from "./Routes";
 import { getCollectionAnalyticsInfo } from "../analytics/CollectionAnalyticsInfo";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 export const CollectionPage: React.FunctionComponent<{
     collectionName: string;
     embeddedSettings?: IEmbedSettings;
 }> = (props) => {
+    const l10n = useIntl();
     // remains empty (and unused) except in byLanguageGroups mode, when a callback sets it.
     const [booksAndLanguages, setBooksAndLanguages] = useState("");
     const { collection, loading } = useGetCollection(props.collectionName);
@@ -78,7 +79,17 @@ export const CollectionPage: React.FunctionComponent<{
                         filter={collection.filter}
                         reportBooksAndLanguages={(books, languages) =>
                             setBooksAndLanguages(
-                                `${books} books in ${languages} languages`
+                                l10n.formatMessage(
+                                    {
+                                        id: "bookCount.inLanguages",
+                                        defaultMessage:
+                                            "{bookCount} books in {languageCount} languages",
+                                    },
+                                    {
+                                        bookCount: books,
+                                        languageCount: languages,
+                                    }
+                                )
                             )
                         }
                     />

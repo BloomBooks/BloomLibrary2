@@ -90,7 +90,7 @@ export const LanguageCard: React.FunctionComponent<ILanguageWithRole> = (
                 {props.usageCount ? (
                     <FormattedMessage
                         id="bookCount"
-                        defaultMessage="{count} Books"
+                        defaultMessage="{count} books"
                         values={{ count: props.usageCount }}
                     />
                 ) : (
