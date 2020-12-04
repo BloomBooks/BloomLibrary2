@@ -66,8 +66,8 @@ export function getDisplayNamesForLanguage(
     } else {
         primary = language.name;
     }
-    // if it looks like this is a variant, add that to the secondary
 
+    // if it looks like this is a variant, add that to the secondary
     if (
         language.isoCode &&
         language.isoCode.indexOf("-") > -1 &&
@@ -76,7 +76,7 @@ export function getDisplayNamesForLanguage(
     )
         secondary = [secondary, language.isoCode].join(" ");
 
-    const combined = primary + (secondary ? `(${secondary})` : "");
+    const combined = primary + (secondary ? ` (${secondary})` : "");
 
     return { primary, secondary, combined };
 }
