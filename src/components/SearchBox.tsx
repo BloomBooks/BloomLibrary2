@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Tooltip from "@material-ui/core/Tooltip";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
@@ -16,6 +16,7 @@ import { giveFreeLearningCsv } from "../export/freeLearningIO";
 import { useLocation, useHistory } from "react-router-dom";
 import { useIntl } from "react-intl";
 import { setLanguageOverride } from "../localization/LocalizationProvider";
+import { CachedTablesContext } from "../model/CacheProvider";
 
 // NB: I tried a bunch of iterations over 2 days with forwardRefs and stuff trying to get this search box
 // to have both the html tooltip AND stop losing focus every time a letter was typed. The upshot was this
@@ -97,6 +98,8 @@ export const SearchBox: React.FunctionComponent<{
             <br />
         </Typography>
     );
+
+    const { languagesByBookCount } = useContext(CachedTablesContext);
 
     const handleSearch = () => {
         // These 'magic' strings cause a file to be written without changing the state of the page.
