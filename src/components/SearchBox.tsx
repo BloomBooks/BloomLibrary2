@@ -131,39 +131,49 @@ export const SearchBox: React.FunctionComponent<{
         ) {
             history.push("/covid19");
         } else if (searchString) {
-            // We always get one empty string from before the leading slash.
-            // We may get one at the end, too, if the path ends with a slash.
-            // In particular if the path is just a slash (at the root), we start out with two empty strings.
-            const pathParts = location.pathname.split("/").filter((x) => x);
-            const existingSearchIndex = pathParts.findIndex((p) =>
-                p.startsWith(":search:")
+            const searchStringLower = searchString.toLowerCase();
+            const matchingLanguage = languagesByBookCount.find(
+                (l) =>
+                    l.name.toLowerCase() === searchStringLower ||
+                    l.englishName?.toLowerCase() === searchStringLower
             );
-            // we don't think it's useful to keep in history states that are just different searches.
-            const replaceInHistory =
-                existingSearchIndex >= 0 &&
-                existingSearchIndex === pathParts.length - 1;
-            // Commented out code allows search to be relative to current collection or subset
-            // if (existingSearchIndex >= 0) {
-            //     // remove the existing one and everything after it.
-            //     pathParts.splice(
-            //         existingSearchIndex,
-            //         pathParts.length - existingSearchIndex
-            //     );
-            // }
-            // pathParts.push(":search:" + encodeURIComponent(enteredSearch));
-            // const newUrl = "/" + pathParts.join("/");
-
-            // special case that when in create or grid mode, we don't want to leave it.
-            const prefix =
-                ["/create", "/grid", "/bulk"].find((x) =>
-                    history.location.pathname.startsWith(x)
-                ) || "";
-            const newUrl =
-                prefix + "/:search:" + encodeURIComponent(searchString);
-            if (replaceInHistory) {
-                history.replace(newUrl);
+            if (matchingLanguage) {
+                history.push(`/language:${matchingLanguage.isoCode}`);
             } else {
-                history.push(newUrl);
+                // We always get one empty string from before the leading slash.
+                // We may get one at the end, too, if the path ends with a slash.
+                // In particular if the path is just a slash (at the root), we start out with two empty strings.
+                const pathParts = location.pathname.split("/").filter((x) => x);
+                const existingSearchIndex = pathParts.findIndex((p) =>
+                    p.startsWith(":search:")
+                );
+                // we don't think it's useful to keep in history states that are just different searches.
+                const replaceInHistory =
+                    existingSearchIndex >= 0 &&
+                    existingSearchIndex === pathParts.length - 1;
+                // Commented out code allows search to be relative to current collection or subset
+                // if (existingSearchIndex >= 0) {
+                //     // remove the existing one and everything after it.
+                //     pathParts.splice(
+                //         existingSearchIndex,
+                //         pathParts.length - existingSearchIndex
+                //     );
+                // }
+                // pathParts.push(":search:" + encodeURIComponent(enteredSearch));
+                // const newUrl = "/" + pathParts.join("/");
+
+                // special case that when in create or grid mode, we don't want to leave it.
+                const prefix =
+                    ["/create", "/grid", "/bulk"].find((x) =>
+                        history.location.pathname.startsWith(x)
+                    ) || "";
+                const newUrl =
+                    prefix + "/:search:" + encodeURIComponent(searchString);
+                if (replaceInHistory) {
+                    history.replace(newUrl);
+                } else {
+                    history.push(newUrl);
+                }
             }
         }
         // This doesn't affect regular searches as the search string will be updated by the new url,
