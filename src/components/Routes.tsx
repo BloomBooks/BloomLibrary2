@@ -311,7 +311,7 @@ function trimLeft(s: string, char: string) {
     return s.replace(new RegExp("^[" + char + "]+"), "");
 }
 
-export function useDocumentTitle(title: string | undefined) {
+export function useSetBrowserTabTitle(title: string | undefined) {
     const location = useLocation();
     useEffect(() => {
         if (!title) {

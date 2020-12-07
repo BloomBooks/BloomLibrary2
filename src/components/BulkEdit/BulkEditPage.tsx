@@ -12,7 +12,7 @@ import { AssignPublisherPanel } from "./AssignPublisherPanel";
 import { Filter as GridFilter } from "@devexpress/dx-react-grid";
 import { AddTagPanel } from "./AddTagPanel";
 import { AddBookshelfPanel } from "./AddBookshelfPanel";
-import { useDocumentTitle } from "../Routes";
+import { useSetBrowserTabTitle } from "../Routes";
 import { AssignOriginalPublisherPanel } from "./AssignOriginalPublisherPanel";
 
 // The Bulk Edit page is for moderators; it has a series of panels for making changes, followed by a grid
@@ -21,7 +21,7 @@ export const BulkEditPage: React.FunctionComponent<{ filters: string }> = (
     props
 ) => {
     const [refreshIndex, setRefreshIndex] = useState(0);
-    useDocumentTitle("Bulk Edit");
+    useSetBrowserTabTitle("Bulk Edit");
     let contextFilter: IFilter = {};
     if (props.filters && props.filters.startsWith(":search:")) {
         const search = props.filters.split("/")[0].substring(":search:".length);

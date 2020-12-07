@@ -12,7 +12,7 @@ import { ByLanguageGroups } from "./ByLanguageGroups";
 import { ByTopicsGroups } from "./ByTopicsGroups";
 import { useTrack } from "../analytics/Analytics";
 import { IEmbedSettings } from "../model/ContentInterfaces";
-import { useDocumentTitle } from "./Routes";
+import { useSetBrowserTabTitle } from "./Routes";
 import { getCollectionAnalyticsInfo } from "../analytics/CollectionAnalyticsInfo";
 import { FormattedMessage, useIntl } from "react-intl";
 
@@ -25,7 +25,7 @@ export const CollectionPage: React.FunctionComponent<{
     const [booksAndLanguages, setBooksAndLanguages] = useState("");
     const { collection, loading } = useGetCollection(props.collectionName);
     const { params, sendIt } = getCollectionAnalyticsInfo(collection);
-    useDocumentTitle(collection?.label);
+    useSetBrowserTabTitle(collection?.label);
     useTrack("Open Collection", params, sendIt);
     if (loading) {
         return null;

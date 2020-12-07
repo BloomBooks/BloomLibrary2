@@ -11,7 +11,11 @@ import { getUrlOfHtmlOfDigitalVersion } from "./BookDetail/ArtifactHelper";
 import { useHistory, useLocation } from "react-router-dom";
 import { useTrack } from "../analytics/Analytics";
 import { getBookAnalyticsInfo } from "../analytics/BookAnalyticsInfo";
-import { useDocumentTitle, getUrlForTarget, previousPathname } from "./Routes";
+import {
+    useSetBrowserTabTitle,
+    getUrlForTarget,
+    previousPathname,
+} from "./Routes";
 import {
     sendPlayerClosingAnalytics,
     startingBook,
@@ -109,7 +113,7 @@ export const ReadBookPage: React.FunctionComponent<{
             .catch(() => {});
     };
 
-    useDocumentTitle("Play"); // Note that the title comes from the ?title parameter, if present. This "Play" will not normally be used.
+    useSetBrowserTabTitle("Play"); // Note that the title comes from the ?title parameter, if present. This "Play" will not normally be used.
     const handleMessageFromBloomPlayer = useCallback(
         (event: MessageEvent) => {
             try {

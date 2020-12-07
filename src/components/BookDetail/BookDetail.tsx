@@ -20,7 +20,7 @@ import { DeleteButton } from "./DeleteButton";
 import { ReportButton } from "./ReportButton";
 import { Breadcrumbs } from "../Breadcrumbs";
 import { useTrack } from "../../analytics/Analytics";
-import { splitPathname, useDocumentTitle } from "../Routes";
+import { splitPathname, useSetBrowserTabTitle } from "../Routes";
 import { useLocation } from "react-router-dom";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -37,7 +37,7 @@ const BookDetail: React.FunctionComponent<{
     const location = useLocation();
     const query = new URLSearchParams(location.search);
     const contextLangIso = getContextLang(query);
-    useDocumentTitle(
+    useSetBrowserTabTitle(
         l10n.formatMessage(
             {
                 id: "book.detail.tabLabel",

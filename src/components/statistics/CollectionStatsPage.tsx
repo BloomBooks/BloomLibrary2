@@ -7,7 +7,7 @@ import React, { useState, useMemo } from "react";
 
 import { useGetCollection } from "../../model/Collections";
 
-import { useDocumentTitle } from "../Routes";
+import { useSetBrowserTabTitle } from "../Routes";
 import Select from "@material-ui/core/Select";
 
 import { StatsOverviewScreen } from "./StatsOverviewScreen";
@@ -127,7 +127,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
     //const [booksAndLanguages, setBooksAndLanguages] = useState("");
     const { collection, loading } = useGetCollection(props.collectionName);
     //const { params, sendIt } = getCollectionAnalyticsInfo(collection);
-    useDocumentTitle(collection?.label + " statistics");
+    useSetBrowserTabTitle(collection?.label + " statistics");
 
     if (loading) return null;
 
