@@ -22,6 +22,7 @@ import { IEmbedSettings } from "../model/ContentInterfaces";
 import { EmbeddingHost, isEmbedded, useSetEmbeddedUrl } from "./EmbeddingHost";
 import { CollectionStatsPage } from "./statistics/CollectionStatsPage";
 import { TestEmbeddingPage } from "./TestEmbedding";
+import { ReleaseNotes } from "./ReleaseNotes";
 
 export let previousPathname = "";
 let currentPathname = "";
@@ -105,6 +106,12 @@ export const Routes: React.FunctionComponent<{}> = () => {
                     path="/player/:id"
                     render={({ match }) => {
                         return <ReadBookPage id={match.params.id} />;
+                    }}
+                />
+                <Route
+                    path="*/release-notes/:channel"
+                    render={({ match }) => {
+                        return <ReleaseNotes channel={match.params.channel} />;
                     }}
                 />
                 <Route path="/about">

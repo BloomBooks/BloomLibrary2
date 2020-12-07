@@ -345,5 +345,8 @@
     "delete.book.confirm.message": {
         "description": "",
         "message": "If you continue, this version of the book <em>{title}</em> will be removed from BloomLibrary.org. There is no way to undo this except by uploading it again."
+    },
+    "Release Notes": {
+        "message": "Release Notes"
     }
 }
