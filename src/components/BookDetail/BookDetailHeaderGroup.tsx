@@ -123,7 +123,19 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                             `}
                         >
                             {props.book.getBestTitle(props.contextLangIso)}
+                            {props.book.edition ? (
+                                <div
+                                    css={css`
+                                        font-size: 12pt;
+                                        font-style: italic;
+                                        text-transform: capitalize;
+                                    `}
+                                >
+                                    {props.book.edition}
+                                </div>
+                            ) : undefined}
                         </h1>
+
                         {/* These are the original credits, which aren't enough. See BL-7990
     <div>{props.book.credits}</div> */}
                         {/* <div>Written by: somebody</div>
