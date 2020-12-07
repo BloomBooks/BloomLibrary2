@@ -35,6 +35,7 @@ export const ReadBookPage: React.FunctionComponent<{
     const autoFullScreen = !widerThanPhone || !higherThanPhone;
     const query = new URLSearchParams(location.search);
     const [, setCounter] = useState(0); // used to force render after going to full screen
+    const [historyProblem, setHistoryProblem] = useState("normal");
     const lang = query.get("lang");
     const [rotateParams, setRotateParams] = useState({
         canRotate: true,
@@ -200,6 +201,53 @@ export const ReadBookPage: React.FunctionComponent<{
         )}&showBackButton=${showBackButton}&centerVertically=false&useOriginalPageSize=true` +
         `${langParam}&hideFullScreenButton=${autoFullScreen}&independent=false&host=bloomlibrary`;
 
+    // This works around a really bizarre problem that we have not been able to find a better
+    // solution for: BL-8866. Basically, sometimes (about one time in five?) that we click the READ
+    // button in the Book Detail view, the new URL for bloom player gets pushed into the history
+    // stack twice. Then, when the user clicks the 'back' button, we're still in the reader
+    // and it seems we should be in the same state, which would be bad enough. But somehow
+    // between re-rendering an iframe that hasn't changed its props, and the React code inside
+    // bloom-player where the URL hasn't changed, we end up with Bloom Player permanently in its
+    // loading state, and all we see is a spinner.
+    // Turns out we can detect that this has happened from the fact that the real
+    // window.history.length is different from the react router history.length, though
+    // unfortunately this doesn't happen immediately so we can only catch it in a useEffect.
+    // Once we've caught it, the basic thing we want to do is window.history.back() to remove
+    // the spurious duplicate entry from the browser's history stack. But we must do that
+    // only once, however many times we render, or we'll be all the way back to detail view.
+    // Moreover, a simplistic use of window.history.back() merely gets us into the forever loading
+    // state at once, which is even worse.
+
+    // So, we have a sort of state machine:
+    // State 'normal': all is well, we haven't detected any history anomaly
+    // State 'noIframe': we've detected an anomaly! Setting this state forces an
+    // immediate re-render, but WITHOUT the bloom player iframe. This ensures that when we
+    // finally go back, we'll get a new iframe that renders properly
+    // State 'repaired': we go to this after issuing the 'back' command, to render
+    // normally whether or not the history stacks are back in sync yet.
+
+    // Lint would like us to add dependencies to this, but it doesn't work if I do.
+    // Not entirely sure why, but I'm at least sure this is safe, since the setHistory
+    // calls form a progression that terminates: once it is in state "repaired"
+    // future renders won't do anything, at least until the history problem goes away.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useEffect(() => {
+        if (window.history.length - history.length > 0) {
+            console.log("History problem occurred");
+            if (historyProblem === "normal") {
+                // force a render without the iframe
+                setHistoryProblem("noIframe");
+            } else if (historyProblem === "noIframe") {
+                // we've done a render without the iframe, now it's safe to fix our history
+                // and then render normally.
+                window.history.back();
+                setHistoryProblem("repaired");
+            }
+        } else if (historyProblem !== "normal") {
+            setHistoryProblem("normal");
+        }
+    });
+
     // This theme matches Bloom-player. It is supposed to help the full-screen button
     // better match the Bloom-player icons, whose toolbar it overlays. Not successful
     // in making the hover background color have the same transparency as bloom-player.
@@ -217,19 +265,21 @@ export const ReadBookPage: React.FunctionComponent<{
     // });
     return (
         <React.Fragment>
-            <iframe
-                title="bloom player"
-                css={css`
-                    border: none;
-                    width: 100%;
-                    height: 100%;
-                `}
-                src={iframeSrc}
-                //src={"https://google.com"}
-                // both of these attributes are needed to handle new and old browsers
-                allow="fullscreen"
-                allowFullScreen={true}
-            ></iframe>
+            {historyProblem === "noIframe" || (
+                <iframe
+                    title="bloom player"
+                    css={css`
+                        border: none;
+                        width: 100%;
+                        height: 100%;
+                    `}
+                    src={iframeSrc}
+                    //src={"https://google.com"}
+                    // both of these attributes are needed to handle new and old browsers
+                    allow="fullscreen"
+                    allowFullScreen={true}
+                ></iframe>
+            )}
         </React.Fragment>
     );
 };
