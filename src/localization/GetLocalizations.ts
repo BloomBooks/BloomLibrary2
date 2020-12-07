@@ -59,7 +59,7 @@ export function useGetLocalizations(
         // in order to skip trying to download English without violating the rule of hooks.
         const [{ response: jsonResponse, error, loading }] = UseAxios(
             {
-                url: `translations/${userInterfaceLanguageTag}/BloomLibrary.org/${encodeURIComponent(
+                url: `/translations/${userInterfaceLanguageTag}/BloomLibrary.org/${encodeURIComponent(
                     filename
                 )}`,
                 method: "GET",
