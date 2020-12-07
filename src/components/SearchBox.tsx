@@ -175,7 +175,9 @@ export const SearchBox: React.FunctionComponent<{
                         history.location.pathname.startsWith(x)
                     ) || "";
                 const newUrl =
-                    prefix + "/:search:" + encodeURIComponent(searchString);
+                    prefix +
+                    "/:search:" +
+                    encodeURIComponent(removeUnwantedSearchTerms(searchString));
                 if (replaceInHistory) {
                     history.replace(newUrl);
                 } else {
@@ -188,6 +190,24 @@ export const SearchBox: React.FunctionComponent<{
         // when the new page appears.
         setSearchString("");
     };
+
+    function removeUnwantedSearchTerms(searchTerms: string): string {
+        const termsToRemove = [
+            "book",
+            "books",
+            "libro",
+            "libros",
+            "livre",
+            "livres",
+        ];
+        return searchTerms
+            .replace(
+                new RegExp("\\b(" + termsToRemove.join("|") + ")\\b", "gi"),
+                " "
+            )
+            .replace(/\s{2,}/g, " ")
+            .trim();
+    }
 
     const handleEnter = (event: React.KeyboardEvent<HTMLDivElement>) => {
         // search on 'Enter' key
