@@ -8,6 +8,8 @@ import { strict as assert } from "assert";
 import { useContentful } from "../connection/UseContentful";
 import { useGetLoggedInUser } from "../connection/LoggedInUser";
 import { IFilter } from "../IFilter";
+import { IntlShape, useIntl } from "react-intl";
+import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 
 /* From original design: Each collection has
     id
@@ -58,6 +60,7 @@ const collectionCache: any = {};
 export function useGetCollection(
     collectionName?: string
 ): IContentfulCollectionQueryResponse {
+    const l10n = useIntl();
     const collections = useGetContentfulCollections();
     const { languagesByBookCount: languages } = useContext(CachedTablesContext);
     const user = useGetLoggedInUser(); // for collection 'my-books'
@@ -121,7 +124,8 @@ export function useGetCollection(
             nameParts[1],
             templateFacetCollection,
             explicitCollection, // may or may not be defined
-            languages
+            languages,
+            l10n
         );
     } else if (explicitCollection) {
         if (explicitCollection.urlKey === "topics") {
@@ -158,7 +162,8 @@ function getFacetCollection(
     value: string,
     templateCollection: ICollection,
     explicitCollection: ICollection | undefined,
-    languages: ILanguage[]
+    languages: ILanguage[],
+    l10n: IntlShape
 ): ICollection {
     /* --- ENHANCE: Currently if we have a leading colon, e.g. bloomlibrary.org/:keyword:foo, we won't get to use the
     "[Template Keyword Collection]", nor the actual "keyword:foo" collection from CF, if it exists.
@@ -197,7 +202,7 @@ function getFacetCollection(
 
         case "search":
             // search collections are generated from a search string the user typed.
-            return makeCollectionForSearch(templateCollection, value);
+            return makeCollectionForSearch(templateCollection, value, l10n);
 
         case "phash":
             // search collections are generated from a search string the user typed.
@@ -263,15 +268,25 @@ export function makeTopicCollection(
 export function makeCollectionForSearch(
     templateCollection: ICollection,
     search: string,
+    l10n: IntlShape,
     baseCollection?: ICollection
 ): ICollection {
     const filter = { ...baseCollection?.filter, search };
-    let label = 'Books matching "' + decodeURIComponent(search) + '"';
+    let label = l10n.formatMessage(
+        {
+            id: "search.booksMatching",
+            defaultMessage: 'Books matching "{searchTerms}"',
+        },
+        { searchTerms: decodeURIComponent(search) }
+    );
     // The root.read is a special case that is always unmarked...not including
     // it's label allows us to, for example, see "Bloom Library: Books matching dogs"
     // rather than "Bloom Library: Read - Books matching dogs"
     if (baseCollection?.urlKey !== "root.read" && baseCollection?.label) {
-        label = baseCollection.label + " - " + label;
+        const localizedBaseCollectionLabel = getLocalizedCollectionLabel(
+            baseCollection
+        );
+        label = `${localizedBaseCollectionLabel} - ${label}`;
     }
     let urlKey = ":search:" + search;
     if (baseCollection?.urlKey) {

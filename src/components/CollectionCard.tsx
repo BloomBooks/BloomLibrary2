@@ -14,7 +14,10 @@ import { Document } from "@contentful/rich-text-types";
 import { ImgWithCredits } from "../ImgWithCredits";
 import { useIntl } from "react-intl";
 import { propsToHideAccessibilityElement } from "../Utilities";
-import { CollectionLabel } from "../localization/CollectionLabel";
+import {
+    CollectionLabel,
+    getLocalizedCollectionLabel,
+} from "../localization/CollectionLabel";
 import { ICollection } from "../model/ContentInterfaces";
 
 interface IProps {
@@ -37,7 +40,11 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
     const titleElementIfNoImage = hideTitle ? (
         <React.Fragment />
     ) : (
-        <div>{props.collection.label || ""}</div>
+        <div>
+            {props.collection.label
+                ? getLocalizedCollectionLabel(props.collection)
+                : ""}
+        </div>
     );
 
     // We want the title to be there even if props tell us to hide it, so screen readers can find it.

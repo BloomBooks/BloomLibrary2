@@ -11,9 +11,11 @@ import { useGetCollection } from "../model/Collections";
 import { splitPathname } from "./Routes";
 import { CollectionLabel } from "../localization/CollectionLabel";
 import { BlorgLink } from "./BlorgLink";
+import { useIntl } from "react-intl";
 
 export const Breadcrumbs: React.FunctionComponent = () => {
     const location = useLocation();
+    const l10n = useIntl();
     // TODO: this doesn't look good on a narrow screen (phone) when the breadcrumbs get very long.
     const breadcrumbsStyle = css`
         display: flex;
@@ -106,10 +108,22 @@ export const Breadcrumbs: React.FunctionComponent = () => {
         const prefix = labelParts[0];
         switch (prefix.toLowerCase()) {
             case "level":
-                label = "Level " + labelParts[1];
+                label = l10n.formatMessage(
+                    {
+                        id: "book.metadata.level",
+                        defaultMessage: "Level {levelNumber}",
+                    },
+                    { levelNumber: labelParts[1] }
+                );
                 break;
             case "search":
-                label = "Books matching " + labelParts.slice(1).join(":");
+                label = l10n.formatMessage(
+                    {
+                        id: "search.booksMatching",
+                        defaultMessage: 'Books matching "{searchTerms}"',
+                    },
+                    { searchTerms: labelParts.slice(1).join(":") }
+                );
                 break;
         }
         crumbs.push(
