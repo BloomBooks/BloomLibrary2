@@ -17,6 +17,7 @@ import { useLocation, useHistory } from "react-router-dom";
 import { useIntl } from "react-intl";
 import { setLanguageOverride } from "../localization/LocalizationProvider";
 import { CachedTablesContext } from "../model/CacheProvider";
+import { featureSpecs, getLocalizedLabel } from "./FeatureHelper";
 
 // NB: I tried a bunch of iterations over 2 days with forwardRefs and stuff trying to get this search box
 // to have both the html tooltip AND stop losing focus every time a letter was typed. The upshot was this
@@ -102,31 +103,75 @@ export const SearchBox: React.FunctionComponent<{
     const { languagesByBookCount } = useContext(CachedTablesContext);
 
     const handleSearch = () => {
-        // These 'magic' strings cause a file to be written without changing the state of the page.
-        if (
-            searchString.toLowerCase() === "freelearningiocsv" ||
-            searchString.toLowerCase() === "csv"
-        ) {
-            giveFreeLearningCsv();
-            return;
-        }
-        if (searchString.length === 0) {
+        const trimmedSearchString = searchString.trim();
+        if (trimmedSearchString.length === 0) {
             // delete everything and press enter is the same as "cancel"
             cancelSearch();
             return;
         }
+
+        if (tryHandleSpecialSearch(trimmedSearchString)) {
+            setSearchString("");
+            return;
+        }
+
+        // We always get one empty string from before the leading slash.
+        // We may get one at the end, too, if the path ends with a slash.
+        // In particular if the path is just a slash (at the root), we start out with two empty strings.
+        const pathParts = location.pathname.split("/").filter((x) => x);
+        const existingSearchIndex = pathParts.findIndex((p) =>
+            p.startsWith(":search:")
+        );
+        // we don't think it's useful to keep in history states that are just different searches.
+        const replaceInHistory =
+            existingSearchIndex >= 0 &&
+            existingSearchIndex === pathParts.length - 1;
+        // Commented out code allows search to be relative to current collection or subset
+        // if (existingSearchIndex >= 0) {
+        //     // remove the existing one and everything after it.
+        //     pathParts.splice(
+        //         existingSearchIndex,
+        //         pathParts.length - existingSearchIndex
+        //     );
+        // }
+        // pathParts.push(":search:" + encodeURIComponent(enteredSearch));
+        // const newUrl = "/" + pathParts.join("/");
+
+        // special case that when in create or grid mode, we don't want to leave it.
+        const prefix =
+            ["/create", "/grid", "/bulk"].find((x) =>
+                history.location.pathname.startsWith(x)
+            ) || "";
+        const newUrl =
+            prefix + "/:search:" + encodeURIComponent(trimmedSearchString);
+        if (replaceInHistory) {
+            history.replace(newUrl);
+        } else {
+            history.push(newUrl);
+        }
+    };
+
+    function tryHandleSpecialSearch(searchStringLocal: string): boolean {
+        const searchStringLower = searchStringLocal.toLowerCase();
+
+        // These 'magic' strings cause a file to be written without changing the state of the page.
+        if (
+            searchStringLower === "freelearningiocsv" ||
+            searchStringLower === "csv"
+        ) {
+            giveFreeLearningCsv();
+            return true;
+        }
+
         // N.B. These 'grid' and 'covid' things need to be called from within 'handleSearch' to avoid
         // React errors about updating during state transitions.
         // enhance: we should just have a set of these keyword-->special page searches, not code for each.
-        if (searchString === "grid") {
+        if (searchStringLower === "grid") {
             history.push("/grid");
-        } else if (searchString.indexOf("uilang=") === 0) {
-            // Allow developers/testers to switch the uilang by typing "uilang=fr". Only marginally useful
-            // because you loose it when you refresh. But it was going to be a pain to preserve it as
-            // a url parameter. Note that you can change your lang in browser settings pretty easily for a
-            // more permanent effect.
-            setLanguageOverride(searchString.split("=")[1]);
-        } else if (
+            return true;
+        }
+
+        if (
             [
                 "covid",
                 "covid19",
@@ -134,60 +179,52 @@ export const SearchBox: React.FunctionComponent<{
                 "cov19",
                 "kovid",
                 "kovid19",
-            ].includes(searchString.toLowerCase())
+            ].includes(searchStringLower)
         ) {
             history.push("/covid19");
-        } else if (searchString) {
-            const searchStringLower = searchString.toLowerCase();
-            const matchingLanguage = languagesByBookCount.find(
-                (l) =>
-                    l.name.toLowerCase() === searchStringLower ||
-                    l.englishName?.toLowerCase() === searchStringLower
-            );
-            if (matchingLanguage) {
-                history.push(`/language:${matchingLanguage.isoCode}`);
-            } else {
-                // We always get one empty string from before the leading slash.
-                // We may get one at the end, too, if the path ends with a slash.
-                // In particular if the path is just a slash (at the root), we start out with two empty strings.
-                const pathParts = location.pathname.split("/").filter((x) => x);
-                const existingSearchIndex = pathParts.findIndex((p) =>
-                    p.startsWith(":search:")
-                );
-                // we don't think it's useful to keep in history states that are just different searches.
-                const replaceInHistory =
-                    existingSearchIndex >= 0 &&
-                    existingSearchIndex === pathParts.length - 1;
-                // Commented out code allows search to be relative to current collection or subset
-                // if (existingSearchIndex >= 0) {
-                //     // remove the existing one and everything after it.
-                //     pathParts.splice(
-                //         existingSearchIndex,
-                //         pathParts.length - existingSearchIndex
-                //     );
-                // }
-                // pathParts.push(":search:" + encodeURIComponent(enteredSearch));
-                // const newUrl = "/" + pathParts.join("/");
-
-                // special case that when in create or grid mode, we don't want to leave it.
-                const prefix =
-                    ["/create", "/grid", "/bulk"].find((x) =>
-                        history.location.pathname.startsWith(x)
-                    ) || "";
-                const newUrl =
-                    prefix + "/:search:" + encodeURIComponent(searchString);
-                if (replaceInHistory) {
-                    history.replace(newUrl);
-                } else {
-                    history.push(newUrl);
-                }
-            }
+            return true;
         }
-        // This doesn't affect regular searches as the search string will be updated by the new url,
-        // but it ensures that special cases like 'grid' and 'covid19' disappear from the search box
-        // when the new page appears.
-        setSearchString("");
-    };
+
+        // Allow developers/testers to switch the uilang by typing "uilang=fr". Only marginally useful
+        // because you loose it when you refresh. But it was going to be a pain to preserve it as
+        // a url parameter. Note that you can change your lang in browser settings pretty easily for a
+        // more permanent effect.
+        if (searchStringLower.indexOf("uilang=") === 0) {
+            setLanguageOverride(searchStringLower.split("=")[1]);
+            return true;
+        }
+
+        if (tryHandleLanguageSearch(searchStringLower)) return true;
+        if (tryHandleFeatureSearch(searchStringLower)) return true;
+
+        return false;
+    }
+
+    function tryHandleLanguageSearch(searchStringLower: string): boolean {
+        const matchingLanguage = languagesByBookCount.find(
+            (l) =>
+                l.name.toLowerCase() === searchStringLower ||
+                l.englishName?.toLowerCase() === searchStringLower
+        );
+        if (matchingLanguage) {
+            history.push(`/language:${matchingLanguage.isoCode}`);
+            return true;
+        }
+        return false;
+    }
+
+    function tryHandleFeatureSearch(searchStringLower: string): boolean {
+        const matchingFeature = featureSpecs.find(
+            (f) =>
+                f.englishLabel.toLowerCase() === searchStringLower ||
+                getLocalizedLabel(f).toLowerCase() === searchStringLower
+        );
+        if (matchingFeature) {
+            history.push(`/${matchingFeature.collectionHref}`);
+            return true;
+        }
+        return false;
+    }
 
     const handleEnter = (event: React.KeyboardEvent<HTMLDivElement>) => {
         // search on 'Enter' key
