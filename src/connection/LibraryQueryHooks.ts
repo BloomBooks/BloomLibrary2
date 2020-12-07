@@ -936,7 +936,11 @@ export function constructParseBookQuery(
         }
         if (otherSearchTerms.length > 0) {
             params.where.search = {
-                $text: { $search: { $term: otherSearchTerms } },
+                $text: {
+                    $search: {
+                        $term: removeUnwantedSearchTerms(otherSearchTerms),
+                    },
+                },
             };
             if (params.order === "titleOrScore") {
                 params.order = "$score";
@@ -1101,6 +1105,24 @@ export function constructParseBookQuery(
     }
 
     return params;
+}
+
+function removeUnwantedSearchTerms(searchTerms: string): string {
+    const termsToRemove = [
+        "book",
+        "books",
+        "libro",
+        "libros",
+        "livre",
+        "livres",
+    ];
+    return searchTerms
+        .replace(
+            new RegExp("\\b(" + termsToRemove.join("|") + ")\\b", "gi"),
+            " "
+        )
+        .replace(/\s{2,}/g, " ")
+        .trim();
 }
 
 function processDerivedFrom(
