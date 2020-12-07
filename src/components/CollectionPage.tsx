@@ -15,6 +15,7 @@ import { IEmbedSettings } from "../model/ContentInterfaces";
 import { useSetBrowserTabTitle } from "./Routes";
 import { getCollectionAnalyticsInfo } from "../analytics/CollectionAnalyticsInfo";
 import { FormattedMessage, useIntl } from "react-intl";
+import { useGetLocalizedCollectionLabel } from "../localization/CollectionLabel";
 
 export const CollectionPage: React.FunctionComponent<{
     collectionName: string;
@@ -25,7 +26,7 @@ export const CollectionPage: React.FunctionComponent<{
     const [booksAndLanguages, setBooksAndLanguages] = useState("");
     const { collection, loading } = useGetCollection(props.collectionName);
     const { params, sendIt } = getCollectionAnalyticsInfo(collection);
-    useSetBrowserTabTitle(collection?.label);
+    useSetBrowserTabTitle(useGetLocalizedCollectionLabel(collection));
     useTrack("Open Collection", params, sendIt);
     if (loading) {
         return null;

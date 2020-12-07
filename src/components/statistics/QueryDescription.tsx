@@ -7,6 +7,7 @@ import React, { useMemo } from "react";
 import { IDateRange, rangeToString } from "./DateRangePicker";
 import { useIntl } from "react-intl";
 import { ICollection } from "../../model/ContentInterfaces";
+import { getLocalizedCollectionLabel } from "../../localization/CollectionLabel";
 
 function useLocalize(prefix: string): (id: string, msg: string) => string {
     const l10n = useIntl();
@@ -30,6 +31,12 @@ export const QueryDescription: React.FunctionComponent<{
 }> = (props) => {
     const l10n = useIntl();
     const T = useLocalize("stats.queryDescription.");
+    const localizedAny = l10n.formatMessage({
+        id: "any",
+        defaultMessage: "any",
+        description:
+            "Used to specify a filter which is unused. For example, country: any or branding: any.",
+    });
     return (
         <div>
             <h4
@@ -55,15 +62,17 @@ export const QueryDescription: React.FunctionComponent<{
                     {T("collection", "Books currently in the collection:")}{" "}
                     {props.collection?.statisticsQuerySpec
                         ? "--" // instead of N/A so that doesn't have to be translated
-                        : props.collection.label}
+                        : getLocalizedCollectionLabel(props.collection)}
                 </li>
                 <li>
                     {T("branding", "Books with branding:")}{" "}
-                    {props.collection?.statisticsQuerySpec?.branding ?? "any"}
+                    {props.collection?.statisticsQuerySpec?.branding ??
+                        localizedAny}
                 </li>
                 <li>
                     {T("country", "From users inside of country:")}{" "}
-                    {props.collection?.statisticsQuerySpec?.country ?? "any"}
+                    {props.collection?.statisticsQuerySpec?.country ??
+                        localizedAny}
                 </li>
                 <li>
                     {T("dateRange", "Date range:")}{" "}

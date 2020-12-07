@@ -4,6 +4,7 @@ import { BookCardGroup } from "./BookCardGroup";
 import { kTopicList } from "../model/ClosedVocabularies";
 import { getTranslation } from "../localization/GetLocalizations";
 import { kNameOfNoTopicCollection } from "../connection/LibraryQueryHooks";
+import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 
 export const TopicsList = [
     "Agriculture",
@@ -62,8 +63,9 @@ export function makeCollectionForTopic(
     topic: string
 ): ICollection {
     const filter = { ...baseCollection.filter, topic };
-    const label =
-        baseCollection.label + ` - ${getTranslation("topic." + topic, topic)}`;
+    const label = `${getLocalizedCollectionLabel(
+        baseCollection
+    )} - ${getTranslation("topic." + topic, topic)}`;
     const urlKey = baseCollection.urlKey + "/:topic:" + topic;
     // Enhance: how can we append "- topic" to title, given that it's some unknown
     // contentful representation of a rich text?

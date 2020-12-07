@@ -28,6 +28,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { QueryDescription } from "./QueryDescription";
 import FormControl from "@material-ui/core/FormControl";
 import { ScreenOptionsSelect } from "./ScreenOptionsSelect";
+import { useGetLocalizedCollectionLabel } from "../../localization/CollectionLabel";
 
 export interface IScreen {
     label: string;
@@ -126,8 +127,17 @@ export const CollectionStatsPage: React.FunctionComponent<{
     // remains empty (and unused) except in byLanguageGroups mode, when a callback sets it.
     //const [booksAndLanguages, setBooksAndLanguages] = useState("");
     const { collection, loading } = useGetCollection(props.collectionName);
-    //const { params, sendIt } = getCollectionAnalyticsInfo(collection);
-    useSetBrowserTabTitle(collection?.label + " statistics");
+    const localizedCollectionLabel = useGetLocalizedCollectionLabel(collection);
+    const localizedBrowserTabTitle = l10n.formatMessage(
+        {
+            id: "collectionStatistics",
+            defaultMessage: "{collectionLabel} statistics",
+            description:
+                "Used to label the statistics for a particular collection. For example, COVID-19 Books statistics. {collectionLabel} gets replaced by the name of the collection.",
+        },
+        { collectionLabel: localizedCollectionLabel }
+    );
+    useSetBrowserTabTitle(collection ? localizedBrowserTabTitle : undefined);
 
     if (loading) return null;
 
@@ -158,7 +168,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
                 }
             `}
         >
-            <h1>{collection.label}</h1>
+            <h1>{localizedCollectionLabel}</h1>
             <h2>
                 <FormattedMessage
                     id="stats.header"

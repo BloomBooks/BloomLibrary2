@@ -59,6 +59,10 @@
         "description": "Priority - Low",
         "message": "Bloom Logo"
     },
+    "search.booksMatching": {
+        "description": "",
+        "message": "Books matching \"{searchTerms}\""
+    },
     "search.forBooks": {
         "description": "",
         "message": "search for books"
@@ -70,6 +74,14 @@
     "search": {
         "description": "Priority - Low",
         "message": "Search"
+    },
+    "collectionRowLabel.missingLevel": {
+        "description": "Used to label books in a particular collection which are missing level information. {collectionName} will be replaced by the name of the collection.",
+        "message": "{collectionName} - (missing a level)"
+    },
+    "level.none": {
+        "description": "Used to label books which are missing level information.",
+        "message": "Books that don't have a level"
     },
     "usermenu.signIn": {
         "description": "",
