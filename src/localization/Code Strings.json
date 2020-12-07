@@ -59,6 +59,10 @@
         "description": "Priority - Low",
         "message": "Bloom Logo"
     },
+    "search.booksMatching": {
+        "description": "",
+        "message": "Books matching \"{searchTerms}\""
+    },
     "search.forBooks": {
         "description": "",
         "message": "search for books"
@@ -70,6 +74,18 @@
     "search": {
         "description": "Priority - Low",
         "message": "Search"
+    },
+    "level.collectionRowLabel": {
+        "description": "",
+        "message": "{collectionName} - Level {levelNumber}"
+    },
+    "level.collectionRowLabel.missing": {
+        "description": "",
+        "message": "{collectionName} - (missing a level)"
+    },
+    "level.missing": {
+        "description": "",
+        "message": "Books for which we are missing levels"
     },
     "usermenu.signIn": {
         "description": "",
