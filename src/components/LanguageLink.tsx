@@ -12,7 +12,7 @@ export const LanguageLink: React.FunctionComponent<{
     return (
         <BlorgLink
             newTabIfEmbedded={true}
-            color={theme.palette.secondary.main}
+            color="secondary"
             href={"/language:" + props.language.isoCode}
         >
             {displayName}

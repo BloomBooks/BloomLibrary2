@@ -76,7 +76,7 @@ export const LeftMetadata: React.FunctionComponent<{
                     <div>
                         Imported from&nbsp;
                         <BlorgLink
-                            color={theme.palette.secondary.main}
+                            color="secondary"
                             href={props.book.importedBookSourceUrl}
                         >
                             {new URL(props.book.importedBookSourceUrl).host}
@@ -161,7 +161,7 @@ export const RightMetadata: React.FunctionComponent<{
                                 <li key={b.id}>
                                     <BlorgLink
                                         newTabIfEmbedded={true}
-                                        color={theme.palette.secondary.main}
+                                        color="secondary"
                                         href={`/book/${b.id}`}
                                     >
                                         {b.title}

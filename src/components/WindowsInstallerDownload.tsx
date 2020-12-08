@@ -69,7 +69,7 @@ export const WindowsInstallerDownload: React.FunctionComponent<{
                     `}
                 >
                     <div>{`Version ${versionNumber} ${info.date}`}</div>
-                    {info.releaseNotes && (
+                    {info.releaseNotes && false && (
                         <div>
                             <BlorgLink href={info.releaseNotes}>
                                 What's New

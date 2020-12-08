@@ -168,7 +168,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                                                 font-size: 9pt;
                                             `}
                                             newTabIfEmbedded={true}
-                                            color={theme.palette.secondary.main}
+                                            color="secondary"
                                             href={`/phash:${sanitizedPhashOfFirstContentImage}`}
                                         >
                                             <FormattedMessage

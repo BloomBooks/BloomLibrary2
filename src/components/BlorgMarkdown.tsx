@@ -11,6 +11,7 @@ import { WindowsInstallerDownload } from "./WindowsInstallerDownload";
 import { WindowsInstallerLink } from "./WindowsInstallerLink";
 import Link from "@material-ui/core/Link";
 import { Feature, FeatureGroup, FeatureMatrix } from "./FeatureMatrix";
+import { BlorgLink } from "./BlorgLink";
 
 export enum Column {
     leftColumn,
@@ -24,8 +25,7 @@ export const BlorgMarkdown: React.FunctionComponent<{
     const options = {
         overrides: {
             a: {
-                // this causes the link to be colored according to the theme (e.g. green in the Create area)
-                component: Link,
+                component: BlorgLink,
             },
             WindowsInstallerDownload,
             WindowsInstallerLink,

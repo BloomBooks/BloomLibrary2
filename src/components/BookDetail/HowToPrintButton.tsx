@@ -5,13 +5,12 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React from "react";
-import { useTheme } from "@material-ui/core";
 import PrintIcon from "@material-ui/icons/Print";
 import { BlorgLink } from "../BlorgLink";
 
 export const HowToPrintButton: React.FunctionComponent = () => (
     <BlorgLink
-        color={useTheme().palette.secondary.main}
+        color="secondary"
         css={css`
             flex-shrink: 1;
             margin-right: 10px !important;

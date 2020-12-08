@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import { commonUI } from "../theme";
 import { getUrlForTarget } from "./Routes";
-import { BlorgLink } from "./BlorgLink";
+import { Link as RouterLink } from "react-router-dom";
 
 interface IProps extends React.HTMLProps<HTMLDivElement> {
     className?: string;
@@ -19,7 +19,9 @@ interface IProps extends React.HTMLProps<HTMLDivElement> {
 export const CheapCard: React.FunctionComponent<IProps> = (props) => {
     const url = getUrlForTarget(props.target || "");
     return (
-        <BlorgLink
+        // we are using the React-Router link here instead of BlorgLink because a) cards are ALWAYS internal and b) they have
+        // a ton of props that get lost when run through BlorgLink (MuiLink)
+        <RouterLink
             className={`cheapCard ${props.className}`}
             css={css`
                 overflow-wrap: break-word; /* helps with titles that have super long words, else they scroll */
@@ -60,10 +62,10 @@ export const CheapCard: React.FunctionComponent<IProps> = (props) => {
                     color: black;
                 }
             `}
-            href={url}
+            to={url}
             role={props.role}
         >
             {props.children}
-        </BlorgLink>
+        </RouterLink>
     );
 };

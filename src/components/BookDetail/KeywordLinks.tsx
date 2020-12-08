@@ -27,7 +27,7 @@ export const KeywordLinks: React.FunctionComponent<{
                             <span>
                                 <BlorgLink
                                     newTabIfEmbedded={true}
-                                    color={theme.palette.secondary.main}
+                                    color="secondary"
                                     // we decided not to do this href={`/:keyword:${keyword}`}
                                     // because we think it's more helpful to show *all* the books that might
                                     // have this word in their title or summary, not just the ones that we

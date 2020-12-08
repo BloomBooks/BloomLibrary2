@@ -8,7 +8,7 @@ export const LicenseLink: React.FunctionComponent<{
     const theme = useTheme();
     return props.book.license ? (
         <BlorgLink
-            color={theme.palette.secondary.main}
+            color="secondary"
             href={
                 // enhance: can we point to the actual version?
                 `https://creativecommons.org/licenses/${props.book.license.replace(
