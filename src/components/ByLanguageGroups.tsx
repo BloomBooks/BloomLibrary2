@@ -11,6 +11,7 @@ import {
     bookHasFeatureInLanguage,
     featureIsLanguageDependent,
 } from "./FeatureHelper";
+import { useIntl } from "react-intl";
 
 export const ByLanguageGroups: React.FunctionComponent<{
     titlePrefix: string;
@@ -27,6 +28,11 @@ export const ByLanguageGroups: React.FunctionComponent<{
         },
         props.filter
     );
+    const l10n = useIntl();
+    const unknown = l10n.formatMessage({
+        id: "language.unknown",
+        defaultMessage: "Unknown",
+    });
     // The combination of useRef and useEffect allows us to run the search once
     //    const rows = useRef<Map<string, { phash: string; book: IBasicBookInfo }>>(
     const [rows, setRows] = useState(new Map<string, IBasicBookInfo[]>());
@@ -39,18 +45,36 @@ export const ByLanguageGroups: React.FunctionComponent<{
     useEffect(() => {
         if (!waiting) {
             const newRows = new Map<string, IBasicBookInfo[]>();
-            // for langIndex = 1... arbitraryMaxLangsPerBook
             // for b in books
+            // for langIndex = 1... arbitraryMaxLangsPerBook
             // lang = book.langs[langIndex]
-            // if x[lang][b.phash] is missing, add x[lang][b.phash]. So the first book with a lang in position langIndex wins.
-            for (
-                let langIndex = 0;
-                langIndex < arbitraryMaxLangsPerBook;
-                langIndex++
-            ) {
-                // eslint-disable-next-line no-loop-func
-                searchResults.books.forEach((book) => {
-                    const key = ComparisonKey(book);
+            // if x[lang][b.comparisonKey] is missing, add x[lang][b.phash].
+            // So the first book (in each set with the same comparisonKey) that has a particular language wins.
+            // eslint-disable-next-line no-loop-func
+            searchResults.books.forEach((book) => {
+                let foundOneLanguage = false;
+                const key = ComparisonKey(book);
+                const addBookToLang = (langCode: string) => {
+                    const rowForLang = newRows.get(langCode);
+                    if (!rowForLang) {
+                        newRows.set(langCode, [book]);
+                    } else {
+                        if (
+                            key === undefined || // if we can't come up with a key, just add this book to the row
+                            !rowForLang.find(
+                                (bookAlreadyInRow) =>
+                                    key === ComparisonKey(bookAlreadyInRow)
+                            )
+                        ) {
+                            rowForLang.push(book);
+                        }
+                    }
+                };
+                for (
+                    let langIndex = 0;
+                    langIndex < arbitraryMaxLangsPerBook;
+                    langIndex++
+                ) {
                     const langCode = book.languages[langIndex]?.isoCode;
                     if (langCode) {
                         // When filtering by feature, a book only gets added to the list for a given language
@@ -63,25 +87,23 @@ export const ByLanguageGroups: React.FunctionComponent<{
                                 langCode
                             )
                         ) {
-                            return; // from this iteration of forEach; don't want this book.
+                            continue; // don't want this book in this language list.
                         }
-                        const rowForLang = newRows.get(langCode);
-                        if (!rowForLang) {
-                            newRows.set(langCode, [book]);
-                        } else {
-                            if (
-                                key === undefined || // if we can't come up with a key, just add this book to the row
-                                !rowForLang.find(
-                                    (bookAlreadyInRow) =>
-                                        key === ComparisonKey(bookAlreadyInRow)
-                                )
-                            ) {
-                                rowForLang.push(book);
-                            }
-                        }
+                        foundOneLanguage = true;
+                        addBookToLang(langCode);
                     }
-                });
-            }
+                }
+                if (!foundOneLanguage) {
+                    // book may have been uploaded without user setting the collection language for sign language.
+                    // We still want it to show up somewhere in the sign language collection page.
+                    // Since this key is only used locally in this function, it doesn't matter that it's not a valid
+                    // three-letter code; in fact, that ensures it won't conflict with a real one.
+                    // We don't know how this can happen for any feature other than sign language, but
+                    // there are a few cases where it does, so we decided to allow it for all of them
+                    // so at least every book with the feature gets listed somehow.
+                    addBookToLang("unknown");
+                }
+            });
             setRows(newRows);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -103,21 +125,26 @@ export const ByLanguageGroups: React.FunctionComponent<{
         }
     }, [totalBookCount, langCount, reportBooksAndLanguages, waiting]);
     const { languagesByBookCount } = useContext(CachedTablesContext);
-    const languages = useMemo(
-        () =>
-            languagesByBookCount
-                .filter((l) => {
-                    if (props.excludeLanguages) {
-                        return !props.excludeLanguages.includes(l.isoCode);
-                    } else return true;
-                })
-                .sort((x, y) =>
-                    getDisplayNamesForLanguage(x).combined.localeCompare(
-                        getDisplayNamesForLanguage(y).combined
-                    )
-                ),
-        [languagesByBookCount, props.excludeLanguages]
-    );
+    const languages = useMemo(() => {
+        const result = languagesByBookCount
+            .filter((l) => {
+                if (props.excludeLanguages) {
+                    return !props.excludeLanguages.includes(l.isoCode);
+                } else return true;
+            })
+            .sort((x, y) =>
+                getDisplayNamesForLanguage(x).combined.localeCompare(
+                    getDisplayNamesForLanguage(y).combined
+                )
+            );
+        result.push({
+            name: unknown,
+            isoCode: "unknown",
+            usageCount: 0,
+            objectId: "",
+        });
+        return result;
+    }, [languagesByBookCount, props.excludeLanguages, unknown]);
     const languagesWithTheseBooks = useMemo(
         () => languages.filter((l) => rows.get(l.isoCode)),
         [languages, rows]

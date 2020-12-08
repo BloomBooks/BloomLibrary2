@@ -346,6 +346,10 @@
         "description": "",
         "message": "If you continue, this version of the book <em>{title}</em> will be removed from BloomLibrary.org. There is no way to undo this except by uploading it again."
     },
+    "language.unknown": {
+        "description": "Heading in a list of languages for a collection of books that have a particular feature, but we don't know which language(s) actually support the feature",
+        "message": "Unknown"
+    },
     "Release Notes": {
         "message": "Release Notes"
     }
