@@ -8,8 +8,6 @@ import React, { useContext } from "react";
 import { Book } from "../../model/Book";
 import { observer } from "mobx-react";
 import { LicenseLink } from "./LicenseLink";
-//NB: v3.0 of title-case has a new API, but don't upgrade: it doesn't actually work like v2.x does, where it can take fooBar and give us "Foo Bar"
-import { useTheme } from "@material-ui/core";
 import { BookStats } from "./BookStats";
 import { CachedTablesContext } from "../../model/CacheProvider";
 import { useGetRelatedBooks } from "../../connection/LibraryQueryHooks";
@@ -21,7 +19,6 @@ import { FormattedMessage, useIntl } from "react-intl";
 export const LeftMetadata: React.FunctionComponent<{
     book: Book;
 }> = observer((props) => {
-    const theme = useTheme();
     return (
         <div
             css={css`
@@ -93,7 +90,6 @@ export const RightMetadata: React.FunctionComponent<{
 }> = observer((props) => {
     const { bookshelves } = useContext(CachedTablesContext);
     const relatedBooks = useGetRelatedBooks(props.book.id);
-    const theme = useTheme();
     const l10n = useIntl();
 
     return (

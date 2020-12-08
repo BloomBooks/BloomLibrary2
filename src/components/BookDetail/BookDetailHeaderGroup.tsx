@@ -13,7 +13,7 @@ import { LanguageLink } from "../LanguageLink";
 import { getArtifactVisibilitySettings, ArtifactType } from "./ArtifactHelper";
 import { ILanguage } from "../../model/Language";
 import { ReadOfflineButton } from "./ReadOfflineButton";
-import { useMediaQuery, useTheme } from "@material-ui/core";
+import { useMediaQuery } from "@material-ui/core";
 import { OSFeaturesContext } from "../../components/OSFeaturesContext";
 import { commonUI } from "../../theme";
 import { useGetBookCountRaw } from "../../connection/LibraryQueryHooks";
@@ -30,7 +30,6 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
     contextLangIso?: string;
 }> = observer((props) => {
     const isEmbedded = useIsEmbedded();
-    const theme = useTheme();
     const { bloomDesktopAvailable, bloomReaderAvailable } = useContext(
         OSFeaturesContext
     );

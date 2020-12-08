@@ -9,7 +9,6 @@ import Markdown from "markdown-to-jsx";
 import { BloomReaderVersionNumber } from "./BloomReaderVersionNumber";
 import { WindowsInstallerDownload } from "./WindowsInstallerDownload";
 import { WindowsInstallerLink } from "./WindowsInstallerLink";
-import Link from "@material-ui/core/Link";
 import { Feature, FeatureGroup, FeatureMatrix } from "./FeatureMatrix";
 import { BlorgLink } from "./BlorgLink";
 

@@ -1,4 +1,3 @@
-import { useTheme } from "@material-ui/core";
 import React from "react";
 
 import { ILanguage, getDisplayNamesForLanguage } from "../model/Language";
@@ -7,7 +6,6 @@ import { BlorgLink } from "./BlorgLink";
 export const LanguageLink: React.FunctionComponent<{
     language: ILanguage;
 }> = (props) => {
-    const theme = useTheme();
     const displayName = getNameDisplay(props.language);
     return (
         <BlorgLink
