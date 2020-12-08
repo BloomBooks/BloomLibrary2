@@ -9,22 +9,26 @@ import { Link as MuiLink } from "@material-ui/core";
 export interface IBlorgLinkProps
     extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
     newTabIfEmbedded?: boolean;
+    newTabAlways?: boolean;
     color?: "primary" | "secondary";
 }
 
 export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
     const isInIframe = window.self !== window.top;
 
+    const { newTabAlways, newTabIfEmbedded, ...propsToPassDown } = props; // Prevent React warnings
+
     // ABOUT MuiLink: we're using this to get the themed color for the link
 
     return isExternal(props.href as string) ||
+        props.newTabAlways ||
         (isInIframe && props.newTabIfEmbedded) ? (
         // We've decided for now to always open a new tab for external websites.
         // Some links should open a new tab if we are embedded in an iframe.
         <MuiLink
             target={"_blank"}
             rel="noopener noreferrer"
-            {...props}
+            {...propsToPassDown}
             color={props.color || "primary"}
         >
             {props.children}
@@ -40,7 +44,7 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
         </MuiLink>
     ) : (
         <MuiLink
-            {...props}
+            {...propsToPassDown}
             component={RouterLink}
             to={props.href!}
             color={props.color || "primary"}
