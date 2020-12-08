@@ -15,6 +15,8 @@ export interface IBlorgLinkProps
 export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
     const isInIframe = window.self !== window.top;
 
+    const { newTabIfEmbedded, ...propsToPassDown } = props; // Prevent React warnings
+
     // ABOUT MuiLink: we're using this to get the themed color for the link
 
     return isExternal(props.href as string) ||
@@ -24,7 +26,7 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
         <MuiLink
             target={"_blank"}
             rel="noopener noreferrer"
-            {...props}
+            {...propsToPassDown}
             color={props.color || "primary"}
         >
             {props.children}
@@ -40,7 +42,7 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
         </MuiLink>
     ) : (
         <MuiLink
-            {...props}
+            {...propsToPassDown}
             component={RouterLink}
             to={props.href!}
             color={props.color || "primary"}
