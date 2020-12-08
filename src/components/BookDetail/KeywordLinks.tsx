@@ -1,13 +1,11 @@
 import { Book } from "../../model/Book";
 import { observer } from "mobx-react";
 import React from "react";
-import { useTheme } from "@material-ui/core";
 import { BlorgLink } from "../BlorgLink";
 
 export const KeywordLinks: React.FunctionComponent<{
     book: Book;
 }> = observer((props) => {
-    const theme = useTheme();
     if (props.book.keywords?.length > 0) {
         return (
             <span>
