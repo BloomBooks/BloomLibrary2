@@ -11,7 +11,7 @@ import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
-import { FormControlLabel, Checkbox } from "@material-ui/core";
+import { FormControlLabel, Checkbox, DialogTitle } from "@material-ui/core";
 import { Book } from "../../model/Book";
 import { BlorgLink } from "../BlorgLink";
 import { followUrl } from "./DownloadsGroup";
@@ -44,49 +44,33 @@ export const DownloadShellbookDialog: React.FunctionComponent<IDownloadShellbook
     };
     return (
         <Dialog open={props.open} onClose={handleCancel}>
+            <DialogTitle>
+                <FormattedMessage
+                    id="downloadShellbook.aboutToDownload.heading"
+                    defaultMessage="Almost there…"
+                    description="Heading for the download shellbook dialog. Indicates that the download is about to start after one more step."
+                />
+            </DialogTitle>
             <DialogContent>
-                <h1
-                    css={css`
-                        font-size: 18pt;
-                        color: black;
-                    `}
-                >
-                    <FormattedMessage
-                        id="downloadShellbook.aboutToDownload.heading"
-                        defaultMessage="Almost there…"
-                        description="Heading for the download shellbook dialog. Indicates that the download is about to start after one more step."
-                    />
-                </h1>
-                <div
-                    css={css`
-                        margin-top: 25px;
-                        color: black;
-                    `}
-                >
-                    <FormattedMessage
-                        id="downloadShellbook.aboutToDownload.message"
-                        defaultMessage="You are about to download {bookTitle} into the Bloom Desktop Application. You need to have <link>Bloom</link> already installed on your computer."
-                        values={{
-                            bookTitle: (
-                                <em>
-                                    {props.book.getBestTitle(
-                                        props.contextLangIso
-                                    )}
-                                </em>
-                            ),
-                            link: (linkText: string) => (
-                                <BlorgLink href="/downloads">
-                                    {linkText}
-                                </BlorgLink>
-                            ),
-                        }}
-                        description="{bookTitle} will be replaced by the title of the book being downloaded. The text inside <link></link> will be a link to the downloads page of the Bloom library website."
-                    />
-                </div>
+                <FormattedMessage
+                    id="downloadShellbook.aboutToDownload.message"
+                    defaultMessage="You are about to download {bookTitle} into the Bloom Desktop Application. You need to have <link>Bloom</link> already installed on your computer."
+                    values={{
+                        bookTitle: (
+                            <em>
+                                {props.book.getBestTitle(props.contextLangIso)}
+                            </em>
+                        ),
+                        link: (linkText: string) => (
+                            <BlorgLink href="/downloads">{linkText}</BlorgLink>
+                        ),
+                    }}
+                    description="{bookTitle} will be replaced by the title of the book being downloaded. The text inside <link></link> will be a link to the downloads page of the Bloom library website."
+                />
+
                 <FormControlLabel
                     css={css`
                         margin-top: 15px;
-                        color: black;
                     `}
                     control={
                         <Checkbox
