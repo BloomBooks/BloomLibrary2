@@ -9,14 +9,14 @@ import Button from "@material-ui/core/Button";
 import TranslationIcon from "./translation.svg";
 import { commonUI } from "../../theme";
 import { FormattedMessage, useIntl } from "react-intl";
-import {
-    downloadShellbook,
-    DownloadShellbookDialog,
-    IBookWithContextLanguage,
-} from "./DownloadShellbookDialog";
+import { DownloadPreflightDialog } from "./DownloadPreflightDialog";
 import { useStorageState } from "react-storage-hooks";
+import { DownloadingShellbookDialog } from "./DownloadingShellbookDialog";
+import { Book } from "../../model/Book";
 
-interface ITranslateButtonProps extends IBookWithContextLanguage {
+interface ITranslateButtonProps {
+    book: Book;
+    contextLangIso?: string; // if we know the user is working with books in a particular language, this tells which one.
     fullWidth?: boolean;
 }
 
@@ -24,10 +24,14 @@ export const TranslateButton: React.FunctionComponent<ITranslateButtonProps> = (
     props
 ) => {
     const l10n = useIntl();
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [dontShowAgain, setDontShowAgain] = useStorageState<boolean>(
+    const [preflightDialogOpen, setPreflightDialogOpen] = useState(false);
+    const [downloadingDialogOpen, setDownloadingDialogOpen] = useState(false);
+    const [
+        dontShowPreflightAgain,
+        setDontShowPreflightAgain,
+    ] = useStorageState<boolean>(
         localStorage,
-        "dont-show-download-shellbook-dialog",
+        "dont-show-download-preflight-dialog",
         false
     );
     return (
@@ -68,10 +72,10 @@ export const TranslateButton: React.FunctionComponent<ITranslateButtonProps> = (
                                     `Sorry, the uploader of this book has restricted shellbook download to ${otherCountryRequired}`
                                 );
                             } else {
-                                if (dontShowAgain) {
-                                    downloadShellbook(props);
+                                if (dontShowPreflightAgain) {
+                                    setDownloadingDialogOpen(true);
                                 } else {
-                                    setDialogOpen(true);
+                                    setPreflightDialogOpen(true);
                                 }
                             }
                         });
@@ -116,19 +120,33 @@ export const TranslateButton: React.FunctionComponent<ITranslateButtonProps> = (
                     </p>
                 </div>
             </Button>
-            <DownloadShellbookDialog
+            <DownloadPreflightDialog
                 book={props.book}
-                open={dialogOpen}
-                close={(dontShowAgainFromDialog: boolean) => {
+                open={preflightDialogOpen}
+                close={(
+                    doDownload: boolean,
+                    dontShowPreflightAgainFromDialog: boolean
+                ) => {
                     // We shouldn't need to set this here because it has already been set in the dialog.
                     // But apparently two components cannot both actively monitor the same useStorageState
                     // variable at the same time. Without this hack, if the user checks the box to not show
                     // the dialog again, it keeps showing up through the end of that session.
-                    setDontShowAgain(dontShowAgainFromDialog);
-                    setDialogOpen(false);
+                    setDontShowPreflightAgain(dontShowPreflightAgainFromDialog);
+                    setPreflightDialogOpen(false);
+                    if (doDownload) {
+                        setDownloadingDialogOpen(true);
+                    }
                 }}
                 contextLangIso={props.contextLangIso}
-            ></DownloadShellbookDialog>
+            ></DownloadPreflightDialog>
+            <DownloadingShellbookDialog
+                book={props.book}
+                open={downloadingDialogOpen}
+                close={() => {
+                    setDownloadingDialogOpen(false);
+                }}
+                contextLangIso={props.contextLangIso}
+            ></DownloadingShellbookDialog>
         </React.Fragment>
     );
 };

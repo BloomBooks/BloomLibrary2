@@ -14,33 +14,26 @@ import DialogContent from "@material-ui/core/DialogContent";
 import { FormControlLabel, Checkbox, DialogTitle } from "@material-ui/core";
 import { Book } from "../../model/Book";
 import { BlorgLink } from "../BlorgLink";
-import { followUrl } from "./DownloadsGroup";
-import { getArtifactUrl, ArtifactType } from "./ArtifactHelper";
-import { track } from "../../analytics/Analytics";
-import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 
-export interface IBookWithContextLanguage {
+interface IDownloadPreflightDialogProps {
+    open: boolean; // dialog is displayed when rendered with this true
+    close: (doDownload: boolean, dontShowDialogAgain: boolean) => void;
     book: Book;
     contextLangIso?: string; // if we know the user is working with books in a particular language, this tells which one.
 }
 
-interface IDownloadShellbookDialogProps extends IBookWithContextLanguage {
-    open: boolean; // dialog is displayed when rendered with this true
-    close: (dontShowDialogAgain: boolean) => void;
-}
-
-export const DownloadShellbookDialog: React.FunctionComponent<IDownloadShellbookDialogProps> = (
+export const DownloadPreflightDialog: React.FunctionComponent<IDownloadPreflightDialogProps> = (
     props
 ) => {
     const l10n = useIntl();
     const [dontShowAgain, setDontShowAgain] = useStorageState<boolean>(
         localStorage,
-        "dont-show-download-shellbook-dialog",
+        "dont-show-download-preflight-dialog",
         false
     );
     const handleCancel = () => {
         setDontShowAgain(false);
-        props.close(false);
+        props.close(false, false);
     };
     return (
         <Dialog open={props.open} onClose={handleCancel}>
@@ -98,8 +91,7 @@ export const DownloadShellbookDialog: React.FunctionComponent<IDownloadShellbook
                 <Button
                     variant="contained"
                     onClick={() => {
-                        downloadShellbook(props);
-                        props.close(dontShowAgain);
+                        props.close(true, dontShowAgain);
                     }}
                     color="primary"
                     autoFocus
@@ -113,13 +105,3 @@ export const DownloadShellbookDialog: React.FunctionComponent<IDownloadShellbook
         </Dialog>
     );
 };
-
-export function downloadShellbook(bookWithLang: IBookWithContextLanguage) {
-    const params = getBookAnalyticsInfo(
-        bookWithLang.book,
-        bookWithLang.contextLangIso,
-        "shell"
-    );
-    track("Download Book", params);
-    followUrl(getArtifactUrl(bookWithLang.book, ArtifactType.shellbook));
-}
