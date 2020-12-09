@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { IconButton, Tooltip } from "@material-ui/core";
 import { observer } from "mobx-react";
 
@@ -77,6 +77,15 @@ export const DownloadsGroup: React.FunctionComponent<{
     const showMoreDownloadsHeading: boolean =
         showingBloomReaderDownloadElsewhere &&
         (!hidePdfButton || !hideEpubButton);
+
+    // I spent some time tracking this down, and don't want to do it again when I forget.
+    // https://github.com/mui-org/material-ui/issues/13394
+    useEffect(() => {
+        console.warn(
+            "The following findDOMNode error will go away in MaterialUI 5, currently (dec 2020) in alpha."
+        );
+    }, []);
+
     return (
         <div>
             {/* {showMoreDownloadsHeading && ( */}
