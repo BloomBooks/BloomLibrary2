@@ -36,7 +36,11 @@ export const TestEmbeddingPage: React.FunctionComponent<{ code: string }> = (
     const iframeSrc = `${iframeRoot}/${props.code}`;
     const badUrl = !props.code || props.code.split("/").length < 1;
     return (
-        <Container>
+        <Container
+            css={css`
+                height: 100%;
+            `}
+        >
             {(badUrl && (
                 <div>
                     <h1>
@@ -60,6 +64,9 @@ export const TestEmbeddingPage: React.FunctionComponent<{ code: string }> = (
                 <div
                     css={css`
                         height: 100%;
+                        display: flex;
+                        flex-direction: column;
+                        overflow: hidden;
                     `}
                 >
                     <div
@@ -98,8 +105,7 @@ export const TestEmbeddingPage: React.FunctionComponent<{ code: string }> = (
                         id="bloomlibrary"
                         src={iframeSrc}
                         title="embed test"
-                        height="100%"
-                        width="100%"
+                        style={{ flexGrow: 1 }}
                         // both of these are needed to handle older and newer browsers
                         allow="fullscreen"
                         allowFullScreen={true}
