@@ -69,7 +69,7 @@ export const WindowsInstallerDownload: React.FunctionComponent<{
                     `}
                 >
                     <div>{`Version ${versionNumber} ${info.date}`}</div>
-                    {info.releaseNotes && false && (
+                    {info.releaseNotes && (
                         <div>
                             {/* Note, the info.releaseNotes actually gives us a url, but that's a pain to stuff in a url parameter
                             and just isn't needed; as long as we know the channel name, we can construct the url. So that is all we pass here */}
