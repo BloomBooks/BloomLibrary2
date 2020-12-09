@@ -298,6 +298,9 @@
         "description": "",
         "message": "Replies will be sent to the email address you provided when you signed up:"
     },
+    "common.OK": {
+        "message": "OK"
+    },
     "common.cancel": {
         "description": "",
         "message": "Cancel"
@@ -367,5 +370,16 @@
     "downloadShellbook.aboutToDownload.dontShowAgain": {
         "message": "I get it. Don't show me this again.",
         "description": "Label for a check box which, if checked, prevents the extra dialog from appearing before downloading a shellbook."
+    },
+    "downloadShellbook.downloading.header": {
+        "message": "Here it comes!",
+        "description": "Heading for the download shellbook dialog. Indicates that the download should be happening now."
+    },
+    "downloadShellbook.downloading.message": {
+        "message": "Bloom should run, download the book, and allow you to add it to your collection."
+    },
+    "downloadShellbook.tryAgain": {
+        "message": "Try downloading it again",
+        "description": "Text for a button on the download shellbook dialog."
     }
 }
