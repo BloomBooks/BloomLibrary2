@@ -3758,6 +3758,11 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.17.14.tgz#b6c60ebf2fb5e4229fdd751ff9ddfae0f5f31541"
   integrity sha512-G0UmX5uKEmW+ZAhmZ6PLTQ5eu/VPaT+d/tdLd5IFsKRPcbe6lPxocBtcYBFSaLaCW8O60AX90e91Nsp8lVHCNw==
 
+"@types/overlayscrollbars@1.12.0":
+  version "1.12.0"
+  resolved "https://registry.yarnpkg.com/@types/overlayscrollbars/-/overlayscrollbars-1.12.0.tgz#98456caceca8ad73bd5bb572632a585074e70764"
+  integrity sha512-h/pScHNKi4mb+TrJGDon8Yb06ujFG0mSg12wIO0sWMUF3dQIe2ExRRdNRviaNt9IjxIiOfnRr7FsQAdHwK4sMg==
+
 "@types/parse-json@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/parse-json/-/parse-json-4.0.0.tgz#2f8bb441434d163b35fb8ffdccd7138927ffb8c0"
@@ -5226,11 +5231,13 @@ block-stream@*:
     inherits "~2.0.0"
 
 bloom-player@^2.0.5:
-  version "2.0.17"
-  resolved "https://registry.yarnpkg.com/bloom-player/-/bloom-player-2.0.17.tgz#cbd1a78859a7329aac6d764f72a146c7aec792cb"
-  integrity sha512-PLhHNEucQosfKDW9pWQPe53ET6FcTTz4PHZ3ZShHOq3CME4oDbXl4u9zwF5nuokJpj0wuVnD5vFP2wn9Py9qpQ==
+  version "2.0.24"
+  resolved "https://registry.yarnpkg.com/bloom-player/-/bloom-player-2.0.24.tgz#aecfd7df8e89e6978884e8fb51d1989374f961f2"
+  integrity sha512-FIUqqjNtsRLF45q3vIHGJXk1uvkWBVXLFlVxN90OYn0Jh+HmKsU+jSmlW86GIFJ+82Iydxwv0E65W9NpeJsXhw==
   dependencies:
+    "@types/overlayscrollbars" "1.12.0"
     dynamic-import-polyfill "^0.1.1"
+    overlayscrollbars "1.13.0"
 
 bluebird@^3.3.5, bluebird@^3.5.5:
   version "3.7.1"
@@ -12479,6 +12486,11 @@ osenv@0, osenv@^0.1.4:
   dependencies:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.0"
+
+overlayscrollbars@1.13.0:
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/overlayscrollbars/-/overlayscrollbars-1.13.0.tgz#1edb436328133b94877b558f77966d5497ca36a7"
+  integrity sha512-p8oHrMeRAKxXDMPI/EBNITj/zTVHKNnAnM59Im+xnoZUlV07FyTg46wom2286jJlXGGfcPFG/ba5NUiCwWNd4w==
 
 p-cancelable@^0.4.0:
   version "0.4.1"
