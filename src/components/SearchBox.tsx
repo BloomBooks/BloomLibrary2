@@ -220,7 +220,11 @@ export const SearchBox: React.FunctionComponent<{
                 getLocalizedLabel(f).toLowerCase() === searchStringLower
         );
         if (matchingFeature) {
-            history.push(`/${matchingFeature.collectionHref}`);
+            history.push(
+                `/${
+                    matchingFeature.collectionHref || matchingFeature.featureKey
+                }`
+            );
             return true;
         }
         return false;
