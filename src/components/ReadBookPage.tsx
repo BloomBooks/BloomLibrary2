@@ -36,6 +36,7 @@ export const ReadBookPage: React.FunctionComponent<{
     const query = new URLSearchParams(location.search);
     const [, setCounter] = useState(0); // used to force render after going to full screen
     const lang = query.get("lang");
+    const [historyProblem, setHistoryProblem] = useState("normal");
     const [rotateParams, setRotateParams] = useState({
         canRotate: true,
         isLandscape: false,
@@ -99,7 +100,7 @@ export const ReadBookPage: React.FunctionComponent<{
         document.documentElement
             .requestFullscreen()
             .then(() => {
-                setCounter((oldCount) => oldCount + 1); // force a render
+                setHistoryProblem("fullScreen");
                 // We are only allowed to do this this if successfully in full screen mode
                 if (!canRotate) {
                     window.screen.orientation.lock(
@@ -200,32 +201,69 @@ export const ReadBookPage: React.FunctionComponent<{
         )}&showBackButton=${showBackButton}&centerVertically=false&useOriginalPageSize=true` +
         `${langParam}&hideFullScreenButton=${autoFullScreen}&independent=false&host=bloomlibrary`;
 
-    // This should go away soon. It's there to detect a reoccurrence of a really bizarre problem: BL-8866.
-    // Basically, sometimes (about one time in five?) that we click the READ
-    // button in the Book Detail view, the new URL for bloom player gets pushed into the history
-    // stack twice. Then, when the user clicks the 'back' button, we're still in the reader
-    // and it seems we should be in the same state, which would be bad enough. But somehow
-    // between re-rendering an iframe that hasn't changed its props, and the React code inside
-    // bloom-player where the URL hasn't changed, we end up with Bloom Player permanently in its
-    // loading state, and all we see is a spinner.
-    // Turns out we can detect that this has happened from the fact that the real
-    // window.history.length is different from the react router history.length, though
-    // unfortunately this doesn't happen immediately so we can only catch it in a useEffect.
-    // We think this is fixed, but for a while if we're wrong we want to know right away.
-
     // Lint would like us to add dependencies to this, but it doesn't work if I do.
     // Not entirely sure why, but I'm at least sure this is safe, since the setHistory
     // calls form a progression that terminates: once it is in state "repaired"
     // future renders won't do anything, at least until the history problem goes away.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
-        if (window.history.length - history.length > 0) {
+        if (
+            window.history.length - history.length > 0 &&
+            historyProblem === "normal"
+        ) {
             console.log(
                 "history problem (BL-8866) is still happening. " +
                     window.history.length +
                     " " +
                     history.length
             );
+        }
+        // When we automatically go to full screen and escape from it, things can be in
+        // a bad state (at least in Chrome) where we have a couple of extra copies of our
+        // ReadBookPage URL in history. Clicking Back will therefore not take us back.
+        // Fixing this reliably is hard. We detect that it might be happening by first
+        // noting that we ARE in full screen mode (above). Then we can tell we LEFT it
+        // when document.fullScreenElement goes away. Since there's not much that can
+        // cause us to re-render after that while the player is showing, another render
+        // tyically arises from the user clicking back and it not working. So when that
+        // happens, we force the browser to go back again.
+        // Unfortunately we sometimes, I think because forward/back buttons moved, get
+        // a render when changing the size of the window. So we only do the forced 'back'
+        // if the window size hasn't changed since the last render.
+        // But, we more often do NOT get a re-render when the window size changes. So
+        // we can still have a single 'back' failure if the user has resized the window.
+        // At least it won't take more than two clicks to get back! So far, this is the
+        // best I can figure out.
+        const possibleHistoryProblem =
+            "leftFullScreen " +
+            document.documentElement.clientWidth +
+            " " +
+            document.documentElement.clientHeight +
+            " ";
+        if (historyProblem === "fullScreen" && !document.fullscreenElement) {
+            //console.log("setting historyProblem to " + possibleHistoryProblem);
+            setHistoryProblem(possibleHistoryProblem + new Date().getTime());
+        } else if (historyProblem.startsWith("leftFullScreen")) {
+            const parts = historyProblem.split(" ");
+            if (new Date().getTime() - parseInt(parts[3]) > 500) {
+                // it's not the immediate re-render caused by setting it to something that starts with leftFullScreen
+                if (historyProblem.startsWith(possibleHistoryProblem)) {
+                    // another re-render with the exact same window dimensions is probably from calling 'back'
+                    //console.log("setting to forceBack");
+                    setHistoryProblem("forceBack");
+                } else {
+                    // update to the new dimensions (and time)
+                    // console.log(
+                    //     "resetting historyProblem to " + possibleHistoryProblem
+                    // );
+                    setHistoryProblem(
+                        possibleHistoryProblem + new Date().getTime()
+                    );
+                }
+            }
+        } else if (historyProblem === "forceBack") {
+            //console.log("going back");
+            window.history.back();
         }
     });
 
