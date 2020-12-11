@@ -277,7 +277,7 @@ export function splitPathname(
 // It's also possible that we're moving to a filtered subset collection; for example, if
 // the current pathname is /enabling-writers/ew-nigeria and target is ew-nigeria/:level:1
 // We want to get enabling-writers/ew-nigeria/:level:1 (only one ew-nigeria).
-// We might also be going a level of fiter deeper; for example, from location
+// We might also be going a level of filter deeper; for example, from location
 // /enabling-writers/ew-nigeria/:level:1 to target ew-nigeria/:level:1/:topic:Agriculture
 // producing enabling-writers/ew-nigeria/:level:1/:topic:Agriculture.
 // Any leading slash on target should be ignored.
@@ -314,8 +314,16 @@ export function getUrlForTarget(target: string) {
     }
     return segments.join("/");
 }
+
 function trimLeft(s: string, char: string) {
     return s.replace(new RegExp("^[" + char + "]+"), "");
+}
+
+export function getContextLangIso(urlKey: string) {
+    return urlKey.startsWith("language:")
+        ? // we don't want anything after a slash as part of the isoCode
+          urlKey.substring("language:".length).split("/")[0]
+        : undefined;
 }
 
 export function useSetBrowserTabTitle(title: string | undefined) {
