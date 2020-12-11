@@ -82,7 +82,7 @@ export function getDisplayNamesForLanguage(
 }
 
 export function getCleanedAndOrderedLanguageList(
-    languages: ILanguage[]
+    languages: ILanguage[] // pre-ordered by usageCount descending
 ): ILanguage[] {
     const distinctCodeToCountMap: Map<string, number> = new Map<
         string,
@@ -95,6 +95,7 @@ export function getCleanedAndOrderedLanguageList(
             distinctCodeToCountMap.set(languageCode, languageResult.usageCount);
 
             // For now, use the name of the one with the most books
+            // (which is the first because they are pre-ordered)
             codeToLanguageMap.set(languageCode, languageResult);
         } else {
             const sumSoFar = distinctCodeToCountMap.get(languageCode)!;
