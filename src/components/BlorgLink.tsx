@@ -19,19 +19,18 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
 
     // ABOUT MuiLink: we're using this to get the themed color for the link
 
-    return isExternal(props.href as string) ||
-        (isInIframe && props.newTabIfEmbedded) ? (
-        // We've decided for now to always open a new tab for external websites.
+    if (isExternal(props.href as string)) {
         // Some links should open a new tab if we are embedded in an iframe.
-        <MuiLink
-            target={"_blank"}
-            rel="noopener noreferrer"
-            {...propsToPassDown}
-            color={props.color || "primary"}
-        >
-            {props.children}
-            {/* This might be a nice thing to do, but the color wasn't actually being applied (the css was there, but the svg didn't take it on)
-            {" "}
+        if (isInIframe && props.newTabIfEmbedded) {
+            return (
+                <MuiLink
+                    target={"_blank"}
+                    rel="noopener noreferrer"
+                    {...propsToPassDown}
+                    color={props.color || "primary"}
+                >
+                    {props.children}
+                    {/* This might be a nice thing to do, but the color wasn't actually being applied (the css was there, but the svg didn't take it on)
             <OpenInNewIcon
                 color="primary"
                 css={css`
@@ -39,8 +38,22 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
                     font-size: 12pt !important;
                 `}
             ></OpenInNewIcon> */}
-        </MuiLink>
-    ) : (
+                </MuiLink>
+            );
+        } else {
+            // It is tempting to open a new tab when the link is to an external site. One can imagine that this less confusing. On mobile, it's clearly
+            // more confusing, since you don't see the new tab and now "back" doesn't work. On Desktop, it's less clear, so I'm erroring on the side of
+            // the Nielsen Norman Group: https://www.nngroup.com/articles/new-browser-windows-and-tabs/
+            return (
+                // just a normal <a></a> element, styled to fit the theme
+                <MuiLink {...propsToPassDown} color={props.color || "primary"}>
+                    {props.children}
+                </MuiLink>
+            );
+        }
+    }
+
+    return (
         <MuiLink
             {...propsToPassDown}
             component={RouterLink}
