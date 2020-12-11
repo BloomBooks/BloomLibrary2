@@ -220,7 +220,12 @@ export const ReadBookPage: React.FunctionComponent<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         if (window.history.length - history.length > 0) {
-            alert("history problem (BL-8866) is still happening :-<");
+            console.log(
+                "history problem (BL-8866) is still happening. " +
+                    window.history.length +
+                    " " +
+                    history.length
+            );
         }
     });
 
