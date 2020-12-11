@@ -14,21 +14,23 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { RouterContent } from "./model/RouterContent";
 import CacheProvider from "./model/CacheProvider";
 import { OSFeaturesProvider } from "./components/OSFeaturesContext";
-
+import CssBaseline from "@material-ui/core/CssBaseline";
 export const App: React.FunctionComponent<{}> = (props) => {
     const embeddedMode = window.self !== window.top;
 
     return (
-        <LocalizationProvider>
-            <div
-                css={css`
-                    display: flex;
-                    flex-direction: column;
-                    margin-left: 0;
-                    height: 100%;
-                `}
-            >
-                {/* <React.StrictMode>
+        <React.Fragment>
+            <CssBaseline />
+            <LocalizationProvider>
+                <div
+                    css={css`
+                        display: flex;
+                        flex-direction: column;
+                        margin-left: 0;
+                        height: 100%;
+                    `}
+                >
+                    {/* <React.StrictMode>
                 In StrictMode,
                     * react-image 2.3.0 makes this complain about UNSAFE_componentWillReceiveProps
                     * react-lazyload 2.6.5 makes it complain about finDomNode
@@ -42,19 +44,21 @@ export const App: React.FunctionComponent<{}> = (props) => {
 
                 See also https://github.com/facebook/react/issues/16362
                 */}
-                <ThemeProvider theme={theme}>
-                    <CacheProvider>
-                        <OSFeaturesProvider>
-                            <UnderConstruction />
-                            <Router>
-                                <RouterContent />
-                            </Router>
-                        </OSFeaturesProvider>
-                    </CacheProvider>
-                </ThemeProvider>
-                {embeddedMode || <LoginDialog />} {/* </React.StrictMode> */}
-            </div>
-        </LocalizationProvider>
+                    <ThemeProvider theme={theme}>
+                        <CacheProvider>
+                            <OSFeaturesProvider>
+                                <UnderConstruction />
+                                <Router>
+                                    <RouterContent />
+                                </Router>
+                            </OSFeaturesProvider>
+                        </CacheProvider>
+                    </ThemeProvider>
+                    {embeddedMode || <LoginDialog />}{" "}
+                    {/* </React.StrictMode> */}
+                </div>
+            </LocalizationProvider>
+        </React.Fragment>
     );
 };
 
