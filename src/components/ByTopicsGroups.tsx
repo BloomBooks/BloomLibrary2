@@ -1,6 +1,7 @@
 import React from "react";
 import { ICollection } from "../model/ContentInterfaces";
 import { BookCardGroup } from "./BookCardGroup";
+import { getContextLangIso } from "./Routes";
 import { kTopicList } from "../model/ClosedVocabularies";
 import { getTranslation } from "../localization/GetLocalizations";
 import { kNameOfNoTopicCollection } from "../connection/LibraryQueryHooks";
@@ -27,9 +28,7 @@ export const TopicsList = [
 export const ByTopicsGroups: React.FunctionComponent<{
     collection: ICollection;
 }> = (props) => {
-    const contextLangIso = props.collection.urlKey.startsWith("language:")
-        ? props.collection.urlKey.substring("language:".length)
-        : undefined;
+    const contextLangIso = getContextLangIso(props.collection.urlKey);
 
     // const otherTopic = TopicsList.find(
     //     (topic: ITopic) => topic.key === "Other"

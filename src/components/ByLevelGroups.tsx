@@ -1,5 +1,6 @@
 import React from "react";
 import { getBestLevelStringOrEmpty } from "../connection/LibraryQueryHooks";
+import { getContextLangIso } from "./Routes";
 import { ICollection } from "../model/ContentInterfaces";
 import { BookCardGroup } from "./BookCardGroup";
 
@@ -7,9 +8,7 @@ import { BookCardGroup } from "./BookCardGroup";
 export const ByLevelGroups: React.FunctionComponent<{
     collection: ICollection;
 }> = (props) => {
-    const contextLangIso = props.collection.urlKey.startsWith("language:")
-        ? props.collection.urlKey.substring("language:".length)
-        : undefined;
+    const contextLangIso = getContextLangIso(props.collection.urlKey);
     return (
         <React.Fragment>
             {["1", "2", "3", "4"].map((level) => (

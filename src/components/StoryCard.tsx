@@ -14,10 +14,11 @@ import Typography from "@material-ui/core/Typography";
 import { Link } from "react-router-dom";
 import { getUrlForTarget } from "./Routes";
 import { useContentfulPage } from "./pages/ContentfulPage";
+
 export const StoryCard: React.FunctionComponent<{ story: ICollection }> = (
     props
 ) => {
-    const url = getUrlForTarget("/page/create/" + props.story.urlKey); // REVIEW
+    const url = "/page/" + getUrlForTarget(props.story.urlKey);
     const page = useContentfulPage("page", props.story.urlKey);
     if (!page) {
         return null;

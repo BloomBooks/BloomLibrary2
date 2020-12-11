@@ -62,7 +62,8 @@ export const CheapCard: React.FunctionComponent<IProps> = (props) => {
                     color: black;
                 }
             `}
-            to={url}
+            /* The initial slash keeps url from just being 'tacked on' to existing url; not what we want here. */
+            to={"/" + url}
             role={props.role}
         >
             {props.children}
