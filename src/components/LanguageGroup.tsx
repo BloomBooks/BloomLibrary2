@@ -176,6 +176,12 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                         css={css`
                                             display: block;
                                             border: 0;
+                                            // Inputs smaller than 16pt cause Safari on IOS to zoom in (BL-9204), messing up our
+                                            // responsive web site by making it wider than the display.
+                                            // It would be better if there was a way to say "at least 16px" in case
+                                            // some user has extra-large fonts configured, but I don't know a reliable
+                                            // way to do it.
+                                            font-size: 16px;
                                         `}
                                         {...getInputProps({
                                             onKeyPress: (e) =>
