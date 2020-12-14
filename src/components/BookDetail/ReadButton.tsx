@@ -22,6 +22,7 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
     const l10n = useIntl();
     const history = useHistory();
     const url = getUrlForTarget(`player/${props.book.id}`);
+
     // This inserts breadcrumbs, embedding information, etc., which we don't want
     // since it interferes with the route for /player/X
     //const url = getUrlForTarget(`/player/${props.book.id}`);
@@ -60,6 +61,10 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
                                 `Sorry, the uploader of this book has restricted reading it to ${otherCountryRequired}`
                             );
                         } else {
+                            // Get the best title for the current iso code we're using
+                            const bestTitle = props.book.getBestTitle(
+                                props.contextLangIso
+                            );
                             // It's important to use react-dom's history here, because just setting
                             // the window's location will reload the page, and that will defeat
                             // the ReadBookPage's attempt to go full screen, because the browser
@@ -68,7 +73,7 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
                                 "/" +
                                     url +
                                     "?title=" +
-                                    encodeURI(props.book.title) +
+                                    encodeURI(bestTitle) +
                                     (props.contextLangIso
                                         ? "&lang=" + props.contextLangIso
                                         : "")

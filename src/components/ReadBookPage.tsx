@@ -117,6 +117,12 @@ export const ReadBookPage: React.FunctionComponent<{
     useSetBrowserTabTitle("Play"); // Note that the title comes from the ?title parameter, if present. This "Play" will not normally be used.
     const handleMessageFromBloomPlayer = useCallback(
         (event: MessageEvent) => {
+            if (event.data && event.data.event) {
+                const eventName = event.data.event;
+                if (eventName === "addBloomLibraryLocationToUrl") {
+                    return; // intercepted a message for 'receiveBloomLibraryMessage(e)'
+                }
+            }
             try {
                 const r = JSON.parse(event.data);
                 if (r.messageType === "backButtonClicked") {
