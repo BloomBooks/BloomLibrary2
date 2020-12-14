@@ -48,6 +48,10 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
         setTimeout(() => setReadyToAddAltText(true), 500);
     }, []);
     const titlePadding = 3;
+    // optional param
+    const langParam = props.contextLangIso
+        ? "?lang=" + props.contextLangIso
+        : "";
     const card = (
         <CheapCard
             className={props.className}
@@ -55,10 +59,7 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                 width: ${BookCardWidth}px;
             `}
             key={props.basicBookInfo.baseUrl}
-            target={
-                `book/${props.basicBookInfo.objectId}` +
-                (props.contextLangIso ? "?lang=" + props.contextLangIso : "")
-            }
+            target={`book/${props.basicBookInfo.objectId}${langParam}`}
             role="listitem"
             // onClick={() =>
             //     router!.pushBook(

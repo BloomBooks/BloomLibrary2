@@ -127,41 +127,46 @@ export const ReadBookPage: React.FunctionComponent<{
             // out on this page and haven't touched a button.
             .catch(() => {});
     };
-
-    useSetBrowserTabTitle("Play"); // Note that the title comes from the ?title parameter, if present. This "Play" will not normally be used.
     const handleMessageFromBloomPlayer = useCallback(
         (event: MessageEvent) => {
-            try {
-                const r = JSON.parse(event.data);
-                if (r.messageType === "backButtonClicked") {
-                    // History.push doesn't automatically raise beforeunload, since
-                    // from the browser's point of view we're staying on the same page.
-                    // Easiest just to call the function we want ourselves.
-                    onPlayerUnloading();
-                    // We don't want to use history.goBack() because we might have
-                    // come direct to the read-book page by following a URL, and
-                    // we want this arrow to give us a way into the Bloom site.
-                    let whereToGo = `/book/${id}`;
-                    // wish all this knowedge didn't have to be here
-                    if (lang) {
-                        whereToGo += `?lang=${lang}`;
+            const evtData = event.data;
+            // Keep from logging errors for messages not meant for us at all.
+            if (
+                typeof evtData === "string" &&
+                evtData.includes("messageType")
+            ) {
+                try {
+                    const r = JSON.parse(evtData);
+                    if (r.messageType === "backButtonClicked") {
+                        // History.push doesn't automatically raise beforeunload, since
+                        // from the browser's point of view we're staying on the same page.
+                        // Easiest just to call the function we want ourselves.
+                        onPlayerUnloading();
+                        // We don't want to use history.goBack() because we might have
+                        // come direct to the read-book page by following a URL, and
+                        // we want this arrow to give us a way into the Bloom site.
+                        let whereToGo = `/book/${id}`;
+                        // wish all this knowedge didn't have to be here
+                        if (lang) {
+                            whereToGo += `?lang=${lang}`;
+                        }
+                        history.push("/" + getUrlForTarget(whereToGo));
+                    } else if (r.messageType === "reportBookProperties") {
+                        const canRotate = r.params?.canRotate as boolean;
+                        const isLandscape = r.params?.landscape as boolean;
+                        setRotateParams({ canRotate, isLandscape });
+                        if (autoFullScreen) {
+                            setupScreen(canRotate, isLandscape);
+                        }
+                    } else if (r.messageType === "fullScreen") {
+                        setupScreen(
+                            rotateParams.canRotate,
+                            rotateParams.isLandscape
+                        );
                     }
-                    history.push("/" + getUrlForTarget(whereToGo));
-                } else if (r.messageType === "reportBookProperties") {
-                    const canRotate = r.params?.canRotate as boolean;
-                    const isLandscape = r.params?.landscape as boolean;
-                    setRotateParams({ canRotate, isLandscape });
-                    if (autoFullScreen) {
-                        setupScreen(canRotate, isLandscape);
-                    }
-                } else if (r.messageType === "fullScreen") {
-                    setupScreen(
-                        rotateParams.canRotate,
-                        rotateParams.isLandscape
-                    );
+                } catch (err) {
+                    console.log(`Got error with message: ${err}`);
                 }
-            } catch (err) {
-                console.log(`Got error with message: ${err}`);
             }
         },
         [
@@ -182,6 +187,10 @@ export const ReadBookPage: React.FunctionComponent<{
     }, [handleMessageFromBloomPlayer]);
 
     const book = useGetBookDetail(id);
+    const bestTitle = book ? book.getBestTitle(contextLangIso) : "Play";
+    // Note that the title comes from the ?title parameter, if present. This "Play" will not normally be used.
+    useSetBrowserTabTitle(bestTitle);
+
     useTrack(
         "Download Book",
         getBookAnalyticsInfo(book, contextLangIso, "read"),
