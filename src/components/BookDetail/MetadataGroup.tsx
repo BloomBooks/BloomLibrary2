@@ -37,7 +37,7 @@ export const LeftMetadata: React.FunctionComponent<{
             <div>
                 <FormattedMessage
                     id="book.metadata.pages"
-                    defaultMessage="{count} Pages"
+                    defaultMessage="{count} pages"
                     values={{ count: props.book.pageCount }}
                 />
             </div>
