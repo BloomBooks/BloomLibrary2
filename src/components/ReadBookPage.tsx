@@ -4,7 +4,13 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useEffect, useCallback, useState, useRef } from "react";
+import React, {
+    useEffect,
+    useCallback,
+    useState,
+    useRef,
+    useContext,
+} from "react";
 import { useGetBookDetail } from "../connection/LibraryQueryHooks";
 import { Book } from "../model/Book";
 import { getUrlOfHtmlOfDigitalVersion } from "./BookDetail/ArtifactHelper";
@@ -21,6 +27,7 @@ import {
     startingBook,
 } from "../analytics/BloomPlayerAnalytics";
 import { useMediaQuery } from "@material-ui/core";
+import { OSFeaturesContext } from "./OSFeaturesContext";
 
 export const ReadBookPage: React.FunctionComponent<{
     id: string;
@@ -28,11 +35,18 @@ export const ReadBookPage: React.FunctionComponent<{
     const id = props.id;
     const history = useHistory();
     const location = useLocation();
+    const { mobile } = useContext(OSFeaturesContext);
     const widerThanPhone = useMediaQuery("(min-width:450px)"); // a bit more than the largest phone width in the chrome debugger (411px)
     const higherThanPhone = useMediaQuery("(min-height:450px)");
+
     // If either dimension is smaller than a phone, we'll guess we are on one
     // and go full screen automatically.
-    const autoFullScreen = !widerThanPhone || !higherThanPhone;
+    // But we only want to do this on a mobile device. One reason is technical:
+    // If the browser window were small and thus caused autoFullScreen to be true,
+    // going full-screen would change the dimensions causing autoFullScreen to change to false.
+    // That causes the url to change which re-renders the iframe and causes havoc. See BL-8866.
+    const autoFullScreen = mobile && (!widerThanPhone || !higherThanPhone);
+
     const query = new URLSearchParams(location.search);
     const [, setCounter] = useState(0); // used to force render after going to full screen
     const lang = query.get("lang");
