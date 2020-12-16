@@ -22,6 +22,10 @@ export const WindowsInstallerLink: React.FunctionComponent<{
     const linkText = props
         .children!.toString()
         .replace("{version}", versionNumber);
+
+    // At the first render, info.url likely hasn't been resolved yet.
+    // But giving BlorgLink an undefined href causes problems.
+    const href = info.url ? info.url : "";
     return (
         <React.Fragment>
             <div
@@ -33,7 +37,7 @@ export const WindowsInstallerLink: React.FunctionComponent<{
                     align-items: start;
                 `}
             >
-                <BlorgLink href={info.url}>{linkText}</BlorgLink>
+                <BlorgLink href={href}>{linkText}</BlorgLink>
             </div>
         </React.Fragment>
     );
