@@ -37,13 +37,14 @@ const BookDetail: React.FunctionComponent<{
     const location = useLocation();
     const query = new URLSearchParams(location.search);
     const contextLangIso = getContextLang(query);
+    const bestTitle = book ? book.getBestTitle(contextLangIso) : "";
     useSetBrowserTabTitle(
         l10n.formatMessage(
             {
                 id: "book.detail.tabLabel",
                 defaultMessage: "About - {title}",
             },
-            { title: book?.title }
+            { title: bestTitle }
         )
     );
     const { collectionName } = splitPathname(location.pathname);
