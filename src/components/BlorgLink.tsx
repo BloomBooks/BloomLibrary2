@@ -8,6 +8,7 @@ import { Link as MuiLink } from "@material-ui/core";
 
 export interface IBlorgLinkProps
     extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+    href: string; // href is part of React.AnchorHTMLAttributes<HTMLAnchorElement> but optional; we want required
     newTabIfEmbedded?: boolean;
     color?: "primary" | "secondary";
 }
@@ -53,11 +54,16 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
         }
     }
 
+    let to = props.href;
+    if (!to.startsWith("/")) {
+        /* The initial slash keeps url from just being 'tacked on' to existing url; not what we want here. */
+        to = `/${to}`;
+    }
     return (
         <MuiLink
             {...propsToPassDown}
             component={RouterLink}
-            to={props.href!}
+            to={to}
             color={props.color || "primary"}
         >
             {props.children}

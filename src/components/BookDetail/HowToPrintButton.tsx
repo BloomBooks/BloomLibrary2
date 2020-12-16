@@ -19,6 +19,7 @@ export const HowToPrintButton: React.FunctionComponent = () => (
             margin-top: 5px;
         `}
         onClick={() => alert("not implemented yet")}
+        href=""
     >
         <PrintIcon
             css={css`
