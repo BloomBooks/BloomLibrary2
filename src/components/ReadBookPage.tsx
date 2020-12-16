@@ -188,7 +188,6 @@ export const ReadBookPage: React.FunctionComponent<{
 
     const book = useGetBookDetail(id);
     const bestTitle = book ? book.getBestTitle(contextLangIso) : "Play";
-    // Note that the title comes from the ?title parameter, if present. This "Play" will not normally be used.
     useSetBrowserTabTitle(bestTitle);
 
     useTrack(
