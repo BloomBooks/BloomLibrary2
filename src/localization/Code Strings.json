@@ -59,6 +59,10 @@
         "description": "Priority - Low",
         "message": "Bloom Logo"
     },
+    "search.booksMatching": {
+        "description": "",
+        "message": "Books matching \"{searchTerms}\""
+    },
     "search.forBooks": {
         "description": "",
         "message": "search for books"
@@ -70,6 +74,14 @@
     "search": {
         "description": "Priority - Low",
         "message": "Search"
+    },
+    "level.none": {
+        "message": "Books that don't have a level",
+        "description": "Used to label books which are missing level information."
+    },
+    "level.none.collection": {
+        "message": "Missing level",
+        "description": "Used to label books in a particular collection which are missing level information. For example, \"COVID-19 - Missing level\" as opposed to \"COVID-19 - Level 1\"."
     },
     "usermenu.signIn": {
         "description": "",

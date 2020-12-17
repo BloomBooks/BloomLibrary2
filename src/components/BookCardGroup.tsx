@@ -19,6 +19,7 @@ import { MoreCard } from "./MoreCard";
 import { CardSwiper } from "./CardSwiper";
 import { ICollection } from "../model/ContentInterfaces";
 import Typography from "@material-ui/core/Typography";
+import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 
 interface IProps {
     title?: string;
@@ -185,7 +186,9 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
     if (countToShow < maxCardsToRetrieve) {
         countToShow = books.length;
     }
-    const label = props.title ?? props.collection.label;
+
+    // props.title, if provided, is already localized
+    const label = props.title ?? getLocalizedCollectionLabel(props.collection);
 
     let group;
     switch (props.collection.layout) {
