@@ -244,7 +244,7 @@ export const CollectionStatsPage: React.FunctionComponent<{
             >
                 <div
                     css={css`
-                        width: 100%;
+                        width: calc(100% + (${kStatsPageGray} * 2) px);
                         background-color: ${kStatsPageGray};
                         margin-left: -${kSideMarginPx}px; // push back out to the edge
                         margin-right: -${kSideMarginPx}px; // push back out to the edge
