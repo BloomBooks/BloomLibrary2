@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 
 import React from "react";
 import Button from "@material-ui/core/Button";
-import ReadIcon from "./read.svg";
+import ReadIcon from "../../assets/Read.svg";
 import { commonUI } from "../../theme";
 import { Book } from "../../model/Book";
 import { useHistory } from "react-router-dom";
