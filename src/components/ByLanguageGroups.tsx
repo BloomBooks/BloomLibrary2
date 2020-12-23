@@ -114,7 +114,6 @@ export const ByLanguageGroups: React.FunctionComponent<{
         // You get it by typing "covid" into search, which then redirect to this page.
         // We can get away without it because the books.length will change when the query comes back
         searchResults.books.length,
-        reportBooksAndLanguages,
         waiting,
     ]);
     const langCount = rows.size;
@@ -149,13 +148,25 @@ export const ByLanguageGroups: React.FunctionComponent<{
         () => languages.filter((l) => rows.get(l.isoCode)),
         [languages, rows]
     );
+    const sortedRows = useMemo(() => {
+        rows.forEach((row) => {
+            row.sort((a, b) =>
+                a.title
+                    .trimLeft()
+                    .localeCompare(b.title.trimLeft(), l10n.locale, {
+                        numeric: true,
+                    })
+            );
+        });
+        return rows;
+    }, [rows, l10n.locale]);
     if (waiting) {
         return <React.Fragment />;
     }
     return (
         <React.Fragment>
             {languagesWithTheseBooks.map((l) => {
-                const books = rows.get(l.isoCode)!;
+                const books = sortedRows.get(l.isoCode)!;
                 return (
                     <BookGroup
                         key={l.isoCode}
