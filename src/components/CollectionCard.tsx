@@ -157,9 +157,8 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
             target={target}
             role="listitem"
         >
-            {titleElement}
             {props.kind !== "short" && imgElement}
-
+            {titleElement}
             <div
                 css={css`
                     margin-top: auto;

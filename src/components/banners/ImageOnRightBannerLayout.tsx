@@ -52,7 +52,9 @@ export const ImageOnRightBannerLayout: React.FunctionComponent<{
                 {props.bookCount || <BookCount filter={props.filter || {}} />}
             </div>
             {showImage && (
+                // the classname here is used by stylesheets in contentful
                 <div
+                    className="banner-image"
                     css={css`
                         display: flex;
                         flex-direction: column;
