@@ -63,7 +63,8 @@ export const ImageOnRightBannerLayout: React.FunctionComponent<{
                         // Suzanne & I decided to dial this back to "contain",
                         // and then let css defined in contentful switch back to
                         // "cover" for those images where it works well.
-                        background-size: cover;
+                        background-size: contain;
+                        background-repeat: no-repeat;
                         margin-left: auto; // if contentful then sets the image to have a fixed width, we get right-alignment
                         margin: 20px; // inset the image into the banner so there is color all around
                         * {
