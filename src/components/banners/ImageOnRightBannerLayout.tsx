@@ -64,18 +64,16 @@ export const ImageOnRightBannerLayout: React.FunctionComponent<{
                         have arrived yet */}
                         {props.banner.backgroundImage?.credits && (
                             <ImageCreditsTooltip
-                                imageCredits={
-                                    // we could make this markdown eventually but for now it's just a string
-                                    <span>
-                                        props.banner.backgroundImage?.credits
-                                    </span>
-                                }
-                            />
-                        )}
-                    </div>
-                )}
-            </div>
-            {props.bookCount || <BookCount filter={props.filter || {}} />}
+                            imageCredits={
+                                // we could make this markdown eventually but for now it's just a string
+                                <span>
+                                    {props.banner.backgroundImage?.credits}
+                                </span>
+                            }
+                        />
+                    )}
+                </div>
+            )}
         </div>
     );
 };
