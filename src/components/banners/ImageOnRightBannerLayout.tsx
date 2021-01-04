@@ -25,45 +25,60 @@ export const ImageOnRightBannerLayout: React.FunctionComponent<{
     return (
         <div
             css={css`
-                padding: 30px;
+                display: flex;
+                flex-direction: row;
             `}
         >
-            <Breadcrumbs />
-
             <div
                 css={css`
-                    display: flex;
-                    flex-direction: row;
+                    padding: 30px;
                 `}
             >
-                <Blurb
-                    {...props}
-                    //padding={"30px"}
-                    width={showImage ? "500px" : "100%"}
-                    hideTitle={props.banner.hideTitle}
-                />
-                {showImage && (
-                    <div
-                        css={css`
-                            display: flex;
-                            flex-direction: column;
-                            flex-grow: 1;
-                            overflow: hidden;
-                            background-size: cover;
-                            margin-left: 20px;
-                            * {
-                                color: white;
-                            }
+                <Breadcrumbs />
 
-                            background-image: url(${backgroundImageUrl});
-                            background-position: ${props.banner
-                                .backgroundImagePosition};
-                        `}
-                    >
-                        {/* there should always be imageCredits, but they may not
+                <div
+                    css={css`
+                        display: flex;
+                        flex-direction: row;
+                    `}
+                >
+                    <Blurb
+                        {...props}
+                        //padding={"30px"}
+                        width={showImage ? "500px" : "100%"}
+                        hideTitle={props.banner.hideTitle}
+                    />
+                </div>
+                {props.bookCount || <BookCount filter={props.filter || {}} />}
+            </div>
+            {showImage && (
+                <div
+                    css={css`
+                        display: flex;
+                        flex-direction: column;
+                        flex-grow: 1;
+                        overflow: hidden;
+                        // note: until Jan 2021 this was cover. Gives nice
+                        // effects when it works, but is harder to pull off.
+                        // Suzanne & I decided to dial this back to "contain",
+                        // and then let css defined in contentful switch back to
+                        // "cover" for those images where it works well.
+                        background-size: cover;
+                        margin-left: auto; // if contentful then sets the image to have a fixed width, we get right-alignment
+                        margin: 20px; // inset the image into the banner so there is color all around
+                        * {
+                            color: white;
+                        }
+
+                        background-image: url(${backgroundImageUrl});
+                        background-position: ${props.banner
+                            .backgroundImagePosition};
+                    `}
+                >
+                    {/* there should always be imageCredits, but they may not
                         have arrived yet */}
-                        {props.banner.backgroundImage?.credits && (
-                            <ImageCreditsTooltip
+                    {props.banner.backgroundImage?.credits && (
+                        <ImageCreditsTooltip
                             imageCredits={
                                 // we could make this markdown eventually but for now it's just a string
                                 <span>
