@@ -28,10 +28,9 @@ import {
 } from "../analytics/BloomPlayerAnalytics";
 import { useMediaQuery } from "@material-ui/core";
 import { OSFeaturesContext } from "./OSFeaturesContext";
+import { IReadBookPageProps } from "./ReadBookPageLazy";
 
-export const ReadBookPage: React.FunctionComponent<{
-    id: string;
-}> = (props) => {
+const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
     const id = props.id;
     const history = useHistory();
     const location = useLocation();
@@ -357,3 +356,6 @@ function getHarvesterBaseUrl(book: Book) {
     // Using slash rather than %2f at the end helps us download as the filename we want.
     // Otherwise, the filename can be something like ken@example.com_007b3c03-52b7-4689-80bd-06fd4b6f9f28_Fox+and+Frog.bloomd
 }
+
+// though we normally don't like to export defaults, this is required for react.lazy (code splitting)
+export default ReadBookPage;

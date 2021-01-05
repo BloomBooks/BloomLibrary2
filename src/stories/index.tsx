@@ -15,7 +15,7 @@ import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
 import BookDetail from "../components/BookDetail/BookDetail";
 import { ThemeProvider } from "@material-ui/styles";
 import theme from "../theme";
-import { ReadBookPage } from "../components/ReadBookPage";
+import { ReadBookPageLazy } from "../components/ReadBookPageLazy";
 import { ConfirmationDialog } from "../components/ConfirmationDialog";
 
 addDecorator(withKnobs);
@@ -30,7 +30,7 @@ storiesOf("BookDetail", module)
     // .add("production test book", () => <BookDetail id={"5rWQGc1d0q"} />)
     // .add("production test book 2", () => <BookDetail id={"BviSvJYwKk"} />)
     .add("ReadBookPage", () => (
-        <ReadBookPage
+        <ReadBookPageLazy
             id={
                 // this is "the women who married bats" from dev.bloomlibrary.org
                 "0oh7hURGtT"
