@@ -16,7 +16,7 @@ import searchIcon from "../search.png";
 import { CachedTablesContext } from "../model/CacheProvider";
 import { ILanguage } from "../model/Language";
 import { commonUI } from "../theme";
-import { CardSwiper } from "./CardSwiper";
+import { CardSwiperLazy } from "./CardSwiper";
 import { Redirect } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
 import { propsToHideAccessibilityElement } from "../Utilities";
@@ -45,8 +45,10 @@ export const LanguageGroup: React.FunctionComponent = () => {
         if (filteredLanguages.length) {
             return (
                 <div {...getMenuProps({})}>
-                    <CardSwiper>
-                        {filteredLanguages.map((l: any, index: number) => (
+                    <CardSwiperLazy
+                        data={filteredLanguages}
+                        placeHolderWidth="140px"
+                        contentMaker={(l: any, index: number) => (
                             // JohnnT: I think this comment is wrong; getLabelProps is actually to do with a label for
                             // the whole chooser.
                             // TODO: to complete the accessibility, we need to pass the Downshift getLabelProps into LanguageCard
@@ -61,8 +63,8 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                 objectId={l.objectId}
                                 role="option"
                             />
-                        ))}
-                    </CardSwiper>
+                        )}
+                    />
                 </div>
             );
         } else {
