@@ -14,12 +14,11 @@ import { AddTagPanel } from "./AddTagPanel";
 import { AddBookshelfPanel } from "./AddBookshelfPanel";
 import { useSetBrowserTabTitle } from "../Routes";
 import { AssignOriginalPublisherPanel } from "./AssignOriginalPublisherPanel";
+import { IBulkEditPageProps } from "./BulkEditPageLazy";
 
 // The Bulk Edit page is for moderators; it has a series of panels for making changes, followed by a grid
 // for selecting what books will be changed.
-export const BulkEditPage: React.FunctionComponent<{ filters: string }> = (
-    props
-) => {
+const BulkEditPage: React.FunctionComponent<IBulkEditPageProps> = (props) => {
     const [refreshIndex, setRefreshIndex] = useState(0);
     useSetBrowserTabTitle("Bulk Edit");
     let contextFilter: IFilter = {};
@@ -81,3 +80,6 @@ export class FilterHolder {
     public gridColumnFilters: GridFilter[] = []; //just the filters from the headers of the columns
 }
 const staticCurrentFilter: FilterHolder = new FilterHolder();
+
+// though we normally don't like to export defaults, this is required for react.lazy (code splitting)
+export default BulkEditPage;

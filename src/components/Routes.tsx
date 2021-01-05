@@ -6,10 +6,10 @@ import { jsx } from "@emotion/core";
 
 import React, { useEffect } from "react";
 import { Switch, Route, Redirect, useLocation } from "react-router-dom";
-import { GridPage } from "./Grid/GridPage";
-import { BulkEditPage } from "./BulkEdit/BulkEditPage";
-import BookDetail from "./BookDetail/BookDetail";
-import { ReadBookPage } from "./ReadBookPage";
+import { GridPage } from "./Grid/GridPage"; // internally lazy
+import { BulkEditPageLazy } from "./BulkEdit/BulkEditPageLazy";
+import { BookDetailLazy } from "./BookDetail/BookDetailLazy";
+import { ReadBookPageLazy } from "./ReadBookPageLazy";
 import { CollectionSubsetPage } from "./CollectionSubsetPage";
 import { ContentfulBanner } from "./banners/ContentfulBanner";
 import { CollectionPage } from "./CollectionPage";
@@ -99,13 +99,13 @@ export const Routes: React.FunctionComponent<{}> = () => {
                 <Route
                     path="/:breadcrumbs*/book/:id"
                     render={({ match }) => {
-                        return <BookDetail id={match.params.id} />;
+                        return <BookDetailLazy id={match.params.id} />;
                     }}
                 />
                 <Route
                     path="/player/:id"
                     render={({ match }) => {
-                        return <ReadBookPage id={match.params.id} />;
+                        return <ReadBookPageLazy id={match.params.id} />;
                     }}
                 />
                 <Route
@@ -126,7 +126,9 @@ export const Routes: React.FunctionComponent<{}> = () => {
                 <Route
                     path="/bulk/:filter*"
                     render={({ match }) => {
-                        return <BulkEditPage filters={match.params.filter} />;
+                        return (
+                            <BulkEditPageLazy filters={match.params.filter} />
+                        );
                     }}
                 />
                 <Route
