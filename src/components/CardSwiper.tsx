@@ -1,5 +1,11 @@
 import React, { ReactElement, useEffect, useState } from "react";
-import Swiper from "react-id-swiper";
+import SwiperCore, { Navigation, A11y } from "swiper";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/swiper.less";
+import "swiper/components/navigation/navigation.less";
+import "swiper/components/a11y/a11y.less";
+
+SwiperCore.use([Navigation]);
 
 export const CardSwiper: React.FunctionComponent<{
     children: ReactElement[];
@@ -16,11 +22,10 @@ export const CardSwiper: React.FunctionComponent<{
         lazy: true,
         watchSlidesVisibility: true,
         navigation: {
-            nextEl: ".swiper-button-next.swiper-button",
-            prevEl: ".swiper-button-prev.swiper-button",
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
         },
         spaceBetween: 20,
-        slidesPerView: "auto",
         // I'm not clear why this is needed now and wasn't in earlier versions.
         // It allows scrolling a bit further with the right arrow than is possible by default,
         // as if the row of cards we're scrolling through had an extra 100px of
@@ -34,7 +39,7 @@ export const CardSwiper: React.FunctionComponent<{
         threshold: 10, // drag of less than 10px not recognized, therefore acts as normal click.
         //preventClicks: false, // Even a long drag activates the link
         watchOverflow: true, // prevents sliding and showing arrows when all cards fit
-        a11y: true, // supposed to provide default accessibility behavior, but seems to do nothing.
+        //a11y: true, // supposed to provide default accessibility behavior, but seems to do nothing.
     };
 
     const [swiper, setSwiper] = useState<any | null>(null);
@@ -56,8 +61,12 @@ export const CardSwiper: React.FunctionComponent<{
     }, [props.children.length, props.wrapperRole, swiper]);
 
     return (
-        <Swiper {...swiperConfig} getSwiper={setSwiper}>
-            {props.children}
+        <Swiper {...swiperConfig} slidesPerView="auto" onSwiper={setSwiper}>
+            {props.children.map((x) => (
+                <SwiperSlide style={{ width: "initial" }}>{x}</SwiperSlide>
+            ))}
+            <div className="swiper-button-next swiper-button"></div>
+            <div className="swiper-button-prev swiper-button"></div>
         </Swiper>
     );
 };
