@@ -23,12 +23,12 @@ export const BookCardWidth = 140;
 interface IProps {
     basicBookInfo: IBasicBookInfo;
     className?: string;
-    // if it's in a lazy swiper, there won't be a book card at all unless it's visible,
+    // laziness never: if it's in a lazy swiper, there won't be a book card at all unless it's visible,
     // so it should just show everything.
-    // if it's in a non-lazy swiper, we will show the card for sure, but let swiper handle
+    // laziness swiper: if it's in a non-lazy swiper, we will show every card without a lazy swapper, but let swiper handle
     // the laziness of loading the image. (Not sure this is working with the latest swiper.
     // I don't think we use it any more.)
-    // otherwise, handle laziness here by putting the content in a LazyLoad.
+    // laziness self: otherwise (typically not in any swiper), handle laziness here by putting the content in a LazyLoad.
     laziness: "never" | "self" | "swiper";
     contextLangIso?: string;
 }

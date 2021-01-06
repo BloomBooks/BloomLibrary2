@@ -54,13 +54,13 @@ const RowOfCardsInternal: React.FunctionComponent<{
                     ? storyCardWidth
                     : collectionCardWidth
             }
-            contentMaker={(childCollection, index) => {
+            contentMaker={(childCollection: ICollection, index) => {
                 switch (props.collection.layout) {
                     case "row-of-story-cards":
                         return (
                             <StoryCard
                                 story={childCollection}
-                                key={childCollection!.urlKey}
+                                key={childCollection.urlKey}
                             />
                         );
                     default:
@@ -73,7 +73,7 @@ const RowOfCardsInternal: React.FunctionComponent<{
                                         ? "short"
                                         : undefined
                                 }
-                                key={childCollection!.urlKey}
+                                key={childCollection.urlKey}
                             />
                         );
                 }

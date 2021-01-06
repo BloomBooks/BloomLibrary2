@@ -14,7 +14,7 @@ import { AddTagPanel } from "./AddTagPanel";
 import { AddBookshelfPanel } from "./AddBookshelfPanel";
 import { useSetBrowserTabTitle } from "../Routes";
 import { AssignOriginalPublisherPanel } from "./AssignOriginalPublisherPanel";
-import { IBulkEditPageProps } from "./BulkEditPageLazy";
+import { IBulkEditPageProps } from "./BulkEditPageCodeSplit";
 
 // The Bulk Edit page is for moderators; it has a series of panels for making changes, followed by a grid
 // for selecting what books will be changed.

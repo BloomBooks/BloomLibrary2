@@ -137,7 +137,7 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
     let bookList: React.ReactElement | undefined;
 
     if (showInOneRow) {
-        const data: (IBasicBookInfo | string)[] = [...books];
+        const data: (IBasicBookInfo | "more")[] = [...books];
         if (wantMoreCard) {
             data.push("more");
         }
@@ -145,7 +145,7 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
             <CardSwiperLazy
                 placeHolderWidth={`${BookCardWidth}px`}
                 data={data}
-                contentMaker={(item, index) => {
+                getReactElement={(item: IBasicBookInfo | "more", index) => {
                     if (item === "more") {
                         return (
                             <MoreCard

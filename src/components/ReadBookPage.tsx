@@ -28,7 +28,7 @@ import {
 } from "../analytics/BloomPlayerAnalytics";
 import { useMediaQuery } from "@material-ui/core";
 import { OSFeaturesContext } from "./OSFeaturesContext";
-import { IReadBookPageProps } from "./ReadBookPageLazy";
+import { IReadBookPageProps } from "./ReadBookPageCodeSplit";
 
 const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
     const id = props.id;

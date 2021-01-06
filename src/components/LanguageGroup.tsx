@@ -5,7 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React, { useContext, useState } from "react";
-import { LanguageCard } from "./LanguageCard";
+import { LanguageCard, languageCardWidth } from "./LanguageCard";
 import Downshift, {
     GetItemPropsOptions,
     GetMenuPropsOptions,
@@ -47,8 +47,8 @@ export const LanguageGroup: React.FunctionComponent = () => {
                 <div {...getMenuProps({})}>
                     <CardSwiperLazy
                         data={filteredLanguages}
-                        placeHolderWidth="140px"
-                        contentMaker={(l: any, index: number) => (
+                        placeHolderWidth={languageCardWidth}
+                        getReactElement={(l: ILanguage, index: number) => (
                             // JohnnT: I think this comment is wrong; getLabelProps is actually to do with a label for
                             // the whole chooser.
                             // TODO: to complete the accessibility, we need to pass the Downshift getLabelProps into LanguageCard

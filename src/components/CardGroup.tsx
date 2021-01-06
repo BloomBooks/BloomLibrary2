@@ -33,7 +33,7 @@ export const CardGroup: React.FunctionComponent<IProps> = (props) => {
             <CardSwiperLazy
                 wrapperRole="list"
                 data={props.data}
-                contentMaker={props.contentMaker}
+                getReactElement={props.contentMaker}
                 placeHolderWidth={props.placeHolderWidth}
             />
         </div>

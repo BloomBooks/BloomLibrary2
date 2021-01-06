@@ -27,7 +27,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { FeaturesGroup } from "./FeaturesGroup";
 import { useIsEmbedded } from "../EmbeddingHost";
 import { commonUI } from "../../theme";
-import { IBookDetailProps } from "./BookDetailLazy";
+import { IBookDetailProps } from "./BookDetailCodeSplit";
 
 const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     const l10n = useIntl();
