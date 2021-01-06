@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import {
     useGetTagList,
@@ -28,22 +28,43 @@ export const CachedTablesContext = React.createContext<ICachedTables>({
     bookshelves: [],
 });
 
+const loadingResult = {
+    bookshelves: [],
+    languagesByBookCount: [],
+    tags: [],
+};
+
 export const CacheProvider: React.FunctionComponent = (props) => {
     CachedTables.bookshelves = useGetBookshelvesByCategory();
     CachedTables.tags = useGetTagList();
     CachedTables.languagesByBookCount = useGetCleanedAndOrderedLanguageList();
 
-    return (
-        <CachedTablesContext.Provider
-            value={{
-                bookshelves: CachedTables.bookshelves,
-                languagesByBookCount: CachedTables.languagesByBookCount,
-                tags: CachedTables.tags,
-            }}
-        >
-            {props.children}
-        </CachedTablesContext.Provider>
+    const resultData =
+        CachedTables.bookshelves.length &&
+        CachedTables.tags.length &&
+        CachedTables.languagesByBookCount.length
+            ? {
+                  bookshelves: CachedTables.bookshelves,
+                  languagesByBookCount: CachedTables.languagesByBookCount,
+                  tags: CachedTables.tags,
+              }
+            : loadingResult;
+
+    // This trick attempts to avoid re-rendering children between the initial render and
+    // when we have ALL the data.
+    // It's tempting to NOT render the children at all until we have the data. However,
+    // the initial render results in firing off more queries, which potentially could
+    // overlap the ones we're waiting for.
+    const result = useMemo(
+        () => (
+            <CachedTablesContext.Provider value={resultData}>
+                {props.children}
+            </CachedTablesContext.Provider>
+        ),
+        [resultData]
     );
+
+    return result;
 };
 
 // export const CacheProvider: React.FunctionComponent<{value}> = (props) => {
