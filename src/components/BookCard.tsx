@@ -18,14 +18,18 @@ import { getBestBookTitle } from "../model/Book";
 import TruncateMarkup from "react-truncate-markup";
 import { useIntl } from "react-intl";
 
-const BookCardWidth = 140;
+export const BookCardWidth = 140;
 
 interface IProps {
     basicBookInfo: IBasicBookInfo;
     className?: string;
-    // if we're showing in one row, then we'll let swiper handle the laziness, otherwise
-    // we tell the card to try and be lazy itself.
-    handleYourOwnLaziness: boolean;
+    // laziness never: if it's in a lazy swiper, there won't be a book card at all unless it's visible,
+    // so it should just show everything.
+    // laziness swiper: if it's in a non-lazy swiper, we will show every card without a lazy swapper, but let swiper handle
+    // the laziness of loading the image. (Not sure this is working with the latest swiper.
+    // I don't think we use it any more.)
+    // laziness self: otherwise (typically not in any swiper), handle laziness here by putting the content in a LazyLoad.
+    laziness: "never" | "self" | "swiper";
     contextLangIso?: string;
 }
 
@@ -97,7 +101,7 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                 }
                 // NB: if you're not getting an image, e.g. in Storybook, it might be because it's not inside of a swiper,
                 // but wasn't told to 'handle its own laziness'.
-                src={props.handleYourOwnLaziness ? thumbnailUrl : undefined}
+                src={props.laziness === "swiper" ? undefined : thumbnailUrl}
                 data-src={thumbnailUrl}
                 onError={(ev) => {
                     // This is unlikely to be necessary now, as we have what we think is a reliable
@@ -153,5 +157,5 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
         </CheapCard>
     );
     /* Note, LazyLoad currently breaks strict mode. See app.tsx */
-    return props.handleYourOwnLaziness ? <LazyLoad>{card}</LazyLoad> : card;
+    return props.laziness === "self" ? <LazyLoad>{card}</LazyLoad> : card;
 };

@@ -25,6 +25,8 @@ interface IProps {
     kind?: "short" | undefined;
 }
 
+export const collectionCardWidth = "220px";
+
 // Show a card with the name, icon, count, etc. of the collection. If the user clicks on it, they go to a page showing the collection.
 export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
     const l10n = useIntl();
@@ -150,7 +152,7 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
         <CheapCard
             {...propsToPassDown} // needed for swiper to work
             css={css`
-                width: 220px;
+                width: ${collectionCardWidth};
                 padding: 10px;
                 ${height}
             `}

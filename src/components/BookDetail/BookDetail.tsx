@@ -27,10 +27,9 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { FeaturesGroup } from "./FeaturesGroup";
 import { useIsEmbedded } from "../EmbeddingHost";
 import { commonUI } from "../../theme";
+import { IBookDetailProps } from "./BookDetailCodeSplit";
 
-const BookDetail: React.FunctionComponent<{
-    id: string;
-}> = (props) => {
+const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     const l10n = useIntl();
     const id = props.id;
     const book = useGetBookDetail(id);
@@ -88,7 +87,7 @@ function getContextLang(query: URLSearchParams): string | undefined {
     return undefined;
 }
 
-export const BookDetailInternal: React.FunctionComponent<{
+const BookDetailInternal: React.FunctionComponent<{
     book: Book;
     contextLangIso?: string;
 }> = observer((props) => {

@@ -5,7 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import React, { ReactElement } from "react";
 import LazyLoad from "react-lazyload";
-import { CardSwiper } from "./CardSwiper";
+import { CardSwiperLazy } from "./CardSwiper";
 import { ICollection } from "../model/ContentInterfaces";
 import {
     CollectionLabel,
@@ -15,7 +15,9 @@ import {
 interface IProps {
     collection: ICollection;
     layout: string;
-    children: ReactElement[];
+    data: any[];
+    contentMaker: (x: any, index: number) => ReactElement;
+    placeHolderWidth: string;
 }
 
 export const CardGroup: React.FunctionComponent<IProps> = (props) => {
@@ -28,7 +30,12 @@ export const CardGroup: React.FunctionComponent<IProps> = (props) => {
                 padding-left: 0;
             `}
         >
-            <CardSwiper wrapperRole="list">{props.children}</CardSwiper>
+            <CardSwiperLazy
+                wrapperRole="list"
+                data={props.data}
+                getReactElement={props.contentMaker}
+                placeHolderWidth={props.placeHolderWidth}
+            />
         </div>
     );
 

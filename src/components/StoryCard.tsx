@@ -15,6 +15,8 @@ import { Link } from "react-router-dom";
 import { getUrlForTarget } from "./Routes";
 import { useContentfulPage } from "./pages/ContentfulPage";
 
+export const storyCardWidth = "240px";
+
 export const StoryCard: React.FunctionComponent<{ story: ICollection }> = (
     props
 ) => {
@@ -26,7 +28,7 @@ export const StoryCard: React.FunctionComponent<{ story: ICollection }> = (
     return (
         <Card
             css={css`
-                width: 240px;
+                width: ${storyCardWidth};
                 // I don't know why, but without this, the edges get cut off
                 margin: 1px;
                 // enhance: really we just want this margin in-between cards
