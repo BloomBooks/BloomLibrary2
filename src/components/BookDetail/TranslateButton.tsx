@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 
 import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
-import TranslationIcon from "./translation.svg";
+import TranslationIcon from "../../assets/Translation.svg";
 import { commonUI } from "../../theme";
 import { FormattedMessage, useIntl } from "react-intl";
 import { DownloadPreflightDialog } from "./DownloadPreflightDialog";

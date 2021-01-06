@@ -14,6 +14,7 @@ export const commonUI = {
         creationArea: "#509E2F", // this is the SIL Intl green
         createAreaTextOnWhite: "#226B04", // a bit darker for contrast
         minContrastGray: "#767676", // lightest grey that is accessible on white background"
+        disabledIconGray: "#DDD",
     },
 
     // Some of these aren't very global, but this is a convenient place to put

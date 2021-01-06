@@ -51,8 +51,12 @@ export class ArtifactVisibilitySettings {
     };
 
     // returns undefined if it's not hidden and should be available
-    public reasonForHiding(book: Book, l10n: IntlShape): string | undefined {
-        switch (book.harvestState) {
+    public reasonForHiding(
+        book: Book,
+        l10n: IntlShape,
+        ignoreHarvesterState: boolean
+    ): string | undefined {
+        switch (ignoreHarvesterState ? "Done" : book.harvestState) {
             case "Updated":
             case "New":
                 return l10n.formatMessage({
@@ -61,6 +65,7 @@ export class ArtifactVisibilitySettings {
                         "Our system has not yet generated this format.",
                 });
             case "Failed":
+            case "FailedIndefinitely":
                 return l10n.formatMessage({
                     id: "book.artifacts.visibility.fail",
                     defaultMessage:

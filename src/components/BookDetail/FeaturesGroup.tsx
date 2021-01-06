@@ -57,7 +57,7 @@ export const FeaturesGroup: React.FunctionComponent<{
                             key: feature.featureKey,
                             fill: feature.isPresent
                                 ? commonUI.colors.bloomBlue
-                                : "#DDD", // They must have a color specified or will be transparent
+                                : commonUI.colors.disabledIconGray, // They must have a color specified or will be transparent
                             // I can't figure out how to make emotion CSS work here.
                             style: {
                                 // I'd prefer to just specify a height and let width be automatic.
