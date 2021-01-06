@@ -84,7 +84,7 @@ storiesOf("BookCard", module).add("simple", () => {
         edition: "",
     };
 
-    return <BookCard handleYourOwnLaziness={false} basicBookInfo={book} />;
+    return <BookCard laziness="swiper" basicBookInfo={book} />;
 });
 storiesOf("BookGroup", module)
     .add("Featured", () => (
