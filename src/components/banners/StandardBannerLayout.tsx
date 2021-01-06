@@ -12,6 +12,8 @@ import { ImgWithCredits } from "../../ImgWithCredits";
 import { Blurb } from "./Blurb";
 import { useMediaQuery } from "@material-ui/core";
 
+export const standardBannerHeight = "260px";
+
 export const StandardBannerLayout: React.FunctionComponent<{
     collection: ICollection;
     banner: IBanner;
@@ -67,7 +69,7 @@ export const StandardBannerLayout: React.FunctionComponent<{
                     css={css`
                         display: flex;
                         flex-direction: ${direction};
-                        max-height: 260px;
+                        max-height: ${standardBannerHeight};
                         overflow: hidden;
                     `}
                 >

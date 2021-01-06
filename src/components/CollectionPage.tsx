@@ -29,7 +29,10 @@ export const CollectionPage: React.FunctionComponent<{
     useSetBrowserTabTitle(useGetLocalizedCollectionLabel(collection));
     useTrack("Open Collection", params, sendIt);
     if (loading) {
-        return null;
+        // Typically the display of a collection fills the screen, pushing the footer off the bottom.
+        // Until we have a collection, we can't make much of a guess how big its display should be,
+        // but a very large guess like this prevents the footer flashing in and out of view.
+        return <div style={{ height: "2000px" }}></div>;
     }
 
     if (!collection) {
