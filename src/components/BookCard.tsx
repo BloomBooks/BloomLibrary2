@@ -61,6 +61,7 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
             className={props.className}
             css={css`
                 width: ${BookCardWidth}px;
+                line-height: normal; // counteract css reset
             `}
             key={props.basicBookInfo.baseUrl}
             target={`book/${props.basicBookInfo.objectId}${langParam}`}

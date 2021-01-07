@@ -79,7 +79,6 @@ export const LanguageFeatureList: React.FunctionComponent<IProps> = (props) => {
                 margin-top: auto;
                 padding: 3px;
                 overflow: hidden;
-                max-height: calc(2em + 4px);
             `}
         >
             <TruncateMarkup
