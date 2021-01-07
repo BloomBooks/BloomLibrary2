@@ -9,9 +9,8 @@ import { Book } from "../../model/Book";
 import { FormattedMessage } from "react-intl";
 import { getAllFeaturesWithTheseMarkedPresent } from "../FeatureHelper";
 import { commonUI } from "../../theme";
-import { getAnchorProps } from "../../embedded";
-import { Link } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography/Typography";
+import { BlorgLink } from "../BlorgLink";
 
 // Shows all the possible features, each as its icon, with a title that is its name.
 // Each functions as a button to go to a collection of books with the features.
@@ -47,17 +46,18 @@ export const FeaturesGroup: React.FunctionComponent<{
                 `}
             >
                 {features.map((feature) => (
-                    <Link
-                        {...getAnchorProps(
+                    <BlorgLink
+                        newTabIfEmbedded={true}
+                        href={
                             "/" + (feature.collectionHref || feature.featureKey)
-                        )}
+                        }
                         key={feature.featureKey}
                     >
                         {feature.icon({
                             key: feature.featureKey,
                             fill: feature.isPresent
                                 ? commonUI.colors.bloomBlue
-                                : "#DDD", // They must have a color specified or will be transparent
+                                : commonUI.colors.disabledIconGray, // They must have a color specified or will be transparent
                             // I can't figure out how to make emotion CSS work here.
                             style: {
                                 // I'd prefer to just specify a height and let width be automatic.
@@ -68,10 +68,9 @@ export const FeaturesGroup: React.FunctionComponent<{
                                 height: featureIconHeight + "px",
                                 width: featureIconHeight + "px",
                                 marginRight: "10px",
-                                //marginTop: "2px",
                             },
                         })}
-                    </Link>
+                    </BlorgLink>
                 ))}
             </div>
         </div>

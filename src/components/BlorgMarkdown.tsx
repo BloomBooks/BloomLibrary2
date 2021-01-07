@@ -9,22 +9,22 @@ import Markdown from "markdown-to-jsx";
 import { BloomReaderVersionNumber } from "./BloomReaderVersionNumber";
 import { WindowsInstallerDownload } from "./WindowsInstallerDownload";
 import { WindowsInstallerLink } from "./WindowsInstallerLink";
-import Link from "@material-ui/core/Link";
 import { Feature, FeatureGroup, FeatureMatrix } from "./FeatureMatrix";
+import { BlorgLink } from "./BlorgLink";
 
 export enum Column {
     leftColumn,
     rightColumn,
 }
 
-export const ContentfulMarkdownPart: React.FunctionComponent<{
+export const BlorgMarkdown: React.FunctionComponent<{
     markdown: string;
     column?: Column;
 }> = (props) => {
     const options = {
         overrides: {
             a: {
-                component: Link,
+                component: BlorgLink,
             },
             WindowsInstallerDownload,
             WindowsInstallerLink,

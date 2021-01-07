@@ -14,6 +14,7 @@ export const commonUI = {
         creationArea: "#509E2F", // this is the SIL Intl green
         createAreaTextOnWhite: "#226B04", // a bit darker for contrast
         minContrastGray: "#767676", // lightest grey that is accessible on white background"
+        disabledIconGray: "#DDD",
     },
 
     // Some of these aren't very global, but this is a convenient place to put
@@ -60,15 +61,28 @@ const theme = createMuiTheme({
         //         padding: "7px"
         //     }
         // },
+        MuiDialog: {
+            paper: {
+                padding: "24px",
+            },
+        },
         MuiDialogTitle: {
             root: {
-                backgroundColor: commonUI.colors.dialogTopBottomGray,
-                "& h6": { fontWeight: "bold" },
+                // we're using the padding on the enclosing dialog-paper instead, so that everything on the edge is consistent distance from the edge.
+                padding: 0,
+            },
+        },
+        MuiDialogContent: {
+            root: {
+                // we're using the padding on the enclosing dialog-paper instead, so that everything on the edge is consistent distance from the edge.
+                paddingLeft: 0,
+                paddingRight: 0,
             },
         },
         MuiDialogActions: {
             root: {
-                backgroundColor: commonUI.colors.dialogTopBottomGray,
+                // we're using the padding on the enclosing dialog-paper instead, so that everything on the edge is consistent distance from the edge.
+                padding: 0,
             },
         },
         // MuiTypography: {

@@ -20,30 +20,30 @@ import { DeleteButton } from "./DeleteButton";
 import { ReportButton } from "./ReportButton";
 import { Breadcrumbs } from "../Breadcrumbs";
 import { useTrack } from "../../analytics/Analytics";
-import { splitPathname, useDocumentTitle } from "../Routes";
+import { splitPathname, useSetBrowserTabTitle } from "../Routes";
 import { useLocation } from "react-router-dom";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { FormattedMessage, useIntl } from "react-intl";
 import { FeaturesGroup } from "./FeaturesGroup";
 import { useIsEmbedded } from "../EmbeddingHost";
 import { commonUI } from "../../theme";
+import { IBookDetailProps } from "./BookDetailCodeSplit";
 
-const BookDetail: React.FunctionComponent<{
-    id: string;
-}> = (props) => {
+const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     const l10n = useIntl();
     const id = props.id;
     const book = useGetBookDetail(id);
     const location = useLocation();
     const query = new URLSearchParams(location.search);
     const contextLangIso = getContextLang(query);
-    useDocumentTitle(
+    const bestTitle = book ? book.getBestTitle(contextLangIso) : "";
+    useSetBrowserTabTitle(
         l10n.formatMessage(
             {
                 id: "book.detail.tabLabel",
                 defaultMessage: "About - {title}",
             },
-            { title: book?.title }
+            { title: bestTitle }
         )
     );
     const { collectionName } = splitPathname(location.pathname);
@@ -87,7 +87,7 @@ function getContextLang(query: URLSearchParams): string | undefined {
     return undefined;
 }
 
-export const BookDetailInternal: React.FunctionComponent<{
+const BookDetailInternal: React.FunctionComponent<{
     book: Book;
     contextLangIso?: string;
 }> = observer((props) => {
@@ -203,7 +203,7 @@ export const BookDetailInternal: React.FunctionComponent<{
                         to yet, so we're not showing it anywhere.
                         (bloomDesktopAvailable definition is commented above)
                             {bloomDesktopAvailable || (
-                            <Link
+                            <BlorgLink
                                 color="secondary"
                                 target="_blank"
                                 rel="noopener noreferrer" // copied from LicenseLink
@@ -242,7 +242,7 @@ export const BookDetailInternal: React.FunctionComponent<{
                                         />
                                     </div>
                                 </div>
-                            </Link>
+                            </BlorgLink>
                         )} */}
                     </div>
                 </div>
@@ -270,9 +270,9 @@ export const BookDetailInternal: React.FunctionComponent<{
 // Shows two groups side by side, unless the screen is too narrow.
 // This is used by both the feature/download section and the metadata, so that
 // the second column in each has the same left edge.
-const Detail2ColumnRow: React.FunctionComponent<React.HTMLProps<
-    HTMLDivElement
->> = (props) => {
+const Detail2ColumnRow: React.FunctionComponent<
+    React.HTMLProps<HTMLDivElement>
+> = (props) => {
     return (
         <div
             css={css`

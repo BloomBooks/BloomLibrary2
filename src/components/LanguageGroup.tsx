@@ -5,7 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React, { useContext, useState } from "react";
-import { LanguageCard } from "./LanguageCard";
+import { LanguageCard, languageCardWidth } from "./LanguageCard";
 import Downshift, {
     GetItemPropsOptions,
     GetMenuPropsOptions,
@@ -13,10 +13,10 @@ import Downshift, {
 } from "downshift";
 import matchSorter from "match-sorter";
 import searchIcon from "../search.png";
-import { CachedTablesContext } from "../model/InternationalizedContent";
+import { CachedTablesContext } from "../model/CacheProvider";
 import { ILanguage } from "../model/Language";
 import { commonUI } from "../theme";
-import { CardSwiper } from "./CardSwiper";
+import { CardSwiperLazy } from "./CardSwiper";
 import { Redirect } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
 import { propsToHideAccessibilityElement } from "../Utilities";
@@ -45,8 +45,10 @@ export const LanguageGroup: React.FunctionComponent = () => {
         if (filteredLanguages.length) {
             return (
                 <div {...getMenuProps({})}>
-                    <CardSwiper>
-                        {filteredLanguages.map((l: any, index: number) => (
+                    <CardSwiperLazy
+                        data={filteredLanguages}
+                        placeHolderWidth={languageCardWidth}
+                        getReactElement={(l: ILanguage, index: number) => (
                             // JohnnT: I think this comment is wrong; getLabelProps is actually to do with a label for
                             // the whole chooser.
                             // TODO: to complete the accessibility, we need to pass the Downshift getLabelProps into LanguageCard
@@ -61,8 +63,8 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                 objectId={l.objectId}
                                 role="option"
                             />
-                        ))}
-                    </CardSwiper>
+                        )}
+                    />
                 </div>
             );
         } else {
@@ -176,6 +178,12 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                         css={css`
                                             display: block;
                                             border: 0;
+                                            // Inputs smaller than 16pt cause Safari on IOS to zoom in (BL-9204), messing up our
+                                            // responsive web site by making it wider than the display.
+                                            // It would be better if there was a way to say "at least 16px" in case
+                                            // some user has extra-large fonts configured, but I don't know a reliable
+                                            // way to do it.
+                                            font-size: 16px;
                                         `}
                                         {...getInputProps({
                                             onKeyPress: (e) =>

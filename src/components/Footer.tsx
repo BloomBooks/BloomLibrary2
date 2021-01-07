@@ -6,8 +6,7 @@ import { jsx } from "@emotion/core";
 import SILLogo from "../assets/SIL.png";
 import GitHubLogo from "../assets/GitHub-Mark-Light-32px.png";
 import React from "react";
-import { Link } from "@material-ui/core";
-import { Link as RouterLink } from "react-router-dom";
+import { BlorgLink } from "../components/BlorgLink";
 import { FormattedMessage, useIntl } from "react-intl";
 
 //import { Link } from "react-router-dom";
@@ -100,7 +99,7 @@ export const Footer: React.FunctionComponent = () => {
             css={css`
                 padding: 20px;
                 overflow-x: hidden; // At small screen widths, the Footer can cause horizontal scrolling.
-                min-height: 120px;
+                min-height: 140px;
                 *,
                 a,
                 a:visited {
@@ -111,11 +110,13 @@ export const Footer: React.FunctionComponent = () => {
                     display: flex;
                     height: 50px !important;
                 }
+                /* If someone can tell me why we need this rule, we can work on a solution,
+                   but it messes up the footer link row "Support | Downloads | etc."
                 a *,
                 span {
                     margin-top: auto !important;
                     margin-bottom: auto !important;
-                }
+                } */
 
                 background-color: #525252;
             `}
@@ -182,17 +183,5 @@ export const Footer: React.FunctionComponent = () => {
                 {github}
             </div>
         </div>
-    );
-};
-
-const BlorgLink: React.FunctionComponent<{ href: string }> = (props) => {
-    return (
-        <Link
-            // use the react-router link instead an an <a> element, so that we don't reload the page when we follow the href
-            component={RouterLink}
-            to={props.href}
-        >
-            <span>{props.children}</span>
-        </Link>
     );
 };

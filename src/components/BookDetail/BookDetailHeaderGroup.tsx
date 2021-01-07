@@ -13,15 +13,15 @@ import { LanguageLink } from "../LanguageLink";
 import { getArtifactVisibilitySettings, ArtifactType } from "./ArtifactHelper";
 import { ILanguage } from "../../model/Language";
 import { ReadOfflineButton } from "./ReadOfflineButton";
-import { useMediaQuery, Link } from "@material-ui/core";
+import { useMediaQuery } from "@material-ui/core";
 import { OSFeaturesContext } from "../../components/OSFeaturesContext";
 import { commonUI } from "../../theme";
 import { useGetBookCountRaw } from "../../connection/LibraryQueryHooks";
 import { getResultsOrMessageElement } from "../../connection/GetQueryResultsUI";
-import { getAnchorProps } from "../../embedded";
 import { useIsEmbedded } from "../EmbeddingHost";
 import { FormattedMessage } from "react-intl";
 import { BookThumbnail } from "./BookThumbnail";
+import { BlorgLink } from "../BlorgLink";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{
     book: Book;
@@ -122,7 +122,19 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                             `}
                         >
                             {props.book.getBestTitle(props.contextLangIso)}
+                            {props.book.edition ? (
+                                <div
+                                    css={css`
+                                        font-size: 12pt;
+                                        font-style: italic;
+                                        text-transform: capitalize;
+                                    `}
+                                >
+                                    {props.book.edition}
+                                </div>
+                            ) : undefined}
                         </h1>
+
                         {/* These are the original credits, which aren't enough. See BL-7990
     <div>{props.book.credits}</div> */}
                         {/* <div>Written by: somebody</div>
@@ -150,14 +162,13 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
 
                                 {countOfBooksWithMatchingPhash > 0 && (
                                     <li>
-                                        <Link
+                                        <BlorgLink
                                             css={css`
                                                 font-size: 9pt;
                                             `}
-                                            color={"secondary"}
-                                            {...getAnchorProps(
-                                                `/phash:${sanitizedPhashOfFirstContentImage}`
-                                            )}
+                                            newTabIfEmbedded={true}
+                                            color="secondary"
+                                            href={`/phash:${sanitizedPhashOfFirstContentImage}`}
                                         >
                                             <FormattedMessage
                                                 id="book.detail.translations"
@@ -166,7 +177,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                                                     count: countOfBooksWithMatchingPhash,
                                                 }}
                                             />
-                                        </Link>
+                                        </BlorgLink>
                                     </li>
                                 )}
                             </ul>

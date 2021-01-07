@@ -13,7 +13,8 @@ export interface IBanner {
     hideTitle: boolean;
     logo: IMedia | undefined;
     backgroundImage: IMedia | undefined;
-    blurb: object;
+    description: string; // markdown
+    blurb: object; // deprecated.... can remove once all the Rich Text `blurb`s are converted to markdown `description`s
     backgroundImagePosition: string;
     backgroundColor: string;
     textColor: string;
@@ -41,7 +42,7 @@ export interface ICollection {
     iconAltText?: string;
     hideLabelOnCardAndDefaultBanner?: boolean;
     childCollections: ICollection[]; // only the top level will have these
-    type: "collection" | "page" |"link";
+    type: "collection" | "page" | "link";
     // When the filter cannot be fully defined as simple json in a Contentful collection (interpreted by ParseServer).
     // E.g., we need to run code like getBestLevelStringOrEmpty() to get at the filter
     secondaryFilter?: (basicBookInfo: IBasicBookInfo) => boolean;

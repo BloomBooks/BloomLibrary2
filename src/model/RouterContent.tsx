@@ -41,5 +41,3 @@ export const RouterContent: React.FunctionComponent<{}> = (props) => {
         </React.Fragment>
     );
 };
-
-export default RouterContent;

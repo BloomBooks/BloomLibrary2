@@ -1,16 +1,15 @@
 import { useContext } from "react";
 import { getDisplayNamesFromLanguageCode, ILanguage } from "./Language";
-import {
-    CachedTablesContext,
-    CachedTables,
-} from "../model/InternationalizedContent";
+import { CachedTablesContext } from "./CacheProvider";
 import { ICollection, IRawCollection } from "./ContentInterfaces";
 import { convertContentfulCollectionToICollection } from "./Contentful";
+import { kTopicList } from "./ClosedVocabularies";
 import { strict as assert } from "assert";
 import { useContentful } from "../connection/UseContentful";
 import { useGetLoggedInUser } from "../connection/LoggedInUser";
 import { IFilter } from "../IFilter";
-import { ITopic } from "./useInternationalizedTopics";
+import { IntlShape, useIntl } from "react-intl";
+import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 
 /* From original design: Each collection has
     id
@@ -26,7 +25,8 @@ import { ITopic } from "./useInternationalizedTopics";
         ID
         Background Image (optional) We use the “card icon” if this is missing (e.g. all publishers)
         Image Credits
-        Blurb
+        Description
+        Blurb (deprecated)
 */
 
 interface IContentfulCollectionQueryResponse {
@@ -37,6 +37,7 @@ interface IContentfulCollectionQueryResponse {
 // A hook function for retrieving collections from contentful.
 function useGetContentfulCollections(): IRawCollection[] {
     // Get every collection in Contentful
+
     const { loading, result } = useContentful({
         content_type: "collection",
         include: 10, // depth
@@ -59,6 +60,7 @@ const collectionCache: any = {};
 export function useGetCollection(
     collectionName?: string
 ): IContentfulCollectionQueryResponse {
+    const l10n = useIntl();
     const collections = useGetContentfulCollections();
     const { languagesByBookCount: languages } = useContext(CachedTablesContext);
     const user = useGetLoggedInUser(); // for collection 'my-books'
@@ -122,7 +124,8 @@ export function useGetCollection(
             nameParts[1],
             templateFacetCollection,
             explicitCollection, // may or may not be defined
-            languages
+            languages,
+            l10n
         );
     } else if (explicitCollection) {
         if (explicitCollection.urlKey === "topics") {
@@ -159,7 +162,8 @@ function getFacetCollection(
     value: string,
     templateCollection: ICollection,
     explicitCollection: ICollection | undefined,
-    languages: ILanguage[]
+    languages: ILanguage[],
+    l10n: IntlShape
 ): ICollection {
     /* --- ENHANCE: Currently if we have a leading colon, e.g. bloomlibrary.org/:keyword:foo, we won't get to use the
     "[Template Keyword Collection]", nor the actual "keyword:foo" collection from CF, if it exists.
@@ -183,22 +187,13 @@ function getFacetCollection(
             );
 
         case "topic":
-            let currentTopic = CachedTables.topics.find(
-                (topic) => topic.key === value
-            );
-            if (!currentTopic) {
-                currentTopic = {
-                    key: value,
-                    displayName: value,
-                };
-            }
             // topic collections currently are generated from the fixed list above.
             // the master "topics" collection is real (so it can be included at the
             // right place in its parent) but its children are inserted by another special case.
             return makeTopicCollection(
                 templateCollection,
                 explicitCollection,
-                currentTopic
+                value
             );
 
         // case "keyword":
@@ -207,7 +202,7 @@ function getFacetCollection(
 
         case "search":
             // search collections are generated from a search string the user typed.
-            return makeCollectionForSearch(templateCollection, value);
+            return makeCollectionForSearch(templateCollection, value, l10n);
 
         case "phash":
             // search collections are generated from a search string the user typed.
@@ -253,7 +248,7 @@ export function makeLanguageCollection(
 export function makeTopicCollection(
     templateCollection: ICollection,
     explicitCollection: ICollection | undefined,
-    topic: ITopic
+    topicName: string
 ): ICollection {
     // last wins
     return {
@@ -264,26 +259,34 @@ export function makeTopicCollection(
         },
         ...templateCollection,
         ...explicitCollection,
-        urlKey: "topic:" + topic.key,
-        label:
-            templateCollection.label.replace("$1", topic.displayName) ||
-            topic.displayName,
-        filter: { topic: topic.key },
+        urlKey: "topic:" + topicName,
+        label: templateCollection.label.replace("$1", topicName) || topicName,
+        filter: { topic: topicName },
     };
 }
 
 export function makeCollectionForSearch(
     templateCollection: ICollection,
     search: string,
+    l10n: IntlShape,
     baseCollection?: ICollection
 ): ICollection {
     const filter = { ...baseCollection?.filter, search };
-    let label = 'Books matching "' + decodeURIComponent(search) + '"';
+    let label = l10n.formatMessage(
+        {
+            id: "search.booksMatching",
+            defaultMessage: 'Books matching "{searchTerms}"',
+        },
+        { searchTerms: decodeURIComponent(search) }
+    );
     // The root.read is a special case that is always unmarked...not including
     // it's label allows us to, for example, see "Bloom Library: Books matching dogs"
     // rather than "Bloom Library: Read - Books matching dogs"
     if (baseCollection?.urlKey !== "root.read" && baseCollection?.label) {
-        label = baseCollection.label + " - " + label;
+        const localizedBaseCollectionLabel = getLocalizedCollectionLabel(
+            baseCollection
+        );
+        label = `${localizedBaseCollectionLabel} - ${label}`;
     }
     let urlKey = ":search:" + search;
     if (baseCollection?.urlKey) {
@@ -337,37 +340,22 @@ export function getDummyCollectionForPreview(bannerId: string): ICollection {
 // card. But once you click the card, then you're going to topic:foo and we would pick up any explicit
 // "topic:foo" collection.
 function makeTopicCollectionsForCards(): ICollection[] {
-    return (
-        [...CachedTables.topics]
-            // Don't need an "Other" topic when displaying various topics on the home page
-            .filter((t: ITopic) => t.key !== "Other")
-            .sort(topicSort)
-            .map((t: ITopic) =>
-                makeTopicCollection(
-                    {
-                        urlKey: "topic:" + t.key,
-                        label: t.displayName,
-                        childCollections: [],
-                        filter: { topic: t.key },
-                        bannerId: "", // this will never be used because it's just for the card
-                        layout: "by-level", // this will never be used because it's just for the card
-                        type: "collection",
-                        description: "",
-                    },
-                    undefined,
-                    t
-                )
-            )
+    return [...kTopicList].sort().map((t) =>
+        makeTopicCollection(
+            {
+                urlKey: "topic:" + t,
+                label: t,
+                childCollections: [],
+                filter: { topic: t },
+                bannerId: "", // this will never be used because it's just for the card
+                layout: "by-level", // this will never be used because it's just for the card
+                type: "collection",
+                description: "",
+            },
+            undefined,
+            t
+        )
     );
-}
-
-function topicSort(a: ITopic, b: ITopic): number {
-    const key1 = a.displayName;
-    const key2 = b.displayName;
-    if (key1 === key2) {
-        return 0;
-    }
-    return key1 > key2 ? 1 : -1;
 }
 
 /* We're thinking (but not certain) that we just want to treat keyword lookups as searches (which will of course

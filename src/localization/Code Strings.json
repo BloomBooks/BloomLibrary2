@@ -1,0 +1,397 @@
+{
+    "language.name": {
+        "description": "enter the name of your language like speakers would like to see it",
+        "message": "English"
+    },
+
+    "books": {
+        "description": "",
+        "message": "Books"
+    },
+    "topics": {
+        "description": "",
+        "message": "Topics"
+    },
+
+    "bloomReader": {
+        "description": "",
+        "message": "Bloom Reader"
+    },
+    "downloads": {
+        "description": "",
+        "message": "Downloads"
+    },
+    "downloads.forTranslation": {
+        "description": "",
+        "message": "For Translation"
+    },
+
+    "language": {
+        "description": "",
+        "message": "Language"
+    },
+    "languages": {
+        "description": "",
+        "message": "Languages"
+    },
+    "bookTitle": {
+        "description": "",
+        "message": "Book Title"
+    },
+    "branding": {
+        "description": "",
+        "message": "Branding"
+    },
+
+    "header.read": {
+        "description": "",
+        "message": "Read"
+    },
+    "header.create": {
+        "description": "",
+        "message": "Create"
+    },
+    "header.home": {
+        "description": "",
+        "message": "Home"
+    },
+    "header.bloomLogo": {
+        "description": "Priority - Low",
+        "message": "Bloom Logo"
+    },
+    "search.booksMatching": {
+        "description": "",
+        "message": "Books matching \"{searchTerms}\""
+    },
+    "search.forBooks": {
+        "description": "",
+        "message": "search for books"
+    },
+    "search.noSearchResults": {
+        "description": "",
+        "message": "No books in the library match the search {searchString}"
+    },
+    "search": {
+        "description": "Priority - Low",
+        "message": "Search"
+    },
+    "level.none": {
+        "message": "Books that don't have a level",
+        "description": "Used to label books which are missing level information."
+    },
+    "level.none.collection": {
+        "message": "Missing level",
+        "description": "Used to label books in a particular collection which are missing level information. For example, \"COVID-19 - Missing level\" as opposed to \"COVID-19 - Level 1\"."
+    },
+    "usermenu.signIn": {
+        "description": "",
+        "message": "Sign In / Sign Up"
+    },
+    "usermenu.loginButton": {
+        "description": "Priority - Low",
+        "message": "login"
+    },
+    "usermenu.avatar": {
+        "description": "Priority - Low",
+        "message": "user"
+    },
+    "usermenu.profile": {
+        "description": "",
+        "message": "Profile"
+    },
+    "usermenu.myBooks": {
+        "description": "",
+        "message": "My Books"
+    },
+    "usermenu.logout": {
+        "description": "",
+        "message": "Log Out"
+    },
+    "card.seeMore": {
+        "description": "",
+        "message": "See more of these books."
+    },
+    "card.genericBooks": {
+        "description": "Priority - Low",
+        "message": "A stack of generic books"
+    },
+    "noLanguageMatch": {
+        "description": "",
+        "message": "We could not find any book with languages matching {searchString}"
+    },
+    "error.collectionNotFound": {
+        "description": "",
+        "message": "Collection not found"
+    },
+    "error.pageNotFound": {
+        "description": "",
+        "message": "We can't seem to find the page you're looking for."
+    },
+    "loading": {
+        "description": "",
+        "message": "Loading..."
+    },
+    "error.cantFind": {
+        "description": "",
+        "message": "Sorry, we could not find that book."
+    },
+    "bookCount": {
+        "description": "",
+        "message": "{count} books"
+    },
+    "bookCount.inLanguages": {
+        "message": "{bookCount} books in {languageCount} languages"
+    },
+    "languagesCount": {
+        "description": "",
+        "message": "{count} Languages"
+    },
+    "findBooksByLanguage": {
+        "description": "",
+        "message": "Find Books By Language"
+    },
+    "book.detail.tabLabel": {
+        "description": "",
+        "message": "About - {title}"
+    },
+    "book.detail.readButton": {
+        "description": "Uppercase only, please",
+        "message": "READ"
+    },
+    "book.detail.readOfflineButton": {
+        "description": "Uppercase only, please",
+        "message": "READ OFFLINE"
+    },
+    "book.detail.readOfflineIcon": {
+        "description": "Priority - Low",
+        "message": "bloom reader document"
+    },
+    "book.detail.readOfflineText": {
+        "description": "",
+        "message": "Download into Bloom Reader"
+    },
+    "book.detail.howToTranslate": {
+        "description": "",
+        "message": "How to translate"
+    },
+    "book.detail.translateButton.translate": {
+        "description": "",
+        "message": "Translate into <emphasis>your</emphasis> language!"
+    },
+    "book.detail.translateButton.download": {
+        "description": "",
+        "message": "Download into Bloom Editor"
+    },
+    "book.detail.translateButton.downloadIcon": {
+        "description": "Priority - Low",
+        "message": "Download Translation Icon"
+    },
+    "book.detail.translations": {
+        "description": "",
+        "message": "{count} books that may be translations"
+    },
+    "book.detail.pictureBook": {
+        "description": "",
+        "message": "Picture Book (no text)"
+    },
+    "book.detail.thumbnail": {
+        "description": "",
+        "message": "book thumbnail"
+    },
+    "book.metadata.level": {
+        "description": "",
+        "message": "Level {levelNumber}"
+    },
+    "book.metadata.pages": {
+        "description": "",
+        "message": "{count} pages"
+    },
+    "book.metadata.license": {
+        "description": "",
+        "message": "License:"
+    },
+    "book.metadata.uploadedBy": {
+        "description": "",
+        "message": "Uploaded {date} by {email}"
+    },
+    "book.metadata.lastUpdated": {
+        "description": "",
+        "message": "Last updated on {date}"
+    },
+    "book.metadata.features": {
+        "description": "",
+        "message": "Features"
+    },
+    "book.metadata.download": {
+        "description": "",
+        "message": "Download"
+    },
+    "book.metadata.tags": {
+        "description": "",
+        "message": "Tags:"
+    },
+    "book.metadata.keywords": {
+        "description": "",
+        "message": "Keywords:"
+    },
+    "book.metadata.bookshelves": {
+        "description": "",
+        "message": "Bookshelves:"
+    },
+    "book.metadata.related": {
+        "description": "",
+        "message": "Related Books:"
+    },
+    "book.report": {
+        "description": "",
+        "message": "Report"
+    },
+    "book.artifacts.visibility.new": {
+        "description": "",
+        "message": "Our system has not yet generated this format."
+    },
+    "book.artifacts.visibility.fail": {
+        "description": "",
+        "message": "Our system ran into a problem while trying to generate this format."
+    },
+    "book.artifacts.visibility.userHidden": {
+        "description": "",
+        "message": "This format has been hidden by the person who uploaded this book."
+    },
+    "book.artifacts.visibility.librarianHidden": {
+        "description": "",
+        "message": "This format has been hidden by a site moderator."
+    },
+    "book.artifacts.visibility.scaling": {
+        "description": "",
+        "message": "Our system was not confident about scaling the book to this format."
+    },
+    "book.artifacts.pdf": {
+        "description": "",
+        "message": "Download PDF"
+    },
+    "book.artifacts.epub": {
+        "description": "",
+        "message": "Download ePUB"
+    },
+    "book.artifacts.bloompub": {
+        "description": "",
+        "message": "Download BloomPUB for Bloom Reader or BloomPub Viewer"
+    },
+    "footer.support": {
+        "description": "",
+        "message": "Support"
+    },
+    "footer.terms": {
+        "description": "",
+        "message": "Terms of Use"
+    },
+    "footer.privacy": {
+        "description": "",
+        "message": "Privacy Policy"
+    },
+    "footer.silLogo": {
+        "description": "Priority - Low",
+        "message": "SIL Logo"
+    },
+    "footer.githubLogo": {
+        "description": "Priority - Low",
+        "message": "Github Logo"
+    },
+    "footer.contentful": {
+        "description": "Priority - Low",
+        "message": "Powered by Contentful"
+    },
+    "version.number.parenthetical": {
+        "description": "",
+        "message": "(version {versionNumber})"
+    },
+    "book.repliesWillBeSent": {
+        "description": "",
+        "message": "Replies will be sent to the email address you provided when you signed up:"
+    },
+    "common.OK": {
+        "message": "OK"
+    },
+    "common.cancel": {
+        "description": "",
+        "message": "Cancel"
+    },
+    "send": {
+        "description": "",
+        "message": "Send"
+    },
+    "common.close": {
+        "description": "",
+        "message": "Close"
+    },
+    "book.concerns": {
+        "description": "",
+        "message": "What concerns do you have about this book?"
+    },
+    "book.summary": {
+        "description": "",
+        "message": "Summary:"
+    },
+    "pleaseSignIn": {
+        "description": "",
+        "message": "Please Sign In"
+    },
+    "toUseThisSignIn": {
+        "description": "Your translation should contain two slashes. The part between will become a button or hot link for signing in",
+        "message": "To use this function, please /Sign In to Bloom Library/"
+    },
+    "concernReported": {
+        "description": "",
+        "message": "Your concern has been reported."
+    },
+    "delete": {
+        "description": "",
+        "message": "Delete"
+    },
+    "delete.book.confirm.title": {
+        "description": "",
+        "message": "Delete this book?"
+    },
+    "delete.book.confirm.button": {
+        "description": "",
+        "message": "Permanently delete this book"
+    },
+    "delete.book.confirm.message": {
+        "description": "",
+        "message": "If you continue, this version of the book <em>{title}</em> will be removed from BloomLibrary.org. There is no way to undo this except by uploading it again."
+    },
+    "language.unknown": {
+        "description": "Heading in a list of languages for a collection of books that have a particular feature, but we don't know which language(s) actually support the feature",
+        "message": "Unknown"
+    },
+    "Release Notes": {
+        "message": "Release Notes"
+    },
+    "downloadBook": {
+        "message": "Download Book"
+    },
+    "downloadShellbook.aboutToDownload.heading": {
+        "message": "Almost there…",
+        "description": "Heading for the download shellbook dialog. Indicates that the download is about to start after one more step."
+    },
+    "downloadShellbook.aboutToDownload.message": {
+        "message": "You are about to download {bookTitle} into the Bloom Desktop Application. You need to have <link>Bloom</link> already installed on your computer.",
+        "description": "{bookTitle} will be replaced by the title of the book being downloaded. The text inside <link></link> will be a link to the downloads page of the Bloom library website."
+    },
+    "downloadShellbook.aboutToDownload.dontShowAgain": {
+        "message": "I get it. Don't show me this again.",
+        "description": "Label for a check box which, if checked, prevents the extra dialog from appearing before downloading a shellbook."
+    },
+    "downloadShellbook.downloading.header": {
+        "message": "Here it comes!",
+        "description": "Heading for the download shellbook dialog. Indicates that the download should be happening now."
+    },
+    "downloadShellbook.downloading.message": {
+        "message": "Bloom should run, download the book, and allow you to add it to your collection."
+    },
+    "downloadShellbook.tryAgain": {
+        "message": "Try downloading it again",
+        "description": "Text for a button on the download shellbook dialog."
+    }
+}

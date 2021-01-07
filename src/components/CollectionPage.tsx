@@ -12,19 +12,21 @@ import { ByLanguageGroups } from "./ByLanguageGroups";
 import { ByTopicsGroups } from "./ByTopicsGroups";
 import { useTrack } from "../analytics/Analytics";
 import { IEmbedSettings } from "../model/ContentInterfaces";
-import { useDocumentTitle } from "./Routes";
+import { useSetBrowserTabTitle } from "./Routes";
 import { getCollectionAnalyticsInfo } from "../analytics/CollectionAnalyticsInfo";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
+import { useGetLocalizedCollectionLabel } from "../localization/CollectionLabel";
 
 export const CollectionPage: React.FunctionComponent<{
     collectionName: string;
     embeddedSettings?: IEmbedSettings;
 }> = (props) => {
+    const l10n = useIntl();
     // remains empty (and unused) except in byLanguageGroups mode, when a callback sets it.
     const [booksAndLanguages, setBooksAndLanguages] = useState("");
     const { collection, loading } = useGetCollection(props.collectionName);
     const { params, sendIt } = getCollectionAnalyticsInfo(collection);
-    useDocumentTitle(collection?.label);
+    useSetBrowserTabTitle(useGetLocalizedCollectionLabel(collection));
     useTrack("Open Collection", params, sendIt);
     if (loading) {
         return null;
@@ -78,7 +80,17 @@ export const CollectionPage: React.FunctionComponent<{
                         filter={collection.filter}
                         reportBooksAndLanguages={(books, languages) =>
                             setBooksAndLanguages(
-                                `${books} books in ${languages} languages`
+                                l10n.formatMessage(
+                                    {
+                                        id: "bookCount.inLanguages",
+                                        defaultMessage:
+                                            "{bookCount} books in {languageCount} languages",
+                                    },
+                                    {
+                                        bookCount: books,
+                                        languageCount: languages,
+                                    }
+                                )
                             )
                         }
                     />

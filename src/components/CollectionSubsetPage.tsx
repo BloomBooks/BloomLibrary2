@@ -19,7 +19,8 @@ import { track } from "../analytics/Analytics";
 import { BookCount } from "./BookCount";
 import { setBloomLibraryTitle } from "./Routes";
 import { NoSearchResults } from "./NoSearchResults";
-import { CachedTables } from "../model/InternationalizedContent";
+import { IntlShape, useIntl } from "react-intl";
+import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 
 // Given a collection and a string like level:1/topic:anthropology/search:dogs,
 // creates a corresponding collection by adding appropriate filters.
@@ -28,7 +29,8 @@ import { CachedTables } from "../model/InternationalizedContent";
 // a parent collection.
 export function generateCollectionFromFilters(
     collection: ICollection,
-    filters: string[]
+    filters: string[],
+    l10n: IntlShape
 ): { filteredCollection: ICollection; skip: number } {
     let filteredCollection = collection;
     let skip = 0;
@@ -39,28 +41,23 @@ export function generateCollectionFromFilters(
                 case "level":
                     filteredCollection = makeCollectionForLevel(
                         filteredCollection,
-                        parts[1]
+                        parts[1],
+                        l10n
                     );
                     break;
                 case "topic":
                     const topicKey = parts[1];
-                    const localizedTopic = CachedTables.topics.find(
-                        (topic) => topic.key === topicKey
-                    );
+
                     filteredCollection = makeCollectionForTopic(
                         filteredCollection,
-                        {
-                            key: topicKey,
-                            displayName: localizedTopic
-                                ? localizedTopic.displayName
-                                : topicKey,
-                        }
+                        topicKey
                     );
                     break;
                 case "search":
                     filteredCollection = makeCollectionForSearch(
                         collection,
                         decodeURIComponent(parts[1]),
+                        l10n,
                         filteredCollection
                     );
                     break;
@@ -93,6 +90,8 @@ export const CollectionSubsetPage: React.FunctionComponent<{
     collectionName: string; // may have tilde's, after last tilde is a contentful collection urlKey
     filters: string[]; // may result in automatically-created subcollections. Might be multiple ones slash-delimited
 }> = (props) => {
+    const l10n = useIntl();
+
     const { collection, loading } = useGetCollection(props.collectionName);
     // Can't use here, we want title information based on subcollection.
     //useDocumentTitle(props.collectionName);
@@ -122,7 +121,9 @@ export const CollectionSubsetPage: React.FunctionComponent<{
                 possibleSubCollection
             );
             track("Open Collection", params);
-            setBloomLibraryTitle(possibleSubCollection.label);
+            setBloomLibraryTitle(
+                getLocalizedCollectionLabel(possibleSubCollection)
+            );
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [whatDeterminesSubCollection]);
@@ -138,7 +139,7 @@ export const CollectionSubsetPage: React.FunctionComponent<{
     const {
         filteredCollection: subcollection,
         skip,
-    } = generateCollectionFromFilters(collection, props.filters);
+    } = generateCollectionFromFilters(collection, props.filters, l10n);
     possibleSubCollection = subcollection;
 
     // The idea here is that by default we break things up by level. If we already did, divide by topic.
@@ -161,7 +162,7 @@ export const CollectionSubsetPage: React.FunctionComponent<{
             }
             subList = (
                 <BookCardGroup
-                    title={subcollection.label}
+                    title={getLocalizedCollectionLabel(subcollection)}
                     collection={subcollection}
                     rows={maxRows}
                     skip={skip}

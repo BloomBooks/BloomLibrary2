@@ -3,7 +3,7 @@ import { observer } from "mobx-react";
 import { FilterHolder } from "./BulkEditPage";
 import { BulkEditPanel } from "./BulkEditPanel";
 import { AddBookshelfToAllBooksInFilter } from "./BulkChangeFunctions";
-import { CachedTablesContext } from "../../model/InternationalizedContent";
+import { CachedTablesContext } from "../../model/CacheProvider";
 
 export const AddBookshelfPanel: React.FunctionComponent<{
     filterHolder: FilterHolder;

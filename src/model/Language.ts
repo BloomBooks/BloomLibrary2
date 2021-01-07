@@ -22,6 +22,12 @@ export function getDisplayNamesFromLanguageCode(
     return undefined;
 }
 
+//  it's tempting to use navigator.language, but we also want to support other ways of choosing the current UI language
+// This is essentially a global (accessed via a setter function) because it's not worth it to me to do a tone of plumbing.
+let userInterfaceTagWeAreUsing: string = "en";
+export function setUserInterfaceTag(tag: string) {
+    userInterfaceTagWeAreUsing = tag;
+}
 export function getDisplayNamesForLanguage(
     language: ILanguage
 ): {
@@ -46,8 +52,11 @@ export function getDisplayNamesForLanguage(
     let primary: string;
     let secondary: string | undefined;
 
+    // the browser/crowdin language may be overly specific. E.g. "es-ES" --> "es"
+    const uilang = userInterfaceTagWeAreUsing.split("-")[0];
+
     if (language.englishName && language.englishName !== language.name) {
-        if (navigator.language === language.isoCode) {
+        if (uilang === language.isoCode) {
             primary = language.name;
             secondary = language.englishName;
         } else {
@@ -57,8 +66,8 @@ export function getDisplayNamesForLanguage(
     } else {
         primary = language.name;
     }
-    // if it looks like this is a variant, add that to the secondary
 
+    // if it looks like this is a variant, add that to the secondary
     if (
         language.isoCode &&
         language.isoCode.indexOf("-") > -1 &&
@@ -67,13 +76,13 @@ export function getDisplayNamesForLanguage(
     )
         secondary = [secondary, language.isoCode].join(" ");
 
-    const combined = primary + (secondary ? `(${secondary})` : "");
+    const combined = primary + (secondary ? ` (${secondary})` : "");
 
     return { primary, secondary, combined };
 }
 
 export function getCleanedAndOrderedLanguageList(
-    languages: ILanguage[]
+    languages: ILanguage[] // pre-ordered by usageCount descending
 ): ILanguage[] {
     const distinctCodeToCountMap: Map<string, number> = new Map<
         string,
@@ -86,6 +95,7 @@ export function getCleanedAndOrderedLanguageList(
             distinctCodeToCountMap.set(languageCode, languageResult.usageCount);
 
             // For now, use the name of the one with the most books
+            // (which is the first because they are pre-ordered)
             codeToLanguageMap.set(languageCode, languageResult);
         } else {
             const sumSoFar = distinctCodeToCountMap.get(languageCode)!;

@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
-        "target": "es5",
-        "module": "esnext",
+        "target": "ES2017",
+    "module": "esnext",
         "sourceMap": true,
         "jsx": "preserve",
         "lib": ["dom", "es5", "scripthost", "es2017.object"],

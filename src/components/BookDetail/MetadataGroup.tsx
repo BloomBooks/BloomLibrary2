@@ -8,90 +8,90 @@ import React, { useContext } from "react";
 import { Book } from "../../model/Book";
 import { observer } from "mobx-react";
 import { LicenseLink } from "./LicenseLink";
-//NB: v3.0 of title-case has a new API, but don't upgrade: it doesn't actually work like v2.x does, where it can take fooBar and give us "Foo Bar"
-import { Link, useTheme } from "@material-ui/core";
 import { BookStats } from "./BookStats";
-import { CachedTablesContext } from "../../model/InternationalizedContent";
-import { getTagDisplayName } from "../../model/Tag";
+import { CachedTablesContext } from "../../model/CacheProvider";
 import { useGetRelatedBooks } from "../../connection/LibraryQueryHooks";
 import { Bookshelf } from "../../model/Bookshelf";
 import { KeywordLinks } from "./KeywordLinks";
-import { getAnchorProps } from "../../embedded";
-import { FormattedMessage } from "react-intl";
+import { BlorgLink } from "../BlorgLink";
+import { FormattedMessage, useIntl } from "react-intl";
 
 export const LeftMetadata: React.FunctionComponent<{
     book: Book;
-}> = observer((props) => (
-    <div
-        css={css`
-            flex-grow: 1;
-        `}
-    >
-        {props.book.level && (
-            <div>
-                <FormattedMessage
-                    id="book.metadata.level"
-                    defaultMessage="Level {levelNumber}"
-                    values={{ levelNumber: props.book.level }}
-                />
-            </div>
-        )}
-        <div>
-            <FormattedMessage
-                id="book.metadata.pages"
-                defaultMessage="{count} Pages"
-                values={{ count: props.book.pageCount }}
-            />
-        </div>
-        <div>{props.book.copyright}</div>
-        <div>
-            <FormattedMessage
-                id="book.metadata.license"
-                defaultMessage="License:"
-            />{" "}
-            <LicenseLink book={props.book} />
-        </div>
-        <div>
-            <FormattedMessage
-                id="book.metadata.uploadedBy"
-                defaultMessage="Uploaded {date} by {email}"
-                values={{
-                    date: props.book.uploadDate!.toLocaleDateString(),
-                    email: obfuscateEmail(props.book.uploader),
-                }}
-            />
-        </div>
-        <div>
-            <FormattedMessage
-                id="book.metadata.lastUpdated"
-                defaultMessage="Last updated on {date}"
-                values={{
-                    date: props.book.updateDate!.toLocaleDateString(),
-                }}
-            />
-        </div>
-        {props.book.importedBookSourceUrl &&
-            props.book.importedBookSourceUrl.length > 0 && (
+}> = observer((props) => {
+    return (
+        <div
+            css={css`
+                flex-grow: 1;
+            `}
+        >
+            {props.book.level && (
                 <div>
-                    Imported from&nbsp;
-                    <Link
-                        color="secondary"
-                        href={props.book.importedBookSourceUrl}
-                    >
-                        {new URL(props.book.importedBookSourceUrl).host}
-                    </Link>
+                    <FormattedMessage
+                        id="book.metadata.level"
+                        defaultMessage="Level {levelNumber}"
+                        values={{ levelNumber: props.book.level }}
+                    />
                 </div>
             )}
-        <BookStats book={props.book} />
-    </div>
-));
+            <div>
+                <FormattedMessage
+                    id="book.metadata.pages"
+                    defaultMessage="{count} pages"
+                    values={{ count: props.book.pageCount }}
+                />
+            </div>
+            <div>{props.book.copyright}</div>
+            <div>
+                <FormattedMessage
+                    id="book.metadata.license"
+                    defaultMessage="License:"
+                />{" "}
+                <LicenseLink book={props.book} />
+            </div>
+            <div>
+                <FormattedMessage
+                    id="book.metadata.uploadedBy"
+                    defaultMessage="Uploaded {date} by {email}"
+                    values={{
+                        date: props.book.uploadDate!.toLocaleDateString(),
+                        email: obfuscateEmail(props.book.uploader),
+                    }}
+                />
+            </div>
+            <div>
+                <FormattedMessage
+                    id="book.metadata.lastUpdated"
+                    defaultMessage="Last updated on {date}"
+                    values={{
+                        date: props.book.updateDate!.toLocaleDateString(),
+                    }}
+                />
+            </div>
+            {props.book.importedBookSourceUrl &&
+                props.book.importedBookSourceUrl.length > 0 && (
+                    <div>
+                        Imported from&nbsp;
+                        <BlorgLink
+                            color="secondary"
+                            href={props.book.importedBookSourceUrl}
+                        >
+                            {new URL(props.book.importedBookSourceUrl).host}
+                        </BlorgLink>
+                    </div>
+                )}
+            <BookStats book={props.book} />
+        </div>
+    );
+});
 
 export const RightMetadata: React.FunctionComponent<{
     book: Book;
 }> = observer((props) => {
     const { bookshelves } = useContext(CachedTablesContext);
     const relatedBooks = useGetRelatedBooks(props.book.id);
-    const theme = useTheme();
+    const l10n = useIntl();
+
     return (
         <div css={css``}>
             <div>
@@ -105,7 +105,17 @@ export const RightMetadata: React.FunctionComponent<{
                         ["topic", "region"].includes(t.split(":")[0])
                     )
                     .map((t) => {
-                        return getTagDisplayName(t);
+                        const parts = t.split(":");
+                        const prefix = parts[0];
+                        const tag = parts[1];
+                        if (prefix === "topic") {
+                            return l10n.formatMessage({
+                                id: "topic." + tag,
+                                defaultMessage: tag,
+                            });
+                        } else {
+                            return tag;
+                        }
                     })
                     .join(", ")}
             </div>
@@ -145,15 +155,13 @@ export const RightMetadata: React.FunctionComponent<{
                         {relatedBooks.map((b: Book) => {
                             return (
                                 <li key={b.id}>
-                                    <Link
-                                        css={css`
-                                            color: ${theme.palette.secondary
-                                                .main} !important;
-                                        `}
-                                        {...getAnchorProps(`/book/${b.id}`)}
+                                    <BlorgLink
+                                        newTabIfEmbedded={true}
+                                        color="secondary"
+                                        href={`/book/${b.id}`}
                                     >
                                         {b.title}
-                                    </Link>
+                                    </BlorgLink>
                                 </li>
                             );
                         })}

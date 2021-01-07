@@ -1,5 +1,4 @@
-import React, { useContext } from "react";
-import { useIntl } from "react-intl";
+import React from "react";
 import { ReactComponent as ActivityIcon } from "../assets/Activity.svg";
 import { ReactComponent as ComicIcon } from "../assets/Comic.svg";
 import { ReactComponent as MotionIcon } from "../assets/Motion.svg";
@@ -7,11 +6,7 @@ import { ReactComponent as SignLanguageIcon } from "../assets/Sign Language.svg"
 import { ReactComponent as TalkingBookIcon } from "../assets/Talking Book.svg";
 import { ReactComponent as VisuallyImpairedIcon } from "../assets/Visually Impaired.svg";
 import { IFilter } from "../IFilter";
-import {
-    CachedTables,
-    CachedTablesContext,
-    ILocalizedString,
-} from "../model/InternationalizedContent";
+import { getTranslation } from "../localization/GetLocalizations";
 
 // Information about features (like talking book, motion) that supports the display of
 // features in the bar under the picture on book cards. Previously also supported Feature
@@ -54,7 +49,7 @@ export const featureIconHeight = 12;
 export const featureSpecs: IFeatureSpec[] = [
     {
         featureKey: "talkingBook",
-        //featureTitle: "Talking Books",
+        // featureTitle: "Talking Books",
         filter: { feature: "talkingBook" },
         // description: (
         //     <div>
@@ -77,7 +72,7 @@ export const featureSpecs: IFeatureSpec[] = [
         icon(props) {
             return (
                 <TalkingBookIcon
-                    title={getLocalizedLabel(this.englishLabel)}
+                    title={getLocalizedLabel(this)}
                     {...props}
                 ></TalkingBookIcon>
             );
@@ -88,7 +83,7 @@ export const featureSpecs: IFeatureSpec[] = [
     },
     {
         featureKey: "blind",
-        //featureTitle: "Books for the Visually Impaired",
+        // featureTitle: "Books for the Visually Impaired",
         filter: { feature: "blind" },
         // description: (
         //     <div>
@@ -99,7 +94,7 @@ export const featureSpecs: IFeatureSpec[] = [
         icon(props) {
             return (
                 <VisuallyImpairedIcon
-                    title={getLocalizedLabel(this.englishLabel)}
+                    title={getLocalizedLabel(this)}
                     {...props}
                 ></VisuallyImpairedIcon>
             );
@@ -120,7 +115,7 @@ export const featureSpecs: IFeatureSpec[] = [
         icon(props) {
             return (
                 <ComicIcon
-                    title={getLocalizedLabel(this.englishLabel)}
+                    title={getLocalizedLabel(this)}
                     {...props}
                 ></ComicIcon>
             );
@@ -163,13 +158,13 @@ export const featureSpecs: IFeatureSpec[] = [
         icon(props) {
             return (
                 <MotionIcon
-                    title={getLocalizedLabel(this.englishLabel)}
+                    title={getLocalizedLabel(this)}
                     {...props}
                 ></MotionIcon>
             );
         },
         languageDependent: false,
-        englishLabel: getLocalizedLabel("Motion Book"),
+        englishLabel: "Motion Book",
     },
     {
         featureKey: "signLanguage",
@@ -185,7 +180,7 @@ export const featureSpecs: IFeatureSpec[] = [
         icon(props) {
             return (
                 <SignLanguageIcon
-                    title={getLocalizedLabel(this.englishLabel)}
+                    title={getLocalizedLabel(this)}
                     {...props}
                 ></SignLanguageIcon>
             );
@@ -208,7 +203,7 @@ export const featureSpecs: IFeatureSpec[] = [
         icon(props) {
             return (
                 <ActivityIcon
-                    title={getLocalizedLabel(this.englishLabel)}
+                    title={getLocalizedLabel(this)}
                     {...props}
                 ></ActivityIcon>
             );
@@ -218,6 +213,13 @@ export const featureSpecs: IFeatureSpec[] = [
         englishLabel: "Interactive Activity",
     },
 ];
+
+export function getLocalizedLabel(feature: IFeatureSpec): string {
+    return getTranslation(
+        `feature.${feature.featureKey}`,
+        feature.englishLabel
+    );
+}
 
 export function featureIsLanguageDependent(featureKey: string): boolean {
     for (const f of featureSpecs) {
@@ -266,8 +268,8 @@ export function bookHasFeatureInLanguage(
     lang: string
 ): boolean {
     if (!featureInfoOfBook) return false;
-    const target = feature + ":" + lang;
-    return featureInfoOfBook.indexOf(target) >= 0;
+
+    return featureInfoOfBook.indexOf(feature + ":" + lang) >= 0;
 }
 
 // Get a FeatureOption (and thus icon-creating function) for each
@@ -295,45 +297,4 @@ export function getFeaturesAvailableForOneLanguageOfBook(
                 )[0]
         )
         .filter((f) => !!f); // drop the features where there was no match
-}
-
-export function useGetLocalizedFeatureLabels() {
-    const localizedFeatureLabels: ILocalizedString[] = [];
-    const l10n = useIntl();
-
-    featureSpecs.forEach((featureSpec) => {
-        localizedFeatureLabels.push({
-            english: featureSpec.englishLabel,
-            localizedString: l10n.formatMessage({
-                id: `feature.${featureSpec.featureKey}.label`,
-                defaultMessage: featureSpec.englishLabel,
-            }),
-        });
-    });
-
-    return localizedFeatureLabels;
-}
-
-// As of the addition of this function in Nov 2020, the only callers do not pass in featureLabels
-// and thus use the version from CachedTables. I'm not 100% sure how this works, but it apparently
-// makes at least one pass when CachedTables is undefined and then comes back when it is.
-// If you find a situation in which the timing doesn't work for your situation, you may
-// need to call useGetLocalizedLabel instead.
-function getLocalizedLabel(
-    englishFeatureLabel: string,
-    featureLabels?: ILocalizedString[]
-) {
-    if (!featureLabels) {
-        if (!CachedTables) return englishFeatureLabel;
-        featureLabels = CachedTables.featureLabels;
-    }
-    const featureLabelInfo = featureLabels.find(
-        (featureLabel) => featureLabel.english === englishFeatureLabel
-    );
-    return featureLabelInfo?.localizedString ?? englishFeatureLabel;
-}
-
-export function useGetLocalizedLabel(englishFeatureLabel: string): string {
-    const { featureLabels } = useContext(CachedTablesContext);
-    return getLocalizedLabel(englishFeatureLabel, featureLabels);
 }

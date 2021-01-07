@@ -16,6 +16,8 @@ interface ILanguageWithRole extends ILanguage {
     role?: string; // accessibility role, passed on as part of propsToPassDown
 }
 
+export const languageCardWidth = "140px";
+
 export const LanguageCard: React.FunctionComponent<ILanguageWithRole> = (
     props
 ) => {
@@ -36,7 +38,7 @@ export const LanguageCard: React.FunctionComponent<ILanguageWithRole> = (
             {...propsToPassDown} // makes swiper work
             css={css`
                 //text-align: center;
-                width: 140px;
+                width: ${languageCardWidth};
                 height: ${commonUI.languageCardHeightInPx}px;
                 padding: ${cardPadding};
             `}
@@ -90,7 +92,7 @@ export const LanguageCard: React.FunctionComponent<ILanguageWithRole> = (
                 {props.usageCount ? (
                     <FormattedMessage
                         id="bookCount"
-                        defaultMessage="{count} Books"
+                        defaultMessage="{count} books"
                         values={{ count: props.usageCount }}
                     />
                 ) : (

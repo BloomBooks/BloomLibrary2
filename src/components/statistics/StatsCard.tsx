@@ -30,13 +30,12 @@ export const StatsCard: React.FunctionComponent<{
     >
         <CardContent
             css={css`
-                padding-top: unset;
-                padding-bottom: unset;
-                padding-left: unset;
-                padding-right: unset;
-                padding: 24px;
-
-                height: 150px;
+                padding: 16px;
+                // Override MuiCardContent default which gives the last child (thus the card) a bottom of 24px.
+                :last-child {
+                    padding-bottom: 16px;
+                }
+                height: 200px;
 
                 display: flex;
                 flex-direction: column;

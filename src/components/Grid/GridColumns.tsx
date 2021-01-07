@@ -10,12 +10,13 @@ import {
     TableFilterRow,
 } from "@devexpress/dx-react-grid";
 
-import { Checkbox, Link, TableCell, Select, MenuItem } from "@material-ui/core";
+import { Checkbox, TableCell, Select, MenuItem } from "@material-ui/core";
 import { Book } from "../../model/Book";
 import QueryString from "qs";
 import titleCase from "title-case";
 import { IFilter, InCirculationOptions } from "../../IFilter";
-import { CachedTables } from "../../model/InternationalizedContent";
+import { CachedTables } from "../../model/CacheProvider";
+import { BlorgLink } from "../BlorgLink";
 
 export interface IGridColumn extends DevExpressColumn {
     moderatorOnly?: boolean;
@@ -47,7 +48,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             defaultVisible: true,
             sortingEnabled: true,
             getCellValue: (b: Book) => (
-                <Link
+                <BlorgLink
                     href={`/book/${b.id}`}
                     css={css`
                         color: ${b.inCirculation
@@ -57,7 +58,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                     target="_blank"
                 >
                     {b.title}
-                </Link>
+                </BlorgLink>
             ),
             addToFilter: (filter: IFilter, value: string) => {
                 // enhance: at the moment we don't have a "title:" search axis, so this will search other fields as well
@@ -270,14 +271,14 @@ export const GridSearchLink: React.FunctionComponent<{
     };
     const url = "/grid/?" + QueryString.stringify(location);
     return (
-        <Link
+        <BlorgLink
             css={css`
                 color: black !important;
             `}
             href={url}
         >
             {props.children}
-        </Link>
+        </BlorgLink>
     );
 };
 

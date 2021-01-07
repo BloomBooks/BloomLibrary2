@@ -1,12 +1,12 @@
 import React from "react";
-import { useDocumentTitle } from "../Routes";
+import { useSetBrowserTabTitle } from "../Routes";
 import { CreationThemeProvider } from "../../theme";
 import { useLocation } from "react-router-dom";
 
 export const ThemeForLocation: React.FunctionComponent<{ urlKey: string }> = (
     props
 ) => {
-    useDocumentTitle(props.urlKey);
+    useSetBrowserTabTitle(props.urlKey);
     const inCreate =
         useLocation().pathname.toLowerCase().indexOf("create") > -1;
 
