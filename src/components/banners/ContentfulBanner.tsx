@@ -4,6 +4,7 @@ import { IFilter } from "../../IFilter";
 import { ICollection } from "../../model/ContentInterfaces";
 import { convertContentfulBannerToIBanner } from "../../model/Contentful";
 import { Banner } from "./Banner";
+import { standardBannerHeight } from "./StandardBannerLayout";
 export const ContentfulBanner: React.FunctionComponent<{
     id: string; // of the banner object on contentful
     collection: ICollection;
@@ -19,7 +20,10 @@ export const ContentfulBanner: React.FunctionComponent<{
         // include: 1
     });
     if (loading) {
-        return null;
+        // This is actually a max-height for just one kind of banner. But it's fairly typical
+        // of most. Having the missing banner take up about the right amount of space reduces
+        // movement of other elements during page load.
+        return <div style={{ height: standardBannerHeight }} />;
     }
 
     // if (error) {
