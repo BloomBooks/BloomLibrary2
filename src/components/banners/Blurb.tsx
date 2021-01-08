@@ -64,9 +64,6 @@ export const Blurb: React.FunctionComponent<{
                     width: 100%;
                 `}
             >
-                {/* just a placeholder to push the imagecredits to the right
-                 */}
-                <div></div>
                 {props.banner.buttonRow && (
                     <ButtonRow collection={props.banner.buttonRow.fields} />
                 )}

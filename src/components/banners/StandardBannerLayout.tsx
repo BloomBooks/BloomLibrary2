@@ -11,6 +11,7 @@ import { ICollection, IBanner } from "../../model/ContentInterfaces";
 import { ImgWithCredits } from "../../ImgWithCredits";
 import { Blurb } from "./Blurb";
 import { useMediaQuery } from "@material-ui/core";
+import { BannerImageCredits } from "./ImageCreditsTooltip";
 
 export const standardBannerHeight = "260px";
 
@@ -102,6 +103,7 @@ export const StandardBannerLayout: React.FunctionComponent<{
                     (props.bookCount || (
                         <BookCount filter={props.filter || {}} />
                     ))}
+                <BannerImageCredits {...props} />
             </div>
         </div>
     );

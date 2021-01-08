@@ -4,7 +4,7 @@ import React from "react"; // see https://github.com/emotion-js/emotion/issues/1
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import { ImageCreditsTooltip } from "./ImageCreditsTooltip";
+import { BannerImageCredits } from "./ImageCreditsTooltip";
 import { IFilter } from "../../IFilter";
 import { IBanner, ICollection } from "../../model/ContentInterfaces";
 import { Blurb } from "./Blurb";
@@ -42,12 +42,7 @@ export const ImageOnRightBannerLayout: React.FunctionComponent<{
                         flex-direction: row;
                     `}
                 >
-                    <Blurb
-                        {...props}
-                        //padding={"30px"}
-                        width={showImage ? "500px" : "100%"}
-                        hideTitle={props.banner.hideTitle}
-                    />
+                    <Blurb {...props} hideTitle={props.banner.hideTitle} />
                 </div>
                 {props.bookCount || <BookCount filter={props.filter || {}} />}
             </div>
@@ -60,6 +55,10 @@ export const ImageOnRightBannerLayout: React.FunctionComponent<{
                         flex-direction: column;
                         flex-grow: 1;
                         overflow: hidden;
+                        // Aim for 20% of the screen width, then when there is not enough space, start shrinking until
+                        // a minium
+                        min-width: clamp(200px, 0.2vw, 300px);
+
                         // note: until Jan 2021 this was cover. Gives nice
                         // effects when it works, but is harder to pull off.
                         // Suzanne & I decided to dial this back to "contain",
@@ -67,7 +66,10 @@ export const ImageOnRightBannerLayout: React.FunctionComponent<{
                         // "cover" for those images where it works well.
                         background-size: contain;
                         background-repeat: no-repeat;
-                        margin-left: auto; // if contentful then sets the image to have a fixed width, we get right-alignment
+                        // this causes the image to be right aligned.
+                        // margin-left:auto does not work
+                        background-position-x: 100%;
+                        //margin-left: auto; // if contentful then sets the image to have a fixed width, we get right-alignment
                         margin: 20px; // inset the image into the banner so there is color all around
                         * {
                             color: white;
@@ -75,21 +77,10 @@ export const ImageOnRightBannerLayout: React.FunctionComponent<{
 
                         background-image: url(${backgroundImageUrl});
                         background-position: ${props.banner
-                            .backgroundImagePosition};
+                            .backgroundImagePosition || "bottom right"};
                     `}
                 >
-                    {/* there should always be imageCredits, but they may not
-                        have arrived yet */}
-                    {props.banner.backgroundImage?.credits && (
-                        <ImageCreditsTooltip
-                            imageCredits={
-                                // we could make this markdown eventually but for now it's just a string
-                                <span>
-                                    {props.banner.backgroundImage?.credits}
-                                </span>
-                            }
-                        />
-                    )}
+                    <BannerImageCredits {...props} />
                 </div>
             )}
         </div>
