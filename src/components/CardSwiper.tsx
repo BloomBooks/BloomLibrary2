@@ -1,9 +1,9 @@
 import React, { ReactElement, useEffect, useState } from "react";
 import SwiperCore, { Navigation, A11y } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/swiper.less";
-import "swiper/components/navigation/navigation.less";
-import "swiper/components/a11y/a11y.less";
+import "swiper/swiper.min.css";
+import "swiper/components/navigation/navigation.min.css";
+import "swiper/components/a11y/a11y.min.css";
 
 SwiperCore.use([Navigation, A11y]);
 
