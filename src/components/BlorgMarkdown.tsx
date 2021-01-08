@@ -11,6 +11,7 @@ import { WindowsInstallerDownload } from "./WindowsInstallerDownload";
 import { WindowsInstallerLink } from "./WindowsInstallerLink";
 import { Feature, FeatureGroup, FeatureMatrix } from "./FeatureMatrix";
 import { BlorgLink } from "./BlorgLink";
+import { ColoredBlock } from "./ColoredBlock";
 
 export enum Column {
     leftColumn,
@@ -32,6 +33,7 @@ export const BlorgMarkdown: React.FunctionComponent<{
             FeatureMatrix,
             Feature,
             FeatureGroup,
+            ColoredBlock,
         },
     };
 
