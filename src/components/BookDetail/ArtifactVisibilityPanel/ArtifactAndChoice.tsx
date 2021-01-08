@@ -14,11 +14,11 @@ import {
 } from "@material-ui/core";
 import { ArtifactVisibilitySettings } from "../../../model/ArtifactVisibilitySettings";
 
-import pdfIcon from "../PDF.svg";
-import epubIcon from "../ePUB.svg";
-import bloomReaderIcon from "../BloomPub.svg";
-import readIcon from "../read.svg";
-import translationIcon from "../translation.svg";
+import pdfIcon from "../../../assets/Pdf.svg";
+import epubIcon from "../../../assets/EPub.svg";
+import bloomReaderIcon from "../../../assets/BloomPub.svg";
+import readIcon from "../../../assets/Read.svg";
+import translationIcon from "../../../assets/Translation.svg";
 import { ArtifactType } from "../ArtifactHelper";
 import { commonUI } from "../../../theme";
 import { useGetLoggedInUser } from "../../../connection/LoggedInUser";

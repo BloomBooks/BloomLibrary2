@@ -37,8 +37,8 @@ export const LanguageFeatureList: React.FunctionComponent<IProps> = (props) => {
             const languageDisplayNames = getDisplayNamesForLanguage(language);
             languageElements.push(
                 showOneNamePerLanguage
-                    ? languageDisplayNames.displayName
-                    : languageDisplayNames.displayNameWithAutonym
+                    ? languageDisplayNames.primary
+                    : languageDisplayNames.combined
             );
 
             // Looking for features that the book has with this language code attached,
@@ -74,12 +74,11 @@ export const LanguageFeatureList: React.FunctionComponent<IProps> = (props) => {
     return (
         <div
             css={css`
-                color: ${commonUI.colors.minContrastGray}
+                color: ${commonUI.colors.minContrastGray};
                 font-size: 9pt;
                 margin-top: auto;
                 padding: 3px;
                 overflow: hidden;
-                max-height: calc(2em + 4px);
             `}
         >
             <TruncateMarkup

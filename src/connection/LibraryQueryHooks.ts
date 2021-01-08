@@ -4,7 +4,7 @@ import { getConnection } from "./ParseServerConnection";
 import { getBloomApiUrl } from "./ApiConnection";
 import { Book, createBookFromParseServerData } from "../model/Book";
 import { useContext, useMemo, useEffect, useState } from "react";
-import { CachedTablesContext } from "../App";
+import { CachedTablesContext } from "../model/CacheProvider";
 import { getCleanedAndOrderedLanguageList, ILanguage } from "../model/Language";
 import { processRegExp } from "../Utilities";
 import { kTopicList } from "../model/ClosedVocabularies";
@@ -191,7 +191,7 @@ export const bookDetailFields =
     "title,allTitles,baseUrl,bookOrder,inCirculation,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
     "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits," +
     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount," +
-    "harvestStartedAt,bookshelves,publisher,originalPublisher,keywords,bookInstanceId,brandingProjectName";
+    "harvestStartedAt,bookshelves,publisher,originalPublisher,keywords,bookInstanceId,brandingProjectName,edition";
 export function useGetBookDetail(bookId: string): Book | undefined | null {
     const { response, loading, error } = useAxios({
         url: `${getConnection().url}classes/books`,
@@ -286,7 +286,7 @@ export function useGetBooksForGrid(
                 keys:
                     "title,baseUrl,license,licenseNotes,inCirculation,summary,copyright,harvestState,harvestLog," +
                     "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits,bookshelves," +
-                    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher,originalPublisher,keywords",
+                    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher,originalPublisher,keywords,edition",
                 // fluff up fields that reference other tables
                 include: "uploader,langPointers",
                 ...query,
@@ -464,6 +464,7 @@ export interface IBasicBookInfo {
     createdAt: string;
     country?: string;
     phashOfFirstContentImage?: string;
+    edition: string;
 }
 // uses the human "level:" tag if present, otherwise falls back to computedLevel
 export function getBestLevelStringOrEmpty(basicBookInfo: IBasicBookInfo) {
@@ -522,7 +523,7 @@ export function useSearchBooks(
         count: 1,
         keys:
             // this should be all the fields of IBasicBookInfo
-            "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles",
+            "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition",
         ...params,
     };
     const bookResultsStatus: IAxiosAnswer = useBookQueryInternal(
@@ -805,6 +806,8 @@ function regex(value: string) {
 
 let reportedDerivativeProblem = false;
 
+export const kNameOfNoTopicCollection = "Other";
+
 export function constructParseBookQuery(
     params: any,
     filter: IFilter,
@@ -868,6 +871,7 @@ export function constructParseBookQuery(
                 case "country":
                 case "publisher":
                 case "originalPublisher":
+                case "edition":
                     params.where[facetLabel] = regex(facetValue);
                     break;
                 case "uploader":
@@ -932,7 +936,11 @@ export function constructParseBookQuery(
         }
         if (otherSearchTerms.length > 0) {
             params.where.search = {
-                $text: { $search: { $term: otherSearchTerms } },
+                $text: {
+                    $search: {
+                        $term: removeUnwantedSearchTerms(otherSearchTerms),
+                    },
+                },
             };
             if (params.order === "titleOrScore") {
                 params.order = "$score";
@@ -1003,7 +1011,7 @@ export function constructParseBookQuery(
     // take `f.topic` to be a comma-separated list
     if (f.topic) {
         delete params.where.topic;
-        if (f.topic === "empty") {
+        if (f.topic === kNameOfNoTopicCollection) {
             // optimize: is it more efficient to try to come up with a regex that will
             // fail if it finds topic:?
             tagParts.push({
@@ -1081,6 +1089,10 @@ export function constructParseBookQuery(
     if (f.originalPublisher) {
         params.where.originalPublisher = f.originalPublisher;
     }
+    delete params.where.edition;
+    if (f.edition) {
+        params.where.edition = f.edition;
+    }
     delete params.where.brandingProjectName;
     if (f.brandingProjectName) {
         params.where.brandingProjectName = f.brandingProjectName;
@@ -1093,6 +1105,24 @@ export function constructParseBookQuery(
     }
 
     return params;
+}
+
+function removeUnwantedSearchTerms(searchTerms: string): string {
+    const termsToRemove = [
+        "book",
+        "books",
+        "libro",
+        "libros",
+        "livre",
+        "livres",
+    ];
+    return searchTerms
+        .replace(
+            new RegExp("\\b(" + termsToRemove.join("|") + ")\\b", "gi"),
+            " "
+        )
+        .replace(/\s{2,}/g, " ")
+        .trim();
 }
 
 function processDerivedFrom(

@@ -6,12 +6,16 @@ import { jsx } from "@emotion/core";
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useGetCollection } from "../model/Collections";
 import { splitPathname } from "./Routes";
+import { CollectionLabel } from "../localization/CollectionLabel";
+import { BlorgLink } from "./BlorgLink";
+import { useIntl } from "react-intl";
 
 export const Breadcrumbs: React.FunctionComponent = () => {
     const location = useLocation();
+    const l10n = useIntl();
     // TODO: this doesn't look good on a narrow screen (phone) when the breadcrumbs get very long.
     const breadcrumbsStyle = css`
         display: flex;
@@ -27,6 +31,7 @@ export const Breadcrumbs: React.FunctionComponent = () => {
             font-weight: bold;
         }*/
         li {
+            line-height: 1em; // without this, "Chinese (简体中文)" doe not align with the part before it
             margin-right: 3px;
             //color: whitesmoke;
 
@@ -44,17 +49,17 @@ export const Breadcrumbs: React.FunctionComponent = () => {
     const crumbs: React.ReactElement[] = [];
     crumbs.push(
         <li key="home">
-            <Link
+            <BlorgLink
                 css={css`
                     text-decoration: none !important;
                     &:hover {
                         text-decoration: underline !important;
                     }
                 `}
-                to="/"
+                href="/"
             >
                 Home
-            </Link>
+            </BlorgLink>
         </li>
     );
     const { breadcrumbs, collectionName, filters } = splitPathname(
@@ -103,23 +108,35 @@ export const Breadcrumbs: React.FunctionComponent = () => {
         const prefix = labelParts[0];
         switch (prefix.toLowerCase()) {
             case "level":
-                label = "Level " + labelParts[1];
+                label = l10n.formatMessage(
+                    {
+                        id: "book.metadata.level",
+                        defaultMessage: "Level {levelNumber}",
+                    },
+                    { levelNumber: labelParts[1] }
+                );
                 break;
             case "search":
-                label = "Books matching " + labelParts.slice(1).join(":");
+                label = l10n.formatMessage(
+                    {
+                        id: "search.booksMatching",
+                        defaultMessage: 'Books matching "{searchTerms}"',
+                    },
+                    { searchTerms: labelParts.slice(1).join(":") }
+                );
                 break;
         }
         crumbs.push(
             <li key={item}>
                 {decodeURIComponent(label)}
-                {/* enhance: reinstate if we come up with a destination for the link.<Link
+                {/* enhance: reinstate if we come up with a destination for the link.<BlorgLink
                     css={css`
                         text-decoration: none !important;
                     `}
                     to="/"
                 >
                     {label}
-                </Link> */}
+                </BlorgLink> */}
             </li>
         );
     }
@@ -160,25 +177,25 @@ const CollectionCrumb: React.FunctionComponent<{
 }> = (props) => {
     const { collection } = useGetCollection(props.collectionName);
 
-    let text = props.collectionName;
-    if (collection) {
-        text = collection.label;
-    }
     const path = [...props.previousBreadcrumbs];
     path.push(props.collectionName);
     return (
         <li>
-            <Link
+            <BlorgLink
                 css={css`
                     text-decoration: none !important;
                     &:hover {
                         text-decoration: underline !important;
                     }
                 `}
-                to={"/" + path.join("/")}
+                href={"/" + path.join("/")}
             >
-                {text}
-            </Link>
+                {collection ? (
+                    <CollectionLabel collection={collection}></CollectionLabel>
+                ) : (
+                    ""
+                )}
+            </BlorgLink>
         </li>
     );
 };

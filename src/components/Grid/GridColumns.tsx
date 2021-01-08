@@ -10,11 +10,13 @@ import {
     TableFilterRow,
 } from "@devexpress/dx-react-grid";
 
-import { Checkbox, Link, TableCell, Select, MenuItem } from "@material-ui/core";
+import { Checkbox, TableCell, Select, MenuItem } from "@material-ui/core";
 import { Book } from "../../model/Book";
 import QueryString from "qs";
 import titleCase from "title-case";
 import { IFilter, InCirculationOptions } from "../../IFilter";
+import { CachedTables } from "../../model/CacheProvider";
+import { BlorgLink } from "../BlorgLink";
 
 export interface IGridColumn extends DevExpressColumn {
     moderatorOnly?: boolean;
@@ -34,6 +36,7 @@ const kTagsToFilterOutOfTagsList = [
     "topic:",
     "system:Incoming",
     "level:",
+    "computedLevel", // added this one only because it gets in the way
 ];
 
 export function getBookGridColumnsDefinitions(): IGridColumn[] {
@@ -45,7 +48,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             defaultVisible: true,
             sortingEnabled: true,
             getCellValue: (b: Book) => (
-                <Link
+                <BlorgLink
                     href={`/book/${b.id}`}
                     css={css`
                         color: ${b.inCirculation
@@ -55,7 +58,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                     target="_blank"
                 >
                     {b.title}
-                </Link>
+                </BlorgLink>
             ),
             addToFilter: (filter: IFilter, value: string) => {
                 // enhance: at the moment we don't have a "title:" search axis, so this will search other fields as well
@@ -87,6 +90,21 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             addToFilter: (filter: IFilter, value: string) => {
                 filter.otherTags = value;
             },
+            getCustomFilterComponent: (props: TableFilterRow.CellProps) => (
+                <ChoicesFilterCell
+                    choices={[
+                        "", // Clear
+                        ...CachedTables.tags.filter(
+                            (t) =>
+                                !kTagsToFilterOutOfTagsList.find(
+                                    (tagToFilterOut) =>
+                                        t.startsWith(tagToFilterOut)
+                                )
+                        ),
+                    ]}
+                    {...props}
+                />
+            ),
         },
         {
             name: "bookshelves",
@@ -253,14 +271,14 @@ export const GridSearchLink: React.FunctionComponent<{
     };
     const url = "/grid/?" + QueryString.stringify(location);
     return (
-        <Link
+        <BlorgLink
             css={css`
                 color: black !important;
             `}
             href={url}
         >
             {props.children}
-        </Link>
+        </BlorgLink>
     );
 };
 
@@ -288,7 +306,11 @@ const ChoicesFilterCell: React.FunctionComponent<
 > = (props) => {
     const [value, setValue] = useState(props.filter?.value || "");
     return (
-        <TableCell>
+        <TableCell
+            css={css`
+                padding-left: 9px !important; // make it line up like the built-in filter cells do
+            `}
+        >
             {/* <Checkbox
             //value={props.filter ? props.filter.value : ""}
             checked={props.filter ? props.filter.value==="true" : false}
@@ -312,6 +334,7 @@ const ChoicesFilterCell: React.FunctionComponent<
                 value={value}
                 css={css`
                     font-size: 0.875rem !important;
+                    width: 100%;
                 `}
                 onChange={(e) => {
                     setValue(e.target.value as string);

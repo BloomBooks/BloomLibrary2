@@ -1,14 +1,12 @@
 import { Book } from "../../model/Book";
-import { Link } from "@material-ui/core";
 import React from "react";
+import { BlorgLink } from "../BlorgLink";
 export const LicenseLink: React.FunctionComponent<{
     book: Book;
-}> = props => {
+}> = (props) => {
     return props.book.license ? (
-        <Link
+        <BlorgLink
             color="secondary"
-            target="_blank"
-            rel="noopener noreferrer"
             href={
                 // enhance: can we point to the actual version?
                 `https://creativecommons.org/licenses/${props.book.license.replace(
@@ -18,7 +16,7 @@ export const LicenseLink: React.FunctionComponent<{
             }
         >
             {props.book.license}
-        </Link>
+        </BlorgLink>
     ) : (
         <span>???</span>
     );

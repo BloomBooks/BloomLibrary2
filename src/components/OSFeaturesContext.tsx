@@ -41,3 +41,18 @@ export const OSFeaturesContext = React.createContext<{
     cantUseBloomD,
     mobile,
 });
+
+export const OSFeaturesProvider: React.FunctionComponent = (props) => {
+    return (
+        <OSFeaturesContext.Provider
+            value={{
+                bloomDesktopAvailable,
+                bloomReaderAvailable,
+                cantUseBloomD,
+                mobile,
+            }}
+        >
+            {props.children}
+        </OSFeaturesContext.Provider>
+    );
+};

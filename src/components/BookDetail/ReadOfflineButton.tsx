@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 
 import React from "react";
 import Button from "@material-ui/core/Button";
-import BloomPubIcon from "./BloomPubWhite.svg";
+import BloomPubIcon from "../../assets/BloomPubWhite.svg";
 import { commonUI } from "../../theme";
 import { getArtifactUrl, ArtifactType } from "./ArtifactHelper";
 import { Book } from "../../model/Book";

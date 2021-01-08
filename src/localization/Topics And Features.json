@@ -1,0 +1,65 @@
+{
+    "topic.Agriculture": {
+        "message": "Agriculture"
+    },
+    "topic.Animal Stories": {
+        "message": "Animal Stories"
+    },
+    "topic.Business": {
+        "message": "Business"
+    },
+    "topic.Dictionary": {
+        "message": "Dictionary"
+    },
+    "topic.Environment": {
+        "message": "Environment"
+    },
+    "topic.Primer": {
+        "message": "Primer"
+    },
+    "topic.Math": {
+        "message": "Math"
+    },
+    "topic.Culture": {
+        "message": "Culture"
+    },
+    "topic.Science": {
+        "message": "Science"
+    },
+    "topic.Story Book": {
+        "message": "Story Book"
+    },
+    "topic.Traditional Story": {
+        "message": "Traditional Story"
+    },
+    "topic.Health": {
+        "message": "Health"
+    },
+    "topic.Personal Development": {
+        "message": "Personal Development"
+    },
+    "topic.Spiritual": {
+        "message": "Spiritual"
+    },
+    "topic.Other": {
+        "message": "Other"
+    },
+    "feature.talkingBook": {
+        "message": "Talking Book"
+    },
+    "feature.blind": {
+        "message": "Features for the Visually Impaired"
+    },
+    "feature.comic": {
+        "message": "Comic Book"
+    },
+    "feature.motion": {
+        "message": "Motion Book"
+    },
+    "feature.signLanguage": {
+        "message": "Sign Language"
+    },
+    "feature.activity": {
+        "message": "Interactive Activity"
+    }
+}

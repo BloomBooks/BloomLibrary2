@@ -4,13 +4,14 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { IconButton, Tooltip } from "@material-ui/core";
 import { observer } from "mobx-react";
 
-import pdfIcon from "./PDF.svg";
-import ePUBIcon from "./ePUB.svg";
-import bloomPubIcon from "./BloomPub.svg";
+import { ReactComponent as PdfIcon } from "../../assets/Pdf.svg";
+import { ReactComponent as EPUBIcon } from "../../assets/EPub.svg";
+// See comment in BloomPubIcon about why this is a special case
+import { BloomPubIcon } from "./BloomPubIcon";
 
 import { Book } from "../../model/Book";
 import {
@@ -18,14 +19,16 @@ import {
     ArtifactType,
     getArtifactVisibilitySettings,
 } from "./ArtifactHelper";
-import { OSFeaturesContext } from "../../components/OSFeaturesContext";
+import { OSFeaturesContext } from "../OSFeaturesContext";
 import { ArtifactVisibilitySettings } from "../../model/ArtifactVisibilitySettings";
 import { track } from "../../analytics/Analytics";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
-import { useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
+import Typography from "@material-ui/core/Typography/Typography";
+import { commonUI } from "../../theme";
 
 interface IArtifactUI {
-    icon: string;
+    icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
     alt: string;
     type: ArtifactType;
     settings: ArtifactVisibilitySettings | undefined;
@@ -34,7 +37,7 @@ interface IArtifactUI {
     analyticsType: string;
 }
 
-export const ArtifactGroup: React.FunctionComponent<{
+export const DownloadsGroup: React.FunctionComponent<{
     book: Book;
     contextLangIso?: string;
 }> = observer((props) => {
@@ -76,9 +79,34 @@ export const ArtifactGroup: React.FunctionComponent<{
     const showMoreDownloadsHeading: boolean =
         showingBloomReaderDownloadElsewhere &&
         (!hidePdfButton || !hideEpubButton);
+
+    // I spent some time tracking this down, and don't want to do it again when I forget.
+    // https://github.com/mui-org/material-ui/issues/13394
+    useEffect(() => {
+        console.warn(
+            "The following findDOMNode error will go away in MaterialUI 5, currently (dec 2020) in alpha."
+        );
+    }, []);
+
     return (
         <div>
-            {showMoreDownloadsHeading && <div>More downloads</div>}
+            {/* {showMoreDownloadsHeading && ( */}
+            <div
+                css={css`
+                    /* width: 300px; */
+                    /* display: inline-block;
+                    margin-top: 12px; */
+                    //margin-bottom: 1em;
+                `}
+            >
+                <Typography variant="caption">
+                    <FormattedMessage
+                        id="book.metadata.download"
+                        defaultMessage="Download"
+                    />
+                </Typography>
+            </div>
+            {/* )} */}
             <ul
                 // margin-left defeats the padding built into mui-buttons, so the
                 // row can be left-aligned when in mobile layout where it is on the left.
@@ -96,7 +124,9 @@ export const ArtifactGroup: React.FunctionComponent<{
             >
                 {[
                     {
-                        icon: pdfIcon,
+                        icon: (p: React.SVGProps<SVGSVGElement>) => (
+                            <PdfIcon {...p}></PdfIcon>
+                        ),
                         alt: l10n.formatMessage({
                             id: "book.artifacts.pdf",
                             defaultMessage: "Download PDF",
@@ -108,7 +138,9 @@ export const ArtifactGroup: React.FunctionComponent<{
                         analyticsType: "pdf",
                     },
                     {
-                        icon: ePUBIcon,
+                        icon: (p: React.SVGProps<SVGSVGElement>) => (
+                            <EPUBIcon {...p}></EPUBIcon>
+                        ),
                         alt: l10n.formatMessage({
                             id: "book.artifacts.epub",
                             defaultMessage: "Download ePUB",
@@ -122,7 +154,9 @@ export const ArtifactGroup: React.FunctionComponent<{
                         analyticsType: "epub",
                     },
                     {
-                        icon: bloomPubIcon,
+                        icon: (p: React.SVGProps<SVGSVGElement>) => (
+                            <BloomPubIcon {...p}></BloomPubIcon>
+                        ),
                         alt: l10n.formatMessage({
                             id: "book.artifacts.bloompub",
                             defaultMessage:
@@ -148,54 +182,66 @@ export const ArtifactGroup: React.FunctionComponent<{
                                 title={
                                     a.settings?.reasonForHiding(
                                         props.book,
-                                        l10n
+                                        l10n,
+                                        a.type === ArtifactType.pdf
                                     ) || a.alt
                                 }
                                 arrow={true}
                             >
                                 <IconButton
+                                    disableRipple={!a.enabled}
+                                    disableFocusRipple={!a.enabled}
+                                    disableTouchRipple={!a.enabled}
+                                    // Only way I've found to disable the hover ripple:
+                                    style={
+                                        !a.enabled
+                                            ? { backgroundColor: "transparent" }
+                                            : {}
+                                    }
+                                    // Can't do this or the tooltip doesn't work:
+                                    // disabled={!a.enabled}
                                     onClick={() => {
-                                        props.book
-                                            .checkCountryPermissions(
-                                                "downloadAnything"
-                                            )
-                                            .then((otherCountryRequired) => {
-                                                if (otherCountryRequired) {
-                                                    alert(
-                                                        `Sorry, the uploader of this book has restricted downloading it to ${otherCountryRequired}`
-                                                    );
-                                                } else {
-                                                    followUrl(
-                                                        artifactUrl,
-                                                        fileName
-                                                    );
-                                                    const params = getBookAnalyticsInfo(
-                                                        props.book,
-                                                        props.contextLangIso,
-                                                        a.analyticsType
-                                                    );
-                                                    track(
-                                                        "Download Book",
-                                                        params
-                                                    );
-                                                }
-                                            });
+                                        if (a.enabled)
+                                            props.book
+                                                .checkCountryPermissions(
+                                                    "downloadAnything"
+                                                )
+                                                .then(
+                                                    (otherCountryRequired) => {
+                                                        if (
+                                                            otherCountryRequired
+                                                        ) {
+                                                            alert(
+                                                                `Sorry, the uploader of this book has restricted downloading it to ${otherCountryRequired}`
+                                                            );
+                                                        } else {
+                                                            followUrl(
+                                                                artifactUrl,
+                                                                fileName
+                                                            );
+                                                            const params = getBookAnalyticsInfo(
+                                                                props.book,
+                                                                props.contextLangIso,
+                                                                a.analyticsType
+                                                            );
+                                                            track(
+                                                                "Download Book",
+                                                                params
+                                                            );
+                                                        }
+                                                    }
+                                                );
                                     }}
                                 >
-                                    {!a.enabled && (
-                                        <div
-                                            css={css`
-                                                background-color: #ffffffb5;
-                                                position: absolute;
-                                                height: 100%;
-                                                width: 100%;
-                                            `}
-                                        ></div>
-                                    )}
                                     {/* We'd like this to be a link, but then the compiler insists it must
                                     have an href, and then we can't impose conditions on doing the download. */}
                                     <span role="link" key={a.alt}>
-                                        <img src={a.icon} alt={a.alt} />
+                                        {a.icon({
+                                            fill: a.enabled
+                                                ? commonUI.colors.bloomBlue
+                                                : commonUI.colors
+                                                      .disabledIconGray,
+                                        })}
                                     </span>
                                 </IconButton>
                             </Tooltip>

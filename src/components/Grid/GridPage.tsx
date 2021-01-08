@@ -8,12 +8,12 @@ import React from "react";
 import { Breadcrumbs } from "../Breadcrumbs";
 import { GridControl } from "./GridControl";
 import { IFilter } from "../../IFilter";
-import { useDocumentTitle } from "../Routes";
+import { useSetBrowserTabTitle } from "../Routes";
 
 export const GridPage: React.FunctionComponent<{ filters: string }> = (
     props
 ) => {
-    useDocumentTitle("Grid");
+    useSetBrowserTabTitle("Grid");
     let contextFilter: IFilter = {};
     if (props.filters && props.filters.startsWith(":search:")) {
         const search = props.filters.split("/")[0].substring(":search:".length);

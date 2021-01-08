@@ -5,14 +5,12 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React from "react";
-import { Link } from "@material-ui/core";
 import PrintIcon from "@material-ui/icons/Print";
+import { BlorgLink } from "../BlorgLink";
 
 export const HowToPrintButton: React.FunctionComponent = () => (
-    <Link
+    <BlorgLink
         color="secondary"
-        target="_blank"
-        rel="noopener noreferrer" // copied from LicenseLink
         css={css`
             flex-shrink: 1;
             margin-right: 10px !important;
@@ -21,6 +19,7 @@ export const HowToPrintButton: React.FunctionComponent = () => (
             margin-top: 5px;
         `}
         onClick={() => alert("not implemented yet")}
+        href=""
     >
         <PrintIcon
             css={css`
@@ -35,5 +34,5 @@ export const HowToPrintButton: React.FunctionComponent = () => (
         >
             How to Make Print Versions
         </div>
-    </Link>
+    </BlorgLink>
 );

@@ -1,11 +1,13 @@
 {
     "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "cSpell.words": [
         "Blorg",
         "Contentful",
         "domtoimage",
         "kgray",
         "parsecsv",
+        "uilang",
         "voca"
     ]
 }

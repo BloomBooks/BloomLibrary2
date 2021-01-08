@@ -6,8 +6,8 @@ import { jsx } from "@emotion/core";
 
 import React from "react";
 import useAxios from "@use-hooks/axios";
-import Link from "@material-ui/core/Link";
 import { getInstallerInfo } from "./WindowsInstallerDownload";
+import { BlorgLink } from "./BlorgLink";
 export const WindowsInstallerLink: React.FunctionComponent<{
     channel: string;
 }> = (props) => {
@@ -22,6 +22,10 @@ export const WindowsInstallerLink: React.FunctionComponent<{
     const linkText = props
         .children!.toString()
         .replace("{version}", versionNumber);
+
+    // At the first render, info.url likely hasn't been resolved yet.
+    // But giving BlorgLink an undefined href causes problems.
+    const href = info.url ? info.url : "";
     return (
         <React.Fragment>
             <div
@@ -33,7 +37,7 @@ export const WindowsInstallerLink: React.FunctionComponent<{
                     align-items: start;
                 `}
             >
-                <Link href={info.url}>{linkText}</Link>
+                <BlorgLink href={href}>{linkText}</BlorgLink>
             </div>
         </React.Fragment>
     );

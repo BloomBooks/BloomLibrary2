@@ -34,7 +34,8 @@ export const StandardBannerLayout: React.FunctionComponent<{
                 flex-direction: column;
                 overflow: hidden;
                 background-size: cover;
-                * {
+                *,
+                a {
                     color: ${textColor};
                 }
 

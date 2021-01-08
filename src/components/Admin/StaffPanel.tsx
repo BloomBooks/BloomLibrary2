@@ -369,7 +369,7 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                     css={css`
                         background-color: white;
                     `}
-                    value={props.book.publisher}
+                    value={props.book.publisher || ""}
                     onChange={(event) => {
                         props.book.publisher = event.target.value;
                         setModified(true);
@@ -381,9 +381,21 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                     css={css`
                         background-color: white;
                     `}
-                    value={props.book.originalPublisher}
+                    value={props.book.originalPublisher || ""}
                     onChange={(event) => {
                         props.book.originalPublisher = event.target.value;
+                        setModified(true);
+                    }}
+                ></TextField>
+                <TextField
+                    label="Edition"
+                    variant="outlined"
+                    css={css`
+                        background-color: white;
+                    `}
+                    value={props.book.edition}
+                    onChange={(event) => {
+                        props.book.edition = event.target.value;
                         setModified(true);
                     }}
                 ></TextField>

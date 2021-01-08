@@ -89,12 +89,19 @@ function useGetContentfulLocales(): string[] | undefined {
         ,
         /*unused*/ dummyToThrowStuffToErrorBoundaryInsideAHook,
     ] = useState();
-
+    const [tempLocalesCache, setLocalesCache] = useState<string[] | undefined>(
+        undefined
+    );
     if (localesCache) return localesCache;
 
     getContentfulClient()
         .getLocales()
-        .then((results) => (localesCache = results.items.map((l) => l.code)))
+        .then((results) => {
+            //console.log(JSON.stringify(results, null, 4));
+            localesCache = results.items.map((l) => l.code);
+            // this is needed to wake up react somehow and cause things to re-render
+            setLocalesCache(localesCache);
+        })
         .catch((err: Error) => {
             console.error(JSON.stringify(err));
             dummyToThrowStuffToErrorBoundaryInsideAHook(() => {
@@ -102,7 +109,9 @@ function useGetContentfulLocales(): string[] | undefined {
             });
         });
 
-    // Eventually, the "then" above will populate localesCache and it will be returned above.
-    // Until then, just return undefined which we treat as the "loading" state.
-    return undefined;
+    // Eventually, the "then" above will populate localesCache, cause a refresh,
+    // this function will run again, and we will return the populated
+    // localesCache. Until then, just return undefined which we treat as the
+    // "loading" state.
+    return tempLocalesCache;
 }

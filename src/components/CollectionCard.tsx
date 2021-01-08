@@ -6,7 +6,6 @@ import { jsx } from "@emotion/core";
 
 import React from "react";
 import { CheapCard } from "./CheapCard";
-import { IFilter } from "../IFilter";
 import { BookCount } from "./BookCount";
 //import teamIcon from "../assets/team.svg";
 import booksIcon from "../assets/books.svg";
@@ -15,31 +14,43 @@ import { Document } from "@contentful/rich-text-types";
 import { ImgWithCredits } from "../ImgWithCredits";
 import { useIntl } from "react-intl";
 import { propsToHideAccessibilityElement } from "../Utilities";
+import {
+    CollectionLabel,
+    getLocalizedCollectionLabel,
+} from "../localization/CollectionLabel";
+import { ICollection } from "../model/ContentInterfaces";
 
 interface IProps {
-    title: string;
-    richTextLabel?: Document;
-    hideTitle?: boolean;
-    bookCount?: string;
-    target: string; // what we're calling "target" is the last part of url, where the url is <breadcrumb stuff>/<target>
-    filter: IFilter;
-    imageUrl: string;
-    credits?: string;
-    altText?: string;
+    collection: ICollection;
     kind?: "short" | undefined;
 }
+
+export const collectionCardWidth = "220px";
 
 // Show a card with the name, icon, count, etc. of the collection. If the user clicks on it, they go to a page showing the collection.
 export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
     const l10n = useIntl();
+    const hideTitle = props.collection.hideLabelOnCardAndDefaultBanner;
+    const imageUrl = props.collection.iconForCardAndDefaultBanner?.url || "";
+    // what we're calling "target" is the last part of url, where the url is <breadcrumb stuff>/<target>
+    const target =
+        props.collection.type === "page"
+            ? `/page/${props.collection!.urlKey}`
+            : props.collection!.urlKey;
+
     // if showing title anyway, don't need it in place of image
-    const titleElementIfNoImage = props.hideTitle ? (
+    const titleElementIfNoImage = hideTitle ? (
         <React.Fragment />
     ) : (
-        <div>{props.title}</div>
+        <div>
+            {props.collection.label
+                ? getLocalizedCollectionLabel(props.collection)
+                : ""}
+        </div>
     );
+
     // We want the title to be there even if props tell us to hide it, so screen readers can find it.
-    const extraPropsIfHidingTitle = props.hideTitle
+    const extraPropsIfHidingTitle = hideTitle
         ? propsToHideAccessibilityElement
         : "";
     const titleElement = (
@@ -78,18 +89,20 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
                 }
             `}
         >
-            {props.richTextLabel ? (
+            {props.collection.richTextLabel ? (
                 documentToReactComponents(
-                    reduceHeadingLevel(props.richTextLabel)
+                    reduceHeadingLevel(props.collection.richTextLabel)
                 )
             ) : (
-                <h2>{props.title}</h2>
+                <h2>
+                    <CollectionLabel collection={props.collection} />
+                </h2>
             )}
         </div>
     );
 
     let imgElement = <React.Fragment />;
-    if (!props.imageUrl) {
+    if (!imageUrl) {
         imgElement = (
             <img
                 src={booksIcon}
@@ -103,13 +116,13 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
                 })}
             ></img>
         );
-    } else if (props.imageUrl !== "none") {
-        const maxHeight = props.hideTitle ? 129 : 100;
+    } else if (imageUrl !== "none") {
+        const maxHeight = hideTitle ? 129 : 100;
         // Usual case, show the image defined in the collection
         imgElement = (
             <ImgWithCredits
-                credits={props.credits}
-                src={props.imageUrl}
+                credits={props.collection.iconCredits}
+                src={imageUrl}
                 css={css`
                     height: ${maxHeight}px;
                     object-fit: contain;
@@ -117,7 +130,7 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
                     margin-left: auto;
                     margin-right: auto;
                     margin-top: auto;
-                    margin-bottom: ${props.hideTitle ? "auto" : "10px"};
+                    margin-bottom: ${hideTitle ? "auto" : "10px"};
                 `}
                 // While we're waiting, show the text title
                 loader={titleElementIfNoImage}
@@ -126,37 +139,36 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
                 // If we have an explicit altText, use it.
                 // An explicit empty alt text indicates it is only decorative, at
                 // least from the viewpoint of a screen reader (BL-8963).
-                alt={props.altText ?? ""}
+                alt={props.collection.iconAltText ?? ""}
             />
         );
     }
 
-    const { bookCount, ...propsToPassDown } = props; // prevent react warnings
+    const { ...propsToPassDown } = props; // prevent react warnings
     // make the cards smaller vertically if they purposely have no image, not even
     // the default one. Otherwise, let the default CheapCard height prevail.
-    const height = props.imageUrl === "none" ? "height: 100px" : "";
+    const height = imageUrl === "none" ? "height: 100px" : "";
     return (
         <CheapCard
             {...propsToPassDown} // needed for swiper to work
             css={css`
-                width: 220px;
+                width: ${collectionCardWidth};
                 padding: 10px;
                 ${height}
             `}
-            target={props.target}
+            target={target}
             role="listitem"
         >
-            {titleElement}
             {props.kind !== "short" && imgElement}
-
+            {titleElement}
             <div
                 css={css`
                     margin-top: auto;
                     text-align: center;
                 `}
             >
-                {props.filter && (
-                    <BookCount message={`{0} Books`} filter={props.filter} />
+                {props.collection.filter && (
+                    <BookCount filter={props.collection.filter} />
                 )}
             </div>
         </CheapCard>

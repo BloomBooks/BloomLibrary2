@@ -13,19 +13,18 @@ import { LanguageLink } from "../LanguageLink";
 import { getArtifactVisibilitySettings, ArtifactType } from "./ArtifactHelper";
 import { ILanguage } from "../../model/Language";
 import { ReadOfflineButton } from "./ReadOfflineButton";
-import { useMediaQuery, Link } from "@material-ui/core";
+import { useMediaQuery } from "@material-ui/core";
 import { OSFeaturesContext } from "../../components/OSFeaturesContext";
 import { commonUI } from "../../theme";
 import { useGetBookCountRaw } from "../../connection/LibraryQueryHooks";
 import { getResultsOrMessageElement } from "../../connection/GetQueryResultsUI";
-import { getAnchorProps } from "../../embedded";
 import { useIsEmbedded } from "../EmbeddingHost";
 import { FormattedMessage } from "react-intl";
 import { BookThumbnail } from "./BookThumbnail";
+import { BlorgLink } from "../BlorgLink";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{
     book: Book;
-    breakToColumn: string;
     // sometimes in the UI, we know what language the user is interested in,
     //so where possible we're going to preference that if this is a multilingual book
     contextLangIso?: string;
@@ -77,7 +76,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
         bloomReaderAvailable; // and we're on a platform that supports bloom reader
 
     const fullWidthButtons = useMediaQuery(
-        `(max-width:${props.breakToColumn})`
+        `(max-width:${commonUI.detailViewBreakpointForTwoColumns})`
     );
 
     return (
@@ -90,7 +89,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                 display: flex;
                 justify-content: space-between;
                 max-width: calc(100vw - ${commonUI.detailViewMargin}*2);
-                @media (max-width: ${props.breakToColumn}) {
+                @media (max-width: ${commonUI.detailViewBreakpointForTwoColumns}) {
                     flex-direction: column;
                 }
             `}
@@ -101,7 +100,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                     margin-bottom: 1em;
                     flex-direction: column;
                     margin-right: 1em;
-                    @media (max-width: ${props.breakToColumn}) {
+                    @media (max-width: ${commonUI.detailViewBreakpointForTwoColumns}) {
                         margin-right: 0;
                     }
                 `}
@@ -123,7 +122,19 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                             `}
                         >
                             {props.book.getBestTitle(props.contextLangIso)}
+                            {props.book.edition ? (
+                                <div
+                                    css={css`
+                                        font-size: 12pt;
+                                        font-style: italic;
+                                        text-transform: capitalize;
+                                    `}
+                                >
+                                    {props.book.edition}
+                                </div>
+                            ) : undefined}
                         </h1>
+
                         {/* These are the original credits, which aren't enough. See BL-7990
     <div>{props.book.credits}</div> */}
                         {/* <div>Written by: somebody</div>
@@ -151,14 +162,13 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
 
                                 {countOfBooksWithMatchingPhash > 0 && (
                                     <li>
-                                        <Link
+                                        <BlorgLink
                                             css={css`
                                                 font-size: 9pt;
                                             `}
-                                            color={"secondary"}
-                                            {...getAnchorProps(
-                                                `/phash:${sanitizedPhashOfFirstContentImage}`
-                                            )}
+                                            newTabIfEmbedded={true}
+                                            color="secondary"
+                                            href={`/phash:${sanitizedPhashOfFirstContentImage}`}
                                         >
                                             <FormattedMessage
                                                 id="book.detail.translations"
@@ -167,7 +177,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                                                     count: countOfBooksWithMatchingPhash,
                                                 }}
                                             />
-                                        </Link>
+                                        </BlorgLink>
                                     </li>
                                 )}
                             </ul>

@@ -11,6 +11,9 @@
 # production
 /build
 
+# These come from yarn sync-crowdin
+public/translations/
+
 # misc
 .DS_Store
 .env.local

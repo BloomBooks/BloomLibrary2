@@ -1,7 +1,7 @@
 import React from "react"; // see https://github.com/emotion-js/emotion/issues/1156
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { ThemeForLocation } from "./ThemeForLocation";
-import { ContentfulMarkdownPart } from "../ContentfulMarkdownPart";
+import { BlorgMarkdown } from "../BlorgMarkdown";
 import Container from "@material-ui/core/Container";
 import { convertContentfulMediaToIMedia } from "../../model/Contentful";
 import { IMedia } from "../../model/ContentInterfaces";
@@ -49,7 +49,7 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
             {/* Could not get this to compile <Markdown> {markdownContent} </Markdown> */}
             {/* {options:{overrides:{h1:{component:WindowsInstallerDownloads, props:{}}}}} */}
             {page.markdownBody ? (
-                <ContentfulMarkdownPart markdown={page.markdownBody} />
+                <BlorgMarkdown markdown={page.markdownBody} />
             ) : (
                 documentToReactComponents(page.fields.body)
             )}

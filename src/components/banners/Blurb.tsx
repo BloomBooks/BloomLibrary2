@@ -7,6 +7,9 @@ import { jsx } from "@emotion/core";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { ICollection, IBanner } from "../../model/ContentInterfaces";
 import { ButtonRow } from "../ButtonRow";
+import { CollectionLabel } from "../../localization/CollectionLabel";
+import { BlorgMarkdown } from "../BlorgMarkdown";
+import { useIntl } from "react-intl";
 
 export const Blurb: React.FunctionComponent<{
     collection: ICollection;
@@ -15,6 +18,8 @@ export const Blurb: React.FunctionComponent<{
     padding?: string;
     hideTitle: boolean;
 }> = (props) => {
+    const l10n = useIntl();
+
     return (
         <div
             css={css`
@@ -26,18 +31,28 @@ export const Blurb: React.FunctionComponent<{
                 padding: ${props.padding};
             `}
         >
-            {props.hideTitle || <CollectionTitle {...props} />}
+            {props.hideTitle || <BannerTitle {...props} />}
 
             <div
                 css={css`
                     font-weight: normal;
                     max-width: 600px;
                     margin-bottom: 10px;
-                    overflow: hidden;
+                    overflow: hidden auto; // 'hidden' for x; 'auto' for y
                 `}
             >
-                {documentToReactComponents(
-                    props.banner.blurb as any //actually we know it's a "Document", but that type is not exported
+                {props.banner.description ? (
+                    <BlorgMarkdown
+                        markdown={l10n.formatMessage({
+                            id: "banner.description." + props.banner.title,
+                            defaultMessage: props.banner.description,
+                        })}
+                    />
+                ) : (
+                    // this is deprecated, can be removed once all blurbs are descriptions. Note that next.bloomlibrary.org will need this code first.
+                    documentToReactComponents(
+                        props.banner.blurb as any //actually we know it's a "Document", but that type is not exported
+                    )
                 )}
             </div>
             <div
@@ -60,30 +75,42 @@ export const Blurb: React.FunctionComponent<{
     );
 };
 
-const CollectionTitle: React.FunctionComponent<{
+const BannerTitle: React.FunctionComponent<{
     collection: ICollection;
     banner: IBanner;
     width?: string;
     padding?: string;
     hideTitle: boolean;
 }> = (props) => {
-    let bannerTitle: React.ReactNode = (
-        <React.Fragment>{props.banner.title}</React.Fragment>
-    );
+    const l10n = useIntl();
+    let bannerTitle: React.ReactNode;
 
     // e.g. we have collection with titles [Default banner], [Default topic banner], [Default Language Banner].
     if (props.banner.title.startsWith("[Default")) {
         // enhance: move to IBanner.useCollectionLabel
         if (props.collection?.label) {
             bannerTitle = (
-                <React.Fragment>{props.collection.label}</React.Fragment>
+                <CollectionLabel
+                    collection={props.collection}
+                ></CollectionLabel>
             );
         }
+        // Currently we don't have a way (or plans) to translate rich text titles
         if (props.collection?.richTextLabel) {
             bannerTitle = documentToReactComponents(
                 props.collection.richTextLabel
             );
         }
+    } else {
+        bannerTitle = (
+            <React.Fragment>
+                {l10n.formatMessage({
+                    // NB: the format of this id come from the azure function that reads contenful and writes to crowdin
+                    id: "banner." + props.banner.title,
+                    defaultMessage: props.banner.title,
+                })}
+            </React.Fragment>
+        );
     }
     return (
         (!props.hideTitle && (

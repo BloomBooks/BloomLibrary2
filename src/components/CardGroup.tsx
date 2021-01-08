@@ -5,12 +5,19 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import React, { ReactElement } from "react";
 import LazyLoad from "react-lazyload";
-import { CardSwiper } from "./CardSwiper";
+import { CardSwiperLazy } from "./CardSwiper";
+import { ICollection } from "../model/ContentInterfaces";
+import {
+    CollectionLabel,
+    useGetLocalizedCollectionLabel,
+} from "../localization/CollectionLabel";
 
 interface IProps {
-    title: string;
+    collection: ICollection;
     layout: string;
-    children: ReactElement[];
+    data: any[];
+    contentMaker: (x: any, index: number) => ReactElement;
+    placeHolderWidth: string;
 }
 
 export const CardGroup: React.FunctionComponent<IProps> = (props) => {
@@ -23,7 +30,12 @@ export const CardGroup: React.FunctionComponent<IProps> = (props) => {
                 padding-left: 0;
             `}
         >
-            <CardSwiper wrapperRole="list">{props.children}</CardSwiper>
+            <CardSwiperLazy
+                wrapperRole="list"
+                data={props.data}
+                getReactElement={props.contentMaker}
+                placeHolderWidth={props.placeHolderWidth}
+            />
         </div>
     );
 
@@ -34,12 +46,17 @@ export const CardGroup: React.FunctionComponent<IProps> = (props) => {
         default:
             group = (
                 <React.Fragment>
-                    <h1>{props.title}</h1>
+                    <h1>
+                        <CollectionLabel
+                            collection={props.collection}
+                        ></CollectionLabel>
+                    </h1>
                     {cards}
                 </React.Fragment>
             );
             break;
     }
+    const collectionLabel = useGetLocalizedCollectionLabel(props.collection);
 
     return (
         // Enhance: LazyLoad has parameters (height and offset) that should help
@@ -71,7 +88,7 @@ export const CardGroup: React.FunctionComponent<IProps> = (props) => {
                     margin-top: 30px;
                 `}
                 role="region"
-                aria-label={props.title}
+                aria-label={collectionLabel}
             >
                 {group}
             </li>

@@ -16,6 +16,8 @@ interface ILanguageWithRole extends ILanguage {
     role?: string; // accessibility role, passed on as part of propsToPassDown
 }
 
+export const languageCardWidth = "140px";
+
 export const LanguageCard: React.FunctionComponent<ILanguageWithRole> = (
     props
 ) => {
@@ -29,21 +31,14 @@ export const LanguageCard: React.FunctionComponent<ILanguageWithRole> = (
         ...propsToPassDown
     } = props; // Prevent React warnings
     const cardPadding = "14px";
-    const { displayName: languageName, autonym } = getDisplayNamesForLanguage(
-        props
-    );
-    const languageCodeAndAlternateName = (props.isoCode.indexOf("-") > -1 &&
-    props.isoCode !== props.englishName
-        ? [props.isoCode, autonym]
-        : [autonym]
-    ).join(" ");
+    const { primary, secondary } = getDisplayNamesForLanguage(props);
 
     return (
         <CheapCard
             {...propsToPassDown} // makes swiper work
             css={css`
                 //text-align: center;
-                width: 140px;
+                width: ${languageCardWidth};
                 height: ${commonUI.languageCardHeightInPx}px;
                 padding: ${cardPadding};
             `}
@@ -66,7 +61,7 @@ export const LanguageCard: React.FunctionComponent<ILanguageWithRole> = (
                         color: ${commonUI.colors.minContrastGray};
                     `}
                 >
-                    {languageCodeAndAlternateName}
+                    {secondary}
                 </div>
             </div>
             <h2
@@ -83,7 +78,7 @@ export const LanguageCard: React.FunctionComponent<ILanguageWithRole> = (
                     // test false positives css={css`color: red;`}
                     lines={2}
                 >
-                    <span> {languageName} </span>
+                    <span> {primary} </span>
                 </TruncateMarkup>
             </h2>
             <div
@@ -97,7 +92,7 @@ export const LanguageCard: React.FunctionComponent<ILanguageWithRole> = (
                 {props.usageCount ? (
                     <FormattedMessage
                         id="bookCount"
-                        defaultMessage="{count} Books"
+                        defaultMessage="{count} books"
                         values={{ count: props.usageCount }}
                     />
                 ) : (

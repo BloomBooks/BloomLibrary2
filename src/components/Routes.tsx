@@ -6,10 +6,10 @@ import { jsx } from "@emotion/core";
 
 import React, { useEffect } from "react";
 import { Switch, Route, Redirect, useLocation } from "react-router-dom";
-import { GridPage } from "./Grid/GridPage";
-import { BulkEditPage } from "./BulkEdit/BulkEditPage";
-import BookDetail from "./BookDetail/BookDetail";
-import { ReadBookPage } from "./ReadBookPage";
+import { GridPage } from "./Grid/GridPage"; // internally lazy
+import { BulkEditPageCodeSplit } from "./BulkEdit/BulkEditPageCodeSplit";
+import { BookDetailCodeSplit } from "./BookDetail/BookDetailCodeSplit";
+import { ReadBookPageCodeSplit } from "./ReadBookPageCodeSplit";
 import { CollectionSubsetPage } from "./CollectionSubsetPage";
 import { ContentfulBanner } from "./banners/ContentfulBanner";
 import { CollectionPage } from "./CollectionPage";
@@ -22,6 +22,7 @@ import { IEmbedSettings } from "../model/ContentInterfaces";
 import { EmbeddingHost, isEmbedded, useSetEmbeddedUrl } from "./EmbeddingHost";
 import { CollectionStatsPage } from "./statistics/CollectionStatsPage";
 import { TestEmbeddingPage } from "./TestEmbedding";
+import { ReleaseNotes } from "./ReleaseNotes";
 
 export let previousPathname = "";
 let currentPathname = "";
@@ -35,6 +36,7 @@ export const Routes: React.FunctionComponent<{}> = () => {
         previousPathname = currentPathname;
         currentPathname = location.pathname;
     }
+
     return (
         <ErrorBoundary url={location.pathname}>
             <Switch>
@@ -97,13 +99,19 @@ export const Routes: React.FunctionComponent<{}> = () => {
                 <Route
                     path="/:breadcrumbs*/book/:id"
                     render={({ match }) => {
-                        return <BookDetail id={match.params.id} />;
+                        return <BookDetailCodeSplit id={match.params.id} />;
                     }}
                 />
                 <Route
                     path="/player/:id"
                     render={({ match }) => {
-                        return <ReadBookPage id={match.params.id} />;
+                        return <ReadBookPageCodeSplit id={match.params.id} />;
+                    }}
+                />
+                <Route
+                    path="*/release-notes/:channel"
+                    render={({ match }) => {
+                        return <ReleaseNotes channel={match.params.channel} />;
                     }}
                 />
                 <Route path="/about">
@@ -118,7 +126,11 @@ export const Routes: React.FunctionComponent<{}> = () => {
                 <Route
                     path="/bulk/:filter*"
                     render={({ match }) => {
-                        return <BulkEditPage filters={match.params.filter} />;
+                        return (
+                            <BulkEditPageCodeSplit
+                                filters={match.params.filter}
+                            />
+                        );
                     }}
                 />
                 <Route
@@ -269,7 +281,7 @@ export function splitPathname(
 // It's also possible that we're moving to a filtered subset collection; for example, if
 // the current pathname is /enabling-writers/ew-nigeria and target is ew-nigeria/:level:1
 // We want to get enabling-writers/ew-nigeria/:level:1 (only one ew-nigeria).
-// We might also be going a level of fiter deeper; for example, from location
+// We might also be going a level of filter deeper; for example, from location
 // /enabling-writers/ew-nigeria/:level:1 to target ew-nigeria/:level:1/:topic:Agriculture
 // producing enabling-writers/ew-nigeria/:level:1/:topic:Agriculture.
 // Any leading slash on target should be ignored.
@@ -278,13 +290,10 @@ export function splitPathname(
 export function getUrlForTarget(target: string) {
     if (target.startsWith("http")) return target;
 
-    const {
-        breadcrumbs,
-        collectionName: pathCollectionName,
-    } = splitPathname(window.location.pathname);
-    let segments = [
-        ...breadcrumbs,
-    ];
+    const { breadcrumbs, collectionName: pathCollectionName } = splitPathname(
+        window.location.pathname
+    );
+    let segments = [...breadcrumbs];
 
     const { collectionName, isPageUrl } = splitPathname(target);
     if (isPageUrl) {
@@ -309,11 +318,19 @@ export function getUrlForTarget(target: string) {
     }
     return segments.join("/");
 }
+
 function trimLeft(s: string, char: string) {
     return s.replace(new RegExp("^[" + char + "]+"), "");
 }
 
-export function useDocumentTitle(title: string | undefined) {
+export function getContextLangIso(urlKey: string) {
+    return urlKey.startsWith("language:")
+        ? // we don't want anything after a slash as part of the isoCode
+          urlKey.substring("language:".length).split("/")[0]
+        : undefined;
+}
+
+export function useSetBrowserTabTitle(title: string | undefined) {
     const location = useLocation();
     useEffect(() => {
         if (!title) {

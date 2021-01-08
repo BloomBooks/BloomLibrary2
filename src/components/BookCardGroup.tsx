@@ -14,11 +14,12 @@ import {
     useSearchBooks,
     IBasicBookInfo,
 } from "../connection/LibraryQueryHooks";
-import { BookCard } from "./BookCard";
+import { BookCard, BookCardWidth } from "./BookCard";
 import { MoreCard } from "./MoreCard";
-import { CardSwiper } from "./CardSwiper";
+import { CardSwiperLazy } from "./CardSwiper";
 import { ICollection } from "../model/ContentInterfaces";
 import Typography from "@material-ui/core/Typography";
+import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 
 interface IProps {
     title?: string;
@@ -120,17 +121,6 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
         books = books.filter((b) => props.collection.secondaryFilter!(b));
     }
 
-    const cards = books.map((b: IBasicBookInfo) => (
-        // if we're showing in one row, then we'll let swiper handle the laziness, otherwise
-        // we tell the card to try and be lazy itself.
-        <BookCard
-            handleYourOwnLaziness={!showInOneRow}
-            key={b.baseUrl}
-            basicBookInfo={b}
-            contextLangIso={props.contextLangIso}
-        />
-    ));
-
     // our more card, if clicked, will result in skipping more than this time.
     let nextSkip: number | undefined;
     if (props.skip === undefined) {
@@ -140,32 +130,77 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
         nextSkip = props.skip + maxCardsToRetrieve;
     }
 
-    // Enhance: allow using a MoreCard even with a fixed set of known books, rather than only if we're using a filter.
-    if (
+    const wantMoreCard =
         search.totalMatchingRecords > (props.skip ?? 0) + maxCardsToRetrieve &&
-        props.collection.urlKey !== "new-arrivals"
-    ) {
-        cards.push(
-            <MoreCard
-                key="more"
-                collection={props.collection}
-                skip={nextSkip}
+        props.collection.urlKey !== "new-arrivals";
+
+    let bookList: React.ReactElement | undefined;
+
+    if (showInOneRow) {
+        const data: (IBasicBookInfo | "more")[] = [...books];
+        if (wantMoreCard) {
+            data.push("more");
+        }
+        bookList = (
+            <CardSwiperLazy
+                placeHolderWidth={`${BookCardWidth}px`}
+                data={data}
+                getReactElement={(item: IBasicBookInfo | "more", index) => {
+                    if (item === "more") {
+                        return (
+                            <MoreCard
+                                key="more"
+                                collection={props.collection}
+                                skip={nextSkip}
+                            />
+                        );
+                    } else {
+                        return (
+                            <BookCard
+                                laziness="never"
+                                key={item.baseUrl}
+                                basicBookInfo={item}
+                                contextLangIso={props.contextLangIso}
+                            />
+                        );
+                    }
+                }}
+            ></CardSwiperLazy>
+        );
+    } else {
+        const cards = books.map((b: IBasicBookInfo) => (
+            // if we're showing in one row, then we'll let swiper handle the laziness, otherwise
+            // we tell the card to try and be lazy itself.
+            <BookCard
+                laziness="self"
+                key={b.baseUrl}
+                basicBookInfo={b}
+                contextLangIso={props.contextLangIso}
             />
+        ));
+
+        // Enhance: allow using a MoreCard even with a fixed set of known books, rather than only if we're using a filter.
+        if (wantMoreCard) {
+            cards.push(
+                <MoreCard
+                    key="more"
+                    collection={props.collection}
+                    skip={nextSkip}
+                />
+            );
+        }
+
+        bookList = (
+            <div
+                css={css`
+                    display: flex;
+                    flex-wrap: wrap;
+                `}
+            >
+                {cards}
+            </div>
         );
     }
-
-    const bookList = showInOneRow ? (
-        <CardSwiper>{cards}</CardSwiper>
-    ) : (
-        <div
-            css={css`
-                display: flex;
-                flex-wrap: wrap;
-            `}
-        >
-            {cards}
-        </div>
-    );
 
     const zeroBooksMatchedElement =
         search.books && search.books.length > 0 ? null : (
@@ -185,7 +220,9 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
     if (countToShow < maxCardsToRetrieve) {
         countToShow = books.length;
     }
-    const label = props.title ?? props.collection.label;
+
+    // props.title, if provided, is already localized
+    const label = props.title ?? getLocalizedCollectionLabel(props.collection);
 
     let group;
     switch (props.collection.layout) {
@@ -204,7 +241,10 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
                     >
                         <div
                             css={css`
+                                // I don't know why width was being ignored, so here it's more locked down
                                 width: 200px;
+                                min-width: 200px;
+                                max-width: 200px;
                                 margin-right: 20px;
                             `}
                         >

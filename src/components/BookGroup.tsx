@@ -47,8 +47,8 @@ export const BookGroup: React.FunctionComponent<IProps> = (props) => {
     // note, if the number of cards is too small to fill up those rows, this will expect
     // to be taller than it is, but then when it is replaced by the actual content, the
     // scrollbar will adjust, so no big deal?
-    const rowHeight = rowCount * commonUI.bookCardHeightPx +
-                commonUI.bookGroupTopMarginPx;
+    const rowHeight =
+        rowCount * commonUI.bookCardHeightPx + commonUI.bookGroupTopMarginPx;
 
     // Enhance: this has parameters, height and offset, that should help
     // but so far I haven't got them to work well. It has many other
@@ -62,10 +62,13 @@ export const BookGroup: React.FunctionComponent<IProps> = (props) => {
     /* Note, this currently breaks strict mode. See app.tsx */
     return (
         <LazyLoad
-            height={
-                rowHeight
+            height={rowHeight}
+            placeholder={
+                <li
+                    className="placeholder"
+                    style={{ height: `${rowHeight}px` }}
+                ></li>
             }
-            placeholder={<li className="placeholder" style={{height:`${rowHeight}px`}}></li>}
         >
             <BookGroupInner {...props} />
         </LazyLoad>
@@ -117,8 +120,10 @@ export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
     const cards = books.map((b: IBasicBookInfo) => (
         // if we're showing in one row, then we'll let swiper handle the laziness, otherwise
         // we tell the card to try and be lazy itself.
+        // Note: I don't think any current clients use the showInOneRow version of BookGroup,
+        // and I'm not sure it will work with the latest swiper.
         <BookCard
-            handleYourOwnLaziness={!showInOneRow}
+            laziness={showInOneRow ? "swiper" : "self"}
             key={b.baseUrl}
             basicBookInfo={b}
             contextLangIso={props.contextLangIso}
