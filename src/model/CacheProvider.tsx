@@ -61,7 +61,7 @@ export const CacheProvider: React.FunctionComponent = (props) => {
                 {props.children}
             </CachedTablesContext.Provider>
         ),
-        [resultData]
+        [resultData, props.children]
     );
 
     return result;
