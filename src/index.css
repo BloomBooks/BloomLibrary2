@@ -181,3 +181,20 @@ to apply it to does not support our inline css */
     width: 200px;
     margin: -12px;
 }
+
+.testimonial-border {
+    border-left-style: solid;
+    border-left-color: green;
+    border-left-width: 3px;
+    padding-left: 20px;
+}
+.attribution-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+}
+.attribution-image {
+    padding-right: 20px;
+    height: 50px;
+}
