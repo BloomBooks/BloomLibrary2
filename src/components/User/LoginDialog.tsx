@@ -10,7 +10,6 @@ import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 // these two firebase imports are strange, but not an error. See https://github.com/firebase/firebase-js-sdk/issues/1832
 import firebase from "firebase/app";
 import "firebase/auth";
-//import * as firebaseui from "firebaseui";
 import { DialogTitle } from "@material-ui/core";
 import Dialog from "@material-ui/core/Dialog";
 import * as Sentry from "@sentry/browser";
