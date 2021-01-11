@@ -8,8 +8,6 @@ import { createBrowserHistory } from "history";
 // these two firebase imports are strange, but not an error. See https://github.com/firebase/firebase-js-sdk/issues/1832
 import firebase from "firebase/app";
 import "firebase/auth";
-
-//import * as firebaseui from "firebaseui";
 import { connectParseServer } from "./connection/ParseServerConnection";
 import { isEmbedded } from "./components/EmbeddingHost";
 
