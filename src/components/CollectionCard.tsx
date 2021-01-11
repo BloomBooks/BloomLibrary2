@@ -19,17 +19,17 @@ import {
     getLocalizedCollectionLabel,
 } from "../localization/CollectionLabel";
 import { ICollection } from "../model/ContentInterfaces";
+import { useResponsiveChoice } from "../responsiveUtilities";
 
 interface IProps {
     collection: ICollection;
-    kind?: "short" | undefined;
+    layout?: "short" | "short-with-book-count" | undefined;
 }
-
-export const collectionCardWidth = "220px";
 
 // Show a card with the name, icon, count, etc. of the collection. If the user clicks on it, they go to a page showing the collection.
 export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
     const l10n = useIntl();
+    const getResponsiveChoice = useResponsiveChoice();
     const hideTitle = props.collection.hideLabelOnCardAndDefaultBanner;
     const imageUrl = props.collection.iconForCardAndDefaultBanner?.url || "";
     // what we're calling "target" is the last part of url, where the url is <breadcrumb stuff>/<target>
@@ -53,14 +53,21 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
     const extraPropsIfHidingTitle = hideTitle
         ? propsToHideAccessibilityElement
         : "";
+
+    const positionRule = props.layout?.startsWith("short")
+        ? "" // just sit under the top padding
+        : `bottom: ${getResponsiveChoice(33, 40)}px`;
+    //console.log(props.collection.label + "  " + props.collection.type);
     const titleElement = (
         <div
             css={css`
-                text-align: center;
+                text-align: left;
                 font-size: 12pt; // from chrome default for h2, which this element used to be
+
                 font-weight: bold;
-                flex-grow: 1; // push the rest to the bottom
-                margin-bottom: 5px;
+                position: absolute;
+
+                ${positionRule};
                 ${extraPropsIfHidingTitle}
                 // For the sake of uniformity, the only styling we allow in richTextLabel is normal, h1, h2, and h3.
                         // Cards are currently always displayed as second-level objects, therefore we reduce heading
@@ -70,13 +77,14 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
                         h3,
                         h4,
                         p {
-                    text-align: center;
+                    text-align: left;
+                    line-height: 1em;
                     margin-bottom: 0;
                     margin-top: 0;
                     font-weight: bold;
                 }
                 h2 {
-                    font-size: 16px;
+                    font-size: ${getResponsiveChoice(11, 16)}px;
                 }
                 h3 {
                     font-size: 14px;
@@ -108,6 +116,7 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
                 src={booksIcon}
                 css={css`
                     height: 40px;
+                    width: 40px;
                     margin-bottom: 10px;
                 `}
                 alt={l10n.formatMessage({
@@ -117,17 +126,33 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
             ></img>
         );
     } else if (imageUrl !== "none") {
-        const maxHeight = hideTitle ? 129 : 100;
+        // About this dimension. 80px height is plenty for the logos of large
+        // publishers with professionally-designed logos, which work well when
+        // small. However many orgs have small text in their logos which is
+        // unreadable at this size. Sigh. In Contentful we have the option of
+        // just setting it to show the title explicitly in these cases.
+
+        // Enhance... this is a bit complicated at the moment... here's the deal
+        // On our shrunk down cards for mobile, the publisher icons contain the
+        // name, so the title is hidden and the icon is unreadable.  So in that
+        // case we don't need to leave room for the title and can use it to make
+        // the icon bigger. However on desktop, that doesn't look as good, and
+        // isn't needed.
+        const maxHeight = (hideTitle
+            ? getResponsiveChoice(60, 80)
+            : getResponsiveChoice(35, 60)) as number;
+
         // Usual case, show the image defined in the collection
         imgElement = (
             <ImgWithCredits
                 credits={props.collection.iconCredits}
                 src={imageUrl}
                 css={css`
-                    height: ${maxHeight}px;
+                    min-height: ${maxHeight}px; // this is for our Book feature svg icons that otherwise want to be tiny. Alternatively, we could just set these svgs to want to be big.
+                    max-height: ${maxHeight}px;
                     object-fit: contain;
-                    width: 198px;
-                    margin-left: auto;
+                    max-width: 100%;
+
                     margin-right: auto;
                     margin-top: auto;
                     margin-bottom: ${hideTitle ? "auto" : "10px"};
@@ -145,26 +170,39 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
     }
 
     const { ...propsToPassDown } = props; // prevent react warnings
-    // make the cards smaller vertically if they purposely have no image, not even
-    // the default one. Otherwise, let the default CheapCard height prevail.
-    const height = imageUrl === "none" ? "height: 100px" : "";
+    // Make the cards smaller vertically if they purposely have no image, not even
+    // the default one.
+    const height =
+        props.layout === "short-with-book-count"
+            ? getResponsiveChoice("70px", "90px")
+            : props.layout === "short"
+            ? getResponsiveChoice("70px", "90px") /// TODO:once merged up to next, can change to 30px, 50px
+            : imageUrl === "none"
+            ? getResponsiveChoice("50px", "100px")
+            : getResponsiveChoice("90px", "130px");
     return (
         <CheapCard
             {...propsToPassDown} // needed for swiper to work
             css={css`
-                width: ${collectionCardWidth};
+                width: ${getResponsiveChoice(100, 200)}px;
+
                 padding: 10px;
-                ${height}
+                height: ${height};
+                justify-content: ${props.layout?.startsWith("short")
+                    ? "center"
+                    : ""};
             `}
             target={target}
             role="listitem"
         >
-            {props.kind !== "short" && imgElement}
+            {!props.layout?.startsWith("short") && imgElement}
             {titleElement}
             <div
+                className="book-count"
                 css={css`
                     margin-top: auto;
-                    text-align: center;
+                    text-align: left;
+                    font-size: ${getResponsiveChoice(10, 14)}px;
                 `}
             >
                 {props.collection.filter && (

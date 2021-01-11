@@ -17,8 +17,7 @@ import { getBestBookTitle } from "../model/Book";
 
 import TruncateMarkup from "react-truncate-markup";
 import { useIntl } from "react-intl";
-
-export const BookCardWidth = 140;
+import { useResponsiveChoice } from "../responsiveUtilities";
 
 interface IProps {
     basicBookInfo: IBasicBookInfo;
@@ -40,6 +39,7 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
     const { thumbnailUrl, isModernThumbnail } = getThumbnailUrl(
         props.basicBookInfo
     );
+    const getResponsiveChoice = useResponsiveChoice();
     const title = getBestBookTitle(
         props.basicBookInfo.title,
         props.basicBookInfo.allTitles,
@@ -60,7 +60,8 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
         <CheapCard
             className={props.className}
             css={css`
-                width: ${BookCardWidth}px;
+                height: ${getResponsiveChoice(160, 190)}px;
+                width: ${getResponsiveChoice(100, 140)}px;
                 line-height: normal; // counteract css reset
             `}
             key={props.basicBookInfo.baseUrl}
@@ -76,7 +77,7 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
             <img
                 className={"swiper-lazy"}
                 css={css`
-                    height: 100px;
+                    height: ${getResponsiveChoice(60, 100)}px;
                     /*cover will crop, but fill up nicely*/
                     object-fit: cover;
                     /* new thumbnails are just the image, and they look better if we see the top and lose some of the bottom
@@ -133,7 +134,9 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                     font-weight: normal;
                     padding-left: ${titlePadding}px;
                     padding-right: ${titlePadding}px;
-                    max-height: 40px;
+                    // need a bit more height on small screen because of thinner
+                    // cards
+                    max-height: ${getResponsiveChoice(50, 40)}px;
                     overflow-y: hidden;
                     margin-top: 3px;
                     margin-bottom: 0;

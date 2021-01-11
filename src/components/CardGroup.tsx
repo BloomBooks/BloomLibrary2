@@ -11,17 +11,18 @@ import {
     CollectionLabel,
     useGetLocalizedCollectionLabel,
 } from "../localization/CollectionLabel";
+import { useResponsiveChoice } from "../responsiveUtilities";
 
 interface IProps {
     collection: ICollection;
     layout: string;
     data: any[];
-    contentMaker: (x: any, index: number) => ReactElement;
-    placeHolderWidth: string;
+    getCards: (x: any, index: number) => ReactElement;
 }
 
 export const CardGroup: React.FunctionComponent<IProps> = (props) => {
-    const rowHeight = 258; // todo derive from commonui.something
+    const getResponsiveChoice = useResponsiveChoice();
+    const rowHeight = getResponsiveChoice(130, 258) as number; // review: tricky to test because it's for lazy loading
     const cards = (
         <div
             // We want this to be a UL. But accessibility checker insists UL may have
@@ -33,8 +34,7 @@ export const CardGroup: React.FunctionComponent<IProps> = (props) => {
             <CardSwiperLazy
                 wrapperRole="list"
                 data={props.data}
-                getReactElement={props.contentMaker}
-                placeHolderWidth={props.placeHolderWidth}
+                getReactElement={props.getCards}
             />
         </div>
     );
@@ -46,7 +46,11 @@ export const CardGroup: React.FunctionComponent<IProps> = (props) => {
         default:
             group = (
                 <React.Fragment>
-                    <h1>
+                    <h1
+                        css={css`
+                            font-size: ${getResponsiveChoice(10, 14)}pt;
+                        `}
+                    >
                         <CollectionLabel
                             collection={props.collection}
                         ></CollectionLabel>
@@ -85,7 +89,7 @@ export const CardGroup: React.FunctionComponent<IProps> = (props) => {
         >
             <li
                 css={css`
-                    margin-top: 30px;
+                    margin-top: ${getResponsiveChoice(15, 30)}px;
                 `}
                 role="region"
                 aria-label={collectionLabel}

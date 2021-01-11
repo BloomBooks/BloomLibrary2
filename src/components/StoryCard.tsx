@@ -14,12 +14,12 @@ import Typography from "@material-ui/core/Typography";
 import { Link } from "react-router-dom";
 import { getUrlForTarget } from "./Routes";
 import { useContentfulPage } from "./pages/ContentfulPage";
-
-export const storyCardWidth = "240px";
+import { useResponsiveChoice } from "../responsiveUtilities";
 
 export const StoryCard: React.FunctionComponent<{ story: ICollection }> = (
     props
 ) => {
+    const getResponsiveChoice = useResponsiveChoice();
     const url = "/page/" + getUrlForTarget(props.story.urlKey);
     const page = useContentfulPage("page", props.story.urlKey);
     if (!page) {
@@ -28,7 +28,7 @@ export const StoryCard: React.FunctionComponent<{ story: ICollection }> = (
     return (
         <Card
             css={css`
-                width: ${storyCardWidth};
+                width: ${getResponsiveChoice(120, 240)}px;
                 // I don't know why, but without this, the edges get cut off
                 margin: 1px;
                 // enhance: really we just want this margin in-between cards
@@ -38,22 +38,41 @@ export const StoryCard: React.FunctionComponent<{ story: ICollection }> = (
             <CardActionArea component={Link} to={`${url}`}>
                 <CardMedia
                     css={css`
-                        width: 240px;
                         height: 160px;
                     `}
                     image={page.cardImage?.url}
                 />
-                <CardContent>
-                    <Typography color="textSecondary" gutterBottom>
+                <CardContent
+                    css={css`
+                        height: ${getResponsiveChoice(190, 190)}px;
+                    `}
+                >
+                    <Typography
+                        color="textSecondary"
+                        gutterBottom
+                        css={css`
+                            font-size: ${getResponsiveChoice(11, 14)}px;
+                        `}
+                    >
                         {page.category}
                     </Typography>
-                    <Typography gutterBottom variant="h5" component="h2">
+                    <Typography
+                        gutterBottom
+                        variant="h5"
+                        component="h2"
+                        css={css`
+                            font-size: ${getResponsiveChoice(12, 16)}px;
+                            font-weight: bold;
+                        `}
+                    >
                         {page.label}
                     </Typography>
                     <Typography
                         variant="body2"
-                        color="textSecondary"
                         component="p"
+                        css={css`
+                            font-size: ${getResponsiveChoice(11, 14)}px;
+                        `}
                     >
                         {page.fields.excerpt}
                     </Typography>

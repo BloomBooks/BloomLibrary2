@@ -1,11 +1,17 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import React from "react";
 import { useGetCollection } from "../model/Collections";
 import { CardGroup } from "./CardGroup";
-import { CollectionCard, collectionCardWidth } from "./CollectionCard";
+import { CollectionCard } from "./CollectionCard";
 import { BookCardGroup } from "./BookCardGroup";
 import { PageNotFound } from "./PageNotFound";
 import { ICollection } from "../model/ContentInterfaces";
-import { StoryCard, storyCardWidth } from "./StoryCard";
+import { StoryCard } from "./StoryCard";
 
 // These can be a group of book cards, collection cards, story page cards, or generic page cards
 export const RowOfCards: React.FunctionComponent<{
@@ -44,17 +50,12 @@ const RowOfCardsInternal: React.FunctionComponent<{
     //     x.label.localeCompare(y.label)
     // );
     const childCollections = props.collection.childCollections;
-
+    console.log(`${props.collection.label} ${props.collection.layout}`);
     return (
         <CardGroup
             collection={props.collection}
             data={childCollections}
-            placeHolderWidth={
-                props.collection.layout === "row-of-story-cards"
-                    ? storyCardWidth
-                    : collectionCardWidth
-            }
-            contentMaker={(childCollection: ICollection, index) => {
+            getCards={(childCollection: ICollection, index) => {
                 switch (props.collection.layout) {
                     case "row-of-story-cards":
                         return (
@@ -63,16 +64,27 @@ const RowOfCardsInternal: React.FunctionComponent<{
                                 key={childCollection.urlKey}
                             />
                         );
+                    case "row-of-cards-with-just-labels":
+                        return (
+                            <CollectionCard
+                                collection={childCollection}
+                                key={childCollection.urlKey}
+                                layout={"short"}
+                            />
+                        );
+                    // Row of different topic cards will use this
+                    case "row-of-cards-with-just-labels-and-book-count":
+                        return (
+                            <CollectionCard
+                                collection={childCollection}
+                                key={childCollection.urlKey}
+                                layout={"short-with-book-count"}
+                            />
+                        );
                     default:
                         return (
                             <CollectionCard
                                 collection={childCollection}
-                                kind={
-                                    props.collection.layout ===
-                                    "row-of-cards-with-just-labels"
-                                        ? "short"
-                                        : undefined
-                                }
                                 key={childCollection.urlKey}
                             />
                         );
