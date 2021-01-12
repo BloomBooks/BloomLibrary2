@@ -202,3 +202,9 @@ to apply it to does not support our inline css */
 .attribution-text {
     padding-left: 20px;
 }
+.multiple-column-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}
