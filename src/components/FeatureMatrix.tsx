@@ -18,6 +18,7 @@ import Check from "@material-ui/icons/Check";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import Collapse from "@material-ui/core/Collapse";
+import { useResponsiveChoice } from "../responsiveUtilities";
 
 const backgroundColor = "white";
 const headerColor = commonUI.colors.createAreaTextOnWhite;
@@ -108,6 +109,7 @@ export const Feature: React.FunctionComponent<{
     enterprise: boolean;
 }> = (props) => {
     const [open, setOpen] = React.useState(false);
+    const getResponsiveChoice = useResponsiveChoice();
     const all = !(props.community || props.enterprise);
     const hasChildren = React.Children.count(props.children) > 0;
     return (
@@ -127,9 +129,9 @@ export const Feature: React.FunctionComponent<{
                     component="th"
                     scope="row"
                     css={css`
-                        width: ${columOneWidth};
+                        /* width: ${columOneWidth}; */
                         font-weight: 600 !important;
-                        font-size: 1rem !important;
+                        font-size: ${getResponsiveChoice(9, 16)}px !important;
                         &,
                         * {
                             color: ${defaultColor};
@@ -180,6 +182,7 @@ export const Feature: React.FunctionComponent<{
                         padding-bottom: 0;
                         padding-top: 0;
                         width: 300px;
+                        font-size: ${getResponsiveChoice(9, 16)}px !important;
                     `}
                 >
                     {/* This is the mardown content that describes the feature */}
