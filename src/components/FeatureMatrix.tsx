@@ -28,6 +28,7 @@ const defaultColor = "black";
 const columOneWidth = "auto";
 
 export const FeatureMatrix: React.FunctionComponent<{}> = (props) => {
+    const getResponsiveChoice = useResponsiveChoice();
     return (
         <TableContainer
             component={Paper}
@@ -35,7 +36,7 @@ export const FeatureMatrix: React.FunctionComponent<{}> = (props) => {
                 background-color: ${backgroundColor}!important;
                 margin-left: auto;
                 margin-right: auto;
-                width: fit-content !important;
+                width: ${getResponsiveChoice("", "fit-content")} !important;
             `}
         >
             <Table
@@ -49,6 +50,12 @@ export const FeatureMatrix: React.FunctionComponent<{}> = (props) => {
                     th,
                     td {
                         border: none !important;
+                        padding-left: 0;
+                    }
+                    .levelName,
+                    .feature {
+                        font-size: ${getResponsiveChoice(10, 14)}px;
+                        line-height: 1em;
                     }
                 `}
             >
@@ -64,9 +71,15 @@ export const FeatureMatrix: React.FunctionComponent<{}> = (props) => {
                         `}
                     >
                         <TableCell></TableCell>
-                        <TableCell align="center">Free</TableCell>
-                        <TableCell align="center">Local Community</TableCell>
-                        <TableCell align="center">Enterprise</TableCell>
+                        <TableCell className="levelName" align="center">
+                            Free
+                        </TableCell>
+                        <TableCell className="levelName" align="center">
+                            Local Community
+                        </TableCell>
+                        <TableCell className="levelName" align="center">
+                            Enterprise
+                        </TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>{props.children}</TableBody>
@@ -123,19 +136,27 @@ export const Feature: React.FunctionComponent<{
                         color: ${defaultColor};
                     }
                     background-color: ${blockColor};
+
+                    .checkMarkHolder {
+                        svg {
+                            height: ${getResponsiveChoice(16, 24)}px;
+                        }
+                    }
                 `}
             >
+                {/* 1st column, feature label */}
                 <TableCell
                     component="th"
                     scope="row"
                     css={css`
                         /* width: ${columOneWidth}; */
                         font-weight: 600 !important;
-                        font-size: ${getResponsiveChoice(9, 16)}px !important;
+                        font-size: ${getResponsiveChoice(10, 16)}px !important;
                         &,
                         * {
                             color: ${defaultColor};
                         }
+                        display: flex;
                     `}
                 >
                     <span
@@ -144,7 +165,7 @@ export const Feature: React.FunctionComponent<{
                             display: inline-block;
                         `}
                     >
-                        {hasChildren && (
+                        {hasChildren ? (
                             <IconButton
                                 aria-label="expand row"
                                 size="small"
@@ -159,15 +180,33 @@ export const Feature: React.FunctionComponent<{
                                     <KeyboardArrowDownIcon />
                                 )}
                             </IconButton>
+                        ) : (
+                            // just take up that space so that if the feature
+                            // label is really long and wrap, it won't take up
+                            // this space and fall out of alignment
+                            <div
+                                css={css`
+                                    padding: 0;
+                                    margin: 0;
+                                `}
+                            ></div>
                         )}
                     </span>
-                    {props.name}
+                    <div
+                        css={css`
+                            padding-top: 8px;
+                        `}
+                    >
+                        {props.name}
+                    </div>
                 </TableCell>
-                <TableCell align="center">{all && <Check />}</TableCell>
-                <TableCell align="center">
+                <TableCell className="checkMarkHolder" align="center">
+                    {all && <Check />}
+                </TableCell>
+                <TableCell className="checkMarkHolder" align="center">
                     {(all || props.community) && <Check />}
                 </TableCell>
-                <TableCell align="center">
+                <TableCell className="checkMarkHolder" align="center">
                     {(all || props.community || props.enterprise) && <Check />}
                 </TableCell>
             </TableRow>
@@ -182,10 +221,11 @@ export const Feature: React.FunctionComponent<{
                         padding-bottom: 0;
                         padding-top: 0;
                         width: 300px;
-                        font-size: ${getResponsiveChoice(9, 16)}px !important;
+                        font-size: ${getResponsiveChoice(10, 16)}px !important;
+                        padding-left: 10px !important; // see "Record by sentence"
                     `}
                 >
-                    {/* This is the mardown content that describes the feature */}
+                    {/* This is the markdown content that describes the feature */}
                     {hasChildren && (
                         <Collapse in={open} timeout="auto" unmountOnExit>
                             {props.children}
