@@ -29,6 +29,7 @@ import { QueryDescription } from "./QueryDescription";
 import FormControl from "@material-ui/core/FormControl";
 import { ScreenOptionsSelect } from "./ScreenOptionsSelect";
 import { useGetLocalizedCollectionLabel } from "../../localization/CollectionLabel";
+import { ICollectionStatsPageProps } from "./CollectionStatsPageCodeSplit";
 
 export interface IScreen {
     label: string;
@@ -39,10 +40,11 @@ export const Pretend: React.FunctionComponent<IStatsProps> = (props) => {
     return <h1>Pretend</h1>;
 };
 
+// Please use only through the CollectionStatsPageCodeSplit
 export const kStatsPageGray = "#ececec";
-export const CollectionStatsPage: React.FunctionComponent<{
-    collectionName: string;
-}> = (props) => {
+export const CollectionStatsPage: React.FunctionComponent<ICollectionStatsPageProps> = (
+    props
+) => {
     const l10n = useIntl();
     const [screenOptions, setScreenOptions] = useState<IScreenOption[]>([]);
     const screens: IScreen[] = useMemo(() => {
@@ -398,3 +400,6 @@ const ScreenTitleBar: React.FunctionComponent<{
         </div>
     );
 };
+
+// though we normally don't like to export defaults, this is required for react.lazy (code splitting)
+export default CollectionStatsPage;
