@@ -10,7 +10,6 @@ import { ButtonRow } from "../ButtonRow";
 import { CollectionLabel } from "../../localization/CollectionLabel";
 import { BlorgMarkdown } from "../BlorgMarkdown";
 import { useIntl } from "react-intl";
-import { useResponsiveChoice } from "../../responsiveUtilities";
 
 export const Blurb: React.FunctionComponent<{
     collection: ICollection;

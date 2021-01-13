@@ -9,7 +9,6 @@ import { CheapCard } from "./CheapCard";
 import { ILanguage, getDisplayNamesForLanguage } from "../model/Language";
 import { commonUI } from "../theme";
 import { useResponsiveChoice } from "../responsiveUtilities";
-import { useTheme } from "@material-ui/core";
 import { FormattedMessage } from "react-intl";
 import TruncateMarkup from "react-truncate-markup";
 
@@ -20,8 +19,6 @@ interface ILanguageWithRole extends ILanguage {
 export const LanguageCard: React.FunctionComponent<ILanguageWithRole> = (
     props
 ) => {
-    const theme = useTheme();
-
     const {
         name,
         isoCode,

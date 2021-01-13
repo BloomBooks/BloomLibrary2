@@ -7,7 +7,6 @@ import React from "react";
 import { commonUI } from "../theme";
 import { getUrlForTarget } from "./Routes";
 import { BlorgLink } from "./BlorgLink";
-import { useResponsiveChoice } from "../responsiveUtilities";
 
 interface IProps extends React.HTMLProps<HTMLDivElement> {
     className?: string;

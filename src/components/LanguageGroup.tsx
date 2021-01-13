@@ -15,7 +15,6 @@ import matchSorter from "match-sorter";
 import searchIcon from "../search.png";
 import { CachedTablesContext } from "../model/CacheProvider";
 import { ILanguage } from "../model/Language";
-import { commonUI } from "../theme";
 import { CardSwiperLazy } from "./CardSwiper";
 import { Redirect } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";

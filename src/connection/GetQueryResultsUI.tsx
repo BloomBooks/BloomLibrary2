@@ -1,6 +1,5 @@
 import React from "react";
 import { IAxiosAnswer } from "./LibraryQueryHooks";
-import { css } from "@emotion/core";
 
 export function getNoResultsElement() {
     return (

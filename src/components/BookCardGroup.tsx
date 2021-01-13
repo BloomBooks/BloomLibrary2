@@ -10,7 +10,7 @@ import LazyLoad, {
 } from "react-lazyload";
 
 import { commonUI } from "../theme";
-import { useResponsiveChoice, useSmallScreen } from "../responsiveUtilities";
+import { useResponsiveChoice } from "../responsiveUtilities";
 import {
     useSearchBooks,
     IBasicBookInfo,
