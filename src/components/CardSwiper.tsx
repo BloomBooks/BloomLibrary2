@@ -76,8 +76,7 @@ export const CardSwiperLazy: React.FunctionComponent<{
     // We don't want to render (too many) cards that are not scrolled into view,
     // horizontally. So we make placeholders with this width.
     // If too large, we'll get blank areas. If too small, we just compute
-    // more than we need to.
-    // If too small, when you scroll swiper, it is "jumpy".
+    // more than we need to and when you scroll swiper, it is "jumpy".
     // Alternatively, we could (and once did) plumb things so that we know the
     // exact width of the cards in this row. We stopped doing that because it
     // became complicated when we started changing card sizes depending on the

@@ -50,7 +50,7 @@ const RowOfCardsInternal: React.FunctionComponent<{
     //     x.label.localeCompare(y.label)
     // );
     const childCollections = props.collection.childCollections;
-    console.log(`${props.collection.label} ${props.collection.layout}`);
+
     return (
         <CardGroup
             collection={props.collection}

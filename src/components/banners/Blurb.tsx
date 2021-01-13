@@ -20,7 +20,6 @@ export const Blurb: React.FunctionComponent<{
     hideTitle: boolean;
 }> = (props) => {
     const l10n = useIntl();
-    const getResponsiveChoice = useResponsiveChoice();
     return (
         <div
             css={css`

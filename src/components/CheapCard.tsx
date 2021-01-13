@@ -18,7 +18,6 @@ interface IProps extends React.HTMLProps<HTMLDivElement> {
 // just a wrapper around the children you provide, made to look like a card and responsive to a click.
 export const CheapCard: React.FunctionComponent<IProps> = (props) => {
     const url = getUrlForTarget(props.target || "");
-    const getResponsiveChoice = useResponsiveChoice();
     return (
         <BlorgLink
             className={`cheapCard ${props.className}`}

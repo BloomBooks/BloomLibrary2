@@ -4,25 +4,19 @@ import { useEffect, useState } from "react";
 
 // Do not use this all over, it's expensive
 export function useRefreshWhenScreenSizeChanges() {
-    // Initialize state with undefined width/height so server and client renders match
-    // Learn more here: https://joshwcomeau.com/react/the-perils-of-rehydration/
     const [windowSize, setWindowSize] = useState({
         width: window.innerWidth,
         height: window.innerHeight,
     });
 
     useEffect(() => {
-        // Handler to call on window resize
         function handleResize() {
-            // Set window width/height to state
             setWindowSize({
                 width: window.innerWidth,
                 height: window.innerHeight,
             });
-            //console.log("resize");
         }
 
-        // Add event listener
         window.addEventListener(
             "resize",
             // this should cause a refresh at most 5 times per second... it didn't seem to help performance, but it did
@@ -36,7 +30,7 @@ export function useRefreshWhenScreenSizeChanges() {
 }
 export function useSmallScreen() {
     const theme = useTheme();
-    // I don't get how this can be so large: return
+    // Note that iwth material's breakpoints, you have to get down to "xs" for phone size
     return useMediaQuery(theme.breakpoints.down("xs"));
     //useMediaQuery(theme.breakpoints.up("(max-width:600px"));
 }
@@ -55,9 +49,9 @@ export function useClassForSmallScreen() {
 export function useResponsiveChoice() {
     const isSmall = useSmallScreen();
     return (
-        smallest: number | string,
-        largest: number | string
+        smallScreenValue: number | string,
+        largeScreenValue: number | string
     ): number | string => {
-        return isSmall ? smallest : largest;
+        return isSmall ? smallScreenValue : largeScreenValue;
     };
 }
