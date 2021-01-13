@@ -5,11 +5,8 @@ import * as Sentry from "@sentry/browser";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { createBrowserHistory } from "history";
-// these two firebase imports are strange, but not an error. See https://github.com/firebase/firebase-js-sdk/issues/1832
-import firebase from "firebase/app";
-import "firebase/auth";
-import { connectParseServer } from "./connection/ParseServerConnection";
 import { isEmbedded } from "./components/EmbeddingHost";
+import { initializeFirebase } from "./firebase/firebase";
 
 try {
     // we're sending errors so long as we're not running on localhost
@@ -25,39 +22,10 @@ try {
     console.error(error);
 }
 
-const firebaseConfig = {
-    apiKey: "AIzaSyACJ7fi7_Rg_bFgTIacZef6OQckr6QKoTY",
-    authDomain: "sil-bloomlibrary.firebaseapp.com",
-    databaseURL: "https://sil-bloomlibrary.firebaseio.com",
-    projectId: "sil-bloomlibrary",
-    storageBucket: "sil-bloomlibrary.appspot.com",
-    messagingSenderId: "481016061476",
-    appId: "1:481016061476:web:8c9905ffec02e8579b82b1",
-};
-
 // supports authentication, including automatic login if a cookie supports it.
 // We don't ever allow things to behave as logged-in in embedded Bloom Library instances.
 if (!isEmbedded()) {
-    firebase.initializeApp(firebaseConfig);
-
-    firebase.auth().onAuthStateChanged(() => {
-        const user = firebase.auth().currentUser;
-        if (!user || !user.emailVerified || !user.email) {
-            return;
-        }
-        user.getIdToken().then((idToken: string) => {
-            connectParseServer(idToken, user.email!)
-                // .then(result =>
-                //     console.log("ConnectParseServer resolved with " + result)
-                // )
-                .catch((err) => {
-                    console.log(
-                        "*** Signing out of firebase because of an error connecting to ParseServer"
-                    );
-                    firebase.auth().signOut();
-                });
-        });
-    });
+    initializeFirebase();
 }
 
 /*  So this is a Single Page App with an internal router. That means, e.g. bloomlibrary.org/foobar doesn't actually have a page. It's
