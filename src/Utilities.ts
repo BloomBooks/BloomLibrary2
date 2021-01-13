@@ -24,15 +24,20 @@ export function removePunctuation(text: string): string {
 export const propsToHideAccessibilityElement =
     "position:absolute;left_-10000px;top:auto;width:1px;height:1px;overflow:hidden;";
 
-export function setCookie(cname: string, cvalue: string, exdays: number) {
+export function setCookie(
+    cookieName: string,
+    cookieValue: string,
+    daysToExpiration: number
+) {
     var d = new Date();
-    d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+    d.setTime(d.getTime() + daysToExpiration * 24 * 60 * 60 * 1000);
     var expires = "expires=" + d.toUTCString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    document.cookie =
+        cookieName + "=" + cookieValue + ";" + expires + ";path=/";
 }
 
-export function getCookie(cname: string) {
-    var name = cname + "=";
+export function getCookie(cookieName: string) {
+    var name = cookieName + "=";
     var ca = document.cookie.split(";");
     for (var i = 0; i < ca.length; i++) {
         var c = ca[i];
