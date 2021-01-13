@@ -6,15 +6,10 @@ import { jsx } from "@emotion/core";
 
 import React, { useState } from "react";
 
-// these two firebase imports are strange, but not an error. See https://github.com/firebase/firebase-js-sdk/issues/1832
-import firebase from "firebase/app";
 import { DialogTitle } from "@material-ui/core";
 import Dialog from "@material-ui/core/Dialog";
-import * as Sentry from "@sentry/browser";
 import { FormattedMessage } from "react-intl";
 import { StyledFirebaseAuthCodeSplit } from "../../firebase/StyledFirebaseAuthCodeSplit";
-
-//import { staticUser } from "./User";
 
 let staticShowLoginDialog: (doOpen: boolean) => void = () => {};
 export { staticShowLoginDialog as ShowLoginDialog };
