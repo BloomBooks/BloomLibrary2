@@ -21,7 +21,6 @@ export const StyledFirebaseAuthCodeSplit: React.FunctionComponent<{
                     loginComplete={props.loginComplete}
                 />
             )}
-            ;
         </div>
     );
 };
