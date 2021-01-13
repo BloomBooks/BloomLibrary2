@@ -16,7 +16,7 @@ import {
     IBasicBookInfo,
 } from "../connection/LibraryQueryHooks";
 import { BookCard } from "./BookCard";
-import { CardSwiper } from "./CardSwiper";
+import { SingleRowCardSwiper } from "./SingleRowCardSwiper";
 
 interface IProps {
     title: string;
@@ -145,8 +145,10 @@ export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
     //     );
     // }
 
+    // JH Jan 2020: I cannot find anywhere that this is showInOne Row is used.
+    // It's also puzzling that it has to have its own CardSwiper implementation.
     const bookList = showInOneRow ? (
-        <CardSwiper wrapperRole="list">{cards}</CardSwiper>
+        <SingleRowCardSwiper wrapperRole="list">{cards}</SingleRowCardSwiper>
     ) : (
         <div
             css={css`

@@ -10,6 +10,7 @@ import { Header } from "../components/header/Header";
 import { Routes } from "../components/Routes";
 import { Footer } from "../components/Footer";
 import { useIsEmbedded } from "../components/EmbeddingHost";
+import { useRefreshWhenScreenSizeChanges } from "../responsiveUtilities";
 
 // What we want inside the <Router> component. Has to be its own component so that we can have
 // useLocation(), which only works inside the Router.
@@ -17,6 +18,7 @@ export const RouterContent: React.FunctionComponent<{}> = (props) => {
     const location = useLocation();
     const showingPlayer = location.pathname.startsWith("/player/");
     const embeddedMode = useIsEmbedded();
+    useRefreshWhenScreenSizeChanges();
     return (
         <React.Fragment>
             {embeddedMode || showingPlayer || <Header />}

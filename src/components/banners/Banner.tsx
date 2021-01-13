@@ -7,6 +7,7 @@ import { jsx } from "@emotion/core";
 import { ICollection, IBanner } from "../../model/ContentInterfaces";
 import { StandardBannerLayout } from "./StandardBannerLayout";
 import { ImageOnRightBannerLayout } from "./ImageOnRightBannerLayout";
+import { useClassForSmallScreen } from "../../responsiveUtilities";
 export const Banner: React.FunctionComponent<{
     collection: ICollection;
     banner: IBanner;
@@ -15,6 +16,7 @@ export const Banner: React.FunctionComponent<{
     const defaultTextColor = props.banner.backgroundImage ? "white" : "black";
     return (
         <div
+            className={useClassForSmallScreen()}
             css={css`
                 display: flex;
                 flex-direction: column;
@@ -23,14 +25,11 @@ export const Banner: React.FunctionComponent<{
                 * {
                     color: ${props.banner.textColor || defaultTextColor};
                 }
-                /* a {
-                    font-size: 14pt;
-                } */
+
                 a:visited {
                     text-decoration: underline;
                 }
                 background-color: ${props.banner.backgroundColor};
-
                 /* this can override any of the above*/
                 ${props.banner.css}
             `}

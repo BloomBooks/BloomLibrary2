@@ -4,18 +4,21 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper.min.css";
 import "swiper/components/navigation/navigation.min.css";
 import "swiper/components/a11y/a11y.min.css";
+import { useResponsiveChoice } from "../responsiveUtilities";
 
 SwiperCore.use([Navigation, A11y]);
 
-const swiperConfig: Swiper = {
+export const swiperConfig: Swiper = {
     preloadImages: false,
-    lazy: true,
+    lazy: {
+        loadPrevNext: true,
+        loadPrevNextAmount: 3,
+    },
     watchSlidesVisibility: true,
     navigation: {
         nextEl: ".swiper-button-next",
         prevEl: ".swiper-button-prev",
     },
-    spaceBetween: 20,
     slidesPerView: "auto",
     // I'm not clear why this is needed now and wasn't in earlier versions.
     // It allows scrolling a bit further with the right arrow than is possible by default,
@@ -33,48 +36,6 @@ const swiperConfig: Swiper = {
     //a11y: true, // supposed to provide default accessibility behavior, but seems to do nothing.
 };
 
-// Almost obsolete original swiper
-export const CardSwiper: React.FunctionComponent<{
-    children: ReactElement[];
-    // Typically the swiper is a list. I can't find a way to configure it so that the element containing
-    // the cards is a UL, but by setting this to 'list' and making items with role listitem we achieve
-    // the same accessibility goals. This role becomes the value of the role attribute of the swiper
-    // wrapper element, which is the immediate parent of the items. Note that it's not always a list, e.g.,
-    // in the LanguageGroup a further-out element is a listbox and the items have role 'option'.
-    // If you set a wrapperRole, make sure the children you pass have role listitem.
-    wrapperRole?: string;
-}> = (props) => {
-    const [swiper, setSwiper] = useState<any | null>(null);
-    useEffect(() => {
-        if (swiper && props.children.length) {
-            // When the number of children change, if we already had cards and the user has scrolled,
-            // we want to reset the scroll back to the left.
-            // This prevents a UI issue when user has scrolled to the right and then filters the cards.
-            // The cards would otherwise be off the left side of the screen.
-
-            // This check is just for optimization.
-            if (swiper.activeIndex !== 0) {
-                swiper.slideTo(0);
-            }
-            if (props.wrapperRole) {
-                swiper.wrapperEl.setAttribute("role", props.wrapperRole);
-            }
-        }
-    }, [props.children.length, props.wrapperRole, swiper]);
-
-    return (
-        <Swiper {...swiperConfig} onSwiper={setSwiper}>
-            {React.Children.map(props.children, (x, index) => (
-                <SwiperSlide key={index} style={{ width: "initial" }}>
-                    {x}
-                </SwiperSlide>
-            ))}
-            <div className="swiper-button-next swiper-button"></div>
-            <div className="swiper-button-prev swiper-button"></div>
-        </Swiper>
-    );
-};
-
 // This version is much more performant for long lists of cards, many of which are not visible, especially in
 // small windows.
 // Enhance: this could be made generic, with a type param indicating that the type of objects in data
@@ -83,8 +44,8 @@ export const CardSwiperLazy: React.FunctionComponent<{
     data: any[];
     // Given one of the items in data (and its index), return the react element that should be
     // shown for that card when it is visible.
-    getReactElement: (item: any, index: number) => ReactElement;
-    placeHolderWidth: string;
+    getReactElement: (card: any, index: number) => ReactElement;
+
     // Typically the swiper is a list. I can't find a way to configure it so that the element containing
     // the cards is a UL, but by setting this to 'list' and making items with role listitem we achieve
     // the same accessibility goals. This role becomes the value of the role attribute of the swiper
@@ -94,6 +55,7 @@ export const CardSwiperLazy: React.FunctionComponent<{
     wrapperRole?: string;
 }> = (props) => {
     const [swiper, setSwiper] = useState<any | null>(null);
+    const getResponsiveChoice = useResponsiveChoice();
     useEffect(() => {
         if (swiper && props.data.length) {
             // When the number of children change, if we already had cards and the user has scrolled,
@@ -111,6 +73,21 @@ export const CardSwiperLazy: React.FunctionComponent<{
         }
     }, [props.data.length, props.wrapperRole, swiper]);
 
+    // We don't want to render (too many) cards that are not scrolled into view,
+    // horizontally. So we make placeholders with this width.
+    // If too large, we'll get blank areas. If too small, we just compute
+    // more than we need to and when you scroll swiper, it is "jumpy".
+    // Alternatively, we could (and once did) plumb things so that we know the
+    // exact width of the cards in this row. We stopped doing that because it
+    // became complicated when we started changing card sizes depending on the
+    // screen size, but it wouldn't be impossible to go back to that.
+    const widthOfPlaceholder = 150;
+
+    // this should be at least 1, which makes things smooth for clicking on
+    // "next". Beyond that, it is for making things smooth while dragging.
+    const kNumberOfCardsToRenderWhileInvisible = 3;
+    let indexOfLastVisibleCard = 0;
+
     return (
         // I believe it ought to be possible to use the 'virtual' feature of Swiper so that only the visible
         // cards get created at all, but I had trouble getting it to work, particularly in LanguageGroup.
@@ -124,16 +101,39 @@ export const CardSwiperLazy: React.FunctionComponent<{
         // The Swiper stylesheet sets SwiperSlides to be 100% width for some reason; we want them
         // to be the size of the generated child element, so I gave them a style that forces "initial"
         // to make the cards use the size of their content.
-        <Swiper {...swiperConfig} onSwiper={setSwiper}>
-            {props.data.map((item: any, index: number) => (
-                <SwiperSlide style={{ width: "initial" }} key={index}>
-                    {(args: any) =>
-                        args.isVisible ? (
-                            props.getReactElement(item, index)
-                        ) : (
-                            <div style={{ width: props.placeHolderWidth }} />
+
+        <Swiper
+            {...swiperConfig}
+            spaceBetween={getResponsiveChoice(10, 20) as number}
+            onSwiper={setSwiper}
+        >
+            {props.data.map((card: any, index: number) => (
+                <SwiperSlide
+                    style={{
+                        width: "initial",
+                    }}
+                    key={index}
+                >
+                    {(args: any) => {
+                        if (
+                            args.isVisible ||
+                            // Render a couple cards to be ready
+                            // Note that will render cards that have already been
+                            // scrolled off to the left.
+                            indexOfLastVisibleCard >
+                                index - kNumberOfCardsToRenderWhileInvisible
                         )
-                    }
+                            indexOfLastVisibleCard = index;
+                        return args.isVisible ? (
+                            props.getReactElement(card, index)
+                        ) : (
+                            <div
+                                style={{
+                                    width: `${widthOfPlaceholder}px`,
+                                }}
+                            />
+                        );
+                    }}
                 </SwiperSlide>
             ))}
             <div className="swiper-button-next swiper-button"></div>

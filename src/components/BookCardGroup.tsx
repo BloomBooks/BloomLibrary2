@@ -10,11 +10,12 @@ import LazyLoad, {
 } from "react-lazyload";
 
 import { commonUI } from "../theme";
+import { useResponsiveChoice, useSmallScreen } from "../responsiveUtilities";
 import {
     useSearchBooks,
     IBasicBookInfo,
 } from "../connection/LibraryQueryHooks";
-import { BookCard, BookCardWidth } from "./BookCard";
+import { BookCard } from "./BookCard";
 import { MoreCard } from "./MoreCard";
 import { CardSwiperLazy } from "./CardSwiper";
 import { ICollection } from "../model/ContentInterfaces";
@@ -70,18 +71,16 @@ export const BookCardGroup: React.FunctionComponent<IProps> = (props) => {
                 ></li>
             }
         >
-            <CollectionGroupInner {...props} />
+            <BookCardGroupInner {...props} />
         </LazyLoad>
     );
 };
-export const CollectionGroupInner: React.FunctionComponent<IProps> = (
-    props
-) => {
+const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
     // we have either a horizontally-scrolling list of 20, or several rows
     // of 5 each
     const maxCardsToRetrieve = props.rows ? props.rows * 5 : 20;
     const collectionFilter = props.collection.filter ?? {};
-
+    const getResponsiveChoice = useResponsiveChoice();
     const search = useSearchBooks(
         {
             include: "langPointers",
@@ -143,7 +142,6 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
         }
         bookList = (
             <CardSwiperLazy
-                placeHolderWidth={`${BookCardWidth}px`}
                 data={data}
                 getReactElement={(item: IBasicBookInfo | "more", index) => {
                     if (item === "more") {
@@ -226,13 +224,17 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
 
     let group;
     switch (props.collection.layout) {
+        // this is used in the "Create" screen
         case "layout: description-followed-by-row-of-books":
             group = (
                 <React.Fragment>
                     <div
                         css={css`
                             display: flex;
-                            flex-direction: row;
+                            flex-direction: ${getResponsiveChoice(
+                                "column",
+                                "row"
+                            )};
                             // The default margin-left is "auto"
                             .swiper-container {
                                 margin-left: 0;
@@ -245,7 +247,8 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
                                 width: 200px;
                                 min-width: 200px;
                                 max-width: 200px;
-                                margin-right: 20px;
+                                margin-right: ${getResponsiveChoice(10, 20)}px;
+                                margin-bottom: 10px; // for mobile where this is on top
                             `}
                         >
                             <h1>{label}</h1>
@@ -266,7 +269,11 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
         default:
             group = (
                 <React.Fragment>
-                    <h1>
+                    <h1
+                        css={css`
+                            font-size: ${getResponsiveChoice(10, 14)}pt;
+                        `}
+                    >
                         {label}
                         {props.collection.urlKey === "new-arrivals" || (
                             <span
