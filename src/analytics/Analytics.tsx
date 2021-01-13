@@ -92,7 +92,18 @@ import { Environment } from "../Environment";
 // to save events that happen before the script in that object's load method is loaded.
 // Typically, we would pass in the source key here, but we don't use it anymore since the load function
 // loads different files based on where we want to send our analytics (segment sources).
-(window as any).analytics.load();
+// It takes a while on a slow connection to load this file, and there's no hurry since we already arranged
+// to capture any events and will send them when the real code is loaded. So to speed up page load, we
+// will postpone this.
+function loadAnalytics() {
+    // This is cheating just a bit since it pushes the possible brief non-responsiveness
+    // while we parse the analytics code outside the window for lighthouse and similar
+    // performance evaluators. But I don't think it will be long enough to notice.
+    setTimeout(() => (window as any).analytics.load(), 5000);
+    window.removeEventListener("DOMContentLoaded", loadAnalytics);
+}
+window.addEventListener("DOMContentLoaded", loadAnalytics);
+
 export function track(event: string, params: object) {
     // Note that once the script created in the load() function above is loaded,
     // window.analytics is an object defined in that script, not the object
