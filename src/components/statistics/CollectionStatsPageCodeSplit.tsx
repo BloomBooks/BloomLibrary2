@@ -4,7 +4,7 @@ export interface ICollectionStatsPageProps {
     collectionName: string;
 }
 
-// This is wrapped so that we can keep all the javascript involved in the BookDetail
+// This is wrapped so that we can keep all the javascript involved in the CollectionStatsPage
 // in a separate js file, downloaded to the user's browser only if he/she needs it.
 export const CollectionStatsPageCodeSplit: React.FunctionComponent<ICollectionStatsPageProps> = (
     props

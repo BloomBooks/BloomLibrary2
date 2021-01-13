@@ -2,10 +2,6 @@ import React, { useEffect, useState } from "react";
 import firebase from "firebase/app"; // think this is just a namespace import, doesn't bring a lot of code
 import { getFirebaseAuth } from "./firebase";
 
-export interface ICollectionStatsPageProps {
-    collectionName: string;
-}
-
 // StyledFirebaseAuth wrapped twice so that we can keep all the javascript involved in Firebase
 // in a separate js file, downloaded to the user's browser only if he/she needs it.
 // Because StyledFirebaseAuth needs to be initialized with objects only available
@@ -91,7 +87,7 @@ const StyledFirebaseAuthCodeSplitInner: React.FunctionComponent<{
         },
     };
     return (
-        <React.Suspense fallback={<div>Loading Bulk Edit...</div>}>
+        <React.Suspense fallback={<div>Loading login screen...</div>}>
             <StyledFirebaseAuth
                 uiConfig={uiConfig as any}
                 firebaseAuth={firebase.auth()}
@@ -99,18 +95,3 @@ const StyledFirebaseAuthCodeSplitInner: React.FunctionComponent<{
         </React.Suspense>
     );
 };
-//         getFirebaseAuth().then(() =>
-//             import("firebase/auth").then(() => {
-//                 // Configure FirebaseUI.
-
-//             });
-//         });
-//         const styledFirebaseAuthModule = import(
-//             /* webpackChunkName: "collectionStatsPage" */ "react-firebaseui/StyledFirebaseAuth"
-//         );
-//         return Promise.all([firebase, styledFirebaseAuthModule]).then(
-//             () => styledFirebaseAuthModule
-//         );
-//     });
-
-// };
