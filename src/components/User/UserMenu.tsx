@@ -12,7 +12,6 @@ import firebase from "firebase/app";
 import { ShowLoginDialog } from "./LoginDialog";
 import { observer } from "mobx-react";
 import { logout as logoutFromParseServer } from "../../connection/ParseServerConnection";
-import Avatar from "react-avatar";
 import { track } from "../../analytics/Analytics";
 import * as Sentry from "@sentry/browser";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -153,6 +152,9 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
     };
     // split out buttonHeight else react complains because it doesn't apply to <div>s
     const { buttonHeight, ...otherProps } = props;
+    const Avatar = React.lazy(
+        () => import(/* webpackChunkName: "avatar" */ "react-avatar")
+    );
     return (
         // <FirebaseAuthConsumer>
         //     {(authState: AuthEmission) => (
@@ -241,12 +243,16 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
                                 />
                             )}
                             {!loggedInUser.photoURL && (
-                                <Avatar
-                                    email={loggedInUser.email ?? ""}
-                                    name={loggedInUser.displayName ?? ""}
-                                    size={props.buttonHeight}
-                                    color={useTheme().palette.secondary.main}
-                                />
+                                <React.Suspense fallback={<div></div>}>
+                                    <Avatar
+                                        email={loggedInUser.email ?? ""}
+                                        name={loggedInUser.displayName ?? ""}
+                                        size={props.buttonHeight}
+                                        color={
+                                            useTheme().palette.secondary.main
+                                        }
+                                    />
+                                </React.Suspense>
                             )}
                         </div>
                     </Button>
