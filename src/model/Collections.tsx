@@ -40,7 +40,15 @@ function useGetContentfulCollections(): IRawCollection[] {
 
     const { loading, result } = useContentful({
         content_type: "collection",
-        include: 10, // depth
+        // Only fetch the fields we need. Unfortunately most of the fields we define are used somewhere; we could conceivably fetch fewer
+        // for certain purposes. We don't directly use sys.type and sys.key, but they are needed to make the contentful code
+        // that builds the childCollections array work properly. There appears to be no way to avoid unwanted fields in referenced objects
+        // (about half the total data this fetches).
+        // As of Jan 2021, we save about 17% by restricting fields this way. Replacing all the fields.* items with just "fields"
+        // is also worth considering...we save 16% just by cutting out unused sys fields.
+        select:
+            "fields.bookSortOrder,fields.banner,fields.urlKey,fields.iconForCardAndDefaultBanner,fields.filter,fields.label,fields.richTextLabel,fields.description,fields.statisticsQuerySpec,fields.hideLabelOnCardAndDefaultBanner,fields.childCollections,fields.layout,fields.rows,sys.contentType,sys.id,sys.type",
+        include: 1, // depth
     });
     if (loading) {
         return [];
