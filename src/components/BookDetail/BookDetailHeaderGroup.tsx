@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 
 import React, { useContext } from "react";
 import { ArtifactType, Book } from "../../model/Book";
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 import { ReadButton } from "./ReadButton";
 import { TranslateButton } from "./TranslateButton";
 import { LanguageLink } from "../LanguageLink";

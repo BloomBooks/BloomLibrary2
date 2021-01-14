@@ -54,7 +54,7 @@ import { useStorageState } from "react-storage-hooks";
 import { Book } from "../../model/Book";
 import StaffPanel from "../Admin/StaffPanel";
 import { useGetLoggedInUser } from "../../connection/LoggedInUser";
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 import { IGridControlProps } from "./GridControl";
 import { CachedTablesContext } from "../../model/CacheProvider";
 import { ILanguage } from "../../model/Language";

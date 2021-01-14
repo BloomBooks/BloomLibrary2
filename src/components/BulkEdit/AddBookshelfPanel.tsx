@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 import { FilterHolder } from "./BulkEditPage";
 import { BulkEditPanel } from "./BulkEditPanel";
 import { AddBookshelfToAllBooksInFilter } from "./BulkChangeFunctions";

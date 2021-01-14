@@ -1,6 +1,6 @@
 import React from "react";
 import { IFilter } from "../../IFilter";
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 import { FilterHolder } from "./BulkEditPage";
 import { BulkEditPanel } from "./BulkEditPanel";
 import { AddTagAllBooksInFilter } from "./BulkChangeFunctions";

@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 
 import React, { useContext } from "react";
 import { Book } from "../../model/Book";
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 import { LicenseLink } from "./LicenseLink";
 import { BookStats } from "./BookStats";
 import { CachedTablesContext } from "../../model/CacheProvider";

@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 
 import React, { useContext, useEffect } from "react";
 import { IconButton, Tooltip } from "@material-ui/core";
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 
 import { ReactComponent as PdfIcon } from "../../assets/Pdf.svg";
 import { ReactComponent as EPUBIcon } from "../../assets/EPub.svg";
