@@ -19,7 +19,13 @@ import Button from "@material-ui/core/Button";
 import { saveAs } from "file-saver";
 import DownloadPngIcon from "./download-png.svg";
 import DownloadCsvIcon from "./download-csv.svg";
-import { IStatsProps, ExportDataFn, IScreenOption } from "./StatsInterfaces";
+import {
+    IStatsProps,
+    ExportDataFn,
+    IScreenOption,
+    IScreen,
+    kStatsPageGray,
+} from "./StatsInterfaces";
 import { useStorageState } from "react-storage-hooks";
 import { exportCsv } from "./exportData";
 import LinearProgress from "@material-ui/core/LinearProgress";
@@ -31,17 +37,11 @@ import { ScreenOptionsSelect } from "./ScreenOptionsSelect";
 import { useGetLocalizedCollectionLabel } from "../../localization/CollectionLabel";
 import { ICollectionStatsPageProps } from "./CollectionStatsPageCodeSplit";
 
-export interface IScreen {
-    label: string;
-    component: React.FunctionComponent<IStatsProps>;
-    options?: IScreenOption[];
-}
 export const Pretend: React.FunctionComponent<IStatsProps> = (props) => {
     return <h1>Pretend</h1>;
 };
 
 // Please use only through the CollectionStatsPageCodeSplit
-export const kStatsPageGray = "#ececec";
 export const CollectionStatsPage: React.FunctionComponent<ICollectionStatsPageProps> = (
     props
 ) => {

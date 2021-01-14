@@ -66,5 +66,12 @@ export interface IBookStat {
     startedCount: number;
     finishedCount: number;
 }
+export interface IScreen {
+    label: string;
+    component: React.FunctionComponent<IStatsProps>;
+    options?: IScreenOption[];
+}
 
 export type ExportDataFn = () => string[][];
+
+export const kStatsPageGray = "#ececec";

@@ -52,3 +52,20 @@ export function getCookie(cookieName: string) {
     }
     return "";
 }
+
+function twoDigit(input: number): string {
+    return input >= 10
+        ? input.toString().substring(0, 2)
+        : "0" + input.toString().substring(0);
+}
+
+// Given a UTC date, format as YYYY-MM-DD
+export function toYyyyMmDd(date: Date) {
+    const result =
+        date.getUTCFullYear() +
+        "-" +
+        twoDigit(date.getUTCMonth() + 1) +
+        "-" +
+        twoDigit(date.getUTCDate());
+    return result;
+}
