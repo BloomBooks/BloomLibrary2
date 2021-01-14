@@ -13,10 +13,9 @@ import { ReactComponent as EPUBIcon } from "../../assets/EPub.svg";
 // See comment in BloomPubIcon about why this is a special case
 import { BloomPubIcon } from "./BloomPubIcon";
 
-import { Book } from "../../model/Book";
+import { ArtifactType, Book } from "../../model/Book";
 import {
     getArtifactUrl,
-    ArtifactType,
     getArtifactVisibilitySettings,
 } from "./ArtifactHelper";
 import { OSFeaturesContext } from "../OSFeaturesContext";

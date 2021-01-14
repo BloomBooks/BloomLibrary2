@@ -10,12 +10,11 @@ import Divider from "@material-ui/core/Divider";
 import { ArtifactAndChoice } from "./ArtifactAndChoice";
 import { useGetBookDetail } from "../../../connection/LibraryQueryHooks";
 import {
-    ArtifactType,
     getArtifactUrl,
     getArtifactVisibilitySettings,
     getArtifactTypeFromKey,
 } from "../ArtifactHelper";
-import { Book } from "../../../model/Book";
+import { Book, ArtifactType } from "../../../model/Book";
 
 // A set of controls by which the user can hide or show the artifacts for a book
 // which the harvester produced.

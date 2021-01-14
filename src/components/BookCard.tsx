@@ -7,13 +7,9 @@ import React, { useState, useEffect } from "react";
 import { CheapCard } from "./CheapCard";
 import LazyLoad from "react-lazyload";
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
-import {
-    getLegacyThumbnailUrl,
-    getThumbnailUrl,
-} from "./BookDetail/ArtifactHelper";
 import { FeatureLevelBar } from "./FeatureLevelBar";
 import { LanguageFeatureList } from "./LanguageFeatureList";
-import { getBestBookTitle } from "../model/Book";
+import { Book, getBestBookTitle } from "../model/Book";
 
 import TruncateMarkup from "react-truncate-markup";
 import { useIntl } from "react-intl";
@@ -34,9 +30,11 @@ interface IProps {
 
 export const BookCard: React.FunctionComponent<IProps> = (props) => {
     const l10n = useIntl();
-    const legacyStyleThumbnail = getLegacyThumbnailUrl(props.basicBookInfo);
+    const legacyStyleThumbnail = Book.getLegacyThumbnailUrl(
+        props.basicBookInfo
+    );
     const [readyToAddAltText, setReadyToAddAltText] = useState(false);
-    const { thumbnailUrl, isModernThumbnail } = getThumbnailUrl(
+    const { thumbnailUrl, isModernThumbnail } = Book.getThumbnailUrl(
         props.basicBookInfo
     );
     const getResponsiveChoice = useResponsiveChoice();

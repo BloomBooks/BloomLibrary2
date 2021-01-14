@@ -5,12 +5,12 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React, { useContext } from "react";
-import { Book } from "../../model/Book";
+import { ArtifactType, Book } from "../../model/Book";
 import { observer } from "mobx-react";
 import { ReadButton } from "./ReadButton";
 import { TranslateButton } from "./TranslateButton";
 import { LanguageLink } from "../LanguageLink";
-import { getArtifactVisibilitySettings, ArtifactType } from "./ArtifactHelper";
+import { getArtifactVisibilitySettings } from "./ArtifactHelper";
 import { ILanguage } from "../../model/Language";
 import { ReadOfflineButton } from "./ReadOfflineButton";
 import { useMediaQuery } from "@material-ui/core";

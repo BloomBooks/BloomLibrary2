@@ -67,7 +67,7 @@ export async function getCurrentUser() {
 // Call this only once! Firebase complains if it is repeatedly imported or initialized.
 async function getFirebaseAuthInternal() {
     // This has the vital side effect of initializing firebase.auth to the appropriate object.
-    await import("firebase/auth");
+    await import(/* webpackChunkName: "firebase" */ "firebase/auth");
 
     firebase.initializeApp(firebaseConfig);
 

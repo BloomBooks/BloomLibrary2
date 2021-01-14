@@ -1,17 +1,9 @@
-import { Book } from "../../model/Book";
+import { Book, ArtifactType } from "../../model/Book";
 import { IBasicBookInfo } from "../../connection/LibraryQueryHooks";
 import {
     ArtifactVisibilitySettings,
     ArtifactVisibilitySettingsGroup,
 } from "../../model/ArtifactVisibilitySettings";
-
-export enum ArtifactType {
-    pdf = "pdf",
-    epub = "epub",
-    bloomReader = "bloomReader",
-    readOnline = "readOnline",
-    shellbook = "shellbook",
-}
 
 export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
     let url;
