@@ -10,7 +10,6 @@ import loginIcon from "../../assets/NoUser.svg";
 // these two firebase imports are strange, but not an error. See https://github.com/firebase/firebase-js-sdk/issues/1832
 import firebase from "firebase/app";
 import { ShowLoginDialog } from "./LoginDialog";
-import { observer } from "mobx-react";
 import { logout as logoutFromParseServer } from "../../connection/ParseServerConnection";
 import { track } from "../../analytics/Analytics";
 import * as Sentry from "@sentry/browser";
@@ -34,7 +33,7 @@ interface IProps extends React.HTMLProps<HTMLDivElement> {
     buttonHeight: string;
 }
 
-export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
+export const UserMenu: React.FunctionComponent<IProps> = (props) => {
     const l10n = useIntl();
     // This variable is used according to an apparently standard but rather
     // obscure convention for managing Material button/menu combinations.
@@ -51,6 +50,8 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
     );
 
     const history = useHistory(); // used to jump to My Books
+
+    const avatarColor = useTheme().palette.secondary.main;
 
     /*useEffect(() => {
         firebase
@@ -248,9 +249,7 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
                                         email={loggedInUser.email ?? ""}
                                         name={loggedInUser.displayName ?? ""}
                                         size={props.buttonHeight}
-                                        color={
-                                            useTheme().palette.secondary.main
-                                        }
+                                        color={avatarColor}
                                     />
                                 </React.Suspense>
                             )}
@@ -307,4 +306,4 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
         // )}
         // </FirebaseAuthConsumer>
     );
-});
+};
