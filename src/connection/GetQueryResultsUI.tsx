@@ -4,8 +4,8 @@ import { IAxiosAnswer } from "./LibraryQueryHooks";
 export function getNoResultsElement() {
     return (
         <div>
-            {/* without this we don't get line and then the screen jumps */}
-            {"-"}
+            {/* without this we don't get a line and then the screen jumps */}
+            &nbsp;
         </div>
     );
 }
