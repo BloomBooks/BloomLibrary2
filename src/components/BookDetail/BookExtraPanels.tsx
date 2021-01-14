@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 
 import React from "react";
 import { Book } from "../../model/Book";
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 import {
     ExpansionPanel,
     ExpansionPanelSummary,

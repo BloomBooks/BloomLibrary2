@@ -1,5 +1,5 @@
 import { observable } from "mobx";
-import { useObserver } from "mobx-react";
+import { useObserver } from "mobx-react-lite";
 // This is currently just a subset of what ParseServer returns,
 // so don't go renaming anything
 export class User {

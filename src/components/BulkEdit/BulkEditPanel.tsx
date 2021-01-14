@@ -15,7 +15,7 @@ import {
 } from "@material-ui/core";
 
 import { IFilter } from "../../IFilter";
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 import { FilterHolder } from "./BulkEditPage";
 

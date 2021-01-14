@@ -12,7 +12,6 @@ import { Theme, InputBase, Paper, Grow } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import CancelIcon from "@material-ui/icons/Cancel";
 import { withStyles } from "@material-ui/styles";
-import { giveFreeLearningCsv } from "../export/freeLearningIO";
 import { useLocation, useHistory } from "react-router-dom";
 import { useIntl } from "react-intl";
 import { setLanguageOverride } from "../localization/LocalizationProvider";
@@ -151,6 +150,13 @@ export const SearchBox: React.FunctionComponent<{
         }
     };
 
+    async function giveFreeLearningCsvAsync() {
+        const { giveFreeLearningCsv } = await import(
+            "../export/freeLearningIO" /* webpackChunkName: "freeLearningCsv" */
+        );
+        giveFreeLearningCsv();
+    }
+
     function tryHandleSpecialSearch(searchStringLocal: string): boolean {
         const searchStringLower = searchStringLocal.toLowerCase();
 
@@ -159,7 +165,7 @@ export const SearchBox: React.FunctionComponent<{
             searchStringLower === "freelearningiocsv" ||
             searchStringLower === "csv"
         ) {
-            giveFreeLearningCsv();
+            giveFreeLearningCsvAsync();
             return true;
         }
 

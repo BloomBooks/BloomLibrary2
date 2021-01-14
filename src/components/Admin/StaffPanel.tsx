@@ -14,7 +14,7 @@ import {
     Radio,
     Button,
 } from "@material-ui/core";
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 import { HideBookControl } from "./HideBookControl";
 import {
     TagsChooser,

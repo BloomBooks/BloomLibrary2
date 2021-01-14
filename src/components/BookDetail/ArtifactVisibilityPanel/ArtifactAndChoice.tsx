@@ -19,9 +19,9 @@ import epubIcon from "../../../assets/EPub.svg";
 import bloomReaderIcon from "../../../assets/BloomPub.svg";
 import readIcon from "../../../assets/Read.svg";
 import translationIcon from "../../../assets/Translation.svg";
-import { ArtifactType } from "../ArtifactHelper";
 import { commonUI } from "../../../theme";
 import { useGetLoggedInUser } from "../../../connection/LoggedInUser";
+import { ArtifactType } from "../../../model/Book";
 
 const useStyles = makeStyles(() =>
     createStyles({

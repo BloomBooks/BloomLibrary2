@@ -1,5 +1,5 @@
 import { Book } from "../../model/Book";
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 import React from "react";
 import { BlorgLink } from "../BlorgLink";
 

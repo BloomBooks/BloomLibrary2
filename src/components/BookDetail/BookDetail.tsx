@@ -11,7 +11,7 @@ import WarningIcon from "@material-ui/icons/Warning";
 import { IconButton, Divider } from "@material-ui/core";
 import { Alert } from "../Alert";
 
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 import { BookExtraPanels } from "./BookExtraPanels";
 import { LeftMetadata, RightMetadata } from "./MetadataGroup";
 import { DownloadsGroup } from "./DownloadsGroup";
