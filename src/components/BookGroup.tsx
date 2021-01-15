@@ -17,6 +17,7 @@ import {
 } from "../connection/LibraryQueryHooks";
 import { BookCard } from "./BookCard";
 import { SingleRowCardSwiper } from "./SingleRowCardSwiper";
+import { useSmallScreen } from "../responsiveUtilities";
 
 interface IProps {
     title: string;
@@ -47,8 +48,10 @@ export const BookGroup: React.FunctionComponent<IProps> = (props) => {
     // note, if the number of cards is too small to fill up those rows, this will expect
     // to be taller than it is, but then when it is replaced by the actual content, the
     // scrollbar will adjust, so no big deal?
-    const rowHeight =
-        rowCount * commonUI.bookCardHeightPx + commonUI.bookGroupTopMarginPx;
+    const topMarginPx = useSmallScreen()
+        ? commonUI.bookGroupSmallTopMarginPx
+        : commonUI.bookGroupTopMarginPx;
+    const rowHeight = rowCount * (commonUI.bookCardHeightPx + topMarginPx);
 
     // Enhance: this has parameters, height and offset, that should help
     // but so far I haven't got them to work well. It has many other
