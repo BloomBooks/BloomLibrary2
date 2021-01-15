@@ -313,16 +313,24 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
             break;
     }
 
+    // For small screens, we want minimal space between rows to maximize what the user can see.
+    const topMarginPx = getResponsiveChoice(
+        commonUI.bookGroupSmallTopMarginPx,
+        commonUI.bookGroupTopMarginPx
+    );
+    const minHeightPx = getResponsiveChoice(
+        commonUI.bookCardHeightPx + commonUI.bookGroupSmallTopMarginPx,
+        commonUI.bookCardHeightPx + commonUI.bookGroupTopMarginPx
+    );
     return (
         //We just don't show the row if there are no matches, e.g., no Health books for this project
         // (ZeroBooksMatchedElement will be an empty pseudo-element that satisfies the 'or' but shows nothing)
         zeroBooksMatchedElement || (
             <li
                 css={css`
-                    margin-top: ${commonUI.bookGroupTopMarginPx}px;
+                    margin-top: ${topMarginPx}px;
                     // we don't know yet how many rows we might get if rows>1, but at least leave room for one
-                    min-height: ${commonUI.bookCardHeightPx +
-                    commonUI.bookGroupTopMarginPx}px;
+                    min-height: ${minHeightPx}px;
                 `}
                 role="region"
                 aria-label={label}
