@@ -10,6 +10,12 @@ const defaultContentfulLocale = "en-US";
 // query result from Contentful.
 const contentfulCache: any = {};
 
+// Pass the specified query to contentful. Initially will typically return
+// {loading:true} unless the result is already cached. When we have data,
+// it will return {loading:false, result: the data}.
+// As a special case, useful when we must call the function by rules of hooks
+// but don't actually want it to query contentful, if query is falsy
+// we return {loading:false result:[]} without sending anything to contentful.
 export function useContentful(
     query: any
 ): { loading: boolean; result: any[] | undefined } {
@@ -28,6 +34,11 @@ export function useContentful(
 
     const queryString = JSON.stringify(query);
     useEffect(() => {
+        if (!query) {
+            // arguably we could setResult, but it's better not to trigger
+            // a state change that would cause another render.
+            return;
+        }
         if (locale === "loading") return;
 
         if (contentfulCache[queryString]) {
@@ -78,6 +89,11 @@ export function useContentful(
         // a new object with the same content on each call.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [queryString, locale]);
+
+    if (!query) {
+        // now we're past the hooks, we can take our early exit.
+        return { loading: false, result: [] };
+    }
 
     if (!results || !results.result || results.queryString !== queryString) {
         return { loading: true, result: undefined };
