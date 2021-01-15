@@ -4,7 +4,8 @@ import { IFilter } from "../../IFilter";
 import { ICollection } from "../../model/ContentInterfaces";
 import { convertContentfulBannerToIBanner } from "../../model/Contentful";
 import { Banner } from "./Banner";
-import { standardBannerHeight } from "./StandardBannerLayout";
+import { useResponsiveChoice } from "../../responsiveUtilities";
+
 export const ContentfulBanner: React.FunctionComponent<{
     id: string; // of the banner object on contentful
     collection: ICollection;
@@ -19,11 +20,24 @@ export const ContentfulBanner: React.FunctionComponent<{
         // default for "include' is "1", and with the current model, we only need to go 1 deep (to get the background image url)
         // include: 1
     });
+    const getResponsiveChoice = useResponsiveChoice();
     if (loading) {
+        // For now, I've decided just to hard-code this for what we actually have on the home page (1/14/21).
+        // It is far from ideal because these numbers could easily change, either because of code
+        // changes elsewhere, or because the actual content changes.
+        // I picked the home page numbers because
+        //  1) that is the page most loaded
+        //  2) that is the page which is probably slowest to load, so this space will be there the longest time.
+        // This is certainly far from ideal, but the implementation below had a slightly too-large height on the
+        // home page even for desktop but was way too large for mobile.
+        const height = getResponsiveChoice(143, 206) + "px";
+        return <div style={{ height }} />;
+
+        // This was the previous implementation (with import { standardBannerHeight } from "./StandardBannerLayout";):
         // This is actually a max-height for just one kind of banner. But it's fairly typical
         // of most. Having the missing banner take up about the right amount of space reduces
         // movement of other elements during page load.
-        return <div style={{ height: standardBannerHeight }} />;
+        //return <div style={{ height: standardBannerHeight }} />;
     }
 
     // if (error) {
