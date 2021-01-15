@@ -5,6 +5,7 @@ import "swiper/swiper.min.css";
 import "swiper/components/navigation/navigation.min.css";
 import "swiper/components/a11y/a11y.min.css";
 import { useResponsiveChoice } from "../responsiveUtilities";
+import "./CardSwiper.css";
 
 SwiperCore.use([Navigation, A11y]);
 
