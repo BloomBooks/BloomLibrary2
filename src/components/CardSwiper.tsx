@@ -5,6 +5,7 @@ import "swiper/swiper.min.css";
 import "swiper/components/navigation/navigation.min.css";
 import "swiper/components/a11y/a11y.min.css";
 import { useResponsiveChoice } from "../responsiveUtilities";
+import { ICardSpec } from "./RowOfCards";
 import "./CardSwiper.css";
 
 SwiperCore.use([Navigation, A11y]);
@@ -55,13 +56,7 @@ export const CardSwiperLazy: React.FunctionComponent<{
     // If you set a wrapperRole, make sure the children you pass have role listitem.
     wrapperRole?: string;
 
-    // We don't want to render (too many) cards that are not scrolled into view,
-    // horizontally. So we make placeholders with this width.
-    // If too large, we'll get blank areas. If too small, we just compute
-    // more than we need to and when you scroll swiper, it is "jumpy".
-    // So it's best to pass the most accurate size possible (the size you expect most,
-    // ideally all, cards to be.)
-    cardWidth?: number;
+    cardSpec: ICardSpec;
 }> = (props) => {
     const [swiper, setSwiper] = useState<any | null>(null);
     const getResponsiveChoice = useResponsiveChoice();
@@ -83,8 +78,6 @@ export const CardSwiperLazy: React.FunctionComponent<{
         }
     }, [props.data.length, props.wrapperRole, swiper]);
 
-    const widthOfPlaceholder = props.cardWidth ? props.cardWidth : 150;
-
     // this should be at least 1, which makes things smooth for clicking on
     // "next". Beyond that, it is for making things smooth while dragging.
     const kNumberOfCardsToRenderWhileInvisible = 3;
@@ -93,7 +86,7 @@ export const CardSwiperLazy: React.FunctionComponent<{
     // Since we're not indicating anywhere how many items we have, 20 should be plenty
     // to fill the screen for any card size we're using. As soon as the user scrolls,
     // we'll show them all. Until then, we can save some rendering effort.
-    let dataToRender = showAll ? props.data : props.data.slice(0, 20);
+    const dataToRender = showAll ? props.data : props.data.slice(0, 20);
 
     return (
         // I believe it ought to be possible to use the 'virtual' feature of Swiper so that only the visible
@@ -138,7 +131,7 @@ export const CardSwiperLazy: React.FunctionComponent<{
                         ) : (
                             <div
                                 style={{
-                                    width: `${widthOfPlaceholder}px`,
+                                    width: `${props.cardSpec.cardWidthPx}px`,
                                 }}
                             />
                         );

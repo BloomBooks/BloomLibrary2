@@ -2,7 +2,7 @@ import { useMediaQuery, useTheme } from "@material-ui/core";
 
 export function useSmallScreen() {
     const theme = useTheme();
-    // Note that iwth material's breakpoints, you have to get down to "xs" for phone size
+    // Note that with material's breakpoints, you have to get down to "xs" for phone size
     return useMediaQuery(theme.breakpoints.down("xs"));
     //useMediaQuery(theme.breakpoints.up("(max-width:600px"));
 }

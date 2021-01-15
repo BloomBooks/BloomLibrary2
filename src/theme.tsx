@@ -23,6 +23,7 @@ export const commonUI = {
     bookGroupTopMarginPx: 30,
     bookGroupSmallTopMarginPx: 3, // margin used on small screens (like mobile)
     bookCardHeightPx: 200,
+    paddingForCollectionAndLanguageCardsPx: 10,
 
     detailViewMargin: "1em",
     detailViewMainButtonWidth: "250px",

@@ -1,5 +1,4 @@
 import { Book, ArtifactType } from "../../model/Book";
-import { IBasicBookInfo } from "../../connection/LibraryQueryHooks";
 import {
     ArtifactVisibilitySettings,
     ArtifactVisibilitySettingsGroup,

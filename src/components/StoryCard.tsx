@@ -15,10 +15,23 @@ import { Link } from "react-router-dom";
 import { getUrlForTarget } from "./Routes";
 import { useContentfulPage } from "./pages/ContentfulPage";
 import { useResponsiveChoice } from "../responsiveUtilities";
+import { ICardSpec } from "./RowOfCards";
+
+export function useStoryCardSpec(): ICardSpec {
+    const getResponsiveChoice = useResponsiveChoice();
+    return {
+        cardWidthPx: getResponsiveChoice(120, 240) as number,
+        cardHeightPx: getResponsiveChoice(190, 190) as number,
+        createFromCollection: (collection: ICollection) => (
+            <StoryCard story={collection} key={collection.urlKey} />
+        ),
+    };
+}
 
 export const StoryCard: React.FunctionComponent<{ story: ICollection }> = (
     props
 ) => {
+    const { cardWidthPx, cardHeightPx } = useStoryCardSpec();
     const getResponsiveChoice = useResponsiveChoice();
     const url = "/page/" + getUrlForTarget(props.story.urlKey);
     const page = useContentfulPage("page", props.story.urlKey);
@@ -28,7 +41,7 @@ export const StoryCard: React.FunctionComponent<{ story: ICollection }> = (
     return (
         <Card
             css={css`
-                width: ${getResponsiveChoice(120, 240)}px;
+                width: ${cardWidthPx}px;
                 // I don't know why, but without this, the edges get cut off
                 margin: 1px;
                 // enhance: really we just want this margin in-between cards
@@ -44,7 +57,7 @@ export const StoryCard: React.FunctionComponent<{ story: ICollection }> = (
                 />
                 <CardContent
                     css={css`
-                        height: ${getResponsiveChoice(190, 190)}px;
+                        height: ${cardHeightPx}px;
                     `}
                 >
                     <Typography

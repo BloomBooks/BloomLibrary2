@@ -14,6 +14,15 @@ import { Book, getBestBookTitle } from "../model/Book";
 import TruncateMarkup from "react-truncate-markup";
 import { useIntl } from "react-intl";
 import { useResponsiveChoice } from "../responsiveUtilities";
+import { ICardSpec } from "./RowOfCards";
+
+export function useBookCardSpec(): ICardSpec {
+    const getResponsiveChoice = useResponsiveChoice();
+    return {
+        cardWidthPx: getResponsiveChoice(100, 140) as number,
+        cardHeightPx: getResponsiveChoice(160, 190) as number,
+    };
+}
 
 interface IProps {
     basicBookInfo: IBasicBookInfo;
@@ -33,6 +42,7 @@ export const largeCardWidth = 140;
 
 export const BookCard: React.FunctionComponent<IProps> = (props) => {
     const l10n = useIntl();
+    const cardSpec = useBookCardSpec();
     const legacyStyleThumbnail = Book.getLegacyThumbnailUrl(
         props.basicBookInfo
     );
@@ -61,8 +71,8 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
         <CheapCard
             className={props.className}
             css={css`
-                height: ${getResponsiveChoice(160, 190)}px;
-                width: ${getResponsiveChoice(smallCardWidth, largeCardWidth)}px;
+                height: ${cardSpec.cardHeightPx}px;
+                width: ${cardSpec.cardWidthPx}px;
                 line-height: normal; // counteract css reset
             `}
             key={props.basicBookInfo.baseUrl}

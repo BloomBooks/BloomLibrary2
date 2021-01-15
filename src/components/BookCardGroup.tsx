@@ -15,7 +15,7 @@ import {
     useSearchBooks,
     IBasicBookInfo,
 } from "../connection/LibraryQueryHooks";
-import { BookCard, largeCardWidth, smallCardWidth } from "./BookCard";
+import { BookCard, useBookCardSpec } from "./BookCard";
 import { MoreCard } from "./MoreCard";
 import { CardSwiperLazy } from "./CardSwiper";
 import { ICollection } from "../model/ContentInterfaces";
@@ -81,6 +81,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
     const maxCardsToRetrieve = props.rows ? props.rows * 5 : 20;
     const collectionFilter = props.collection.filter ?? {};
     const getResponsiveChoice = useResponsiveChoice();
+    const cardSpec = useBookCardSpec();
     const isSmall = useSmallScreen();
     const search = useSearchBooks(
         {
@@ -144,7 +145,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
         bookList = (
             <CardSwiperLazy
                 data={data}
-                cardWidth={isSmall ? smallCardWidth : largeCardWidth}
+                cardSpec={cardSpec}
                 getReactElement={(item: IBasicBookInfo | "more", index) => {
                     if (item === "more") {
                         return (

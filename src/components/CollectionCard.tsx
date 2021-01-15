@@ -20,16 +20,54 @@ import {
 } from "../localization/CollectionLabel";
 import { ICollection } from "../model/ContentInterfaces";
 import { useResponsiveChoice } from "../responsiveUtilities";
+import { ICardSpec } from "./RowOfCards";
+import { commonUI } from "../theme";
+import TruncateMarkup from "react-truncate-markup";
 
-interface IProps {
-    collection: ICollection;
-    layout?: "short" | "short-with-book-count" | undefined;
+export enum CollectionCardLayout {
+    short,
+    shortWithBookCount,
+    iconAndBookCount,
+}
+
+export function useCollectionCardSpec(layout: CollectionCardLayout): ICardSpec {
+    const getResponsiveChoice = useResponsiveChoice();
+    // Make the cards smaller vertically if they purposely have no image, not even
+    // the default one.
+    let height;
+    if (layout === CollectionCardLayout.shortWithBookCount)
+        height = getResponsiveChoice(70, 90);
+    else if (layout === CollectionCardLayout.short) {
+        height = getResponsiveChoice(70, 90); /// TODO:once merged up to next, can change to 30px, 50px
+    } else if (layout === CollectionCardLayout.iconAndBookCount) {
+        height = getResponsiveChoice(90, 130);
+    } else {
+        console.error("unknown collectionCardLayout: " + layout);
+        height = getResponsiveChoice(50, 100);
+    }
+
+    return {
+        cardWidthPx: getResponsiveChoice(100, 200) as number,
+        cardHeightPx: height as number,
+        createFromCollection: (collection: ICollection) => (
+            <CollectionCard
+                collection={collection}
+                key={collection.urlKey}
+                layout={layout}
+            />
+        ),
+    };
 }
 
 // Show a card with the name, icon, count, etc. of the collection. If the user clicks on it, they go to a page showing the collection.
-export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
+export const CollectionCard: React.FunctionComponent<{
+    collection: ICollection;
+    layout: CollectionCardLayout;
+}> = (props) => {
     const l10n = useIntl();
     const getResponsiveChoice = useResponsiveChoice();
+    const cardSpec = useCollectionCardSpec(props.layout);
+    console.log(props.collection.label + ":" + JSON.stringify(cardSpec));
     const hideTitle = props.collection.hideLabelOnCardAndDefaultBanner;
     const imageUrl = props.collection.iconForCardAndDefaultBanner?.url || "";
     // what we're calling "target" is the last part of url, where the url is <breadcrumb stuff>/<target>
@@ -54,9 +92,11 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
         ? propsToHideAccessibilityElement
         : "";
 
-    const positionRule = props.layout?.startsWith("short")
-        ? "" // just sit under the top padding
-        : `bottom: ${getResponsiveChoice(33, 40)}px`;
+    const positionRule =
+        props.layout === CollectionCardLayout.short ||
+        props.layout === CollectionCardLayout.shortWithBookCount
+            ? "" // just sit under the top padding
+            : `bottom: ${getResponsiveChoice(33, 40)}px`;
     //console.log(props.collection.label + "  " + props.collection.type);
     const titleElement = (
         <div
@@ -170,33 +210,29 @@ export const CollectionCard: React.FunctionComponent<IProps> = (props) => {
     }
 
     const { ...propsToPassDown } = props; // prevent react warnings
-    // Make the cards smaller vertically if they purposely have no image, not even
-    // the default one.
-    const height =
-        props.layout === "short-with-book-count"
-            ? getResponsiveChoice("70px", "90px")
-            : props.layout === "short"
-            ? getResponsiveChoice("70px", "90px") /// TODO:once merged up to next, can change to 30px, 50px
-            : imageUrl === "none"
-            ? getResponsiveChoice("50px", "100px")
-            : getResponsiveChoice("90px", "130px");
+
     return (
         <CheapCard
             {...propsToPassDown} // needed for swiper to work
             css={css`
-                width: ${getResponsiveChoice(100, 200)}px;
+                width: ${cardSpec.cardWidthPx}px;
 
-                padding: 10px;
-                height: ${height};
-                justify-content: ${props.layout?.startsWith("short")
+                padding: ${commonUI.paddingForCollectionAndLanguageCardsPx}px;
+                height: ${cardSpec.cardHeightPx}px;
+                justify-content: ${props.layout ===
+                    CollectionCardLayout.short ||
+                props.layout === CollectionCardLayout.shortWithBookCount
                     ? "center"
                     : ""};
             `}
             target={target}
             role="listitem"
         >
-            {!props.layout?.startsWith("short") && imgElement}
-            {titleElement}
+            {![
+                CollectionCardLayout.short,
+                CollectionCardLayout.shortWithBookCount,
+            ].includes(props.layout) && imgElement}
+            <TruncateMarkup lines={1}>{titleElement}</TruncateMarkup>
             <div
                 className="book-count"
                 css={css`

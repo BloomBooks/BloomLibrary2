@@ -5,7 +5,10 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React, { useContext, useState } from "react";
-import { LanguageCard } from "./LanguageCard";
+import {
+    LanguageCard,
+    useLanguageCardSpecs as useLanguageCardSpec,
+} from "./LanguageCard";
 import Downshift, {
     GetItemPropsOptions,
     GetMenuPropsOptions,
@@ -28,6 +31,8 @@ export const LanguageGroup: React.FunctionComponent = () => {
     // for that code (currently when the user has selected a language by typing and pressing Enter)
     const [langChosen, setLangChosen] = useState("");
     const getResponsiveChoice = useResponsiveChoice();
+    const cardSpec = useLanguageCardSpec();
+
     let filteredLanguages: ILanguage[] = [];
 
     const getFilteredLanguages = (filter: string | null): ILanguage[] => {
@@ -47,6 +52,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                 <div {...getMenuProps({})}>
                     <CardSwiperLazy
                         data={filteredLanguages}
+                        cardSpec={cardSpec}
                         getReactElement={(l: ILanguage, index: number) => (
                             // JohnT: I think this comment is wrong; getLabelProps is actually to do with a label for
                             // the whole chooser.
