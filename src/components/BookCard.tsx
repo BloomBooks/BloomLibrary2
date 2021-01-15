@@ -28,6 +28,9 @@ interface IProps {
     contextLangIso?: string;
 }
 
+export const smallCardWidth = 100;
+export const largeCardWidth = 140;
+
 export const BookCard: React.FunctionComponent<IProps> = (props) => {
     const l10n = useIntl();
     const legacyStyleThumbnail = Book.getLegacyThumbnailUrl(
@@ -59,7 +62,7 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
             className={props.className}
             css={css`
                 height: ${getResponsiveChoice(160, 190)}px;
-                width: ${getResponsiveChoice(100, 140)}px;
+                width: ${getResponsiveChoice(smallCardWidth, largeCardWidth)}px;
                 line-height: normal; // counteract css reset
             `}
             key={props.basicBookInfo.baseUrl}
