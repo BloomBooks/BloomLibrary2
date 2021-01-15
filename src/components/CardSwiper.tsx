@@ -56,6 +56,7 @@ export const CardSwiperLazy: React.FunctionComponent<{
 }> = (props) => {
     const [swiper, setSwiper] = useState<any | null>(null);
     const getResponsiveChoice = useResponsiveChoice();
+    const [showAll, setShowAll] = useState(false);
     useEffect(() => {
         if (swiper && props.data.length) {
             // When the number of children change, if we already had cards and the user has scrolled,
@@ -88,6 +89,11 @@ export const CardSwiperLazy: React.FunctionComponent<{
     const kNumberOfCardsToRenderWhileInvisible = 3;
     let indexOfLastVisibleCard = 0;
 
+    // Since we're not indicating anywhere how many items we have, 20 should be plenty
+    // to fill the screen for any card size we're using. As soon as the user scrolls,
+    // we'll show them all. Until then, we can save some rendering effort.
+    let dataToRender = showAll ? props.data : props.data.slice(0, 20);
+
     return (
         // I believe it ought to be possible to use the 'virtual' feature of Swiper so that only the visible
         // cards get created at all, but I had trouble getting it to work, particularly in LanguageGroup.
@@ -106,8 +112,10 @@ export const CardSwiperLazy: React.FunctionComponent<{
             {...swiperConfig}
             spaceBetween={getResponsiveChoice(10, 20) as number}
             onSwiper={setSwiper}
+            onSlideChange={() => setShowAll(true)}
+            onScroll={() => setShowAll(true)}
         >
-            {props.data.map((card: any, index: number) => (
+            {dataToRender.map((card: any, index: number) => (
                 <SwiperSlide
                     style={{
                         width: "initial",
