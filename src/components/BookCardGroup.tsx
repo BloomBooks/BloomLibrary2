@@ -10,12 +10,12 @@ import LazyLoad, {
 } from "react-lazyload";
 
 import { commonUI } from "../theme";
-import { useResponsiveChoice } from "../responsiveUtilities";
+import { useResponsiveChoice, useSmallScreen } from "../responsiveUtilities";
 import {
     useSearchBooks,
     IBasicBookInfo,
 } from "../connection/LibraryQueryHooks";
-import { BookCard } from "./BookCard";
+import { BookCard, largeCardWidth, smallCardWidth } from "./BookCard";
 import { MoreCard } from "./MoreCard";
 import { CardSwiperLazy } from "./CardSwiper";
 import { ICollection } from "../model/ContentInterfaces";
@@ -81,6 +81,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
     const maxCardsToRetrieve = props.rows ? props.rows * 5 : 20;
     const collectionFilter = props.collection.filter ?? {};
     const getResponsiveChoice = useResponsiveChoice();
+    const isSmall = useSmallScreen();
     const search = useSearchBooks(
         {
             include: "langPointers",
@@ -143,6 +144,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
         bookList = (
             <CardSwiperLazy
                 data={data}
+                cardWidth={isSmall ? smallCardWidth : largeCardWidth}
                 getReactElement={(item: IBasicBookInfo | "more", index) => {
                     if (item === "more") {
                         return (
@@ -260,7 +262,25 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
                                 {props.collection.description}
                             </Typography>
                         </div>
-                        {search.waiting || bookList}
+                        {search.waiting ||
+                            // On a big screen the parent is already a horizontal flexbox,
+                            // and swiper flex-shrinks to the appropriate width and works.
+                            // On a small screen, the parent is a vertical flexbox, and
+                            // without an extra wrapper, swiper just grows to the size of
+                            // its content, there is no row-swiping behavior, and instead,
+                            // the whole window gets a horizontal scroll bar.
+                            (isSmall ? (
+                                <div
+                                    css={css`
+                                        width: 100%;
+                                        display: flex;
+                                    `}
+                                >
+                                    {bookList}
+                                </div>
+                            ) : (
+                                bookList
+                            ))}
                     </div>
                 </React.Fragment>
             );

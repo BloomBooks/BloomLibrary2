@@ -53,6 +53,14 @@ export const CardSwiperLazy: React.FunctionComponent<{
     // in the LanguageGroup a further-out element is a listbox and the items have role 'option'.
     // If you set a wrapperRole, make sure the children you pass have role listitem.
     wrapperRole?: string;
+
+    // We don't want to render (too many) cards that are not scrolled into view,
+    // horizontally. So we make placeholders with this width.
+    // If too large, we'll get blank areas. If too small, we just compute
+    // more than we need to and when you scroll swiper, it is "jumpy".
+    // So it's best to pass the most accurate size possible (the size you expect most,
+    // ideally all, cards to be.)
+    cardWidth?: number;
 }> = (props) => {
     const [swiper, setSwiper] = useState<any | null>(null);
     const getResponsiveChoice = useResponsiveChoice();
@@ -74,15 +82,7 @@ export const CardSwiperLazy: React.FunctionComponent<{
         }
     }, [props.data.length, props.wrapperRole, swiper]);
 
-    // We don't want to render (too many) cards that are not scrolled into view,
-    // horizontally. So we make placeholders with this width.
-    // If too large, we'll get blank areas. If too small, we just compute
-    // more than we need to and when you scroll swiper, it is "jumpy".
-    // Alternatively, we could (and once did) plumb things so that we know the
-    // exact width of the cards in this row. We stopped doing that because it
-    // became complicated when we started changing card sizes depending on the
-    // screen size, but it wouldn't be impossible to go back to that.
-    const widthOfPlaceholder = 150;
+    const widthOfPlaceholder = props.cardWidth ? props.cardWidth : 150;
 
     // this should be at least 1, which makes things smooth for clicking on
     // "next". Beyond that, it is for making things smooth while dragging.
