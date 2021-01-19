@@ -2,9 +2,12 @@ import { useMediaQuery, useTheme } from "@material-ui/core";
 
 export function useSmallScreen() {
     const theme = useTheme();
-    // Note that with material's breakpoints, you have to get down to "xs" for phone size
-    return useMediaQuery(theme.breakpoints.down("xs"));
-    //useMediaQuery(theme.breakpoints.up("(max-width:600px"));
+    // Note that with material's breakpoints, you have to get down to "xs" for
+    // phone size.
+    // On the noSSr: see
+    // https://github.com/mui-org/material-ui/issues/21142#issuecomment-633144987
+    // and https://issues.bloomlibrary.org/youtrack/issue/BL-9414
+    return useMediaQuery(theme.breakpoints.down("xs"), { noSsr: true });
 }
 export function useClassForSmallScreen() {
     return useSmallScreen() ? "smallScreen" : "";

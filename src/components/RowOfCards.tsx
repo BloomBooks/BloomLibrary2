@@ -64,8 +64,6 @@ const RowOfCollectionCards: React.FunctionComponent<{
         return null;
     }
 
-    console.log(`${props.collection.label}: ${props.collection.layout}`);
-
     const cardSpec = cardSpecs[props.collection.layout];
     console.assert(
         cardSpec,

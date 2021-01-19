@@ -66,7 +66,7 @@ export const CollectionCard: React.FunctionComponent<{
     const l10n = useIntl();
     const getResponsiveChoice = useResponsiveChoice();
     const cardSpec = useCollectionCardSpec(props.layout);
-    console.log(props.collection.label + ":" + JSON.stringify(cardSpec));
+
     const hideTitle = props.collection.hideLabelOnCardAndDefaultBanner;
     const imageUrl = props.collection.iconForCardAndDefaultBanner?.url || "";
     // what we're calling "target" is the last part of url, where the url is <breadcrumb stuff>/<target>
