@@ -12,6 +12,7 @@ import { useResponsiveChoice } from "../responsiveUtilities";
 import { FormattedMessage } from "react-intl";
 import TruncateMarkup from "react-truncate-markup";
 import { ICardSpec } from "./RowOfCards";
+import { SmartTruncateMarkup } from "./SmartTruncateMarkup";
 
 export function useLanguageCardSpecs(): ICardSpec {
     const getResponsiveChoice = useResponsiveChoice();
@@ -72,12 +73,12 @@ export const LanguageCard: React.FunctionComponent<
                         line-height: 1em;
                     `}
                 >
-                    {/* in small mode didn't work, allowed 3 lines <TruncateMarkup lines={2}>
-                    I think the rare 3 line cases (search for "x-") look ok.
-
+                    <SmartTruncateMarkup
+                        condition={(secondary ?? "").length >= 11}
+                        lines={1} // For just one line, we could do it with CSS, but using TruncateMarkup makes this easy to change if needed.
+                    >
                         <span>{secondary}</span>
-                    </TruncateMarkup> */}
-                    {secondary}
+                    </SmartTruncateMarkup>
                 </div>
             </div>
             <h2

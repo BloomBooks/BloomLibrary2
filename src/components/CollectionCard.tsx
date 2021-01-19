@@ -17,11 +17,13 @@ import { propsToHideAccessibilityElement } from "../Utilities";
 import {
     CollectionLabel,
     getLocalizedCollectionLabel,
+    useGetLocalizedCollectionLabel,
 } from "../localization/CollectionLabel";
 import { ICollection } from "../model/ContentInterfaces";
 import { useResponsiveChoice } from "../responsiveUtilities";
 import { ICardSpec } from "./RowOfCards";
 import { commonUI } from "../theme";
+import TruncateMarkup from "react-truncate-markup";
 
 export enum CollectionCardLayout {
     short,
@@ -95,8 +97,9 @@ export const CollectionCard: React.FunctionComponent<{
         props.layout === CollectionCardLayout.short ||
         props.layout === CollectionCardLayout.shortWithBookCount
             ? "" // just sit under the top padding
-            : `bottom: ${getResponsiveChoice(33, 40)}px`;
+            : `bottom: ${getResponsiveChoice(23, 30)}px`;
     //console.log(props.collection.label + "  " + props.collection.type);
+    const label = useGetLocalizedCollectionLabel(props.collection);
     const titleElement = (
         <div
             css={css`
@@ -136,15 +139,26 @@ export const CollectionCard: React.FunctionComponent<{
                 }
             `}
         >
-            {props.collection.richTextLabel ? (
-                documentToReactComponents(
-                    reduceHeadingLevel(props.collection.richTextLabel)
-                )
-            ) : (
-                <h2>
-                    <CollectionLabel collection={props.collection} />
-                </h2>
-            )}
+            <TruncateMarkup lines={2}>
+                {props.collection.richTextLabel ? (
+                    // Truncate markup doesn't actually seem to work here. It has very
+                    // tight constraints on what it can truncate, and apparently the output
+                    // of documentToReactComponents doesn't qualify, though it didn't
+                    // complain in console as it does about most problems.
+                    // I don't know of any current collections that appear as cards and
+                    // have rich text labels; if we create any, we'll need to be careful
+                    // they aren't too long.
+                    <div>
+                        {documentToReactComponents(
+                            reduceHeadingLevel(props.collection.richTextLabel)
+                        )}
+                    </div>
+                ) : (
+                    // here we have inlined the implementation of CollectionLabel,
+                    // since TruncateMarkup can't handle a non-built-in react component
+                    <h2>{label}</h2>
+                )}
+            </TruncateMarkup>
         </div>
     );
 
@@ -215,7 +229,7 @@ export const CollectionCard: React.FunctionComponent<{
             {...propsToPassDown} // needed for swiper to work
             css={css`
                 width: ${cardSpec.cardWidthPx}px;
-
+                position: relative; // so auto width of absolutely positioned child is relative to this
                 padding: ${commonUI.paddingForCollectionAndLanguageCardsPx}px;
                 height: ${cardSpec.cardHeightPx}px;
                 justify-content: ${props.layout ===
