@@ -9,7 +9,7 @@ import { getCleanedAndOrderedLanguageList, ILanguage } from "../model/Language";
 import { processRegExp } from "../Utilities";
 import { kTopicList } from "../model/ClosedVocabularies";
 import { IStatsProps } from "../components/statistics/StatsInterfaces";
-import { toYyyyMmDd } from "../components/statistics/ReaderSessionsChart";
+import { toYyyyMmDd } from "../Utilities";
 import { useGetCollection } from "../model/Collections";
 
 // For things other than books, which should use `useBookQuery()`

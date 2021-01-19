@@ -1,16 +1,12 @@
 import React from "react";
 import { IAxiosAnswer } from "./LibraryQueryHooks";
-import { css } from "@emotion/core";
 
 export function getNoResultsElement() {
     return (
-        <div
-            css={css`
-                background-color: lightgray;
-                width: 100px;
-                height: 20px;
-            `}
-        />
+        <div>
+            {/* without this we don't get a line and then the screen jumps */}
+            &nbsp;
+        </div>
     );
 }
 

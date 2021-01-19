@@ -7,7 +7,7 @@ import { jsx } from "@emotion/core";
 import React, { Fragment, useState } from "react";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { IconButton } from "@material-ui/core";
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 import * as Sentry from "@sentry/browser";
 
 import { Book } from "../../model/Book";

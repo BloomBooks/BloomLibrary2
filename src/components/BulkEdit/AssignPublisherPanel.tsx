@@ -1,6 +1,6 @@
 import React from "react";
 import { IFilter } from "../../IFilter";
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 import { FilterHolder } from "./BulkEditPage";
 import { BulkEditPanel } from "./BulkEditPanel";
 import { ChangeColumnValueForAllBooksInFilter } from "./BulkChangeFunctions";
@@ -9,7 +9,7 @@ export const AssignPublisherPanel: React.FunctionComponent<{
     filterHolder: FilterHolder;
     backgroundColor: string;
     refresh: () => void;
-}> = observer(props => {
+}> = observer((props) => {
     return (
         <BulkEditPanel
             panelLabel="Change Publisher"

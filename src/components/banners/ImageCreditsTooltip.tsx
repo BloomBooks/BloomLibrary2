@@ -5,6 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import { Button, Tooltip } from "@material-ui/core";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
+import { IBanner } from "../../model/ContentInterfaces";
 
 export const ImageCreditsTooltip: React.FunctionComponent<{
     imageCredits: React.ReactNode;
@@ -38,3 +39,15 @@ export const ImageCreditsTooltip: React.FunctionComponent<{
         </Button>
     </Tooltip>
 );
+
+export const BannerImageCredits: React.FunctionComponent<{
+    banner: IBanner;
+}> = (props) =>
+    props.banner.backgroundImage?.credits ? (
+        <ImageCreditsTooltip
+            imageCredits={
+                // we could make this markdown eventually but for now it's just a string
+                <span>{props.banner.backgroundImage?.credits}</span>
+            }
+        />
+    ) : null;

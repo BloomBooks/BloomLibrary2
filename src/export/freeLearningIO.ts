@@ -1,9 +1,10 @@
-import { Book, createBookFromParseServerData } from "../model/Book";
-import { axios } from "@use-hooks/axios";
 import {
-    getArtifactUrl,
+    Book,
+    createBookFromParseServerData,
     ArtifactType,
-} from "../components/BookDetail/ArtifactHelper";
+} from "../model/Book";
+import { axios } from "@use-hooks/axios";
+import { getArtifactUrl } from "../components/BookDetail/ArtifactHelper";
 const FileSaver = require("file-saver");
 
 export async function giveFreeLearningCsv() {
@@ -202,3 +203,6 @@ function csvEncode(incomingValue: string): string {
     }
     return value.trim();
 }
+
+// though we normally don't like to export defaults, this is required for lazy module loading (code splitting)
+export default giveFreeLearningCsv;

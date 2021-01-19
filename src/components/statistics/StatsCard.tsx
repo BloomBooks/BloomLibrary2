@@ -10,7 +10,7 @@ import CardContent from "@material-ui/core/CardContent";
 import { IItem, kDarkGrey } from "./StatsOverviewScreen";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
 import { IconButton } from "@material-ui/core";
-import { kStatsPageGray } from "./CollectionStatsPage";
+import { kStatsPageGray } from "./StatsInterfaces";
 import Tooltip from "react-tooltip-lite";
 
 export const StatsCard: React.FunctionComponent<{

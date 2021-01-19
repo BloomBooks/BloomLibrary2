@@ -11,12 +11,12 @@ import "../index.css";
 import { StandAloneHarvesterArtifactUserControl } from "../components/BookDetail/ArtifactVisibilityPanel/ArtifactVisibilityPanel";
 import { ArtifactAndChoice } from "../components/BookDetail/ArtifactVisibilityPanel/ArtifactAndChoice";
 import { ArtifactVisibilitySettings } from "../model/ArtifactVisibilitySettings";
-import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
 import BookDetail from "../components/BookDetail/BookDetail";
 import { ThemeProvider } from "@material-ui/styles";
 import theme from "../theme";
 import { ReadBookPageCodeSplit } from "../components/ReadBookPageCodeSplit";
 import { ConfirmationDialog } from "../components/ConfirmationDialog";
+import { ArtifactType } from "../model/Book";
 
 addDecorator(withKnobs);
 addDecorator((storyFn) => (

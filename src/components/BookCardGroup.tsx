@@ -10,11 +10,12 @@ import LazyLoad, {
 } from "react-lazyload";
 
 import { commonUI } from "../theme";
+import { useResponsiveChoice, useSmallScreen } from "../responsiveUtilities";
 import {
     useSearchBooks,
     IBasicBookInfo,
 } from "../connection/LibraryQueryHooks";
-import { BookCard, BookCardWidth } from "./BookCard";
+import { BookCard, useBookCardSpec } from "./BookCard";
 import { MoreCard } from "./MoreCard";
 import { CardSwiperLazy } from "./CardSwiper";
 import { ICollection } from "../model/ContentInterfaces";
@@ -70,18 +71,18 @@ export const BookCardGroup: React.FunctionComponent<IProps> = (props) => {
                 ></li>
             }
         >
-            <CollectionGroupInner {...props} />
+            <BookCardGroupInner {...props} />
         </LazyLoad>
     );
 };
-export const CollectionGroupInner: React.FunctionComponent<IProps> = (
-    props
-) => {
+const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
     // we have either a horizontally-scrolling list of 20, or several rows
     // of 5 each
     const maxCardsToRetrieve = props.rows ? props.rows * 5 : 20;
     const collectionFilter = props.collection.filter ?? {};
-
+    const getResponsiveChoice = useResponsiveChoice();
+    const cardSpec = useBookCardSpec();
+    const isSmall = useSmallScreen();
     const search = useSearchBooks(
         {
             include: "langPointers",
@@ -143,8 +144,8 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
         }
         bookList = (
             <CardSwiperLazy
-                placeHolderWidth={`${BookCardWidth}px`}
                 data={data}
+                cardSpec={cardSpec}
                 getReactElement={(item: IBasicBookInfo | "more", index) => {
                     if (item === "more") {
                         return (
@@ -226,13 +227,17 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
 
     let group;
     switch (props.collection.layout) {
+        // this is used in the "Create" screen
         case "layout: description-followed-by-row-of-books":
             group = (
                 <React.Fragment>
                     <div
                         css={css`
                             display: flex;
-                            flex-direction: row;
+                            flex-direction: ${getResponsiveChoice(
+                                "column",
+                                "row"
+                            )};
                             // The default margin-left is "auto"
                             .swiper-container {
                                 margin-left: 0;
@@ -245,7 +250,8 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
                                 width: 200px;
                                 min-width: 200px;
                                 max-width: 200px;
-                                margin-right: 20px;
+                                margin-right: ${getResponsiveChoice(10, 20)}px;
+                                margin-bottom: 10px; // for mobile where this is on top
                             `}
                         >
                             <h1>{label}</h1>
@@ -257,7 +263,25 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
                                 {props.collection.description}
                             </Typography>
                         </div>
-                        {search.waiting || bookList}
+                        {search.waiting ||
+                            // On a big screen the parent is already a horizontal flexbox,
+                            // and swiper flex-shrinks to the appropriate width and works.
+                            // On a small screen, the parent is a vertical flexbox, and
+                            // without an extra wrapper, swiper just grows to the size of
+                            // its content, there is no row-swiping behavior, and instead,
+                            // the whole window gets a horizontal scroll bar.
+                            (isSmall ? (
+                                <div
+                                    css={css`
+                                        width: 100%;
+                                        display: flex;
+                                    `}
+                                >
+                                    {bookList}
+                                </div>
+                            ) : (
+                                bookList
+                            ))}
                     </div>
                 </React.Fragment>
             );
@@ -266,7 +290,11 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
         default:
             group = (
                 <React.Fragment>
-                    <h1>
+                    <h1
+                        css={css`
+                            font-size: ${getResponsiveChoice(10, 14)}pt;
+                        `}
+                    >
                         {label}
                         {props.collection.urlKey === "new-arrivals" || (
                             <span
@@ -286,16 +314,24 @@ export const CollectionGroupInner: React.FunctionComponent<IProps> = (
             break;
     }
 
+    // For small screens, we want minimal space between rows to maximize what the user can see.
+    const topMarginPx = getResponsiveChoice(
+        commonUI.bookGroupSmallTopMarginPx,
+        commonUI.bookGroupTopMarginPx
+    );
+    const minHeightPx = getResponsiveChoice(
+        commonUI.bookCardHeightPx + commonUI.bookGroupSmallTopMarginPx,
+        commonUI.bookCardHeightPx + commonUI.bookGroupTopMarginPx
+    );
     return (
         //We just don't show the row if there are no matches, e.g., no Health books for this project
         // (ZeroBooksMatchedElement will be an empty pseudo-element that satisfies the 'or' but shows nothing)
         zeroBooksMatchedElement || (
             <li
                 css={css`
-                    margin-top: ${commonUI.bookGroupTopMarginPx}px;
+                    margin-top: ${topMarginPx}px;
                     // we don't know yet how many rows we might get if rows>1, but at least leave room for one
-                    min-height: ${commonUI.bookCardHeightPx +
-                    commonUI.bookGroupTopMarginPx}px;
+                    min-height: ${minHeightPx}px;
                 `}
                 role="region"
                 aria-label={label}

@@ -8,6 +8,7 @@ import React from "react";
 import { CheapCard } from "./CheapCard";
 import { ICollection } from "../model/ContentInterfaces";
 import { FormattedMessage } from "react-intl";
+import { useResponsiveChoice } from "../responsiveUtilities";
 
 // const image = css`
 //     height: 100px;
@@ -24,6 +25,8 @@ interface IProps {
     skip?: number;
 }
 export const MoreCard: React.FunctionComponent<IProps> = (props) => {
+    const getResponsiveChoice = useResponsiveChoice();
+
     const href =
         "/" +
         [props.collection.urlKey] +
@@ -33,6 +36,7 @@ export const MoreCard: React.FunctionComponent<IProps> = (props) => {
         <CheapCard
             css={css`
                 width: ${cardWidth}px;
+                height: ${getResponsiveChoice(160, 190)}px;
             `}
             target={href}
         >

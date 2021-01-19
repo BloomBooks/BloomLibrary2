@@ -10,6 +10,7 @@ import { useGetDailyBookEventStats } from "./useGetDailyBookEventStats";
 import { IStatsProps } from "./StatsInterfaces";
 import { useProvideDataForExport } from "./exportData";
 import { getFakeUtcDate } from "./DateRangePicker";
+import { toYyyyMmDd } from "../../Utilities";
 
 interface IBookDownload {
     bookid: string;
@@ -20,23 +21,6 @@ interface IBookDownload {
 function toMmmYyyy(input: Date): string {
     const ds = getFakeUtcDate(input).toDateString(); // DDD MMM DD YYYY, locale-independent
     return ds.substring(4, 8) + ds.substring(11);
-}
-
-function twoDigit(input: number): string {
-    return input >= 10
-        ? input.toString().substring(0, 2)
-        : "0" + input.toString().substring(0);
-}
-
-// Given a UTC date, format as YYYY-MM-DD
-export function toYyyyMmDd(date: Date) {
-    const result =
-        date.getUTCFullYear() +
-        "-" +
-        twoDigit(date.getUTCMonth() + 1) +
-        "-" +
-        twoDigit(date.getUTCDate());
-    return result;
 }
 
 export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (

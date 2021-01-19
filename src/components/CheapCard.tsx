@@ -12,7 +12,6 @@ interface IProps extends React.HTMLProps<HTMLDivElement> {
     className?: string;
     target?: string; // what we're calling "target" is the last part of url, where the url is <breadcrumb stuff>/<target>
     role?: string;
-    kind?: "short" | undefined;
 }
 
 // just a wrapper around the children you provide, made to look like a card and responsive to a click.
@@ -28,9 +27,6 @@ export const CheapCard: React.FunctionComponent<IProps> = (props) => {
                 flex-direction: column;
 
                 margin-bottom: ${commonUI.cheapCardMarginBottomInPx}px;
-                height: ${props.kind === "short"
-                    ? "40px"
-                    : "190px"}; // todo derive from commonUI.something
                 margin-right: 5px;
                 background-color: white;
                 border-radius: 4px;
@@ -59,6 +55,10 @@ export const CheapCard: React.FunctionComponent<IProps> = (props) => {
                 &:visited {
                     color: black;
                 }
+
+                // NOTE! There are more css rules that can come from the parent
+                // component, e.g. collection card. In the debugger they'll all
+                // show together (with the overrides from the parent at the end).
             `}
             href={url}
             role={props.role}

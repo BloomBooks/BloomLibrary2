@@ -19,7 +19,6 @@ export const Blurb: React.FunctionComponent<{
     hideTitle: boolean;
 }> = (props) => {
     const l10n = useIntl();
-
     return (
         <div
             css={css`
@@ -37,7 +36,6 @@ export const Blurb: React.FunctionComponent<{
                 css={css`
                     font-weight: normal;
                     max-width: 600px;
-                    margin-bottom: 10px;
                     overflow: hidden auto; // 'hidden' for x; 'auto' for y
                 `}
             >
@@ -64,9 +62,6 @@ export const Blurb: React.FunctionComponent<{
                     width: 100%;
                 `}
             >
-                {/* just a placeholder to push the imagecredits to the right
-                 */}
-                <div></div>
                 {props.banner.buttonRow && (
                     <ButtonRow collection={props.banner.buttonRow.fields} />
                 )}
