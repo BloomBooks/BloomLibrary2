@@ -141,6 +141,14 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         );
                     }}
                 />
+                <Route
+                    path="/_preview/page/:pageName"
+                    render={({ match }) => {
+                        return (
+                            <ContentfulPage urlKey={match.params.pageName} />
+                        );
+                    }}
+                />
                 {/* the colon here is not literally there in the url */}
                 <Route
                     path={"/:segments*/stats"}
