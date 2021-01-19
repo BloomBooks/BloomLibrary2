@@ -22,7 +22,6 @@ import { ICollection } from "../model/ContentInterfaces";
 import { useResponsiveChoice } from "../responsiveUtilities";
 import { ICardSpec } from "./RowOfCards";
 import { commonUI } from "../theme";
-import TruncateMarkup from "react-truncate-markup";
 
 export enum CollectionCardLayout {
     short,
@@ -232,7 +231,8 @@ export const CollectionCard: React.FunctionComponent<{
                 CollectionCardLayout.short,
                 CollectionCardLayout.shortWithBookCount,
             ].includes(props.layout) && imgElement}
-            <TruncateMarkup lines={1}>{titleElement}</TruncateMarkup>
+            {/* TODO: we would like to truncate, but TruncateMarkup says it cannot handle react elements */}
+            {titleElement}
             <div
                 className="book-count"
                 css={css`
