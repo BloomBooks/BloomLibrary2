@@ -34,18 +34,65 @@ interface IContentfulCollectionQueryResponse {
     loading: boolean; // Hook response loading || !fetched, that is, we don't actually have a result yet
 }
 
-// A hook function for retrieving collections from contentful.
-function useGetContentfulCollections(): IRawCollection[] {
-    // Get every collection in Contentful
+// A hook function for retrieving all the collections from contentful.
+// This is increasingly time-consuming, but might be worth reinstating as something we do in the
+// background. OTOH, user may still be paying to download stuff he won't need (and more than
+// half of which we have already).
+// function useGetContentfulCollections(): IRawCollection[] {
+//     // Get every collection in Contentful
 
-    const { loading, result } = useContentful({
-        content_type: "collection",
-        include: 10, // depth
-    });
-    if (loading) {
-        return [];
+//     const { loading, result } = useContentful({
+//         content_type: "collection",
+//         // Only fetch the fields we need. Unfortunately most of the fields we define are used somewhere; we could conceivably fetch fewer
+//         // for certain purposes. We don't directly use sys.type and sys.key, but they are needed to make the contentful code
+//         // that builds the childCollections array work properly. There appears to be no way to avoid unwanted fields in referenced objects
+//         // (about half the total data this fetches).
+//         // As of Jan 2021, we save about 17% by restricting fields this way. Replacing all the fields.* items with just "fields"
+//         // is also worth considering...we save 16% just by cutting out unused sys fields.
+//         select:
+//             "fields.bookSortOrder,fields.banner,fields.urlKey,fields.iconForCardAndDefaultBanner,fields.filter,fields.label,fields.richTextLabel,fields.description,fields.statisticsQuerySpec,fields.hideLabelOnCardAndDefaultBanner,fields.childCollections,fields.layout,fields.rows,sys.contentType,sys.id,sys.type",
+//         include: 10, // depth
+//     });
+//     if (loading) {
+//         return [];
+//     }
+//     return result as IRawCollection[];
+// }
+
+// Get the specified contentful collection. CollectionName may be falsy for various
+// reasons, mostly to do with the fact that as a hook we are forced to call this in
+// cases where we know we don't want to. In that case, return loading:true result:[]
+// without doing an actual query.
+function useGetContentfulCollection(
+    collectionName?: string
+): { loading: boolean; result: IRawCollection[] } {
+    const nameParts = (collectionName || "").split(":");
+    let templateKey = "-";
+    if (nameParts.length > 1) {
+        templateKey = `[Template ${Capitalize(nameParts[0])} Collection]`;
     }
-    return result as IRawCollection[];
+
+    const { loading, result } = useContentful(
+        collectionName
+            ? {
+                  content_type: "collection",
+                  // Only fetch the fields we need. Unfortunately most of the fields we define are used somewhere; we could conceivably fetch fewer
+                  // for certain purposes. We don't directly use sys.type and sys.key, but they are needed to make the contentful code
+                  // that builds the childCollections array work properly. There appears to be no way to avoid unwanted fields in referenced objects
+                  // (about half the total data this fetches).
+                  // As of Jan 2021, we save about 17% by restricting fields this way. Replacing all the fields.* items with just "fields"
+                  // is also worth considering...we save 16% just by cutting out unused sys fields.
+                  select:
+                      "fields.bookSortOrder,fields.banner,fields.urlKey,fields.iconForCardAndDefaultBanner,fields.filter,fields.label,fields.richTextLabel,fields.description,fields.statisticsQuerySpec,fields.hideLabelOnCardAndDefaultBanner,fields.childCollections,fields.layout,fields.rows,sys.contentType,sys.id,sys.type",
+                  include: 10, // depth
+                  "fields.urlKey[in]": `${collectionName},${templateKey}`,
+              }
+            : undefined // no collection name means we don't want useContentful to do a query
+    );
+    if (loading) {
+        return { loading, result: [] };
+    }
+    return { loading, result: result as IRawCollection[] };
 }
 
 // Basically a map of collectionName to ICollection
@@ -61,12 +108,28 @@ export function useGetCollection(
     collectionName?: string
 ): IContentfulCollectionQueryResponse {
     const l10n = useIntl();
-    const collections = useGetContentfulCollections();
+    const cachedCollection = collectionName
+        ? collectionCache[collectionName]
+        : undefined;
+    // If we got a result from the cache, we don't need to do a fresh query...
+    // but it's a hook so we have to call it. Passing an empty collectionName
+    // will cause it to do minimal work, certainly not a network query.
+    const { loading, result: collections } = useGetContentfulCollection(
+        cachedCollection ? "" : collectionName
+    );
     const { languagesByBookCount: languages } = useContext(CachedTablesContext);
     const user = useGetLoggedInUser(); // for collection 'my-books'
 
+    if (cachedCollection) {
+        return { loading: false, collection: cachedCollection };
+    }
+
     if (!collectionName) {
         return { loading: false };
+    }
+
+    if (loading) {
+        return { loading };
     }
 
     if (!user && collectionName === "my-books") {
@@ -75,15 +138,9 @@ export function useGetCollection(
         return { loading: true };
     }
 
-    if (!collections.length || !languages.length) {
-        return { loading: true };
-    }
-
-    if (collectionCache[collectionName]) {
-        return {
-            loading: false,
-            collection: collectionCache[collectionName],
-        };
+    if (!collections.length) {
+        console.error("collection " + collectionName + " not found");
+        return { loading: false, collection: undefined };
     }
 
     // We have template collections for everything, and then also we can provide
@@ -119,6 +176,9 @@ export function useGetCollection(
 
     let collection: ICollection | undefined;
     if (templateFacetCollection) {
+        if (languages.length === 0) {
+            return { loading: true };
+        }
         collection = getFacetCollection(
             nameParts[0],
             nameParts[1],
@@ -128,15 +188,8 @@ export function useGetCollection(
             l10n
         );
     } else if (explicitCollection) {
-        if (explicitCollection.urlKey === "topics") {
-            // We currently generate the one collection for each topic, just
-            // for showing the cards. If someone clicks a card, well then we
-            // go and see what the collection should really be. If we ever
-            // want to use icons on the card, then we can just remove this
-            // whole block and instead populate the "Topics" collection on
-            // Contentful
-            explicitCollection.childCollections = makeTopicCollectionsForCards();
-        }
+        // I don't think we'll ever first see this except as a root. If we do, may need to figure
+        // a way to move it to cacheChildCollections
         if (explicitCollection.urlKey === "my-books") {
             if (user) {
                 const email = user.email;
@@ -151,10 +204,36 @@ export function useGetCollection(
     }
     if (collection) {
         collectionCache[collectionName] = collection;
+        // Commonly, especially when we load the root collection for the page,
+        // we'll get lots of other collections linked as children. We can save time
+        // later by caching them too.
+        cacheChildCollections(collection);
         return { loading: false, collection };
     }
 
     return { loading: false };
+}
+
+// Enhance: this might miss caching some collections that we would find by templatekey?
+function cacheChildCollections(collection: ICollection) {
+    if (collection.urlKey === "topics") {
+        // We currently generate the one collection for each topic, just
+        // for showing the cards. If someone clicks a card, well then we
+        // go and see what the collection should really be. If we ever
+        // want to use icons on the card, then we can just remove this
+        // whole block and instead populate the "Topics" collection on
+        // Contentful
+        collection.childCollections = makeTopicCollectionsForCards();
+        // Do NOT cache the child collections we just made, we want to go to
+        // contentful to see if there's a real one if we ever open it.
+    } else {
+        collection.childCollections.forEach((c) => {
+            if (!collectionCache[c.urlKey]) {
+                collectionCache[c.urlKey] = c;
+                cacheChildCollections(c);
+            }
+        });
+    }
 }
 
 function getFacetCollection(

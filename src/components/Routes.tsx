@@ -20,7 +20,7 @@ import { getDummyCollectionForPreview } from "../model/Collections";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { IEmbedSettings } from "../model/ContentInterfaces";
 import { EmbeddingHost, isEmbedded, useSetEmbeddedUrl } from "./EmbeddingHost";
-import { CollectionStatsPage } from "./statistics/CollectionStatsPage";
+import { CollectionStatsPageCodeSplit } from "./statistics/CollectionStatsPageCodeSplit";
 import { TestEmbeddingPage } from "./TestEmbedding";
 import { ReleaseNotes } from "./ReleaseNotes";
 
@@ -154,7 +154,7 @@ export const Routes: React.FunctionComponent<{}> = () => {
                             match.params.segments
                         );
                         return (
-                            <CollectionStatsPage
+                            <CollectionStatsPageCodeSplit
                                 collectionName={collectionName}
                             />
                         );

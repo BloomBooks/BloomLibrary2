@@ -6,17 +6,16 @@ import { jsx } from "@emotion/core";
 
 import React, { useContext, useEffect } from "react";
 import { IconButton, Tooltip } from "@material-ui/core";
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 
 import { ReactComponent as PdfIcon } from "../../assets/Pdf.svg";
 import { ReactComponent as EPUBIcon } from "../../assets/EPub.svg";
 // See comment in BloomPubIcon about why this is a special case
 import { BloomPubIcon } from "./BloomPubIcon";
 
-import { Book } from "../../model/Book";
+import { ArtifactType, Book } from "../../model/Book";
 import {
     getArtifactUrl,
-    ArtifactType,
     getArtifactVisibilitySettings,
 } from "./ArtifactHelper";
 import { OSFeaturesContext } from "../OSFeaturesContext";

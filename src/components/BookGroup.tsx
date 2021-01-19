@@ -16,7 +16,8 @@ import {
     IBasicBookInfo,
 } from "../connection/LibraryQueryHooks";
 import { BookCard } from "./BookCard";
-import { CardSwiper } from "./CardSwiper";
+import { SingleRowCardSwiper } from "./SingleRowCardSwiper";
+import { useResponsiveChoice } from "../responsiveUtilities";
 
 interface IProps {
     title: string;
@@ -145,8 +146,10 @@ export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
     //     );
     // }
 
+    // JH Jan 2020: I cannot find anywhere that this is showInOne Row is used.
+    // It's also puzzling that it has to have its own CardSwiper implementation.
     const bookList = showInOneRow ? (
-        <CardSwiper wrapperRole="list">{cards}</CardSwiper>
+        <SingleRowCardSwiper wrapperRole="list">{cards}</SingleRowCardSwiper>
     ) : (
         <div
             css={css`
@@ -167,16 +170,25 @@ export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
             <React.Fragment></React.Fragment>
         );
 
+    // For small screens, we want minimal space between rows to maximize what the user can see.
+    const getResponsiveChoice = useResponsiveChoice();
+    const topMarginPx = getResponsiveChoice(
+        commonUI.bookGroupSmallTopMarginPx,
+        commonUI.bookGroupTopMarginPx
+    );
+    const minHeightPx = getResponsiveChoice(
+        commonUI.bookCardHeightPx + commonUI.bookGroupSmallTopMarginPx,
+        commonUI.bookCardHeightPx + commonUI.bookGroupTopMarginPx
+    );
     return (
         //We just don't show the row if there are no matches, e.g., no Health books for this project
         // (ZeroBooksMatchedElement will be an empty pseudo-element that satisfies the 'or' but shows nothing)
         zeroBooksMatchedElement || (
             <li
                 css={css`
-                    margin-top: ${commonUI.bookGroupTopMarginPx}px;
+                    margin-top: ${topMarginPx}px;
                     // we don't know yet how many rows we might get if rows>1, but at least leave room for one
-                    min-height: ${commonUI.bookCardHeightPx +
-                    commonUI.bookGroupTopMarginPx}px;
+                    min-height: ${minHeightPx}px;
                 `}
                 role="region"
                 aria-label={props.title}

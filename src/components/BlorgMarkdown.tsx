@@ -11,15 +11,19 @@ import { WindowsInstallerDownload } from "./WindowsInstallerDownload";
 import { WindowsInstallerLink } from "./WindowsInstallerLink";
 import { Feature, FeatureGroup, FeatureMatrix } from "./FeatureMatrix";
 import { BlorgLink } from "./BlorgLink";
+import { ColoredBlock } from "./ColoredBlock";
+import { Testimonial } from "./Testimonial";
+import { Attribution } from "./Attribution";
+import { Columns, Column } from "./Columns";
 
-export enum Column {
+export enum TwoColumn {
     leftColumn,
     rightColumn,
 }
 
 export const BlorgMarkdown: React.FunctionComponent<{
     markdown: string;
-    column?: Column;
+    column?: TwoColumn;
 }> = (props) => {
     const options = {
         overrides: {
@@ -32,6 +36,11 @@ export const BlorgMarkdown: React.FunctionComponent<{
             FeatureMatrix,
             Feature,
             FeatureGroup,
+            ColoredBlock,
+            Testimonial,
+            Attribution,
+            Columns,
+            Column,
         },
     };
 
@@ -51,7 +60,7 @@ export const BlorgMarkdown: React.FunctionComponent<{
                 }
             `}
             className={`contentful-markdown-part ${
-                props.column === Column.rightColumn ? "rightColumn" : ""
+                props.column === TwoColumn.rightColumn ? "rightColumn" : ""
             }`}
         >
             <Markdown options={options}>{props.markdown}</Markdown>

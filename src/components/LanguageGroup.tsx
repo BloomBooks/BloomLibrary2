@@ -5,7 +5,10 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React, { useContext, useState } from "react";
-import { LanguageCard, languageCardWidth } from "./LanguageCard";
+import {
+    LanguageCard,
+    useLanguageCardSpecs as useLanguageCardSpec,
+} from "./LanguageCard";
 import Downshift, {
     GetItemPropsOptions,
     GetMenuPropsOptions,
@@ -15,11 +18,11 @@ import matchSorter from "match-sorter";
 import searchIcon from "../search.png";
 import { CachedTablesContext } from "../model/CacheProvider";
 import { ILanguage } from "../model/Language";
-import { commonUI } from "../theme";
 import { CardSwiperLazy } from "./CardSwiper";
 import { Redirect } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
 import { propsToHideAccessibilityElement } from "../Utilities";
+import { useResponsiveChoice } from "../responsiveUtilities";
 
 export const LanguageGroup: React.FunctionComponent = () => {
     const l10n = useIntl();
@@ -27,6 +30,8 @@ export const LanguageGroup: React.FunctionComponent = () => {
     // setting this to a language code causes a <Redirect> to render and open the page
     // for that code (currently when the user has selected a language by typing and pressing Enter)
     const [langChosen, setLangChosen] = useState("");
+    const getResponsiveChoice = useResponsiveChoice();
+    const cardSpec = useLanguageCardSpec();
 
     let filteredLanguages: ILanguage[] = [];
 
@@ -47,9 +52,9 @@ export const LanguageGroup: React.FunctionComponent = () => {
                 <div {...getMenuProps({})}>
                     <CardSwiperLazy
                         data={filteredLanguages}
-                        placeHolderWidth={languageCardWidth}
+                        cardSpec={cardSpec}
                         getReactElement={(l: ILanguage, index: number) => (
-                            // JohnnT: I think this comment is wrong; getLabelProps is actually to do with a label for
+                            // JohnT: I think this comment is wrong; getLabelProps is actually to do with a label for
                             // the whole chooser.
                             // TODO: to complete the accessibility, we need to pass the Downshift getLabelProps into LanguageCard
                             // and apply it to the actual label.
@@ -71,9 +76,6 @@ export const LanguageGroup: React.FunctionComponent = () => {
             return (
                 <div
                     css={css`
-                        height: ${commonUI.languageCardHeightInPx +
-                        commonUI.cheapCardMarginBottomInPx -
-                        10}px; // 10 matches the padding-top
                         padding-top: 10px;
                         font-size: 0.8rem;
                     `}
@@ -102,16 +104,12 @@ export const LanguageGroup: React.FunctionComponent = () => {
     const rootPropsOptions: GetRootPropsOptions = { refKey: "ref" };
     (rootPropsOptions as any).role = undefined;
 
+    const contentHeight = getResponsiveChoice(140, 160);
+
     return langChosen ? (
         <Redirect to={"/language:" + langChosen} />
     ) : (
-        <li
-            css={css`
-                margin-top: 30px;
-            `}
-            role="region"
-            aria-labelledby="findBooksByLanguage"
-        >
+        <li role="region" aria-labelledby="findBooksByLanguage">
             <h1
                 // This has an ID to match the aria-labelledby above.
                 // The FormattedMessage has an ID to look up the message, but its ID does not
@@ -145,7 +143,11 @@ export const LanguageGroup: React.FunctionComponent = () => {
                         getMenuProps,
                         inputValue: currentInputBoxText,
                     }) => (
-                        <div>
+                        <div
+                            css={css`
+                                height: ${contentHeight}px;
+                            `}
+                        >
                             <div
                                 css={css`
                                     display: flex;
@@ -229,7 +231,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                 // still loading or no response
                 <div
                     css={css`
-                        height: 100px;
+                        height: ${contentHeight}px;
                     `}
                 >
                     <FormattedMessage

@@ -14,10 +14,10 @@ import {
     DialogTitle,
 } from "@material-ui/core";
 import { followUrl } from "./DownloadsGroup";
-import { getArtifactUrl, ArtifactType } from "./ArtifactHelper";
+import { getArtifactUrl } from "./ArtifactHelper";
 import { track } from "../../analytics/Analytics";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
-import { Book } from "../../model/Book";
+import { Book, ArtifactType } from "../../model/Book";
 
 interface IDownloadingShellbookDialogProps {
     open: boolean; // dialog is displayed when rendered with this true

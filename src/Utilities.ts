@@ -23,3 +23,49 @@ export function removePunctuation(text: string): string {
 // hide them visully while still letting the screen reader find them.
 export const propsToHideAccessibilityElement =
     "position:absolute;left_-10000px;top:auto;width:1px;height:1px;overflow:hidden;";
+
+export function setCookie(
+    cookieName: string,
+    cookieValue: string,
+    daysToExpiration: number
+) {
+    const expirationTime = new Date();
+    expirationTime.setTime(
+        expirationTime.getTime() + daysToExpiration * 24 * 60 * 60 * 1000
+    );
+    const expires = "expires=" + expirationTime.toUTCString();
+    document.cookie =
+        cookieName + "=" + cookieValue + ";" + expires + ";path=/";
+}
+
+export function getCookie(cookieName: string) {
+    const name = cookieName + "=";
+    const cookieArray = document.cookie.split(";");
+    for (var i = 0; i < cookieArray.length; i++) {
+        let nameEqualsVal = cookieArray[i];
+        while (nameEqualsVal.charAt(0) === " ") {
+            nameEqualsVal = nameEqualsVal.substring(1);
+        }
+        if (nameEqualsVal.indexOf(name) === 0) {
+            return nameEqualsVal.substring(name.length, nameEqualsVal.length);
+        }
+    }
+    return "";
+}
+
+function twoDigit(input: number): string {
+    return input >= 10
+        ? input.toString().substring(0, 2)
+        : "0" + input.toString().substring(0);
+}
+
+// Given a UTC date, format as YYYY-MM-DD
+export function toYyyyMmDd(date: Date) {
+    const result =
+        date.getUTCFullYear() +
+        "-" +
+        twoDigit(date.getUTCMonth() + 1) +
+        "-" +
+        twoDigit(date.getUTCDate());
+    return result;
+}

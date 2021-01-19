@@ -10,12 +10,11 @@ import Divider from "@material-ui/core/Divider";
 import { ArtifactAndChoice } from "./ArtifactAndChoice";
 import { useGetBookDetail } from "../../../connection/LibraryQueryHooks";
 import {
-    ArtifactType,
     getArtifactUrl,
     getArtifactVisibilitySettings,
     getArtifactTypeFromKey,
 } from "../ArtifactHelper";
-import { Book } from "../../../model/Book";
+import { Book, ArtifactType } from "../../../model/Book";
 
 // A set of controls by which the user can hide or show the artifacts for a book
 // which the harvester produced.
@@ -135,9 +134,7 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
 };
 
 // This version of the control doesn't require the caller to have previously created
-// a book. That is useful to various tests and perhaps to the legacy angular Bloom Library,
-// though we are currently expecting to fork this project and stick with an older
-// version of HarvesterArtifactUserControl if we need modifications for that.
+// a book. That is useful to various tests and was initially for the legacy angular Bloom Library.
 export const StandAloneHarvesterArtifactUserControl: React.FunctionComponent<{
     bookId: string;
     currentSession?: string;

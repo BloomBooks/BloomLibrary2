@@ -9,15 +9,17 @@ import { Button, Menu, MenuItem, useTheme } from "@material-ui/core";
 import loginIcon from "../../assets/NoUser.svg";
 // these two firebase imports are strange, but not an error. See https://github.com/firebase/firebase-js-sdk/issues/1832
 import firebase from "firebase/app";
-import "firebase/auth";
 import { ShowLoginDialog } from "./LoginDialog";
-import { observer } from "mobx-react";
 import { logout as logoutFromParseServer } from "../../connection/ParseServerConnection";
-import Avatar from "react-avatar";
 import { track } from "../../analytics/Analytics";
 import * as Sentry from "@sentry/browser";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useHistory } from "react-router-dom";
+import {
+    firebaseAuthStateChanged,
+    getCurrentUser,
+} from "../../firebase/firebase";
+import { setCookie } from "../../Utilities";
 
 // This React component displays a button for functions related to the user who may
 // be logged in. If no user is logged in, it displays a generic icon with pull-down
@@ -31,7 +33,7 @@ interface IProps extends React.HTMLProps<HTMLDivElement> {
     buttonHeight: string;
 }
 
-export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
+export const UserMenu: React.FunctionComponent<IProps> = (props) => {
     const l10n = useIntl();
     // This variable is used according to an apparently standard but rather
     // obscure convention for managing Material button/menu combinations.
@@ -43,11 +45,13 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
     // combinations is visible at any one time, a single state works for both.
     const [anchorEl, setAnchorEl] = useState(null as Element | null);
 
-    const [loggedInUser, setLoggedInUser] = useState(
-        firebase.auth().currentUser
+    const [loggedInUser, setLoggedInUser] = useState<firebase.User | null>(
+        null
     );
 
     const history = useHistory(); // used to jump to My Books
+
+    const avatarColor = useTheme().palette.secondary.main;
 
     /*useEffect(() => {
         firebase
@@ -79,13 +83,14 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
 
     useEffect(
         () =>
-            firebase.auth().onAuthStateChanged(() => {
+            firebaseAuthStateChanged(() => {
                 // If someone is now logged in, and it wasnt' who we previously had logged
                 // in (or more likely no one was previously logged in), report login
                 if (
                     firebase.auth()?.currentUser?.email &&
                     loggedInUser?.email !== firebase.auth()?.currentUser?.email
                 ) {
+                    setCookie("loggedIn", "true", 360);
                     // In previous blorg, we tracked the user name, but we're avoiding PII now.
                     track("Log In", {});
                 }
@@ -96,6 +101,7 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
                     !firebase.auth()?.currentUser?.email &&
                     loggedInUser?.email
                 ) {
+                    setCookie("loggedIn", "false", 360);
                     track("Log Out", {});
                 }
                 setLoggedInUser(firebase.auth().currentUser);
@@ -106,6 +112,13 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
             }),
         [loggedInUser]
     );
+    useEffect(() => {
+        getCurrentUser().then((currentUser) => {
+            if (currentUser !== null) {
+                setLoggedInUser(currentUser);
+            }
+        });
+    }, []);
 
     const showMenu = (ev: any) => {
         setAnchorEl(ev.target as Element);
@@ -140,6 +153,9 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
     };
     // split out buttonHeight else react complains because it doesn't apply to <div>s
     const { buttonHeight, ...otherProps } = props;
+    const Avatar = React.lazy(
+        () => import(/* webpackChunkName: "avatar" */ "react-avatar")
+    );
     return (
         // <FirebaseAuthConsumer>
         //     {(authState: AuthEmission) => (
@@ -228,12 +244,14 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
                                 />
                             )}
                             {!loggedInUser.photoURL && (
-                                <Avatar
-                                    email={loggedInUser.email ?? ""}
-                                    name={loggedInUser.displayName ?? ""}
-                                    size={props.buttonHeight}
-                                    color={useTheme().palette.secondary.main}
-                                />
+                                <React.Suspense fallback={<div></div>}>
+                                    <Avatar
+                                        email={loggedInUser.email ?? ""}
+                                        name={loggedInUser.displayName ?? ""}
+                                        size={props.buttonHeight}
+                                        color={avatarColor}
+                                    />
+                                </React.Suspense>
                             )}
                         </div>
                     </Button>
@@ -288,4 +306,4 @@ export const UserMenu: React.FunctionComponent<IProps> = observer((props) => {
         // )}
         // </FirebaseAuthConsumer>
     );
-});
+};
