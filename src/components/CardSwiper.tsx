@@ -1,3 +1,9 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import React, { ReactElement, useEffect, useState } from "react";
 import SwiperCore, { Navigation, A11y } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -6,7 +12,7 @@ import "swiper/components/navigation/navigation.min.css";
 import "swiper/components/a11y/a11y.min.css";
 import { useResponsiveChoice } from "../responsiveUtilities";
 import { ICardSpec } from "./RowOfCards";
-import "./CardSwiper.css";
+import { commonUI } from "../theme";
 
 SwiperCore.use([Navigation, A11y]);
 
@@ -108,6 +114,56 @@ export const CardSwiperLazy: React.FunctionComponent<{
             onSwiper={setSwiper}
             onSlideChange={() => setShowAll(true)}
             onScroll={() => setShowAll(true)}
+            css={css`
+                /* we don't want to see a grey'd "back" or "next button"; just don't show it */
+                .swiper-button-disabled {
+                    visibility: hidden;
+                }
+
+                /* Make the buttons the same height as the cards so clicking above or
+    below the buttons performs the next/previous action */
+                .swiper-button-next {
+                    right: 0;
+                }
+                .swiper-button-prev {
+                    left: 0;
+                }
+                .swiper-button {
+                    // Note, this should be the same as the light grey used
+                    // elsewhere, e.g.  in the Language Card secondary titles.
+                    // But that is set to #767676 (the minimal grey that passes
+                    // contrast tests) but if you look at it on screen, it
+                    // actually comes out closer to a5a5a5 (of course zoomed in,
+                    // the pixels of the text are in multiple shades).
+                    color: #a5a5a5;
+                    padding-left: 10px;
+                    padding-right: 10px;
+                    margin-top: 0;
+                    height: 100%;
+                    top: 0;
+                    ::after {
+                        font-size: ${getResponsiveChoice(16, 32)}px;
+                    }
+                }
+
+                &:hover .swiper-button {
+                    color: ${commonUI.colors.bloomRed};
+                }
+                &:after {
+                    content: "";
+                    width: 100px;
+                    height: 100%;
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    z-index: 1;
+                    background: linear-gradient(
+                        90deg,
+                        rgba(250, 250, 250, 0),
+                        rgba(250, 250, 250, 1)
+                    );
+                }
+            `}
         >
             {dataToRender.map((card: any, index: number) => (
                 <SwiperSlide

@@ -15,7 +15,6 @@ import { ImgWithCredits } from "../ImgWithCredits";
 import { useIntl } from "react-intl";
 import { propsToHideAccessibilityElement } from "../Utilities";
 import {
-    CollectionLabel,
     getLocalizedCollectionLabel,
     useGetLocalizedCollectionLabel,
 } from "../localization/CollectionLabel";
