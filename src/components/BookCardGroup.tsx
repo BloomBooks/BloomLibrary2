@@ -21,6 +21,7 @@ import { CardSwiperLazy } from "./CardSwiper";
 import { ICollection } from "../model/ContentInterfaces";
 import Typography from "@material-ui/core/Typography";
 import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
+import { useGetResponsiveBookGroupTopMargin } from "./BookGroup";
 
 interface IProps {
     title?: string;
@@ -35,9 +36,10 @@ interface IProps {
 }
 
 export const BookCardGroup: React.FunctionComponent<IProps> = (props) => {
+    const cardSpec = useBookCardSpec();
     const rowHeight =
-        (props.rows ?? 1) * commonUI.bookCardHeightPx +
-        commonUI.bookGroupTopMarginPx;
+        (props.rows ?? 1) * cardSpec.cardHeightPx +
+        useGetResponsiveBookGroupTopMargin();
     if (!props.collection.filter) {
         // this happens for example if there are no "published" the cards in the row
         return null; // otherwise we would just get all the books in the library
@@ -169,6 +171,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
             ></CardSwiperLazy>
         );
     } else {
+        const verticalSpacing = cardSpec.cardSpacingPx;
         const cards = books.map((b: IBasicBookInfo) => (
             // if we're showing in one row, then we'll let swiper handle the laziness, otherwise
             // we tell the card to try and be lazy itself.
@@ -177,6 +180,9 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
                 key={b.baseUrl}
                 basicBookInfo={b}
                 contextLangIso={props.contextLangIso}
+                css={css`
+                    margin-bottom: ${verticalSpacing}px;
+                `}
             />
         ));
 
@@ -187,6 +193,9 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
                     key="more"
                     collection={props.collection}
                     skip={nextSkip}
+                    css={css`
+                        margin-bottom: ${verticalSpacing}px;
+                    `}
                 />
             );
         }
@@ -196,6 +205,9 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
                 css={css`
                     display: flex;
                     flex-wrap: wrap;
+                    // Negative bottom margin on the container couteracts the the bottom margin on the elements
+                    // so the last row doesn't have extraneous margin at the end.
+                    margin-bottom: -${verticalSpacing}px;
                 `}
             >
                 {cards}
@@ -314,15 +326,8 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
             break;
     }
 
-    // For small screens, we want minimal space between rows to maximize what the user can see.
-    const topMarginPx = getResponsiveChoice(
-        commonUI.bookGroupSmallTopMarginPx,
-        commonUI.bookGroupTopMarginPx
-    );
-    const minHeightPx = getResponsiveChoice(
-        commonUI.bookCardHeightPx + commonUI.bookGroupSmallTopMarginPx,
-        commonUI.bookCardHeightPx + commonUI.bookGroupTopMarginPx
-    );
+    const topMarginPx = useGetResponsiveBookGroupTopMargin();
+    const minHeightPx = cardSpec.cardHeightPx + topMarginPx;
     return (
         //We just don't show the row if there are no matches, e.g., no Health books for this project
         // (ZeroBooksMatchedElement will be an empty pseudo-element that satisfies the 'or' but shows nothing)

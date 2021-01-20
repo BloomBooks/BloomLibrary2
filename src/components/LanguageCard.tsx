@@ -11,7 +11,7 @@ import { commonUI } from "../theme";
 import { useResponsiveChoice } from "../responsiveUtilities";
 import { FormattedMessage } from "react-intl";
 import TruncateMarkup from "react-truncate-markup";
-import { ICardSpec } from "./RowOfCards";
+import { ICardSpec, useBaseCardSpec } from "./RowOfCards";
 import { SmartTruncateMarkup } from "./SmartTruncateMarkup";
 
 export function useLanguageCardSpecs(): ICardSpec {
@@ -19,6 +19,7 @@ export function useLanguageCardSpecs(): ICardSpec {
     return {
         cardWidthPx: getResponsiveChoice(100, 150) as number,
         cardHeightPx: getResponsiveChoice(90, 125) as number,
+        cardSpacingPx: useBaseCardSpec().cardSpacingPx,
     };
 }
 
@@ -100,14 +101,8 @@ export const LanguageCard: React.FunctionComponent<
             <div
                 css={css`
                     font-size: ${getResponsiveChoice(10, 14)}px;
-
                     position: absolute;
-                    // TODO: our layout approach for collectionCard and
-                    // LanguageCard differ. This "bottom" is actually off the
-                    // bottom of the visible card boundary PLUS its bottom
-                    // margin.
-                    bottom: ${commonUI.paddingForCollectionAndLanguageCardsPx +
-                    4}px;
+                    bottom: 4px;
                 `}
             >
                 {props.usageCount ? (
