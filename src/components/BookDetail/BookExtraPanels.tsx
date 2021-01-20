@@ -14,7 +14,6 @@ import {
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { HarvesterArtifactUserControl } from "./ArtifactVisibilityPanel/ArtifactVisibilityPanel";
-//import { StaffPanel } from "../Admin/StaffPanel";
 import { LoggedInUser } from "../../connection/LoggedInUser";
 export const BookExtraPanels: React.FunctionComponent<{
     book: Book;
@@ -24,7 +23,11 @@ export const BookExtraPanels: React.FunctionComponent<{
 
     // causes webpack to create a chunk for this which we only download as needed.
     const ReactJsonView = React.lazy(() =>
-        user?.moderator ? import("react-json-view") : new Promise(() => {})
+        user?.moderator
+            ? import(
+                  /* webpackChunkName: "react-json-view" */ "react-json-view"
+              )
+            : new Promise(() => {})
     );
 
     const StaffPanel = React.lazy(() =>

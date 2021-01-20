@@ -4,9 +4,9 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import React from "react";
-import { commonUI } from "../theme";
 import { getUrlForTarget } from "./Routes";
 import { BlorgLink } from "./BlorgLink";
+import { useBaseCardSpec } from "./RowOfCards";
 
 interface IProps extends React.HTMLProps<HTMLDivElement> {
     className?: string;
@@ -17,6 +17,7 @@ interface IProps extends React.HTMLProps<HTMLDivElement> {
 // just a wrapper around the children you provide, made to look like a card and responsive to a click.
 export const CheapCard: React.FunctionComponent<IProps> = (props) => {
     const url = getUrlForTarget(props.target || "");
+    const cardSpacing = useBaseCardSpec().cardSpacingPx;
     return (
         <BlorgLink
             className={`cheapCard ${props.className}`}
@@ -26,8 +27,8 @@ export const CheapCard: React.FunctionComponent<IProps> = (props) => {
                 display: flex;
                 flex-direction: column;
 
-                margin-bottom: ${commonUI.cheapCardMarginBottomInPx}px;
-                margin-right: 5px;
+                margin-bottom: ${cardSpacing}px;
+                margin-right: ${cardSpacing}px;
                 background-color: white;
                 border-radius: 4px;
 
@@ -55,6 +56,8 @@ export const CheapCard: React.FunctionComponent<IProps> = (props) => {
                 &:visited {
                     color: black;
                 }
+
+                position: relative;
 
                 // NOTE! There are more css rules that can come from the parent
                 // component, e.g. collection card. In the debugger they'll all

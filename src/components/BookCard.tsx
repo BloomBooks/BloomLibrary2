@@ -10,11 +10,9 @@ import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
 import { FeatureLevelBar } from "./FeatureLevelBar";
 import { LanguageFeatureList } from "./LanguageFeatureList";
 import { Book, getBestBookTitle } from "../model/Book";
-
-import TruncateMarkup from "react-truncate-markup";
 import { useIntl } from "react-intl";
 import { useResponsiveChoice } from "../responsiveUtilities";
-import { ICardSpec } from "./RowOfCards";
+import { ICardSpec, useBaseCardSpec } from "./RowOfCards";
 import { SmartTruncateMarkup } from "./SmartTruncateMarkup";
 
 export function useBookCardSpec(): ICardSpec {
@@ -22,6 +20,7 @@ export function useBookCardSpec(): ICardSpec {
     return {
         cardWidthPx: getResponsiveChoice(100, 140) as number,
         cardHeightPx: getResponsiveChoice(160, 190) as number,
+        cardSpacingPx: useBaseCardSpec().cardSpacingPx,
     };
 }
 

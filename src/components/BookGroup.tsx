@@ -15,7 +15,7 @@ import {
     useSearchBooks,
     IBasicBookInfo,
 } from "../connection/LibraryQueryHooks";
-import { BookCard } from "./BookCard";
+import { BookCard, useBookCardSpec } from "./BookCard";
 import { SingleRowCardSwiper } from "./SingleRowCardSwiper";
 import { useResponsiveChoice } from "../responsiveUtilities";
 
@@ -37,6 +37,11 @@ interface IProps {
     predeterminedBooks?: IBasicBookInfo[];
 }
 
+export function useGetResponsiveBookGroupTopMargin(): number {
+    const getResponsiveChoice = useResponsiveChoice();
+    return getResponsiveChoice(3, 20) as number;
+}
+
 export const BookGroup: React.FunctionComponent<IProps> = (props) => {
     // typically props.rows, if large, is intended as a maximum; very often the real size is
     // much less. We get less gigantic scroll bar ranges by limiting it.
@@ -45,11 +50,12 @@ export const BookGroup: React.FunctionComponent<IProps> = (props) => {
         rowCount = Math.ceil(props.predeterminedBooks.length / 5); // still rough, but better than just using the max.
     }
 
+    const cardSpec = useBookCardSpec();
     // note, if the number of cards is too small to fill up those rows, this will expect
     // to be taller than it is, but then when it is replaced by the actual content, the
     // scrollbar will adjust, so no big deal?
     const rowHeight =
-        rowCount * commonUI.bookCardHeightPx + commonUI.bookGroupTopMarginPx;
+        rowCount * cardSpec.cardHeightPx + useGetResponsiveBookGroupTopMargin();
 
     // Enhance: this has parameters, height and offset, that should help
     // but so far I haven't got them to work well. It has many other
@@ -170,16 +176,8 @@ export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
             <React.Fragment></React.Fragment>
         );
 
-    // For small screens, we want minimal space between rows to maximize what the user can see.
-    const getResponsiveChoice = useResponsiveChoice();
-    const topMarginPx = getResponsiveChoice(
-        commonUI.bookGroupSmallTopMarginPx,
-        commonUI.bookGroupTopMarginPx
-    );
-    const minHeightPx = getResponsiveChoice(
-        commonUI.bookCardHeightPx + commonUI.bookGroupSmallTopMarginPx,
-        commonUI.bookCardHeightPx + commonUI.bookGroupTopMarginPx
-    );
+    const topMarginPx = useGetResponsiveBookGroupTopMargin();
+    const minHeightPx = useBookCardSpec().cardHeightPx + topMarginPx;
     return (
         //We just don't show the row if there are no matches, e.g., no Health books for this project
         // (ZeroBooksMatchedElement will be an empty pseudo-element that satisfies the 'or' but shows nothing)

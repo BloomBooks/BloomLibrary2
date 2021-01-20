@@ -9,6 +9,7 @@ import { CheapCard } from "./CheapCard";
 import { ICollection } from "../model/ContentInterfaces";
 import { FormattedMessage } from "react-intl";
 import { useResponsiveChoice } from "../responsiveUtilities";
+import { commonUI } from "../theme";
 
 // const image = css`
 //     height: 100px;
@@ -37,6 +38,7 @@ export const MoreCard: React.FunctionComponent<IProps> = (props) => {
             css={css`
                 width: ${cardWidth}px;
                 height: ${getResponsiveChoice(160, 190)}px;
+                padding: ${commonUI.paddingForCollectionAndLanguageCardsPx}px;
             `}
             target={href}
         >

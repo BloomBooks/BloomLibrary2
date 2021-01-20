@@ -110,7 +110,7 @@ export const CardSwiperLazy: React.FunctionComponent<{
 
         <Swiper
             {...swiperConfig}
-            spaceBetween={getResponsiveChoice(10, 20) as number}
+            spaceBetween={props.cardSpec.cardSpacingPx}
             onSwiper={setSwiper}
             onSlideChange={() => setShowAll(true)}
             onScroll={() => setShowAll(true)}
@@ -120,8 +120,8 @@ export const CardSwiperLazy: React.FunctionComponent<{
                     visibility: hidden;
                 }
 
-                /* Make the buttons the same height as the cards so clicking above or
-    below the buttons performs the next/previous action */
+                // Make the buttons the same height as the cards so clicking above or
+                // below the buttons performs the next/previous action
                 .swiper-button-next {
                     right: 0;
                 }
@@ -162,6 +162,14 @@ export const CardSwiperLazy: React.FunctionComponent<{
                         rgba(250, 250, 250, 0),
                         rgba(250, 250, 250, 1)
                     );
+                }
+
+                // I wanted to have Cheap Card handle all the spacing between cards whether in a swiper context or not.
+                // But a 20px margin on the card with the spaceBetween config set to 0 caused us to not be able to
+                // swipe far enough to see the last card in some scenarios. So I had to revert to using swiper's spaceBetween.
+                // Thus we have to get rid of the card's margin here or it would be doubled.
+                & .cheapCard {
+                    margin-right: 0;
                 }
             `}
         >

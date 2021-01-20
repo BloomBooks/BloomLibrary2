@@ -20,7 +20,7 @@ import {
 } from "../localization/CollectionLabel";
 import { ICollection } from "../model/ContentInterfaces";
 import { useResponsiveChoice } from "../responsiveUtilities";
-import { ICardSpec } from "./RowOfCards";
+import { ICardSpec, useBaseCardSpec } from "./RowOfCards";
 import { commonUI } from "../theme";
 import TruncateMarkup from "react-truncate-markup";
 
@@ -49,6 +49,7 @@ export function useCollectionCardSpec(layout: CollectionCardLayout): ICardSpec {
     return {
         cardWidthPx: getResponsiveChoice(100, 200) as number,
         cardHeightPx: height as number,
+        cardSpacingPx: useBaseCardSpec().cardSpacingPx,
         createFromCollection: (collection: ICollection) => (
             <CollectionCard
                 collection={collection}

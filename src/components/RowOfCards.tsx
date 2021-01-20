@@ -6,12 +6,26 @@ import { PageNotFound } from "./PageNotFound";
 import { ICollection } from "../model/ContentInterfaces";
 import { useStoryCardSpec } from "./StoryCard";
 import { CollectionCardLayout, useCollectionCardSpec } from "./CollectionCard";
+import { useResponsiveChoice } from "../responsiveUtilities";
 
 export interface ICardSpec {
     cardWidthPx: number;
     cardHeightPx: number;
+    cardSpacingPx: number;
     // not used by language card & other things that are not collection-based
     createFromCollection?: (collection: ICollection) => any;
+}
+
+export function useBaseCardSpec(): ICardSpec {
+    const getResponsiveChoice = useResponsiveChoice();
+    return {
+        cardSpacingPx: getResponsiveChoice(10, 20) as number,
+
+        // Perhaps these will be used some day.
+        // For now, keep them simple and fast (not responsive).
+        cardWidthPx: 100,
+        cardHeightPx: 100,
+    };
 }
 
 // These can be a group of book cards, collection cards, story page cards, or generic page cards
