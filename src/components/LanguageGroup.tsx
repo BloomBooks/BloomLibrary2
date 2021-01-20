@@ -104,7 +104,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
     const rootPropsOptions: GetRootPropsOptions = { refKey: "ref" };
     (rootPropsOptions as any).role = undefined;
 
-    const contentHeight = getResponsiveChoice(140, 160);
+    const contentHeight = getResponsiveChoice(140, 170);
 
     return langChosen ? (
         <Redirect to={"/language:" + langChosen} />

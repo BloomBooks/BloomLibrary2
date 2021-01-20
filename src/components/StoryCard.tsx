@@ -22,6 +22,7 @@ export function useStoryCardSpec(): ICardSpec {
     return {
         cardWidthPx: getResponsiveChoice(120, 240) as number,
         cardHeightPx: getResponsiveChoice(190, 190) as number,
+        cardSpacingPx: 20,
         createFromCollection: (collection: ICollection) => (
             <StoryCard story={collection} key={collection.urlKey} />
         ),
@@ -31,7 +32,7 @@ export function useStoryCardSpec(): ICardSpec {
 export const StoryCard: React.FunctionComponent<{ story: ICollection }> = (
     props
 ) => {
-    const { cardWidthPx, cardHeightPx } = useStoryCardSpec();
+    const { cardWidthPx, cardHeightPx, cardSpacingPx } = useStoryCardSpec();
     const getResponsiveChoice = useResponsiveChoice();
     const url = "/page/" + getUrlForTarget(props.story.urlKey);
     const page = useContentfulPage("page", props.story.urlKey);
@@ -45,7 +46,7 @@ export const StoryCard: React.FunctionComponent<{ story: ICollection }> = (
                 // I don't know why, but without this, the edges get cut off
                 margin: 1px;
                 // enhance: really we just want this margin in-between cards
-                margin-right: 20px;
+                margin-right: ${cardSpacingPx}px;
             `}
         >
             <CardActionArea component={Link} to={`${url}`}>
