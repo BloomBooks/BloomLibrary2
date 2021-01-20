@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useRef, useState } from "react";
 import SwiperCore, { Navigation, A11y } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper.min.css";
@@ -67,6 +67,8 @@ export const CardSwiperLazy: React.FunctionComponent<{
     const [swiper, setSwiper] = useState<any | null>(null);
     const getResponsiveChoice = useResponsiveChoice();
     const [showAll, setShowAll] = useState(false);
+    const indexOfFirstVisibleCard = useRef(0);
+    const indexOfLastVisibleCard = useRef(1);
     useEffect(() => {
         if (swiper && props.data.length) {
             // When the number of children change, if we already had cards and the user has scrolled,
@@ -87,7 +89,6 @@ export const CardSwiperLazy: React.FunctionComponent<{
     // this should be at least 1, which makes things smooth for clicking on
     // "next". Beyond that, it is for making things smooth while dragging.
     const kNumberOfCardsToRenderWhileInvisible = 3;
-    let indexOfLastVisibleCard = 0;
 
     // Since we're not indicating anywhere how many items we have, 20 should be plenty
     // to fill the screen for any card size we're using. As soon as the user scrolls,
@@ -173,16 +174,53 @@ export const CardSwiperLazy: React.FunctionComponent<{
                     key={index}
                 >
                     {(args: any) => {
+                        // Keep track of the lowest and highest index that has been rendered visible since
+                        // last rendered not-visible. Note, we can confidently set new values when the
+                        // current card is visible. When rendering an invisible card, if its index is
+                        // the current high or low, we can't really be sure that the next lower or higher
+                        // index has been rendered visible. Worst case, we render a few more than needed.
+                        // The assumption here is that any card that is visible must get rendered with that
+                        // flag set; any card that was once visible and no longer is will probably get
+                        // re-rendered that way eventually; if it doesn't, all the better, we saved some work.
                         if (
+                            args.isVisible &&
+                            index < indexOfFirstVisibleCard.current
+                        ) {
+                            indexOfFirstVisibleCard.current = index;
+                        }
+                        if (
+                            !args.isVisible &&
+                            index >= indexOfFirstVisibleCard.current &&
+                            index < indexOfLastVisibleCard.current
+                        ) {
+                            indexOfFirstVisibleCard.current = index + 1;
+                        }
+                        if (
+                            args.isVisible &&
+                            index > indexOfLastVisibleCard.current
+                        ) {
+                            indexOfLastVisibleCard.current = index;
+                        }
+                        if (
+                            !args.isVisible &&
+                            index <= indexOfLastVisibleCard.current &&
+                            index > indexOfFirstVisibleCard.current
+                        ) {
+                            indexOfLastVisibleCard.current = index - 1;
+                        }
+                        const makeRealContent =
                             args.isVisible ||
-                            // Render a couple cards to be ready
-                            // Note that will render cards that have already been
-                            // scrolled off to the left.
-                            indexOfLastVisibleCard >
-                                index - kNumberOfCardsToRenderWhileInvisible
-                        )
-                            indexOfLastVisibleCard = index;
-                        return args.isVisible ? (
+                            // Render a couple cards to be ready to scroll in.
+                            // Also, a card may be rendered as not-visible when it is in the
+                            // process of being scrolled off, especially to the left, so we want to
+                            // keep it just a bit longer.
+                            (index >
+                                indexOfFirstVisibleCard.current -
+                                    kNumberOfCardsToRenderWhileInvisible &&
+                                index <
+                                    indexOfLastVisibleCard.current +
+                                        kNumberOfCardsToRenderWhileInvisible);
+                        return makeRealContent ? (
                             props.getReactElement(card, index)
                         ) : (
                             <div
