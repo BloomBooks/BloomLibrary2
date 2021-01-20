@@ -44,7 +44,7 @@ export const CollectionPage: React.FunctionComponent<{
                 <div>
                     <FormattedMessage
                         id="error.collectionNotFound"
-                        defaultMessage="Collection not found"
+                        defaultMessage="Sorry, we couldn't find that page."
                     />
                 </div>
             );

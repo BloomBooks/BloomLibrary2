@@ -229,7 +229,7 @@ export const DataStudioDashboardScreen: React.FunctionComponent<IStatsProps> = (
     }
 
     if (!collection) {
-        return <div>Collection not found</div>;
+        return <div>Sorry, we couldn't find that page.</div>;
     }
 
     const backColor = "#333";

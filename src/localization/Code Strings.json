@@ -121,7 +121,7 @@
     },
     "error.collectionNotFound": {
         "description": "",
-        "message": "Collection not found"
+        "message": "Sorry, we couldn't find that page."
     },
     "error.pageNotFound": {
         "description": "",
