@@ -46,22 +46,30 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         return <TestEmbeddingPage code={match.params.code} />;
                     }}
                 ></Route>
-                {/* Alias from legacy blorg */}
-                <Route path={"/browse"}>
-                    <Redirect to="/create" />
-                </Route>
-                {/* One of the links from BloomDesktop goes here */}
-                <Route path={"/books"}>
-                    <Redirect to="/create" />
+                <Route
+                    exact
+                    path={[
+                        "/browse", // Alias from legacy blorg
+                        "/books", // One of the links from BloomDesktop goes here
+                    ]}
+                >
+                    <Redirect to="/" />
                 </Route>
                 <Route
+                    exact
                     path={[
+                        "/download", // Alias from legacy blorg
                         "/downloads", // Alias for convenience when telling people where to get Bloom
                         "/installers", // Alias from legacy blorg
                     ]}
                 >
                     <Redirect to="/page/create/downloads" />
                 </Route>
+                {/* Alias from legacy blorg */}
+                <Redirect from={"/browse/detail/:id"} to="/book/:id" />
+                {/* Alias from legacy blorg */}
+                <Redirect from={"/readBook/:id"} to="/player/:id" />
+
                 <Route path={"/page/create/about"}>
                     <ContentfulMultiPartPage urlKey="new-about" />
                 </Route>
