@@ -14,8 +14,9 @@ import Typography from "@material-ui/core/Typography";
 import { Link } from "react-router-dom";
 import { getUrlForTarget } from "./Routes";
 import { useContentfulPage } from "./pages/ContentfulPage";
-import { useResponsiveChoice } from "../responsiveUtilities";
+import { useResponsiveChoice, useSmallScreen } from "../responsiveUtilities";
 import { ICardSpec } from "./RowOfCards";
+import TruncateMarkup from "react-truncate-markup";
 
 export function useStoryCardSpec(): ICardSpec {
     const getResponsiveChoice = useResponsiveChoice();
@@ -34,6 +35,7 @@ export const StoryCard: React.FunctionComponent<{ story: ICollection }> = (
 ) => {
     const { cardWidthPx, cardHeightPx, cardSpacingPx } = useStoryCardSpec();
     const getResponsiveChoice = useResponsiveChoice();
+    const isSmall = useSmallScreen();
     const url = "/page/" + getUrlForTarget(props.story.urlKey);
     const page = useContentfulPage("page", props.story.urlKey);
     if (!page) {
@@ -88,7 +90,12 @@ export const StoryCard: React.FunctionComponent<{ story: ICollection }> = (
                             font-size: ${getResponsiveChoice(11, 14)}px;
                         `}
                     >
-                        {page.fields.excerpt}
+                        {/* For some reason 8 produces 9 lines...which seems to be about right for the tall cards we have in small
+                        screen mode. The wider but shorter big-screen cards only have room for six, though that is usually more text.
+                        Big screen cutoff is not tested as I don't know of a story with more than five lines of excerpt. */}
+                        <TruncateMarkup lines={isSmall ? 8 : 6}>
+                            <span>{page.fields.excerpt}</span>
+                        </TruncateMarkup>
                     </Typography>
                 </CardContent>
             </CardActionArea>
