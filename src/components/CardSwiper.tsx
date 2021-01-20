@@ -176,37 +176,49 @@ export const CardSwiperLazy: React.FunctionComponent<{
                     {(args: any) => {
                         // Keep track of the lowest and highest index that has been rendered visible since
                         // last rendered not-visible. Note, we can confidently set new values when the
-                        // current card is visible. When rendering an invisible card, if its index is
-                        // the current high or low, we can't really be sure that the next lower or higher
-                        // index has been rendered visible. Worst case, we render a few more than needed.
-                        // The assumption here is that any card that is visible must get rendered with that
-                        // flag set; any card that was once visible and no longer is will probably get
-                        // re-rendered that way eventually; if it doesn't, all the better, we saved some work.
+                        // current card is visible. When rendering an invisible card, things get a bit tricky.
                         if (
                             args.isVisible &&
                             index < indexOfFirstVisibleCard.current
                         ) {
+                            // If a card is now visible whose index is less than the first visible card we
+                            // know about, its index becomes the first visible one.
                             indexOfFirstVisibleCard.current = index;
-                        }
-                        if (
-                            !args.isVisible &&
-                            index >= indexOfFirstVisibleCard.current &&
-                            index < indexOfLastVisibleCard.current
-                        ) {
-                            indexOfFirstVisibleCard.current = index + 1;
                         }
                         if (
                             args.isVisible &&
                             index > indexOfLastVisibleCard.current
                         ) {
+                            // If a card is now visible whose index is more than the last visible card we
+                            // know about, its index becomes the last visible one.
                             indexOfLastVisibleCard.current = index;
                         }
                         if (
                             !args.isVisible &&
-                            index <= indexOfLastVisibleCard.current &&
-                            index > indexOfFirstVisibleCard.current
+                            index >= indexOfFirstVisibleCard.current &&
+                            index <= indexOfLastVisibleCard.current
                         ) {
-                            indexOfLastVisibleCard.current = index - 1;
+                            // If we're rendering a card in the range we previously thought was visible,
+                            // but it no longer is, we want to adjust the range. Most likely, after scrolling,
+                            // at least all the cards whose visibility changed will be re-rendered in order.
+                            // So, if we're scrolling in a direction that increases the visible indexes,
+                            // the first thing we'll see is one or more cards near the bottom of the old range that are no
+                            // longer visible. Then any cards that just became visible.
+                            // If we're scrolling the other way, first we'll see the new low-index visible card(s),
+                            // then a high-index card that stopped being visible.
+                            // The best guess I can make is to change the one closest to the invisible card.
+                            // If we're wrong, the worst thing that happens is scrollng gets a bit less smooth;
+                            // the cards that are stably visible are always real.
+                            if (
+                                index - indexOfFirstVisibleCard.current >
+                                indexOfLastVisibleCard.current - index
+                            ) {
+                                // closest to the top of the old range, so guess the visible cards are below this one.
+                                indexOfLastVisibleCard.current = index - 1;
+                            } else {
+                                // closest to the bottom of the old range, so guess the visible cards are after this one.
+                                indexOfFirstVisibleCard.current = index + 1;
+                            }
                         }
                         const makeRealContent =
                             args.isVisible ||
@@ -214,6 +226,25 @@ export const CardSwiperLazy: React.FunctionComponent<{
                             // Also, a card may be rendered as not-visible when it is in the
                             // process of being scrolled off, especially to the left, so we want to
                             // keep it just a bit longer.
+                            // Note, this may not fully achieve all the desired effect, since nothing
+                            // ensures that cards that were initially rendered one way will be re-rendered
+                            // when the visible card indexes change unless their visibility changes.
+                            // The immediate goal when setting up this
+                            // code was to not convert the card that is disappearing into a placeholder
+                            // before the animation ends for scrolling it off. That seems to have been
+                            // accomplished. However, after a few scrolls to the right, we don't seem to be
+                            // converting placeholders to real until they actually become visible, nor
+                            // are real cards being converted back to placeholders as they stop being visible.
+                            // So, for example, when the visible range moves from (5,8) to (4,7), we need card 8
+                            // to stay real during the animation, and it does. If card 4 was (undesirably) still
+                            // a placeholder, we need it to become real, and it does. We'd like the range of real cards
+                            // to move from (2,11) to (1,10), but in fact cards 1 and 11 don't get re-rendered
+                            // so nothing changes...unless card 4 was previously a placeholder, in which case
+                            // it gets fixed. (We would render cards 4 and 8, which would move the first and last
+                            // indexes, since their visibility changed. 4 will become real if it wasn't already,
+                            // but 8 won't change because it's still in the extended range we keep real.)
+                            // Since we're not achieving the full effect aimed at, there may be something simpler
+                            // that would achieve the minimum we require, but I'm not seeing it.
                             (index >
                                 indexOfFirstVisibleCard.current -
                                     kNumberOfCardsToRenderWhileInvisible &&
