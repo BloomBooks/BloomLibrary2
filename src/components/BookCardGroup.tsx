@@ -237,6 +237,32 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
     // props.title, if provided, is already localized
     const label = props.title ?? getLocalizedCollectionLabel(props.collection);
 
+    const descriptionBlockWidth = 200;
+    const descriptionBlockLargeRightMargin = 20;
+
+    const descriptionBlock = (
+        <div
+            css={css`
+                // I don't know why width was being ignored, so here it's more locked down
+                width: ${descriptionBlockWidth}px;
+                min-width: ${descriptionBlockWidth}px;
+                max-width: ${descriptionBlockWidth}px;
+                margin-right: ${getResponsiveChoice(
+                    10,
+                    descriptionBlockLargeRightMargin
+                )}px;
+                margin-bottom: 10px; // for mobile where this is on top
+                // See below: we use absolute positioning when arranged in a row to work around a Swiper bug.
+                position: ${getResponsiveChoice("relative", "absolute")};
+            `}
+        >
+            <h1>{label}</h1>
+            <Typography variant="body2" color="textSecondary" component="p">
+                {props.collection.description}
+            </Typography>
+        </div>
+    );
+
     let group;
     switch (props.collection.layout) {
         // this is used in the "Create" screen
@@ -245,55 +271,34 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
                 <React.Fragment>
                     <div
                         css={css`
-                            display: flex;
-                            flex-direction: ${getResponsiveChoice(
-                                "column",
-                                "row"
-                            )};
-                            // The default margin-left is "auto"
-                            .swiper-container {
-                                margin-left: 0;
-                            }
+                            position: relative;
                         `}
                     >
-                        <div
-                            css={css`
-                                // I don't know why width was being ignored, so here it's more locked down
-                                width: 200px;
-                                min-width: 200px;
-                                max-width: 200px;
-                                margin-right: ${getResponsiveChoice(10, 20)}px;
-                                margin-bottom: 10px; // for mobile where this is on top
-                            `}
-                        >
-                            <h1>{label}</h1>
-                            <Typography
-                                variant="body2"
-                                color="textSecondary"
-                                component="p"
-                            >
-                                {props.collection.description}
-                            </Typography>
-                        </div>
-                        {search.waiting ||
-                            // On a big screen the parent is already a horizontal flexbox,
-                            // and swiper flex-shrinks to the appropriate width and works.
-                            // On a small screen, the parent is a vertical flexbox, and
-                            // without an extra wrapper, swiper just grows to the size of
-                            // its content, there is no row-swiping behavior, and instead,
-                            // the whole window gets a horizontal scroll bar.
-                            (isSmall ? (
+                        {isSmall ? (
+                            <React.Fragment>
+                                {descriptionBlock}
+                                {search.waiting || bookList}
+                            </React.Fragment>
+                        ) : (
+                            // Would much prefer to use a div with display:flex here, or just make the containing
+                            // div display:flex with a conditional direction. But Swiper behaves weirdly if its
+                            // parent is a horizontal flexbox, especially if everything fits. The last card is not
+                            // created properly (gets rendered with visible:false) and the Next button is shown
+                            // even though everything fits. There may be a better workaround, but so far this is
+                            // the best I can find: the old-fashioned approach, where we make a row
+                            // by positioning one child absolutely and padding the other to leave room for it.
+                            <React.Fragment>
+                                {descriptionBlock}
                                 <div
                                     css={css`
-                                        width: 100%;
-                                        display: flex;
+                                        padding-left: ${descriptionBlockWidth +
+                                        descriptionBlockLargeRightMargin}px;
                                     `}
                                 >
-                                    {bookList}
+                                    {search.waiting || bookList}
                                 </div>
-                            ) : (
-                                bookList
-                            ))}
+                            </React.Fragment>
+                        )}
                     </div>
                 </React.Fragment>
             );
