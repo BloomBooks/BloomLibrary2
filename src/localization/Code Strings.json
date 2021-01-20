@@ -393,5 +393,8 @@
     "downloadShellbook.tryAgain": {
         "message": "Try downloading it again",
         "description": "Text for a button on the download shellbook dialog."
+    },
+    "download.beta": {
+        "message": "Download Beta"
     }
 }
