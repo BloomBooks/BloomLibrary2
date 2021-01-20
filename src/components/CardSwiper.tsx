@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useRef, useState } from "react";
 import SwiperCore, { Navigation, A11y } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper.min.css";
@@ -67,6 +67,7 @@ export const CardSwiperLazy: React.FunctionComponent<{
     const [swiper, setSwiper] = useState<any | null>(null);
     const getResponsiveChoice = useResponsiveChoice();
     const [showAll, setShowAll] = useState(false);
+    const indexOfLastVisibleCard = useRef(1);
     useEffect(() => {
         if (swiper && props.data.length) {
             // When the number of children change, if we already had cards and the user has scrolled,
@@ -83,11 +84,6 @@ export const CardSwiperLazy: React.FunctionComponent<{
             }
         }
     }, [props.data.length, props.wrapperRole, swiper]);
-
-    // this should be at least 1, which makes things smooth for clicking on
-    // "next". Beyond that, it is for making things smooth while dragging.
-    const kNumberOfCardsToRenderWhileInvisible = 3;
-    let indexOfLastVisibleCard = 0;
 
     // Since we're not indicating anywhere how many items we have, 20 should be plenty
     // to fill the screen for any card size we're using. As soon as the user scrolls,
@@ -149,6 +145,8 @@ export const CardSwiperLazy: React.FunctionComponent<{
                 &:hover .swiper-button {
                     color: ${commonUI.colors.bloomRed};
                 }
+                // Make the fading effect on the right indicating there are more cards.
+                // enhance: it would be nice NOT to do this if all the cards just exactly fit.
                 &:after {
                     content: "";
                     width: 100px;
@@ -157,6 +155,8 @@ export const CardSwiperLazy: React.FunctionComponent<{
                     top: 0;
                     right: 0;
                     z-index: 1;
+                    // Allow clicks through the overlay to the button underneath
+                    pointer-events: none;
                     background: linear-gradient(
                         90deg,
                         rgba(250, 250, 250, 0),
@@ -182,15 +182,20 @@ export const CardSwiperLazy: React.FunctionComponent<{
                 >
                     {(args: any) => {
                         if (
-                            args.isVisible ||
-                            // Render a couple cards to be ready
-                            // Note that will render cards that have already been
-                            // scrolled off to the left.
-                            indexOfLastVisibleCard >
-                                index - kNumberOfCardsToRenderWhileInvisible
-                        )
-                            indexOfLastVisibleCard = index;
-                        return args.isVisible ? (
+                            args.isVisible &&
+                            index > indexOfLastVisibleCard.current
+                        ) {
+                            indexOfLastVisibleCard.current = index;
+                        }
+
+                        // Any card we've ever rendered fully we will keep rendering.
+                        // The main reason for not fully rendering is to save time on the ones we haven't seen yet.
+                        // Once they are rendered, we'd prefer not to have to do it again.
+                        // Also, we've seen a problem where the card on the left that is scrolling off the
+                        // screen disappears before it is all the way off. We think it is because it
+                        // was being re-rendered as a placeholder before it was off-screen.
+                        return args.isVisible ||
+                            index <= indexOfLastVisibleCard.current ? (
                             props.getReactElement(card, index)
                         ) : (
                             <div
