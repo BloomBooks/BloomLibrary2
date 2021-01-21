@@ -1,7 +1,3 @@
-// Display a block with a colored background.
-// Optional padding is provided.
-// Optional background image is allowed. (This feature is very rudimentary and untested at present.)
-
 // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
 import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
@@ -24,9 +20,7 @@ export const Vimeo: React.FunctionComponent<{
             `}
         >
             <iframe
-                src={
-                    "https://player.vimeo.com/video/141561934?title=0&byline=0&portrait=0&autoplay=1"
-                }
+                src={`https://player.vimeo.com/video/${props.id}?title=0&byline=0&portrait=0&autoplay=1`}
                 css={css`
                     position: absolute;
                     top: 0;
@@ -37,7 +31,7 @@ export const Vimeo: React.FunctionComponent<{
                 `}
                 allow={"fullscreen; picture-in-picture"}
                 allowFullScreen
-                title={"z"}
+                title={"video"}
             ></iframe>
         </div>
     );

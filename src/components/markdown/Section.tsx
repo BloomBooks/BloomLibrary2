@@ -11,7 +11,7 @@ import * as React from "react";
 import Container from "@material-ui/core/Container";
 
 export interface IColoredBlockProps extends React.HTMLAttributes<HTMLElement> {
-    color: string; // could be color name or RGB value like "#b1e29d"
+    backgroundColor: string; // could be color name or RGB value like "#b1e29d"
     image?: string; // optional value like "url('mybackground.png')"
     textColor?: string;
     className?: string;
@@ -23,7 +23,7 @@ export const Section: React.FunctionComponent<IColoredBlockProps> = (props) => {
         <section
             className={props.className}
             css={css`
-                background-color: ${props.color};
+                background-color: ${props.backgroundColor};
                 background-image: ${props.image};
                 padding-bottom: 1em;
                 padding-top: 1em;

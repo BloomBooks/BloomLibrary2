@@ -38,9 +38,6 @@ export const BlorgMarkdown: React.FunctionComponent<{
             FeatureMatrix,
             Feature,
             FeatureGroup,
-            // NB: we need this to be lower case because, when using an html
-            // formatter to work on a long markdown document, <Section> will get
-            // changed to <section>
             Section,
             Testimonial,
             Columns,
@@ -54,20 +51,6 @@ export const BlorgMarkdown: React.FunctionComponent<{
 
     return (
         <div
-            // css={css`
-            // // In the contentful markdown, this is a common image layout
-            //     .imageInsideStory {
-            //         // prevent images in stories from being wider than the container
-            //         max-width: 100%;
-            //         // Conceivably these rules should only apply to stories? If they start to
-            //         // mess up other kinds of pages, then we can deal with that.
-            //         margin-top: 14px;
-            //         margin-bottom: 14px;
-            //         display: block; // makes the following centering rules work
-            //         margin-left: auto;
-            //         margin-right: auto;
-            //     }
-            // `}
             className={`contentful-markdown-part ${
                 props.column === TwoColumn.rightColumn ? "rightColumn" : ""
             }`}
