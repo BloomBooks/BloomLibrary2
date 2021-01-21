@@ -75,8 +75,8 @@ export const LanguageCard: React.FunctionComponent<
                     `}
                 >
                     <SmartTruncateMarkup
-                        condition={(secondary ?? "").length >= 11}
-                        lines={1} // For just one line, we could do it with CSS, but using TruncateMarkup makes this easy to change if needed.
+                        condition={(secondary ?? "").length >= 18}
+                        lines={2}
                     >
                         <span>{secondary}</span>
                     </SmartTruncateMarkup>
