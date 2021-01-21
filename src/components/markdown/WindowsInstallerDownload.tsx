@@ -7,9 +7,8 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import Button from "@material-ui/core/Button";
 import useAxios, { IReturns } from "@use-hooks/axios";
-import { commonUI } from "../theme";
-import { BlorgLink } from "./BlorgLink";
-import { FormattedMessage } from "react-intl";
+import { commonUI } from "../../theme";
+import { BlorgLink } from "../BlorgLink";
 export const WindowsInstallerDownload: React.FunctionComponent<{
     channel: string;
 }> = (props) => {
@@ -46,11 +45,7 @@ export const WindowsInstallerDownload: React.FunctionComponent<{
                             }
                         `}
                     >
-                        <FormattedMessage
-                            // Unfortunate id, but it already existed, and we don't want a new one.
-                            id="book.metadata.download"
-                            defaultMessage="Download"
-                        />
+                        Download
                     </Button>
                 ) : (
                     <Button
@@ -65,10 +60,7 @@ export const WindowsInstallerDownload: React.FunctionComponent<{
                             }
                         `}
                     >
-                        <FormattedMessage
-                            id="download.beta"
-                            defaultMessage="Download Beta"
-                        />
+                        Download Beta
                     </Button>
                 )}
                 <div

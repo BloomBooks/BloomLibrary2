@@ -59,18 +59,6 @@ a:hover {
     color: white;
 }
 
-/* Rules applying to ContentfulPage AND ContentfulMultiPartPage. */
-.base-contentful-page {
-    /* max-width: 800px; /* TODO this need to vary by screen width
-    margin-left: auto;
-    margin-right: auto; */
-    margin-bottom: 2em;
-}
-
-.base-contentful-page h1 {
-    font-size: 2rem;
-}
-
 /* Rules applying only to ContentfulMultiPartPage. */
 .multipart-contentful-page > div {
     display: flex;
