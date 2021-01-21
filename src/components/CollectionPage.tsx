@@ -16,6 +16,7 @@ import { useSetBrowserTabTitle } from "./Routes";
 import { getCollectionAnalyticsInfo } from "../analytics/CollectionAnalyticsInfo";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useGetLocalizedCollectionLabel } from "../localization/CollectionLabel";
+import { PageNotFound } from "./PageNotFound";
 
 export const CollectionPage: React.FunctionComponent<{
     collectionName: string;
@@ -40,14 +41,7 @@ export const CollectionPage: React.FunctionComponent<{
         }
 
         if (!collection) {
-            return (
-                <div>
-                    <FormattedMessage
-                        id="error.collectionNotFound"
-                        defaultMessage="Collection not found"
-                    />
-                </div>
-            );
+            return <PageNotFound />;
         }
         const collectionRows = collection.childCollections.map((c) => {
             if (c.urlKey === "language-chooser") {
