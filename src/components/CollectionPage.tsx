@@ -14,7 +14,7 @@ import { useTrack } from "../analytics/Analytics";
 import { IEmbedSettings } from "../model/ContentInterfaces";
 import { useSetBrowserTabTitle } from "./Routes";
 import { getCollectionAnalyticsInfo } from "../analytics/CollectionAnalyticsInfo";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
 import { useGetLocalizedCollectionLabel } from "../localization/CollectionLabel";
 import { PageNotFound } from "./PageNotFound";
 

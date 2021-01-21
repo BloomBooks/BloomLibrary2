@@ -20,7 +20,7 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
 
     // ABOUT MuiLink: we're using this to get the themed color for the link
 
-    if (isExternal(props.href as string)) {
+    if (isExternalOrEmail(props.href as string)) {
         // Some links should open a new tab if we are embedded in an iframe.
         if (isInIframe && props.newTabIfEmbedded) {
             return (
@@ -71,10 +71,10 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
     );
 };
 
-function isExternal(url: string): boolean {
+function isExternalOrEmail(url: string): boolean {
     try {
-        // if it doesn't start with http, let's say it is internal
-        if (!url.startsWith("http")) return false;
+        // if it doesn't start with http or mailto, let's say it is internal
+        if (!url.startsWith("http") && !url.startsWith("mailto:")) return false;
         // if it does, it could still be pointing to this site
         const urlObj = new URL(url, window.location.origin);
         return urlObj.hostname !== window.location.hostname;
