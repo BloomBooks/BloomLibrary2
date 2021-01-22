@@ -1,7 +1,12 @@
+import css from "@emotion/css/macro";
 import React from "react"; // see https://github.com/emotion-js/emotion/issues/1156
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { ThemeForLocation } from "./ThemeForLocation";
-import { BlorgMarkdown } from "../BlorgMarkdown";
+import { BlorgMarkdown } from "../markdown/BlorgMarkdown";
 import Container from "@material-ui/core/Container";
 import { convertContentfulMediaToIMedia } from "../../model/Contentful";
 import { IMedia } from "../../model/ContentInterfaces";
@@ -12,6 +17,7 @@ export interface IContentfulPage {
     // The text label we show on the card
     label: string;
     markdownBody: string;
+    hideTitle: boolean;
 
     // A sentence that is shown when we're showing a story card
     excerpt?: string;
@@ -23,6 +29,7 @@ export interface IContentfulPage {
     // NB: purposefully missing here are "body" and "parts" which are probably going away.
     // For now, those can be accessed via the raw fields tag
     fields: any;
+    css?: string;
 }
 
 export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
@@ -33,17 +40,18 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
         return null;
     }
 
-    // This feels like a bit of a hack, but I'm not sure what we want to do.
-    // Note that strictly, we're just looking for something starting with an h1,
-    // which could be something other than the title.
-    const titleIfDocDoesNotSeemToHaveOne =
-        page.markdownBody && !page.markdownBody.startsWith("#") ? (
-            <h1>{page.label}</h1>
-        ) : undefined;
+    const titleElementIfWanted = page.hideTitle ? undefined : (
+        <h1>{page.label}</h1>
+    );
 
     const innards = (
-        <div className={`base-contentful-page contentful-page ${props.urlKey}`}>
-            {titleIfDocDoesNotSeemToHaveOne}
+        <div
+            className={`base-contentful-page contentful-page ${props.urlKey}`}
+            css={css`
+                ${page.css}
+            `}
+        >
+            {titleElementIfWanted}
 
             {/* Insert our custom components when the markdown has HTML that calls for them */}
             {/* Could not get this to compile <Markdown> {markdownContent} </Markdown> */}
@@ -56,11 +64,22 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
         </div>
     );
 
-    return (
-        <Container maxWidth="md">
+    // "about" has a more challenging layout with background colors that look bad
+    // if enclosed in a container that adds whitespace on the sides. Instead,
+    // the color has to be edge-to-edge. If we did more of this, then we could
+    // introduce some kind of layout field, but for now, yagni.
+    if (props.urlKey === "about") {
+        return (
             <ThemeForLocation urlKey={props.urlKey}>{innards}</ThemeForLocation>
-        </Container>
-    );
+        );
+    } else
+        return (
+            <Container maxWidth="md">
+                <ThemeForLocation urlKey={props.urlKey}>
+                    {innards}
+                </ThemeForLocation>
+            </Container>
+        );
 };
 
 export function useContentfulPage(
@@ -84,10 +103,12 @@ export function useContentfulPage(
     if (!p) {
         return undefined;
     }
+
     return {
         urlKey: p.fields.urlKey,
         label: p.fields.label,
         markdownBody: p.fields.markdownBody,
+        hideTitle: p.fields.hideTitle || false,
         fields: p.fields,
         // the following are used when we are showing a "story card" (like for blog posts)
         cardImage: p.fields.iconForCardAndDefaultBanner
@@ -97,5 +118,6 @@ export function useContentfulPage(
             : undefined,
         excerpt: p.fields.excerpt,
         category: p.fields.category,
+        css: p.fields.css,
     };
 }

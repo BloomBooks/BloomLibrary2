@@ -10,17 +10,17 @@ import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
 import { FeatureLevelBar } from "./FeatureLevelBar";
 import { LanguageFeatureList } from "./LanguageFeatureList";
 import { Book, getBestBookTitle } from "../model/Book";
-
-import TruncateMarkup from "react-truncate-markup";
 import { useIntl } from "react-intl";
 import { useResponsiveChoice } from "../responsiveUtilities";
-import { ICardSpec } from "./RowOfCards";
+import { ICardSpec, useBaseCardSpec } from "./RowOfCards";
+import { SmartTruncateMarkup } from "./SmartTruncateMarkup";
 
 export function useBookCardSpec(): ICardSpec {
     const getResponsiveChoice = useResponsiveChoice();
     return {
         cardWidthPx: getResponsiveChoice(100, 140) as number,
         cardHeightPx: getResponsiveChoice(160, 190) as number,
+        cardSpacingPx: useBaseCardSpec().cardSpacingPx,
     };
 }
 
@@ -157,16 +157,9 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                 {/* For most titles, we don't want to pay the cost of checking the length and using this
                 truncation component. By experiment, we found that 30 characters causes some false positives
                 but not many, and no false negatives so far. */}
-                {title.length < 30 ? (
-                    title
-                ) : (
-                    <TruncateMarkup
-                        // test false positives css={css`color: red;`}
-                        lines={2}
-                    >
-                        <span>{title}</span>
-                    </TruncateMarkup>
-                )}
+                <SmartTruncateMarkup condition={title.length >= 30} lines={2}>
+                    <span>{title}</span>
+                </SmartTruncateMarkup>
             </div>
             <LanguageFeatureList basicBookInfo={props.basicBookInfo} />
         </CheapCard>

@@ -36,6 +36,7 @@ import FormControl from "@material-ui/core/FormControl";
 import { ScreenOptionsSelect } from "./ScreenOptionsSelect";
 import { useGetLocalizedCollectionLabel } from "../../localization/CollectionLabel";
 import { ICollectionStatsPageProps } from "./CollectionStatsPageCodeSplit";
+import { PageNotFound } from "../PageNotFound";
 
 export const Pretend: React.FunctionComponent<IStatsProps> = (props) => {
     return <h1>Pretend</h1>;
@@ -144,14 +145,7 @@ export const CollectionStatsPage: React.FunctionComponent<ICollectionStatsPagePr
     if (loading) return null;
 
     if (!collection) {
-        return (
-            <div>
-                <FormattedMessage
-                    id="error.collectionNotFound"
-                    defaultMessage="Collection not found"
-                />
-            </div>
-        );
+        return <PageNotFound />;
     }
     const kSideMarginPx = 20;
     return (

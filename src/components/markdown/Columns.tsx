@@ -1,7 +1,3 @@
-// Provide multiple columns within an outer block using flex.
-// flex-grow and flex-basis are used to control the relative widths of the columns.
-// The default is equal-width columns as much as possible depending on content.
-
 // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
 import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
@@ -10,14 +6,17 @@ import { jsx } from "@emotion/core";
 
 import * as React from "react";
 
-export const Columns: React.FunctionComponent<{}> = (props) => {
+// Provide multiple columns within an outer block using flex.
+export const Columns: React.FunctionComponent<{ className?: string }> = (
+    props
+) => {
     return (
         <div
-            className="multiple-column-container"
+            className={props.className || "columns"}
             css={css`
                 display: flex;
                 flex-direction: row;
-                flex-wrap: nowrap;
+                flex-wrap: wrap;
                 justify-content: space-between;
                 column-gap: 2em;
                 padding-left: 1em;
@@ -29,18 +28,20 @@ export const Columns: React.FunctionComponent<{}> = (props) => {
     );
 };
 
-export interface IColumnProps extends React.HTMLAttributes<HTMLElement> {
-    flexGrow?: number; // optional value
-}
-
-export const Column: React.FunctionComponent<IColumnProps> = (props) => {
+export const Column: React.FunctionComponent<{ className?: string }> = (
+    props
+) => {
     // Every column starts at 1%, then grows proportionally to flex-grow
     // Without setting flex-basis, flex-grow seems to have little effect.
     return (
         <div
+            className={props.className || "column"}
             css={css`
-                flex-grow: ${props.flexGrow ? props.flexGrow : 1};
+                flex-grow: 1;
                 flex-basis: 1%;
+                // if you change this, remember to check the about page,
+                // Services section, and see how it changes with various screen widths.
+                min-width: 200px;
             `}
         >
             {props.children}

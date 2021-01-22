@@ -19,6 +19,7 @@ import { commonUI } from "../../theme";
 import { ReaderSessionsChart } from "./ReaderSessionsChart";
 import { IComprehensionQuestionData } from "./ComprehensionQuestionsReport";
 import { IStatsProps, IDailyBookStat } from "./Definitions";
+import { PageNotFound } from "../PageNotFound";
 
 // Most or all of this code is not currently used. We may resurrect it if we decide to more
 // closely emulate the old Guatemala/RISE dashboard.
@@ -229,7 +230,7 @@ export const DataStudioDashboardScreen: React.FunctionComponent<IStatsProps> = (
     }
 
     if (!collection) {
-        return <div>Collection not found</div>;
+        return <PageNotFound/>;
     }
 
     const backColor = "#333";

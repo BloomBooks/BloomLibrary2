@@ -15,7 +15,6 @@ import { ContentfulBanner } from "./banners/ContentfulBanner";
 import { CollectionPage } from "./CollectionPage";
 import { Footer } from "./Footer";
 import { ContentfulPage } from "./pages/ContentfulPage";
-import { ContentfulMultiPartPage } from "./pages/ContentfulMultiPartPage";
 import { getDummyCollectionForPreview } from "../model/Collections";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { IEmbedSettings } from "../model/ContentInterfaces";
@@ -46,25 +45,37 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         return <TestEmbeddingPage code={match.params.code} />;
                     }}
                 ></Route>
-                {/* Alias from legacy blorg */}
-                <Route path={"/browse"}>
-                    <Redirect to="/create" />
-                </Route>
-                {/* One of the links from BloomDesktop goes here */}
-                <Route path={"/books"}>
-                    <Redirect to="/create" />
+                <Route
+                    exact
+                    path={[
+                        "/browse", // Alias from legacy blorg
+                        "/books", // One of the links from BloomDesktop goes here
+                    ]}
+                >
+                    <Redirect to="/" />
                 </Route>
                 <Route
+                    exact
                     path={[
+                        "/download", // Alias from legacy blorg
                         "/downloads", // Alias for convenience when telling people where to get Bloom
                         "/installers", // Alias from legacy blorg
                     ]}
                 >
                     <Redirect to="/page/create/downloads" />
                 </Route>
-                <Route path={"/page/create/about"}>
-                    <ContentfulMultiPartPage urlKey="new-about" />
-                </Route>
+                {/* Alias from legacy blorg */}
+                <Redirect from={"/browse/detail/:id"} to="/book/:id" />
+                {/* Alias from legacy blorg */}
+                <Redirect from={"/readBook/:id"} to="/player/:id" />
+                {/* Alias from legacy blorg */}
+                <Redirect from={"/about"} to="/page/create/about" />
+                {/* Alias from legacy blorg */}
+                <Redirect
+                    from={"/bloom-reader-privacy-policy"}
+                    to="/page/create/bloom-reader-privacy-policy"
+                />
+
                 <Route
                     path={[
                         "/artofreading", // We have published this link in various places (like the WeSay page)
@@ -114,9 +125,6 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         return <ReleaseNotes channel={match.params.channel} />;
                     }}
                 />
-                <Route path="/about">
-                    <ContentfulMultiPartPage urlKey="new-about" />
-                </Route>
                 <Route
                     path="/grid/:filter*"
                     render={({ match }) => {
@@ -135,6 +143,14 @@ export const Routes: React.FunctionComponent<{}> = () => {
                 />
                 <Route
                     path="/page/:breadcrumbs*/:pageName"
+                    render={({ match }) => {
+                        return (
+                            <ContentfulPage urlKey={match.params.pageName} />
+                        );
+                    }}
+                />
+                <Route
+                    path="/_preview/page/:pageName"
                     render={({ match }) => {
                         return (
                             <ContentfulPage urlKey={match.params.pageName} />

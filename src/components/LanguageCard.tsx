@@ -11,13 +11,15 @@ import { commonUI } from "../theme";
 import { useResponsiveChoice } from "../responsiveUtilities";
 import { FormattedMessage } from "react-intl";
 import TruncateMarkup from "react-truncate-markup";
-import { ICardSpec } from "./RowOfCards";
+import { ICardSpec, useBaseCardSpec } from "./RowOfCards";
+import { SmartTruncateMarkup } from "./SmartTruncateMarkup";
 
 export function useLanguageCardSpecs(): ICardSpec {
     const getResponsiveChoice = useResponsiveChoice();
     return {
         cardWidthPx: getResponsiveChoice(100, 150) as number,
         cardHeightPx: getResponsiveChoice(90, 125) as number,
+        cardSpacingPx: useBaseCardSpec().cardSpacingPx,
     };
 }
 
@@ -72,12 +74,12 @@ export const LanguageCard: React.FunctionComponent<
                         line-height: 1em;
                     `}
                 >
-                    {/* in small mode didn't work, allowed 3 lines <TruncateMarkup lines={2}>
-                    I think the rare 3 line cases (search for "x-") look ok.
-
+                    <SmartTruncateMarkup
+                        condition={(secondary ?? "").length >= 18}
+                        lines={2}
+                    >
                         <span>{secondary}</span>
-                    </TruncateMarkup> */}
-                    {secondary}
+                    </SmartTruncateMarkup>
                 </div>
             </div>
             <h2
@@ -99,14 +101,8 @@ export const LanguageCard: React.FunctionComponent<
             <div
                 css={css`
                     font-size: ${getResponsiveChoice(10, 14)}px;
-
                     position: absolute;
-                    // TODO: our layout approach for collectionCard and
-                    // LanguageCard differ. This "bottom" is actually off the
-                    // bottom of the visible card boundary PLUS its bottom
-                    // margin.
-                    bottom: ${commonUI.paddingForCollectionAndLanguageCardsPx +
-                    4}px;
+                    bottom: 4px;
                 `}
             >
                 {props.usageCount ? (
