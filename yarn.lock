@@ -5209,9 +5209,9 @@ bl@^1.0.0:
     safe-buffer "^5.1.1"
 
 bloom-player@^2.0.33:
-  version "2.0.34"
-  resolved "https://registry.yarnpkg.com/bloom-player/-/bloom-player-2.0.34.tgz#040c64af5b8b3ab549a7474f1fee016dc5c525d4"
-  integrity sha512-OPqQdvpIKJjHXCR7yrreT3SgR5+8Puc+Nl/a9YdZY5WDVJUVS391uFjgJAeWeNXtcsYxImb0Ft6aJ/6QecuUJw==
+  version "2.0.39"
+  resolved "https://registry.yarnpkg.com/bloom-player/-/bloom-player-2.0.39.tgz#7db237dfcc73aae03f7f61969a237f148b717668"
+  integrity sha512-kS0iA7H2n0gYjCCvxlLP9OYPRBE3CNekDVOZhTLOfGAh3fp8MgECwB1GsUUnr98ngAO6Px/2cZZgNTyPMnGf+g==
   dependencies:
     dynamic-import-polyfill "^0.1.1"
     jquery.nicescroll "^3.7.6"

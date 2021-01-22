@@ -1,8 +1,8 @@
-import React, { Fragment } from "react";
-
+import React from "react";
 import { storiesOf, addDecorator } from "@storybook/react";
 import { withKnobs, boolean } from "@storybook/addon-knobs";
 
+import { LocalizationProvider } from "../localization/LocalizationProvider";
 import { BookCard } from "../components/BookCard";
 import { BookGroup } from "../components/BookGroup";
 import { LanguageGroup } from "../components/LanguageGroup";
@@ -17,11 +17,17 @@ import theme from "../theme";
 import { ReadBookPageCodeSplit } from "../components/ReadBookPageCodeSplit";
 import { ConfirmationDialog } from "../components/ConfirmationDialog";
 import { ArtifactType } from "../model/Book";
+import { BrowserRouter as Router } from "react-router-dom";
+import { BloomPubIcon } from "../components/BookDetail/BloomPubIcon";
 
 addDecorator(withKnobs);
 addDecorator((storyFn) => (
+    <LocalizationProvider>{storyFn()}</LocalizationProvider>
+));
+addDecorator((storyFn) => (
     <ThemeProvider theme={theme}>{storyFn()}</ThemeProvider>
 ));
+addDecorator((storyFn) => <Router>{storyFn()}</Router>);
 const sampleUrl =
     "https://s3.amazonaws.com/BloomLibraryBooks/librarian%40bloomlibrary.org%2f32916f6b-02bd-4e0b-9b2b-d971096259b7%2fGrandpa+Fish+and+the+Radio%2f";
 
@@ -173,6 +179,12 @@ storiesOf("Components", module)
                 uploading it again.
             </ConfirmationDialog>
         );
+    })
+    .add("BloomPubIcon -- unfilled", () => {
+        return <BloomPubIcon></BloomPubIcon>;
+    })
+    .add("BloomPubIcon -- Bloom blue filled", () => {
+        return <BloomPubIcon fill={"#1d94a4"}></BloomPubIcon>;
     });
 
 const triStateBooleanOptions = [undefined, false, true];

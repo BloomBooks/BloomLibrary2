@@ -70,6 +70,11 @@ export const Routes: React.FunctionComponent<{}> = () => {
                 <Redirect from={"/readBook/:id"} to="/player/:id" />
                 {/* Alias from legacy blorg */}
                 <Redirect from={"/about"} to="/page/create/about" />
+                {/* Alias from legacy blorg */}
+                <Redirect
+                    from={"/bloom-reader-privacy-policy"}
+                    to="/page/create/bloom-reader-privacy-policy"
+                />
 
                 <Route
                     path={[
