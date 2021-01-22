@@ -20,6 +20,7 @@ export const commonUI = {
     // Some of these aren't very global, but this is a convenient place to put
     // constants shared by various components to keep them consistent
     paddingForCollectionAndLanguageCardsPx: 10,
+    paddingForSmallCollectionAndLanguageCardsPx: 6,
 
     detailViewMargin: "1em",
     detailViewMainButtonWidth: "250px",
