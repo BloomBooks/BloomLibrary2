@@ -59,49 +59,6 @@ a:hover {
     color: white;
 }
 
-/* we don't want to see a grey'd "back" or "next button"; just don't show it */
-.swiper-button-disabled {
-    visibility: hidden;
-}
-
-/* Make the buttons the same height as the cards so clicking above or
-    below the buttons performs the next/previous action */
-.swiper-button-next {
-    right: 0;
-}
-.swiper-button-prev {
-    left: 0;
-}
-.swiper-button {
-    /* just makes the svg gray (#828282)*/
-    filter: invert(57%) sepia(0%) saturate(213%) hue-rotate(175deg)
-        brightness(90%) contrast(81%);
-    padding-left: 10px;
-    padding-right: 10px;
-    margin-top: 0;
-    height: 100%;
-    top: 0;
-}
-
-/* hide the scroll buttons except for the row that has the pointer */
-/* This is here instead of CardSwiper because the react component Swiper that we would have liked
-to apply it to does not support our inline css */
-.swiper-container:not(:hover) .swiper-button {
-    display: none;
-}
-
-/* Rules applying to ContentfulPage AND ContentfulMultiPartPage. */
-.base-contentful-page {
-    /* max-width: 800px; /* TODO this need to vary by screen width
-    margin-left: auto;
-    margin-right: auto; */
-    margin-bottom: 2em;
-}
-
-.base-contentful-page h1 {
-    font-size: 2rem;
-}
-
 /* Rules applying only to ContentfulMultiPartPage. */
 .multipart-contentful-page > div {
     display: flex;

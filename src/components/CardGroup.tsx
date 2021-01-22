@@ -24,7 +24,6 @@ interface IProps {
 
 export const CardGroup: React.FunctionComponent<IProps> = (props) => {
     const getResponsiveChoice = useResponsiveChoice();
-    //const rowHeight = getResponsiveChoice(130, 258) as number; // review:
     //tricky to test because it's for lazy loading
     const rowHeightPx = getResponsiveChoice(
         props.cardSpec.cardHeightPx + 10,
@@ -97,7 +96,7 @@ export const CardGroup: React.FunctionComponent<IProps> = (props) => {
         >
             <li
                 css={css`
-                    margin-top: ${getResponsiveChoice(15, 30)}px;
+                    margin-top: ${getResponsiveChoice(15, 20)}px;
                 `}
                 role="region"
                 aria-label={collectionLabel}

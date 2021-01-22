@@ -1,7 +1,12 @@
+import css from "@emotion/css/macro";
 import React from "react"; // see https://github.com/emotion-js/emotion/issues/1156
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { ThemeForLocation } from "./ThemeForLocation";
-import { BlorgMarkdown } from "../BlorgMarkdown";
+import { BlorgMarkdown } from "../markdown/BlorgMarkdown";
 import Container from "@material-ui/core/Container";
 import { convertContentfulMediaToIMedia } from "../../model/Contentful";
 import { IMedia } from "../../model/ContentInterfaces";
@@ -23,6 +28,7 @@ export interface IContentfulPage {
     // NB: purposefully missing here are "body" and "parts" which are probably going away.
     // For now, those can be accessed via the raw fields tag
     fields: any;
+    css?: string;
 }
 
 export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
@@ -37,12 +43,19 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
     // Note that strictly, we're just looking for something starting with an h1,
     // which could be something other than the title.
     const titleIfDocDoesNotSeemToHaveOne =
-        page.markdownBody && !page.markdownBody.startsWith("#") ? (
+        page.markdownBody &&
+        !page.markdownBody.startsWith("#") &&
+        page.label ? (
             <h1>{page.label}</h1>
         ) : undefined;
 
     const innards = (
-        <div className={`base-contentful-page contentful-page ${props.urlKey}`}>
+        <div
+            className={`base-contentful-page contentful-page ${props.urlKey}`}
+            css={css`
+                ${page.css}
+            `}
+        >
             {titleIfDocDoesNotSeemToHaveOne}
 
             {/* Insert our custom components when the markdown has HTML that calls for them */}
@@ -56,11 +69,22 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
         </div>
     );
 
-    return (
-        <Container maxWidth="md">
+    // "about" has a more challenging layout with background colors that look bad
+    // if enclosed in a container that adds whitespace on the sides. Instead,
+    // the color has to be edge-to-edge. If we did more of this, then we could
+    // introduce some kind of layout field, but for now, yagni.
+    if (props.urlKey === "about") {
+        return (
             <ThemeForLocation urlKey={props.urlKey}>{innards}</ThemeForLocation>
-        </Container>
-    );
+        );
+    } else
+        return (
+            <Container maxWidth="md">
+                <ThemeForLocation urlKey={props.urlKey}>
+                    {innards}
+                </ThemeForLocation>
+            </Container>
+        );
 };
 
 export function useContentfulPage(
@@ -84,6 +108,7 @@ export function useContentfulPage(
     if (!p) {
         return undefined;
     }
+
     return {
         urlKey: p.fields.urlKey,
         label: p.fields.label,
@@ -97,5 +122,6 @@ export function useContentfulPage(
             : undefined,
         excerpt: p.fields.excerpt,
         category: p.fields.category,
+        css: p.fields.css,
     };
 }
