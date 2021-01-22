@@ -8,7 +8,7 @@ import React from "react";
 import { ThemeForLocation } from "./pages/ThemeForLocation";
 import Container from "@material-ui/core/Container";
 import useAxios from "@use-hooks/axios";
-import { BlorgMarkdown } from "./BlorgMarkdown";
+import { BlorgMarkdown } from "./markdown/BlorgMarkdown";
 import { FormattedMessage } from "react-intl";
 
 export const ReleaseNotes: React.FunctionComponent<{ channel: string }> = (

@@ -6,15 +6,17 @@ import { jsx } from "@emotion/core";
 
 import React from "react";
 import Markdown from "markdown-to-jsx";
-import { BloomReaderVersionNumber } from "./BloomReaderVersionNumber";
+import { BloomReaderVersionNumber } from "../BloomReaderVersionNumber";
 import { WindowsInstallerDownload } from "./WindowsInstallerDownload";
 import { WindowsInstallerLink } from "./WindowsInstallerLink";
 import { Feature, FeatureGroup, FeatureMatrix } from "./FeatureMatrix";
-import { BlorgLink } from "./BlorgLink";
-import { ColoredBlock } from "./ColoredBlock";
+import { BlorgLink } from "../BlorgLink";
+import { Section } from "./Section";
 import { Testimonial } from "./Testimonial";
-import { Attribution } from "./Attribution";
+import { Vimeo } from "./Vimeo";
 import { Columns, Column } from "./Columns";
+import { Button } from "./Button";
+import { ContentfulImage, StoryImage } from "./ContentfulImage";
 
 export enum TwoColumn {
     leftColumn,
@@ -36,29 +38,19 @@ export const BlorgMarkdown: React.FunctionComponent<{
             FeatureMatrix,
             Feature,
             FeatureGroup,
-            ColoredBlock,
+            Section,
             Testimonial,
-            Attribution,
             Columns,
             Column,
+            Vimeo,
+            Button,
+            Image: ContentfulImage,
+            StoryImage,
         },
     };
 
     return (
         <div
-            css={css`
-                img {
-                    // prevent images in stories from being wider than the container
-                    max-width: 100%;
-                    // Conceivably these rules should only apply to stories? If they start to
-                    // mess up other kinds of pages, then we can deal with that.
-                    margin-top: 14px;
-                    margin-bottom: 14px;
-                    display: block; // makes the following centering rules work
-                    margin-left: auto;
-                    margin-right: auto;
-                }
-            `}
             className={`contentful-markdown-part ${
                 props.column === TwoColumn.rightColumn ? "rightColumn" : ""
             }`}

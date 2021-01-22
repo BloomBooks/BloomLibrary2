@@ -12,13 +12,13 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-import { commonUI } from "../theme";
+import { commonUI } from "../../theme";
 import IconButton from "@material-ui/core/IconButton";
 import Check from "@material-ui/icons/Check";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import Collapse from "@material-ui/core/Collapse";
-import { useResponsiveChoice } from "../responsiveUtilities";
+import { useResponsiveChoice } from "../../responsiveUtilities";
 
 const backgroundColor = "white";
 const headerColor = commonUI.colors.createAreaTextOnWhite;

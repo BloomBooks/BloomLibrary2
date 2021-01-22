@@ -8,7 +8,7 @@ import { documentToReactComponents } from "@contentful/rich-text-react-renderer"
 import { ICollection, IBanner } from "../../model/ContentInterfaces";
 import { ButtonRow } from "../ButtonRow";
 import { CollectionLabel } from "../../localization/CollectionLabel";
-import { BlorgMarkdown } from "../BlorgMarkdown";
+import { BlorgMarkdown } from "../markdown/BlorgMarkdown";
 import { useIntl } from "react-intl";
 
 export const Blurb: React.FunctionComponent<{

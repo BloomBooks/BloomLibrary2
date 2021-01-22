@@ -7,7 +7,7 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import useAxios from "@use-hooks/axios";
 import { getInstallerInfo } from "./WindowsInstallerDownload";
-import { BlorgLink } from "./BlorgLink";
+import { BlorgLink } from "../BlorgLink";
 export const WindowsInstallerLink: React.FunctionComponent<{
     channel: string;
 }> = (props) => {

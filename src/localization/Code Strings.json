@@ -119,10 +119,6 @@
         "description": "",
         "message": "We could not find any book with languages matching {searchString}"
     },
-    "error.collectionNotFound": {
-        "description": "",
-        "message": "Collection not found"
-    },
     "error.pageNotFound": {
         "description": "",
         "message": "We can't seem to find the page you're looking for."
@@ -393,5 +389,8 @@
     "downloadShellbook.tryAgain": {
         "message": "Try downloading it again",
         "description": "Text for a button on the download shellbook dialog."
+    },
+    "download.beta": {
+        "message": "Download Beta"
     }
 }
