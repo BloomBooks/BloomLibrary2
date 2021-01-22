@@ -7,8 +7,8 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import Button from "@material-ui/core/Button";
 import useAxios, { IReturns } from "@use-hooks/axios";
-import { commonUI } from "../theme";
-import { BlorgLink } from "./BlorgLink";
+import { commonUI } from "../../theme";
+import { BlorgLink } from "../BlorgLink";
 import { FormattedMessage } from "react-intl";
 export const WindowsInstallerDownload: React.FunctionComponent<{
     channel: string;
