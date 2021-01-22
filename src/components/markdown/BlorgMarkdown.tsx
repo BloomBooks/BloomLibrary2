@@ -10,6 +10,7 @@ import { Testimonial } from "./Testimonial";
 import { Vimeo } from "./Vimeo";
 import { Columns, Column } from "./Columns";
 import { Button } from "./Button";
+import { AllBloomInstallers } from "./AllBloomInstallers";
 import { ContentfulImage, StoryImage } from "./ContentfulImage";
 
 export enum TwoColumn {
@@ -40,6 +41,7 @@ export const BlorgMarkdown: React.FunctionComponent<{
             Button,
             Image: ContentfulImage,
             StoryImage,
+            AllBloomInstallers,
         },
     };
 
