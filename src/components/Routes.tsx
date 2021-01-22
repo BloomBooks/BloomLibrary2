@@ -15,7 +15,6 @@ import { ContentfulBanner } from "./banners/ContentfulBanner";
 import { CollectionPage } from "./CollectionPage";
 import { Footer } from "./Footer";
 import { ContentfulPage } from "./pages/ContentfulPage";
-import { ContentfulMultiPartPage } from "./pages/ContentfulMultiPartPage";
 import { getDummyCollectionForPreview } from "../model/Collections";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { IEmbedSettings } from "../model/ContentInterfaces";
@@ -69,10 +68,14 @@ export const Routes: React.FunctionComponent<{}> = () => {
                 <Redirect from={"/browse/detail/:id"} to="/book/:id" />
                 {/* Alias from legacy blorg */}
                 <Redirect from={"/readBook/:id"} to="/player/:id" />
+                {/* Alias from legacy blorg */}
+                <Redirect from={"/about"} to="/page/create/about" />
+                {/* Alias from legacy blorg */}
+                <Redirect
+                    from={"/bloom-reader-privacy-policy"}
+                    to="/page/create/bloom-reader-privacy-policy"
+                />
 
-                <Route path={"/page/create/about"}>
-                    <ContentfulMultiPartPage urlKey="new-about" />
-                </Route>
                 <Route
                     path={[
                         "/artofreading", // We have published this link in various places (like the WeSay page)
@@ -122,9 +125,6 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         return <ReleaseNotes channel={match.params.channel} />;
                     }}
                 />
-                <Route path="/about">
-                    <ContentfulMultiPartPage urlKey="new-about" />
-                </Route>
                 <Route
                     path="/grid/:filter*"
                     render={({ match }) => {

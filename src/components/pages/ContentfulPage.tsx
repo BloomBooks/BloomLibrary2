@@ -17,6 +17,7 @@ export interface IContentfulPage {
     // The text label we show on the card
     label: string;
     markdownBody: string;
+    hideTitle: boolean;
 
     // A sentence that is shown when we're showing a story card
     excerpt?: string;
@@ -39,15 +40,9 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
         return null;
     }
 
-    // This feels like a bit of a hack, but I'm not sure what we want to do.
-    // Note that strictly, we're just looking for something starting with an h1,
-    // which could be something other than the title.
-    const titleIfDocDoesNotSeemToHaveOne =
-        page.markdownBody &&
-        !page.markdownBody.startsWith("#") &&
-        page.label ? (
-            <h1>{page.label}</h1>
-        ) : undefined;
+    const titleElementIfWanted = page.hideTitle ? undefined : (
+        <h1>{page.label}</h1>
+    );
 
     const innards = (
         <div
@@ -56,7 +51,7 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
                 ${page.css}
             `}
         >
-            {titleIfDocDoesNotSeemToHaveOne}
+            {titleElementIfWanted}
 
             {/* Insert our custom components when the markdown has HTML that calls for them */}
             {/* Could not get this to compile <Markdown> {markdownContent} </Markdown> */}
@@ -113,6 +108,7 @@ export function useContentfulPage(
         urlKey: p.fields.urlKey,
         label: p.fields.label,
         markdownBody: p.fields.markdownBody,
+        hideTitle: p.fields.hideTitle || false,
         fields: p.fields,
         // the following are used when we are showing a "story card" (like for blog posts)
         cardImage: p.fields.iconForCardAndDefaultBanner

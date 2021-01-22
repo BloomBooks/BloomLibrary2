@@ -20,7 +20,7 @@ export const Vimeo: React.FunctionComponent<{
             `}
         >
             <iframe
-                src={`https://player.vimeo.com/video/${props.id}?title=0&byline=0&portrait=0&autoplay=1`}
+                src={`https://player.vimeo.com/video/${props.id}?title=0&byline=0&portrait=0&autoplay=0`}
                 css={css`
                     position: absolute;
                     top: 0;
