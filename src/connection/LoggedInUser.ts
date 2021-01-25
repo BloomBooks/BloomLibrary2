@@ -1,11 +1,12 @@
-import { observable, makeObservable } from "mobx";
-import { useObserver } from "mobx-react-lite";
+import { observable, makeObservable, autorun } from "mobx";
+import { useState } from "react";
+
 // This is currently just a subset of what ParseServer returns,
 // so don't go renaming anything
 export class User {
     constructor(userRecord: any) {
         makeObservable(this, {
-            moderator: observable
+            moderator: observable,
         });
 
         this.objectId = userRecord.objectId;
@@ -27,12 +28,22 @@ class UserHolder {
 
     constructor() {
         makeObservable(this, {
-            current: observable
+            current: observable,
         });
     }
 }
 export const LoggedInUser: UserHolder = new UserHolder();
 
+// We want this to return the LoggedInUser.current, as currently observed...
+// causing whatever calls this to re-render when the user changes.
+// Previously done with mobx useObserver, which looked much simpler, but is
+// now deprecated, this seems to be the best available replacement.
 export function useGetLoggedInUser(): User | undefined {
-    return useObserver(() => LoggedInUser.current);
+    const [user, setUser] = useState(LoggedInUser.current);
+    autorun(() => {
+        if (LoggedInUser.current !== user) {
+            setUser(LoggedInUser.current);
+        }
+    });
+    return user;
 }
