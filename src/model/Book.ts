@@ -1,4 +1,4 @@
-import { observable } from "mobx";
+import { observable, makeObservable } from "mobx";
 import {
     updateBook,
     retrieveCurrentBookData,
@@ -75,28 +75,27 @@ export class Book {
     public brandingProjectName = "";
 
     // things that can be edited on the site are observable so that the rest of the UI will update if they are changed.
-    @observable public title: string = "";
-    @observable public summary: string = "";
-    @observable public tags: string[] = [];
-    @observable public level: string = "";
-    @observable public librarianNote: string = "";
-    @observable public inCirculation: boolean = true;
-    @observable public publisher: string = "";
-    @observable public originalPublisher: string = "";
-    @observable public features: string[] = [];
-    @observable public bookshelves: string[] = [];
-    @observable public edition: string = "";
+    public title: string = "";
+    public summary: string = "";
+    public tags: string[] = [];
+    public level: string = "";
+    public librarianNote: string = "";
+    public inCirculation: boolean = true;
+    public publisher: string = "";
+    public originalPublisher: string = "";
+    public features: string[] = [];
+    public bookshelves: string[] = [];
+    public edition: string = "";
 
     // This scalar string format is easier for the user/UI to modify,
     // but in the database, we store it as an array of strings instead
     // StaffPanel component observes this
-    @observable public keywordsText: string = "";
+    public keywordsText: string = "";
 
     // KeywordLinks component observes this
-    @observable public keywords: string[] = [];
+    public keywords: string[] = [];
     public keywordStems: string[] = [];
 
-    @observable
     public artifactsToOfferToUsers: ArtifactVisibilitySettingsGroup = new ArtifactVisibilitySettingsGroup();
     public uploader: { username: string } | undefined;
     // this is the raw ISO date we get from the query. These dates are automatically included
@@ -114,6 +113,25 @@ export class Book {
     public ePUBVisible: boolean = false;
 
     public languages: ILanguage[] = [];
+
+    constructor() {
+        makeObservable(this, {
+            title: observable,
+            summary: observable,
+            tags: observable,
+            level: observable,
+            librarianNote: observable,
+            inCirculation: observable,
+            publisher: observable,
+            originalPublisher: observable,
+            features: observable,
+            bookshelves: observable,
+            edition: observable,
+            keywordsText: observable,
+            keywords: observable,
+            artifactsToOfferToUsers: observable
+        });
+    }
 
     public getHarvestLog() {
         // enhance: what does it mean if there are multiple items? Is only the last still true?
