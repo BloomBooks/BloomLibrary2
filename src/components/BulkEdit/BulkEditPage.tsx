@@ -7,7 +7,7 @@ import { jsx } from "@emotion/core";
 import React, { useState } from "react";
 import { GridControl } from "../Grid/GridControl";
 import { IFilter } from "../../IFilter";
-import { observable } from "mobx";
+import { observable, makeObservable } from "mobx";
 import { AssignPublisherPanel } from "./AssignPublisherPanel";
 import { Filter as GridFilter } from "@devexpress/dx-react-grid";
 import { AddTagPanel } from "./AddTagPanel";
@@ -75,9 +75,14 @@ const BulkEditPage: React.FunctionComponent<IBulkEditPageProps> = (props) => {
 // To work around this, we keep the state *outside* of BulkEditPage, and let any of its children that need
 // to know the current filter instead subscribe to it using mobx.observer.
 export class FilterHolder {
-    @observable
     public completeFilter: IFilter = {}; //includes the search box
     public gridColumnFilters: GridFilter[] = []; //just the filters from the headers of the columns
+
+    constructor() {
+        makeObservable(this, {
+            completeFilter: observable
+        });
+    }
 }
 const staticCurrentFilter: FilterHolder = new FilterHolder();
 

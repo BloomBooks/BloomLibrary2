@@ -1,18 +1,25 @@
-import { observable, computed } from "mobx";
+import { observable, computed, makeObservable } from "mobx";
 import { Book } from "../model/Book";
 import { IntlShape } from "react-intl";
 
 // This is related to the "show" column on book in ParseServer
 export class ArtifactVisibilitySettings {
-    @observable public harvester: boolean | undefined;
-    @observable public librarian: boolean | undefined;
-    @observable public user: boolean | undefined;
+    public harvester: boolean | undefined;
+    public librarian: boolean | undefined;
+    public user: boolean | undefined;
 
     constructor(
         harvester?: boolean | undefined,
         librarian?: boolean | undefined,
         user?: boolean | undefined
     ) {
+        makeObservable(this, {
+            harvester: observable,
+            librarian: observable,
+            user: observable,
+            decision: computed
+        });
+
         this.harvester = harvester;
         this.librarian = librarian;
         this.user = user;
@@ -100,7 +107,7 @@ export class ArtifactVisibilitySettings {
 
     // This duplicates some logic in other methods, but if we use them,
     // they probably have to be @computed too...
-    @computed public get decision(): boolean {
+    public get decision(): boolean {
         if (this.user !== undefined) {
             return this.user;
         }
@@ -133,13 +140,21 @@ export class ArtifactVisibilitySettingsGroup {
     // offer these to the user. The other three can be undefined, indicating that
     // the harvester has not created the artifacts, so there is no possibility of
     // making them available.
-    @observable
     public pdf: ArtifactVisibilitySettings = new ArtifactVisibilitySettings();
-    @observable public epub: ArtifactVisibilitySettings | undefined;
-    @observable public bloomReader: ArtifactVisibilitySettings | undefined;
-    @observable public readOnline: ArtifactVisibilitySettings | undefined;
-    @observable
+    public epub: ArtifactVisibilitySettings | undefined;
+    public bloomReader: ArtifactVisibilitySettings | undefined;
+    public readOnline: ArtifactVisibilitySettings | undefined;
     public shellbook: ArtifactVisibilitySettings = new ArtifactVisibilitySettings();
+
+    constructor() {
+        makeObservable(this, {
+            pdf: observable,
+            epub: observable,
+            bloomReader: observable,
+            readOnline: observable,
+            shellbook: observable
+        });
+    }
 
     // Make a real (observable) ArtifactVisibilitySettingsGroup
     // out of a pojo with the same basic fields, typically part of a
