@@ -18,6 +18,8 @@ export const PageNotFound: React.FunctionComponent = () => (
                 width: fit-content;
             }
             margin-top: 100px;
+            margin-left: 10px;
+            margin-right: 10px;
             font-size: 24px;
             text-align: center;
         `}
