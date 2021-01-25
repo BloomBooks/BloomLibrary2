@@ -230,7 +230,10 @@ export const CollectionCard: React.FunctionComponent<{
             css={css`
                 width: ${cardSpec.cardWidthPx}px;
                 position: relative; // so auto width of absolutely positioned child is relative to this
-                padding: ${commonUI.paddingForCollectionAndLanguageCardsPx}px;
+                padding: ${getResponsiveChoice(
+                    commonUI.paddingForSmallCollectionAndLanguageCardsPx,
+                    commonUI.paddingForCollectionAndLanguageCardsPx
+                )}px;
                 height: ${cardSpec.cardHeightPx}px;
                 justify-content: ${props.layout ===
                     CollectionCardLayout.short ||

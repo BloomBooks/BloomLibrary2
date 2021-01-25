@@ -48,7 +48,10 @@ export const LanguageCard: React.FunctionComponent<
                 width: ${cardWidthPx}px;
                 // When choosing a height, search on "x-" to see some tall ones
                 height: ${cardHeightPx}px;
-                padding: ${commonUI.paddingForCollectionAndLanguageCardsPx}px;
+                padding: ${getResponsiveChoice(
+                    commonUI.paddingForSmallCollectionAndLanguageCardsPx,
+                    commonUI.paddingForCollectionAndLanguageCardsPx
+                )}px;
             `}
             target={`/language:${props.isoCode}`}
             onClick={undefined} // we just want to follow the href, whatever might be in propsToPassDown
