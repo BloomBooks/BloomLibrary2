@@ -60,7 +60,8 @@
         "swiper": "^6.4.5",
         "title-case": "^2.1.1",
         "use-media": "^1.4.0",
-        "wink-porter2-stemmer": "^2.0.1"
+        "wink-porter2-stemmer": "^2.0.1",
+        "xml2json-light": "^1.0.6"
     },
     "eslintConfig": {
         "extends": "react-app"
