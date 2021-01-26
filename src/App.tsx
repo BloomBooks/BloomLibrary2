@@ -15,7 +15,7 @@ import { RouterContent } from "./model/RouterContent";
 import CacheProvider from "./model/CacheProvider";
 import { OSFeaturesProvider } from "./components/OSFeaturesContext";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import ScrollToTopOnNewPages from "./ScrollToTopOnNewPages";
+import ScrollToTop from "./ScrollToTop";
 export const App: React.FunctionComponent<{}> = (props) => {
     const embeddedMode = window.self !== window.top;
 
@@ -50,9 +50,8 @@ export const App: React.FunctionComponent<{}> = (props) => {
                             <OSFeaturesProvider>
                                 <UnderConstruction />
                                 <Router>
-                                    <ScrollToTopOnNewPages>
-                                        <RouterContent />
-                                    </ScrollToTopOnNewPages>
+                                    <ScrollToTop />
+                                    <RouterContent />
                                 </Router>
                             </OSFeaturesProvider>
                         </CacheProvider>
