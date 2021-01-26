@@ -1,4 +1,4 @@
-import { observable, computed, makeObservable } from "mobx";
+import { observable, computed, makeObservable, action } from "mobx";
 import { Book } from "../model/Book";
 import { IntlShape } from "react-intl";
 
@@ -17,12 +17,17 @@ export class ArtifactVisibilitySettings {
             harvester: observable,
             librarian: observable,
             user: observable,
-            decision: computed
+            setLibrarian: action,
+            decision: computed,
         });
 
         this.harvester = harvester;
         this.librarian = librarian;
         this.user = user;
+    }
+
+    public setLibrarian(isLibrarian: boolean | undefined) {
+        this.librarian = isLibrarian;
     }
 
     public isUserHide(): boolean {
@@ -152,7 +157,7 @@ export class ArtifactVisibilitySettingsGroup {
             epub: observable,
             bloomReader: observable,
             readOnline: observable,
-            shellbook: observable
+            shellbook: observable,
         });
     }
 

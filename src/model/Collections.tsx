@@ -6,7 +6,7 @@ import { convertContentfulCollectionToICollection } from "./Contentful";
 import { kTopicList } from "./ClosedVocabularies";
 import { strict as assert } from "assert";
 import { useContentful } from "../connection/UseContentful";
-import { useGetLoggedInUser } from "../connection/LoggedInUser";
+import { LoggedInUser } from "../connection/LoggedInUser";
 import { IFilter } from "../IFilter";
 import { IntlShape, useIntl } from "react-intl";
 import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
@@ -118,7 +118,7 @@ export function useGetCollection(
         cachedCollection ? "" : collectionName
     );
     const { languagesByBookCount: languages } = useContext(CachedTablesContext);
-    const user = useGetLoggedInUser(); // for collection 'my-books'
+    const user = LoggedInUser.current; // for collection 'my-books'
 
     if (cachedCollection) {
         return { loading: false, collection: cachedCollection };

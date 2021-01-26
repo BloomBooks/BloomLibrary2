@@ -68,7 +68,7 @@ export function getConnection(): IConnection {
 // one of its users. If it gets one, this establishes that this user
 // belongs to the moderator role, and that is recorded in the object.
 function checkIfUserIsModerator() {
-    LoggedInUser.current!.moderator = false; // default, unless we can verify otherwise
+    LoggedInUser.current!.setModerator(false); // default, unless we can verify otherwise
     const connection = getConnection();
     const userId = LoggedInUser.current!.objectId;
     axios
@@ -87,13 +87,7 @@ function checkIfUserIsModerator() {
         })
         .then((result) => {
             if (result.data.results.length > 0) {
-                LoggedInUser.current!.moderator = true;
-                /*
-                was trying to get mobx / useGetLoggedInUser to cause a refresh once this is known
-                const copy = LoggedInUser.current!;
-                copy.moderator = true;
-                LoggedInUser.current = copy;
-                */
+                LoggedInUser.current!.setModerator(true);
             }
         });
 }
@@ -143,7 +137,7 @@ export async function connectParseServer(
                     )
                     .then((usersResult) => {
                         if (usersResult.data.sessionToken) {
-                            LoggedInUser.current = new User(usersResult.data);
+                            LoggedInUser.setCurrent(new User(usersResult.data));
                             //Object.assign(CurrentUser, usersResult.data);
                             connection.headers["X-Parse-Session-Token"] =
                                 usersResult.data.sessionToken;
@@ -192,7 +186,7 @@ export function logout() {
         .catch((error) => console.error("While logging out, got" + error))
         .finally(() => {
             delete connection.headers["X-Parse-Session-Token"];
-            LoggedInUser.current = undefined;
+            LoggedInUser.setCurrent(undefined);
         });
 }
 

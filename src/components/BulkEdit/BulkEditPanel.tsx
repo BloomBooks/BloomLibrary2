@@ -16,8 +16,8 @@ import {
 
 import { IFilter } from "../../IFilter";
 import { observer } from "mobx-react-lite";
-import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 import { FilterHolder } from "./BulkEditPage";
+import { LoggedInUser } from "../../connection/LoggedInUser";
 
 export const BulkEditPanel: React.FunctionComponent<{
     panelLabel: string;
@@ -37,7 +37,7 @@ export const BulkEditPanel: React.FunctionComponent<{
     const [valueToSet, setValueToSet] = useState<string | undefined>("");
     const [working, setWorking] = useState(false);
     const [armed, setArmed] = useState(false);
-    const user = useGetLoggedInUser();
+    const user = LoggedInUser.current;
 
     //What we really want to say is that we want more of a filter than just incirculation, because
     // that means the operator is probably confused. It's not occurring to me how to say that, so

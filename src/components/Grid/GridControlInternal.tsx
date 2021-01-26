@@ -53,7 +53,7 @@ import { getBookGridColumnsDefinitions, IGridColumn } from "./GridColumns";
 import { useStorageState } from "react-storage-hooks";
 import { Book } from "../../model/Book";
 import StaffPanel from "../Admin/StaffPanel";
-import { useGetLoggedInUser } from "../../connection/LoggedInUser";
+import { LoggedInUser } from "../../connection/LoggedInUser";
 import { observer } from "mobx-react-lite";
 import { IGridControlProps } from "./GridControl";
 import { CachedTablesContext } from "../../model/CacheProvider";
@@ -68,7 +68,7 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
         const { languagesByBookCount: languages } = useContext(
             CachedTablesContext
         );
-        const user = useGetLoggedInUser();
+        const user = LoggedInUser.current;
         const kBooksPerGridPage = 20;
         const [gridFilters, setGridFilters] = useState<GridFilter[]>(
             props.initialGridFilters || []

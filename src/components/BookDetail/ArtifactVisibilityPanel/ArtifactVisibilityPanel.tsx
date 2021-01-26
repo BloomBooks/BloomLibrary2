@@ -52,7 +52,7 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
         if (props.currentUserIsUploader) {
             artifactSettings.user = decision;
         } else if (props.currentUserIsModerator) {
-            artifactSettings.librarian = decision;
+            artifactSettings.setLibrarian(decision);
         }
 
         book.saveArtifactVisibilityToParseServer();

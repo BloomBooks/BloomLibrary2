@@ -20,8 +20,8 @@ import bloomReaderIcon from "../../../assets/BloomPub.svg";
 import readIcon from "../../../assets/Read.svg";
 import translationIcon from "../../../assets/Translation.svg";
 import { commonUI } from "../../../theme";
-import { useGetLoggedInUser } from "../../../connection/LoggedInUser";
 import { ArtifactType } from "../../../model/Book";
+import { LoggedInUser } from "../../../connection/LoggedInUser";
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -63,7 +63,7 @@ export const ArtifactAndChoice: React.FunctionComponent<{
     currentUserIsUploader: boolean;
 }> = (props) => {
     const classes = useStyles();
-    const user = useGetLoggedInUser();
+    const user = LoggedInUser.current;
 
     const getThisPersonsChoice = (): string => {
         const decisionByThisPerson = props.currentUserIsUploader
