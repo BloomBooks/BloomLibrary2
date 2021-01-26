@@ -73,10 +73,13 @@ export const LocalizationProvider: React.FunctionComponent<{}> = (props) => {
                                             : ""
                                     }}`
                             );
-                        } else {
-                            console.info(
-                                `Missing translation for '${s.descriptor.id}' in ${languageTagWeAreUsing}`
-                            );
+                        } else if (slowerLanguageLookupToHelpErrorChecking) {
+                            // This is happening even for strings which are translated.
+                            // I haven't proven it, but I'm guessing it is getting into this code
+                            // before the translated strings file has been downloaded and parsed.
+                            // console.info(
+                            //     `Missing translation for '${s.descriptor.id}' in ${languageTagWeAreUsing}`
+                            // );
                         }
                     }
                 } else {
