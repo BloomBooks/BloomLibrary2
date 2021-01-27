@@ -49,6 +49,7 @@ export const Routes: React.FunctionComponent<{}> = () => {
                     exact
                     path={[
                         "/browse", // Alias from legacy blorg
+                        "/landing", // Alias from legacy blorg
                         "/books", // One of the links from BloomDesktop goes here
                     ]}
                 >

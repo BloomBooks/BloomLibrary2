@@ -11,7 +11,7 @@ import { useGetCollection } from "../model/Collections";
 import { splitPathname } from "./Routes";
 import { CollectionLabel } from "../localization/CollectionLabel";
 import { BlorgLink } from "./BlorgLink";
-import { useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 export const Breadcrumbs: React.FunctionComponent = () => {
     const location = useLocation();
@@ -58,7 +58,7 @@ export const Breadcrumbs: React.FunctionComponent = () => {
                 `}
                 href="/"
             >
-                Home
+                <FormattedMessage id="header.home" defaultMessage="Home" />
             </BlorgLink>
         </li>
     );
