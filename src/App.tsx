@@ -16,6 +16,12 @@ import CacheProvider from "./model/CacheProvider";
 import { OSFeaturesProvider } from "./components/OSFeaturesContext";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import ScrollToTop from "./ScrollToTop";
+import { configure } from "mobx";
+
+// Turn off "mobx" strict mode, so we can set observables without the boilerplate
+// of wrapping methods annotated as 'actions'.
+configure({ enforceActions: "never" });
+
 export const App: React.FunctionComponent<{}> = (props) => {
     const embeddedMode = window.self !== window.top;
 
