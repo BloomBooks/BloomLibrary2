@@ -48,7 +48,6 @@ export const TranslateButton: React.FunctionComponent<ITranslateButtonProps> = (
                         : commonUI.detailViewMainButtonWidth};
                     height: ${commonUI.detailViewMainButtonHeight};
                     display: flex;
-                    padding-top: 0px; /* shift it all up*/
                     float: right;
                     box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
                         0px 2px 2px 0px rgba(0, 0, 0, 0.14),
@@ -83,18 +82,16 @@ export const TranslateButton: React.FunctionComponent<ITranslateButtonProps> = (
             >
                 <div
                     css={css`
-                        display: block;
-                        padding-top: 5px;
+                        display: flex;
+                        flex-direction: column;
                     `}
                 >
-                    <p
+                    <div
                         css={css`
                             text-transform: initial;
                             font-weight: normal;
                             font-size: 14pt;
                             line-height: 1.2;
-                            margin-top: 0;
-                            margin-bottom: 0;
                         `}
                     >
                         <FormattedMessage
@@ -104,20 +101,20 @@ export const TranslateButton: React.FunctionComponent<ITranslateButtonProps> = (
                                 emphasis: (str: string) => <em>{str}</em>,
                             }}
                         />
-                    </p>
-                    <p
+                    </div>
+                    <div
                         css={css`
                             font-size: 9pt;
                             line-height: 1.1;
                             text-transform: initial;
-                            margin-top: 2px;
+                            margin-top: 5px;
                         `}
                     >
                         <FormattedMessage
                             id="book.detail.translateButton.download"
                             defaultMessage="Download into Bloom Editor"
                         />
-                    </p>
+                    </div>
                 </div>
             </Button>
             <DownloadPreflightDialog
