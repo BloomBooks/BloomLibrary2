@@ -391,6 +391,17 @@
         "description": "Text for a button on the download shellbook dialog."
     },
     "download.beta": {
-        "message": "Download Beta"
+        "message": "Download Beta",
+        "description": "Text for a button to download the beta version of the Bloom software."
+    },
+    "download.linkToReleaseNotes": {
+        "message": "What's New"
+    },
+    "download.linkToRequirements": {
+        "message": "Requirements"
+    },
+    "download.versionInfo": {
+        "message": "Version {versionNumber} {date}",
+        "description": "Describes the version of the Bloom software to be downloaded. \"versionNumber\" is the version number of Bloom, e.g. 4.8.3. \"date\" is the date that version was created, e.g. 2020-11-24."
     }
 }

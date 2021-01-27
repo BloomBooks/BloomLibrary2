@@ -76,7 +76,13 @@ export const WindowsInstallerDownload: React.FunctionComponent<{
                         margin-left: 30px;
                     `}
                 >
-                    <div>{`Version ${versionNumber} ${info.date}`}</div>
+                    <div>
+                        <FormattedMessage
+                            id="download.versionInfo"
+                            defaultMessage="Version {versionNumber} {date}"
+                            values={{ versionNumber, date: info.date }}
+                        />
+                    </div>
                     {info.releaseNotes && (
                         <div>
                             {/* Note, the info.releaseNotes actually gives us a url, but that's a pain to stuff in a url parameter
@@ -84,7 +90,10 @@ export const WindowsInstallerDownload: React.FunctionComponent<{
                             <BlorgLink
                                 href={"/create/release-notes/" + props.channel}
                             >
-                                What's New
+                                <FormattedMessage
+                                    id="download.linkToReleaseNotes"
+                                    defaultMessage="What's New"
+                                />
                             </BlorgLink>
                         </div>
                     )}
@@ -92,7 +101,10 @@ export const WindowsInstallerDownload: React.FunctionComponent<{
                         <BlorgLink
                             href={"/page/create/bloom-windows-requirements"}
                         >
-                            Requirements
+                            <FormattedMessage
+                                id="download.linkToRequirements"
+                                defaultMessage="Requirements"
+                            />
                         </BlorgLink>
                     </div>
                 </div>
