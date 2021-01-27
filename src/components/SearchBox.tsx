@@ -291,6 +291,7 @@ export const SearchBox: React.FunctionComponent<{
             <InputBase
                 css={css`
                     font-size: 1.45rem !important;
+                    width: 100%;
                 `}
                 placeholder={l10n.formatMessage({
                     id: "search.forBooks",
