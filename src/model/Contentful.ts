@@ -47,10 +47,9 @@ export function convertContentfulCollectionToICollection(
     // This is awkward as an external API name from contentful. So let's just allow "tag",
     // which matches the name on this field in the UI we present to the librarian & staff.
     // Here we rename "tag" to "otherTags"
-     if(item.fields.filter?.tag)
-    {
-         item.fields.filter.otherTags =  item.fields.filter.tag;
-         delete item.fields.filter.tag;
+    if (item.fields.filter?.tag) {
+        item.fields.filter.otherTags = item.fields.filter.tag;
+        delete item.fields.filter.tag;
     }
 
     const result: ICollection = {
@@ -63,12 +62,15 @@ export function convertContentfulCollectionToICollection(
         iconForCardAndDefaultBanner: icon,
         hideLabelOnCardAndDefaultBanner:
             item.fields.hideLabelOnCardAndDefaultBanner,
+        kind: item.fields.kind,
         childCollections: getSubCollections(item.fields.childCollections),
         bannerId,
         layout: item.fields.layout?.fields?.name || "by-topic",
         rows: item.fields.rows,
         order,
-        type: item.fields.urlKey.startsWith("http") ? "link" : item.sys.contentType.sys.id,
+        type: item.fields.urlKey.startsWith("http")
+            ? "link"
+            : item.sys.contentType.sys.id,
     };
     return result;
 }
@@ -131,8 +133,11 @@ function getSubCollections(childCollections: any[]): ICollection[] {
             .map((x: any) => {
                 // if a collection is linked to but isn't "published" yet (or has been unpublished)
                 // then it doesn't have a fields property. Just skip it.
-                return (x && x.fields)? convertContentfulCollectionToICollection(x):undefined;
-            }).filter(y=>y)
+                return x && x.fields
+                    ? convertContentfulCollectionToICollection(x)
+                    : undefined;
+            })
+            .filter((y) => y)
             //.filter((y) => y)
             .map((z) => z!)
     );
