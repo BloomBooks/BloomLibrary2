@@ -41,6 +41,7 @@ export interface ICollection {
     iconCredits?: string;
     iconAltText?: string;
     hideLabelOnCardAndDefaultBanner?: boolean;
+    kind?: string;
     childCollections: ICollection[]; // only the top level will have these
     type: "collection" | "page" | "link";
     // When the filter cannot be fully defined as simple json in a Contentful collection (interpreted by ParseServer).
