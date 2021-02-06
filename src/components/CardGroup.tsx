@@ -51,17 +51,20 @@ export const CardGroup: React.FunctionComponent<IProps> = (props) => {
         case "layout: description-followed-by-row-of-books":
             break;
         default:
+            const heading = props.collection.kind !== "Simple Page Links" && (
+                <h1
+                    css={css`
+                        font-size: ${getResponsiveChoice(10, 14)}pt;
+                    `}
+                >
+                    <CollectionLabel
+                        collection={props.collection}
+                    ></CollectionLabel>
+                </h1>
+            );
             group = (
                 <React.Fragment>
-                    <h1
-                        css={css`
-                            font-size: ${getResponsiveChoice(10, 14)}pt;
-                        `}
-                    >
-                        <CollectionLabel
-                            collection={props.collection}
-                        ></CollectionLabel>
-                    </h1>
+                    {heading}
                     {cards}
                 </React.Fragment>
             );
