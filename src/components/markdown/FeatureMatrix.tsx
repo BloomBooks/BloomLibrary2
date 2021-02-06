@@ -27,7 +27,12 @@ const blockColor = "white";
 const defaultColor = "black";
 const columOneWidth = "auto";
 
-export const FeatureMatrix: React.FunctionComponent<{}> = (props) => {
+export const FeatureMatrix: React.FunctionComponent<{
+    // These are passed in as props so they can be localized in Contentful.
+    freeLabel?: string;
+    communityLabel?: string;
+    enterpriseLabel?: string;
+}> = (props) => {
     const getResponsiveChoice = useResponsiveChoice();
     return (
         <TableContainer
@@ -72,13 +77,13 @@ export const FeatureMatrix: React.FunctionComponent<{}> = (props) => {
                     >
                         <TableCell></TableCell>
                         <TableCell className="levelName" align="center">
-                            Free
+                            {props.freeLabel || "Free"}
                         </TableCell>
                         <TableCell className="levelName" align="center">
-                            Local Community
+                            {props.communityLabel || "Local Community"}
                         </TableCell>
                         <TableCell className="levelName" align="center">
-                            Enterprise
+                            {props.enterpriseLabel || "Enterprise"}
                         </TableCell>
                     </TableRow>
                 </TableHead>

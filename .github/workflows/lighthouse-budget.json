@@ -1,0 +1,66 @@
+[
+    {
+        "path": "/*",
+        "options": {
+            "firstPartyHostnames": [
+                "*.bloomlibrary.org",
+                "bloom-parse-server-production.azurewebsites.net"
+            ]
+        },
+        "timings": [
+            {
+                "metric": "first-contentful-paint",
+                "budget": 4500
+            },
+            {
+                "metric": "speed-index",
+                "budget": 9000
+            },
+            {
+                "metric": "largest-contentful-paint",
+                "budget": 4500
+            },
+            {
+                "metric": "interactive",
+                "budget": 8000
+            },
+            {
+                "metric": "total-blocking-time",
+                "budget": 600
+            },
+            {
+                "metric": "cumulative-layout-shift",
+                "budget": 0.1
+            },
+            {
+                "metric": "first-meaningful-paint",
+                "budget": 6000
+            }
+        ],
+        "resourceSizes": [
+            {
+                "resourceType": "script",
+                "budget": 400
+            },
+            {
+                "resourceType": "total",
+                "budget": 550
+            }
+        ],
+        "resourceCounts": [
+            {
+                "resourceType": "third-party",
+                "budget": 25
+            }
+        ]
+    },
+    {
+        "path": "/covid19",
+        "resourceSizes": [
+            {
+                "resourceType": "script",
+                "budget": 900
+            }
+        ]
+    }
+]
