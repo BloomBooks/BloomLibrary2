@@ -1,6 +1,6 @@
 import React from "react";
 import { useIntl } from "react-intl";
-import { kNameToL10NKey } from "../model/CloseVocabularies";
+import { kNameToL10NKey } from "../model/ClosedVocabularies";
 import { ICollection } from "../model/ContentInterfaces";
 import { getTranslation } from "./GetLocalizations";
 

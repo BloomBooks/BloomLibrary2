@@ -7,23 +7,6 @@ import { getTranslation } from "../localization/GetLocalizations";
 import { kNameOfNoTopicCollection } from "../connection/LibraryQueryHooks";
 import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 
-export const TopicsList = [
-    "Agriculture",
-    "Animal Stories",
-    "Business",
-    "Dictionary",
-    "Environment",
-    "Primer",
-    "Math",
-    "Culture",
-    "Science",
-    "Story Book",
-    "Traditional Story",
-    "Health",
-    "Personal Development",
-    "Spiritual",
-];
-
 // For each topic, show a row of books for that topic.
 // Note: very similar to ByLevelsGroup, possibly we can factor out something common.
 export const ByTopicsGroups: React.FunctionComponent<{
