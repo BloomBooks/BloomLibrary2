@@ -26,7 +26,6 @@ import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
         Background Image (optional) We use the “card icon” if this is missing (e.g. all publishers)
         Image Credits
         Description
-        Blurb (deprecated)
 */
 
 interface IContentfulCollectionQueryResponse {

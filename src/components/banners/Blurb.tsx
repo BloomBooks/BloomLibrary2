@@ -39,18 +39,13 @@ export const Blurb: React.FunctionComponent<{
                     overflow: hidden auto; // 'hidden' for x; 'auto' for y
                 `}
             >
-                {props.banner.description ? (
+                {props.banner.description && (
                     <BlorgMarkdown
                         markdown={l10n.formatMessage({
                             id: "banner.description." + props.banner.title,
                             defaultMessage: props.banner.description,
                         })}
                     />
-                ) : (
-                    // this is deprecated, can be removed once all blurbs are descriptions. Note that next.bloomlibrary.org will need this code first.
-                    documentToReactComponents(
-                        props.banner.blurb as any //actually we know it's a "Document", but that type is not exported
-                    )
                 )}
             </div>
             <div

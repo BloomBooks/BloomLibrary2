@@ -14,7 +14,6 @@ export interface IBanner {
     logo: IMedia | undefined;
     backgroundImage: IMedia | undefined;
     description: string; // markdown
-    blurb: object; // deprecated.... can remove once all the Rich Text `blurb`s are converted to markdown `description`s
     backgroundImagePosition: string;
     backgroundColor: string;
     textColor: string;
