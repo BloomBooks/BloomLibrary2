@@ -72,14 +72,21 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
 };
 
 function isExternalOrEmail(url: string): boolean {
-    try {
-        // if it doesn't start with http or mailto, let's say it is internal
-        if (!url.startsWith("http") && !url.startsWith("mailto:")) return false;
-        // if it does, it could still be pointing to this site
-        const urlObj = new URL(url, window.location.origin);
-        return urlObj.hostname !== window.location.hostname;
-    } catch {
-        console.error(`isExternal() could not parse ${url}`);
-        return false;
-    }
+    return url.startsWith("http") || url.startsWith("mailto:");
+
+    // This was the previous version of this code.
+    // It attempted to ensure we didn't reload our SPA
+    // when navigating to an internal link with a full url.
+    // But it got broken downstream sometime later, and now
+    // we feel it is best to just have the simple check above.
+    // try {
+    //     // if it doesn't start with http or mailto, let's say it is internal
+    //     if (!url.startsWith("http") && !url.startsWith("mailto:")) return false;
+    //     // if it does, it could still be pointing to this site
+    //     const urlObj = new URL(url, window.location.origin);
+    //     return urlObj.hostname !== window.location.hostname;
+    // } catch {
+    //     console.error(`isExternal() could not parse ${url}`);
+    //     return false;
+    // }
 }
