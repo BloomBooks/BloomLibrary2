@@ -41,6 +41,18 @@
     "topic.Spiritual": {
         "message": "Spiritual"
     },
+    "topic.Community Living": {
+        "message": "Community Living"
+    },
+    "topic.Fiction": {
+        "message": "Fiction"
+    },
+    "topic.How To": {
+        "message": "How To"
+    },
+    "topic.Non Fiction": {
+        "message": "Non Fiction"
+    },
     "topic.Other": {
         "message": "Other"
     },

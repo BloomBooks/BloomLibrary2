@@ -74,7 +74,7 @@ export function getDisplayNamesForLanguage(
         language.isoCode !== language.englishName &&
         language.isoCode !== language.name
     )
-        secondary = [secondary, language.isoCode].join(" ");
+        secondary = [secondary, language.isoCode].join(" ").trim();
 
     const combined = primary + (secondary ? ` (${secondary})` : "");
 
