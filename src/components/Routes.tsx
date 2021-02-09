@@ -45,45 +45,7 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         return <TestEmbeddingPage code={match.params.code} />;
                     }}
                 ></Route>
-                <Route
-                    exact
-                    path={[
-                        "/browse", // Alias from legacy blorg
-                        "/landing", // Alias from legacy blorg
-                        "/books", // One of the links from BloomDesktop goes here
-                    ]}
-                >
-                    <Redirect to="/" />
-                </Route>
-                <Route
-                    exact
-                    path={[
-                        "/download", // Alias from legacy blorg
-                        "/downloads", // Alias for convenience when telling people where to get Bloom
-                        "/installers", // Alias from legacy blorg
-                    ]}
-                >
-                    <Redirect to="/page/create/downloads" />
-                </Route>
-                {/* Alias from legacy blorg */}
-                <Redirect from={"/browse/detail/:id"} to="/book/:id" />
-                {/* Alias from legacy blorg */}
-                <Redirect from={"/readBook/:id"} to="/player/:id" />
-                {/* Alias from legacy blorg */}
-                <Redirect from={"/about"} to="/page/create/about" />
-                {/* Alias from legacy blorg */}
-                <Redirect
-                    from={"/bloom-reader-privacy-policy"}
-                    to="/page/create/bloom-reader-privacy-policy"
-                />
 
-                <Route
-                    path={[
-                        "/artofreading", // We have published this link in various places (like the WeSay page)
-                    ]}
-                >
-                    <Redirect to="/page/create/page/art-of-reading" />
-                </Route>
                 {/* At contentful.com, when you work on something, there is a "Preview" button
                                         which takes you to our site so you can see how your content will actually be
                                         displayed. For banners, we configured contentful to set you to this url. */}
@@ -177,32 +139,106 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         );
                     }}
                 ></Route>
+
+                {/* We might as well put some of these lesser-used ones toward the bottom for efficiency... */}
                 <Route
-                    path="/sponsorship" // From legacy blorg
+                    exact
+                    path={[
+                        "/browse", // Alias from legacy blorg
+                        "/landing", // Alias from legacy blorg
+                        "/books", // One of the links from BloomDesktop goes here
+                    ]}
                 >
+                    <Redirect to="/" />
+                </Route>
+                <Route
+                    exact
+                    path={[
+                        "/download", // Alias from legacy blorg
+                        "/downloads", // Alias for convenience when telling people where to get Bloom
+                        "/installers", // Alias from legacy blorg
+                    ]}
+                >
+                    <Redirect to="/page/create/downloads" />
+                </Route>
+                {/* Alias from legacy blorg */}
+                <Redirect from={"/browse/detail/:id"} to="/book/:id" />
+                {/* Alias from legacy blorg */}
+                <Redirect from={"/readBook/:id"} to="/player/:id" />
+                {/* We have published this artofreading link in various places (like the WeSay page) */}
+                <Route path={["/artofreading"]}>
+                    <Redirect to="/page/create/page/art-of-reading" />
+                </Route>
+                {/* Alias from legacy blorg */}
+                <Redirect from={"/about"} to="/page/create/about" />
+                {/* Alias from legacy blorg */}
+                <Redirect
+                    from={"/bloom-reader-privacy-policy"}
+                    to="/page/create/bloom-reader-privacy-policy"
+                />
+                {/* Alias from legacy blorg */}
+                <Route path="/sponsorship">
                     <ContentfulPage urlKey="sponsorship" />
                 </Route>
-                {/* Must come last, this matches anything, including the home path with nothing at all. */}
+
+                {/* Aliases from BloomDesktop */}
+                {/* Note, because of the special handling required here for hashes
+                    (the router doesn't match paths based on hash),
+                    we handle the home page in this route because the path is "/" */}
                 <Route
-                    path={"/:segments*"}
+                    exact
+                    strict
+                    path={"/"}
                     render={({ match }) => {
-                        if (window.self !== window.top) {
+                        if (location.hash?.startsWith("#/browse/detail/")) {
                             return (
-                                <EmbeddingHost
-                                    urlSegments={location.pathname}
-                                ></EmbeddingHost>
+                                <Redirect
+                                    to={
+                                        "/book/" +
+                                        location.hash.substr(
+                                            "#/browse/detail/".length
+                                        )
+                                    }
+                                />
                             );
                         }
-                        return (
-                            <CollectionWrapper
+                        return location.hash === "#/terms" ? (
+                            <ContentfulPage urlKey="termsOfUse" />
+                        ) : (
+                            <DefaultRouteComponent
+                                locationPathname={location.pathname}
                                 segments={match.params.segments}
-                            ></CollectionWrapper>
+                            />
                         );
                     }}
+                ></Route>
+
+                {/* Must come last, this matches anything else */}
+                <Route
+                    path={"/:segments*"}
+                    render={({ match }) => (
+                        <DefaultRouteComponent
+                            locationPathname={location.pathname}
+                            segments={match.params.segments}
+                        />
+                    )}
                 ></Route>
             </Switch>
         </ErrorBoundary>
     );
+};
+
+// The fallthrough/default component when a route doesn't match something else.
+export const DefaultRouteComponent: React.FunctionComponent<{
+    locationPathname: string;
+    segments: string;
+}> = (props) => {
+    if (window.self !== window.top) {
+        return (
+            <EmbeddingHost urlSegments={props.locationPathname}></EmbeddingHost>
+        );
+    }
+    return <CollectionWrapper segments={props.segments}></CollectionWrapper>;
 };
 
 // Given a pathname like /enabling-writers/ew-nigeria/:level:1/:topic:Agriculture/:search:dogs,
