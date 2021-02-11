@@ -182,6 +182,8 @@ export const Routes: React.FunctionComponent<{}> = () => {
                 </Route>
 
                 {/* Aliases from BloomDesktop */}
+                <Redirect from="/support" to="/page/support" />
+                <Redirect from="/terms" to="/page/termsOfUse" />
                 {/* Note, because of the special handling required here for hashes
                     (the router doesn't match paths based on hash),
                     we handle the home page in this route because the path is "/" */}
