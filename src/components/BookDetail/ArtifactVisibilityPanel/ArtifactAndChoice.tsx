@@ -3,7 +3,7 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { createStyles, makeStyles } from "@material-ui/styles";
 import {
     Button,
@@ -78,19 +78,11 @@ export const ArtifactAndChoice: React.FunctionComponent<{
     const [thisPersonsChoice, setThisPersonsChoice] = React.useState(
         getThisPersonsChoice()
     );
-    const isFirstRun = useRef(true);
-    useEffect(() => {
-        // Do not call onChange during component mount
-        if (isFirstRun.current) {
-            isFirstRun.current = false;
-            return;
-        }
-
-        props.onChange(thisPersonsChoice);
-    }, [thisPersonsChoice, props]);
 
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        setThisPersonsChoice(event.target.value as string);
+        const newValue = event.target.value as string;
+        setThisPersonsChoice(newValue);
+        props.onChange(newValue);
     };
 
     const getAutoText = (): string => {
@@ -106,16 +98,15 @@ export const ArtifactAndChoice: React.FunctionComponent<{
 
     const getRationaleText = (): string => {
         // console.log(
-        //     "ArtifactAndChoice from getRationalText():" + JSON.stringify(props)
+        //     "ArtifactAndChoice from getRationaleText():" + JSON.stringify(props)
         // );
         // console.log(
-        //     "getRationalText():" +
+        //     "getRationaleText():" +
         //         props.visibilitySettings.hasUserDecided().toString()
         // );
         if (!props.visibilitySettings) {
             return "";
         }
-        //console.log("abc:" + props.visibility.hasUserDecided());
         if (
             !props.currentUserIsUploader &&
             props.visibilitySettings.hasUserDecided()
