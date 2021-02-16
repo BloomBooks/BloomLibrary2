@@ -83,6 +83,13 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
         setModified(true);
     };
 
+    const handleRequestHarvest = (
+        event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    ) => {
+        props.book.harvestState = "Requested";
+        setModified(true);
+    };
+
     const setModified = (val: boolean) => {
         if (val === modified) {
             return;
@@ -113,6 +120,18 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
         // avoid unsaved changes warning.
         setModified(false);
         document.location.reload();
+    };
+
+    // insert a <br/> between each entry in the array of log entries
+    const renderHarvestLog = (log: string[]) => {
+        let spans = [];
+        for (let i = 0; i < log.length; ++i) {
+            if (i > 0) {
+                spans.push(<br />);
+            }
+            spans.push(<span>{log[i]}</span>);
+        }
+        return <div>{spans}</div>;
     };
 
     return (
@@ -400,7 +419,66 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                     }}
                 ></TextField>
             </div>
-            <HideBookControl book={props.book} setModified={setModified} />
+            <div
+                css={css`
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    width: 100%;
+                `}
+            >
+                <HideBookControl book={props.book} setModified={setModified} />
+                <div
+                    css={css`
+                        border: 2px solid ${borderColor};
+                        border-radius: 4px;
+                        margin-left: 10px;
+                        padding: 10px;
+                        background-color: white;
+                        margin-bottom: 1em;
+                        width: 50%;
+                    `}
+                >
+                    <label
+                        css={css`
+                            padding-left: 5px;
+                            padding-right: 5px;
+                            position: relative;
+                            top: -20px;
+                            left: 5px;
+                            background-color: white;
+                        `}
+                    >
+                        Harvester
+                    </label>
+                    <div
+                        css={css`
+                            display: flex;
+                            flex-direction: row;
+                            justify-content: space-between;
+                            width: 100%;
+                            top: -10px;
+                            position: relative;
+                        `}
+                    >
+                        <div>Status: {props.book.harvestState}</div>
+                        <Button
+                            onClick={handleRequestHarvest}
+                            variant="outlined"
+                            color="secondary"
+                            disabled={props.book.harvestState === "Requested"}
+                            css={css`
+                                margin-left: auto !important;
+                                margin-right: 10px !important;
+                                min-width: 90px !important;
+                            `}
+                        >
+                            Request Harvesting
+                        </Button>
+                    </div>
+                    <div>Log: {renderHarvestLog(props.book.harvestLog)}</div>
+                </div>
+            </div>
             <div
                 id="apControls"
                 css={css`
