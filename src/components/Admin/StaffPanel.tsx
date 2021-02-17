@@ -87,6 +87,8 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
         props.book.harvestState = "Requested";
+        // Possible todo: save harvestState immediately to Parse instead of
+        // merely activating the Save button.
         setModified(true);
     };
 
