@@ -11,7 +11,7 @@ import {
     Checkbox,
     FormControlLabel,
     Select,
-    MenuItem,
+    MenuItem
 } from "@material-ui/core";
 
 import { IFilter } from "../../IFilter";
@@ -33,7 +33,8 @@ export const BulkEditPanel: React.FunctionComponent<{
     ) => void;
     filterHolder: FilterHolder;
     refresh: () => void;
-}> = observer((props) => {
+    noValueNeeded?: boolean;
+}> = observer(props => {
     const [valueToSet, setValueToSet] = useState<string | undefined>("");
     const [working, setWorking] = useState(false);
     const [armed, setArmed] = useState(false);
@@ -48,6 +49,7 @@ export const BulkEditPanel: React.FunctionComponent<{
         !!props.filterHolder.completeFilter.language ||
         !!props.filterHolder.completeFilter.derivedFrom ||
         !!props.filterHolder.completeFilter.feature ||
+        !!props.filterHolder.completeFilter.topic ||
         !!props.filterHolder.completeFilter.brandingProjectName ||
         // lots of other fields, e.g. copyright, end up as part of search (e.g. search:"copyright:foo")
         !!props.filterHolder.completeFilter.search
@@ -85,7 +87,7 @@ export const BulkEditPanel: React.FunctionComponent<{
                         control={
                             <Checkbox
                                 checked={armed}
-                                onChange={(e) => {
+                                onChange={e => {
                                     setArmed(e.target.checked);
                                 }}
                             />
@@ -108,11 +110,11 @@ export const BulkEditPanel: React.FunctionComponent<{
                             css={css`
                                 width: 400px;
                             `}
-                            onChange={(e) => {
+                            onChange={e => {
                                 setValueToSet(e.target.value as string);
                             }}
                         >
-                            {props.choices.map((c) => (
+                            {props.choices.map(c => (
                                 <MenuItem key={c} value={c}>
                                     {c}
                                 </MenuItem>
@@ -120,7 +122,7 @@ export const BulkEditPanel: React.FunctionComponent<{
                         </Select>
                     )}
                     {/* TEXT FIELD */}
-                    {!props.choices && (
+                    {!props.choices && !props.noValueNeeded && (
                         <TextField
                             variant="outlined"
                             label={props.newValueLabel}
@@ -128,7 +130,7 @@ export const BulkEditPanel: React.FunctionComponent<{
                                 width: 600px;
                             `}
                             defaultValue={valueToSet}
-                            onChange={(evt) => {
+                            onChange={evt => {
                                 const v = evt.target.value.trim();
                                 setValueToSet(v.length ? v : undefined);
                             }}
@@ -148,21 +150,22 @@ export const BulkEditPanel: React.FunctionComponent<{
                         variant="outlined"
                         css={css`
                             margin-top: 20px;
+                            margin-left: auto;
                         `}
                         disabled={
                             !armed ||
                             working ||
+                            // We currently do not allow setting a value to "", but we could change that if we need to set empty values.
+                            (!valueToSet && !props.noValueNeeded) ||
                             // We currently do not allow setting every single book; it's too likely that this is a mistake.
-                            // We currently do not all setting a value to "", but we could change that if we need to set empty values.
-                            !valueToSet ||
                             notFilteredYet
                         }
                         onClick={() => {
-                            if (valueToSet) {
+                            if (valueToSet || props.noValueNeeded) {
                                 setWorking(true);
                                 props.performChangesToAllMatchingBooks(
                                     props.filterHolder.completeFilter,
-                                    valueToSet,
+                                    valueToSet || "not-used",
                                     () => {
                                         setWorking(false);
                                         props.refresh();
