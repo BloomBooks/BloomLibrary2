@@ -28,8 +28,8 @@ async function ChangeOriginalPublisher(
 ) {
     ChangeColumnValueForAllBooksInFilter(
         filter,
-        originalPublisher,
         "originalPublisher",
+        originalPublisher,
         refresh
     );
 }

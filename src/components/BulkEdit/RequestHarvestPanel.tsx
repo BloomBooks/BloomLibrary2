@@ -5,31 +5,39 @@ import { FilterHolder } from "./BulkEditPage";
 import { BulkEditPanel } from "./BulkEditPanel";
 import { ChangeColumnValueForAllBooksInFilter } from "./BulkChangeFunctions";
 
-export const AssignPublisherPanel: React.FunctionComponent<{
+export const RequestHarvestPanel: React.FunctionComponent<{
     filterHolder: FilterHolder;
-    backgroundColor: string;
     refresh: () => void;
+    backgroundColor: string;
 }> = observer(props => {
     return (
         <BulkEditPanel
-            panelLabel="Change Publisher"
-            newValueLabel="New Publisher"
-            actionButtonLabel="Change Publisher"
-            performChangesToAllMatchingBooks={ChangePublisher}
+            panelLabel="Request Harvest"
+            newValueLabel="unused"
+            actionButtonLabel="Request Harvest"
+            performChangesToAllMatchingBooks={SetHarvestState}
+            noValueNeeded={true}
             {...props}
         />
     );
 });
 
-async function ChangePublisher(
+async function SetHarvestState(
     filter: IFilter,
-    publisher: string,
+    unused: string,
+    refresh: () => void
+) {
+    ReharvestAllBooksInFilter(filter, refresh);
+}
+
+export async function ReharvestAllBooksInFilter(
+    filter: IFilter,
     refresh: () => void
 ) {
     ChangeColumnValueForAllBooksInFilter(
         filter,
-        "publisher",
-        publisher,
+        "harvestState",
+        "Requested",
         refresh
     );
 }

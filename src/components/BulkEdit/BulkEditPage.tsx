@@ -15,10 +15,11 @@ import { AddBookshelfPanel } from "./AddBookshelfPanel";
 import { useSetBrowserTabTitle } from "../Routes";
 import { AssignOriginalPublisherPanel } from "./AssignOriginalPublisherPanel";
 import { IBulkEditPageProps } from "./BulkEditPageCodeSplit";
+import { RequestHarvestPanel } from "./RequestHarvestPanel";
 
 // The Bulk Edit page is for moderators; it has a series of panels for making changes, followed by a grid
 // for selecting what books will be changed.
-const BulkEditPage: React.FunctionComponent<IBulkEditPageProps> = (props) => {
+const BulkEditPage: React.FunctionComponent<IBulkEditPageProps> = props => {
     const [refreshIndex, setRefreshIndex] = useState(0);
     useSetBrowserTabTitle("Bulk Edit");
     let contextFilter: IFilter = {};
@@ -53,6 +54,12 @@ const BulkEditPage: React.FunctionComponent<IBulkEditPageProps> = (props) => {
                 filterHolder={staticCurrentFilter}
                 refresh={() => setRefreshIndex(refreshIndex + 1)}
             />
+            <RequestHarvestPanel
+                backgroundColor="#F8DCC2"
+                filterHolder={staticCurrentFilter}
+                refresh={() => setRefreshIndex(refreshIndex + 1)}
+            />
+
             <GridControl
                 showFilterSpec={true}
                 // the need to preserve the grid's filter state this way this is related to the problem described on the comment above class FilterHolder
