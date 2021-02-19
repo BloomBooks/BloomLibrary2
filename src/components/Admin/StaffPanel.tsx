@@ -434,10 +434,10 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                     css={css`
                         border: 2px solid ${borderColor};
                         border-radius: 4px;
+                        margin-top: 1.1em;
                         margin-left: 10px;
                         padding: 10px;
                         background-color: white;
-                        margin-bottom: 1em;
                         width: 50%;
                     `}
                 >
@@ -486,7 +486,7 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                 css={css`
                     display: flex;
                     flex-direction: row;
-                    margin-top: 10px;
+                    margin-top: 1em;
                 `}
             >
                 <Button
