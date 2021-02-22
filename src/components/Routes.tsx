@@ -204,14 +204,21 @@ export const Routes: React.FunctionComponent<{}> = () => {
                                 />
                             );
                         }
-                        return location.hash === "#/terms" ? (
-                            <ContentfulPage urlKey="termsOfUse" />
-                        ) : (
-                            <DefaultRouteComponent
-                                locationPathname={location.pathname}
-                                segments={match.params.segments}
-                            />
-                        );
+                        switch (location.hash) {
+                            case "#/terms":
+                                return <ContentfulPage urlKey="termsOfUse" />;
+                            case "#/artofreading":
+                                return (
+                                    <Redirect to="/page/create/page/art-of-reading" />
+                                );
+                            default:
+                                return (
+                                    <DefaultRouteComponent
+                                        locationPathname={location.pathname}
+                                        segments={match.params.segments}
+                                    />
+                                );
+                        }
                     }}
                 ></Route>
 

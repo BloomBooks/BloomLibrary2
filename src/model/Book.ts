@@ -129,7 +129,7 @@ export class Book {
             edition: observable,
             keywordsText: observable,
             keywords: observable,
-            artifactsToOfferToUsers: observable
+            artifactsToOfferToUsers: observable,
         });
     }
 
@@ -265,6 +265,7 @@ export class Book {
             keywords: this.keywords,
             keywordStems: this.keywordStems,
             edition: this.edition,
+            harvestState: this.harvestState,
         });
     }
 
