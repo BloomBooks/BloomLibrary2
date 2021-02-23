@@ -6,8 +6,8 @@ import { CachedTables } from "../../model/CacheProvider";
 
 export async function ChangeColumnValueForAllBooksInFilter(
     filter: IFilter,
-    newValue: string,
     columnName: string,
+    newValue: string,
     refresh: () => void
 ) {
     const finalParams = constructParseBookQuery({}, filter, CachedTables.tags);
@@ -15,7 +15,11 @@ export async function ChangeColumnValueForAllBooksInFilter(
     const books = await axios.get(`${getConnection().url}classes/books`, {
         headers,
 
-        params: { limit: 100000, keys: "objectId,title", ...finalParams },
+        params: {
+            limit: 100000,
+            keys: "objectId,title",
+            ...finalParams
+        }
     });
     const putData: any = {};
     putData.updateSource = "bloom-library-bulk-edit";
@@ -28,7 +32,7 @@ export async function ChangeColumnValueForAllBooksInFilter(
             axios.put(
                 `${getConnection().url}classes/books/${book.objectId}`,
                 {
-                    ...putData,
+                    ...putData
                 },
                 { headers }
             )
@@ -36,7 +40,7 @@ export async function ChangeColumnValueForAllBooksInFilter(
     }
     Promise.all(promises)
         .then(() => refresh())
-        .catch((error) => {
+        .catch(error => {
             alert(error);
         });
 }
@@ -60,7 +64,7 @@ export async function AddTagAllBooksInFilter(
     const books = await axios.get(`${getConnection().url}classes/books`, {
         headers,
 
-        params: { limit: 100000, keys: "objectId,title,tags", ...finalParams },
+        params: { limit: 100000, keys: "objectId,title,tags", ...finalParams }
     });
     const putData: any = {};
     putData.updateSource = "bloom-library-bulk-edit";
@@ -84,7 +88,7 @@ export async function AddTagAllBooksInFilter(
                 axios.put(
                     `${getConnection().url}classes/books/${book.objectId}`,
                     {
-                        ...putData,
+                        ...putData
                     },
                     { headers }
                 )
@@ -94,7 +98,7 @@ export async function AddTagAllBooksInFilter(
     console.log(`Changing tags on ${changeCount} books...`);
     Promise.all(promises)
         .then(() => refresh())
-        .catch((error) => {
+        .catch(error => {
             alert(error);
         });
 }
@@ -111,8 +115,8 @@ export async function AddBookshelfToAllBooksInFilter(
         params: {
             limit: 100000,
             keys: "objectId,title,bookshelves",
-            ...finalParams,
-        },
+            ...finalParams
+        }
     });
     const putData: any = {};
     putData.updateSource = "bloom-library-bulk-edit";
@@ -127,7 +131,7 @@ export async function AddBookshelfToAllBooksInFilter(
                 axios.put(
                     `${getConnection().url}classes/books/${book.objectId}`,
                     {
-                        ...putData,
+                        ...putData
                     },
                     { headers }
                 )
@@ -136,7 +140,7 @@ export async function AddBookshelfToAllBooksInFilter(
     }
     Promise.all(promises)
         .then(() => refresh())
-        .catch((error) => {
+        .catch(error => {
             alert(error);
         });
 }
