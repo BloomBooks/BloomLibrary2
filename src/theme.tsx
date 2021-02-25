@@ -1,6 +1,6 @@
-import { createMuiTheme, MuiThemeProvider } from "@material-ui/core";
+import { createMuiTheme, MuiThemeProvider, useTheme } from "@material-ui/core";
 
-import React from "react";
+import React, { useState } from "react";
 export const commonUI = {
     colors: {
         bloomRed: "#D65649",
@@ -95,6 +95,9 @@ export default theme;
 
 const creationPalette = {
     primary: { main: commonUI.colors.creationArea, light: "white" },
+    // currently we're using the same color for "secondary" as for "primary", so that glow on cards is green.
+    // eventually when materialui supports more names for the pallette, we can sort this out so that we just define the glow color
+    secondary: { main: commonUI.colors.creationArea },
 };
 const creationTheme = createMuiTheme({ ...theme, palette: creationPalette });
 export function CreationThemeProvider(props: any) {
@@ -103,4 +106,23 @@ export function CreationThemeProvider(props: any) {
             {props.children}
         </MuiThemeProvider>
     );
+}
+
+export function convertHexToRGBA(hexCode: string, opacity: number) {
+    const hex = hexCode.replace("#", "");
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+
+    return `rgba(${r},${g},${b},${opacity})`;
+}
+
+export function useCardHoverStyles() {
+    const current = useTheme();
+    const [glowColor] = useState(
+        convertHexToRGBA(current.palette.secondary.main, 0.5)
+    );
+    return `box-shadow: 0 1px 5px ${glowColor}, 0 1px 5px ${glowColor};
+            &,* {text-decoration: none;
+        }`;
 }

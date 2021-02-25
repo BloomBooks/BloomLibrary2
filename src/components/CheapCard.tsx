@@ -7,6 +7,7 @@ import React from "react";
 import { getUrlForTarget } from "./Routes";
 import { BlorgLink } from "./BlorgLink";
 import { useBaseCardSpec } from "./RowOfCards";
+import { useCardHoverStyles } from "../theme";
 
 interface IProps extends React.HTMLProps<HTMLDivElement> {
     className?: string;
@@ -18,6 +19,7 @@ interface IProps extends React.HTMLProps<HTMLDivElement> {
 export const CheapCard: React.FunctionComponent<IProps> = (props) => {
     const url = getUrlForTarget(props.target || "");
     const cardSpacing = useBaseCardSpec().cardSpacingPx;
+    const hoverStyles = useCardHoverStyles();
     return (
         <BlorgLink
             className={`cheapCard ${props.className}`}
@@ -36,9 +38,7 @@ export const CheapCard: React.FunctionComponent<IProps> = (props) => {
                     0 1px 2px rgba(0, 0, 0, 0.24);
                 transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
                 &:hover {
-                    box-shadow: 0 4px 5px rgba(0, 0, 0, 0.25),
-                        0 4px 5px rgba(0, 0, 0, 0.22);
-                    background-color: lightgray;
+                    ${hoverStyles}
                 }
 
                 /* for on dark background*/

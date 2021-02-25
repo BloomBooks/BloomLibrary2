@@ -22,6 +22,7 @@ import { EmbeddingHost, isEmbedded, useSetEmbeddedUrl } from "./EmbeddingHost";
 import { CollectionStatsPageCodeSplit } from "./statistics/CollectionStatsPageCodeSplit";
 import { TestEmbeddingPage } from "./TestEmbedding";
 import { ReleaseNotes } from "./ReleaseNotes";
+import { ThemeForLocation } from "./pages/ThemeForLocation";
 
 export let previousPathname = "";
 let currentPathname = "";
@@ -38,7 +39,8 @@ export const Routes: React.FunctionComponent<{}> = () => {
 
     return (
         <ErrorBoundary url={location.pathname}>
-            <Switch>
+            <ThemeForLocation urlKey={location.pathname}>
+                <Switch>
                 <Route
                     path="/test-embedding/:code*"
                     render={({ match }) => {
@@ -46,36 +48,36 @@ export const Routes: React.FunctionComponent<{}> = () => {
                     }}
                 ></Route>
 
-                {/* At contentful.com, when you work on something, there is a "Preview" button
+                    {/* At contentful.com, when you work on something, there is a "Preview" button
                                         which takes you to our site so you can see how your content will actually be
                                         displayed. For banners, we configured contentful to set you to this url. */}
-                <Route
-                    path="/_previewBanner/:id" // used by preview button when editing in contentful
-                    render={({ match }) => (
-                        <React.Fragment>
-                            <div // simulate it being in a context that sets some margin
-                                css={css`
-                                    //margin: 20px;
-                                    height: 500px;
-                                `}
-                            >
-                                <ContentfulBanner
-                                    id={match.params.id}
-                                    collection={getDummyCollectionForPreview(
-                                        match.params.id
-                                    )}
-                                />
-                            </div>
-                            <Footer />
-                        </React.Fragment>
-                    )}
-                ></Route>
-                <Route
-                    path="/:breadcrumbs*/book/:id"
-                    render={({ match }) => {
-                        return <BookDetailCodeSplit id={match.params.id} />;
-                    }}
-                />
+                    <Route
+                        path="/_previewBanner/:id" // used by preview button when editing in contentful
+                        render={({ match }) => (
+                            <React.Fragment>
+                                <div // simulate it being in a context that sets some margin
+                                    css={css`
+                                        //margin: 20px;
+                                        height: 500px;
+                                    `}
+                                >
+                                    <ContentfulBanner
+                                        id={match.params.id}
+                                        collection={getDummyCollectionForPreview(
+                                            match.params.id
+                                        )}
+                                    />
+                                </div>
+                                <Footer />
+                            </React.Fragment>
+                        )}
+                    ></Route>
+                    <Route
+                        path="/:breadcrumbs*/book/:id"
+                        render={({ match }) => {
+                            return <BookDetailCodeSplit id={match.params.id} />;
+                        }}
+                    />
                 <Route
                     path="/player/:id"
                     render={({ match }) => {
@@ -89,22 +91,22 @@ export const Routes: React.FunctionComponent<{}> = () => {
                     }}
                 />
                 <Route
-                    path="/grid/:filter*"
-                    render={({ match }) => {
-                        return <GridPage filters={match.params.filter} />;
-                    }}
-                />
-                <Route
-                    path="/bulk/:filter*"
-                    render={({ match }) => {
-                        return (
-                            <BulkEditPageCodeSplit
-                                filters={match.params.filter}
-                            />
-                        );
-                    }}
-                />
-                <Route
+                        path="/grid/:filter*"
+                        render={({ match }) => {
+                            return <GridPage filters={match.params.filter} />;
+                        }}
+                    />
+                    <Route
+                        path="/bulk/:filter*"
+                        render={({ match }) => {
+                            return (
+                                <BulkEditPageCodeSplit
+                                    filters={match.params.filter}
+                                />
+                            );
+                        }}
+                    />
+                    <Route
                     path="/page/:breadcrumbs*/:pageName"
                     render={({ match }) => {
                         return (
@@ -112,7 +114,7 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         );
                     }}
                 />
-                <Route
+                    <Route
                     path="/_preview/page/:pageName"
                     render={({ match }) => {
                         return (
@@ -120,89 +122,89 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         );
                     }}
                 />
-                {/* the colon here is not literally there in the url */}
-                <Route
-                    path={"/:segments*/stats"}
-                    render={({ match }) => {
-                        if (window.self !== window.top) {
-                            throw new Error(
-                                "Stats not available in embedding."
+                    {/* the colon here is not literally there in the url */}
+                    <Route
+                        path={"/:segments*/stats"}
+                        render={({ match }) => {
+                            if (window.self !== window.top) {
+                                throw new Error(
+                                    "Stats not available in embedding."
+                                );
+                            }
+                            const { collectionName } = splitPathname(
+                                match.params.segments
                             );
-                        }
-                        const { collectionName } = splitPathname(
-                            match.params.segments
-                        );
-                        return (
-                            <CollectionStatsPageCodeSplit
-                                collectionName={collectionName}
-                            />
-                        );
-                    }}
-                ></Route>
-
-                {/* We might as well put some of these lesser-used ones toward the bottom for efficiency... */}
-                <Route
-                    exact
-                    path={[
-                        "/browse", // Alias from legacy blorg
-                        "/landing", // Alias from legacy blorg
-                        "/books", // One of the links from BloomDesktop goes here
-                    ]}
-                >
-                    <Redirect to="/" />
-                </Route>
-                <Route
-                    exact
-                    path={[
-                        "/download", // Alias from legacy blorg
-                        "/downloads", // Alias for convenience when telling people where to get Bloom
-                        "/installers", // Alias from legacy blorg
-                    ]}
-                >
-                    <Redirect to="/page/create/downloads" />
-                </Route>
-                {/* Alias from legacy blorg */}
-                <Redirect from={"/browse/detail/:id"} to="/book/:id" />
-                {/* Alias from legacy blorg */}
-                <Redirect from={"/readBook/:id"} to="/player/:id" />
-                {/* We have published this artofreading link in various places (like the WeSay page) */}
-                <Route path={["/artofreading"]}>
-                    <Redirect to="/page/create/page/art-of-reading" />
-                </Route>
-                {/* Alias from legacy blorg */}
-                <Redirect from={"/about"} to="/page/create/about" />
-                {/* Alias from legacy blorg */}
-                <Redirect
-                    from={"/bloom-reader-privacy-policy"}
-                    to="/page/create/bloom-reader-privacy-policy"
-                />
-                {/* Alias from legacy blorg */}
-                <Route path="/sponsorship">
-                    <ContentfulPage urlKey="sponsorship" />
-                </Route>
-
-                {/* Aliases from BloomDesktop */}
-                <Redirect from="/support" to="/page/support" />
-                <Redirect from="/terms" to="/page/termsOfUse" />
-                {/* Note, because of the special handling required here for hashes
-                    (the router doesn't match paths based on hash),
-                    we handle the home page in this route because the path is "/" */}
-                <Route
-                    exact
-                    strict
-                    path={"/"}
-                    render={({ match }) => {
-                        if (location.hash?.startsWith("#/browse/detail/")) {
                             return (
-                                <Redirect
-                                    to={
-                                        "/book/" +
-                                        location.hash.substr(
-                                            "#/browse/detail/".length
-                                        )
-                                    }
+                                <CollectionStatsPageCodeSplit
+                                    collectionName={collectionName}
                                 />
                             );
+                        }}
+                    ></Route>
+
+                    {/* We might as well put some of these lesser-used ones toward the bottom for efficiency... */}
+                    <Route
+                        exact
+                        path={[
+                            "/browse", // Alias from legacy blorg
+                            "/landing", // Alias from legacy blorg
+                            "/books", // One of the links from BloomDesktop goes here
+                        ]}
+                    >
+                        <Redirect to="/" />
+                    </Route>
+                    <Route
+                        exact
+                        path={[
+                            "/download", // Alias from legacy blorg
+                            "/downloads", // Alias for convenience when telling people where to get Bloom
+                            "/installers", // Alias from legacy blorg
+                        ]}
+                    >
+                        <Redirect to="/page/create/downloads" />
+                    </Route>
+                    {/* Alias from legacy blorg */}
+                    <Redirect from={"/browse/detail/:id"} to="/book/:id" />
+                    {/* Alias from legacy blorg */}
+                    <Redirect from={"/readBook/:id"} to="/player/:id" />
+                    {/* We have published this artofreading link in various places (like the WeSay page) */}
+                    <Route path={["/artofreading"]}>
+                        <Redirect to="/page/create/page/art-of-reading" />
+                    </Route>
+                    {/* Alias from legacy blorg */}
+                    <Redirect from={"/about"} to="/page/create/about" />
+                    {/* Alias from legacy blorg */}
+                    <Redirect
+                        from={"/bloom-reader-privacy-policy"}
+                        to="/page/create/bloom-reader-privacy-policy"
+                    />
+                    {/* Alias from legacy blorg */}
+                    <Route path="/sponsorship">
+                        <ContentfulPage urlKey="sponsorship" />
+                    </Route>
+
+                    {/* Aliases from BloomDesktop */}
+                    <Redirect from="/support" to="/page/support" />
+                    <Redirect from="/terms" to="/page/termsOfUse" />
+                    {/* Note, because of the special handling required here for hashes
+                    (the router doesn't match paths based on hash),
+                    we handle the home page in this route because the path is "/" */}
+                    <Route
+                        exact
+                        strict
+                        path={"/"}
+                        render={({ match }) => {
+                            if (location.hash?.startsWith("#/browse/detail/")) {
+                                return (
+                                    <Redirect
+                                        to={
+                                            "/book/" +
+                                            location.hash.substr(
+                                                "#/browse/detail/".length
+                                            )
+                                        }
+                                    />
+                                );
                         }
                         switch (location.hash) {
                             case "#/terms":
@@ -210,29 +212,30 @@ export const Routes: React.FunctionComponent<{}> = () => {
                             case "#/artofreading":
                                 return (
                                     <Redirect to="/page/create/page/art-of-reading" />
-                                );
-                            default:
-                                return (
-                                    <DefaultRouteComponent
-                                        locationPathname={location.pathname}
-                                        segments={match.params.segments}
-                                    />
-                                );
-                        }
-                    }}
-                ></Route>
+                                    );
+                                default:
+                                    return (
+                                        <DefaultRouteComponent
+                                            locationPathname={location.pathname}
+                                            segments={match.params.segments}
+                                        />
+                                    );
+                            }
+                        }}
+                    ></Route>
 
-                {/* Must come last, this matches anything else */}
-                <Route
-                    path={"/:segments*"}
-                    render={({ match }) => (
-                        <DefaultRouteComponent
-                            locationPathname={location.pathname}
-                            segments={match.params.segments}
-                        />
-                    )}
-                ></Route>
-            </Switch>
+                    {/* Must come last, this matches anything else */}
+                    <Route
+                        path={"/:segments*"}
+                        render={({ match }) => (
+                            <DefaultRouteComponent
+                                locationPathname={location.pathname}
+                                segments={match.params.segments}
+                            />
+                        )}
+                    ></Route>
+                </Switch>
+            </ThemeForLocation>
         </ErrorBoundary>
     );
 };

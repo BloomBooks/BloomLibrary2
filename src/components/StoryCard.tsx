@@ -17,6 +17,7 @@ import { useContentfulPage } from "./pages/ContentfulPage";
 import { useResponsiveChoice, useSmallScreen } from "../responsiveUtilities";
 import { ICardSpec } from "./RowOfCards";
 import TruncateMarkup from "react-truncate-markup";
+import { useCardHoverStyles } from "../theme";
 
 export function useStoryCardSpec(): ICardSpec {
     const getResponsiveChoice = useResponsiveChoice();
@@ -38,6 +39,7 @@ export const StoryCard: React.FunctionComponent<{ story: ICollection }> = (
     const isSmall = useSmallScreen();
     const url = "/page/" + getUrlForTarget(props.story.urlKey);
     const page = useContentfulPage("page", props.story.urlKey);
+    const hoverStyles = useCardHoverStyles();
     if (!page) {
         return null;
     }
@@ -49,6 +51,9 @@ export const StoryCard: React.FunctionComponent<{ story: ICollection }> = (
                 margin: 1px;
                 // enhance: really we just want this margin in-between cards
                 margin-right: ${cardSpacingPx}px;
+                &:hover {
+                    ${hoverStyles}
+                }
             `}
         >
             <CardActionArea component={Link} to={`${url}`}>
