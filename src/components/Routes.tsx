@@ -41,12 +41,14 @@ export const Routes: React.FunctionComponent<{}> = () => {
         <ErrorBoundary url={location.pathname}>
             <ThemeForLocation urlKey={location.pathname}>
                 <Switch>
-                <Route
-                    path="/test-embedding/:code*"
-                    render={({ match }) => {
-                        return <TestEmbeddingPage code={match.params.code} />;
-                    }}
-                ></Route>
+                    <Route
+                        path="/test-embedding/:code*"
+                        render={({ match }) => {
+                            return (
+                                <TestEmbeddingPage code={match.params.code} />
+                            );
+                        }}
+                    ></Route>
 
                     {/* At contentful.com, when you work on something, there is a "Preview" button
                                         which takes you to our site so you can see how your content will actually be
@@ -78,19 +80,23 @@ export const Routes: React.FunctionComponent<{}> = () => {
                             return <BookDetailCodeSplit id={match.params.id} />;
                         }}
                     />
-                <Route
-                    path="/player/:id"
-                    render={({ match }) => {
-                        return <ReadBookPageCodeSplit id={match.params.id} />;
-                    }}
-                />
-                <Route
-                    path="*/release-notes/:channel"
-                    render={({ match }) => {
-                        return <ReleaseNotes channel={match.params.channel} />;
-                    }}
-                />
-                <Route
+                    <Route
+                        path="/player/:id"
+                        render={({ match }) => {
+                            return (
+                                <ReadBookPageCodeSplit id={match.params.id} />
+                            );
+                        }}
+                    />
+                    <Route
+                        path="*/release-notes/:channel"
+                        render={({ match }) => {
+                            return (
+                                <ReleaseNotes channel={match.params.channel} />
+                            );
+                        }}
+                    />
+                    <Route
                         path="/grid/:filter*"
                         render={({ match }) => {
                             return <GridPage filters={match.params.filter} />;
@@ -107,21 +113,25 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         }}
                     />
                     <Route
-                    path="/page/:breadcrumbs*/:pageName"
-                    render={({ match }) => {
-                        return (
-                            <ContentfulPage urlKey={match.params.pageName} />
-                        );
-                    }}
-                />
+                        path="/page/:breadcrumbs*/:pageName"
+                        render={({ match }) => {
+                            return (
+                                <ContentfulPage
+                                    urlKey={match.params.pageName}
+                                />
+                            );
+                        }}
+                    />
                     <Route
-                    path="/_preview/page/:pageName"
-                    render={({ match }) => {
-                        return (
-                            <ContentfulPage urlKey={match.params.pageName} />
-                        );
-                    }}
-                />
+                        path="/_preview/page/:pageName"
+                        render={({ match }) => {
+                            return (
+                                <ContentfulPage
+                                    urlKey={match.params.pageName}
+                                />
+                            );
+                        }}
+                    />
                     {/* the colon here is not literally there in the url */}
                     <Route
                         path={"/:segments*/stats"}
@@ -205,13 +215,15 @@ export const Routes: React.FunctionComponent<{}> = () => {
                                         }
                                     />
                                 );
-                        }
-                        switch (location.hash) {
-                            case "#/terms":
-                                return <ContentfulPage urlKey="termsOfUse" />;
-                            case "#/artofreading":
-                                return (
-                                    <Redirect to="/page/create/page/art-of-reading" />
+                            }
+                            switch (location.hash) {
+                                case "#/terms":
+                                    return (
+                                        <ContentfulPage urlKey="termsOfUse" />
+                                    );
+                                case "#/artofreading":
+                                    return (
+                                        <Redirect to="/page/create/page/art-of-reading" />
                                     );
                                 default:
                                     return (
