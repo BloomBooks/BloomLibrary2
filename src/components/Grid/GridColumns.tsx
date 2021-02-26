@@ -9,7 +9,6 @@ import {
     Column as DevExpressColumn,
     TableFilterRow,
 } from "@devexpress/dx-react-grid";
-
 import { Checkbox, TableCell, Select, MenuItem } from "@material-ui/core";
 import { Book } from "../../model/Book";
 import QueryString from "qs";
@@ -17,6 +16,7 @@ import titleCase from "title-case";
 import { IFilter, InCirculationOptions } from "../../IFilter";
 import { CachedTables } from "../../model/CacheProvider";
 import { BlorgLink } from "../BlorgLink";
+import { useSingleBookStats } from "../BookDetail/BookStats";
 
 export interface IGridColumn extends DevExpressColumn {
     moderatorOnly?: boolean;
@@ -243,6 +243,18 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                 filter.keywordsText = value;
             },
         },
+        {
+            name: "reads",
+            sortingEnabled: true,
+            getCellValue: (b: Book) => <GridBookReads key={b.id} book={b} />,
+        },
+        {
+            name: "downloadsForTranslation",
+            sortingEnabled: true,
+            getCellValue: (b: Book) => (
+                <GridBookDownloads key={b.id} book={b} />
+            ),
+        },
     ];
 
     // generate the capitalized column names since the grid doesn't do that.
@@ -279,6 +291,28 @@ export const GridSearchLink: React.FunctionComponent<{
         >
             {props.children}
         </BlorgLink>
+    );
+};
+
+// This component kicks off a query to get statistics for the book.
+// It displays "..." until the query returns to show that it is processing.
+// Enhance: It would be more efficient to do one query for a whole page of books iff one of the (two for now)
+// stats columns was visible.
+export const GridBookReads: React.FunctionComponent<{
+    book: Book;
+}> = (props) => {
+    const bookStats = useSingleBookStats(props.book);
+    return <div>{bookStats.bookid === "" ? "..." : bookStats.totalreads}</div>;
+};
+
+// This component kicks off a query to get statistics for the book.
+// It displays "..." until the query returns to show that it is processing.
+export const GridBookDownloads: React.FunctionComponent<{
+    book: Book;
+}> = (props) => {
+    const bookStats = useSingleBookStats(props.book);
+    return (
+        <div>{bookStats.bookid === "" ? "..." : bookStats.shelldownloads}</div>
     );
 };
 

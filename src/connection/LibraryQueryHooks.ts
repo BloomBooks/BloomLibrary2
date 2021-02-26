@@ -284,7 +284,7 @@ export function useGetBooksForGrid(
                 count: 1, // causes it to return the count
 
                 keys:
-                    "title,baseUrl,license,licenseNotes,inCirculation,summary,copyright,harvestState,harvestLog," +
+                    "title,baseUrl,license,licenseNotes,inCirculation,summary,copyright,harvestState,harvestLog,bookInstanceId," +
                     "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits,bookshelves," +
                     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher,originalPublisher,keywords,edition",
                 // fluff up fields that reference other tables

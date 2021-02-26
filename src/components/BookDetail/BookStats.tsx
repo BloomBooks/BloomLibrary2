@@ -35,6 +35,19 @@ function getInitialBookStats() {
     };
 }
 
+export function useSingleBookStats(book: Book): IBookStats {
+    const { response } = useAxios({
+        url: `https://api.bloomlibrary.org/v1/stats?book=${book.id}&book-instance-id=${book.bookInstanceId}`,
+        // Use this when debugging changes to the Azure function
+        // url: `http://localhost:7071/v1/stats?book=${book.id}&book-instance-id=${book.bookInstanceId}`,
+        method: "GET",
+        trigger: book.id,
+    });
+    if (response && response["data"] && response["data"]["bookstats"])
+        return response["data"]["bookstats"];
+    return getInitialBookStats();
+}
+
 // Display a string of stats about a particular book's usage such as `6 views, 3 reads, 2 devices, 1 shell downloads`.
 // We purposely use the term "stats" rather than "analytics" to try to distinguish, in code, between
 // analytics - the reporting of information about usage
@@ -44,20 +57,7 @@ function getInitialBookStats() {
 export const BookStats: React.FunctionComponent<{
     book: Book;
 }> = (props) => {
-    function useGetBookStats(book: Book): IBookStats {
-        const { response } = useAxios({
-            url: `https://api.bloomlibrary.org/v1/stats?book=${book.id}&book-instance-id=${book.bookInstanceId}`,
-            // Use this when debugging changes to the Azure function
-            // url: `http://localhost:7071/v1/stats?book=${book.id}&book-instance-id=${book.bookInstanceId}`,
-            method: "GET",
-            trigger: book.id,
-        });
-        if (response && response["data"] && response["data"]["bookstats"])
-            return response["data"]["bookstats"];
-        return getInitialBookStats();
-    }
-
-    const bookStats = useGetBookStats(props.book);
+    const bookStats = useSingleBookStats(props.book);
 
     const tooltipcontents = (
         <div>
