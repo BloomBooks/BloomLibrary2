@@ -153,6 +153,16 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                 gridFilters
             );
         }
+        if (props.setExportData) {
+            props.setExportData(
+                columnNamesInDisplayOrder,
+                hiddenColumnNames,
+                sortings.map((s) => ({
+                    columnName: s.columnName,
+                    descending: s.direction === "asc",
+                }))
+            );
+        }
 
         const totalBookMatchingFilter = useGetBookCount(
             filterMadeFromPageSearchPlusColumnFilters || {}

@@ -257,13 +257,7 @@ export function useGetBooksForGrid(
     });
 
     // Enhance: this only pays attention to the first one at this point, as that's all I figured out how to do
-    let order = "";
-    if (sortingArray?.length > 0) {
-        order = sortingArray[0].columnName;
-        if (sortingArray[0].descending) {
-            order = "-" + order; // a preceding minus sign means descending order
-        }
-    }
+    const order = constructParseSortOrder(sortingArray);
     const query = constructParseBookQuery({}, filter, tags);
     //console.log("order: " + order);
     const { response, loading, error } = useAxios({
@@ -807,6 +801,20 @@ function regex(value: string) {
 let reportedDerivativeProblem = false;
 
 export const kNameOfNoTopicCollection = "Other";
+
+export function constructParseSortOrder(
+    // We only pay attention to the first one at this point, as that's all I figured out
+    sortingArray: { columnName: string; descending: boolean }[]
+) {
+    let order = "";
+    if (sortingArray?.length > 0) {
+        order = sortingArray[0].columnName;
+        if (sortingArray[0].descending) {
+            order = "-" + order; // a preceding minus sign means descending order
+        }
+    }
+    return order;
+}
 
 export function constructParseBookQuery(
     params: any,
