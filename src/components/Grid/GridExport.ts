@@ -1,6 +1,4 @@
-import { axios } from "@use-hooks/axios";
-import { getConnection } from "../../connection/ParseServerConnection";
-import { exportCsv } from "../statistics/exportData";
+import { exportCsv } from "../../export/exportData";
 import { Book, createBookFromParseServerData } from "../../model/Book";
 import { CachedTables } from "../../model/CacheProvider";
 import { IFilter } from "../../IFilter";
@@ -9,63 +7,64 @@ import {
     constructParseSortOrder,
     constructParseBookQuery,
 } from "../../connection/LibraryQueryHooks";
+import { retrieveAllGridBookData } from "../../connection/LibraryQueries";
 
-let theBooks: Book[] = [];
-let theColumnsInOrder: string[] = [];
-let theHiddenColumns: string[] = [];
-let theSortingArray: Array<{
+let static_books: Book[] = [];
+let static_columnsInOrder: string[] = [];
+let static_hiddenColumns: string[] = [];
+let static_sortingArray: Array<{
     columnName: string;
     descending: boolean;
 }> = [];
-let theCompleteFilter: IFilter;
-let theGridColumnFilters: GridFilter[];
+let static_completeFilter: IFilter;
+let static_gridColumnFilters: GridFilter[];
 
 export function setGridExportFilter(
     completeFilter: IFilter, //includes the search box
     gridColumnFilters: GridFilter[] //just the filters from the headers of the columns
 ): void {
-    theCompleteFilter = completeFilter;
-    theGridColumnFilters = gridColumnFilters;
+    static_completeFilter = completeFilter;
+    static_gridColumnFilters = gridColumnFilters;
 }
 
-export function setGridExportData(
+export function setGridExportColumnInfo(
     columnsInOrder: string[],
     hiddenColumns: string[],
     sortingArray: Array<{ columnName: string; descending: boolean }>
 ) {
-    theColumnsInOrder = columnsInOrder;
-    theHiddenColumns = hiddenColumns;
-    theSortingArray = sortingArray;
+    static_columnsInOrder = columnsInOrder;
+    static_hiddenColumns = hiddenColumns;
+    static_sortingArray = sortingArray;
 }
 
 export function getAllGridDataAndExportCsv(): void {
-    const order = constructParseSortOrder(theSortingArray);
+    const order = constructParseSortOrder(static_sortingArray);
     const query = constructParseBookQuery(
         {},
-        theCompleteFilter,
+        static_completeFilter,
         CachedTables.tags
     );
     const retrieval = retrieveAllGridBookData(query, order);
     retrieval.then((data) => {
         const totalMatchingBooksCount = data["count"] as number;
         if (!totalMatchingBooksCount) return;
-        theBooks = data["results"].map((r: object) =>
+        static_books = data["results"].map((r: object) =>
             createBookFromParseServerData(r)
         );
         exportCsv("Grid", exportData);
-        theBooks = []; // allow garbage collection since we don't need this data any longer.
+        static_books = []; // allow garbage collection since we don't need this data any longer.
     });
 }
 
 function exportData(): string[][] {
     const all: string[][] = [];
-    if (!theBooks || !theBooks.length) return all;
-    const headerRow = theColumnsInOrder.filter(
-        (item) => !theHiddenColumns.includes(item)
+    if (!static_books || !static_books.length) return all;
+    const headerRow = static_columnsInOrder.filter(
+        (item) => !static_hiddenColumns.includes(item)
     );
     all.push(headerRow);
 
-    theBooks.forEach((book) => {
+    static_books.forEach((book) => {
         //const valueRow = Object.values(row).map((v) => v ? v.toString() : "") as string[];
         const valueRow = headerRow.map((key) => getStringForItem(book, key));
         all.push(valueRow);
@@ -76,7 +75,7 @@ function exportData(): string[][] {
 function getStringForItem(book: Book, key: string): string {
     switch (key) {
         case "languages":
-            return book.languages.map((lang) => lang.name).join(",");
+            return book.languages.map((lang) => lang.name).join(", ");
         case "uploader":
             return book.uploader?.username ?? "";
         case "topic":
@@ -88,33 +87,14 @@ function getStringForItem(book: Book, key: string): string {
             return book.tags.filter((tag) => tag === "system:Incoming").length
                 ? "true"
                 : "false";
+        case "tags":
+            return book.tags
+                .filter(
+                    (tag) =>
+                        !tag.startsWith("topic:") && tag !== "system:Incoming"
+                )
+                .join(", ");
     }
     let item = book[key as keyof Book];
     return item ? item.toString() : "";
-}
-
-// Get all the information for all the books currently displayed in the grid, as
-// filtered and sorted by query and sortOrder.
-export async function retrieveAllGridBookData(
-    query: object,
-    sortOrder: string
-) {
-    console.log(`DEBUG: query="${JSON.stringify(query)}"`);
-    console.log(`DEBUG: sortOrder="${sortOrder}"`);
-    const result = await axios.get(`${getConnection().url}classes/books`, {
-        headers: getConnection().headers,
-        params: {
-            order: sortOrder,
-            count: 1, // causes it to return the count
-            limit: 100000000,
-            keys:
-                "title,baseUrl,license,licenseNotes,inCirculation,summary,copyright,harvestState,harvestLog," +
-                "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits,bookshelves," +
-                "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher,originalPublisher,keywords,edition,objectId,bookInstanceId",
-            // fluff up fields that reference other tables
-            include: "uploader,langPointers",
-            ...query,
-        },
-    });
-    return result.data;
 }

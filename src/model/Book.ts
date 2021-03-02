@@ -1,8 +1,6 @@
 import { observable, makeObservable } from "mobx";
-import {
-    updateBook,
-    retrieveCurrentBookData,
-} from "../connection/LibraryUpdates";
+import { updateBook } from "../connection/LibraryUpdates";
+import { retrieveCurrentBookData } from "../connection/LibraryQueries";
 import { ArtifactVisibilitySettingsGroup } from "./ArtifactVisibilitySettings";
 import { ILanguage } from "./Language";
 import { removePunctuation } from "../Utilities";

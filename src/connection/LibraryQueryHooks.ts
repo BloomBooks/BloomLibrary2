@@ -242,6 +242,18 @@ interface IGridResult {
     onePageOfMatchingBooks: Book[];
     totalMatchingBooksCount: number;
 }
+
+export const gridBookKeys =
+    "title,baseUrl,license,licenseNotes,inCirculation,summary,copyright,harvestState,harvestLog," +
+    "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits,bookshelves," +
+    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher,originalPublisher,keywords,edition";
+
+export const gridBookIncludeFields = "uploader,langPointers";
+
+// the axios call here (in the useAxios call) must mimic that found in LibraryQueries/retrieveAllGridBookData
+// exactly except for the skip and limit parameters.  This hook gets one page worth of books: the other function
+// retrieves data for all of the books in one query.  We have separate methods because this is a hook, and uses
+// a hook to access axios, while the other method is invoked in response to clicking a button for exporting.
 export function useGetBooksForGrid(
     filter: IFilter,
     limit: number,
@@ -276,13 +288,9 @@ export function useGetBooksForGrid(
                 skip,
                 order,
                 count: 1, // causes it to return the count
-
-                keys:
-                    "title,baseUrl,license,licenseNotes,inCirculation,summary,copyright,harvestState,harvestLog," +
-                    "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits,bookshelves," +
-                    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher,originalPublisher,keywords,edition",
+                keys: gridBookKeys,
                 // fluff up fields that reference other tables
-                include: "uploader,langPointers",
+                include: gridBookIncludeFields,
                 ...query,
             },
         },

@@ -1,6 +1,5 @@
 import { axios } from "@use-hooks/axios";
 import { getConnection } from "./ParseServerConnection";
-import { bookDetailFields } from "./LibraryQueryHooks";
 
 export function updateBook(
     bookId: string,
@@ -31,21 +30,4 @@ export function updateBook(
         .catch((error) => {
             alert(error);
         });
-}
-
-// Get the current information about one book.
-// Not sure this is the right place for this. But it's used in an update operation,
-// and it's definitely not a hook, so it seemed best to keep the parse server
-// direct operations in just two places.
-export async function retrieveCurrentBookData(bookId: string) {
-    const headers = getConnection().headers;
-    const result = await axios.get(
-        `${getConnection().url}classes/books/${bookId}`,
-        {
-            headers,
-            params: { keys: bookDetailFields },
-        }
-    );
-
-    return result.data;
 }

@@ -159,7 +159,7 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                 hiddenColumnNames,
                 sortings.map((s) => ({
                     columnName: s.columnName,
-                    descending: s.direction === "asc",
+                    descending: s.direction === "desc",
                 }))
             );
         }
@@ -177,7 +177,7 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
             gridPage * kBooksPerGridPage,
             sortings.map((s) => ({
                 columnName: s.columnName,
-                descending: s.direction === "asc",
+                descending: s.direction === "desc",
             }))
         );
         const thisIsAModerator = user?.moderator;
