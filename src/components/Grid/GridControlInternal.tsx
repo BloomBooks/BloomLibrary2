@@ -153,6 +153,16 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                 gridFilters
             );
         }
+        if (props.setExportData) {
+            props.setExportData(
+                columnNamesInDisplayOrder,
+                hiddenColumnNames,
+                sortings.map((s) => ({
+                    columnName: s.columnName,
+                    descending: s.direction === "desc",
+                }))
+            );
+        }
 
         const totalBookMatchingFilter = useGetBookCount(
             filterMadeFromPageSearchPlusColumnFilters || {}
@@ -167,7 +177,7 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
             gridPage * kBooksPerGridPage,
             sortings.map((s) => ({
                 columnName: s.columnName,
-                descending: s.direction === "asc",
+                descending: s.direction === "desc",
             }))
         );
         const thisIsAModerator = user?.moderator;

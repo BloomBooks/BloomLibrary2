@@ -242,6 +242,18 @@ interface IGridResult {
     onePageOfMatchingBooks: Book[];
     totalMatchingBooksCount: number;
 }
+
+export const gridBookKeys =
+    "title,baseUrl,license,licenseNotes,inCirculation,summary,copyright,harvestState,harvestLog," +
+    "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits,bookshelves," +
+    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher,originalPublisher,keywords,edition";
+
+export const gridBookIncludeFields = "uploader,langPointers";
+
+// the axios call here (in the useAxios call) must mimic that found in LibraryQueries/retrieveAllGridBookData
+// exactly except for the skip and limit parameters.  This hook gets one page worth of books: the other function
+// retrieves data for all of the books in one query.  We have separate methods because this is a hook, and uses
+// a hook to access axios, while the other method is invoked in response to clicking a button for exporting.
 export function useGetBooksForGrid(
     filter: IFilter,
     limit: number,
@@ -257,13 +269,7 @@ export function useGetBooksForGrid(
     });
 
     // Enhance: this only pays attention to the first one at this point, as that's all I figured out how to do
-    let order = "";
-    if (sortingArray?.length > 0) {
-        order = sortingArray[0].columnName;
-        if (sortingArray[0].descending) {
-            order = "-" + order; // a preceding minus sign means descending order
-        }
-    }
+    const order = constructParseSortOrder(sortingArray);
     const query = constructParseBookQuery({}, filter, tags);
     //console.log("order: " + order);
     const { response, loading, error } = useAxios({
@@ -282,13 +288,9 @@ export function useGetBooksForGrid(
                 skip,
                 order,
                 count: 1, // causes it to return the count
-
-                keys:
-                    "title,baseUrl,license,licenseNotes,inCirculation,summary,copyright,harvestState,harvestLog," +
-                    "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits,bookshelves," +
-                    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher,originalPublisher,keywords,edition",
+                keys: gridBookKeys,
                 // fluff up fields that reference other tables
-                include: "uploader,langPointers",
+                include: gridBookIncludeFields,
                 ...query,
             },
         },
@@ -807,6 +809,20 @@ function regex(value: string) {
 let reportedDerivativeProblem = false;
 
 export const kNameOfNoTopicCollection = "Other";
+
+export function constructParseSortOrder(
+    // We only pay attention to the first one at this point, as that's all I figured out
+    sortingArray: { columnName: string; descending: boolean }[]
+) {
+    let order = "";
+    if (sortingArray?.length > 0) {
+        order = sortingArray[0].columnName;
+        if (sortingArray[0].descending) {
+            order = "-" + order; // a preceding minus sign means descending order
+        }
+    }
+    return order;
+}
 
 export function constructParseBookQuery(
     params: any,

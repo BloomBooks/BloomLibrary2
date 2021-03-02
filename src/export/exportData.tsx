@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { ExportDataFn } from "./StatsInterfaces";
+import { saveAs } from "file-saver";
 
 // Tables and charts call this to provide a function that the parent screen can call in order
 // to export the data that is in the chart.
@@ -79,3 +79,5 @@ function csvEncode(value: string): string {
     }
     return value;
 }
+
+export type ExportDataFn = () => string[][];
