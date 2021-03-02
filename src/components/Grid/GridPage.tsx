@@ -11,10 +11,10 @@ import { IFilter } from "../../IFilter";
 import { useSetBrowserTabTitle } from "../Routes";
 import Button from "@material-ui/core/Button";
 import { useIntl } from "react-intl";
-import DownloadCsvIcon from "../statistics/download-csv.svg";
+import DownloadCsvIcon from "../../export/download-csv.svg";
 import {
     setGridExportFilter,
-    setGridExportData,
+    setGridExportColumnInfo,
     getAllGridDataAndExportCsv,
 } from "./GridExport";
 
@@ -45,7 +45,7 @@ export const GridPage: React.FunctionComponent<{ filters: string }> = (
             <GridControl
                 contextFilter={contextFilter}
                 setCurrentFilter={setGridExportFilter}
-                setExportData={setGridExportData}
+                setExportData={setGridExportColumnInfo}
             />
             <div
                 css={css`

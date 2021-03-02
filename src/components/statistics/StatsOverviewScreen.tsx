@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import { IStatsProps } from "./StatsInterfaces";
 import { StatsCard } from "./StatsCard";
-import { useProvideDataForExport } from "./exportData";
+import { useProvideDataForExport } from "../../export/exportData";
 import { useGetOverviewStats } from "./useGetOverviewStats";
 import { FormattedMessage, useIntl } from "react-intl";
 

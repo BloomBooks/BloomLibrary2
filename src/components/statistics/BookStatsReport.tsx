@@ -16,7 +16,7 @@ import { IGridColumn } from "../Grid/GridColumns";
 import { useState, useContext } from "react";
 import { IStatsProps } from "./StatsInterfaces";
 import { useGetBookStats } from "./useGetBookStats";
-import { useProvideDataForExport } from "./exportData";
+import { useProvideDataForExport } from "../../export/exportData";
 import { CachedTablesContext } from "../../model/CacheProvider";
 import { getDisplayNamesFromLanguageCode } from "../../model/Language";
 import { useIntl } from "react-intl";

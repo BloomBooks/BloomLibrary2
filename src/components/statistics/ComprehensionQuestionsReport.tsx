@@ -17,7 +17,7 @@ import { IGridColumn } from "../Grid/GridColumns";
 import { useState } from "react";
 import { IStatsProps } from "./StatsInterfaces";
 import { useGetBookComprehensionEventStats } from "./useGetBookStats";
-import { useProvideDataForExport } from "./exportData";
+import { useProvideDataForExport } from "../../export/exportData";
 import { useIntl } from "react-intl";
 
 export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> = (

@@ -8,7 +8,7 @@ import { Bar, LabelFormatter } from "@nivo/bar";
 import { commonUI } from "../../theme";
 import { useGetDailyBookEventStats } from "./useGetDailyBookEventStats";
 import { IStatsProps } from "./StatsInterfaces";
-import { useProvideDataForExport } from "./exportData";
+import { useProvideDataForExport } from "../../export/exportData";
 import { getFakeUtcDate } from "./DateRangePicker";
 import { toYyyyMmDd } from "../../Utilities";
 
