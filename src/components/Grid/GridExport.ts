@@ -17,14 +17,12 @@ let static_sortingArray: Array<{
     descending: boolean;
 }> = [];
 let static_completeFilter: IFilter;
-let static_gridColumnFilters: GridFilter[];
 
 export function setGridExportFilter(
     completeFilter: IFilter, //includes the search box
     gridColumnFilters: GridFilter[] //just the filters from the headers of the columns
 ): void {
     static_completeFilter = completeFilter;
-    static_gridColumnFilters = gridColumnFilters;
 }
 
 export function setGridExportColumnInfo(
@@ -95,6 +93,6 @@ function getStringForItem(book: Book, key: string): string {
                 )
                 .join(", ");
     }
-    let item = book[key as keyof Book];
+    const item = book[key as keyof Book];
     return item ? item.toString() : "";
 }
