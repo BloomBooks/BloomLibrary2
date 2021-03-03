@@ -66,6 +66,11 @@ export interface IBookStat {
     */
     startedCount: number;
     finishedCount: number;
+
+    shellDownloads: number;
+    pdfDownloads: number;
+    epubDownloads: number;
+    bloomPubDownloads: number;
 }
 export interface IScreen {
     label: string;
