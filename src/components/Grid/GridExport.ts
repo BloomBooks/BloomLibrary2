@@ -82,7 +82,7 @@ function getStringForItem(book: Book, key: string): string {
             return book.tags
                 .filter((tag) => tag.startsWith("topic:"))
                 .map((topic) => topic.replace("topic:", ""))
-                .join(",");
+                .join(", ");
         case "incoming":
             return book.tags.filter((tag) => tag === "system:Incoming").length
                 ? "true"
