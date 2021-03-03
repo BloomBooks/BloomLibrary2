@@ -5,6 +5,7 @@ import {
     gridBookKeys,
     gridBookIncludeFields,
 } from "./LibraryQueryHooks";
+import { getBloomApiUrl } from "./ApiConnection";
 
 // Get all the information for all the books currently displayed in the grid, as
 // filtered and sorted by query and sortOrder.
@@ -32,6 +33,33 @@ export async function retrieveAllGridBookData(
             ...query,
         },
     });
+    return result.data;
+}
+
+export async function retrieveAllGridBookStats(
+    query: object,
+    sortOrder: string
+) {
+    const result = await axios.post(
+        `${getBloomApiUrl()}/v1/stats/reading/per-book`,
+        {
+            filter: {
+                parseDBQuery: {
+                    url: `${getConnection().url}classes/books`,
+                    method: "GET",
+                    options: {
+                        headers: getConnection().headers,
+                        params: {
+                            order: sortOrder,
+                            limit: 10000000,
+                            keys: "objectId,bookInstanceId",
+                            ...query,
+                        },
+                    },
+                },
+            },
+        }
+    );
     return result.data;
 }
 

@@ -6,8 +6,12 @@ import { Filter as GridFilter } from "@devexpress/dx-react-grid";
 import {
     constructParseSortOrder,
     constructParseBookQuery,
+    joinBooksAndStats,
 } from "../../connection/LibraryQueryHooks";
-import { retrieveAllGridBookData } from "../../connection/LibraryQueries";
+import {
+    retrieveAllGridBookData,
+    retrieveAllGridBookStats,
+} from "../../connection/LibraryQueries";
 
 let static_books: Book[] = [];
 let static_columnsInOrder: string[] = [];
@@ -23,6 +27,7 @@ export function setGridExportFilter(
     gridColumnFilters: GridFilter[] //just the filters from the headers of the columns
 ): void {
     static_completeFilter = completeFilter;
+    // don't have a use for the gridColumnFilters, so ignore that argument
 }
 
 export function setGridExportColumnInfo(
@@ -42,13 +47,16 @@ export function getAllGridDataAndExportCsv(): void {
         static_completeFilter,
         CachedTables.tags
     );
-    const retrieval = retrieveAllGridBookData(query, order);
-    retrieval.then((data) => {
-        const totalMatchingBooksCount = data["count"] as number;
+    const bookData = retrieveAllGridBookData(query, order);
+    const bookStats = retrieveAllGridBookStats(query, order);
+    Promise.all([bookData, bookStats]).then(([bookData, bookStats]) => {
+        const totalMatchingBooksCount = bookData["count"] as number;
         if (!totalMatchingBooksCount) return;
-        static_books = data["results"].map((r: object) =>
+        static_books = bookData["results"].map((r: object) =>
             createBookFromParseServerData(r)
         );
+        joinBooksAndStats(static_books, bookStats);
+
         exportCsv("Grid", exportData);
         static_books = []; // allow garbage collection since we don't need this data any longer.
     });
@@ -92,6 +100,10 @@ function getStringForItem(book: Book, key: string): string {
                         !tag.startsWith("topic:") && tag !== "system:Incoming"
                 )
                 .join(", ");
+        case "reads":
+            return book.stats.finishedCount.toString();
+        case "downloadsForTranslation":
+            return book.stats.shellDownloads.toString();
     }
     const item = book[key as keyof Book];
     return item ? item.toString() : "";

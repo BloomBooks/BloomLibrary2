@@ -244,6 +244,7 @@ interface IGridResult {
 }
 
 export const gridBookKeys =
+    "objectId,bookInstanceId," +
     "title,baseUrl,license,licenseNotes,inCirculation,summary,copyright,harvestState,harvestLog," +
     "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits,bookshelves," +
     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher,originalPublisher,keywords,edition";
@@ -295,6 +296,35 @@ export function useGetBooksForGrid(
             },
         },
     });
+    const stats = useAxios({
+        url: `${getBloomApiUrl()}/v1/stats/reading/per-book`,
+        method: "POST",
+        trigger:
+            JSON.stringify(filter) +
+            limit.toString() +
+            skip.toString() +
+            order.toString(),
+        options: {
+            data: {
+                filter: {
+                    parseDBQuery: {
+                        url: `${getConnection().url}classes/books`,
+                        method: "GET",
+                        options: {
+                            headers: getConnection().headers,
+                            params: {
+                                limit,
+                                skip,
+                                order,
+                                keys: "objectId,bookInstanceId",
+                                ...query,
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    });
 
     // Before we had this useEffect, we would get a new instance of each book, each time the grid re-rendered.
     // Besides being inefficient, it led to a very difficult bug in the embedded staff panel where we would
@@ -322,9 +352,65 @@ export function useGetBooksForGrid(
                 onePageOfMatchingBooks: onePageOfBooks,
                 totalMatchingBooksCount: response["data"]["count"],
             });
+            if (
+                stats.response &&
+                stats.response["data"] &&
+                stats.response["data"]["stats"] &&
+                stats.response["data"]["stats"].length > 0
+            ) {
+                joinBooksAndStats(onePageOfBooks, stats.response["data"]);
+            }
         }
-    }, [loading, error, response]);
+    }, [loading, error, response, stats.loading, stats.error, stats.response]);
     return result;
+}
+
+// The basic data for books and the analytic statistics are currently stored in different
+// databases in the Cloud.  We want to join the statistics for each book with the read of
+// the data for that book to display or save.  This method effectively does the desired
+// join by adding the statistics represented by raw JSON returned from a web api call to
+// the appropriate books in the input array of Book objects.  The array of Books must be
+// created from a compatible (but separate) web api call so that the book instance ids in
+// the two sets of input data can match up properly.
+export function joinBooksAndStats(books: Book[], bookStats: any) {
+    // Set up (builtin javascript) hashmap for faster access to book via its instance id.
+    const bookFromIdMap: any = {};
+    books.forEach((book: Book) => {
+        bookFromIdMap[book.bookInstanceId] = book;
+    });
+    bookStats["stats"].forEach((statRow: any) => {
+        const book: Book = bookFromIdMap[statRow.bookinstanceid];
+        if (book) {
+            book.stats.title = statRow.booktitle;
+            book.stats.branding = statRow.bookbranding;
+            book.stats.language = statRow.language;
+            // The parseInt and parseFloat methods are important.
+            // Without them, js will treat the values like strings even though typescript knows they are numbers.
+            // Then the + operator will concatenate instead of add.
+            book.stats.startedCount = parseInt(statRow.started, 10) || 0;
+            book.stats.finishedCount = parseInt(statRow.finished, 10) || 0;
+            book.stats.shellDownloads =
+                parseInt(statRow.shelldownloads, 10) || 0;
+            book.stats.pdfDownloads = parseInt(statRow.pdfdownloads, 10) || 0;
+            book.stats.epubDownloads = parseInt(statRow.epubdownloads, 10) || 0;
+            book.stats.bloomPubDownloads =
+                parseInt(statRow.bloompubdownloads, 10) || 0;
+            book.stats.questions =
+                parseInt(statRow.numquestionsinbook, 10) || 0;
+            book.stats.quizzesTaken =
+                parseInt(statRow.numquizzestaken, 10) || 0;
+            book.stats.meanCorrect =
+                parseFloat(statRow.meanpctquestionscorrect) || 0.0;
+            book.stats.medianCorrect =
+                parseFloat(statRow.medianpctquestionscorrect) || 0.0;
+        } else {
+            console.error(
+                `stats row did not match any book provided: ${JSON.stringify(
+                    statRow
+                )}`
+            );
+        }
+    });
 }
 
 // we just want a better name
