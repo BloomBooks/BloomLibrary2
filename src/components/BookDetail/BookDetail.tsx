@@ -101,7 +101,7 @@ const BookDetailInternal: React.FunctionComponent<{
             css={css`
                 margin-top: 10px !important;
                 margin-bottom: 10px !important;
-                background-color: rgba(29, 148, 164, 0.13) !important;
+                background-color: ${commonUI.colors.bloomBlue}21 !important;
                 height: 2px !important;
             `}
         />

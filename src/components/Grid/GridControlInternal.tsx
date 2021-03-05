@@ -309,7 +309,7 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                                 return (
                                     <div
                                         css={css`
-                                            //background-color: #1d94a438;
+                                            //background-color: #1a818f38;
                                         `}
                                     >
                                         <StaffPanel book={book}></StaffPanel>

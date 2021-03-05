@@ -13,7 +13,7 @@ import { ArtifactAndChoice } from "../components/BookDetail/ArtifactVisibilityPa
 import { ArtifactVisibilitySettings } from "../model/ArtifactVisibilitySettings";
 import BookDetail from "../components/BookDetail/BookDetail";
 import { ThemeProvider } from "@material-ui/styles";
-import theme from "../theme";
+import theme, { commonUI } from "../theme";
 import { ReadBookPageCodeSplit } from "../components/ReadBookPageCodeSplit";
 import { ConfirmationDialog } from "../components/ConfirmationDialog";
 import { ArtifactType } from "../model/Book";
@@ -184,7 +184,7 @@ storiesOf("Components", module)
         return <BloomPubIcon></BloomPubIcon>;
     })
     .add("BloomPubIcon -- Bloom blue filled", () => {
-        return <BloomPubIcon fill={"#1d94a4"}></BloomPubIcon>;
+        return <BloomPubIcon fill={commonUI.colors.bloomBlue}></BloomPubIcon>;
     });
 
 const triStateBooleanOptions = [undefined, false, true];
