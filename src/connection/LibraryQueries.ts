@@ -7,60 +7,53 @@ import {
 } from "./LibraryQueryHooks";
 import { getBloomApiUrl } from "./ApiConnection";
 
-// Get all the information for all the books currently displayed in the grid, as
-// filtered and sorted by query and sortOrder.
-// This axios call in this method must mimic that in LibraryQueryHooks/useGetBooksForGrid
-// exactly except for not setting skip and setting limit to an unreasonably large number.
-// useGetBooksForGrid uses useAxios for the call to keep things simple, but we can't use
-// that hook because of React's infamous Law of Hooks.
-// (Actually, if we wanted to make 2 calls to useGetBooksForGrid every time, we could, once
-// for a page's worth of books and once for all the books, but that's grossly inefficient
-// and makes it harder to guarantee that the exported data is the absolute latest since it
-// can take several seconds best case to fetch all of the book data.)
-export async function retrieveAllGridBookData(
+// Get basic information about a number of books for the grid page
+export async function retrieveBookData(
     query: object,
-    sortOrder: string
+    sortOrder: string,
+    skipCount: number,
+    limitCount: number
 ) {
-    const result = await axios.get(`${getConnection().url}classes/books`, {
+    return axios.get(`${getConnection().url}classes/books`, {
         headers: getConnection().headers,
         params: {
-            order: sortOrder,
             count: 1, // causes it to return the count
-            limit: 100000000,
+            order: sortOrder,
+            skip: skipCount,
+            limit: limitCount,
             keys: gridBookKeys,
             // fluff up fields that reference other tables
             include: gridBookIncludeFields,
             ...query,
         },
     });
-    return result.data;
 }
 
-export async function retrieveAllGridBookStats(
+// Get statistics for a number of books for the grid page
+export async function retrieveBookStats(
     query: object,
-    sortOrder: string
+    sortOrder: string,
+    skipCount: number,
+    limitCount: number
 ) {
-    const result = await axios.post(
-        `${getBloomApiUrl()}/v1/stats/reading/per-book`,
-        {
-            filter: {
-                parseDBQuery: {
-                    url: `${getConnection().url}classes/books`,
-                    method: "GET",
-                    options: {
-                        headers: getConnection().headers,
-                        params: {
-                            order: sortOrder,
-                            limit: 10000000,
-                            keys: "objectId,bookInstanceId",
-                            ...query,
-                        },
+    return axios.post(`${getBloomApiUrl()}/v1/stats/reading/per-book`, {
+        filter: {
+            parseDBQuery: {
+                url: `${getConnection().url}classes/books`,
+                method: "GET",
+                options: {
+                    headers: getConnection().headers,
+                    params: {
+                        order: sortOrder,
+                        skip: skipCount,
+                        limit: limitCount,
+                        keys: "objectId,bookInstanceId",
+                        ...query,
                     },
                 },
             },
-        }
-    );
-    return result.data;
+        },
+    });
 }
 
 // Get the current information about one book.

@@ -2,6 +2,7 @@ import useAxios, { IReturns, axios, IParams } from "@use-hooks/axios";
 import { IFilter, InCirculationOptions } from "../IFilter";
 import { getConnection } from "./ParseServerConnection";
 import { getBloomApiUrl } from "./ApiConnection";
+import { retrieveBookData, retrieveBookStats } from "./LibraryQueries";
 import { Book, createBookFromParseServerData } from "../model/Book";
 import { useContext, useMemo, useEffect, useState } from "react";
 import { CachedTablesContext } from "../model/CacheProvider";
@@ -275,59 +276,20 @@ export function useGetBooksForGrid(
     // Enhance: this only pays attention to the first one at this point, as that's all I figured out how to do
     const order = constructParseSortOrder(sortingArray);
     const query = constructParseBookQuery({}, filter, tags);
-    //console.log("order: " + order);
-    const { response, loading, error } = useAxios({
-        url: `${getConnection().url}classes/books`,
-        method: "GET",
-        trigger:
-            JSON.stringify(filter) +
-            limit.toString() +
-            skip.toString() +
-            order.toString(),
+    const trigger =
+        JSON.stringify(filter) +
+        limit.toString() +
+        skip.toString() +
+        order.toString();
 
-        options: {
-            headers: getConnection().headers,
-            params: {
-                limit,
-                skip,
-                order,
-                count: 1, // causes it to return the count
-                keys: gridBookKeys,
-                // fluff up fields that reference other tables
-                include: gridBookIncludeFields,
-                ...query,
-            },
-        },
-    });
-    const stats = useAxios({
-        url: `${getBloomApiUrl()}/v1/stats/reading/per-book`,
-        method: "POST",
-        trigger:
-            JSON.stringify(filter) +
-            limit.toString() +
-            skip.toString() +
-            order.toString(),
-        options: {
-            data: {
-                filter: {
-                    parseDBQuery: {
-                        url: `${getConnection().url}classes/books`,
-                        method: "GET",
-                        options: {
-                            headers: getConnection().headers,
-                            params: {
-                                limit,
-                                skip,
-                                order,
-                                keys: "objectId,bookInstanceId",
-                                ...query,
-                            },
-                        },
-                    },
-                },
-            },
-        },
-    });
+    const { response, loading, error } = useAsync(
+        () => retrieveBookData(query, order, skip, limit),
+        trigger
+    );
+    const stats = useAsync(
+        () => retrieveBookStats(query, order, skip, limit),
+        trigger
+    );
 
     // Before we had this useEffect, we would get a new instance of each book, each time the grid re-rendered.
     // Besides being inefficient, it led to a very difficult bug in the embedded staff panel where we would
@@ -356,6 +318,8 @@ export function useGetBooksForGrid(
                 totalMatchingBooksCount: response["data"]["count"],
             });
             if (
+                !stats.loading &&
+                !stats.error &&
                 stats.response &&
                 stats.response["data"] &&
                 stats.response["data"]["stats"] &&
@@ -1294,3 +1258,35 @@ export async function deleteBook(id: string) {
         headers: getConnection().headers,
     });
 }
+
+// Some axios calls should be shared between hook and non-hook uses.  useAxios is
+// great if the call doesn't need to be shared, but is unusable ouside of hooks.
+// This generic hook allows us to feed in a function that calls axios and returns
+// its Promise.  This function is adapted from the one developed in the web article
+// https://dev.to/lukasmoellerch/a-hook-to-use-promise-results-2hfd.
+const useAsync = <T>(fn: () => Promise<T>, trigger: string) => {
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<Error | undefined>();
+    const [response, setResponse] = useState<T | undefined>();
+    useEffect(() => {
+        setLoading(true);
+        let cancel = false;
+        fn().then(
+            (result) => {
+                if (cancel) return;
+                setResponse(result);
+                setLoading(false);
+            },
+            (error) => {
+                if (cancel) return;
+                setError(error);
+                setLoading(false);
+            }
+        );
+        return () => {
+            cancel = true;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [trigger]);
+    return { response, loading, error };
+};

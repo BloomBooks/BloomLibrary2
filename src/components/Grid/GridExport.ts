@@ -9,8 +9,8 @@ import {
     joinBooksAndStats,
 } from "../../connection/LibraryQueryHooks";
 import {
-    retrieveAllGridBookData,
-    retrieveAllGridBookStats,
+    retrieveBookData,
+    retrieveBookStats,
 } from "../../connection/LibraryQueries";
 
 let static_books: Book[] = [];
@@ -47,16 +47,16 @@ export function getAllGridDataAndExportCsv(): void {
         static_completeFilter,
         CachedTables.tags
     );
-    const bookDataPromise = retrieveAllGridBookData(query, order);
-    const bookStatsPromise = retrieveAllGridBookStats(query, order);
+    const bookDataPromise = retrieveBookData(query, order, 0, 10000000);
+    const bookStatsPromise = retrieveBookStats(query, order, 0, 10000000);
     Promise.all([bookDataPromise, bookStatsPromise]).then(
         ([bookData, bookStats]) => {
-            const totalMatchingBooksCount = bookData["count"] as number;
+            const totalMatchingBooksCount = bookData.data["count"] as number;
             if (!totalMatchingBooksCount) return;
-            static_books = bookData["results"].map((r: object) =>
+            static_books = bookData.data["results"].map((r: object) =>
                 createBookFromParseServerData(r)
             );
-            joinBooksAndStats(static_books, bookStats);
+            joinBooksAndStats(static_books, bookStats.data);
 
             exportCsv("Grid", exportData);
             static_books = []; // allow garbage collection since we don't need this data any longer.
