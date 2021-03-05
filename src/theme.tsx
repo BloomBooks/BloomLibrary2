@@ -9,7 +9,7 @@ export const commonUI = {
         // from 64 to 56, which according to https://juicystudio.com/services/luminositycontrastratio.php#specify
         // yields a contrast ratio of 4.58.
         bloomBlue: "#1a818f",
-        bloomBlueTransparent: "#1d94a438",
+        bloomBlueTransparent: "#1a818f38",
         dialogTopBottomGray: "#F1F3F4",
         creationArea: "#509E2F", // this is the SIL Intl green
         createAreaTextOnWhite: "#226B04", // a bit darker for contrast
@@ -37,7 +37,7 @@ const theme = createMuiTheme({
             light: commonUI.colors.bloomBlueTransparent,
         },
         warning: { main: "#F3AA18" },
-        info: { main: "#1d94a4" },
+        info: { main: commonUI.colors.bloomBlue },
     },
     // typography: {
     //     fontSize: 12,

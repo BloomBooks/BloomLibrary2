@@ -6,13 +6,15 @@ import { jsx } from "@emotion/core";
 
 import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
-import TranslationIcon from "../../assets/Translation.svg";
+import { ReactComponent as TranslationIcon } from "../../assets/Translation.svg";
 import { commonUI } from "../../theme";
-import { FormattedMessage, useIntl } from "react-intl";
+import { FormattedMessage } from "react-intl";
 import { DownloadPreflightDialog } from "./DownloadPreflightDialog";
 import { useStorageState } from "react-storage-hooks";
 import { DownloadingShellbookDialog } from "./DownloadingShellbookDialog";
 import { Book } from "../../model/Book";
+import { useTheme } from "@material-ui/core";
+import { useLocation } from "react-router-dom";
 
 interface ITranslateButtonProps {
     book: Book;
@@ -23,7 +25,7 @@ interface ITranslateButtonProps {
 export const TranslateButton: React.FunctionComponent<ITranslateButtonProps> = (
     props
 ) => {
-    const l10n = useIntl();
+    const theme = useTheme();
     const [preflightDialogOpen, setPreflightDialogOpen] = useState(false);
     const [downloadingDialogOpen, setDownloadingDialogOpen] = useState(false);
     const [
@@ -34,6 +36,13 @@ export const TranslateButton: React.FunctionComponent<ITranslateButtonProps> = (
         "dont-show-download-preflight-dialog",
         false
     );
+
+    // Ideally, this would be defined at some higher level and I could just use it here.
+    // But since it uses a hook, that greatly limits our ability to extract it.
+    // It didn't seem worth adding a whole new context provider.
+    const inCreate =
+        useLocation().pathname.toLowerCase().indexOf("create") > -1;
+
     return (
         <React.Fragment>
             <Button
@@ -54,12 +63,12 @@ export const TranslateButton: React.FunctionComponent<ITranslateButtonProps> = (
                         0px 1px 5px 0px rgba(0, 0, 0, 0.12);
                 `}
                 startIcon={
-                    <img
-                        alt={l10n.formatMessage({
-                            id: "book.detail.translateButton.downloadIcon",
-                            defaultMessage: "Download Translation Icon",
-                        })}
-                        src={TranslationIcon}
+                    <TranslationIcon
+                        fill={
+                            inCreate
+                                ? theme.palette.primary.main
+                                : commonUI.colors.bloomBlue
+                        }
                     />
                 }
                 onClick={() => {
