@@ -6,6 +6,10 @@ import { ILanguage } from "./Language";
 import { removePunctuation } from "../Utilities";
 import { axios } from "@use-hooks/axios";
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
+import {
+    IBookStat,
+    getDefaultBookStat,
+} from "../components/statistics/StatsInterfaces";
 const stem = require("wink-porter2-stemmer");
 
 export function createBookFromParseServerData(pojo: any): Book {
@@ -111,6 +115,8 @@ export class Book {
     public ePUBVisible: boolean = false;
 
     public languages: ILanguage[] = [];
+
+    public stats: IBookStat = getDefaultBookStat();
 
     constructor() {
         makeObservable(this, {

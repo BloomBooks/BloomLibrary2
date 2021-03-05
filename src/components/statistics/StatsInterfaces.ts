@@ -66,7 +66,31 @@ export interface IBookStat {
     */
     startedCount: number;
     finishedCount: number;
+
+    shellDownloads: number;
+    pdfDownloads: number;
+    epubDownloads: number;
+    bloomPubDownloads: number;
 }
+
+export function getDefaultBookStat(): IBookStat {
+    return {
+        title: "",
+        branding: "",
+        questions: 0,
+        quizzesTaken: 0,
+        meanCorrect: 0,
+        medianCorrect: 0,
+        language: "",
+        startedCount: 0,
+        finishedCount: 0,
+        shellDownloads: 0,
+        pdfDownloads: 0,
+        epubDownloads: 0,
+        bloomPubDownloads: 0,
+    };
+}
+
 export interface IScreen {
     label: string;
     component: React.FunctionComponent<IStatsProps>;

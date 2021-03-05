@@ -2,13 +2,17 @@ import useAxios, { IReturns, axios, IParams } from "@use-hooks/axios";
 import { IFilter, InCirculationOptions } from "../IFilter";
 import { getConnection } from "./ParseServerConnection";
 import { getBloomApiUrl } from "./ApiConnection";
+import { retrieveBookData, retrieveBookStats } from "./LibraryQueries";
 import { Book, createBookFromParseServerData } from "../model/Book";
 import { useContext, useMemo, useEffect, useState } from "react";
 import { CachedTablesContext } from "../model/CacheProvider";
 import { getCleanedAndOrderedLanguageList, ILanguage } from "../model/Language";
 import { processRegExp } from "../Utilities";
 import { kTopicList } from "../model/ClosedVocabularies";
-import { IStatsProps } from "../components/statistics/StatsInterfaces";
+import {
+    IBookStat,
+    IStatsProps,
+} from "../components/statistics/StatsInterfaces";
 import { toYyyyMmDd } from "../Utilities";
 import { useGetCollection } from "../model/Collections";
 
@@ -244,6 +248,7 @@ interface IGridResult {
 }
 
 export const gridBookKeys =
+    "objectId,bookInstanceId," +
     "title,baseUrl,license,licenseNotes,inCirculation,summary,copyright,harvestState,harvestLog," +
     "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits,bookshelves," +
     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher,originalPublisher,keywords,edition";
@@ -271,30 +276,20 @@ export function useGetBooksForGrid(
     // Enhance: this only pays attention to the first one at this point, as that's all I figured out how to do
     const order = constructParseSortOrder(sortingArray);
     const query = constructParseBookQuery({}, filter, tags);
-    //console.log("order: " + order);
-    const { response, loading, error } = useAxios({
-        url: `${getConnection().url}classes/books`,
-        method: "GET",
-        trigger:
-            JSON.stringify(filter) +
-            limit.toString() +
-            skip.toString() +
-            order.toString(),
+    const trigger =
+        JSON.stringify(filter) +
+        limit.toString() +
+        skip.toString() +
+        order.toString();
 
-        options: {
-            headers: getConnection().headers,
-            params: {
-                limit,
-                skip,
-                order,
-                count: 1, // causes it to return the count
-                keys: gridBookKeys,
-                // fluff up fields that reference other tables
-                include: gridBookIncludeFields,
-                ...query,
-            },
-        },
-    });
+    const { response, loading, error } = useAsync(
+        () => retrieveBookData(query, order, skip, limit),
+        trigger
+    );
+    const stats = useAsync(
+        () => retrieveBookStats(query, order, skip, limit),
+        trigger
+    );
 
     // Before we had this useEffect, we would get a new instance of each book, each time the grid re-rendered.
     // Besides being inefficient, it led to a very difficult bug in the embedded staff panel where we would
@@ -322,9 +317,68 @@ export function useGetBooksForGrid(
                 onePageOfMatchingBooks: onePageOfBooks,
                 totalMatchingBooksCount: response["data"]["count"],
             });
+            if (
+                !stats.loading &&
+                !stats.error &&
+                stats.response &&
+                stats.response["data"] &&
+                stats.response["data"]["stats"] &&
+                stats.response["data"]["stats"].length > 0
+            ) {
+                joinBooksAndStats(onePageOfBooks, stats.response["data"]);
+            }
         }
-    }, [loading, error, response]);
+    }, [loading, error, response, stats.loading, stats.error, stats.response]);
     return result;
+}
+
+// The basic data for books and the analytic statistics are currently stored in different
+// databases in the Cloud.  We want to join the statistics for each book with the read of
+// the data for that book to display or save.  This method effectively does the desired
+// join by adding the statistics represented by raw JSON returned from a web api call to
+// the appropriate books in the input array of Book objects.  The array of Books must be
+// created from a compatible (but separate) web api call so that the book instance ids in
+// the two sets of input data can match up properly.
+export function joinBooksAndStats(books: Book[], bookStats: any) {
+    // Set up (builtin javascript) hashmap for faster access to book via its instance id.
+    const bookFromIdMap: any = {};
+    books.forEach((book: Book) => {
+        bookFromIdMap[book.bookInstanceId] = book;
+    });
+    bookStats["stats"].forEach((statRow: any) => {
+        const book: Book = bookFromIdMap[statRow.bookinstanceid];
+        if (book) {
+            book.stats = extractBookStatFromRawData(statRow);
+        } else {
+            console.error(
+                `stats row did not match any book provided: ${JSON.stringify(
+                    statRow
+                )}`
+            );
+        }
+    });
+}
+
+export function extractBookStatFromRawData(statRow: any): IBookStat {
+    const stats: IBookStat = {
+        title: statRow.booktitle,
+        branding: statRow.bookbranding,
+        language: statRow.language,
+        // The parseInt and parseFloat methods are important.
+        // Without them, js will treat the values like strings even though typescript knows they are numbers.
+        // Then the + operator will concatenate instead of add.
+        startedCount: parseInt(statRow.started, 10) || 0,
+        finishedCount: parseInt(statRow.finished, 10) || 0,
+        shellDownloads: parseInt(statRow.shelldownloads, 10) || 0,
+        pdfDownloads: parseInt(statRow.pdfdownloads, 10) || 0,
+        epubDownloads: parseInt(statRow.epubdownloads, 10) || 0,
+        bloomPubDownloads: parseInt(statRow.bloompubdownloads, 10) || 0,
+        questions: parseInt(statRow.numquestionsinbook, 10) || 0,
+        quizzesTaken: parseInt(statRow.numquizzestaken, 10) || 0,
+        meanCorrect: parseFloat(statRow.meanpctquestionscorrect) || 0.0,
+        medianCorrect: parseFloat(statRow.medianpctquestionscorrect) || 0.0,
+    };
+    return stats;
 }
 
 // we just want a better name
@@ -1204,3 +1258,35 @@ export async function deleteBook(id: string) {
         headers: getConnection().headers,
     });
 }
+
+// Some axios calls should be shared between hook and non-hook uses.  useAxios is
+// great if the call doesn't need to be shared, but is unusable ouside of hooks.
+// This generic hook allows us to feed in a function that calls axios and returns
+// its Promise.  This function is adapted from the one developed in the web article
+// https://dev.to/lukasmoellerch/a-hook-to-use-promise-results-2hfd.
+const useAsync = <T>(fn: () => Promise<T>, trigger: string) => {
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<Error | undefined>();
+    const [response, setResponse] = useState<T | undefined>();
+    useEffect(() => {
+        setLoading(true);
+        let cancel = false;
+        fn().then(
+            (result) => {
+                if (cancel) return;
+                setResponse(result);
+                setLoading(false);
+            },
+            (error) => {
+                if (cancel) return;
+                setError(error);
+                setLoading(false);
+            }
+        );
+        return () => {
+            cancel = true;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [trigger]);
+    return { response, loading, error };
+};
