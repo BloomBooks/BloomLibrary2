@@ -75,6 +75,7 @@ export class Book {
     public bookInstanceId: string = "";
     public internetLimits: IInternetLimits = {};
     public brandingProjectName = "";
+    public suitableForMakingShells = false; // that is, the book is a template.
 
     // things that can be edited on the site are observable so that the rest of the UI will update if they are changed.
     public title: string = "";
