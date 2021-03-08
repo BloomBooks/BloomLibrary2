@@ -194,7 +194,7 @@ export function useGetPhashMatchingRelatedBooks(
 export const bookDetailFields =
     "title,allTitles,baseUrl,bookOrder,inCirculation,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
     "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits," +
-    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount," +
+    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,suitableForMakingShells," +
     "harvestStartedAt,bookshelves,publisher,originalPublisher,keywords,bookInstanceId,brandingProjectName,edition";
 export function useGetBookDetail(bookId: string): Book | undefined | null {
     const { response, loading, error } = useAxios({
