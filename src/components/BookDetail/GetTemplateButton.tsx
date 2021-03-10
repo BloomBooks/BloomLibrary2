@@ -15,6 +15,9 @@ export const GetTemplateButton: React.FunctionComponent<{
     inCreate: boolean;
 }> = (props) => {
     const theme = useTheme();
+    const iconColor = props.inCreate
+        ? theme.palette.primary.main
+        : commonUI.colors.bloomBlue;
     return (
         <React.Fragment>
             <div
@@ -31,13 +34,7 @@ export const GetTemplateButton: React.FunctionComponent<{
                         margin-bottom: 10px;
                     `}
                 >
-                    <TemplateIcon
-                        fill={
-                            props.inCreate
-                                ? theme.palette.primary.main
-                                : commonUI.colors.bloomBlue
-                        }
-                    />
+                    <TemplateIcon fill={iconColor} stroke={iconColor} />
                     <div
                         css={css`
                             text-transform: initial;
