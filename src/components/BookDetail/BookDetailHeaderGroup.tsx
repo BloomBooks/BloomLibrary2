@@ -22,6 +22,7 @@ import { useIsEmbedded } from "../EmbeddingHost";
 import { FormattedMessage } from "react-intl";
 import { BookThumbnail } from "./BookThumbnail";
 import { BlorgLink } from "../BlorgLink";
+import { DownloadToBloomButton } from "./DownloadToBloomButton";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{
     book: Book;
@@ -218,7 +219,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                     />
                 )}
                 {showTranslateButton && (
-                    <TranslateButton
+                    <DownloadToBloomButton
                         book={props.book}
                         fullWidth={fullWidthButtons}
                         contextLangIso={props.contextLangIso}

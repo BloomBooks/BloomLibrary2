@@ -22,6 +22,7 @@ import { ICollection } from "../model/ContentInterfaces";
 import Typography from "@material-ui/core/Typography";
 import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 import { useGetResponsiveBookGroupTopMargin } from "./BookGroup";
+import { BlorgMarkdown } from "./markdown/BlorgMarkdown";
 
 interface IProps {
     title?: string;
@@ -258,7 +259,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
         >
             <h1>{label}</h1>
             <Typography variant="body2" color="textSecondary" component="p">
-                {props.collection.description}
+                <BlorgMarkdown markdown={props.collection.description} />
             </Typography>
         </div>
     );

@@ -126,7 +126,9 @@ export const CollectionCard: React.FunctionComponent<{
                     font-weight: bold;
                 }
                 h2 {
-                    font-size: ${getResponsiveChoice(11, 16)}px;
+                    // Note: 16px looks good if there is only one line of text, but with two lines, 16 bumps the text into the bottom of the image above.
+                    // Example Education For Life, Papua New Guinea Standards-based Curriculum card
+                    font-size: ${getResponsiveChoice(11, 14)}px;
                 }
                 h3 {
                     font-size: 14px;
