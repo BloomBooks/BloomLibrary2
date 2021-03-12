@@ -243,6 +243,20 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                 filter.keywordsText = value;
             },
         },
+        {
+            // cannot be used for sorting or filtering until we have only one database source
+            name: "reads",
+            sortingEnabled: false,
+            getCellValue: (b: Book) => b.stats.finishedCount,
+            defaultVisible: false,
+        },
+        {
+            // cannot be used for sorting or filtering until we have only one database source
+            name: "downloadsForTranslation",
+            sortingEnabled: false,
+            getCellValue: (b: Book) => b.stats.shellDownloads,
+            defaultVisible: false,
+        },
     ];
 
     // generate the capitalized column names since the grid doesn't do that.

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { ExportDataFn } from "./StatsInterfaces";
+import { saveAs } from "file-saver";
 
 // Tables and charts call this to provide a function that the parent screen can call in order
 // to export the data that is in the chart.
@@ -46,11 +46,11 @@ export function useProvideDataForExport(
 export function exportCsv(name: string, exportDataFn: ExportDataFn) {
     const csv = exportDataFn()!
         .map((columnsOfOneRow) => {
-            return columnsOfOneRow.map((c) => csvEncode(c)).join(", ");
+            return columnsOfOneRow.map((c) => csvEncode(c)).join(",");
         })
         .join("\n");
     saveAs(
-        new Blob([csv], {
+        new Blob(["\uFEFF" + csv], {
             type: "text/csv;charset=utf-8",
         }),
         name + ".csv"
@@ -61,9 +61,8 @@ function csvEncode(value: string): string {
     let needsQuotes = false;
     needsQuotes = value.indexOf(",") > -1;
 
-    // mac,linux, windows all have an \r, so that's
-    // enough, even though windows also has \n.
-    needsQuotes = needsQuotes || value.indexOf("\r") > -1;
+    // escape newline characters
+    value = value.replace(/\n/g, "\\n").replace(/\r/g, "\\r");
 
     // the rfc spec seems astonishingly inconsistent on the question of
     // whether quotes should be escaped if the entire field is not surrounded in quotes
@@ -79,3 +78,5 @@ function csvEncode(value: string): string {
     }
     return value;
 }
+
+export type ExportDataFn = () => string[][];

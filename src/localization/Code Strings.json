@@ -170,6 +170,14 @@
         "description": "",
         "message": "How to translate"
     },
+    "book.detail.getTemplateButton.getThis": {
+        "description": "Get in the sense of start a process to download it.",
+        "message": "Get this Template"
+    },
+    "book.detail.getTemplateButton.download": {
+        "description": "",
+        "message": "The template book will be downloaded and installed. You can start a book with this template, or add any of its template pages from the \"Add Page\" dialog box from any book."
+    },
     "book.detail.translateButton.translate": {
         "description": "",
         "message": "Translate into <emphasis>your</emphasis> language!"
