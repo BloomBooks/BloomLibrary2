@@ -9,6 +9,14 @@ import { Breadcrumbs } from "../Breadcrumbs";
 import { GridControl } from "./GridControl";
 import { IFilter } from "../../IFilter";
 import { useSetBrowserTabTitle } from "../Routes";
+import Button from "@material-ui/core/Button";
+import { useIntl } from "react-intl";
+import DownloadCsvIcon from "../../export/download-csv.svg";
+import {
+    setGridExportFilter,
+    setGridExportColumnInfo,
+    getAllGridDataAndExportCsv,
+} from "./GridExport";
 
 export const GridPage: React.FunctionComponent<{ filters: string }> = (
     props
@@ -19,6 +27,9 @@ export const GridPage: React.FunctionComponent<{ filters: string }> = (
         const search = props.filters.split("/")[0].substring(":search:".length);
         contextFilter = { search };
     }
+
+    const l10n = useIntl();
+
     return (
         <div>
             <div
@@ -31,7 +42,26 @@ export const GridPage: React.FunctionComponent<{ filters: string }> = (
             >
                 <Breadcrumbs />
             </div>
-            <GridControl contextFilter={contextFilter} />
+            <GridControl
+                contextFilter={contextFilter}
+                setCurrentFilter={setGridExportFilter}
+                setExportData={setGridExportColumnInfo}
+            />
+            <div
+                css={css`
+                    display: flex;
+                `}
+            >
+                <Button onClick={() => getAllGridDataAndExportCsv()}>
+                    <img
+                        alt={l10n.formatMessage({
+                            id: "stats.download.csvIcon",
+                            defaultMessage: "download CSV",
+                        })}
+                        src={DownloadCsvIcon}
+                    />
+                </Button>
+            </div>
         </div>
     );
 };

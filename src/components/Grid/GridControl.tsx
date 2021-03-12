@@ -9,6 +9,11 @@ export interface IGridControlProps {
     ) => void;
     initialGridFilters?: GridFilter[];
     contextFilter?: IFilter;
+    setExportData?: (
+        columnNamesInDisplayOrder: string[],
+        hiddenColumns: string[],
+        sortingArray: Array<{ columnName: string; descending: boolean }>
+    ) => void;
 }
 
 // This is wrapped so that we can keep all the javascript involved in the grid
@@ -16,10 +21,11 @@ export interface IGridControlProps {
 export const GridControl: React.FunctionComponent<IGridControlProps> = (
     props
 ) => {
-    const GridControlInternal = React.lazy(() =>
-        import(
-            /* webpackChunkName: "gridControlInternal" */ "./GridControlInternal"
-        )
+    const GridControlInternal = React.lazy(
+        () =>
+            import(
+                /* webpackChunkName: "gridControlInternal" */ "./GridControlInternal"
+            )
     );
     return (
         <React.Suspense fallback={<div>Loading Grid...</div>}>

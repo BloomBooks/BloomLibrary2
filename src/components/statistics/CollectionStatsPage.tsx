@@ -18,16 +18,15 @@ import domtoimage from "dom-to-image-more";
 import Button from "@material-ui/core/Button";
 import { saveAs } from "file-saver";
 import DownloadPngIcon from "./download-png.svg";
-import DownloadCsvIcon from "./download-csv.svg";
+import DownloadCsvIcon from "../../export/download-csv.svg";
 import {
     IStatsProps,
-    ExportDataFn,
     IScreenOption,
     IScreen,
     kStatsPageGray,
 } from "./StatsInterfaces";
 import { useStorageState } from "react-storage-hooks";
-import { exportCsv } from "./exportData";
+import { exportCsv, ExportDataFn } from "../../export/exportData";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import { BookStatsReport } from "./BookStatsReport";
 import { FormattedMessage, useIntl } from "react-intl";
