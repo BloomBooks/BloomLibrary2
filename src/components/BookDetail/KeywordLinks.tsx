@@ -22,7 +22,7 @@ export const KeywordLinks: React.FunctionComponent<{
                         }
 
                         return (
-                            <span>
+                            <span key={keyword}>
                                 <BlorgLink
                                     newTabIfEmbedded={true}
                                     color="secondary"

@@ -7,7 +7,6 @@ import { jsx } from "@emotion/core";
 import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import { commonUI } from "../../theme";
-import { FormattedMessage } from "react-intl";
 import { DownloadPreflightDialog } from "./DownloadPreflightDialog";
 import { useStorageState } from "react-storage-hooks";
 import { DownloadingShellbookDialog } from "./DownloadingShellbookDialog";

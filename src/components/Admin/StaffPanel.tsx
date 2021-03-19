@@ -131,7 +131,7 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
             if (i > 0) {
                 spans.push(<br />);
             }
-            spans.push(<span>{log[i]}</span>);
+            spans.push(<span key={i}>{log[i]}</span>);
         }
         return <div>{spans}</div>;
     };

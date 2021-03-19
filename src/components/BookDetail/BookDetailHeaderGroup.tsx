@@ -8,7 +8,6 @@ import React, { useContext } from "react";
 import { ArtifactType, Book } from "../../model/Book";
 import { observer } from "mobx-react-lite";
 import { ReadButton } from "./ReadButton";
-import { TranslateButton } from "./TranslateButton";
 import { LanguageLink } from "../LanguageLink";
 import { getArtifactVisibilitySettings } from "./ArtifactHelper";
 import { ILanguage } from "../../model/Language";
