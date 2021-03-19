@@ -115,3 +115,43 @@ it("corrects case, but not if both cases are valid", () => {
     expect(specialParts[1]).toBe("topic:math");
     expect(specialParts[2]).toBe("topic:Math");
 });
+
+it("handles publisher and original publisher", () => {
+    const {
+        otherSearchTerms,
+        specialParts,
+    } = splitString("frogs publisher:Pratham originalPublisher:Bob", [
+        "something irrelevant",
+        "topic:Math",
+    ]);
+    expect(otherSearchTerms).toEqual("frogs");
+    expect(specialParts.length).toBe(2);
+    // The order for facets is in the order of their appearance in the facet array.
+    // originalPublisher needs to be matched before publisher, since the first contains the second.
+    expect(specialParts[0]).toBe("originalPublisher:Bob");
+    expect(specialParts[1]).toBe("publisher:Pratham");
+});
+
+it("handles publisher and original publisher with spaces", () => {
+    const {
+        otherSearchTerms,
+        specialParts,
+    } = splitString(
+        'frogs publisher: "African Storybook Project" originalPublisher:"Book Dash"',
+        ["something irrelevant", "topic:Math"]
+    );
+    expect(otherSearchTerms).toEqual("frogs");
+    expect(specialParts.length).toBe(2);
+    expect(specialParts[0]).toBe("originalPublisher:Book Dash");
+    expect(specialParts[1]).toBe("publisher:African Storybook Project");
+});
+
+it("handles corner case of facet with no content", () => {
+    const { otherSearchTerms, specialParts } = splitString("frogs publisher:", [
+        "something irrelevant",
+        "topic:Math",
+    ]);
+    expect(otherSearchTerms).toEqual("frogs");
+    expect(specialParts.length).toBe(1);
+    expect(specialParts[0]).toBe("publisher:");
+});
