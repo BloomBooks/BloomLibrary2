@@ -777,7 +777,7 @@ export function splitString(
     // these would be things like "system:Incoming"
     allTagsInDatabase: string[]
 ): { otherSearchTerms: string; specialParts: string[] } {
-    /*  JH/AP removed April 6 202 because tags was optional (fine),
+    /*  JH/AP removed April 6 2020 because tags was optional (fine),
     but then this method would essentially bail out if you didn't provide tags.
 
     if (!allTagsInDatabase) {
@@ -794,6 +794,8 @@ export function splitString(
         "phash:",
         "level:",
         "feature:",
+        "originalPublisher:", // must come before "publisher:", since "originalPublisher:" includes the other as a substring
+        "publisher:",
     ];
 
     const possibleParts = [...facets, ...allTagsInDatabase];
@@ -814,13 +816,16 @@ export function splitString(
             gotOne = true;
             let end = index + possiblePart.length;
             const isFacet = facets.includes(possiblePart);
-            if (isFacet) {
-                end = otherSearchTerms.indexOf(" ", end);
-                if (end < 0) {
-                    end = otherSearchTerms.length;
-                }
-            }
             let part = otherSearchTerms.substring(index, end);
+            if (isFacet) {
+                const result = getFacetPartWithOrWithoutQuotes(
+                    otherSearchTerms,
+                    index,
+                    end
+                );
+                part = result.part;
+                end = result.end;
+            }
             // If possibleParts contains an exact match for the part, we'll keep that case.
             // So for example if we have both system:Incoming and system:incoming, it's
             // possible to search for either. Otherwise, we want to switch to the case
@@ -845,6 +850,43 @@ export function splitString(
     }
 
     return { otherSearchTerms, specialParts };
+}
+
+function getFacetPartWithOrWithoutQuotes(
+    searchString: string,
+    startIndex: number,
+    endIndex: number
+): { part: string; end: number } {
+    const facet = searchString.substring(startIndex, endIndex); // e.g. publisher:
+    const len = searchString.length;
+    // Handle corner case of nothing following the facet's "colon".
+    if (len === endIndex) {
+        return { part: facet, end: endIndex };
+    }
+    // Start looking for the value of the facet.
+    let start = endIndex;
+    let end: number;
+    let facetPart: string;
+    if (searchString[start] === '"') {
+        // handle double quote subcase
+        start++; // don't include the quotes in our result
+        end = searchString.indexOf('"', start);
+        if (end < 0) {
+            end = len;
+        }
+        facetPart = searchString.substring(start, end);
+        end = start + facetPart.length;
+        if (end < len && searchString[end] === '"') {
+            end++;
+        }
+    } else {
+        end = searchString.indexOf(" ", start);
+        if (end < 0) {
+            end = len;
+        }
+        facetPart = searchString.substring(start, end);
+    }
+    return { part: facet + facetPart, end };
 }
 
 function regexCaseSensitive(value: string) {
@@ -1151,11 +1193,15 @@ export function constructParseBookQuery(
         };
     }
 
-    delete params.where.publisher;
+    // We (gjm and jt) aren't sure why these two "delete" lines were ever needed, but now that we
+    // add params for both publisher and originalPublisher, it doesn't work to delete them here.
+    // If removing the delete lines causes a problem, we'll need to look for a different solution.
+
+    //delete params.where.publisher;
     if (f.publisher) {
         params.where.publisher = f.publisher;
     }
-    delete params.where.originalPublisher;
+    //delete params.where.originalPublisher;
     if (f.originalPublisher) {
         params.where.originalPublisher = f.originalPublisher;
     }
