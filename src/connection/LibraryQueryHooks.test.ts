@@ -136,6 +136,7 @@ beforeAll(async () => {
                 "bookshelf:Enabling writers workshops",
             ],
             copyright: "Copyright © 2014, Nicole and bookdash.org",
+            publisher: "Unlikely Publisher",
         });
         // This is there specifically to NOT be found by tag searches or the copyright search
         // It SHOULD be found by the uploader search, however.
@@ -159,6 +160,8 @@ beforeAll(async () => {
                 className: "_User",
                 objectId: fredId,
             },
+            publisher: "Unlikely Publisher",
+            originalPublisher: "Unlikely Original Publisher",
         });
     } catch (error) {
         console.log(JSON.stringify(error));
@@ -221,4 +224,30 @@ it("retrieves a book with quoted tag value", async () => {
     });
     expect(result.data.results.length).toBe(1);
     expect(result.data.results[0].title).toBe(title1);
+});
+
+it("retrieves a book with quoted publisher value", async () => {
+    const result = await getBook({
+        search: 'publisher: "Unlikely Publisher"',
+    });
+    expect(result.data.results.length).toBe(2);
+    expect(result.data.results[0].title).toBe(title1);
+    expect(result.data.results[1].title).toBe(title3);
+});
+
+it("retrieves a book with quoted originalPublisher value", async () => {
+    const result = await getBook({
+        search: 'originalPublisher: "Unlikely Original Publisher"',
+    });
+    expect(result.data.results.length).toBe(1);
+    expect(result.data.results[0].title).toBe(title3);
+});
+
+it("doesn't crash with a facet non-value", async () => {
+    const result = await getBook({
+        search: "publisher:",
+    });
+    expect(result.data.results.length).toBe(2);
+    expect(result.data.results[0].title).toBe(title1);
+    expect(result.data.results[1].title).toBe(title3);
 });
