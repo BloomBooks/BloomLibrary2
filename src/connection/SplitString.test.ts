@@ -16,7 +16,7 @@ it("a mixture of otherSearchTerms and special parts", () => {
     ]);
     expect(otherSearchTerms).toEqual("dogs cats");
     expect(specialParts.length).toBe(1);
-    expect(specialParts[0]).toBe("topic:Animals");
+    expect(specialParts.includes("topic:Animals"));
 });
 
 it("topic at start", () => {
@@ -30,7 +30,7 @@ it("topic at start", () => {
     ]);
     expect(otherSearchTerms).toEqual("dogs cats");
     expect(specialParts.length).toBe(1);
-    expect(specialParts[0]).toBe("topic:Animals");
+    expect(specialParts.includes("topic:Animals"));
 });
 
 it("topic at end", () => {
@@ -44,7 +44,7 @@ it("topic at end", () => {
     ]);
     expect(otherSearchTerms).toEqual("dogs cats");
     expect(specialParts.length).toBe(1);
-    expect(specialParts[0]).toBe("topic:Animals");
+    expect(specialParts.includes("topic:Animals"));
 });
 
 it("topic and bookshelf name and otherSearchTerms in quotes", () => {
@@ -61,8 +61,8 @@ it("topic and bookshelf name and otherSearchTerms in quotes", () => {
     );
     expect(otherSearchTerms).toEqual('dogs "black birds"');
     expect(specialParts.length).toBe(2);
-    expect(specialParts[0]).toBe("topic:Animal stories");
-    expect(specialParts[1]).toBe("bookshelf:enabling writers workshop");
+    expect(specialParts.includes("topic:Animal stories"));
+    expect(specialParts.includes("bookshelf:enabling writers workshop"));
 });
 
 it("ignores various unhelpful spaces", () => {
@@ -75,10 +75,8 @@ it("ignores various unhelpful spaces", () => {
     );
     expect(otherSearchTerms).toEqual('dogs "black birds"');
     expect(specialParts.length).toBe(2);
-    // Note that the order in which the parts are extracted depends on their order
-    // in the topic list, not in the input string.
-    expect(specialParts[0]).toBe("topic:Math");
-    expect(specialParts[1]).toBe("bookshelf:enabling writers workshop");
+    expect(specialParts.includes("topic:Math"));
+    expect(specialParts.includes("bookshelf:enabling writers workshop"));
 });
 
 it("finds uploader and copyright", () => {
@@ -92,10 +90,8 @@ it("finds uploader and copyright", () => {
     ]);
     expect(otherSearchTerms).toEqual("dogs");
     expect(specialParts.length).toBe(2);
-    // Note that the order in which the parts are extracted depends on their order
-    // in the topic list, not in the input string.
-    expect(specialParts[0]).toBe("uploader:fred@example");
-    expect(specialParts[1]).toBe("copyright:sil.org");
+    expect(specialParts.includes("uploader:fred@example"));
+    expect(specialParts.includes("copyright:sil.org"));
 });
 
 it("corrects case, but not if both cases are valid", () => {
@@ -111,7 +107,110 @@ it("corrects case, but not if both cases are valid", () => {
     ]);
     expect(otherSearchTerms).toEqual("cats");
     expect(specialParts.length).toBe(3);
-    expect(specialParts[0]).toBe("topic:Health");
-    expect(specialParts[1]).toBe("topic:math");
-    expect(specialParts[2]).toBe("topic:Math");
+    expect(specialParts.includes("topic:Health"));
+    expect(specialParts.includes("topic:math"));
+    expect(specialParts.includes("topic:Math"));
+});
+
+it("handles publisher and original publisher", () => {
+    const {
+        otherSearchTerms,
+        specialParts,
+    } = splitString("frogs publisher: Pratham originalPublisher:Bob", [
+        "something irrelevant",
+        "topic:Math",
+    ]);
+    expect(otherSearchTerms).toEqual("frogs");
+    expect(specialParts.length).toBe(2);
+    expect(specialParts.includes("originalPublisher:Bob"));
+    expect(specialParts.includes("publisher:Pratham"));
+});
+
+it("handles publisher and original publisher with spaces", () => {
+    const {
+        otherSearchTerms,
+        specialParts,
+    } = splitString(
+        'frogs publisher: "African Storybook Project" originalPublisher:"Book Dash"',
+        ["something irrelevant", "topic:Math"]
+    );
+    expect(otherSearchTerms).toEqual("frogs");
+    expect(specialParts.length).toBe(2);
+    expect(specialParts.includes("originalPublisher:Book Dash"));
+    expect(specialParts.includes("publisher:African Storybook Project"));
+});
+
+it("handles corner case of facet with no content", () => {
+    const { otherSearchTerms, specialParts } = splitString("frogs publisher:", [
+        "something irrelevant",
+        "topic:Math",
+    ]);
+    expect(otherSearchTerms).toEqual("frogs");
+    expect(specialParts.length).toBe(1);
+    expect(specialParts.includes("publisher:"));
+});
+
+it("handles facet corner case with quotes, but no space", () => {
+    const {
+        otherSearchTerms,
+        specialParts,
+    } = splitString('frogs publisher:"Pratham"', [
+        "something irrelevant",
+        "topic:Math",
+    ]);
+    expect(otherSearchTerms).toEqual("frogs");
+    expect(specialParts.length).toBe(1);
+    expect(specialParts.includes("publisher:Pratham"));
+});
+
+it("doesn't crash on missing facet final quote", () => {
+    const {
+        otherSearchTerms,
+        specialParts,
+    } = splitString('frogs publisher: "Book Dash', [
+        "something irrelevant",
+        "topic:Math",
+    ]);
+    expect(otherSearchTerms).toEqual("frogs");
+    expect(specialParts.length).toBe(1);
+    expect(specialParts.includes("publisher:Book Dash"));
+});
+
+it("doesn't crash on missing facet leading quote", () => {
+    const {
+        otherSearchTerms,
+        specialParts,
+    } = splitString('frogs publisher: Book Dash"', [
+        "something irrelevant",
+        "topic:Math",
+    ]);
+    expect(otherSearchTerms).toEqual('frogs Dash"');
+    expect(specialParts.length).toBe(1);
+    expect(specialParts.includes("publisher:Book"));
+});
+
+it("doesn't crash on mismatched facet quotes", () => {
+    const {
+        otherSearchTerms,
+        specialParts,
+    } = splitString('frogs publisher: "Book Dash" "another', [
+        "something irrelevant",
+        "topic:Math",
+    ]);
+    expect(otherSearchTerms).toEqual('frogs "another');
+    expect(specialParts.length).toBe(1);
+    expect(specialParts.includes("publisher:Book Dash"));
+});
+
+it("doesn't crash with facet empry string search", () => {
+    const {
+        otherSearchTerms,
+        specialParts,
+    } = splitString('frogs publisher: ""', [
+        "something irrelevant",
+        "topic:Math",
+    ]);
+    expect(otherSearchTerms).toEqual("frogs");
+    expect(specialParts.length).toBe(1);
+    expect(specialParts.includes("publisher:"));
 });
