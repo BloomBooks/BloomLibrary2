@@ -48,16 +48,23 @@ export const TestEmbeddingPage: React.FunctionComponent<{ code: string }> = (
                         Contentful "Collection" Key of the embedding. E.g., your
                         URL should look like:
                     </h1>
-                    <a href="http://localhost:3000/test-embedding/chetana">
-                        http://localhost:3000/test-embedding/chetana
+                    <a
+                        href="/test-embedding/education-for-life-org"
+                        target="_blank"
+                    >
+                        /test-embedding/education-for-life-org
+                    </a>
+                    <br />
+                    <a href="/test-embedding/chetana" target="_blank">
+                        /test-embedding/chetana
                     </a>
                     <br></br>
-                    <a href="https://embed.bloomlibrary.org/test-embedding/turka">
-                        https://embed.bloomlibrary.org/test-embedding/turka
+                    <a href="/test-embedding/turka" target="_blank">
+                        /test-embedding/turka
                     </a>
                     <br></br>
-                    <a href="https://alpha.bloomlibrary.org/test-embedding/sil-lead">
-                        https://alpha.bloomlibrary.org/test-embedding/sil-lead
+                    <a href="/test-embedding/sil-lead" target="_blank">
+                        /test-embedding/sil-lead
                     </a>
                 </div>
             )) || (
@@ -85,9 +92,19 @@ export const TestEmbeddingPage: React.FunctionComponent<{ code: string }> = (
                         <div
                             css={css`
                                 margin-left: 5px;
+                                a {
+                                    color: white;
+                                }
                             `}
                         >
-                            {"iframe is pointing at " + iframeSrc}
+                            {"iframe is pointing at "}
+                            <a
+                                href={iframeSrc}
+                                target={"_blank"}
+                                rel="noopener noreferrer"
+                            >
+                                {iframeSrc}
+                            </a>
                         </div>
 
                         <div
@@ -97,7 +114,7 @@ export const TestEmbeddingPage: React.FunctionComponent<{ code: string }> = (
                             `}
                         >
                             {
-                                "Important: a real test requires copying the url to a new tab and making sure it shows the same thing."
+                                "Important: a real test requires clicking the above url making sure the new tab shows the same thing."
                             }
                         </div>
                     </div>
