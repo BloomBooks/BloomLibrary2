@@ -107,7 +107,7 @@ async function cleanup() {
     await deleteUser(fredId, sessionToken);
 }
 
-const title1 = "Bloom library 2 test book 1 anunlikelykeyword title";
+const title1 = "Bloom library 2 test about 1 anunlikelykeyword title";
 const title2 =
     " test Enabling writers workshops book about topic:Math in the Pacific from bookdash.org";
 const title3 = "Another book with anunlikelykeyword";
@@ -136,6 +136,7 @@ beforeAll(async () => {
                 "bookshelf:Enabling writers workshops",
             ],
             copyright: "Copyright © 2014, Nicole and bookdash.org",
+            publisher: "Unlikely Publisher",
         });
         // This is there specifically to NOT be found by tag searches or the copyright search
         // It SHOULD be found by the uploader search, however.
@@ -159,6 +160,8 @@ beforeAll(async () => {
                 className: "_User",
                 objectId: fredId,
             },
+            publisher: "Unlikely Publisher",
+            originalPublisher: "Unlikely Original Publisher",
         });
     } catch (error) {
         console.log(JSON.stringify(error));
@@ -209,8 +212,9 @@ it("retrieves a book with topic:Math in tags, but not one with that string in ti
     expect(result.data.results[0].title).toBe(title1);
 });
 
+// Previously this test failed because one of the two words was "book", which gets removed.
 it("retrieves a book with a quoted string, but not one with the two words separately", async () => {
-    const result = await getBook({ search: '"test book"' });
+    const result = await getBook({ search: '"test about"' });
     expect(result.data.results.length).toBe(1);
     expect(result.data.results[0].title).toBe(title1);
 });
@@ -221,4 +225,30 @@ it("retrieves a book with quoted tag value", async () => {
     });
     expect(result.data.results.length).toBe(1);
     expect(result.data.results[0].title).toBe(title1);
+});
+
+it("retrieves a book with quoted publisher value", async () => {
+    const result = await getBook({
+        search: 'publisher: "Unlikely Publisher"',
+    });
+    expect(result.data.results.length).toBe(2);
+    expect(result.data.results[0].title).toBe(title1);
+    expect(result.data.results[1].title).toBe(title3);
+});
+
+it("retrieves a book with quoted originalPublisher value", async () => {
+    const result = await getBook({
+        search: 'originalPublisher: "Unlikely Original Publisher"',
+    });
+    expect(result.data.results.length).toBe(1);
+    expect(result.data.results[0].title).toBe(title3);
+});
+
+it("doesn't crash with a facet non-value", async () => {
+    const result = await getBook({
+        search: "publisher:",
+    });
+    expect(result.data.results.length).toBe(2);
+    expect(result.data.results[0].title).toBe(title1);
+    expect(result.data.results[1].title).toBe(title3);
 });
