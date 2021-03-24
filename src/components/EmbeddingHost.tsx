@@ -10,19 +10,44 @@ import { useLocation } from "react-router-dom";
 export const EmbeddingHost: React.FunctionComponent<{
     urlSegments: string;
 }> = (props) => {
-    // TODO: this only works for one level of collection.
-    // If we name multiple collections, then we have to maintain that if the client adds subcollections.
-    // Instead, we plan to actually walk the collection to determine its descendants.
-    // Some ideas on how to do that:
-    //  1) fully populate the ICollection:ChildCollections rather than just store ids
-    //  2) add a "descendants" field to ICollection which just has an array of ids for us to check here.
-    // tslint:disable-next-line: prefer-const
-    let { collectionName, embeddedSettingsUrlKey } = splitPathname(props.urlSegments);
-    const { result, loading } = useContentful({
-        content_type: "embeddingSettings",
-        "fields.urlKey": `${embeddedSettingsUrlKey}`,
+    const location = useLocation();
+
+    const query = new URLSearchParams(location.search);
+    const domain = query.get("bl-domain");
+
+    const response1 = useContentful({
+        content_type: "domainEmbeddingSettings",
+        "fields.domain": domain,
         include: 1,
     });
+
+    // tslint:disable-next-line: prefer-const
+    let { collectionName, embeddedSettingsUrlKey } = splitPathname(
+        props.urlSegments
+    );
+    const { result, loading } = useContentful({
+        content_type: "embeddingSettings",
+        "fields.urlKey": embeddedSettingsUrlKey,
+        include: 1,
+    });
+
+    // First, check if embedding is allowed based on domainEmbeddingSettings
+    if (response1.loading) {
+        return null;
+    }
+
+    if (response1.result && response1.result.length >= 1) {
+        // TODO for Phase 2:
+        // Parse result[0].collectionUrlKeys and check if we match a pattern
+        const isPatternMatched = true;
+
+        if (isPatternMatched) {
+            return <CollectionWrapper segments={props.urlSegments} />;
+        }
+    }
+
+    // Nope, not allowed via domainEmbeddingSettings.
+    // Try the older logic and see if it's allowed
     if (loading) {
         return null;
     }
@@ -49,6 +74,14 @@ export const EmbeddingHost: React.FunctionComponent<{
             </h1>
         );
     }
+
+    return (
+        <CollectionWrapper
+            segments={props.urlSegments}
+            embeddedSettings={settings}
+        />
+    );
+
     /* This was a good idea but we're not allowed, from an iframe, to know the host domain.
     Note: if we *really* had to do this, there is X-Frame-Options ALLOW-FROM http://example.com/,
     But that would seem to require making a separate S3 bucket, with this HTTP header, for each
@@ -68,12 +101,6 @@ export const EmbeddingHost: React.FunctionComponent<{
         );
     }
     */
-    return (
-        <CollectionWrapper
-            segments={props.urlSegments}
-            embeddedSettings={settings}
-        />
-    );
 };
 
 // If this iframe has the necessary javascript loaded, this will allow visitors to be able to share, bookmark locations within the library, or
@@ -119,6 +146,6 @@ export function useIsEmbedded(): boolean {
 
 // For contexts where we currently can't readily do useIsEmbedded(). We'll have to fix these if the
 // algorithm changes.
-export function isEmbedded() : boolean {
+export function isEmbedded(): boolean {
     return window.self !== window.top;
 }

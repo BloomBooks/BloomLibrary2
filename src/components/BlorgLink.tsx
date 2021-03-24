@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import { Link as MuiLink } from "@material-ui/core";
 //import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 
@@ -14,6 +14,8 @@ export interface IBlorgLinkProps
 }
 
 export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
+    const location = useLocation();
+
     const isInIframe = window.self !== window.top;
 
     const { newTabIfEmbedded, ...propsToPassDown } = props; // Prevent React warnings
@@ -54,11 +56,15 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
         }
     }
 
-    let to = props.href;
+    const query = new URLSearchParams(location.search);
+    const queryComponent = getLinkUrlQueryComponent(query);
+
+    let to = props.href + queryComponent;
     if (!to.startsWith("/")) {
         /* The initial slash keeps url from just being 'tacked on' to existing url; not what we want here. */
         to = `/${to}`;
     }
+
     return (
         <MuiLink
             {...propsToPassDown}
@@ -89,4 +95,32 @@ function isExternalOrEmail(url: string): boolean {
     //     console.error(`isExternal() could not parse ${url}`);
     //     return false;
     // }
+}
+
+// Returns the query component (the part including/after the question mark) of the URL to pass to MuiLink's "to" parameter
+function getLinkUrlQueryComponent(query: URLSearchParams): string {
+    // Currently the url query contains nothing other than the params we need to forward
+    // from the current page to the new page
+    const queryParams = getQueryParamsToForward(query);
+    if (queryParams) {
+        return "?" + queryParams;
+    } else {
+        return "";
+    }
+}
+
+// Returns (as a string) the query parameters that should be forwarded from the current page to the next page
+// Parameters beginning with "bl-" are defined as those to be forwarded
+function getQueryParamsToForward(
+    query: URLSearchParams // the current query parameters
+): string {
+    const params: string[] = [];
+    query.forEach((value, key) => {
+        if (key.startsWith("bl-")) {
+            params.push(`${key}=${value}`);
+        }
+    });
+
+    const paramString = params.join("&");
+    return paramString;
 }
