@@ -33,7 +33,11 @@ export const TestEmbeddingPage: React.FunctionComponent<{ code: string }> = (
             ? "http://" + window.location.host
             : "https://" + window.location.host;
 
-    const iframeSrc = `${iframeRoot}/${props.code}`;
+    const iframeSrc =
+        `${iframeRoot}/${props.code}` +
+        (props.code === "education-for-life-org"
+            ? "?bl-domain=mytalkingbooks.org"
+            : "");
     const badUrl = !props.code || props.code.split("/").length < 1;
     return (
         <Container
