@@ -109,7 +109,9 @@ export class Book {
     // which we parse into
     public uploadDate: Date | undefined;
     public updateDate: Date | undefined;
-    // conceptually a date, but uploaded from parse server this is what it has.
+    public lastUploadedDate: Date | undefined;
+    // These next two are conceptually dates, but uploaded from parse server this is what they have.
+    private lastUploaded: { iso: string } | undefined;
     public harvestStartedAt: { iso: string } | undefined;
     public importedBookSourceUrl?: string;
     // todo: We need to handle limited visibility, i.e. by country
@@ -188,6 +190,12 @@ export class Book {
         // todo: parse out the dates, in this YYYY-MM-DD format (e.g. with )
         this.uploadDate = new Date(Date.parse(this.createdAt));
         this.updateDate = new Date(Date.parse(this.updatedAt as string));
+
+        // We have to do a similar parsing trick here as for harvestStartedAt, but without the
+        // dependence on a particular date. If parsedb has a lastUploaded date, we trust it.
+        this.lastUploadedDate = this.lastUploaded
+            ? new Date(this.lastUploaded.iso)
+            : undefined;
 
         //TODO: this is just experimenting with the logic, but what we need
         // is 1) something factored out so we don't have to repeat for each artifact type
