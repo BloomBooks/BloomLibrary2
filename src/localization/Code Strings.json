@@ -222,6 +222,10 @@
         "description": "",
         "message": "Last updated on {date}"
     },
+    "book.metadata.lastUploaded": {
+        "description": "",
+        "message": "Last uploaded on {date}"
+    },
     "book.metadata.features": {
         "description": "",
         "message": "Features"
