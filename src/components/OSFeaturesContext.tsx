@@ -1,12 +1,17 @@
 import React from "react";
 
-export const bloomDesktopAvailable =
-    (navigator.appVersion.indexOf("Win") >= 0 ||
-        navigator.appVersion.indexOf("Linux") >= 0) &&
-    // Running on Android will also include "Linux"
-    navigator.appVersion.indexOf("Android") < 0;
-
+const windows = navigator.appVersion.indexOf("Win") >= 0;
 const android = navigator.appVersion.indexOf("Android") >= 0;
+const chromeOS = navigator.userAgent.indexOf("CrOS") >= 0;
+// Linux Firefox does not include "Linux" in appVersion (BL-9728)
+// Running on Android or ChromeOS will also include "Linux" in appVersion or platform.
+const linux =
+    (navigator.appVersion.indexOf("Linux") >= 0 ||
+        navigator.platform?.startsWith("Linux")) &&
+    !android &&
+    !chromeOS;
+export const bloomDesktopAvailable = windows || linux;
+
 export const bloomReaderAvailable = android;
 // From discussion at https://stackoverflow.com/questions/9038625/detect-if-device-is-ios.
 // This will NOT detect an ipad running IOS 13 in desktop mode, which is probably what we
