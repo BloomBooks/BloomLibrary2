@@ -5,41 +5,16 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React, { useState, useEffect, useContext } from "react";
-import Tooltip from "@material-ui/core/Tooltip";
-import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
-import { Theme, InputBase, Paper, Grow } from "@material-ui/core";
+import { InputBase, Paper, Grow } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import CancelIcon from "@material-ui/icons/Cancel";
-import { withStyles } from "@material-ui/styles";
 import { useLocation, useHistory } from "react-router-dom";
 import { useIntl } from "react-intl";
 import { setLanguageOverride } from "../localization/LocalizationProvider";
 import { CachedTablesContext } from "../model/CacheProvider";
 import { featureSpecs, getLocalizedLabel } from "./FeatureHelper";
-
-// NB: I tried a bunch of iterations over 2 days with forwardRefs and stuff trying to get this search box
-// to have both the html tooltip AND stop losing focus every time a letter was typed. The upshot was this
-// HtmlTooltip declaration was INSIDE of the SearchBox declaration. Moving it outside kept it from being
-// rerendered every time a character was typed.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const HtmlTooltip = withStyles((theme: Theme) => ({
-    tooltip: {
-        backgroundColor: theme.palette.background.default,
-        color: theme.palette.text.primary,
-        maxWidth: 220,
-        border: "1px solid #ccc",
-        borderRadius: "6px",
-        paddingLeft: "20px",
-        paddingRight: "20px",
-        paddingTop: "14px",
-        paddingBottom: "14px",
-        marginTop: "6px",
-    },
-    arrow: {
-        color: theme.palette.background.default,
-    },
-}))(Tooltip);
+import { trySpecialSearch } from "../model/SpecialSearch";
 
 export const SearchBox: React.FunctionComponent<{
     // Extra CSS props to apply to the root div. (A bit of a kludge; there's no clean way
@@ -72,32 +47,6 @@ export const SearchBox: React.FunctionComponent<{
     useEffect(() => setSearchString(initialSearchString), [
         initialSearchString,
     ]);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [showTooltip, setShowTooltip] = useState(true);
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const searchTooltip: JSX.Element = (
-        <Typography style={{ lineHeight: "1.25rem" }}>
-            {"Press <Enter> to search"}
-            <br />
-            <br />
-            <em>{"Example searches:"}</em>
-            <br />
-            <br />
-            {"butterflies"}
-            <br />
-            {'"Moon and Cap"'}
-            <br />
-            {"fish topic:math"}
-            <br />
-            {"level:3 topic:animal stories"}
-            <br />
-            {"uploader:ken@examples.com"}
-            <br />
-            {"copyright:pratham"}
-            <br />
-        </Typography>
-    );
 
     const { languagesByBookCount } = useContext(CachedTablesContext);
 
@@ -169,25 +118,18 @@ export const SearchBox: React.FunctionComponent<{
             return true;
         }
 
-        // N.B. These 'grid' and 'covid' things need to be called from within 'handleSearch' to avoid
-        // React errors about updating during state transitions.
-        // enhance: we should just have a set of these keyword-->special page searches, not code for each.
         if (searchStringLower === "grid") {
             history.push("/grid");
             return true;
         }
 
-        if (
-            [
-                "covid",
-                "covid19",
-                "coronavirus",
-                "cov19",
-                "kovid",
-                "kovid19",
-            ].includes(searchStringLower)
-        ) {
-            history.push("/covid19");
+        const specialSearchResults = trySpecialSearch(searchStringLower);
+        if (specialSearchResults.length > 0) {
+            // For now, just assume the special search can only return 1 string.
+            // This will change someday (we are on phase 1 of 3, currently) to result in a page
+            // that starts with collections that match the special search, followed by books that
+            // match the (non-special) search.
+            history.push("/" + specialSearchResults[0]);
             return true;
         }
 
@@ -241,7 +183,6 @@ export const SearchBox: React.FunctionComponent<{
         if (event.key === "Enter") {
             handleSearch();
             event.preventDefault();
-            setShowTooltip(false);
         }
     };
 
@@ -259,7 +200,7 @@ export const SearchBox: React.FunctionComponent<{
         }
     };
 
-    const searchTextField: JSX.Element = (
+    return (
         <Paper
             key="searchField"
             css={css`
@@ -274,7 +215,6 @@ export const SearchBox: React.FunctionComponent<{
                 padding-left: 5px;
                 ${props.cssExtra || ""}
             `}
-            onFocus={() => setShowTooltip(true)}
             component="form"
             elevation={0}
             role="search"
@@ -300,10 +240,8 @@ export const SearchBox: React.FunctionComponent<{
                 inputProps={{ "aria-label": "search for books" }}
                 value={searchString}
                 onChange={(event) =>
-                    setSearchString(
-                        event.target
-                            .value /* no, don't trim yet else can't type space .trim()*/
-                    )
+                    /* N.B. Don't trim the search string before setting it here, or you can't type space! */
+                    setSearchString(event.target.value)
                 }
                 onKeyPress={handleEnter}
             />
@@ -320,22 +258,4 @@ export const SearchBox: React.FunctionComponent<{
             </Grow>
         </Paper>
     );
-
-    return (
-        // (showTooltip && (
-        //     <HtmlTooltip title={searchTooltip} arrow /*disableHoverListener*/>
-        //         {searchTextField}
-        //     </HtmlTooltip>
-        // )) ||
-        searchTextField
-    );
 };
-
-export function CheckForCovidSearch(search?: string) {
-    if (!search) return false;
-
-    const searchTerms = search.toLowerCase();
-    return (
-        searchTerms.indexOf("covid") > -1 || searchTerms.indexOf("corona") > -1
-    );
-}
