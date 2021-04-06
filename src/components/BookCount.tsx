@@ -34,7 +34,10 @@ export const BookCount: React.FunctionComponent<IProps> = (props) => {
 };
 
 const BookCountInternal: React.FunctionComponent<IProps> = (props) => {
-    const bookCountResult = useGetBookCountRaw(props.filter);
+    // If filter is empty (Some collections w/child collections are like this), rather than calculating the number of books in Bloom Library,
+    // just don't display any book count.
+    const shouldSkipQuery = isEmpty(props.filter);
+    const bookCountResult = useGetBookCountRaw(props.filter, shouldSkipQuery);
     const { noResultsElement, count } = getResultsOrMessageElement(
         bookCountResult
     );
@@ -75,7 +78,8 @@ const BookCountInternal: React.FunctionComponent<IProps> = (props) => {
             });
             // and we can fall through to show whatever result we have, since loading is properly true.
         } else {
-            // Another spurious result before we even sent the request to the server.
+            // Another spurious result before we even sent the request to the server,
+            // or if the filter is empty
             return getNoResultsElement();
         }
     }
@@ -117,3 +121,7 @@ const BookCountInternal: React.FunctionComponent<IProps> = (props) => {
         )
     );
 };
+
+function isEmpty(obj: {}): boolean {
+    return Object.keys(obj).length === 0;
+}

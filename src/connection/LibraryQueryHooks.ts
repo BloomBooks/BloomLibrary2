@@ -92,8 +92,17 @@ export function useGetLanguageInfo(language: string): ILanguage[] {
     } else return [];
 }
 
-export function useGetBookCountRaw(filter: IFilter) {
-    return useBookQueryInternal({ limit: 0, count: 1 }, filter);
+// Gets the count of books matching {filter}
+// shouldSkipQuery: If defined and set to true, then this method will not actually cause the query to run.
+//     This can be useful with conditional hooks due to Rules of Hooks)
+export function useGetBookCountRaw(filter: IFilter, shouldSkipQuery?: boolean) {
+    return useBookQueryInternal(
+        { limit: 0, count: 1 },
+        filter,
+        undefined,
+        undefined,
+        shouldSkipQuery
+    );
 }
 
 export function useGetBookCount(filter: IFilter): number {
