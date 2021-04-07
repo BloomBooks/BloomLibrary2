@@ -68,7 +68,7 @@ export const DownloadToBloomButton: React.FunctionComponent<ITranslateButtonProp
     // with a layout that isn't broken.
     const startButton = isTemplate
         ? undefined
-        : getTranslateIcon(theme, isTemplate);
+        : getTranslateIcon(theme, inCreate);
 
     // Main content of the two versions of the button.
     const content = isTemplate ? (
