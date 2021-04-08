@@ -14,7 +14,7 @@ import { FormattedMessage } from "react-intl";
 
 interface IProps {
     message?: string;
-    filter: IFilter;
+    filter?: IFilter;
     noMatches?: JSX.Element;
     //ClassName?: string;
 }
@@ -34,10 +34,14 @@ export const BookCount: React.FunctionComponent<IProps> = (props) => {
 };
 
 const BookCountInternal: React.FunctionComponent<IProps> = (props) => {
-    // If filter is empty (Some collections w/child collections are like this), rather than calculating the number of books in Bloom Library,
+    // If filter is undefined (Some collections w/child collections are like this), rather than calculating the number of books in Bloom Library,
     // just don't display any book count.
-    const shouldSkipQuery = isEmpty(props.filter);
-    const bookCountResult = useGetBookCountRaw(props.filter, shouldSkipQuery);
+    // Note though that the home page has filter is empty, and in that case, we want shouldSkipQuery to return false.
+    const shouldSkipQuery = props.filter === undefined;
+    const bookCountResult = useGetBookCountRaw(
+        props.filter || {},
+        shouldSkipQuery
+    );
     const { noResultsElement, count } = getResultsOrMessageElement(
         bookCountResult
     );
