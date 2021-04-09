@@ -59,15 +59,17 @@ export const LeftMetadata: React.FunctionComponent<{
                     }}
                 />
             </div>
-            <div>
-                <FormattedMessage
-                    id="book.metadata.lastUpdated"
-                    defaultMessage="Last updated on {date}"
-                    values={{
-                        date: props.book.updateDate!.toLocaleDateString(),
-                    }}
-                />
-            </div>
+            {props.book.lastUploadedDate && (
+                <div>
+                    <FormattedMessage
+                        id="book.metadata.lastUploaded"
+                        defaultMessage="Last uploaded on {date}"
+                        values={{
+                            date: props.book.lastUploadedDate!.toLocaleDateString(),
+                        }}
+                    />
+                </div>
+            )}
             {props.book.importedBookSourceUrl &&
                 props.book.importedBookSourceUrl.length > 0 && (
                     <div>

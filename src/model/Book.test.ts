@@ -10,14 +10,14 @@ let cases: string[][][] = [
     [["other", "quiz", "activity"]],
 ];
 test.each(cases)(
-    "sanitizeFeaturesArray replaces quiz with activity",
+    "sanitizeFeaturesArray, if given quiz, adds activity if necessary",
     (features) => {
         expect(features).not.toBeUndefined();
 
         Book.sanitizeFeaturesArray(features);
 
         expect(features.filter((f) => f === "activity").length).toBe(1);
-        expect(features.includes("quiz")).toBeFalsy();
+        expect(features.includes("quiz")).toBeTruthy();
     }
 );
 
