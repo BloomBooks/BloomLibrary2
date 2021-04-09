@@ -109,7 +109,9 @@ export class Book {
     // which we parse into
     public uploadDate: Date | undefined;
     public updateDate: Date | undefined;
-    // conceptually a date, but uploaded from parse server this is what it has.
+    public lastUploadedDate: Date | undefined;
+    // These next two are conceptually dates, but uploaded from parse server this is what they have.
+    private lastUploaded: { iso: string } | undefined;
     public harvestStartedAt: { iso: string } | undefined;
     public importedBookSourceUrl?: string;
     // todo: We need to handle limited visibility, i.e. by country
@@ -189,6 +191,12 @@ export class Book {
         this.uploadDate = new Date(Date.parse(this.createdAt));
         this.updateDate = new Date(Date.parse(this.updatedAt as string));
 
+        // We have to do a similar parsing trick here as for harvestStartedAt, but without the
+        // dependence on a particular date. If parsedb has a lastUploaded date, we trust it.
+        this.lastUploadedDate = this.lastUploaded
+            ? new Date(this.lastUploaded.iso)
+            : undefined;
+
         //TODO: this is just experimenting with the logic, but what we need
         // is 1) something factored out so we don't have to repeat for each artifact type
         // 2) a way that the ArtifactVisibility panel actually changes some mobx-observed
@@ -224,13 +232,11 @@ export class Book {
     }
 
     // Modifies the given array of features in place.
-    // Currently, replaces "quiz" with "activity" so we can treat them the same because
-    // we don't actually want a "quiz" feature. Just "activity."
+    // Ensures that quizzes and widgets are considered both their respective self as well as a type of "activity"
+    // (Note: at one time in the past, this code would replace "quiz" with "activity" instead)
     public static sanitizeFeaturesArray(features: string[]) {
         if (features?.length) {
-            const indexOfQuiz = features.indexOf("quiz");
-            if (indexOfQuiz > -1) {
-                features.splice(indexOfQuiz, 1);
+            if (features.includes("quiz") || features.includes("widget")) {
                 if (!features.includes("activity")) features.push("activity");
             }
         }

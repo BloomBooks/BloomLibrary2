@@ -35,15 +35,8 @@ export const EmbeddingHost: React.FunctionComponent<{
     if (response1.loading) {
         return null;
     }
-
-    if (response1.result && response1.result.length >= 1) {
-        // TODO for Phase 2:
-        // Parse result[0].collectionUrlKeys and check if we match a pattern
-        const isPatternMatched = true;
-
-        if (isPatternMatched) {
-            return <CollectionWrapper segments={props.urlSegments} />;
-        }
+    if (doesDomainAllowEmbedding(collectionName, response1.result)) {
+        return <CollectionWrapper segments={props.urlSegments} />;
     }
 
     // Nope, not allowed via domainEmbeddingSettings.
@@ -102,6 +95,45 @@ export const EmbeddingHost: React.FunctionComponent<{
     }
     */
 };
+
+// Returns true if embedding is allowed for the domain.
+function doesDomainAllowEmbedding(
+    collectionName: string, // The name of the collection for which we are checking if embedding is allowed.
+    result: any[] | undefined // the result from a useContentful call to check the domainEmbedSettings
+): boolean {
+    if (result && result.length >= 1) {
+        // Check collectionUrlKeys and check if we match a pattern
+        // If collectionUrlKeys is empty, allow any pattern
+        const collectionUrlKeys = (result[0].fields["collectionUrlKeys"] ||
+            "*") as string;
+
+        const patterns = collectionUrlKeys.split(",");
+
+        for (let i = 0; i < patterns.length; ++i) {
+            const pattern = patterns[i].trim();
+            if (doesNameMatchPattern(collectionName, pattern)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+// Checks if the collection name matches the pattern.
+// pattern matching is case insensitive.
+// The pattern needs to match the full collection name, but you can use "*" wildcards
+export function doesNameMatchPattern(
+    collectionName: string,
+    pattern: string
+): boolean {
+    // pattern "cat-and-dog*" should match things beginning with "cat-and-dog"
+    // pattern "Look-Listen-Live" should match only that.
+    // In order for that to work, we need the ^ and $ beginning/end anchors.
+    const regexPattern = "^" + pattern.replace("*", ".*") + "$";
+    const regex = new RegExp(regexPattern, "i"); // case insensitive
+    return regex.test(collectionName);
+}
 
 // If this iframe has the necessary javascript loaded, this will allow visitors to be able to share, bookmark locations within the library, or
 // refresh without losing their place. See the the other end of this code at testembed.htm

@@ -92,8 +92,17 @@ export function useGetLanguageInfo(language: string): ILanguage[] {
     } else return [];
 }
 
-export function useGetBookCountRaw(filter: IFilter) {
-    return useBookQueryInternal({ limit: 0, count: 1 }, filter);
+// Gets the count of books matching {filter}
+// shouldSkipQuery: If defined and set to true, then this method will not actually cause the query to run.
+//     This can be useful with conditional hooks due to Rules of Hooks)
+export function useGetBookCountRaw(filter: IFilter, shouldSkipQuery?: boolean) {
+    return useBookQueryInternal(
+        { limit: 0, count: 1 },
+        filter,
+        undefined,
+        undefined,
+        shouldSkipQuery
+    );
 }
 
 export function useGetBookCount(filter: IFilter): number {
@@ -194,7 +203,7 @@ export function useGetPhashMatchingRelatedBooks(
 export const bookDetailFields =
     "title,allTitles,baseUrl,bookOrder,inCirculation,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
     "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits," +
-    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,suitableForMakingShells," +
+    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,suitableForMakingShells,lastUploaded," +
     "harvestStartedAt,bookshelves,publisher,originalPublisher,keywords,bookInstanceId,brandingProjectName,edition";
 export function useGetBookDetail(bookId: string): Book | undefined | null {
     const { response, loading, error } = useAxios({
@@ -514,6 +523,8 @@ export interface IBasicBookInfo {
     features: string[];
     tags: string[];
     updatedAt?: string;
+    // conceptually a date, but uploaded from parse server this is what it has.
+    lastUploaded?: { iso: string } | undefined;
     license: string;
     copyright: string;
     pageCount: string;
