@@ -193,10 +193,11 @@ export const ArtifactAndChoice: React.FunctionComponent<{
     return (
         <div
             className={classes.artifactAndChoice}
-            // Using makeStyles to set the margin-left doesn't work. It gets overridden by the default .MuiFormControl-root.
-            // So we hack it here.
+            // Using makeStyles to set the margin-left doesn't work. It gets overridden by the
+            // default .MuiFormControl-root. So we hack it here. Except somehow that Mui class
+            // changes when we are under the Create tab, so we have to use our own class.
             css={css`
-                .MuiFormControl-root {
+                .choice-control {
                     margin-left: 50px;
                 }
             `}
@@ -208,7 +209,7 @@ export const ArtifactAndChoice: React.FunctionComponent<{
             >
                 {getButton()}
             </a>
-            <FormControl>
+            <FormControl className="choice-control">
                 <Select
                     value={thisPersonsChoice}
                     onChange={handleChange}
