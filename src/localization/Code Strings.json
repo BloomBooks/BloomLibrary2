@@ -218,9 +218,9 @@
         "description": "",
         "message": "Uploaded {date} by {email}"
     },
-    "book.metadata.lastUpdated": {
+    "book.metadata.lastUploaded": {
         "description": "",
-        "message": "Last updated on {date}"
+        "message": "Last uploaded on {date}"
     },
     "book.metadata.features": {
         "description": "",

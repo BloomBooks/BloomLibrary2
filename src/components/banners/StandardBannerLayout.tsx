@@ -100,9 +100,7 @@ export const StandardBannerLayout: React.FunctionComponent<{
 
                 {props.collection?.urlKey !== "new-arrivals" &&
                     props.collection?.urlKey !== "create" &&
-                    (props.bookCount || (
-                        <BookCount filter={props.filter || {}} />
-                    ))}
+                    (props.bookCount || <BookCount filter={props.filter} />)}
                 <BannerImageCredits {...props} />
             </div>
         </div>
