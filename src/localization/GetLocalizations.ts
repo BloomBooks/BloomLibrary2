@@ -11,7 +11,7 @@ export interface IStringMap {
     [id: string]: string;
 }
 
-let static_translationsToCurrentLanguage: IStringMap;
+let static_translationsToCurrentLanguage: IStringMap = {};
 
 // This is an alternative to doing `const l10=useIntl(); l10.formatMessage()`,
 // for places where we are not in react component and so can't use that hook. It
