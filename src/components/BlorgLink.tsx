@@ -13,6 +13,12 @@ export interface IBlorgLinkProps
     color?: "primary" | "secondary";
 }
 
+// A Link class that is clever about using a React Router Link for internal hrefs and
+// a regular one for external ones, and in a few other ways.
+// Since it's all about handling the href, that is deliberately not optional.
+// If you want something that looks like a link but is really a button (as should be
+// done if there isn't an href, according to accessibility rules), you can use
+// a MUI Link with component="button" (example in LicenseLink.tsx).
 export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
     const location = useLocation();
 
