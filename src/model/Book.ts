@@ -62,6 +62,7 @@ export class Book {
     public allTitles = new Map<string, string>();
     public allTitlesRaw = "";
     public license: string = "";
+    public licenseNotes: string = "";
     public baseUrl: string = "";
     public copyright: string = "";
     public country: string = "";
