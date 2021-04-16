@@ -8,7 +8,6 @@ import { Book } from "../../model/Book";
 import React, { useState } from "react";
 import { BlorgLink } from "../BlorgLink";
 import { Alert } from "../Alert";
-import { commonUI } from "../../theme";
 import Link from "@material-ui/core/Link";
 export const LicenseLink: React.FunctionComponent<{
     book: Book;
