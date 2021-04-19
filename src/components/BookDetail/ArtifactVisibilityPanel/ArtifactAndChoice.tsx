@@ -31,6 +31,13 @@ const useStyles = makeStyles(() =>
         },
         artifactAndChoice: {
             padding: 10,
+
+            // This CSS makes it so that even if rationaleText is long, and the combined width of artifact + margin + rationaleText would've exceeded this container's width,
+            // the artifact link and the choice div will still be vertically aligned.
+            // (The choice div will be shrunk to fit inside the container (rationaleText will become wrapped))
+            display: "flex",
+            flexWrap: "nowrap", // nowrap is actually already the default value, but it's key to achieving the formatting we want
+            justifyContent: "flex-start", // flex-start is actually already the default value, but it's key to achieving the formatting we want
         },
         button: {
             width: 100,
