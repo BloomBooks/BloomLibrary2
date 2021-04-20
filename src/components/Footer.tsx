@@ -51,7 +51,7 @@ export const Footer: React.FunctionComponent = () => {
                     margin-left: 10px;
                 `}
             >
-                {"© 2020 SIL International"}
+                {`© ${new Date().getFullYear()} SIL International`}
             </div>
         </a>
     );
