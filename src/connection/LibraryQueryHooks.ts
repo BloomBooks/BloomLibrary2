@@ -258,7 +258,7 @@ interface IGridResult {
 
 export const gridBookKeys =
     "objectId,bookInstanceId," +
-    "title,baseUrl,license,licenseNotes,inCirculation,summary,copyright,harvestState,harvestLog," +
+    "title,baseUrl,license,licenseNotes,inCirculation,summary,copyright,harvestState,harvestLog,harvestStartedAt," +
     "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits,bookshelves," +
     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher,originalPublisher,keywords,edition";
 
