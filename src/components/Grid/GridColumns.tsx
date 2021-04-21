@@ -54,6 +54,9 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                         color: ${b.inCirculation
                             ? "black !important"
                             : "grey !important"};
+                        text-decoration: ${!b.inCirculation
+                            ? "line-through !important"
+                            : ""};
                     `}
                     target="_blank"
                 >
