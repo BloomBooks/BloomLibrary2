@@ -14,7 +14,6 @@ const stem = require("wink-porter2-stemmer");
 
 export function createBookFromParseServerData(pojo: any): Book {
     const b = Object.assign(new Book(), pojo);
-
     // change to a more transparent name internally, and make an observable object
     b.artifactsToOfferToUsers = ArtifactVisibilitySettingsGroup.createFromParseServerData(
         pojo.show
@@ -22,6 +21,7 @@ export function createBookFromParseServerData(pojo: any): Book {
 
     b.allTitlesRaw = pojo.allTitles;
     b.allTitles = parseAllTitles(pojo.allTitles);
+    b.originalTitle = pojo.originalTitle;
     b.languages = pojo.langPointers;
     b.finishCreationFromParseServerData(pojo.objectId);
 
@@ -77,6 +77,7 @@ export class Book {
     public internetLimits: IInternetLimits = {};
     public brandingProjectName = "";
     public suitableForMakingShells = false; // that is, the book is a template.
+    public originalTitle: string = "";
 
     // things that can be edited on the site are observable so that the rest of the UI will update if they are changed.
     public title: string = "";

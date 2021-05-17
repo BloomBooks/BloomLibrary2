@@ -23,6 +23,7 @@ import { CollectionStatsPageCodeSplit } from "./statistics/CollectionStatsPageCo
 import { TestEmbeddingPage } from "./TestEmbedding";
 import { ReleaseNotes } from "./ReleaseNotes";
 import { ThemeForLocation } from "./pages/ThemeForLocation";
+import { CollectionReportSplit } from "./reports/CollectionReportSplit";
 
 export let previousPathname = "";
 let currentPathname = "";
@@ -146,6 +147,24 @@ export const Routes: React.FunctionComponent<{}> = () => {
                             );
                             return (
                                 <CollectionStatsPageCodeSplit
+                                    collectionName={collectionName}
+                                />
+                            );
+                        }}
+                    ></Route>
+                    <Route
+                        path={"/:segments*/report"}
+                        render={({ match }) => {
+                            if (window.self !== window.top) {
+                                throw new Error(
+                                    "Report not available in embedding."
+                                );
+                            }
+                            const { collectionName } = splitPathname(
+                                match.params.segments
+                            );
+                            return (
+                                <CollectionReportSplit
                                     collectionName={collectionName}
                                 />
                             );
