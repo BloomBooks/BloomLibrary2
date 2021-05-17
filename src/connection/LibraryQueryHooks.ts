@@ -273,7 +273,8 @@ export function useGetBooksForGrid(
     limit: number,
     skip: number,
     // We only pay attention to the first one at this point, as that's all I figured out
-    sortingArray: Array<{ columnName: string; descending: boolean }>
+    sortingArray: Array<{ columnName: string; descending: boolean }>,
+    keysToGet?: string // defaults to gridBookKeys if not defined
 ): IGridResult {
     //console.log("Sorts: " + sortingArray.map(s => s.columnName).join(","));
     const { tags } = useContext(CachedTablesContext);
@@ -290,9 +291,8 @@ export function useGetBooksForGrid(
         limit.toString() +
         skip.toString() +
         order.toString();
-
     const { response, loading, error } = useAsync(
-        () => retrieveBookData(query, order, skip, limit),
+        () => retrieveBookData(query, order, skip, limit, keysToGet),
         trigger
     );
     const stats = useAsync(

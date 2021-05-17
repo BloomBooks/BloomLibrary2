@@ -202,5 +202,49 @@
     "collectionStatistics": {
         "message": "{collectionLabel} statistics",
         "description": "Used to label the statistics for a particular collection. For example, COVID-19 Books statistics. {collectionLabel} gets replaced by the name of the collection."
+    },
+    "report.languages": {
+        "description": "",
+        "message": "Languages"
+    },
+    "report.primaryTitle": {
+        "description": "",
+        "message": "Primary Title"
+    },
+    "report.originalTitle": {
+        "description": "",
+        "message": "Original Title"
+    },
+    "report.allTitlesRaw": {
+        "description": "",
+        "message": "All Titles-raw"
+    },
+    "report.originalPublisher": {
+        "description": "",
+        "message": "Original Publisher"
+    },
+    "report.publisher": {
+        "description": "",
+        "message": "Publisher"
+    },
+    "report.blorgLink": {
+        "description": "",
+        "message": "Blorg Link"
+    },
+    "report.readsStarted": {
+        "description": "",
+        "message": "Reads (starts)"
+    },
+    "report.downloadsCombined": {
+        "description": "",
+        "message": "Downloads (combined)"
+    },
+    "report.originalUploadDate": {
+        "description": "",
+        "message": "Original Upload Date"
+    },
+    "report.pageName": {
+        "description": "",
+        "message": "Pratham Books Report"
     }
 }

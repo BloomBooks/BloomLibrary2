@@ -23,6 +23,7 @@ import { CollectionStatsPageCodeSplit } from "./statistics/CollectionStatsPageCo
 import { TestEmbeddingPage } from "./TestEmbedding";
 import { ReleaseNotes } from "./ReleaseNotes";
 import { ThemeForLocation } from "./pages/ThemeForLocation";
+import { PrathamReport } from "./reports/PrathamReport";
 
 export let previousPathname = "";
 let currentPathname = "";
@@ -149,6 +150,12 @@ export const Routes: React.FunctionComponent<{}> = () => {
                                     collectionName={collectionName}
                                 />
                             );
+                        }}
+                    ></Route>
+                    <Route
+                        path={"/pratham/report"}
+                        render={() => {
+                            return <PrathamReport />;
                         }}
                     ></Route>
 
