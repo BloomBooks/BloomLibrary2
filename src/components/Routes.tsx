@@ -23,6 +23,7 @@ import { CollectionStatsPageCodeSplit } from "./statistics/CollectionStatsPageCo
 import { TestEmbeddingPage } from "./TestEmbedding";
 import { ReleaseNotes } from "./ReleaseNotes";
 import { ThemeForLocation } from "./pages/ThemeForLocation";
+import { BookshelfReportSplit } from "./reports/BookshelfReportSplit";
 
 export let previousPathname = "";
 let currentPathname = "";
@@ -148,6 +149,14 @@ export const Routes: React.FunctionComponent<{}> = () => {
                                 <CollectionStatsPageCodeSplit
                                     collectionName={collectionName}
                                 />
+                            );
+                        }}
+                    ></Route>
+                    <Route
+                        path={"/pratham/report"}
+                        render={() => {
+                            return (
+                                <BookshelfReportSplit bookshelfName="Pratham" />
                             );
                         }}
                     ></Route>
