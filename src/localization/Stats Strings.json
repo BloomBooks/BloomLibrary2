@@ -202,5 +202,33 @@
     "collectionStatistics": {
         "message": "{collectionLabel} statistics",
         "description": "Used to label the statistics for a particular collection. For example, COVID-19 Books statistics. {collectionLabel} gets replaced by the name of the collection."
+    },
+    "report.title": {
+        "description": "",
+        "message": "Primary Title"
+    },
+    "report.originalTitle": {
+        "description": "",
+        "message": "Original Title"
+    },
+    "report.allTitles": {
+        "description": "",
+        "message": "All Titles"
+    },
+    "report.originalPublisher": {
+        "description": "",
+        "message": "Original Publisher"
+    },
+    "report.publisher": {
+        "description": "",
+        "message": "Publisher"
+    },
+    "report.blorgLink": {
+        "description": "",
+        "message": "Bloom Library Link"
+    },
+    "report.uploadDate": {
+        "description": "",
+        "message": "Original Upload Date"
     }
 }
