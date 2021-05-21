@@ -4,12 +4,11 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useState } from "react";
+import React from "react";
 import { useGetBookDetail } from "../../connection/LibraryQueryHooks";
 import { Book } from "../../model/Book";
-import WarningIcon from "@material-ui/icons/Warning";
-import { IconButton, Divider } from "@material-ui/core";
-import { Alert } from "../Alert";
+
+import { Divider } from "@material-ui/core";
 
 import { observer } from "mobx-react-lite";
 import { BookExtraPanels } from "./BookExtraPanels";
@@ -28,6 +27,7 @@ import { FeaturesGroup } from "./FeaturesGroup";
 import { useIsEmbedded } from "../EmbeddingHost";
 import { commonUI } from "../../theme";
 import { IBookDetailProps } from "./BookDetailCodeSplit";
+import { MissingFontBlock } from "./MissingFontBlock";
 
 const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     const l10n = useIntl();
@@ -94,8 +94,7 @@ const BookDetailInternal: React.FunctionComponent<{
     // const { bloomDesktopAvailable } = useContext(
     //     OSFeaturesContext
     // );
-    const showHarvesterWarning =
-        props.book.getHarvestLog().indexOf("Warning") >= 0;
+
     const divider = (
         <Divider
             css={css`
@@ -106,7 +105,6 @@ const BookDetailInternal: React.FunctionComponent<{
             `}
         />
     );
-    const [alertText, setAlertText] = useState<string | null>(null);
 
     const embeddedMode = useIsEmbedded();
     return (
@@ -196,6 +194,7 @@ const BookDetailInternal: React.FunctionComponent<{
                             />
                             <DeleteButton book={props.book} />
                         </div>
+
                         {/* Enhance, maybe, add this and wire to some message <HowToPrintButton />*/}
                         {/* This link is supposed to be an explanation of how to get Bloom desktop etc.
                         so you can translate the book. A such only needed where the Translate button
@@ -246,22 +245,8 @@ const BookDetailInternal: React.FunctionComponent<{
                         )} */}
                     </div>
                 </div>
-                {showHarvesterWarning && (
-                    <IconButton
-                        aria-label="harvester warning"
-                        onClick={() => setAlertText(props.book.getHarvestLog())}
-                    >
-                        <WarningIcon />
-                    </IconButton>
-                )}
+                <MissingFontBlock book={props.book} />
                 <BookExtraPanels book={props.book} />
-                <Alert
-                    open={alertText != null}
-                    close={() => {
-                        setAlertText(null);
-                    }}
-                    message={alertText!}
-                />
             </div>
         </div>
     );

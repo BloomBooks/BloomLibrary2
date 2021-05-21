@@ -10,6 +10,7 @@ export interface IBlorgLinkProps
     extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
     href: string; // href is part of React.AnchorHTMLAttributes<HTMLAnchorElement> but optional; we want required
     newTabIfEmbedded?: boolean;
+    alwaysNewTab?: boolean;
     color?: "primary" | "secondary";
 }
 
@@ -30,7 +31,7 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
 
     if (isExternalOrEmail(props.href as string)) {
         // Some links should open a new tab if we are embedded in an iframe.
-        if (isInIframe && props.newTabIfEmbedded) {
+        if (props.alwaysNewTab || (isInIframe && props.newTabIfEmbedded)) {
             return (
                 <MuiLink
                     target={"_blank"}
