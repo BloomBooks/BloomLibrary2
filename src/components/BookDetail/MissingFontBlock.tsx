@@ -61,7 +61,7 @@ export const MissingFontBlock: React.FunctionComponent<{ book: Book }> = (
                 `}
             >
                 {l10n.formatMessage({
-                    id: "book.missingFontsPre",
+                    id: "book.missingFontsNotice",
                     defaultMessage:
                         "We cannot fully present this book because it uses one or more fonts that BloomLibrary.org does not have. Please help us to find each font by clicking on its name and answering some questions: ",
                 })}
