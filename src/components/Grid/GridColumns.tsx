@@ -54,6 +54,9 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                         color: ${b.inCirculation
                             ? "black !important"
                             : "grey !important"};
+                        text-decoration: ${!b.inCirculation
+                            ? "line-through !important"
+                            : ""};
                     `}
                     target="_blank"
                 >
@@ -116,6 +119,15 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             },
         },
         {
+            name: "features",
+            title: "Features",
+            defaultVisible: false,
+            getCellValue: (b: Book) => b.features.join(","),
+            addToFilter: (filter: IFilter, value: string) => {
+                filter.search += ` feature:${value}`;
+            },
+        },
+        {
             name: "country",
             title: "Country",
             defaultVisible: false,
@@ -175,13 +187,25 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             },
             getCustomFilterComponent: (props: TableFilterRow.CellProps) => (
                 <ChoicesFilterCell
-                    choices={["", "Done", "Failed", "New", "Updated"]}
+                    choices={[
+                        "",
+                        "Done",
+                        "Failed",
+                        "New",
+                        "Updated",
+                        "Requested",
+                    ]}
                     {...props}
                 />
             ),
         },
         {
             name: "harvestLog",
+            defaultVisible: false,
+        },
+        {
+            name: "harvestStartedAt",
+            getCellValue: (b: Book) => b.harvestStartedAt?.iso,
             defaultVisible: false,
         },
         {

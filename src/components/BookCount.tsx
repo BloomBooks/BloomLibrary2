@@ -125,7 +125,3 @@ const BookCountInternal: React.FunctionComponent<IProps> = (props) => {
         )
     );
 };
-
-function isEmpty(obj: {}): boolean {
-    return Object.keys(obj).length === 0;
-}

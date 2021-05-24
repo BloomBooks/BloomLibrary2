@@ -62,6 +62,7 @@ export class Book {
     public allTitles = new Map<string, string>();
     public allTitlesRaw = "";
     public license: string = "";
+    public licenseNotes: string = "";
     public baseUrl: string = "";
     public copyright: string = "";
     public country: string = "";
@@ -144,6 +145,13 @@ export class Book {
         // enhance: what does it mean if there are multiple items? Is only the last still true?
         return this.harvestLog.join(" / ");
     }
+
+    public getMissingFontNames(): string[] {
+        return this.harvestLog
+            .filter((entry) => entry.indexOf("MissingFont") >= 0)
+            .map((entry) => entry.split("-")[1].trim());
+    }
+
     public getBestLevel(): string | undefined {
         if (this.level) return this.level;
         return this.getTagValue("computedLevel");

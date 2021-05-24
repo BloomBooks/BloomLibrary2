@@ -126,15 +126,37 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
 
     // insert a <br/> between each entry in the array of log entries
     const renderHarvestLog = (log: string[]) => {
-        let spans = [];
+        const spans = [];
         for (let i = 0; i < log.length; ++i) {
             if (i > 0) {
-                spans.push(<br />);
+                spans.push(<br key={i + "br"} />);
             }
             spans.push(<span key={i}>{log[i]}</span>);
         }
         return <div>{spans}</div>;
     };
+
+    // .Mui-focused is the only one of these .Mui-xxx classes that doesn't
+    // seem to get a number appended to the end sometimes. That makes them
+    // very susceptible to breaking. The same control that has classes
+    // MuiFormControl-root and MuiInputBase-root when you go to the detail
+    // url directly has MuiFormControl-root-436 and MuiInputBase-root-464
+    // when you inject "create/" into the url. Since this css only applies
+    // to this React local TextField component, just use the tag names.
+    // Also since the inner 'css' in the emotion 'css={css`style string`}'
+    // is just a function, I was able to pull out the common styles into a string
+    // and use a css(someCombinedString) format.
+    const commonTextFieldStyles: string = `fieldset {
+            border-color: ${borderColor} !important;
+            border-width: 2px !important;
+        }
+        label {
+            color: darkGrey;
+        }
+        .Mui-focused {
+            color: black;
+        }
+        background-color: white;`;
 
     return (
         // review: is there some shade-of-grey constant we should use for the background color?
@@ -186,22 +208,12 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                     `}
                 >
                     <TextField
-                        css={css`
-                            .MuiOutlinedInput-notchedOutline {
-                                border-color: ${borderColor} !important;
-                                border-width: 2px !important;
-                            }
-                            .MuiInputLabel-root {
-                                color: darkGrey;
-                            }
-                            .MuiInputBase-root {
-                                margin-bottom: 1em;
-                            }
-                            .MuiInputLabel-root.Mui-focused {
-                                color: black;
-                            }
-                            background-color: white;
-                        `}
+                        css={css(
+                            `
+                                div {
+                                    margin-bottom: 1em;
+                                }` + commonTextFieldStyles
+                        )}
                         label="Title"
                         variant="outlined"
                         multiline
@@ -211,19 +223,8 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                     ></TextField>
                     <TextField
                         id="apSummary"
-                        css={css`
-                            .MuiOutlinedInput-notchedOutline {
-                                border-color: ${borderColor} !important;
-                                border-width: 2px !important;
-                            }
-                            .MuiInputLabel-root {
-                                color: darkGrey;
-                            }
-                            .MuiInputLabel-root.Mui-focused {
-                                color: black;
-                            }
-                            background-color: white;
-                        `}
+                        className="staff-text-field"
+                        css={css(commonTextFieldStyles)}
                         label="Summary"
                         variant="outlined"
                         multiline
@@ -235,27 +236,16 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                         id="apNotes"
                         // 87px height aligns it with the Level radio buttons,
                         // at least in Chrome.
-                        css={css`
+                        css={css(
+                            `
                             margin-top: 10px !important;
-                            .MuiOutlinedInput-notchedOutline {
-                                border-color: ${borderColor} !important;
-                                border-width: 2px !important;
-                            }
-                            .MuiInputBase-input {
-                                height: 87px;
-                            }
-                            .MuiInputBase-root {
+                            div {
                                 margin-bottom: 1em;
                             }
-
-                            .MuiInputLabel-root {
-                                color: darkGrey;
-                            }
-                            .MuiInputLabel-root.Mui-focused {
-                                color: black;
-                            }
-                            background-color: white;
-                        `}
+                            textarea {
+                                height: 87px;
+                            }` + commonTextFieldStyles
+                        )}
                         label="Notes"
                         variant="outlined"
                         multiline
@@ -325,22 +315,12 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                     <TextField
                         label="Keywords"
                         variant="outlined"
-                        css={css`
-                            .MuiOutlinedInput-notchedOutline {
-                                border-color: ${borderColor} !important;
-                                border-width: 2px !important;
-                            }
-                            .MuiInputLabel-root {
-                                color: darkGrey;
-                            }
-                            .MuiInputBase-root {
+                        css={css(
+                            `
+                            div {
                                 margin-bottom: 1em;
-                            }
-                            .MuiInputLabel-root.Mui-focused {
-                                color: black;
-                            }
-                            background-color: white;
-                        `}
+                            }` + commonTextFieldStyles
+                        )}
                         value={props.book.keywordsText || ""}
                         onChange={(event) => {
                             props.book.keywordsText = event.target.value;
