@@ -30,7 +30,7 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
     // ABOUT MuiLink: we're using this to get the themed color for the link
 
     if (isExternalOrEmail(props.href as string)) {
-        // Some links should open a new tab if we are embedded in an iframe.
+        // Open a new tab if appropriate
         if (props.alwaysNewTab || (isInIframe && props.newTabIfEmbedded)) {
             return (
                 <MuiLink
