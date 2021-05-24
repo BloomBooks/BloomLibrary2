@@ -126,10 +126,10 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
 
     // insert a <br/> between each entry in the array of log entries
     const renderHarvestLog = (log: string[]) => {
-        let spans = [];
+        const spans = [];
         for (let i = 0; i < log.length; ++i) {
             if (i > 0) {
-                spans.push(<br />);
+                spans.push(<br key={i + "br"} />);
             }
             spans.push(<span key={i}>{log[i]}</span>);
         }

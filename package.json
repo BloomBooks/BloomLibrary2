@@ -9,6 +9,7 @@
         "//start": " browser=none prevents opening a normal browser tab, then corsChrome gives us a browser that ignores CORS problems",
         "start": "set BROWSER=none&&concurrently \"react-scripts start\" \"npm:corsChrome\" \"npm:copyInBloomPlayer\"",
         "build": "yarn copyInBloomPlayer && react-scripts build",
+        "build:ci": "set CI=true&&yarn copyInBloomPlayer&&react-scripts build",
         "copyInBloomPlayer": "ncp node_modules/bloom-player/dist public/bloom-player",
         "test": "react-scripts test",
         "test:ci": "set CI=true&&react-scripts test --testResultsProcessor jest-teamcity-reporter",
@@ -18,7 +19,9 @@
         "corsChrome": "chrome http://localhost:3000/ --disable-web-security --auto-open-devtools-for-tabs --user-data-dir=%temp%/chromeTemp",
         "crowdin-dangerous-upload": "ts-node --compiler-options \"{\\\"module\\\": \\\"commonjs\\\"}\" src/localization/crowdin-sync -- upload",
         "crowdin-download": "ts-node --compiler-options \"{\\\"module\\\": \\\"commonjs\\\"}\" src/localization/crowdin-sync -- download",
-        "analyze": "source-map-explorer build/static/js/*chunk.*"
+        "analyze": "source-map-explorer build/static/js/*chunk.*",
+        "lint": "eslint \"src/**/!(*.d).ts{,x}\"",
+        "prepare": "husky install"
     },
     "dependencies": {
         "@contentful/rich-text-react-renderer": "^13.4.0",
@@ -67,6 +70,9 @@
     "eslintConfig": {
         "extends": "react-app"
     },
+    "lint-staged": {
+        "*.{ts,tsx}": "eslint --max-warnings 0"
+    },
     "browserslist": [
         ">0.2%",
         "not dead",
@@ -108,8 +114,12 @@
         "decompress": "^4.2.1",
         "download": "^8.0.0",
         "fs-extra": "^9.0.1",
+        "husky": "^6.0.0",
         "jest-teamcity-reporter": "^0.9.0",
+        "lint-staged": "^10.5.4",
         "ncp": "^2.0.0",
+        "prettier": "^2.2.1",
+        "pretty-quick": "^3.1.0",
         "react-select": "^3.0.8",
         "source-map-explorer": "^2.5.2",
         "temp-dir": "^2.0.0",
