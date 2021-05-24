@@ -19,13 +19,14 @@ export const MissingFontBlock: React.FunctionComponent<{ book: Book }> = (
     useEffect(() => {
         const missingFontNames = props.book.getMissingFontNames();
         setLinks(
-            missingFontNames.map((n) => (
+            missingFontNames.map((fontName) => (
                 <BlorgLink
-                    alwaysNewTab={true}
+                    key={fontName}
+                    alwaysnewtab={true}
                     color="primary"
-                    href={`https://docs.google.com/forms/d/e/1FAIpQLSeo_lwdTU0JY4Nw1zlo1LCceXkLBWcATfWItnS7FqX5Aa3NUg/viewform?usp=pp_url&entry.1604864976=${window.location.href}&entry.1767307754=${n}`}
+                    href={`https://docs.google.com/forms/d/e/1FAIpQLSeo_lwdTU0JY4Nw1zlo1LCceXkLBWcATfWItnS7FqX5Aa3NUg/viewform?usp=pp_url&entry.1604864976=${window.location.href}&entry.1767307754=${fontName}`}
                 >
-                    {n}
+                    {fontName}
                 </BlorgLink>
             ))
         );
