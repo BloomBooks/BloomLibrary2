@@ -10,21 +10,28 @@ export interface IBlorgLinkProps
     extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
     href: string; // href is part of React.AnchorHTMLAttributes<HTMLAnchorElement> but optional; we want required
     newTabIfEmbedded?: boolean;
+    alwaysnewtab?: boolean;
     color?: "primary" | "secondary";
 }
 
+// A Link class that is clever about using a React Router Link for internal hrefs and
+// a regular one for external ones, and in a few other ways.
+// Since it's all about handling the href, that is deliberately not optional.
+// If you want something that looks like a link but is really a button (as should be
+// done if there isn't an href, according to accessibility rules), you can use
+// a MUI Link with component="button" (example in LicenseLink.tsx).
 export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
     const location = useLocation();
 
     const isInIframe = window.self !== window.top;
 
-    const { newTabIfEmbedded, ...propsToPassDown } = props; // Prevent React warnings
+    const { newTabIfEmbedded, alwaysnewtab, ...propsToPassDown } = props; // Prevent React warnings
 
     // ABOUT MuiLink: we're using this to get the themed color for the link
 
     if (isExternalOrEmail(props.href as string)) {
-        // Some links should open a new tab if we are embedded in an iframe.
-        if (isInIframe && props.newTabIfEmbedded) {
+        // Open a new tab if appropriate
+        if (props.alwaysnewtab || (isInIframe && props.newTabIfEmbedded)) {
             return (
                 <MuiLink
                     target={"_blank"}
