@@ -3,7 +3,6 @@
         "description": "enter the name of your language like speakers would like to see it",
         "message": "English"
     },
-
     "books": {
         "description": "",
         "message": "Books"
@@ -82,6 +81,15 @@
     "level.none.collection": {
         "message": "Missing level",
         "description": "Used to label books in a particular collection which are missing level information. For example, \"COVID-19 - Missing level\" as opposed to \"COVID-19 - Level 1\"."
+    },
+
+    "level.prefix": {
+        "message": "Content level:",
+        "description": "This is shown before either 'first words' or 'first sentences', 'longer paragraphs', etc. We avoid calling it a 'Reading level' because that term suggest more than we're doing here. This is a really simple measure just based on counting words, sentences, and paragraphs."
+    },
+    "level.automated-measure-notice": {
+        "description": "This notice is appended when we show a book 'level' that hasn't been set by a human, but rather by a simple calculation, which may be wrong.",
+        "message": "(this is an automated measure)"
     },
     "usermenu.signIn": {
         "description": "",

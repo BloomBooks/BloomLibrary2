@@ -28,7 +28,10 @@ To add a new file:
 
 # Testing languages
 
--   you will need to create local language files with `yarn crowdin-download` to get the files locally
+You will need to create local language files with `yarn crowdin-download` to get the files locally. This requires setting a `bloomCrowdinApiToken` environment variable. This token isn't visible on the Crowdin site: it only shows it once. So you have to get it from another Bloom Developer or in the Azure configuration.
+
+To set your browser language, you can:
+
 -   You can just to change your browser settings.
 -   You can add `?uilang=<code>` to the url (but this gets lost)
 -   You can enter `uilang=<code>` in the search box

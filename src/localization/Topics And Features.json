@@ -73,5 +73,21 @@
     },
     "feature.activity": {
         "message": "Interactive Activity"
+    },
+    "level.1": {
+        "description": "This is an automated level that BloomLibrary assigns to books. This text shows up if you hover over the dots on the book thumbnail that indicate the level",
+        "message": "First words & phrases"
+    },
+    "level.2": {
+        "description": "This is an automated level that BloomLibrary assigns to books. This text shows up if you hover over the dots on the book thumbnail that indicate the level",
+        "message": "First sentences"
+    },
+    "level.3": {
+        "description": "This is an automated level that BloomLibrary assigns to books. This text shows up if you hover over the dots on the book thumbnail that indicate the level",
+        "message": "First paragraphs"
+    },
+    "level.4": {
+        "description": "This is an automated level that BloomLibrary assigns to books. This text shows up if you hover over the dots on the book thumbnail that indicate the level",
+        "message": "Longer paragraphs"
     }
 }
