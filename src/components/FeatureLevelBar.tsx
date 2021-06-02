@@ -3,48 +3,75 @@ import css from "@emotion/css/macro";
 // these two make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React from "react";
+import React, { useMemo } from "react";
 import {
     IBasicBookInfo,
-    getBestLevelStringOrEmpty,
+    getTagStringOrEmpty,
 } from "../connection/LibraryQueryHooks";
 import { getNonLanguageFeatures, featureIconHeight } from "./FeatureHelper";
-
-// The color of the feature bar is determined by the level, if it's a known one
-// (except if there's no level it will be grey or white depending on
-// whether any features or level are shown.)
-const getFeatureBarColor = (level: string, featureCount: number): string => {
-    switch (level) {
-        case "1":
-            return "rgb(246,188,46)";
-        case "2":
-            return "rgb(145,103,142)";
-        case "3":
-            return "rgb(65,149,163)";
-        case "4":
-            return " #439C77";
-        default:
-            if (featureCount > 0 || level) return "rgb(212,212,212)";
-            else return "white";
-    }
-};
+import { useIntl } from "react-intl";
 
 interface IProps {
     basicBookInfo: IBasicBookInfo;
 }
 
+const englishTooltipByLevel = [
+    "", // <-- no level
+    "First words & phrases",
+    "First sentences",
+    "First paragraphs",
+    "Longer paragraphs",
+];
+
 // This bar (which appears under the picture in a BookCard) shows any reading level
 // we know for the book, and any features that are language-independent.
 export const FeatureLevelBar: React.FunctionComponent<IProps> = (props) => {
-    // Figure out what level, if any, to show in the feature bar.
-    const level = getBestLevelStringOrEmpty(props.basicBookInfo);
-    const levelLabel = level ? `Level: ${level}` : "";
-
-    // Now figure out what features will show in the feature bar.
-    // They have to occur in the book and not be language-dependent.
     const featureBarFeatures = getNonLanguageFeatures(
         props.basicBookInfo.features
     );
+    const humanLevelValue = getTagStringOrEmpty(props.basicBookInfo, "level");
+    const levelToShow = Number.parseInt(
+        humanLevelValue
+            ? humanLevelValue
+            : getTagStringOrEmpty(props.basicBookInfo, "computedLevel"),
+        10
+    );
+
+    const barColor = useMemo(() => {
+        // The color of the feature bar is determined by the level, if it's a known one
+        // (except if there's no level it will be grey or white depending on
+        // whether any features or level are shown.)
+
+        const barColorByLevel = [
+            featureBarFeatures.length > 0 ? "#d4d4d4" : "white", // <-- no level
+            "#f6bc2e",
+            "#91678e",
+            "#4195a3",
+            "#439C77",
+        ];
+        return barColorByLevel[levelToShow];
+    }, [levelToShow, featureBarFeatures.length]);
+
+    const l10n = useIntl();
+    const levelTooltip = useMemo(() => {
+        if (levelToShow === 0) return "";
+        let tip = l10n.formatMessage({
+            id: "level.prefix",
+            defaultMessage: "Content level: ",
+        });
+        tip += levelToShow
+            ? l10n.formatMessage({
+                  id: "level." + levelToShow.toString(),
+                  defaultMessage: englishTooltipByLevel[levelToShow],
+              })
+            : "";
+        const guessNotice = l10n.formatMessage({
+            id: "level.automated-measure-notice",
+            defaultMessage: "(this is an automated measure)",
+        });
+        return humanLevelValue ? tip : `${tip}\n${guessNotice}`;
+    }, [l10n, levelToShow, humanLevelValue]);
+
     const featureElements = featureBarFeatures.map((feature) =>
         feature.icon({
             key: feature.featureKey,
@@ -64,26 +91,27 @@ export const FeatureLevelBar: React.FunctionComponent<IProps> = (props) => {
         })
     );
 
-    let featureBarColor = getFeatureBarColor(level, featureBarFeatures.length);
-
     return (
         <div
             css={css`
-                background-color: ${featureBarColor};
+                background-color: ${barColor};
                 height: ${featureIconHeight + 4}px;
                 display: flex;
             `}
         >
             {featureElements}
             <div
+                title={levelTooltip}
                 css={css`
                     margin-left: auto;
-                    margin-right: 2px;
-                    margin-top: 2px;
-                    font-size: 8pt;
+                    margin-right: 6px;
+                    margin-top: -8px;
+                    font-size: 20pt;
+                    letter-spacing: -3px;
+                    color: #00000096; // just a bit of transparency to take the edge off
                 `}
             >
-                {levelLabel}
+                {"••••".substr(0, levelToShow)}
             </div>
         </div>
     );
