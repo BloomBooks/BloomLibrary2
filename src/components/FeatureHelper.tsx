@@ -248,6 +248,8 @@ export function getAllFeaturesWithTheseMarkedPresent(
     });
 }
 
+// Figure out what features will show in the feature bar.
+// They have to occur in the book and not be language-dependent.
 export function getNonLanguageFeatures(
     features: string[] | undefined
 ): IFeatureSpec[] {
