@@ -31,7 +31,7 @@ export const ReportDialog: React.FunctionComponent<{
     const pleaseSignInFrame = l10n.formatMessage({
         id: "toUseThisSignIn",
         defaultMessage:
-            "To use this function, please /Sign In to Bloom Library/}",
+            "To use this function, please /Sign In to Bloom Library/",
     });
     const parts = pleaseSignInFrame.split("/");
     const beforeSignInButton = parts[0];
