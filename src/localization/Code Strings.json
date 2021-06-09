@@ -355,7 +355,7 @@
         "message": "Please Sign In"
     },
     "toUseThisSignIn": {
-        "description": "Your translation should contain two slashes. The part between will become a button or hot link for signing in",
+        "description": "Your translation should contain two slashes. The text between the slashes will become a button or hot link for signing in.",
         "message": "To use this function, please /Sign In to Bloom Library/"
     },
     "concernReported": {

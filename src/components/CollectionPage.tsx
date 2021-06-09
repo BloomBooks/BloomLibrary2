@@ -47,7 +47,11 @@ export const CollectionPage: React.FunctionComponent<{
             if (c.urlKey === "language-chooser") {
                 return <LanguageGroup key="lang" />;
             }
-            return <RowOfCards key={c.urlKey} urlKey={c.urlKey} />;
+
+            // Ref BL-10063.
+            const rows = collection.expandChildCollectionRows ? 1000 : 1;
+
+            return <RowOfCards key={c.urlKey} urlKey={c.urlKey} rows={rows} />;
         });
 
         let booksComponent: React.ReactElement | null = null;

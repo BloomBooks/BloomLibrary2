@@ -71,6 +71,7 @@ export function convertContentfulCollectionToICollection(
         type: item.fields.urlKey.startsWith("http")
             ? "link"
             : item.sys.contentType.sys.id,
+        expandChildCollectionRows: item.fields.expandChildCollectionRows,
     };
     return result;
 }
