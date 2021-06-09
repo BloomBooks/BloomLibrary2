@@ -82,7 +82,7 @@ function useGetContentfulCollection(
                   // As of Jan 2021, we save about 17% by restricting fields this way. Replacing all the fields.* items with just "fields"
                   // is also worth considering...we save 16% just by cutting out unused sys fields.
                   select:
-                      "fields.bookSortOrder,fields.banner,fields.urlKey,fields.iconForCardAndDefaultBanner,fields.filter,fields.label,fields.richTextLabel,fields.description,fields.statisticsQuerySpec,fields.hideLabelOnCardAndDefaultBanner,fields.childCollections,fields.layout,fields.rows,sys.contentType,sys.id,sys.type",
+                      "fields.bookSortOrder,fields.banner,fields.urlKey,fields.iconForCardAndDefaultBanner,fields.filter,fields.label,fields.richTextLabel,fields.description,fields.statisticsQuerySpec,fields.hideLabelOnCardAndDefaultBanner,fields.childCollections,fields.expandChildCollectionRows,fields.layout,fields.rows,sys.contentType,sys.id,sys.type",
                   include: 10, // depth
                   "fields.urlKey[in]": `${collectionName},${templateKey}`,
               }
@@ -412,6 +412,7 @@ export function getDummyCollectionForPreview(bannerId: string): ICollection {
         layout: "by-level",
         type: "collection",
         description: "",
+        expandChildCollectionRows: false,
     };
 }
 // These are just for cards. At this point it would not be possible to override what we see on a topic
@@ -429,6 +430,7 @@ function makeTopicCollectionsForCards(): ICollection[] {
                 layout: "by-level", // this will never be used because it's just for the card
                 type: "collection",
                 description: "",
+                expandChildCollectionRows: false,
             },
             undefined,
             t

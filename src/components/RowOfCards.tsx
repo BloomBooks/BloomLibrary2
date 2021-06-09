@@ -31,8 +31,10 @@ export function useBaseCardSpec(): ICardSpec {
 }
 
 // These can be a group of book cards, collection cards, story page cards, or generic page cards
+// Enhance: The name could be improved: this isn't always a single "row" anymore.
 export const RowOfCards: React.FunctionComponent<{
     urlKey: string;
+    rows?: number;
 }> = (props) => {
     const { collection, loading } = useGetCollection(props.urlKey);
     if (loading) {
@@ -46,7 +48,7 @@ export const RowOfCards: React.FunctionComponent<{
     if (collection.childCollections.length > 0) {
         return <RowOfCollectionCards collection={collection} />;
     } else {
-        return <BookCardGroup collection={collection} />;
+        return <BookCardGroup collection={collection} rows={props.rows} />;
     }
 };
 
