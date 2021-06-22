@@ -21,7 +21,8 @@
         "crowdin-download": "ts-node --compiler-options \"{\\\"module\\\": \\\"commonjs\\\"}\" src/localization/crowdin-sync -- download",
         "analyze": "source-map-explorer build/static/js/*chunk.*",
         "lint": "eslint \"src/**/!(*.d).ts{,x}\"",
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "postinstall": "husky install && shx rm -rf .git/hooks && shx ln -s ../.husky .git/hooks"
     },
     "dependencies": {
         "@contentful/rich-text-react-renderer": "^13.4.0",
@@ -121,6 +122,7 @@
         "prettier": "^2.2.1",
         "pretty-quick": "^3.1.0",
         "react-select": "^3.0.8",
+        "shx": "^0.3.3",
         "source-map-explorer": "^2.5.2",
         "temp-dir": "^2.0.0",
         "ts-jest": "^25.2.0",
