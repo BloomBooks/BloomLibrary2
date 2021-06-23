@@ -5,6 +5,7 @@ import { WindowsInstallerDownload } from "./WindowsInstallerDownload";
 import { WindowsInstallerLink } from "./WindowsInstallerLink";
 import { Feature, FeatureGroup, FeatureMatrix } from "./FeatureMatrix";
 import { BlorgLink } from "../BlorgLink";
+import { MarkdownBookCards } from "./MarkdownBookCards";
 import { Section } from "./Section";
 import { Testimonial } from "./Testimonial";
 import { Vimeo } from "./Vimeo";
@@ -42,6 +43,7 @@ export const BlorgMarkdown: React.FunctionComponent<{
             Image: ContentfulImage,
             StoryImage,
             AllBloomInstallers,
+            BookCards: MarkdownBookCards,
         },
     };
 

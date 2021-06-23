@@ -30,7 +30,7 @@ export const CheapCard: React.FunctionComponent<IProps> = (props) => {
                 flex-direction: column;
 
                 margin-bottom: ${cardSpacing}px;
-                margin-right: ${cardSpacing}px;
+                margin-right: ${cardSpacing}px !important; // for some reason ".MuiTypography" was winning over this when used in Markdown (MarkdownBookCards).
                 background-color: white;
                 border-radius: 4px;
 
