@@ -464,7 +464,12 @@ function makeBookQueryAxiosParams(
     doNotActuallyRunQuery?: boolean,
     tags?: string[]
 ): IParams<any> {
-    let finalParams: object = { where: {} };
+    // Parse server's default limit is 100, which is basically never helpful to us.
+    // There is a corner case in useCollectionStats for which we currently want 0. See BL-10126.
+    // Note, if we ever change this to get all books, be sure to set inCirculation appropriately.
+    const defaultLimit = 0;
+
+    let finalParams: object = { where: {}, limit: defaultLimit };
     // No reason to construct the query if we aren't going to run it...
     if (!doNotActuallyRunQuery) {
         finalParams = constructParseBookQuery(
