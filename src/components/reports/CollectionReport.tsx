@@ -1,3 +1,8 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
 import React, { useMemo } from "react";
 import { useGetBooksForGrid } from "../../connection/LibraryQueryHooks";
 import {
@@ -12,9 +17,12 @@ import {
 } from "@devexpress/dx-react-grid";
 import { ICollectionReportProps } from "./CollectionReportSplit";
 import { IGridColumn } from "../Grid/GridColumns";
+import Button from "@material-ui/core/Button";
+import DownloadCsvIcon from "../../export/download-csv.svg";
 import { useIntl } from "react-intl";
 import { useGetCollection } from "../../model/Collections";
 import { PageNotFound } from "../PageNotFound";
+import { exportCsv, ExportDataFn } from "../../export/exportData";
 
 interface IBookReport {
     languages: string;
@@ -83,6 +91,7 @@ export const CollectionReport: React.FunctionComponent<ICollectionReportProps> =
         reportBookKeys,
         doNotRunQuery
     );
+
     const haveBooks: boolean = !!(matchingBooks && matchingBooks.length);
     let bookData: IBookReport[] = [];
     if (haveBooks) {
@@ -93,6 +102,25 @@ export const CollectionReport: React.FunctionComponent<ICollectionReportProps> =
             );
         });
     }
+    const exportBookData: ExportDataFn = () => {
+        const allRows: string[][] = [];
+        bookData.map(entry => {
+            const row: string[] = [];
+            row.push(entry.languages ?? "");
+            row.push(entry.title ?? "");
+            row.push(entry.originalTitle ?? "");
+            row.push(entry.allTitles ?? "");
+            row.push(entry.originalPublisher ?? "");
+            row.push(entry.publisher ?? "");
+            row.push(entry.blorgLink ?? "");
+            row.push(entry.startedCount?.toString() ?? "0");
+            row.push(entry.downloads?.toString() ?? "0");
+            row.push(entry.uploadDate ?? "");
+            allRows.push(row);
+        });
+        return allRows;
+    };
+
     const columns: IGridColumn[] = [
         { name: "languages", title: "Languages", l10nId: "languages" },
         { name: "title", title: "Primary Title" },
@@ -114,13 +142,15 @@ export const CollectionReport: React.FunctionComponent<ICollectionReportProps> =
         c.title = s;
     });
 
+    const kLeftPaddingPx = 24;
+
     const result = useMemo(() => {
         const loadingStatement = l10n.formatMessage({
             id: "loading",
             defaultMessage: "Loading...",
         });
         if (loading) {
-            return <div style={{ height: "2000px" }}>{loadingStatement}</div>;
+            return <div css={css`padding-left: ${kLeftPaddingPx}px;`}>{loadingStatement}</div>;
         }
         if (!collection) {
             return <PageNotFound />;
@@ -139,14 +169,33 @@ export const CollectionReport: React.FunctionComponent<ICollectionReportProps> =
         return (
             <div>
                 {totalMatchingBooksCount >= 0 && (
-                    <div>
+                <div
+                    css={css`
+                        display: flex;
+                        justify-content: space-between;
+                    `}
+                >
+                    <div css={css`padding-left: ${kLeftPaddingPx}px;`}>
                         <h1>{collection.label}</h1>
                         <p>{summaryCount}</p>
                     </div>
+                    <Button
+                        css={css`padding-right: ${kLeftPaddingPx}px;`}
+                        onClick={() => exportCsv(`${collection.label}`, exportBookData)}
+                    >
+                        <img
+                            alt={l10n.formatMessage({
+                                id: "stats.download.csvIcon",
+                                defaultMessage: "download CSV",
+                            })}
+                            src={DownloadCsvIcon}
+                        />
+                    </Button>
+                </div>
                 )}
                 {(totalMatchingBooksCount < 0 ||
                     (!haveBooks && totalMatchingBooksCount > 0)) && (
-                    <div>{loadingStatement}</div>
+                    <div css={css`padding-left: ${kLeftPaddingPx}px;`}>{loadingStatement}</div>
                 )}
                 {haveBooks && (
                     <Grid rows={bookData} columns={columns}>
