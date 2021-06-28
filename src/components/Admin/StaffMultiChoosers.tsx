@@ -29,6 +29,11 @@ export const BookshelvesChooser: React.FunctionComponent<{
                     backgroundColor: commonUI.colors.bloomBlue,
                 };
             }}
+            // We really want only one bookshelf.  As a temporary fix, we restrict the chooser
+            // to the most recently chosen, which is the last item in the keys array.  Once the
+            // bookshelves have been cleaned up, we can change the bookshelf property to a string
+            // and the MultiChooser to a simple chooser.  See BL-10031.
+            isSingle={true}
             {...props}
         />
     );
