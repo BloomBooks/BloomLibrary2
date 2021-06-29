@@ -27,6 +27,7 @@ export const MarkdownBookCards: React.FunctionComponent<{}> = (props) => {
             {bookInfos ? (
                 bookInfos.map((info) => (
                     <BookCard
+                        key={info.objectId}
                         basicBookInfo={info}
                         laziness={"never"}
                     ></BookCard>
