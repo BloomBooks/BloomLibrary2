@@ -102,24 +102,6 @@ export const CollectionReport: React.FunctionComponent<ICollectionReportProps> =
             );
         });
     }
-    const exportBookData: ExportDataFn = () => {
-        const allRows: string[][] = [];
-        bookData.map(entry => {
-            const row: string[] = [];
-            row.push(entry.languages ?? "");
-            row.push(entry.title ?? "");
-            row.push(entry.originalTitle ?? "");
-            row.push(entry.allTitles ?? "");
-            row.push(entry.originalPublisher ?? "");
-            row.push(entry.publisher ?? "");
-            row.push(entry.blorgLink ?? "");
-            row.push(entry.startedCount?.toString() ?? "0");
-            row.push(entry.downloads?.toString() ?? "0");
-            row.push(entry.uploadDate ?? "");
-            allRows.push(row);
-        });
-        return allRows;
-    };
 
     const columns: IGridColumn[] = [
         { name: "languages", title: "Languages", l10nId: "languages" },
@@ -150,11 +132,38 @@ export const CollectionReport: React.FunctionComponent<ICollectionReportProps> =
             defaultMessage: "Loading...",
         });
         if (loading) {
-            return <div css={css`padding-left: ${kLeftPaddingPx}px;`}>{loadingStatement}</div>;
+            return (
+                <div
+                    css={css`
+                        padding-left: ${kLeftPaddingPx}px;
+                    `}
+                >
+                    {loadingStatement}
+                </div>
+            );
         }
         if (!collection) {
             return <PageNotFound />;
         }
+        const exportBookData: ExportDataFn = () => {
+            const allRows: string[][] = [];
+            bookData.map((entry) => {
+                const row: string[] = [];
+                row.push(entry.languages ?? "");
+                row.push(entry.title ?? "");
+                row.push(entry.originalTitle ?? "");
+                row.push(entry.allTitles ?? "");
+                row.push(entry.originalPublisher ?? "");
+                row.push(entry.publisher ?? "");
+                row.push(entry.blorgLink ?? "");
+                row.push(entry.startedCount?.toString() ?? "0");
+                row.push(entry.downloads?.toString() ?? "0");
+                row.push(entry.uploadDate ?? "");
+                allRows.push(row);
+                return row;
+            });
+            return allRows;
+        };
         // Doing this explicitly using the count we already have display much sooner
         // than using <BookCount filter=.../> and waiting for another query to round-trip.
         const summaryCount = l10n.formatMessage(
@@ -169,33 +178,47 @@ export const CollectionReport: React.FunctionComponent<ICollectionReportProps> =
         return (
             <div>
                 {totalMatchingBooksCount >= 0 && (
-                <div
-                    css={css`
-                        display: flex;
-                        justify-content: space-between;
-                    `}
-                >
-                    <div css={css`padding-left: ${kLeftPaddingPx}px;`}>
-                        <h1>{collection.label}</h1>
-                        <p>{summaryCount}</p>
-                    </div>
-                    <Button
-                        css={css`padding-right: ${kLeftPaddingPx}px;`}
-                        onClick={() => exportCsv(`${collection.label}`, exportBookData)}
+                    <div
+                        css={css`
+                            display: flex;
+                            justify-content: space-between;
+                        `}
                     >
-                        <img
-                            alt={l10n.formatMessage({
-                                id: "stats.download.csvIcon",
-                                defaultMessage: "download CSV",
-                            })}
-                            src={DownloadCsvIcon}
-                        />
-                    </Button>
-                </div>
+                        <div
+                            css={css`
+                                padding-left: ${kLeftPaddingPx}px;
+                            `}
+                        >
+                            <h1>{collection.label}</h1>
+                            <p>{summaryCount}</p>
+                        </div>
+                        <Button
+                            css={css`
+                                padding-right: ${kLeftPaddingPx}px;
+                            `}
+                            onClick={() =>
+                                exportCsv(`${collection.label}`, exportBookData)
+                            }
+                        >
+                            <img
+                                alt={l10n.formatMessage({
+                                    id: "stats.download.csvIcon",
+                                    defaultMessage: "download CSV",
+                                })}
+                                src={DownloadCsvIcon}
+                            />
+                        </Button>
+                    </div>
                 )}
                 {(totalMatchingBooksCount < 0 ||
                     (!haveBooks && totalMatchingBooksCount > 0)) && (
-                    <div css={css`padding-left: ${kLeftPaddingPx}px;`}>{loadingStatement}</div>
+                    <div
+                        css={css`
+                            padding-left: ${kLeftPaddingPx}px;
+                        `}
+                    >
+                        {loadingStatement}
+                    </div>
                 )}
                 {haveBooks && (
                     <Grid rows={bookData} columns={columns}>
