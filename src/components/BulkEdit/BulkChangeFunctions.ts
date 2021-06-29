@@ -7,7 +7,7 @@ import { CachedTables } from "../../model/CacheProvider";
 export async function ChangeColumnValueForAllBooksInFilter(
     filter: IFilter,
     columnName: string,
-    newValue: any, // string or bool
+    newValue: string | boolean,
     refresh: () => void
 ) {
     const finalParams = constructParseBookQuery({}, filter, CachedTables.tags);
