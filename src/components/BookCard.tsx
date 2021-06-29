@@ -167,3 +167,23 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
     /* Note, LazyLoad currently breaks strict mode. See app.tsx */
     return props.laziness === "self" ? <LazyLoad>{card}</LazyLoad> : card;
 };
+
+export const BookCardPlaceholder: React.FunctionComponent = (props) => {
+    const cardSpec = useBookCardSpec();
+    return (
+        // <div
+        //     css={css`
+        //         // use up the height we will need when we eventually get the info
+        //         height: ${cardSpec.cardHeightPx}px;
+        //     `}
+        // >{`loading...`}</div>
+
+        <CheapCard
+            css={css`
+                height: ${cardSpec.cardHeightPx}px;
+                width: ${cardSpec.cardWidthPx}px;
+                line-height: normal; // counteract css reset
+            `}
+        />
+    );
+};

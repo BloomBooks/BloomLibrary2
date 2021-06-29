@@ -251,6 +251,27 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
     return detail;
 }
 
+// gives you just enough to make cards
+export function useGetBasicBookInfos(
+    ids: string[]
+): IBasicBookInfo[] | undefined {
+    const { response } = useAxios({
+        url: `${getConnection().url}classes/books`,
+        method: "GET",
+        trigger: "true",
+        options: {
+            headers: getConnection().headers,
+            params: {
+                where: {
+                    objectId: { $in: ids.map((id) => id) },
+                },
+                keys: kFieldsOfIBasicBookInfo,
+            },
+        },
+    });
+    return response ? response["data"]["results"] : undefined;
+}
+
 interface IGridResult {
     onePageOfMatchingBooks: Book[];
     totalMatchingBooksCount: number;
@@ -553,6 +574,10 @@ export interface IBasicBookInfo {
     phashOfFirstContentImage?: string;
     edition: string;
 }
+
+const kFieldsOfIBasicBookInfo =
+    "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition";
+
 // uses the human "level:" tag if present, otherwise falls back to computedLevel
 export function getBestLevelStringOrEmpty(basicBookInfo: IBasicBookInfo) {
     const levelValue = getTagStringOrEmpty(basicBookInfo, "level");
