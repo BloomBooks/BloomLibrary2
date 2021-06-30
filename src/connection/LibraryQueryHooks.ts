@@ -251,6 +251,27 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
     return detail;
 }
 
+// gives you just enough to make cards
+export function useGetBasicBookInfos(
+    ids: string[]
+): IBasicBookInfo[] | undefined {
+    const { response } = useAxios({
+        url: `${getConnection().url}classes/books`,
+        method: "GET",
+        trigger: "true",
+        options: {
+            headers: getConnection().headers,
+            params: {
+                where: {
+                    objectId: { $in: ids.map((id) => id) },
+                },
+                keys: kFieldsOfIBasicBookInfo,
+            },
+        },
+    });
+    return response ? response["data"]["results"] : undefined;
+}
+
 interface IGridResult {
     onePageOfMatchingBooks: Book[];
     totalMatchingBooksCount: number;
@@ -264,8 +285,8 @@ export const gridBookKeys =
 
 export const gridBookIncludeFields = "uploader,langPointers";
 
-// the axios call here (in the useAxios call) must mimic that found in LibraryQueries/retrieveAllGridBookData
-// exactly except for the skip and limit parameters.  This hook gets one page worth of books: the other function
+// the axios calls here (in the useAsync(=>retrieveBook(Data|Stats) calls) are shared with getAllGridDataAndExportCsv
+// in GridExport.ts except for the skip and limit parameters.  This hook gets one page worth of books: the other function
 // retrieves data for all of the books in one query.  We have separate methods because this is a hook, and uses
 // a hook to access axios, while the other method is invoked in response to clicking a button for exporting.
 export function useGetBooksForGrid(
@@ -273,7 +294,9 @@ export function useGetBooksForGrid(
     limit: number,
     skip: number,
     // We only pay attention to the first one at this point, as that's all I figured out
-    sortingArray: Array<{ columnName: string; descending: boolean }>
+    sortingArray: Array<{ columnName: string; descending: boolean }>,
+    keysToGet?: string, // defaults to gridBookKeys if not defined
+    doNotActuallyRunQuery?: boolean
 ): IGridResult {
     //console.log("Sorts: " + sortingArray.map(s => s.columnName).join(","));
     const { tags } = useContext(CachedTablesContext);
@@ -290,14 +313,15 @@ export function useGetBooksForGrid(
         limit.toString() +
         skip.toString() +
         order.toString();
-
     const { response, loading, error } = useAsync(
-        () => retrieveBookData(query, order, skip, limit),
-        trigger
+        () => retrieveBookData(query, order, skip, limit, keysToGet),
+        trigger,
+        doNotActuallyRunQuery
     );
     const stats = useAsync(
         () => retrieveBookStats(query, order, skip, limit),
-        trigger
+        trigger,
+        doNotActuallyRunQuery
     );
 
     // Before we had this useEffect, we would get a new instance of each book, each time the grid re-rendered.
@@ -306,13 +330,17 @@ export function useGetBooksForGrid(
     // grid re-rendered.
     useEffect(() => {
         if (
+            doNotActuallyRunQuery ||
             loading ||
             !response ||
             !response["data"] ||
-            !response["data"]["results"] ||
-            response["data"]["results"].length === 0 ||
-            error
+            !response["data"]["results"]
         ) {
+            setResult({
+                onePageOfMatchingBooks: [],
+                totalMatchingBooksCount: -1,
+            });
+        } else if (response["data"]["results"].length === 0 || error) {
             setResult({
                 onePageOfMatchingBooks: [],
                 totalMatchingBooksCount: 0,
@@ -337,7 +365,15 @@ export function useGetBooksForGrid(
                 joinBooksAndStats(onePageOfBooks, stats.response["data"]);
             }
         }
-    }, [loading, error, response, stats.loading, stats.error, stats.response]);
+    }, [
+        loading,
+        error,
+        response,
+        stats.loading,
+        stats.error,
+        stats.response,
+        doNotActuallyRunQuery,
+    ]);
     return result;
 }
 
@@ -449,7 +485,12 @@ function makeBookQueryAxiosParams(
     doNotActuallyRunQuery?: boolean,
     tags?: string[]
 ): IParams<any> {
-    let finalParams: object = { where: {} };
+    // Parse server's default limit is 100, which is basically never helpful to us.
+    // There is a corner case in useCollectionStats for which we currently want 0. See BL-10126.
+    // Note, if we ever change this to get all books, be sure to set inCirculation appropriately.
+    const defaultLimit = 0;
+
+    let finalParams: object = { where: {}, limit: defaultLimit };
     // No reason to construct the query if we aren't going to run it...
     if (!doNotActuallyRunQuery) {
         finalParams = constructParseBookQuery(
@@ -533,6 +574,10 @@ export interface IBasicBookInfo {
     phashOfFirstContentImage?: string;
     edition: string;
 }
+
+const kFieldsOfIBasicBookInfo =
+    "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition";
+
 // uses the human "level:" tag if present, otherwise falls back to computedLevel
 export function getBestLevelStringOrEmpty(basicBookInfo: IBasicBookInfo) {
     const levelValue = getTagStringOrEmpty(basicBookInfo, "level");
@@ -1321,11 +1366,22 @@ export async function deleteBook(id: string) {
 // This generic hook allows us to feed in a function that calls axios and returns
 // its Promise.  This function is adapted from the one developed in the web article
 // https://dev.to/lukasmoellerch/a-hook-to-use-promise-results-2hfd.
-const useAsync = <T>(fn: () => Promise<T>, trigger: string) => {
+const useAsync = <T>(
+    fn: () => Promise<T>,
+    trigger: string,
+    doNotActuallyCallFunction?: boolean
+) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<Error | undefined>();
     const [response, setResponse] = useState<T | undefined>();
     useEffect(() => {
+        if (doNotActuallyCallFunction) {
+            //console.log("Did not call function for useAsync");
+            setLoading(false);
+            setError(undefined);
+            setResponse(undefined);
+            return () => (cancel = true);
+        }
         setLoading(true);
         let cancel = false;
         fn().then(

@@ -11,6 +11,7 @@ import { IStatsProps } from "./StatsInterfaces";
 import { useProvideDataForExport } from "../../export/exportData";
 import { getFakeUtcDate } from "./DateRangePicker";
 import { toYyyyMmDd } from "../../Utilities";
+import { FormattedMessage } from "react-intl";
 
 interface IBookDownload {
     bookid: string;
@@ -32,7 +33,13 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
     // }
     useProvideDataForExport(dayStats, props);
 
-    if (!dayStats) return <h1>{"Loading..."}</h1>;
+    if (!dayStats)
+        return (
+            <div>
+                <FormattedMessage id="loading" defaultMessage="Loading..." />
+            </div>
+        );
+    if (!dayStats.length) return <div>{"No data found"}</div>;
 
     const counts = new Map<string, number>();
     let maxCount = 0;
