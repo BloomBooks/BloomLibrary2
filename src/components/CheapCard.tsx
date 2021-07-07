@@ -66,7 +66,8 @@ export const CheapCard: React.FunctionComponent<IProps> = (props) => {
             href={url}
             role={props.role}
         >
-            {props.children}
+            {/* the empty string here prevents a console warning from MuiLink when the children aren't available yet */}
+            {props.children ?? ""}
         </BlorgLink>
     );
 };

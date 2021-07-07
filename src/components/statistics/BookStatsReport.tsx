@@ -137,7 +137,7 @@ export const BookStatsReport: React.FunctionComponent<IStatsProps> = (
     return (
         <div
             css={css`
-                background-color: white;
+                background-color: ${gotRows && "white"};
                 thead.MuiTableHead-root * {
                     line-height: 15px;
                     vertical-align: top;

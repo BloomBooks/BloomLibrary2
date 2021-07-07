@@ -12,7 +12,8 @@ export async function retrieveBookData(
     query: object,
     sortOrder: string,
     skipCount: number,
-    limitCount: number
+    limitCount: number,
+    keysToGet?: string
 ) {
     return axios.get(`${getConnection().url}classes/books`, {
         headers: getConnection().headers,
@@ -21,7 +22,7 @@ export async function retrieveBookData(
             order: sortOrder,
             skip: skipCount,
             limit: limitCount,
-            keys: gridBookKeys,
+            keys: keysToGet ?? gridBookKeys,
             // fluff up fields that reference other tables
             include: gridBookIncludeFields,
             ...query,

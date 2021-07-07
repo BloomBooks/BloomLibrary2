@@ -1,3 +1,5 @@
+/* NB: DON'T KEEP PILING EVERYTHING INTO HERE. Instead, make a "stories.tsx" in the folder of the components you are writing a story for. */
+
 import React from "react";
 import { storiesOf, addDecorator } from "@storybook/react";
 import { withKnobs, boolean } from "@storybook/addon-knobs";
