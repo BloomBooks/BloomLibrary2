@@ -27,7 +27,8 @@ import { FeaturesGroup } from "./FeaturesGroup";
 import { useIsEmbedded } from "../EmbeddingHost";
 import { commonUI } from "../../theme";
 import { IBookDetailProps } from "./BookDetailCodeSplit";
-import { MissingFontBlock } from "./MissingFontBlock";
+import { MissingFontNotice } from "./MissingFontNotice";
+import { HarvesterProgressNotice } from "./HarvestProgressNotice";
 
 const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     const l10n = useIntl();
@@ -153,6 +154,8 @@ const BookDetailInternal: React.FunctionComponent<{
                         </p>
                     </div>
                 )}
+                <HarvesterProgressNotice book={props.book} />
+                <MissingFontNotice book={props.book} />
                 {divider}
                 <Detail2ColumnRow>
                     <FeaturesGroup book={props.book} />
@@ -245,7 +248,7 @@ const BookDetailInternal: React.FunctionComponent<{
                         )} */}
                     </div>
                 </div>
-                <MissingFontBlock book={props.book} />
+
                 <BookExtraPanels book={props.book} />
             </div>
         </div>

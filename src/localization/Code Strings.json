@@ -258,6 +258,14 @@
         "description": "",
         "message": "We cannot fully present this book because it uses one or more fonts that BloomLibrary.org does not have. Please help us to find each font by clicking on its name and answering some questions: "
     },
+    "book.harvesterTakingTooLongNotice": {
+        "description": "",
+        "message": "We apologize for the inconvenience, but our server seems to be having problems processing newly uploaded books."
+    },
+    "book.harvesterSoonNotice": {
+        "description": "",
+        "message": "This book has recently arrived in the Bloom Library and should be processed soon. Please check back in a few minutes."
+    },
 
     "book.report": {
         "description": "",
