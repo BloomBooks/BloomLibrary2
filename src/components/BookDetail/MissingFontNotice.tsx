@@ -4,13 +4,14 @@ import { jsx } from "@emotion/core";
 
 import React, { ReactElement, useEffect, useState } from "react";
 import { Book } from "../../model/Book";
-import { BlorgLink } from "../../components/BlorgLink";
+import { BlorgLink } from "../BlorgLink";
 import { commonUI } from "../../theme";
 import ReportProblemOutlinedIcon from "@material-ui/icons/ReportProblemOutlined";
 import { Paper } from "@material-ui/core";
 import { useIntl } from "react-intl";
+import { BookProblemNotice } from "./BookProblemNotice";
 
-export const MissingFontBlock: React.FunctionComponent<{ book: Book }> = (
+export const MissingFontNotice: React.FunctionComponent<{ book: Book }> = (
     props
 ) => {
     const l10n = useIntl();
@@ -41,34 +42,14 @@ export const MissingFontBlock: React.FunctionComponent<{ book: Book }> = (
     );
 
     return (
-        <Paper
-            css={css`
-                padding: 10px;
-                display: flex;
-                flex-direction: row;
-                color: ${commonUI.colors.bloomRed};
-                background-color: white;
-                margin-top: 10px;
-
-                a {
-                    text-decoration: underline;
-                }
-            `}
-        >
-            <ReportProblemOutlinedIcon />
-            <div
-                css={css`
-                    margin-left: 10px;
-                `}
-            >
-                {l10n.formatMessage({
-                    id: "book.missingFontsNotice",
-                    defaultMessage:
-                        "We cannot fully present this book because it uses one or more fonts that BloomLibrary.org does not have. Please help us to find each font by clicking on its name and answering some questions: ",
-                })}
-                &nbsp;{listOfLinks}
-                {"."}
-            </div>
-        </Paper>
+        <BookProblemNotice>
+            {l10n.formatMessage({
+                id: "book.missingFontsNotice",
+                defaultMessage:
+                    "We cannot fully present this book because it uses one or more fonts that BloomLibrary.org does not have. Please help us to find each font by clicking on its name and answering some questions: ",
+            })}
+            &nbsp;{listOfLinks}
+            {"."}
+        </BookProblemNotice>
     );
 };
