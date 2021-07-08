@@ -1,13 +1,6 @@
-import css from "@emotion/css/macro";
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
-
 import React, { ReactElement, useEffect, useState } from "react";
 import { Book } from "../../model/Book";
 import { BlorgLink } from "../BlorgLink";
-import { commonUI } from "../../theme";
-import ReportProblemOutlinedIcon from "@material-ui/icons/ReportProblemOutlined";
-import { Paper } from "@material-ui/core";
 import { useIntl } from "react-intl";
 import { BookProblemNotice } from "./BookProblemNotice";
 
