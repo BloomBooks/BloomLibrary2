@@ -367,12 +367,14 @@ export class Book {
         const limits = this.internetLimits;
         let requiredCountry = "";
         switch (restrictionType) {
+            // @ts-ignore: Fallthrough case in switch
             case "downloadShell":
                 if (limits.downloadShell) {
                     requiredCountry = limits.downloadShell.countryCode;
                     break;
                 }
             // deliberate fall-through, downloadShell is restricted by the other two also.
+            // @ts-ignore: Fallthrough case in switch
             // eslint-disable-next-line no-fallthrough
             case "downloadAnything":
                 if (limits.downloadAnything) {

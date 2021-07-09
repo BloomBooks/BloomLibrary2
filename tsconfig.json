@@ -27,7 +27,8 @@
                     "validProperties": ["label"]
                 }
             }
-        ]
+        ],
+        "noFallthroughCasesInSwitch": true
     },
     "exclude": ["node_modules", "typings"],
     "include": ["src", "src/components/statistics/dom-to-image-more.d.ts"]
