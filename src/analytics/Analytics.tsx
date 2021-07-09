@@ -132,16 +132,13 @@ export function useTrack(event: string, params: object, sendIt: boolean) {
     // We only want a analytics call if it meaningfully changed.
     // Getting a different stringify should be good enough.
 
-    useEffect(
-        () => {
-            if (sendIt && paramsString !== oldParamsString) {
-                setOldParamsString(paramsString);
-                track(event, params);
-            }
-        },
+    useEffect(() => {
+        if (sendIt && paramsString !== oldParamsString) {
+            setOldParamsString(paramsString);
+            track(event, params);
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [event, paramsString, sendIt]
-    );
+    }, [event, paramsString, sendIt]);
 }
 
 // We decided, for now, to just send to the production analytics source
