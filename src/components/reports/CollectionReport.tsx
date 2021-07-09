@@ -74,7 +74,7 @@ export const CollectionReport: React.FunctionComponent<ICollectionReportProps> =
     const l10n = useIntl();
 
     const kBooksPerPage = 1000000; // effectively unlimited
-    let sortings: ReadonlyArray<Sorting> = [];
+    const sortings: ReadonlyArray<Sorting> = [];
     const { collection, loading } = useGetCollection(props.collectionName);
     const doNotRunQuery = loading || !collection?.filter;
     const {
@@ -93,40 +93,41 @@ export const CollectionReport: React.FunctionComponent<ICollectionReportProps> =
     );
 
     const haveBooks: boolean = !!(matchingBooks && matchingBooks.length);
-    let bookData: IBookReport[] = [];
-    if (haveBooks) {
-        bookData = matchingBooks.map((b: any) => {
+    const bookData = useMemo(() => {
+        if (!haveBooks) return [];
+
+        return matchingBooks.map((b: any) => {
             return extractBookReportFromRawData(
                 b,
                 props.collectionName.toLowerCase()
             );
         });
-    }
-
-    const columns: IGridColumn[] = [
-        { name: "languages", title: "Languages", l10nId: "languages" },
-        { name: "title", title: "Primary Title" },
-        { name: "originalTitle", title: "Original Title" },
-        { name: "allTitles", title: "All Titles" },
-        { name: "originalPublisher", title: "Original Publisher" },
-        { name: "publisher", title: "Publisher" },
-        { name: "blorgLink", title: "Bloom Library Link" },
-        { name: "startedCount", title: "Reads", l10nId: "stats.reads" },
-        { name: "downloads", title: "Downloads", l10nId: "downloads" },
-        { name: "uploadDate", title: "Original Upload Date" },
-    ];
-    // localize
-    columns.forEach((c) => {
-        const s = l10n.formatMessage({
-            id: c.l10nId ?? `report.${c.name}`,
-            defaultMessage: c.title,
-        });
-        c.title = s;
-    });
+    }, [haveBooks, matchingBooks, props.collectionName]);
 
     const kLeftPaddingPx = 24;
 
     const result = useMemo(() => {
+        const columns: IGridColumn[] = [
+            { name: "languages", title: "Languages", l10nId: "languages" },
+            { name: "title", title: "Primary Title" },
+            { name: "originalTitle", title: "Original Title" },
+            { name: "allTitles", title: "All Titles" },
+            { name: "originalPublisher", title: "Original Publisher" },
+            { name: "publisher", title: "Publisher" },
+            { name: "blorgLink", title: "Bloom Library Link" },
+            { name: "startedCount", title: "Reads", l10nId: "stats.reads" },
+            { name: "downloads", title: "Downloads", l10nId: "downloads" },
+            { name: "uploadDate", title: "Original Upload Date" },
+        ];
+        // localize
+        columns.forEach((c) => {
+            const s = l10n.formatMessage({
+                id: c.l10nId ?? `report.${c.name}`,
+                defaultMessage: c.title,
+            });
+            c.title = s;
+        });
+
         const loadingStatement = l10n.formatMessage({
             id: "loading",
             defaultMessage: "Loading...",
@@ -238,7 +239,6 @@ export const CollectionReport: React.FunctionComponent<ICollectionReportProps> =
         loading,
         totalMatchingBooksCount,
         bookData,
-        columns,
         haveBooks,
         l10n,
     ]);

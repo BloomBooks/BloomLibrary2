@@ -7,7 +7,11 @@ module.exports = {
         // "eslint:recommended",
         // "plugin:@typescript-eslint/recommended",
     ],
-    // rules: { "@typescript-eslint/ban-types": [false] },
+    rules: {
+        "no-var": "warn",
+        "prefer-const": "warn",
+        "no-bitwise": "warn",
+    },
 };
 
 /* This was our tslint

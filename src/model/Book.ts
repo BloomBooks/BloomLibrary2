@@ -201,7 +201,7 @@ export class Book {
         this.updateDate = new Date(Date.parse(this.updatedAt as string));
 
         // We have to do a similar parsing trick here as for harvestStartedAt, but without the
-        // dependence on a particular date. If parsedb has a lastUploaded date, we trust it.
+        // dependence on a particular date. If parse db has a lastUploaded date, we trust it.
         this.lastUploadedDate = this.lastUploaded
             ? new Date(this.lastUploaded.iso)
             : undefined;
@@ -226,7 +226,7 @@ export class Book {
             } else this.ePUBVisible = true;
         }
 
-        // Keeping this around as an example, becuase it is helpful in debugging because you
+        // Keeping this around as an example, because it is helpful in debugging because you
         // can see what in the callstack changed the value.
         // observe(this, "tags", (change: any) => {
         //     console.log("Changed tags: " + change.newValue);
@@ -354,7 +354,7 @@ export class Book {
         return t || this.title; // if we couldn't get this lang out of allTitles, use the official title
     }
 
-    // Passed a restrictionType that is one of the field names in IInternetLlimits
+    // Passed a restrictionType that is one of the field names in IInternetLimits
     // Returns an empty string if the book may be used in the way indicated by the restrictionType
     // in the country where the browser is located.
     // If the book may not be so used, returns a string that may be used to describe what it is
@@ -367,14 +367,14 @@ export class Book {
         const limits = this.internetLimits;
         let requiredCountry = "";
         switch (restrictionType) {
-            // @ts-ignore: Fallthrough case in switch
+            // @ts-ignore: noFallthroughCasesInSwitch
             case "downloadShell":
                 if (limits.downloadShell) {
                     requiredCountry = limits.downloadShell.countryCode;
                     break;
                 }
             // deliberate fall-through, downloadShell is restricted by the other two also.
-            // @ts-ignore: Fallthrough case in switch
+            // @ts-ignore: noFallthroughCasesInSwitch
             // eslint-disable-next-line no-fallthrough
             case "downloadAnything":
                 if (limits.downloadAnything) {
@@ -421,7 +421,7 @@ export class Book {
     }
 
     // Get the URL where we find book thumbnails if they have been harvested recently
-    // enough tohave a harvester-produced thumbnail. Includes a fake query designed to defeat
+    // enough to have a harvester-produced thumbnail. Includes a fake query designed to defeat
     // caching of the thumbnail if the book might have been modified since last cached.
     public static getHarvesterProducedThumbnailUrl(
         book: Book | IBasicBookInfo
@@ -432,7 +432,7 @@ export class Book {
             new Date(harvestTime.iso) < new Date(2020, 1, 11, 11)
         ) {
             // That data above is FEBRUARY 12! at 11am. If the harvest time is before that,
-            // the book was not havested recently enough to have a useful harvester thumbnail.
+            // the book was not harvested recently enough to have a useful harvester thumbnail.
             // (We'd prefer to do this with harvester version, or even to just be
             // able to assume that any harvested book has this, but it's not yet so.
             // When it is, we can use harvestState === "Done" and remove harvestStartedAt from
@@ -488,7 +488,7 @@ export class Book {
 
         // Keeping this code in case the above actually works one day. However, we
         // discovered while trying to set up CloudFlare to actually do it that right
-        // now ClouldFlare just redirects the query back to S3. Thus, the only effect of
+        // now CloudFlare just redirects the query back to S3. Thus, the only effect of
         // going through CloudFlare is an EXTRA request. We think we need an Enterprise
         // subscription to CloudFlare to do better. So for now, just leave the URL
         // unmodified.
@@ -512,7 +512,7 @@ export class Book {
     }
 
     // Get the URL where we find book thumbnails if they have not been harvested recently
-    // enough tohave a harvester-produced thumbnail. Includes a fake query designed to defeat
+    // enough to have a harvester-produced thumbnail. Includes a fake query designed to defeat
     // caching of the thumbnail if the book might have been modified since last cached.
     public static getLegacyThumbnailUrl(book: Book | IBasicBookInfo): string {
         return (
