@@ -1,9 +1,9 @@
 {
     "compilerOptions": {
         "target": "ES2017",
-    "module": "esnext",
+        "module": "esnext",
         "sourceMap": true,
-        "jsx": "preserve",
+        "jsx": "react",
         "lib": ["dom", "es5", "scripthost", "es2017.object"],
         "allowSyntheticDefaultImports": true,
         "forceConsistentCasingInFileNames": true,
@@ -27,7 +27,8 @@
                     "validProperties": ["label"]
                 }
             }
-        ]
+        ],
+        "noFallthroughCasesInSwitch": true
     },
     "exclude": ["node_modules", "typings"],
     "include": ["src", "src/components/statistics/dom-to-image-more.d.ts"]

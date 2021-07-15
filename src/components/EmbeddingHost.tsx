@@ -21,8 +21,7 @@ export const EmbeddingHost: React.FunctionComponent<{
         include: 1,
     });
 
-    // tslint:disable-next-line: prefer-const
-    let { collectionName, embeddedSettingsUrlKey } = splitPathname(
+    const { collectionName, embeddedSettingsUrlKey } = splitPathname(
         props.urlSegments
     );
     const { result, loading } = useContentful({

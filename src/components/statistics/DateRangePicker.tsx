@@ -3,7 +3,7 @@ import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
-import React, { useState, FunctionComponent } from "react";
+import React, { useState } from "react";
 
 // NB: using a library outside of material-ui because, while they do have an internal calendar component,
 // it seems to be undocumented aside from it saying it exists. People are reading the code to try and figure it out.

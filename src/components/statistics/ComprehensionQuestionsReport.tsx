@@ -14,7 +14,7 @@ import {
     TableColumnResizing,
 } from "@devexpress/dx-react-grid-material-ui";
 import { IGridColumn } from "../Grid/GridColumns";
-import { useState } from "react";
+import React, { useState } from "react";
 import { IStatsProps } from "./StatsInterfaces";
 import { useGetBookComprehensionEventStats } from "./useGetBookStats";
 import { useProvideDataForExport } from "../../export/exportData";
