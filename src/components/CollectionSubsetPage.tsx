@@ -99,7 +99,7 @@ export const CollectionSubsetPage: React.FunctionComponent<{
     // This will be set equal to subcollection if we are able to compute a subcollection.
     // When the useEffect below runs in cases where we don't have a collection yet,
     // and so can't make a subcollection either, it is undefined.
-    let possibleSubCollection: ICollection | undefined;
+    let possibleSubCollection: ICollection | undefined = undefined;
 
     // This is tricky. We want to generate various things from the actual subcollection
     // we display. But we can't create that until we get the root collection it's based on.

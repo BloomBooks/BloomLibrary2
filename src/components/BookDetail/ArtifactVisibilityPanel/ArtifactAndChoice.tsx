@@ -212,6 +212,7 @@ export const ArtifactAndChoice: React.FunctionComponent<{
             <a
                 href={props.url}
                 target={isInternalUrl() ? undefined : "_blank"}
+                rel="noreferrer"
                 className={classes.a}
             >
                 {getButton()}

@@ -11,7 +11,7 @@ import {
     Checkbox,
     FormControlLabel,
     Select,
-    MenuItem
+    MenuItem,
 } from "@material-ui/core";
 
 import { IFilter } from "../../IFilter";
@@ -34,7 +34,7 @@ export const BulkEditPanel: React.FunctionComponent<{
     filterHolder: FilterHolder;
     refresh: () => void;
     noValueNeeded?: boolean;
-}> = observer(props => {
+}> = observer((props) => {
     const [valueToSet, setValueToSet] = useState<string | undefined>("");
     const [working, setWorking] = useState(false);
     const [armed, setArmed] = useState(false);
@@ -87,7 +87,7 @@ export const BulkEditPanel: React.FunctionComponent<{
                         control={
                             <Checkbox
                                 checked={armed}
-                                onChange={e => {
+                                onChange={(e) => {
                                     setArmed(e.target.checked);
                                 }}
                             />
@@ -110,11 +110,11 @@ export const BulkEditPanel: React.FunctionComponent<{
                             css={css`
                                 width: 400px;
                             `}
-                            onChange={e => {
+                            onChange={(e) => {
                                 setValueToSet(e.target.value as string);
                             }}
                         >
-                            {props.choices.map(c => (
+                            {props.choices.map((c) => (
                                 <MenuItem key={c} value={c}>
                                     {c}
                                 </MenuItem>
@@ -130,12 +130,15 @@ export const BulkEditPanel: React.FunctionComponent<{
                                 width: 600px;
                             `}
                             defaultValue={valueToSet}
-                            onChange={evt => {
+                            onChange={(evt) => {
                                 const v = evt.target.value.trim();
                                 setValueToSet(v.length ? v : undefined);
                             }}
                         />
                     )}
+                    {/* other controls */}
+                    {props.children}
+
                     {notFilteredYet && (
                         <span
                             css={css`
