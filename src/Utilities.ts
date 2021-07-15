@@ -41,7 +41,7 @@ export function setCookie(
 export function getCookie(cookieName: string) {
     const name = cookieName + "=";
     const cookieArray = document.cookie.split(";");
-    for (var i = 0; i < cookieArray.length; i++) {
+    for (let i = 0; i < cookieArray.length; i++) {
         let nameEqualsVal = cookieArray[i];
         while (nameEqualsVal.charAt(0) === " ") {
             nameEqualsVal = nameEqualsVal.substring(1);

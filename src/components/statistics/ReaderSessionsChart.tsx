@@ -12,11 +12,7 @@ import { useProvideDataForExport } from "../../export/exportData";
 import { getFakeUtcDate } from "./DateRangePicker";
 import { toYyyyMmDd } from "../../Utilities";
 import { FormattedMessage } from "react-intl";
-
-interface IBookDownload {
-    bookid: string;
-    timeofshelldownload: string;
-}
+import React from "react";
 
 // Given a UTC date, format as MMM YYYY
 function toMmmYyyy(input: Date): string {

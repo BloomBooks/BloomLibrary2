@@ -198,9 +198,9 @@ function HashStringArray(arrayOfStrings: string[]): string {
     for (const element of arrayOfStrings) {
         for (let i = 0; i < element.length; i++) {
             const chr = element.charCodeAt(i);
-            // tslint:disable-next-line: no-bitwise
+            // eslint-disable-next-line no-bitwise
             hash = (hash << 5) - hash + chr;
-            // tslint:disable-next-line: no-bitwise
+            // eslint-disable-next-line no-bitwise
             hash |= 0; // Convert to 32bit integer
         }
     }

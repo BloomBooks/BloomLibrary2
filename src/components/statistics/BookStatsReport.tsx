@@ -13,7 +13,7 @@ import {
 } from "@devexpress/dx-react-grid-material-ui";
 import { SortingState, IntegratedSorting } from "@devexpress/dx-react-grid";
 import { IGridColumn } from "../Grid/GridColumns";
-import { useState, useContext } from "react";
+import React, { useState, useContext } from "react";
 import { IStatsProps } from "./StatsInterfaces";
 import { useGetBookStats } from "./useGetBookStats";
 import { useProvideDataForExport } from "../../export/exportData";

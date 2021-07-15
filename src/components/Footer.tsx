@@ -26,10 +26,10 @@ export const Footer: React.FunctionComponent = () => {
     );
 
     const sil = (
+        // eslint-disable-next-line react/jsx-no-target-blank
         <a
             href="https://www.sil.org"
             rel="noopener"
-            // eslint-disable-next-line react/jsx-no-target-blank
             target="_blank"
             css={css`
                 display: flex;
@@ -57,12 +57,8 @@ export const Footer: React.FunctionComponent = () => {
     );
 
     const github = (
-        <a
-            href="https://github.com/bloombooks"
-            rel="noopener"
-            // eslint-disable-next-line react/jsx-no-target-blank
-            target="_blank"
-        >
+        // eslint-disable-next-line react/jsx-no-target-blank
+        <a href="https://github.com/bloombooks" rel="noopener" target="_blank">
             <img
                 css={css`
                     height: 32px !important;
@@ -76,10 +72,10 @@ export const Footer: React.FunctionComponent = () => {
         </a>
     );
     const contentful = (
+        // eslint-disable-next-line react/jsx-no-target-blank
         <a
             href="https://www.contentful.com/"
             rel="noopener"
-            // eslint-disable-next-line react/jsx-no-target-blank
             target="_blank"
             css={css`
                 margin-left: auto;

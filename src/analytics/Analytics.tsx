@@ -5,9 +5,7 @@ import { Environment } from "../Environment";
 // This block is boilerplate stuff from segment.io.  It is only modified by automatic line breaking and to pass typescript,
 // to remove the automatic root-page notification, and to extract the line that sets the ID so we can make that configurable.
 /* eslint-disable */
-/* tslint:disable */
 (function () {
-    // tslint:disable-next-line: prefer-const
     var analytics = ((window as any).analytics =
         (window as any).analytics || []);
     if (!analytics.initialize)
@@ -86,7 +84,6 @@ import { Environment } from "../Environment";
             analytics.SNIPPET_VERSION = "4.1.0";
         }
 })();
-/* tslint:enable */
 /* eslint-enable */
 // (Note: window.analytics here is typically the array created in the immediately-invokved function above
 // to save events that happen before the script in that object's load method is loaded.
@@ -132,16 +129,13 @@ export function useTrack(event: string, params: object, sendIt: boolean) {
     // We only want a analytics call if it meaningfully changed.
     // Getting a different stringify should be good enough.
 
-    useEffect(
-        () => {
-            if (sendIt && paramsString !== oldParamsString) {
-                setOldParamsString(paramsString);
-                track(event, params);
-            }
-        },
+    useEffect(() => {
+        if (sendIt && paramsString !== oldParamsString) {
+            setOldParamsString(paramsString);
+            track(event, params);
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [event, paramsString, sendIt]
-    );
+    }, [event, paramsString, sendIt]);
 }
 
 // We decided, for now, to just send to the production analytics source

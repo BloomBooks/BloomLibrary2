@@ -241,6 +241,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
         { name: "pageCount", sortingEnabled: true },
         { name: "phashOfFirstContentImage", sortingEnabled: true },
         { name: "createdAt", sortingEnabled: true },
+        { name: "updatedAt", sortingEnabled: true },
         {
             name: "publisher",
             sortingEnabled: true,
@@ -279,6 +280,13 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             addToFilter: (filter: IFilter, value: string) => {
                 filter.keywordsText = value;
             },
+        },
+        {
+            name: "bookInstanceID",
+            title: "Book Instance ID",
+            sortingEnabled: true,
+            getCellValue: (b: Book) => b.bookInstanceId,
+            defaultVisible: false,
         },
         {
             // cannot be used for sorting or filtering until we have only one database source
