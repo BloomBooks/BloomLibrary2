@@ -282,6 +282,13 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             },
         },
         {
+            name: "bookInstanceID",
+            title: "Book Instance ID",
+            sortingEnabled: true,
+            getCellValue: (b: Book) => b.bookInstanceId,
+            defaultVisible: false,
+        },
+        {
             // cannot be used for sorting or filtering until we have only one database source
             name: "reads",
             sortingEnabled: false,
