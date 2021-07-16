@@ -22,6 +22,7 @@ export const MultiChooser: React.FunctionComponent<{
     getSelectedValues: () => any[];
     getLabelForValue: (v: any) => string;
     getStylingForValue?: (v: any) => object;
+    isSingle?: boolean;
 }> = (props) => {
     const [chosenItems, setChosenItems] = useState(props.getSelectedValues());
 
@@ -82,12 +83,25 @@ export const MultiChooser: React.FunctionComponent<{
                 }))}
                 onChange={(v: any) => {
                     const currentValues = (v as IOption[] | null) || [];
-                    props.setSelectedValues(
-                        currentValues?.map((x) => x.actualObjectValue)
+                    const actualObjectValues = currentValues?.map(
+                        (x) => x.actualObjectValue
                     );
-                    setChosenItems(
-                        currentValues.map((v) => v.actualObjectValue)
-                    ); // show the change in the UI
+                    let chosenValues = actualObjectValues;
+                    if (
+                        props.isSingle &&
+                        actualObjectValues &&
+                        actualObjectValues.length > 1
+                    ) {
+                        // We really want only one bookshelf.  As a temporary fix, we restrict the chooser onChange
+                        // to the most recently chosen, which is the last item in the values array.  Once the
+                        // bookshelves have been cleaned up, we can change the bookshelf property to a string
+                        // and the MultiChooser to a simple chooser.  See BL-10031.
+                        chosenValues = actualObjectValues.slice(
+                            actualObjectValues.length - 1
+                        );
+                    }
+                    props.setSelectedValues(chosenValues);
+                    setChosenItems(chosenValues); // show the change in the UI
                     props.setModified(true);
                 }}
                 // onInputChange={(newValue: string) => {
