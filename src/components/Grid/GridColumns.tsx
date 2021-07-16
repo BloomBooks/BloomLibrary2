@@ -282,7 +282,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             },
         },
         {
-            name: "bookInstanceID",
+            name: "bookInstanceId",
             title: "Book Instance ID",
             sortingEnabled: true,
             getCellValue: (b: Book) => b.bookInstanceId,
