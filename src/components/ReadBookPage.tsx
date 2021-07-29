@@ -116,9 +116,11 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
                 setHistoryProblem("fullScreen");
                 // We are only allowed to do this this if successfully in full screen mode
                 if (!canRotate) {
-                    window.screen.orientation.lock(
-                        isLandscape ? "landscape" : "portrait"
-                    );
+                    if (window.screen.orientation.lock) {
+                        window.screen.orientation
+                            .lock(isLandscape ? "landscape" : "portrait")
+                            .catch(() => {});
+                    }
                 }
             })
             // If we can't do it, we can't. That's what the full screen button is for.
