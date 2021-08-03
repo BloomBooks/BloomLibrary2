@@ -116,9 +116,11 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
                 setHistoryProblem("fullScreen");
                 // We are only allowed to do this this if successfully in full screen mode
                 if (!canRotate) {
-                    window.screen.orientation.lock(
-                        isLandscape ? "landscape" : "portrait"
-                    );
+                    if (window.screen.orientation.lock) {
+                        window.screen.orientation
+                            .lock(isLandscape ? "landscape" : "portrait")
+                            .catch(() => {});
+                    }
                 }
             })
             // If we can't do it, we can't. That's what the full screen button is for.
@@ -326,8 +328,17 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
 
 function onPlayerUnloading() {
     window.screen.orientation?.unlock();
-    document.exitFullscreen().catch((e) => console.log(e));
+    exitFullscreen();
     sendPlayerClosingAnalytics();
+}
+
+function exitFullscreen() {
+    // Copied this logic from bloom-player's controlBar.tsx
+    if (document.exitFullscreen) {
+        document.exitFullscreen().catch((e) => console.log(e));
+    } else if ((document as any).webkitExitFullScreen) {
+        (document as any).webkitExitFullScreen(); // Safari, maybe Chrome on IOS?
+    }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
