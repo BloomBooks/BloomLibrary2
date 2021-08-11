@@ -22,6 +22,7 @@ import { FormattedMessage } from "react-intl";
 import { BookThumbnail } from "./BookThumbnail";
 import { BlorgLink } from "../BlorgLink";
 import { DownloadToBloomButton } from "./DownloadToBloomButton";
+import { BloomReaderDownloadButton } from "./BloomReaderDownloadButton";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{
     book: Book;
@@ -230,6 +231,9 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                         fullWidth={fullWidthButtons}
                         contextLangIso={props.contextLangIso}
                     />
+                )}
+                {showBloomReaderButton && (
+                    <BloomReaderDownloadButton fullWidth={fullWidthButtons} />
                 )}
             </div>
         </div>
