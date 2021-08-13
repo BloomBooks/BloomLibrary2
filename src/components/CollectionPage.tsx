@@ -17,6 +17,9 @@ import { getCollectionAnalyticsInfo } from "../analytics/CollectionAnalyticsInfo
 import { useIntl } from "react-intl";
 import { useGetLocalizedCollectionLabel } from "../localization/CollectionLabel";
 import { PageNotFound } from "./PageNotFound";
+import { ICollection } from "../model/ContentInterfaces";
+import { IFilter } from "../IFilter";
+import { useGetBookCountRaw } from "../connection/LibraryQueryHooks";
 
 export const CollectionPage: React.FunctionComponent<{
     collectionName: string;
@@ -25,10 +28,45 @@ export const CollectionPage: React.FunctionComponent<{
     const l10n = useIntl();
     // remains empty (and unused) except in byLanguageGroups mode, when a callback sets it.
     const [booksAndLanguages, setBooksAndLanguages] = useState("");
+    const [countOfBooks, setCountOfBooks] = useState(0);
+    const [countString, setCountString] = useState("");
     const { collection, loading } = useGetCollection(props.collectionName);
     const { params, sendIt } = getCollectionAnalyticsInfo(collection);
+    const filter: IFilter = {};
+    const [collectionFilter, setCollectionFilter] = useState(filter);
+    const [filterCollectionName, setFilterCollectionName] = useState("");
     useSetBrowserTabTitle(useGetLocalizedCollectionLabel(collection));
     useTrack("Open Collection", params, sendIt);
+
+    let count: number = 0;
+    const answer = useGetBookCountRaw(
+        collectionFilter,
+        !collectionFilter.anyOfThese
+    );
+    if (!answer || !answer.response) {
+        count = 0;
+    } else {
+        const s = answer.response["data"]["count"];
+        count = parseInt(s, 10);
+    }
+    if (count !== countOfBooks) {
+        setCountOfBooks(count);
+        if (count) {
+            setCountString(
+                l10n.formatMessage(
+                    {
+                        id: "bookCount",
+                        defaultMessage: "{count} books",
+                    },
+                    {
+                        count: count,
+                    }
+                )
+            );
+        } else {
+            setCountString("");
+        }
+    }
 
     // We seem to get some spurious renders of CollectionPage (at least one extra one on the home page)
     // where nothing significant has changed. Keeping the results in a memo saves time.
@@ -105,6 +143,14 @@ export const CollectionPage: React.FunctionComponent<{
 
                     break;
             }
+        } else if (
+            collection.childCollections.length &&
+            collection.label !== filterCollectionName
+        ) {
+            // create filter for total book count
+            const filter: IFilter = getCollectionFilter(collection);
+            setCollectionFilter(filter);
+            setFilterCollectionName(collection.label);
         }
 
         const banner = (
@@ -120,6 +166,8 @@ export const CollectionPage: React.FunctionComponent<{
                     // the filter-based count.
                     collection.layout === "by-language"
                         ? booksAndLanguages
+                        : collection.childCollections.length
+                        ? countString
                         : undefined
                 }
             />
@@ -134,6 +182,38 @@ export const CollectionPage: React.FunctionComponent<{
                 </ListOfBookGroups>
             </div>
         );
-    }, [booksAndLanguages, collection, l10n, loading, props.embeddedSettings]);
+    }, [
+        booksAndLanguages,
+        collection,
+        l10n,
+        loading,
+        props.embeddedSettings,
+        countString,
+        filterCollectionName,
+    ]);
     return result;
 };
+
+export function getCollectionFilter(collection: ICollection) {
+    const filters: IFilter[] = [];
+    collectCollectionFilters(collection, filters);
+    const filter: IFilter = {
+        anyOfThese: filters,
+    };
+    return filter;
+}
+
+// Accumulate the filters for this collection and recursively all of
+// its child collections into the supplied IFilter[] array.
+function collectCollectionFilters(
+    collection: ICollection | undefined,
+    filters: IFilter[]
+): void {
+    if (!collection) return;
+    if (collection.filter) {
+        filters.push(collection.filter);
+    }
+    for (const mychild of collection.childCollections) {
+        collectCollectionFilters(mychild, filters);
+    }
+}

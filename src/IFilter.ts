@@ -29,4 +29,12 @@ export interface IFilter {
     derivedFrom?: IFilter;
     derivedFromCollectionName?: string;
     edition?: string;
+
+    // Each field above generally specifies some limitation on results returned by a Parse query.  The filter
+    // defined by the combination of fields produces a set INTERSECTION of all the individual result sets.
+    // (This could also be described as a logical AND operation.)  This is good for restricting the output of
+    // the filter as narrowly as desired.  But what if we want a set UNION of results instead?  This field
+    // provides a means to define a set of alternatives that are combined together as a set UNION.
+    // NB: At the moment, there is no way to specify this on contentful.
+    anyOfThese?: IFilter[];
 }
