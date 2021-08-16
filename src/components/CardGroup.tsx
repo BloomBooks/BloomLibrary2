@@ -90,6 +90,11 @@ const GroupOfCollectionCards: React.FunctionComponent<{
     cardSpecs["by-topic"] = useCollectionCardSpec(
         CollectionCardLayout.iconAndBookCount
     );
+    // Unexpected. But prevents a crash ("Oops! Something went wrong." screen) if it happens.
+    // Can happen if, for example, someone navigates to a collection which is
+    // designed to only be a top-level row of cards (such as All-Children-Reading).
+    cardSpecs["by-level"] = cardSpecs["by-topic"];
+    cardSpecs["by-language"] = cardSpecs["by-topic"];
 
     if (
         !props.collection.childCollections ||
