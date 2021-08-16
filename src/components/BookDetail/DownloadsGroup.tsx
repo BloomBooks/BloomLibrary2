@@ -95,14 +95,7 @@ export const DownloadsGroup: React.FunctionComponent<{
     return (
         <div>
             {/* {showMoreDownloadsHeading && ( */}
-            <div
-                css={css`
-                    /* width: 300px; */
-                    /* display: inline-block;
-                    margin-top: 12px; */
-                    //margin-bottom: 1em;
-                `}
-            >
+            <div>
                 <Typography variant="caption">
                     <FormattedMessage
                         id="book.metadata.download"
@@ -130,9 +123,39 @@ export const DownloadsGroup: React.FunctionComponent<{
                         margin-top: ${showMoreDownloadsHeading ? "-10px" : "0"};
                         list-style: none;
                         padding: 0;
+                        display: flex;
+                        justify-content: start;
                     `}
                 >
                     {[
+                        {
+                            icon: (p: React.SVGProps<SVGSVGElement>) => (
+                                <BloomPubIcon {...p}></BloomPubIcon>
+                            ),
+                            alt: l10n.formatMessage({
+                                id: "book.artifacts.bloompub",
+                                defaultMessage:
+                                    "Download BloomPUB for Bloom Reader or BloomPub Viewer",
+                            }),
+                            type: ArtifactType.bloomReader,
+                            settings: bloomReaderSettings,
+                            enabled: enableBloomPub,
+                            hidden: !showBloomPUBButton,
+                            analyticsType: "bloompub",
+                        },
+                        {
+                            // Add a spacer that has flex-grow and only shows if there is
+                            // a bloomPUB artifact.
+                            icon: (p: React.SVGProps<SVGSVGElement>) => (
+                                <div></div>
+                            ),
+                            alt: "noIcon",
+                            type: ArtifactType.bloomReader,
+                            settings: bloomReaderSettings,
+                            enabled: false,
+                            hidden: !showBloomPUBButton,
+                            analyticsType: "",
+                        },
                         {
                             icon: (p: React.SVGProps<SVGSVGElement>) => (
                                 <PdfIcon {...p}></PdfIcon>
@@ -163,28 +186,19 @@ export const DownloadsGroup: React.FunctionComponent<{
                             hidden: hideEpubButton,
                             analyticsType: "epub",
                         },
-                        {
-                            icon: (p: React.SVGProps<SVGSVGElement>) => (
-                                <BloomPubIcon {...p}></BloomPubIcon>
-                            ),
-                            alt: l10n.formatMessage({
-                                id: "book.artifacts.bloompub",
-                                defaultMessage:
-                                    "Download BloomPUB for Bloom Reader or BloomPub Viewer",
-                            }),
-                            type: ArtifactType.bloomReader,
-                            settings: bloomReaderSettings,
-                            enabled: enableBloomPub,
-                            hidden: !showBloomPUBButton,
-                            analyticsType: "bloompub",
-                        },
                     ].map((a: IArtifactUI) => {
                         const artifactUrl = getArtifactUrl(props.book, a.type);
                         const parts = artifactUrl.split("/");
                         const fileName = parts[parts.length - 1];
+                        const isSpacer =
+                            a.type === ArtifactType.bloomReader &&
+                            a.alt === "noIcon";
                         return (
                             !a.hidden && (
                                 <Tooltip
+                                    css={css`
+                                        flex: ${isSpacer ? 3 : 0};
+                                    `}
                                     key={a.alt}
                                     aria-label={`${a.alt} is not available`}
                                     title={
@@ -197,6 +211,11 @@ export const DownloadsGroup: React.FunctionComponent<{
                                     arrow={true}
                                 >
                                     <IconButton
+                                        css={css`
+                                            cursor: ${!a.enabled
+                                                ? "default"
+                                                : "pointer"};
+                                        `}
                                         disableRipple={!a.enabled}
                                         disableFocusRipple={!a.enabled}
                                         disableTouchRipple={!a.enabled}
@@ -262,7 +281,7 @@ export const DownloadsGroup: React.FunctionComponent<{
                         );
                     })}
                 </ul>
-                {enableBloomPub && !showingBloomReaderDownloadElsewhere && (
+                {showBloomPUBButton && (
                     <BlorgLink
                         href="https://bloomlibrary.org/page/create/bloom-reader"
                         color="secondary" // bloomBlue
@@ -270,13 +289,17 @@ export const DownloadsGroup: React.FunctionComponent<{
                             display: flex;
                             flex-direction: row;
                             align-items: center;
+                            margin-top: -16px; // reduce space between artifacts and 'Get Bloom Reader' link
+                            margin-left: -7px; // line up vertically with BloomPUB icon
                         `}
                     >
                         <PlayStoreIcon />
-                        <FormattedMessage
-                            id="book.detail.getBloomReader"
-                            defaultMessage="Get Bloom Reader"
-                        />
+                        <Typography variant="button">
+                            <FormattedMessage
+                                id="book.detail.getBloomReader"
+                                defaultMessage="Get Bloom Reader"
+                            />
+                        </Typography>
                     </BlorgLink>
                 )}
             </div>

@@ -18,6 +18,10 @@ export const bloomReaderAvailable = android;
 // want, since the current application is hiding the bloomd download on non-desktop devices
 // that can't use it themselves.
 const ios = /^(iPhone|iPad|iPod)/.test(navigator.platform);
+// When testing with Chrome's device toolbar on Windows, the above ios will be false even though
+// Chrome is 'simulating' an iPhone/iPad. The following will show if we are testing them in Chrome.
+// UserAgent=Mozilla/5.0 (iPhone...
+const testingMobileIos = /\((iPhone|iPad|iPod)/.test(navigator.userAgent);
 // This is simplistic. In some senses anything but Android can't use BloomD files
 // at present, but we're taking the general approach that desktops can reasonably
 // download them to share or post or similar. We could try various more sophisticated
@@ -27,10 +31,10 @@ const ios = /^(iPhone|iPad|iPod)/.test(navigator.platform);
 // that important to do so on every possible mobile device. Of course, we REALLY
 // don't want to prevent downloading a bloomd on anything that can run BloomReader,
 // but cantUseBloomD is currently only relevant if bloomReaderAvailable is false.
-export const cantUseBloomD = ios;
+export const cantUseBloomD = ios || testingMobileIos;
 // We hide disabled download buttons on mobile (touch) devices because it not
 // easily discoverable why a button is disabled.
-export const mobile = android || ios;
+export const mobile = android || ios || testingMobileIos;
 // This context allows anyone interested to find out whether the OS on which the
 // user is running has support for bloom desktop (e.g., to hide a download/translate
 // button) and whether it has bloomReader support (and so downloading for that should

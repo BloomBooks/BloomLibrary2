@@ -68,6 +68,9 @@ export const FeaturesGroup: React.FunctionComponent<{
                                 height: featureIconHeight + "px",
                                 width: featureIconHeight + "px",
                                 marginRight: "10px",
+                                cursor: feature.isPresent
+                                    ? "pointer"
+                                    : "default",
                             },
                         })}
                     </BlorgLink>
