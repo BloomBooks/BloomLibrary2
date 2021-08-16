@@ -72,6 +72,7 @@ export function convertContentfulCollectionToICollection(
             ? "link"
             : item.sys.contentType.sys.id,
         expandChildCollectionRows: item.fields.expandChildCollectionRows,
+        showBookCountInRowDisplay: item.fields.showBookCountInRowDisplay,
     };
     return result;
 }

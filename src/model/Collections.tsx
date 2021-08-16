@@ -413,6 +413,7 @@ export function getDummyCollectionForPreview(bannerId: string): ICollection {
         type: "collection",
         description: "",
         expandChildCollectionRows: false,
+        showBookCountInRowDisplay: false,
     };
 }
 // These are just for cards. At this point it would not be possible to override what we see on a topic
@@ -431,6 +432,7 @@ function makeTopicCollectionsForCards(): ICollection[] {
                 type: "collection",
                 description: "",
                 expandChildCollectionRows: false,
+                showBookCountInRowDisplay: false,
             },
             undefined,
             t

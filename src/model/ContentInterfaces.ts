@@ -44,6 +44,7 @@ export interface ICollection {
     childCollections: ICollection[]; // only the top level will have these
     type: "collection" | "page" | "link";
     expandChildCollectionRows: boolean;
+    showBookCountInRowDisplay: boolean;
     // When the filter cannot be fully defined as simple json in a Contentful collection (interpreted by ParseServer).
     // E.g., we need to run code like getBestLevelStringOrEmpty() to get at the filter
     secondaryFilter?: (basicBookInfo: IBasicBookInfo) => boolean;
