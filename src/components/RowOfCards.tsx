@@ -74,6 +74,12 @@ const RowOfCollectionCards: React.FunctionComponent<{
     cardSpecs["by-topic"] = useCollectionCardSpec(
         CollectionCardLayout.iconAndBookCount
     );
+    // Unexpected. But prevents a crash if it happens.
+    // Can happen if, for example, someone navigates to a collection which is
+    // designed to only be a top-level row of cards (such as All-Children-Reading).
+    cardSpecs["by-level"] = useCollectionCardSpec(
+        CollectionCardLayout.iconAndBookCount
+    );
 
     if (
         !props.collection.childCollections ||
