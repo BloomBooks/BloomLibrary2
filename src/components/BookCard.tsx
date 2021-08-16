@@ -51,11 +51,12 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
         props.basicBookInfo
     );
     const getResponsiveChoice = useResponsiveChoice();
-    const title = getBestBookTitle(
-        props.basicBookInfo.title,
-        props.basicBookInfo.allTitles,
-        props.contextLangIso
-    );
+    const title =
+        getBestBookTitle(
+            props.basicBookInfo.title,
+            props.basicBookInfo.allTitles,
+            props.contextLangIso
+        ) || "";
     useEffect(() => {
         // This is just a delay so that Swiper can put a .swiper-lazy-loading class onto
         // the img. What was happening before was that the screen was showing our alt-text
