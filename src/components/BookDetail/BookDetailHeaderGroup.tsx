@@ -148,41 +148,44 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                     >
                         {book.credits}
                     </p> */}
-                        {(props.book.languages.length && (
-                            <ul
-                                css={css`
-                                    list-style: none;
-                                    padding: 0;
-                                `}
-                            >
-                                {props.book.languages.map((l: ILanguage) => (
-                                    <li key={l.isoCode}>
-                                        <LanguageLink language={l} />
-                                    </li>
-                                ))}
+                        {(props.book.languages &&
+                            props.book.languages.length && (
+                                <ul
+                                    css={css`
+                                        list-style: none;
+                                        padding: 0;
+                                    `}
+                                >
+                                    {props.book.languages.map(
+                                        (l: ILanguage) => (
+                                            <li key={l.isoCode}>
+                                                <LanguageLink language={l} />
+                                            </li>
+                                        )
+                                    )}
 
-                                {countOfBooksWithMatchingPhash > 0 && (
-                                    <li>
-                                        <BlorgLink
-                                            css={css`
-                                                font-size: 9pt;
-                                            `}
-                                            newTabIfEmbedded={true}
-                                            color="secondary"
-                                            href={`/phash:${sanitizedPhashOfFirstContentImage}`}
-                                        >
-                                            <FormattedMessage
-                                                id="book.detail.translations"
-                                                defaultMessage="{count} books that may be translations"
-                                                values={{
-                                                    count: countOfBooksWithMatchingPhash,
-                                                }}
-                                            />
-                                        </BlorgLink>
-                                    </li>
-                                )}
-                            </ul>
-                        )) || (
+                                    {countOfBooksWithMatchingPhash > 0 && (
+                                        <li>
+                                            <BlorgLink
+                                                css={css`
+                                                    font-size: 9pt;
+                                                `}
+                                                newTabIfEmbedded={true}
+                                                color="secondary"
+                                                href={`/phash:${sanitizedPhashOfFirstContentImage}`}
+                                            >
+                                                <FormattedMessage
+                                                    id="book.detail.translations"
+                                                    defaultMessage="{count} books that may be translations"
+                                                    values={{
+                                                        count: countOfBooksWithMatchingPhash,
+                                                    }}
+                                                />
+                                            </BlorgLink>
+                                        </li>
+                                    )}
+                                </ul>
+                            )) || (
                             <FormattedMessage
                                 id="book.detail.pictureBook"
                                 defaultMessage="Picture Book (no text)"
