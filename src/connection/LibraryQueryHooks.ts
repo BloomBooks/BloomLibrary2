@@ -503,13 +503,29 @@ function makeBookQueryAxiosParams(
     }
     //console.log("finalParams: " + JSON.stringify(finalParams));
 
+    const theOptions = {
+        headers: getConnection().headers,
+        data: undefined as any,
+        params: undefined as any,
+    };
+    if (filter.anyOfThese) {
+        // The filter may be too complex to pass in the URL (ie, GET params).  So we use POST with data that
+        // specifies that the underlying operation is actually a GET.  (This doesn't seem to be documented, but
+        // Andrew discovered that it works, and I got a confirming message on the parse-server slack channel.)
+        theOptions.data = {
+            _method: "GET",
+            ...finalParams,
+        };
+    } else {
+        theOptions.params = finalParams;
+    }
     return {
         url: `${getConnection().url}classes/books`,
         // The "rules of hooks" require that if we're ever going to run a useEffect, we have to *always* run it
         // So we can't conditionally run this useBookQueryInternal(). But useAxios does give this way to run its
         // internal useEffect() but not actually run the query.
         forceDispatchEffect: () => !doNotActuallyRunQuery,
-        method: "GET",
+        method: filter.anyOfThese ? "POST" : "GET",
         // there is an inner useEffect, and it looks at this. We want to rerun whenever the query changes (duh).
         // Also, the very first time this runs, we will need to run again once we get
         // the list of known tags.
@@ -519,10 +535,7 @@ function makeBookQueryAxiosParams(
             JSON.stringify(!!tags) +
             JSON.stringify(limit) +
             JSON.stringify(skip),
-        options: {
-            headers: getConnection().headers,
-            params: finalParams,
-        },
+        options: theOptions,
     };
 }
 
@@ -983,7 +996,7 @@ export function constructParseBookQuery(
     limit?: number, //pagination
     skip?: number //pagination
 ): object {
-    if (filter.derivedFromCollectionName) {
+    if (filter?.derivedFromCollectionName) {
         // We should have already converted from derivedFromCollectionName to derivedFrom by now. See useProcessDerivativeFilter().
         alert("Attempted to load books with an invalid filter.");
         console.error(
@@ -1026,7 +1039,7 @@ export function constructParseBookQuery(
     const tagParts: object[] = [];
     if (!!f.search) {
         const { otherSearchTerms, specialParts } = splitString(
-            filter.search!,
+            f.search!,
             allTagsFromDatabase
         );
 
@@ -1171,9 +1184,9 @@ export function constructParseBookQuery(
 
     // allow regex searches on bookshelf. Handing for counting up, for example, all the books with bookshelf tags
     // that start with "Enabling Writers" (and then go on to list country and sub-project).
-    if (filter.bookshelf) {
+    if (f.bookshelf) {
         delete params.where.bookshelf;
-        params.where.bookshelves = regex(filter.bookshelf);
+        params.where.bookshelves = regex(f.bookshelf);
     }
     // I think you can also do topic via search, but I need a way to do an "OR" in order to combine several topics for STEM
     // take `f.topic` to be a comma-separated list
@@ -1200,22 +1213,25 @@ export function constructParseBookQuery(
         }
     }
     // Now we need to assemble topicsAll and tagParts
-    if (tagsAll.length) {
-        // merge topicsAll into tagsAll
-        tagParts.push({
-            $all: tagsAll,
-        });
+    if (tagsAll.length === 1 && tagParts.length === 0) {
+        params.where.tags = tagsAll[0];
+    } else {
+        if (tagsAll.length) {
+            // merge topicsAll into tagsAll
+            tagParts.push({
+                $all: tagsAll,
+            });
+        }
+        if (tagParts.length === 1) {
+            params.where.tags = tagParts[0];
+        } else if (tagParts.length > 1) {
+            params.where.$and = tagParts.map((p: any) => {
+                return {
+                    tags: p,
+                };
+            });
+        }
     }
-    if (tagParts.length === 1) {
-        params.where.tags = tagParts[0];
-    } else if (tagParts.length > 1) {
-        params.where.$and = tagParts.map((p: any) => {
-            return {
-                tags: p,
-            };
-        });
-    }
-
     if (f.feature != null) {
         delete params.where.feature;
         const features = f.feature.split(" OR ");
@@ -1274,6 +1290,18 @@ export function constructParseBookQuery(
     delete params.where.bookLineageArray;
     if (f.derivedFrom) {
         processDerivedFrom(f, allTagsFromDatabase, params);
+    }
+
+    if (f.anyOfThese) {
+        delete params.where.anyOfThese;
+        params.where.$or = [];
+        for (const child of f.anyOfThese) {
+            const pbq = constructParseBookQuery({}, child, []) as any;
+            if (!child.inCirculation) {
+                delete pbq.where.inCirculation;
+            }
+            params.where.$or.push(pbq.where);
+        }
     }
 
     return params;

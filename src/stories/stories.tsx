@@ -12,15 +12,19 @@ import { SearchBox } from "../components/SearchBox";
 import "../index.css";
 import { StandAloneHarvesterArtifactUserControl } from "../components/BookDetail/ArtifactVisibilityPanel/ArtifactVisibilityPanel";
 import { ArtifactAndChoice } from "../components/BookDetail/ArtifactVisibilityPanel/ArtifactAndChoice";
-import { ArtifactVisibilitySettings } from "../model/ArtifactVisibilitySettings";
+import {
+    ArtifactVisibilitySettings,
+    ArtifactVisibilitySettingsGroup,
+} from "../model/ArtifactVisibilitySettings";
 import BookDetail from "../components/BookDetail/BookDetail";
 import { ThemeProvider } from "@material-ui/styles";
 import theme, { commonUI } from "../theme";
 import { ReadBookPageCodeSplit } from "../components/ReadBookPageCodeSplit";
 import { ConfirmationDialog } from "../components/ConfirmationDialog";
-import { ArtifactType } from "../model/Book";
+import { ArtifactType, Book } from "../model/Book";
 import { BrowserRouter as Router } from "react-router-dom";
 import { BloomPubIcon } from "../components/BookDetail/BloomPubIcon";
+import { DownloadsGroup } from "../components/BookDetail/DownloadsGroup";
 
 addDecorator(withKnobs);
 addDecorator((storyFn) => (
@@ -35,6 +39,7 @@ const sampleUrl =
 
 storiesOf("BookDetail", module)
     .add("Beautiful Day", () => <BookDetail id={"lhQnYpvD9p"} />)
+    .add("Look at the Animals", () => <BookDetail id={"ORB2KVJDgT"} />)
     // .add("production test book", () => <BookDetail id={"5rWQGc1d0q"} />)
     // .add("production test book 2", () => <BookDetail id={"BviSvJYwKk"} />)
     .add("ReadBookPage", () => (
@@ -153,6 +158,8 @@ storiesOf("Pages", module);
 // ))
 // .add("Motion Book Feature Page", () => <FeaturePage featureKey="motion" />);
 
+const testBook = new Book();
+
 storiesOf("Components", module)
     .add("SearchBox", () => {
         const bloomRed: string = theme.palette.primary.main;
@@ -187,6 +194,15 @@ storiesOf("Components", module)
     })
     .add("BloomPubIcon -- Bloom blue filled", () => {
         return <BloomPubIcon fill={commonUI.colors.bloomBlue}></BloomPubIcon>;
+    })
+    .add("DownloadsGroup", () => {
+        const bloomPubAvailable = new ArtifactVisibilitySettings(
+            boolean("BloomPub available?", false)
+        );
+        testBook.artifactsToOfferToUsers = new ArtifactVisibilitySettingsGroup();
+        testBook.artifactsToOfferToUsers.bloomReader = bloomPubAvailable;
+        testBook.harvestState = "Done";
+        return <DownloadsGroup book={testBook}></DownloadsGroup>;
     });
 
 const triStateBooleanOptions = [undefined, false, true];

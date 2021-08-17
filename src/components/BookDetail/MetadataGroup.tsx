@@ -174,9 +174,12 @@ export const RightMetadata: React.FunctionComponent<{
     );
 });
 function obfuscateEmail(user: any): string {
+    if (!user) {
+        return ""; // pathological
+    }
     const email = user.username;
     if (!email) {
-        return "";
+        return ""; // pathological
     }
     const index = email.lastIndexOf("@");
     if (index < 0 || index + 1 >= email.length) {

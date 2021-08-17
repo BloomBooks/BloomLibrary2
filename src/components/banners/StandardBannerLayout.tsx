@@ -12,6 +12,7 @@ import { ImgWithCredits } from "../../ImgWithCredits";
 import { Blurb } from "./Blurb";
 import { useMediaQuery } from "@material-ui/core";
 import { BannerImageCredits } from "./ImageCreditsTooltip";
+import { getFilterForCollectionAndChildren } from "../../model/Collections";
 
 export const standardBannerHeight = "260px";
 
@@ -100,7 +101,17 @@ export const StandardBannerLayout: React.FunctionComponent<{
 
                 {props.collection?.urlKey !== "new-arrivals" &&
                     props.collection?.urlKey !== "create" &&
-                    (props.bookCount || <BookCount filter={props.filter} />)}
+                    (props.bookCount || (
+                        <BookCount
+                            filter={
+                                props.filter
+                                    ? props.filter
+                                    : getFilterForCollectionAndChildren(
+                                          props.collection
+                                      )
+                            }
+                        />
+                    ))}
                 <BannerImageCredits {...props} />
             </div>
         </div>

@@ -178,6 +178,10 @@
         "description": "",
         "message": "How to translate"
     },
+    "book.detail.getBloomReader": {
+        "description": "Text of the Bloom Reader download link",
+        "message": "Get Bloom Reader"
+    },
     "book.detail.getTemplateButton.getThis": {
         "description": "Get in the sense of start a process to download it.",
         "message": "Get this Template"

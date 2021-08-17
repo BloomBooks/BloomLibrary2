@@ -413,6 +413,7 @@ export function getDummyCollectionForPreview(bannerId: string): ICollection {
         type: "collection",
         description: "",
         expandChildCollectionRows: false,
+        showBookCountInRowDisplay: false,
     };
 }
 // These are just for cards. At this point it would not be possible to override what we see on a topic
@@ -431,6 +432,7 @@ function makeTopicCollectionsForCards(): ICollection[] {
                 type: "collection",
                 description: "",
                 expandChildCollectionRows: false,
+                showBookCountInRowDisplay: false,
             },
             undefined,
             t
@@ -474,4 +476,29 @@ function makeTopicCollectionsForCards(): ICollection[] {
 
 function Capitalize(s: string): string {
     return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+}
+
+export function getFilterForCollectionAndChildren(collection: ICollection) {
+    if (!collection) return undefined;
+    const filters: IFilter[] = [];
+    gatherCollectionAndChildrenFilters(collection, filters);
+    const filter: IFilter = {
+        anyOfThese: filters,
+    };
+    return filter;
+}
+
+// Accumulate the filters for this collection and recursively all of
+// its child collections into the supplied IFilter[] array.
+function gatherCollectionAndChildrenFilters(
+    collection: ICollection | undefined,
+    filters: IFilter[]
+): void {
+    if (!collection) return;
+    if (collection.filter) {
+        filters.push(collection.filter);
+    }
+    for (const mychild of collection.childCollections) {
+        gatherCollectionAndChildrenFilters(mychild, filters);
+    }
 }
