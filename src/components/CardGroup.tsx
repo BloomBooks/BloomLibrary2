@@ -13,6 +13,8 @@ import {
 } from "../localization/CollectionLabel";
 import { useResponsiveChoice } from "../responsiveUtilities";
 import { ICardSpec } from "./RowOfCards";
+import { BookCount } from "./BookCount";
+import { getFilterForCollectionAndChildren } from "../model/Collections";
 
 interface IProps {
     collection: ICollection;
@@ -51,16 +53,43 @@ export const CardGroup: React.FunctionComponent<IProps> = (props) => {
         case "layout: description-followed-by-row-of-books":
             break;
         default:
+            const bookCountSize = getResponsiveChoice(10, 14); // same as book card count
             const heading = props.collection.kind !== "Simple Page Links" && (
-                <h1
+                <div
                     css={css`
-                        font-size: ${getResponsiveChoice(10, 14)}pt;
+                        display: flex;
+                        flex-direction: row;
+                        align-items: baseline;
                     `}
                 >
-                    <CollectionLabel
-                        collection={props.collection}
-                    ></CollectionLabel>
-                </h1>
+                    <h1
+                        css={css`
+                            font-size: ${getResponsiveChoice(10, 14)}pt;
+                        `}
+                    >
+                        <CollectionLabel
+                            collection={props.collection}
+                        ></CollectionLabel>
+                    </h1>
+                    {props.collection.showBookCountInRowDisplay && (
+                        <div
+                            css={css`
+                                font-size: ${bookCountSize}px;
+                                margin-left: ${bookCountSize}px; // Convenient to use the same number
+                            `}
+                        >
+                            <BookCount
+                                filter={
+                                    props.collection.filter
+                                        ? props.collection.filter
+                                        : getFilterForCollectionAndChildren(
+                                              props.collection
+                                          )
+                                }
+                            />
+                        </div>
+                    )}
+                </div>
             );
             group = (
                 <React.Fragment>
