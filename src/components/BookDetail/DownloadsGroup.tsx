@@ -280,7 +280,7 @@ export const DownloadsGroup: React.FunctionComponent<{
                         );
                     })}
                 </ul>
-                {showBloomPUBButton && (
+                {showBloomPUBButton && enableBloomPub && (
                     <BlorgLink
                         href="https://bloomlibrary.org/page/create/bloom-reader"
                         color="secondary" // bloomBlue
