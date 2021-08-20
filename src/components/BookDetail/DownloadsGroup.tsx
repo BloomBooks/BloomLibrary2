@@ -10,6 +10,7 @@ import { observer } from "mobx-react-lite";
 
 import { ReactComponent as PdfIcon } from "../../assets/Pdf.svg";
 import { ReactComponent as EPUBIcon } from "../../assets/EPub.svg";
+import { PlayStoreIcon } from "./PlayStoreIcon";
 // See comment in BloomPubIcon about why this is a special case
 import { BloomPubIcon } from "./BloomPubIcon";
 
@@ -25,6 +26,7 @@ import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { FormattedMessage, useIntl } from "react-intl";
 import Typography from "@material-ui/core/Typography/Typography";
 import { commonUI } from "../../theme";
+import { BlorgLink } from "../BlorgLink";
 
 interface IArtifactUI {
     icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
@@ -34,6 +36,7 @@ interface IArtifactUI {
     enabled: boolean;
     hidden?: boolean | undefined;
     analyticsType: string;
+    isSpacer?: boolean; // in this case, none of the rest really matters
 }
 
 export const DownloadsGroup: React.FunctionComponent<{
@@ -87,17 +90,13 @@ export const DownloadsGroup: React.FunctionComponent<{
         );
     }, []);
 
+    const enableBloomPub =
+        haveABloomPubToDownload && props.book.harvestState === "Done";
+
     return (
         <div>
             {/* {showMoreDownloadsHeading && ( */}
-            <div
-                css={css`
-                    /* width: 300px; */
-                    /* display: inline-block;
-                    margin-top: 12px; */
-                    //margin-bottom: 1em;
-                `}
-            >
+            <div>
                 <Typography variant="caption">
                     <FormattedMessage
                         id="book.metadata.download"
@@ -106,148 +105,203 @@ export const DownloadsGroup: React.FunctionComponent<{
                 </Typography>
             </div>
             {/* )} */}
-            <ul
-                // margin-left defeats the padding built into mui-buttons, so the
-                // row can be left-aligned when in mobile layout where it is on the left.
-                // margin-right allows right-aligning when in desktop layout mode.
-                // margin-top defeats most of the mui padding to bring the buttons closer
-                // to the heading if there is one.
+            <div
                 css={css`
-                    margin: 0;
-                    margin-left: -12px;
-                    margin-right: -12px;
-                    margin-top: ${showMoreDownloadsHeading ? "-10px" : "0"};
-                    list-style: none;
-                    padding: 0;
+                    display: flex;
+                    flex-direction: column;
                 `}
             >
-                {[
-                    {
-                        icon: (p: React.SVGProps<SVGSVGElement>) => (
-                            <PdfIcon {...p}></PdfIcon>
-                        ),
-                        alt: l10n.formatMessage({
-                            id: "book.artifacts.pdf",
-                            defaultMessage: "Download PDF",
-                        }),
-                        type: ArtifactType.pdf,
-                        settings: pdfSettings,
-                        enabled: pdfSettings?.decision === true,
-                        hidden: hidePdfButton,
-                        analyticsType: "pdf",
-                    },
-                    {
-                        icon: (p: React.SVGProps<SVGSVGElement>) => (
-                            <EPUBIcon {...p}></EPUBIcon>
-                        ),
-                        alt: l10n.formatMessage({
-                            id: "book.artifacts.epub",
-                            defaultMessage: "Download ePUB",
-                        }),
-                        type: ArtifactType.epub,
-                        settings: epubSettings,
-                        enabled:
-                            epubSettings?.decision === true &&
-                            props.book.harvestState === "Done",
-                        hidden: hideEpubButton,
-                        analyticsType: "epub",
-                    },
-                    {
-                        icon: (p: React.SVGProps<SVGSVGElement>) => (
-                            <BloomPubIcon {...p}></BloomPubIcon>
-                        ),
-                        alt: l10n.formatMessage({
-                            id: "book.artifacts.bloompub",
-                            defaultMessage:
-                                "Download BloomPUB for Bloom Reader or BloomPub Viewer",
-                        }),
-                        type: ArtifactType.bloomReader,
-                        settings: bloomReaderSettings,
-                        enabled:
-                            haveABloomPubToDownload &&
-                            props.book.harvestState === "Done",
-                        hidden: !showBloomPUBButton,
-                        analyticsType: "bloompub",
-                    },
-                ].map((a: IArtifactUI) => {
-                    const artifactUrl = getArtifactUrl(props.book, a.type);
-                    const parts = artifactUrl.split("/");
-                    const fileName = parts[parts.length - 1];
-                    return (
-                        !a.hidden && (
-                            <Tooltip
-                                key={a.alt}
-                                aria-label={`${a.alt} is not available`}
-                                title={
-                                    a.settings?.reasonForHiding(
-                                        props.book,
-                                        l10n,
-                                        a.type === ArtifactType.pdf
-                                    ) || a.alt
-                                }
-                                arrow={true}
-                            >
-                                <IconButton
-                                    disableRipple={!a.enabled}
-                                    disableFocusRipple={!a.enabled}
-                                    disableTouchRipple={!a.enabled}
-                                    // Only way I've found to disable the hover ripple:
-                                    style={
-                                        !a.enabled
-                                            ? { backgroundColor: "transparent" }
-                                            : {}
+                <ul
+                    // margin-left defeats the padding built into mui-buttons, so the
+                    // row can be left-aligned when in mobile layout where it is on the left.
+                    // margin-right allows right-aligning when in desktop layout mode.
+                    // margin-top defeats most of the mui padding to bring the buttons closer
+                    // to the heading if there is one.
+                    css={css`
+                        margin: 0;
+                        margin-left: -12px;
+                        margin-right: -12px;
+                        margin-top: ${showMoreDownloadsHeading ? "-10px" : "0"};
+                        list-style: none;
+                        padding: 0;
+                        display: flex;
+                        justify-content: start;
+                    `}
+                >
+                    {[
+                        {
+                            icon: (p: React.SVGProps<SVGSVGElement>) => (
+                                <BloomPubIcon {...p}></BloomPubIcon>
+                            ),
+                            alt: l10n.formatMessage({
+                                id: "book.artifacts.bloompub",
+                                defaultMessage:
+                                    "Download BloomPUB for Bloom Reader or BloomPub Viewer",
+                            }),
+                            type: ArtifactType.bloomReader,
+                            settings: bloomReaderSettings,
+                            enabled: enableBloomPub,
+                            hidden: !showBloomPUBButton,
+                            analyticsType: "bloompub",
+                        },
+                        {
+                            // Add a spacer that has flex-grow and only shows if there is
+                            // a bloomPUB artifact.
+                            icon: (p: React.SVGProps<SVGSVGElement>) => (
+                                <div></div>
+                            ),
+                            alt: "",
+                            type: ArtifactType.bloomReader,
+                            settings: bloomReaderSettings,
+                            enabled: false,
+                            hidden: !showBloomPUBButton,
+                            analyticsType: "",
+                            isSpacer: true,
+                        },
+                        {
+                            icon: (p: React.SVGProps<SVGSVGElement>) => (
+                                <PdfIcon {...p}></PdfIcon>
+                            ),
+                            alt: l10n.formatMessage({
+                                id: "book.artifacts.pdf",
+                                defaultMessage: "Download PDF",
+                            }),
+                            type: ArtifactType.pdf,
+                            settings: pdfSettings,
+                            enabled: pdfSettings?.decision === true,
+                            hidden: hidePdfButton,
+                            analyticsType: "pdf",
+                        },
+                        {
+                            icon: (p: React.SVGProps<SVGSVGElement>) => (
+                                <EPUBIcon {...p}></EPUBIcon>
+                            ),
+                            alt: l10n.formatMessage({
+                                id: "book.artifacts.epub",
+                                defaultMessage: "Download ePUB",
+                            }),
+                            type: ArtifactType.epub,
+                            settings: epubSettings,
+                            enabled:
+                                epubSettings?.decision === true &&
+                                props.book.harvestState === "Done",
+                            hidden: hideEpubButton,
+                            analyticsType: "epub",
+                        },
+                    ].map((a: IArtifactUI) => {
+                        const artifactUrl = getArtifactUrl(props.book, a.type);
+                        const parts = artifactUrl.split("/");
+                        const fileName = parts[parts.length - 1];
+                        return (
+                            !a.hidden && (
+                                <Tooltip
+                                    css={css`
+                                        flex: ${a.isSpacer ? 3 : 0};
+                                    `}
+                                    key={a.alt}
+                                    aria-label={`${a.alt} is not available`}
+                                    title={
+                                        a.settings?.reasonForHiding(
+                                            props.book,
+                                            l10n,
+                                            a.type === ArtifactType.pdf
+                                        ) || a.alt
                                     }
-                                    // Can't do this or the tooltip doesn't work:
-                                    // disabled={!a.enabled}
-                                    onClick={() => {
-                                        if (a.enabled)
-                                            props.book
-                                                .checkCountryPermissions(
-                                                    "downloadAnything"
-                                                )
-                                                .then(
-                                                    (otherCountryRequired) => {
-                                                        if (
-                                                            otherCountryRequired
-                                                        ) {
-                                                            alert(
-                                                                `Sorry, the uploader of this book has restricted downloading it to ${otherCountryRequired}`
-                                                            );
-                                                        } else {
-                                                            followUrl(
-                                                                artifactUrl,
-                                                                fileName
-                                                            );
-                                                            const params = getBookAnalyticsInfo(
-                                                                props.book,
-                                                                props.contextLangIso,
-                                                                a.analyticsType
-                                                            );
-                                                            track(
-                                                                "Download Book",
-                                                                params
-                                                            );
-                                                        }
-                                                    }
-                                                );
-                                    }}
+                                    arrow={true}
                                 >
-                                    {/* We'd like this to be a link, but then the compiler insists it must
+                                    <IconButton
+                                        css={css`
+                                            cursor: ${!a.enabled
+                                                ? "default"
+                                                : "pointer"};
+                                        `}
+                                        disableRipple={!a.enabled}
+                                        disableFocusRipple={!a.enabled}
+                                        disableTouchRipple={!a.enabled}
+                                        // Only way I've found to disable the hover ripple:
+                                        style={
+                                            !a.enabled
+                                                ? {
+                                                      backgroundColor:
+                                                          "transparent",
+                                                  }
+                                                : {}
+                                        }
+                                        // Can't do this or the tooltip doesn't work:
+                                        // disabled={!a.enabled}
+                                        onClick={() => {
+                                            if (a.enabled)
+                                                props.book
+                                                    .checkCountryPermissions(
+                                                        "downloadAnything"
+                                                    )
+                                                    .then(
+                                                        (
+                                                            otherCountryRequired
+                                                        ) => {
+                                                            if (
+                                                                otherCountryRequired
+                                                            ) {
+                                                                alert(
+                                                                    `Sorry, the uploader of this book has restricted downloading it to ${otherCountryRequired}`
+                                                                );
+                                                            } else {
+                                                                followUrl(
+                                                                    artifactUrl,
+                                                                    fileName
+                                                                );
+                                                                const params = getBookAnalyticsInfo(
+                                                                    props.book,
+                                                                    props.contextLangIso,
+                                                                    a.analyticsType
+                                                                );
+                                                                track(
+                                                                    "Download Book",
+                                                                    params
+                                                                );
+                                                            }
+                                                        }
+                                                    );
+                                        }}
+                                    >
+                                        {/* We'd like this to be a link, but then the compiler insists it must
                                     have an href, and then we can't impose conditions on doing the download. */}
-                                    <span role="link" key={a.alt}>
-                                        {a.icon({
-                                            fill: a.enabled
-                                                ? commonUI.colors.bloomBlue
-                                                : commonUI.colors
-                                                      .disabledIconGray,
-                                        })}
-                                    </span>
-                                </IconButton>
-                            </Tooltip>
-                        )
-                    );
-                })}
-            </ul>
+                                        <span role="link" key={a.alt}>
+                                            {a.icon({
+                                                fill: a.enabled
+                                                    ? commonUI.colors.bloomBlue
+                                                    : commonUI.colors
+                                                          .disabledIconGray,
+                                            })}
+                                        </span>
+                                    </IconButton>
+                                </Tooltip>
+                            )
+                        );
+                    })}
+                </ul>
+                {showBloomPUBButton && enableBloomPub && (
+                    <BlorgLink
+                        href="https://bloomlibrary.org/page/create/bloom-reader"
+                        color="secondary" // bloomBlue
+                        css={css`
+                            display: flex;
+                            flex-direction: row;
+                            align-items: center;
+                            margin-top: -16px; // reduce space between artifacts and 'Get Bloom Reader' link
+                            margin-left: -7px; // line up vertically with BloomPUB icon
+                        `}
+                    >
+                        <PlayStoreIcon />
+                        <Typography variant="button">
+                            <FormattedMessage
+                                id="book.detail.getBloomReader"
+                                defaultMessage="Get Bloom Reader"
+                            />
+                        </Typography>
+                    </BlorgLink>
+                )}
+            </div>
         </div>
     );
 });
