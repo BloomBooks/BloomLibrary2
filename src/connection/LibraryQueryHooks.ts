@@ -14,7 +14,10 @@ import {
     IStatsProps,
 } from "../components/statistics/StatsInterfaces";
 import { toYyyyMmDd } from "../Utilities";
-import { useGetCollection } from "../model/Collections";
+import {
+    useGetCollection,
+    getFilterForCollectionAndChildren,
+} from "../model/Collections";
 
 // For things other than books, which should use `useBookQuery()`
 function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
@@ -705,8 +708,11 @@ export function useCollectionStats(
     statsProps: IStatsProps,
     urlSuffix: string
 ): IAxiosAnswer {
+    const collectionFilter = statsProps.collection.filter
+        ? statsProps.collection.filter
+        : getFilterForCollectionAndChildren(statsProps.collection);
     const collectionReady = useProcessDerivativeFilter(
-        statsProps.collection.filter
+        collectionFilter as IFilter
     );
 
     let apiFilter: any;
@@ -721,10 +727,10 @@ export function useCollectionStats(
         // conditional logic testing for whether we had already retrieved a collection
         // from which we could get the filter, there's no point in actually running
         // the query. useAxios will just immediately return no results.
-        const doNotRunQuery: boolean = !statsProps.collection.filter;
+        const doNotRunQuery: boolean = !collectionFilter;
         const bookQueryParams = makeBookQueryAxiosParams(
             params,
-            statsProps.collection.filter || {},
+            collectionFilter || {},
             limit,
             skip,
             doNotRunQuery || !collectionReady
