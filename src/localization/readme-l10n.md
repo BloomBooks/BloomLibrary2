@@ -17,7 +17,9 @@ IMPORTANT:
 
 # About code string files.
 
-Strings that are hard-coded into this source have to be entered into one of the code string files found in `src/localization`. These must each be listed in `src/localization/l10nFilesForCodeStrings.ts`. When the `crowdin-dangerous-upload` script runs, it uploads these files to crowdin, replacing whatever was there. When `crowdin-download` runs, it downloads all the latest translations of the files.
+Strings that are hard-coded into this source have to be entered into one of the code string files found in `src/localization`. These must each be listed in `src/localization/crowdin-file-names.json`. When the `crowdin-dangerous-upload` script runs, it uploads these files to crowdin, replacing whatever was there. When `crowdin-download` runs, it downloads all the latest translations of the files.
+
+NOTE: CROWDIN DOES NOT _ALWAYS_ DO A REBUILD. SO IF YOU JUST MADE A CHANGE, YOU MIGHT NOT SEE IT IN THE DOWNLOAD. ON THE "HOME" SCREEN, THERE IS SOME STATUS ON THE RIGHT THAT SHOWS WHEN THE LAST BUILD WAS AND ANY ACTIVITY SINCE THEN. YOU CAN FORCE A BUILD FROM THE UI.
 
 To add a new file:
 
