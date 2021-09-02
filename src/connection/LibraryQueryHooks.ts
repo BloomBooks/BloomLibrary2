@@ -1,5 +1,5 @@
 import useAxios, { IReturns, axios, IParams } from "@use-hooks/axios";
-import { IFilter, InCirculationOptions } from "../IFilter";
+import { IFilter, BooleanOptions } from "../IFilter";
 import { getConnection } from "./ParseServerConnection";
 import { getBloomApiUrl } from "./ApiConnection";
 import { retrieveBookData, retrieveBookStats } from "./LibraryQueries";
@@ -204,7 +204,7 @@ export function useGetPhashMatchingRelatedBooks(
 */
 
 export const bookDetailFields =
-    "title,allTitles,baseUrl,bookOrder,inCirculation,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
+    "title,allTitles,baseUrl,bookOrder,inCirculation,draft,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
     "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits," +
     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,suitableForMakingShells,lastUploaded," +
     "harvestStartedAt,bookshelves,publisher,originalPublisher,keywords,bookInstanceId,brandingProjectName,edition";
@@ -282,7 +282,7 @@ interface IGridResult {
 
 export const gridBookKeys =
     "objectId,bookInstanceId," +
-    "title,baseUrl,license,licenseNotes,inCirculation,summary,copyright,harvestState,harvestLog,harvestStartedAt," +
+    "title,baseUrl,license,licenseNotes,inCirculation,draft,summary,copyright,harvestState,harvestLog,harvestStartedAt," +
     "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits,bookshelves," +
     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher,originalPublisher,keywords,edition";
 
@@ -589,10 +589,11 @@ export interface IBasicBookInfo {
     country?: string;
     phashOfFirstContentImage?: string;
     edition: string;
+    draft?: boolean;
 }
 
 const kFieldsOfIBasicBookInfo =
-    "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition";
+    "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft";
 
 // uses the human "level:" tag if present, otherwise falls back to computedLevel
 export function getBestLevelStringOrEmpty(basicBookInfo: IBasicBookInfo) {
@@ -651,7 +652,7 @@ export function useSearchBooks(
         count: 1,
         keys:
             // this should be all the fields of IBasicBookInfo
-            "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition",
+            "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition, draft",
         ...params,
     };
     const bookResultsStatus: IAxiosAnswer = useBookQueryInternal(
@@ -1250,13 +1251,27 @@ export function constructParseBookQuery(
     delete params.where.inCirculation;
     switch (f.inCirculation) {
         case undefined:
-        case InCirculationOptions.Yes:
+        case BooleanOptions.Yes:
             params.where.inCirculation = { $in: [true, null] };
             break;
-        case InCirculationOptions.No:
+        case BooleanOptions.No:
             params.where.inCirculation = false;
             break;
-        case InCirculationOptions.All:
+        case BooleanOptions.All:
+            // just don't include it in the query
+            break;
+    }
+    // Unless the filter explicitly allows draft books, don't include them.
+    delete params.where.draft;
+    switch (f.draft) {
+        case BooleanOptions.Yes:
+            params.where.draft = true;
+            break;
+        case undefined:
+        case BooleanOptions.No:
+            params.where.draft = { $in: [false, null] };
+            break;
+        case BooleanOptions.All:
             // just don't include it in the query
             break;
     }

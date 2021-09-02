@@ -7,7 +7,7 @@ import { kTopicList } from "./ClosedVocabularies";
 import { strict as assert } from "assert";
 import { useContentful } from "../connection/UseContentful";
 import { useGetLoggedInUser } from "../connection/LoggedInUser";
-import { IFilter } from "../IFilter";
+import { BooleanOptions, IFilter } from "../IFilter";
 import { IntlShape, useIntl } from "react-intl";
 import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 
@@ -195,6 +195,7 @@ export function useGetCollection(
                 if (email) {
                     const filterOnUserAsUploader: IFilter = {};
                     filterOnUserAsUploader.search = `uploader:${email}`;
+                    filterOnUserAsUploader.draft = BooleanOptions.All;
                     explicitCollection.filter = filterOnUserAsUploader;
                 }
             }
