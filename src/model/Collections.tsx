@@ -7,7 +7,7 @@ import { kTopicList } from "./ClosedVocabularies";
 import { strict as assert } from "assert";
 import { useContentful } from "../connection/UseContentful";
 import { useGetLoggedInUser } from "../connection/LoggedInUser";
-import { IFilter } from "../IFilter";
+import { BooleanOptions, IFilter } from "../IFilter";
 import { IntlShape, useIntl } from "react-intl";
 import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 
@@ -82,7 +82,7 @@ function useGetContentfulCollection(
                   // As of Jan 2021, we save about 17% by restricting fields this way. Replacing all the fields.* items with just "fields"
                   // is also worth considering...we save 16% just by cutting out unused sys fields.
                   select:
-                      "fields.bookSortOrder,fields.banner,fields.urlKey,fields.iconForCardAndDefaultBanner,fields.filter,fields.label,fields.richTextLabel,fields.description,fields.statisticsQuerySpec,fields.hideLabelOnCardAndDefaultBanner,fields.childCollections,fields.expandChildCollectionRows,fields.layout,fields.rows,sys.contentType,sys.id,sys.type",
+                      "fields.bookSortOrder,fields.banner,fields.urlKey,fields.iconForCardAndDefaultBanner,fields.sponsorshipImage,fields.filter,fields.label,fields.richTextLabel,fields.description,fields.statisticsQuerySpec,fields.hideLabelOnCardAndDefaultBanner,fields.childCollections,fields.expandChildCollectionRows,fields.layout,fields.rows,sys.contentType,sys.id,sys.type",
                   include: 10, // depth
                   "fields.urlKey[in]": `${collectionName},${templateKey}`,
               }
@@ -195,6 +195,7 @@ export function useGetCollection(
                 if (email) {
                     const filterOnUserAsUploader: IFilter = {};
                     filterOnUserAsUploader.search = `uploader:${email}`;
+                    filterOnUserAsUploader.draft = BooleanOptions.All;
                     explicitCollection.filter = filterOnUserAsUploader;
                 }
             }
