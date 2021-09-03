@@ -1321,6 +1321,9 @@ export function constructParseBookQuery(
             if (!child.inCirculation) {
                 delete pbq.where.inCirculation;
             }
+            if (!child.draft) {
+                delete pbq.where.draft;
+            }
             params.where.$or.push(pbq.where);
         }
     }

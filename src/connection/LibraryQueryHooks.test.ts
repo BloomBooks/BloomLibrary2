@@ -268,7 +268,7 @@ it("builds proper parse query for anyOfThese field", () => {
     );
     const resultString = JSON.stringify(result);
     expect(resultString).toBe(
-        '{"count":1,"limit":0,"where":{"inCirculation":{"$in":[true,null]},"$or":[{"tags":"bookshelf:first"},{"tags":"bookshelf:second"},{"tags":"bookshelf:third"}]}}'
+        '{"count":1,"limit":0,"where":{"inCirculation":{"$in":[true,null]},"draft":{"$in":[false,null]},"$or":[{"tags":"bookshelf:first"},{"tags":"bookshelf:second"},{"tags":"bookshelf:third"}]}}'
     );
 });
 
@@ -289,6 +289,6 @@ it("builds proper parse query for recursive anyOfThese field", () => {
     );
     const resultString = JSON.stringify(result);
     expect(resultString).toBe(
-        '{"count":1,"limit":0,"where":{"tags":"bookshelf:first","inCirculation":{"$in":[true,null]},"$or":[{"tags":"bookshelf:second"},{"$or":[{"tags":"bookshelf:third"}]}]}}'
+        '{"count":1,"limit":0,"where":{"tags":"bookshelf:first","inCirculation":{"$in":[true,null]},"draft":{"$in":[false,null]},"$or":[{"tags":"bookshelf:second"},{"$or":[{"tags":"bookshelf:third"}]}]}}'
     );
 });
