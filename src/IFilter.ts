@@ -1,4 +1,4 @@
-export enum InCirculationOptions {
+export enum BooleanOptions {
     All,
     No,
     Yes,
@@ -13,7 +13,9 @@ export interface IFilter {
     bookShelfCategory?: string;
     otherTags?: string;
     // inCirculation:undefined will be treated as InCirculationOptions.Yes
-    inCirculation?: InCirculationOptions;
+    inCirculation?: BooleanOptions;
+    // false or undefined means draft books will not be returned.
+    draft?: BooleanOptions;
     search?: string;
     keywordsText?: string;
     brandingProjectName?: string;
