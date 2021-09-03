@@ -179,6 +179,13 @@ export const CollectionPage: React.FunctionComponent<{
                 </ListOfBookGroups>
             </div>
         );
-    }, [booksAndLanguages, collection, l10n, loading, props.embeddedSettings]);
+    }, [
+        booksAndLanguages,
+        collection,
+        getResponsiveChoice,
+        l10n,
+        loading,
+        props.embeddedSettings,
+    ]);
     return result;
 };
