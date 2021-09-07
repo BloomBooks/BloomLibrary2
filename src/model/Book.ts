@@ -86,6 +86,7 @@ export class Book {
     public level: string = "";
     public librarianNote: string = "";
     public inCirculation: boolean = true;
+    public draft: boolean = false;
     public publisher: string = "";
     public originalPublisher: string = "";
     public features: string[] = [];
@@ -131,6 +132,7 @@ export class Book {
             level: observable,
             librarianNote: observable,
             inCirculation: observable,
+            draft: observable,
             publisher: observable,
             originalPublisher: observable,
             features: observable,
@@ -274,6 +276,7 @@ export class Book {
         updateBook(this.id, {
             tags,
             inCirculation: this.inCirculation,
+            draft: this.draft,
             summary: this.summary?.trim(),
             librarianNote: this.librarianNote,
             bookshelves: this.bookshelves,

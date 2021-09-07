@@ -47,7 +47,7 @@ import {
     Sorting,
 } from "@devexpress/dx-react-grid";
 import { TableCell, useTheme } from "@material-ui/core";
-import { IFilter, InCirculationOptions } from "../../IFilter";
+import { IFilter, BooleanOptions } from "../../IFilter";
 import { getBookGridColumnsDefinitions, IGridColumn } from "./GridColumns";
 
 import { useStorageState } from "react-storage-hooks";
@@ -376,7 +376,8 @@ function CombineGridAndSearchBoxFilter(
 
     const f: IFilter = {
         ...decodedFilter,
-        inCirculation: InCirculationOptions.All,
+        inCirculation: BooleanOptions.All,
+        draft: BooleanOptions.All,
     };
     gridFilters.forEach((g) => {
         // the business of contains vs. equals has not been worked out yet, on the grid ui side nor the actual query side

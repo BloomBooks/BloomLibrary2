@@ -104,6 +104,7 @@ async function downloadAndUnpackCrowdinBuild(crowdinBuildId: number) {
                 },
             }
         );
+        console.log(`Decompressed to ${kTargetDirectory}`);
     } catch (err) {
         console.error("error: " + JSON.stringify(err, null, 4));
     }
