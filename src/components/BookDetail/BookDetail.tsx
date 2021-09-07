@@ -274,8 +274,9 @@ const BookDetailInternal: React.FunctionComponent<{
                         control={
                             <Checkbox
                                 css={css`
-                                    margin-top: -20px;
+                                    padding-top: 0;
                                     margin-right: -5px;
+                                    padding-right: 1px;
                                 `}
                                 checked={props.book.draft}
                                 onChange={(e) => {
@@ -293,7 +294,6 @@ const BookDetailInternal: React.FunctionComponent<{
                                 <DraftIcon
                                     css={css`
                                         width: 54px;
-                                        margin-right: 2px;
                                     `}
                                 />
                                 <div>
