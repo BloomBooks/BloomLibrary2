@@ -155,7 +155,7 @@ export const CollectionPage: React.FunctionComponent<{
                                 {l10n.formatMessage({
                                     id: "sponsorshipHeading",
                                     defaultMessage:
-                                        "This project was sponsored by",
+                                        "This project was supported by",
                                 })}
                             </h1>
                             {/* Note: the spacing that looks right here really depends on whether there is
