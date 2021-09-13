@@ -5840,10 +5840,10 @@ bl@^1.0.0:
     readable-stream "^2.3.5"
     safe-buffer "^5.1.1"
 
-bloom-player@^2.0.84:
-  version "2.0.84"
-  resolved "https://registry.yarnpkg.com/bloom-player/-/bloom-player-2.0.84.tgz#9f8c9525a406d5e3d55799a75f72238575458365"
-  integrity sha512-OY8h3QvwIIqy5dCIy9hhHHrizMURZybNYWEM1TLNxEwEHHHPPOms8QoJWArC1TaJefe5he3mPKxcARDx5e6mLw==
+bloom-player@^2.0.85:
+  version "2.0.85"
+  resolved "https://registry.yarnpkg.com/bloom-player/-/bloom-player-2.0.85.tgz#e11fd7cdfa2aec1792d724c10b938d9be35cac1c"
+  integrity sha512-o19pXDegQSCCIH72M6NeOy68/WnNggaicaBm6IDCfiI09VvK8T/Yf25SrURfZ4Zh7q8EeCjmR2WB92PvwsxsBg==
   dependencies:
     dynamic-import-polyfill "^0.1.1"
     jquery.nicescroll "^3.7.6"
