@@ -50,12 +50,13 @@ export function useGetCleanedAndOrderedLanguageList(): ILanguage[] {
 }
 export function useGetTagList(): string[] {
     const axiosResult = useLibraryQuery("tag", {
-        limit: 1000,
-        count: 1000,
+        limit: Number.MAX_SAFE_INTEGER,
+        count: 1, // Requests the total count
         order: "name",
     });
 
     if (axiosResult.response?.data?.results) {
+        assertAllRecordsReturned(axiosResult.response.data);
         return axiosResult.response.data.results.map(
             (parseTag: { name: string }) => {
                 return parseTag.name;
@@ -64,6 +65,20 @@ export function useGetTagList(): string[] {
     }
     return [];
 }
+
+function assertAllRecordsReturned(axiosResponseData: {
+    count: number;
+    results: Array<unknown>;
+}) {
+    const totalMatchingRecords = axiosResponseData.count;
+    const recordsInThisResponse = axiosResponseData.results.length;
+
+    console.assert(
+        totalMatchingRecords === recordsInThisResponse,
+        `Not all records returned in Parse request for distinct features. Please investigate. ${recordsInThisResponse} returned, ${totalMatchingRecords} total.`
+    );
+}
+
 export function useGetTopicList() {
     // todo: this is going to give more than topics
     return useLibraryQuery("tag", { limit: 1000, count: 1000 });
