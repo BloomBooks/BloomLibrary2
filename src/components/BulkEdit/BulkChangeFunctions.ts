@@ -5,7 +5,7 @@ import { AxiosResponse } from "axios";
 import {
     assertAllParseRecordsReturned,
     constructParseBookQuery,
-    IParseAxiosResponseWithCount,
+    IParseResponseDataWithCount,
     IParseCommonFields,
 } from "../../connection/LibraryQueryHooks";
 import { CachedTables } from "../../model/CacheProvider";
@@ -138,7 +138,7 @@ export async function AddFeatureToAllBooksInFilter(
             ...finalParams,
         },
     })) as AxiosResponse<
-        IParseAxiosResponseWithCount<
+        IParseResponseDataWithCount<
             IParseCommonFields & {
                 features: string[];
             }

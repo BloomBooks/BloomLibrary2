@@ -20,30 +20,46 @@ import {
     getFilterForCollectionAndChildren,
 } from "../model/Collections";
 
+/**
+ * @summary The minimum fields returned by Parse
+ */
 export interface IParseCommonFields {
     objectId: string;
     createdAt: string;
     updatedAt: string;
 }
 
-export interface IParseAxiosResponse<T = any> {
+/**
+ * @summary Represents the data returned by Parse.
+ * This interfaces represents the type of the AxiosResponse object's data field.
+ * @param T For strict typing, define the parameterized type T as accurately as feasible. It is the type of each result record returned by Parse.
+ * To ignore typing, just use "any" or leave blank (defaults to any) as the type
+ */
+export interface IParseResponseData<T = any> {
     count?: number;
     results: Array<T>;
 }
 
-// T = the type of each of the returned results
-// e.g. it could include the object ID, creationTime, etc at minimum
-// You can use "any" (the default) to ignore this and allow any consumers to automatically ignore typing too.
-// You can also use "unknown" to ignore this but force downstream consumers to think about typing
-// Or you can explicitly give the return type (as accurately as feasible)
-export interface IParseAxiosResponseWithCount<T = any> {
+/**
+ * @summary Represents the data returned by Parse if count has been requested..
+ * This interfaces represents the type of the AxiosResponse object's data field.
+ * @param T For strict typing, define the parameterized type T as accurately as feasible. It is the type of each result record returned by Parse.
+ * To ignore typing, just use "any" or omit (defaults to any) as the type
+ */
+export interface IParseResponseDataWithCount<T = any> {
     count: number;
     results: Array<T>;
 }
 
-// For things other than books, which should use `useBookQuery()`
-function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
-    return useAxios({
+/**
+ * @summary For things other than books, which should use `useBookQuery()`
+ * @param T The type of the result record returned by Parse. Or use "any" or omit to ignore types.
+ */
+function useLibraryQuery<T = any>(
+    queryClass: string,
+    params: {}
+): IReturns<IParseResponseData<T>> {
+    return useAxios<IParseResponseData<T>>({
         url: `${getConnection().url}classes/${queryClass}`,
         method: "GET",
         trigger: "true",
@@ -53,8 +69,21 @@ function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
         },
     });
 }
+
+/**
+ * @summary Same as useLibraryQuery, but modifies params to request the count
+ */
+function useLibraryQueryWithCount<T = any>(
+    queryClass: string,
+    params: {}
+): IReturns<IParseResponseDataWithCount<T>> {
+    return useLibraryQuery(queryClass, { ...params, count: 1 }) as IReturns<
+        IParseResponseDataWithCount<T>
+    >;
+}
+
 function useGetLanguagesList() {
-    return useLibraryQuery("language", {
+    return useLibraryQuery<IParseCommonFields & ILanguage>("language", {
         keys: "name,englishName,usageCount,isoCode",
         limit: 10000,
         order: "-usageCount",
@@ -71,9 +100,8 @@ export function useGetCleanedAndOrderedLanguageList(): ILanguage[] {
     return [];
 }
 export function useGetTagList(): string[] {
-    const axiosResult = useLibraryQuery("tag", {
+    const axiosResult = useLibraryQueryWithCount("tag", {
         limit: Number.MAX_SAFE_INTEGER,
-        count: 1, // Requests the total count
         order: "name",
     });
 
@@ -93,7 +121,7 @@ export function useGetTagList(): string[] {
  * @param axiosResponseData: An AxiosResponse object. Its "data" field must have a count field and a results array within it (i.e., implements IParseAxiosResponseWithCount)
  */
 export function assertAllParseRecordsReturned(
-    axiosResponse: AxiosResponse<IParseAxiosResponseWithCount<unknown>>
+    axiosResponse: AxiosResponse<IParseResponseDataWithCount<unknown>>
 ) {
     const totalMatchingRecords = axiosResponse.data.count;
     const recordsInThisResponse = axiosResponse.data.results.length;
@@ -112,27 +140,22 @@ export function useGetTopicList() {
 export function useGetBookshelvesByCategory(
     category?: string
 ): IBookshelfResult[] {
-    const axiosResult = useLibraryQuery("bookshelf", {
+    const axiosResult = useLibraryQuery<IBookshelfResult>("bookshelf", {
         where: category ? { category } : null,
         //,keys: "englishName,key"
     });
-    if (axiosResult.response?.data?.results) {
-        const fullBookShelfDescriptions = axiosResult.response.data
-            .results as IBookshelfResult[];
 
-        return fullBookShelfDescriptions;
-    } else return [];
+    const fullBookShelfDescriptions = axiosResult.response?.data?.results;
+    return fullBookShelfDescriptions ?? [];
 }
 
 export function useGetLanguageInfo(language: string): ILanguage[] {
-    const axiosResult = useLibraryQuery("language", {
+    const axiosResult = useLibraryQuery<ILanguage>("language", {
         where: { isoCode: language },
         keys: "isoCode,name,usageCount,bannerImageUrl",
     });
 
-    if (axiosResult.response?.data?.results) {
-        return axiosResult.response.data.results as ILanguage[];
-    } else return [];
+    return axiosResult.response?.data?.results ?? [];
 }
 
 // Gets the count of books matching {filter}
@@ -298,7 +321,7 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
 export function useGetBasicBookInfos(
     ids: string[]
 ): IBasicBookInfo[] | undefined {
-    const { response } = useAxios({
+    const { response } = useAxios<IParseResponseData<IBasicBookInfo>>({
         url: `${getConnection().url}classes/books`,
         method: "GET",
         trigger: "true",
