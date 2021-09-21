@@ -1,7 +1,13 @@
 import { IFilter } from "../../IFilter";
 import { getConnection } from "../../connection/ParseServerConnection";
 import { axios } from "@use-hooks/axios";
-import { constructParseBookQuery } from "../../connection/LibraryQueryHooks";
+import { AxiosResponse } from "axios";
+import {
+    assertAllParseRecordsReturned,
+    constructParseBookQuery,
+    IParseAxiosResponseWithCount,
+    IParseCommonFields,
+} from "../../connection/LibraryQueryHooks";
 import { CachedTables } from "../../model/CacheProvider";
 
 export async function ChangeColumnValueForAllBooksInFilter(
@@ -16,16 +22,20 @@ export async function ChangeColumnValueForAllBooksInFilter(
         headers,
 
         params: {
-            limit: 100000,
+            limit: Number.MAX_SAFE_INTEGER,
+            count: 1,
             keys: "objectId,title",
             ...finalParams,
         },
     });
+
+    assertAllParseRecordsReturned(books);
+
     const putData: any = {};
     putData.updateSource = "bloom-library-bulk-edit";
     putData[columnName] = newValue;
 
-    const promises: Array<Promise<any>> = [];
+    const promises: Array<Promise<unknown>> = [];
     for (const book of books.data.results) {
         console.log(book.title);
         promises.push(
@@ -64,12 +74,20 @@ export async function AddTagAllBooksInFilter(
     const books = await axios.get(`${getConnection().url}classes/books`, {
         headers,
 
-        params: { limit: 100000, keys: "objectId,title,tags", ...finalParams },
+        params: {
+            limit: Number.MAX_SAFE_INTEGER,
+            count: 1,
+            keys: "objectId,title,tags",
+            ...finalParams,
+        },
     });
+
+    assertAllParseRecordsReturned(books);
+
     const putData: any = {};
     putData.updateSource = "bloom-library-bulk-edit";
 
-    const promises: Array<Promise<any>> = [];
+    const promises: Array<Promise<unknown>> = [];
     let changeCount = 0;
     for (const book of books.data.results) {
         putData.tags = [...book.tags];
@@ -102,6 +120,78 @@ export async function AddTagAllBooksInFilter(
             alert(error);
         });
 }
+
+export async function AddFeatureToAllBooksInFilter(
+    filter: IFilter,
+    newFeature: string,
+    refresh: () => void
+) {
+    const finalParams = constructParseBookQuery({}, filter, CachedTables.tags);
+    const headers = getConnection().headers;
+    const books = (await axios.get(`${getConnection().url}classes/books`, {
+        headers,
+
+        params: {
+            limit: Number.MAX_SAFE_INTEGER,
+            count: 1,
+            keys: "objectId,title,features",
+            ...finalParams,
+        },
+    })) as AxiosResponse<
+        IParseAxiosResponseWithCount<
+            IParseCommonFields & {
+                features: string[];
+            }
+        >
+    >;
+
+    assertAllParseRecordsReturned(books);
+
+    const putData: {
+        updateSource: string;
+        features?: string[];
+    } = {
+        updateSource: "bloom-library-bulk-edit",
+    };
+
+    const promises: Array<Promise<unknown>> = [];
+    let changeCount = 0;
+    for (const book of books.data.results) {
+        putData.features = [...book.features];
+        // a feature that starts with "-" means that we want to remove it
+        if (newFeature[0] === "-") {
+            const featureToRemove = newFeature.substr(1, newFeature.length - 1);
+            putData.features = putData.features.filter(
+                (f: string) => f !== featureToRemove
+            );
+        } else if (putData.features.indexOf(newFeature) < 0) {
+            putData.features.push(newFeature);
+        }
+        if (putData.features.length !== book.features.length) {
+            ++changeCount;
+            promises.push(
+                axios.put(
+                    `${getConnection().url}classes/books/${book.objectId}`,
+                    {
+                        ...putData,
+                    },
+                    { headers }
+                )
+            );
+        }
+    }
+    console.log(`Changing features on ${changeCount} books...`);
+
+    // ENHANCE: Or we could await Promise.all.
+    // The caller (bulkEditPanel) could await this promise and then call props.refresh()
+    // Instead of passing callbacks down the stack many layers.
+    Promise.all(promises)
+        .then(() => refresh())
+        .catch((error) => {
+            alert(error);
+        });
+}
+
 export async function AddBookshelfToAllBooksInFilter(
     filter: IFilter,
     newBookshelf: string,
@@ -113,15 +203,18 @@ export async function AddBookshelfToAllBooksInFilter(
         headers,
 
         params: {
-            limit: 100000,
+            limit: Number.MAX_SAFE_INTEGER,
+            count: 1,
             keys: "objectId,title,bookshelves",
             ...finalParams,
         },
     });
+    assertAllParseRecordsReturned(books);
+
     const putData: any = {};
     putData.updateSource = "bloom-library-bulk-edit";
 
-    const promises: Array<Promise<any>> = [];
+    const promises: Array<Promise<unknown>> = [];
     for (const book of books.data.results) {
         //console.log(book.title);
         putData.bookshelves = book.bookshelves || [];

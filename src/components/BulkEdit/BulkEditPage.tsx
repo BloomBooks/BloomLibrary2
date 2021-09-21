@@ -17,6 +17,7 @@ import { AssignOriginalPublisherPanel } from "./AssignOriginalPublisherPanel";
 import { IBulkEditPageProps } from "./BulkEditPageCodeSplit";
 import { RequestHarvestPanel } from "./RequestHarvestPanel";
 import { HideBooksPanel } from "./HideBooksPanel";
+import { AddFeaturePanel } from "./AddFeaturePanel";
 
 // The Bulk Edit page is for moderators; it has a series of panels for making changes, followed by a grid
 // for selecting what books will be changed.
@@ -47,6 +48,11 @@ const BulkEditPage: React.FunctionComponent<IBulkEditPageProps> = (props) => {
             />
             <AddTagPanel
                 backgroundColor="lightblue"
+                filterHolder={staticCurrentFilter}
+                refresh={() => setRefreshIndex(refreshIndex + 1)}
+            />
+            <AddFeaturePanel
+                backgroundColor="aquamarine"
                 filterHolder={staticCurrentFilter}
                 refresh={() => setRefreshIndex(refreshIndex + 1)}
             />

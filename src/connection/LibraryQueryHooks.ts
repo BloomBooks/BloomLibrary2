@@ -1,4 +1,5 @@
 import useAxios, { IReturns, axios, IParams } from "@use-hooks/axios";
+import { AxiosResponse } from "axios";
 import { IFilter, BooleanOptions } from "../IFilter";
 import { getConnection } from "./ParseServerConnection";
 import { getBloomApiUrl } from "./ApiConnection";
@@ -18,6 +19,27 @@ import {
     useGetCollection,
     getFilterForCollectionAndChildren,
 } from "../model/Collections";
+
+export interface IParseCommonFields {
+    objectId: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface IParseAxiosResponse<T = any> {
+    count?: number;
+    results: Array<T>;
+}
+
+// T = the type of each of the returned results
+// e.g. it could include the object ID, creationTime, etc at minimum
+// You can use "any" (the default) to ignore this and allow any consumers to automatically ignore typing too.
+// You can also use "unknown" to ignore this but force downstream consumers to think about typing
+// Or you can explicitly give the return type (as accurately as feasible)
+export interface IParseAxiosResponseWithCount<T = any> {
+    count: number;
+    results: Array<T>;
+}
 
 // For things other than books, which should use `useBookQuery()`
 function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
@@ -56,7 +78,7 @@ export function useGetTagList(): string[] {
     });
 
     if (axiosResult.response?.data?.results) {
-        assertAllRecordsReturned(axiosResult.response.data);
+        assertAllParseRecordsReturned(axiosResult.response);
         return axiosResult.response.data.results.map(
             (parseTag: { name: string }) => {
                 return parseTag.name;
@@ -66,16 +88,19 @@ export function useGetTagList(): string[] {
     return [];
 }
 
-function assertAllRecordsReturned(axiosResponseData: {
-    count: number;
-    results: Array<unknown>;
-}) {
-    const totalMatchingRecords = axiosResponseData.count;
-    const recordsInThisResponse = axiosResponseData.results.length;
+/**
+ * @summary Use this method after calls to Parse that the caller expects to returns all matching records (as opposed to requests that explicitly support paging)
+ * @param axiosResponseData: An AxiosResponse object. Its "data" field must have a count field and a results array within it (i.e., implements IParseAxiosResponseWithCount)
+ */
+export function assertAllParseRecordsReturned(
+    axiosResponse: AxiosResponse<IParseAxiosResponseWithCount<unknown>>
+) {
+    const totalMatchingRecords = axiosResponse.data.count;
+    const recordsInThisResponse = axiosResponse.data.results.length;
 
     console.assert(
         totalMatchingRecords === recordsInThisResponse,
-        `Not all records returned in Parse request for distinct features. Please investigate. ${recordsInThisResponse} returned, ${totalMatchingRecords} total.`
+        `Incomplete records returned in Parse request. Please investigate. ${recordsInThisResponse} returned, ${totalMatchingRecords} total.`
     );
 }
 
