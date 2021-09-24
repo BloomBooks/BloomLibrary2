@@ -1,3 +1,9 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import React, { useMemo, useState } from "react";
 
 import { ContentfulBanner } from "./banners/ContentfulBanner";
@@ -17,12 +23,14 @@ import { getCollectionAnalyticsInfo } from "../analytics/CollectionAnalyticsInfo
 import { useIntl } from "react-intl";
 import { useGetLocalizedCollectionLabel } from "../localization/CollectionLabel";
 import { PageNotFound } from "./PageNotFound";
+import { useResponsiveChoice } from "../responsiveUtilities";
 
 export const CollectionPage: React.FunctionComponent<{
     collectionName: string;
     embeddedSettings?: IEmbedSettings;
 }> = (props) => {
     const l10n = useIntl();
+    const getResponsiveChoice = useResponsiveChoice();
     // remains empty (and unused) except in byLanguageGroups mode, when a callback sets it.
     const [booksAndLanguages, setBooksAndLanguages] = useState("");
     const { collection, loading } = useGetCollection(props.collectionName);
@@ -131,9 +139,53 @@ export const CollectionPage: React.FunctionComponent<{
                 <ListOfBookGroups>
                     {collectionRows}
                     {booksComponent}
+
+                    {collection.sponsorshipImage && (
+                        <div
+                            css={css`
+                                margin-bottom: 2em;
+                            `}
+                        >
+                            <h1
+                                css={css`
+                                    font-size: ${getResponsiveChoice(10, 14)}pt;
+                                    margin-bottom: 5px;
+                                `}
+                            >
+                                {l10n.formatMessage({
+                                    id: "sponsorshipHeading",
+                                    defaultMessage:
+                                        "This project was supported by",
+                                })}
+                            </h1>
+                            {/* Note: the spacing that looks right here really depends on whether there is
+                            one or multiple rows in the sponsorship image. If one row, the 5px is fine. But
+                            if multiple rows, well USAID requires a huge space all around, and then a much
+                            bigger spacing on top looks good. That spacing has to be added to the image when
+                            it is uploaded to Contentful, as we don't know from here. See Begin with Books Mali for example. */}
+                            <img
+                                src={collection.sponsorshipImage.url}
+                                alt={"sponsor logos"}
+                                css={css`
+                                    max-height: ${getResponsiveChoice(
+                                        75,
+                                        100
+                                    )}%;
+                                    max-width: 90vw;
+                                `}
+                            ></img>
+                        </div>
+                    )}
                 </ListOfBookGroups>
             </div>
         );
-    }, [booksAndLanguages, collection, l10n, loading, props.embeddedSettings]);
+    }, [
+        booksAndLanguages,
+        collection,
+        getResponsiveChoice,
+        l10n,
+        loading,
+        props.embeddedSettings,
+    ]);
     return result;
 };

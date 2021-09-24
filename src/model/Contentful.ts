@@ -42,7 +42,9 @@ export function convertContentfulCollectionToICollection(
     const icon = convertContentfulMediaToIMedia(
         item.fields?.iconForCardAndDefaultBanner
     );
-
+    const sponsorshipImage = convertContentfulMediaToIMedia(
+        item.fields?.sponsorshipImage
+    );
     // Internally, we need tags to be named "otherTags" in the filter.
     // This is awkward as an external API name from contentful. So let's just allow "tag",
     // which matches the name on this field in the UI we present to the librarian & staff.
@@ -60,6 +62,7 @@ export function convertContentfulCollectionToICollection(
         filter: item.fields.filter,
         statisticsQuerySpec: item.fields.statisticsQuerySpec,
         iconForCardAndDefaultBanner: icon,
+        sponsorshipImage: sponsorshipImage,
         hideLabelOnCardAndDefaultBanner:
             item.fields.hideLabelOnCardAndDefaultBanner,
         kind: item.fields.kind,
@@ -72,6 +75,7 @@ export function convertContentfulCollectionToICollection(
             ? "link"
             : item.sys.contentType.sys.id,
         expandChildCollectionRows: item.fields.expandChildCollectionRows,
+        showBookCountInRowDisplay: item.fields.showBookCountInRowDisplay,
     };
     return result;
 }

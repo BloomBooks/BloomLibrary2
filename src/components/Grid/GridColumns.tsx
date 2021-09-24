@@ -14,7 +14,7 @@ import { Checkbox, TableCell, Select, MenuItem } from "@material-ui/core";
 import { Book } from "../../model/Book";
 import QueryString from "qs";
 import titleCase from "title-case";
-import { IFilter, InCirculationOptions } from "../../IFilter";
+import { IFilter, BooleanOptions } from "../../IFilter";
 import { CachedTables } from "../../model/CacheProvider";
 import { BlorgLink } from "../BlorgLink";
 
@@ -57,6 +57,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                         text-decoration: ${!b.inCirculation
                             ? "line-through !important"
                             : ""};
+                        font-style: ${b.draft ? "italic" : "normal"};
                     `}
                     target="_blank"
                 >
@@ -223,9 +224,25 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             ),
             addToFilter: (filter: IFilter, value: string) => {
                 if (value === "No")
-                    filter.inCirculation = InCirculationOptions.No;
+                    filter.inCirculation = BooleanOptions.No;
                 if (value === "Yes")
-                    filter.inCirculation = InCirculationOptions.Yes;
+                    filter.inCirculation = BooleanOptions.Yes;
+                // otherwise don't mention it
+            },
+        },
+        {
+            name: "draft",
+            defaultVisible:false,
+            sortingEnabled: false, // parse server doesn't seem to be able to sort on booleans?
+            getCellValue: (b: Book) => (b.draft ? "Yes" : "No"),
+            getCustomFilterComponent: (props: TableFilterRow.CellProps) => (
+                <ChoicesFilterCell choices={["All", "Yes", "No"]} {...props} />
+            ),
+            addToFilter: (filter: IFilter, value: string) => {
+                if (value === "No")
+                    filter.draft = BooleanOptions.No;
+                if (value === "Yes")
+                    filter.draft = BooleanOptions.Yes;
                 // otherwise don't mention it
             },
         },

@@ -12,7 +12,7 @@ export const BloomPubIcon: React.FunctionComponent<{ fill?: string }> = (
         <svg
             width="64"
             height="50"
-            viewBox="0 0 64 50"
+            viewBox="0 -3 64 53"
             fill={props.fill}
             xmlns="http://www.w3.org/2000/svg"
         >

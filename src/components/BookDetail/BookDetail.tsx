@@ -8,7 +8,7 @@ import React from "react";
 import { useGetBookDetail } from "../../connection/LibraryQueryHooks";
 import { Book } from "../../model/Book";
 
-import { Divider } from "@material-ui/core";
+import { Checkbox, Divider, FormControlLabel } from "@material-ui/core";
 
 import { observer } from "mobx-react-lite";
 import { BookExtraPanels } from "./BookExtraPanels";
@@ -29,6 +29,9 @@ import { commonUI } from "../../theme";
 import { IBookDetailProps } from "./BookDetailCodeSplit";
 import { MissingFontNotice } from "./MissingFontNotice";
 import { HarvesterProgressNotice } from "./HarvestProgressNotice";
+import { LoggedInUser } from "../../connection/LoggedInUser";
+import { ReactComponent as DraftIcon } from "../../assets/DRAFT-Stamp.svg";
+import { useResponsiveChoice } from "../../responsiveUtilities";
 
 const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     const l10n = useIntl();
@@ -108,6 +111,10 @@ const BookDetailInternal: React.FunctionComponent<{
     );
 
     const embeddedMode = useIsEmbedded();
+    const user = LoggedInUser.current;
+    const userIsUploader = user?.username === props.book.uploader?.username;
+    const l10n = useIntl();
+    const getResponsiveChoice = useResponsiveChoice();
     return (
         <div
             // had width:800px, but that destroys responsiveness
@@ -131,7 +138,13 @@ const BookDetailInternal: React.FunctionComponent<{
             >
                 {embeddedMode || <Breadcrumbs />}
             </div>
-            <div>
+
+            <div
+                // position is relative so this is the basis div for absolutely positioning the DRAFT overlay
+                css={css`
+                    position: relative;
+                `}
+            >
                 <BookDetailHeaderGroup
                     book={props.book}
                     contextLangIso={props.contextLangIso}
@@ -248,6 +261,65 @@ const BookDetailInternal: React.FunctionComponent<{
                         )} */}
                     </div>
                 </div>
+                {(user?.moderator || userIsUploader) && (
+                    <FormControlLabel
+                        css={css`
+                            margin-top: 15px;
+                            // By default, the checkbox has some padding used for animations on hover etc.
+                            // And then, apparently a corresponding negative margin on this control makes it look
+                            // aligned left. I think the amount of both is 8px. So a margin of -5px actually INCREASES
+                            // the indent, aligning it with the 3px that something indents the Report button icon.
+                            margin-left: -5px;
+                        `}
+                        control={
+                            <Checkbox
+                                css={css`
+                                    padding-top: 0;
+                                    margin-right: -5px;
+                                    padding-right: 1px;
+                                `}
+                                checked={props.book.draft}
+                                onChange={(e) => {
+                                    props.book.draft = e.target.checked;
+                                    props.book.saveAdminDataToParse();
+                                }}
+                            />
+                        }
+                        label={
+                            <div
+                                css={css`
+                                    display: flex;
+                                `}
+                            >
+                                <DraftIcon
+                                    css={css`
+                                        width: 54px;
+                                    `}
+                                />
+                                <div>
+                                    {l10n.formatMessage({
+                                        id: "book.detail.draftDescription",
+                                        defaultMessage:
+                                            "Show this book only to reviewers with whom I share the URL of this page.",
+                                        description:
+                                            "Label for a check box which, if checked, marks the book as 'DRAFT' and prevents the book from showing in most views",
+                                    })}
+                                </div>
+                            </div>
+                        }
+                    />
+                )}
+                {props.book.draft && (
+                    <DraftIcon
+                        css={css`
+                            width: 261px;
+                            height: 197px;
+                            position: absolute;
+                            left: ${getResponsiveChoice(120, 180)}px;
+                            top: ${getResponsiveChoice(-26, -12)}px;
+                        `}
+                    />
+                )}
 
                 <BookExtraPanels book={props.book} />
             </div>

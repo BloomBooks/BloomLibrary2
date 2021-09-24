@@ -67,7 +67,7 @@ export function trySpecialSearch(
     }
 
     const languageSearchResult = tryHandleLanguageSearch(
-        search,
+        search === "chinese" ? "chinese, simplified" : search,
         languagesByBookCount
     );
     if (languageSearchResult !== "") {

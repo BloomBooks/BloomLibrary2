@@ -13,7 +13,11 @@ export const HarvesterProgressNotice: React.FunctionComponent<{
     book: Book;
 }> = (props) => {
     const l10n = useIntl();
-    if (props.book.harvestState !== "New") return null;
+    if (
+        props.book.harvestState !== "New" &&
+        props.book.harvestState !== "InProgress"
+    )
+        return null;
 
     if (!props.book.lastUploadedDate) {
         return (

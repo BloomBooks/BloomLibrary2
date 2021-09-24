@@ -1,5 +1,5 @@
 import useAxios, { IReturns, axios, IParams } from "@use-hooks/axios";
-import { IFilter, InCirculationOptions } from "../IFilter";
+import { IFilter, BooleanOptions } from "../IFilter";
 import { getConnection } from "./ParseServerConnection";
 import { getBloomApiUrl } from "./ApiConnection";
 import { retrieveBookData, retrieveBookStats } from "./LibraryQueries";
@@ -14,7 +14,10 @@ import {
     IStatsProps,
 } from "../components/statistics/StatsInterfaces";
 import { toYyyyMmDd } from "../Utilities";
-import { useGetCollection } from "../model/Collections";
+import {
+    useGetCollection,
+    getFilterForCollectionAndChildren,
+} from "../model/Collections";
 
 // For things other than books, which should use `useBookQuery()`
 function useLibraryQuery(queryClass: string, params: {}): IReturns<any> {
@@ -201,7 +204,7 @@ export function useGetPhashMatchingRelatedBooks(
 */
 
 export const bookDetailFields =
-    "title,allTitles,baseUrl,bookOrder,inCirculation,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
+    "title,allTitles,baseUrl,bookOrder,inCirculation,draft,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
     "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits," +
     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,suitableForMakingShells,lastUploaded," +
     "harvestStartedAt,bookshelves,publisher,originalPublisher,keywords,bookInstanceId,brandingProjectName,edition";
@@ -279,7 +282,7 @@ interface IGridResult {
 
 export const gridBookKeys =
     "objectId,bookInstanceId," +
-    "title,baseUrl,license,licenseNotes,inCirculation,summary,copyright,harvestState,harvestLog,harvestStartedAt," +
+    "title,baseUrl,license,licenseNotes,inCirculation,draft,summary,copyright,harvestState,harvestLog,harvestStartedAt," +
     "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits,bookshelves," +
     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher,originalPublisher,keywords,edition";
 
@@ -503,13 +506,29 @@ function makeBookQueryAxiosParams(
     }
     //console.log("finalParams: " + JSON.stringify(finalParams));
 
+    const theOptions = {
+        headers: getConnection().headers,
+        data: undefined as any,
+        params: undefined as any,
+    };
+    if (filter.anyOfThese) {
+        // The filter may be too complex to pass in the URL (ie, GET params).  So we use POST with data that
+        // specifies that the underlying operation is actually a GET.  (This doesn't seem to be documented, but
+        // Andrew discovered that it works, and I got a confirming message on the parse-server slack channel.)
+        theOptions.data = {
+            _method: "GET",
+            ...finalParams,
+        };
+    } else {
+        theOptions.params = finalParams;
+    }
     return {
         url: `${getConnection().url}classes/books`,
         // The "rules of hooks" require that if we're ever going to run a useEffect, we have to *always* run it
         // So we can't conditionally run this useBookQueryInternal(). But useAxios does give this way to run its
         // internal useEffect() but not actually run the query.
         forceDispatchEffect: () => !doNotActuallyRunQuery,
-        method: "GET",
+        method: filter.anyOfThese ? "POST" : "GET",
         // there is an inner useEffect, and it looks at this. We want to rerun whenever the query changes (duh).
         // Also, the very first time this runs, we will need to run again once we get
         // the list of known tags.
@@ -519,10 +538,7 @@ function makeBookQueryAxiosParams(
             JSON.stringify(!!tags) +
             JSON.stringify(limit) +
             JSON.stringify(skip),
-        options: {
-            headers: getConnection().headers,
-            params: finalParams,
-        },
+        options: theOptions,
     };
 }
 
@@ -573,10 +589,11 @@ export interface IBasicBookInfo {
     country?: string;
     phashOfFirstContentImage?: string;
     edition: string;
+    draft?: boolean;
 }
 
 const kFieldsOfIBasicBookInfo =
-    "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition";
+    "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft";
 
 // uses the human "level:" tag if present, otherwise falls back to computedLevel
 export function getBestLevelStringOrEmpty(basicBookInfo: IBasicBookInfo) {
@@ -635,7 +652,7 @@ export function useSearchBooks(
         count: 1,
         keys:
             // this should be all the fields of IBasicBookInfo
-            "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition",
+            "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition, draft",
         ...params,
     };
     const bookResultsStatus: IAxiosAnswer = useBookQueryInternal(
@@ -692,8 +709,11 @@ export function useCollectionStats(
     statsProps: IStatsProps,
     urlSuffix: string
 ): IAxiosAnswer {
+    const collectionFilter = statsProps.collection.filter
+        ? statsProps.collection.filter
+        : getFilterForCollectionAndChildren(statsProps.collection);
     const collectionReady = useProcessDerivativeFilter(
-        statsProps.collection.filter
+        collectionFilter as IFilter
     );
 
     let apiFilter: any;
@@ -708,10 +728,10 @@ export function useCollectionStats(
         // conditional logic testing for whether we had already retrieved a collection
         // from which we could get the filter, there's no point in actually running
         // the query. useAxios will just immediately return no results.
-        const doNotRunQuery: boolean = !statsProps.collection.filter;
+        const doNotRunQuery: boolean = !collectionFilter;
         const bookQueryParams = makeBookQueryAxiosParams(
             params,
-            statsProps.collection.filter || {},
+            collectionFilter || {},
             limit,
             skip,
             doNotRunQuery || !collectionReady
@@ -983,7 +1003,7 @@ export function constructParseBookQuery(
     limit?: number, //pagination
     skip?: number //pagination
 ): object {
-    if (filter.derivedFromCollectionName) {
+    if (filter?.derivedFromCollectionName) {
         // We should have already converted from derivedFromCollectionName to derivedFrom by now. See useProcessDerivativeFilter().
         alert("Attempted to load books with an invalid filter.");
         console.error(
@@ -1026,7 +1046,7 @@ export function constructParseBookQuery(
     const tagParts: object[] = [];
     if (!!f.search) {
         const { otherSearchTerms, specialParts } = splitString(
-            filter.search!,
+            f.search!,
             allTagsFromDatabase
         );
 
@@ -1171,9 +1191,9 @@ export function constructParseBookQuery(
 
     // allow regex searches on bookshelf. Handing for counting up, for example, all the books with bookshelf tags
     // that start with "Enabling Writers" (and then go on to list country and sub-project).
-    if (filter.bookshelf) {
+    if (f.bookshelf) {
         delete params.where.bookshelf;
-        params.where.bookshelves = regex(filter.bookshelf);
+        params.where.bookshelves = regex(f.bookshelf);
     }
     // I think you can also do topic via search, but I need a way to do an "OR" in order to combine several topics for STEM
     // take `f.topic` to be a comma-separated list
@@ -1200,22 +1220,25 @@ export function constructParseBookQuery(
         }
     }
     // Now we need to assemble topicsAll and tagParts
-    if (tagsAll.length) {
-        // merge topicsAll into tagsAll
-        tagParts.push({
-            $all: tagsAll,
-        });
+    if (tagsAll.length === 1 && tagParts.length === 0) {
+        params.where.tags = tagsAll[0];
+    } else {
+        if (tagsAll.length) {
+            // merge topicsAll into tagsAll
+            tagParts.push({
+                $all: tagsAll,
+            });
+        }
+        if (tagParts.length === 1) {
+            params.where.tags = tagParts[0];
+        } else if (tagParts.length > 1) {
+            params.where.$and = tagParts.map((p: any) => {
+                return {
+                    tags: p,
+                };
+            });
+        }
     }
-    if (tagParts.length === 1) {
-        params.where.tags = tagParts[0];
-    } else if (tagParts.length > 1) {
-        params.where.$and = tagParts.map((p: any) => {
-            return {
-                tags: p,
-            };
-        });
-    }
-
     if (f.feature != null) {
         delete params.where.feature;
         const features = f.feature.split(" OR ");
@@ -1228,13 +1251,27 @@ export function constructParseBookQuery(
     delete params.where.inCirculation;
     switch (f.inCirculation) {
         case undefined:
-        case InCirculationOptions.Yes:
+        case BooleanOptions.Yes:
             params.where.inCirculation = { $in: [true, null] };
             break;
-        case InCirculationOptions.No:
+        case BooleanOptions.No:
             params.where.inCirculation = false;
             break;
-        case InCirculationOptions.All:
+        case BooleanOptions.All:
+            // just don't include it in the query
+            break;
+    }
+    // Unless the filter explicitly allows draft books, don't include them.
+    delete params.where.draft;
+    switch (f.draft) {
+        case BooleanOptions.Yes:
+            params.where.draft = true;
+            break;
+        case undefined:
+        case BooleanOptions.No:
+            params.where.draft = { $in: [false, null] };
+            break;
+        case BooleanOptions.All:
             // just don't include it in the query
             break;
     }
@@ -1274,6 +1311,21 @@ export function constructParseBookQuery(
     delete params.where.bookLineageArray;
     if (f.derivedFrom) {
         processDerivedFrom(f, allTagsFromDatabase, params);
+    }
+
+    if (f.anyOfThese) {
+        delete params.where.anyOfThese;
+        params.where.$or = [];
+        for (const child of f.anyOfThese) {
+            const pbq = constructParseBookQuery({}, child, []) as any;
+            if (!child.inCirculation) {
+                delete pbq.where.inCirculation;
+            }
+            if (!child.draft) {
+                delete pbq.where.draft;
+            }
+            params.where.$or.push(pbq.where);
+        }
     }
 
     return params;

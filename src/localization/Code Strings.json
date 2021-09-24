@@ -178,6 +178,10 @@
         "description": "",
         "message": "How to translate"
     },
+    "book.detail.getBloomReader": {
+        "description": "Text of the Bloom Reader download link",
+        "message": "Get Bloom Reader"
+    },
     "book.detail.getTemplateButton.getThis": {
         "description": "Get in the sense of start a process to download it.",
         "message": "Get this Template"
@@ -432,5 +436,9 @@
     "download.versionInfo": {
         "message": "Version {versionNumber} {date}",
         "description": "Describes the version of the Bloom software to be downloaded. \"versionNumber\" is the version number of Bloom, e.g. 4.8.3. \"date\" is the date that version was created, e.g. 2020-11-24."
+    },
+    "sponsorshipHeading": {
+        "message": "This project was supported by",
+        "description": "Example, see the bottom of https://bloomlibrary.org/kyrgyzstan-OkuuKeremet"
     }
 }

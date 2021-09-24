@@ -14,6 +14,7 @@ import { useIntl } from "react-intl";
 import { useResponsiveChoice } from "../responsiveUtilities";
 import { ICardSpec, useBaseCardSpec } from "./RowOfCards";
 import { SmartTruncateMarkup } from "./SmartTruncateMarkup";
+import { ReactComponent as DraftIcon } from "../assets/DRAFT-Stamp.svg";
 
 export function useBookCardSpec(): ICardSpec {
     const getResponsiveChoice = useResponsiveChoice();
@@ -51,11 +52,12 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
         props.basicBookInfo
     );
     const getResponsiveChoice = useResponsiveChoice();
-    const title = getBestBookTitle(
-        props.basicBookInfo.title,
-        props.basicBookInfo.allTitles,
-        props.contextLangIso
-    );
+    const title =
+        getBestBookTitle(
+            props.basicBookInfo.title,
+            props.basicBookInfo.allTitles,
+            props.contextLangIso
+        ) || "";
     useEffect(() => {
         // This is just a delay so that Swiper can put a .swiper-lazy-loading class onto
         // the img. What was happening before was that the screen was showing our alt-text
@@ -162,6 +164,17 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                 </SmartTruncateMarkup>
             </div>
             <LanguageFeatureList basicBookInfo={props.basicBookInfo} />
+            {props.basicBookInfo.draft && (
+                <DraftIcon
+                    css={css`
+                        position: absolute;
+                        width: ${getResponsiveChoice(80, 122)}px;
+                        height: ${getResponsiveChoice(65, 94)}px;
+                        left: 9px;
+                        top: 4px;
+                    `}
+                />
+            )}
         </CheapCard>
     );
     /* Note, LazyLoad currently breaks strict mode. See app.tsx */
