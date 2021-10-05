@@ -81,7 +81,7 @@ export const QueryDescription: React.FunctionComponent<{
             </ul>
             {T(
                 "underCountingNote",
-                "Note that the events that devices and browsers try to send to us are sometimes stopped by various network firewalls. Therefore we may be under counting."
+                "Note that the events that devices and browsers try to send to us are sometimes stopped by various network firewalls. Therefore we may be undercounting."
             )}
         </div>
     );
