@@ -4,12 +4,15 @@ import { jsx } from "@emotion/core";
 
 import React from "react";
 import ReportProblemOutlinedIcon from "@material-ui/icons/ReportProblemOutlined";
+import ErrorIcon from "@material-ui/icons/Error";
 import { BookNotice } from "./BookNotice";
 
-export const BookProblemNotice: React.FunctionComponent<{}> = (props) => {
+export const BookProblemNotice: React.FunctionComponent<{
+    errorIcon?: boolean;
+}> = (props) => {
     return (
         <BookNotice>
-            <ReportProblemOutlinedIcon />
+            {props.errorIcon ? <ErrorIcon /> : <ReportProblemOutlinedIcon />}
             <div
                 css={css`
                     margin-left: 10px;
