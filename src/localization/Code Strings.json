@@ -270,6 +270,10 @@
         "description": "",
         "message": "This book has recently arrived in the Bloom Library and should be processed soon. Please check back in a few minutes."
     },
+    "book.harvesterFailedNotice": {
+        "description": "",
+        "message": "Our server encountered a problem while processing this book. The developers have been notified."
+    },
 
     "book.report": {
         "description": "",
