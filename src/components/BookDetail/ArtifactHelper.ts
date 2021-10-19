@@ -108,7 +108,7 @@ export function getBookNameFromUrl(baseUrl: string): string | undefined {
 // caching of the thumbnail if the book might have been modified since last cached.
 export function getHarvesterProducedThumbnailUrl(
     book: Book,
-    size: number
+    size: string
 ): string | undefined {
     const harvestTime = book.harvestStartedAt;
     if (!harvestTime || new Date(harvestTime.iso) < new Date(2020, 1, 11, 11)) {

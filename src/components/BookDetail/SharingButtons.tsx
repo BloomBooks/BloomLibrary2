@@ -1,9 +1,3 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
-
 import React from "react";
 
 import { Book } from "../../model/Book";
@@ -14,12 +8,19 @@ const encodeUrl = require("encodeurl");
 export const SharingButtons: React.FunctionComponent<{ book: Book }> = (
     props
 ) => {
-    const url = `http://social.bloomlibrary.org/v1/social?img=${getHarvesterProducedThumbnailUrl(
+    // The previews will fail if the link is to localhost
+    const location = window.location.href.replace(
+        "http://localhost:3000",
+        "https://bloomlibrary.org"
+    );
+    const url = `https://social.bloomlibrary.org/v1/social?img=${getHarvesterProducedThumbnailUrl(
         props.book,
-        300
-    )}&width=300&height=300&description=${encodeUrl(props.book.summary)}&link=${
-        window.location
-    }`;
+        "300x300"
+    )}&width=300&height=300&title=${encodeUrl(props.book.title)}${
+        props.book.summary
+            ? "&description=" + encodeUrl(props.book.summary)
+            : ""
+    }&link=${location}`;
     console.log(url);
     return (
         <FacebookShareButton url={url}>
