@@ -1376,6 +1376,13 @@ export function constructParseBookQuery(
         processDerivedFrom(f, allTagsFromDatabase, params);
     }
 
+    delete params.where.originalCredits;
+    if (f.originalCredits) {
+        // NB: According to https://issues.bloomlibrary.org/youtrack/issue/BL-7990, the "Credits" column
+        // on parse is actually the "original credits" in Bloom
+        params.where.credits = f.originalCredits;
+    }
+
     if (f.anyOfThese) {
         delete params.where.anyOfThese;
         params.where.$or = [];
