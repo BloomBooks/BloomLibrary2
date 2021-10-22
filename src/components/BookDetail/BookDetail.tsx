@@ -205,6 +205,7 @@ const BookDetailInternal: React.FunctionComponent<{
                                 display: flex;
                             `}
                         >
+                            <SharingButtons book={props.book} />
                             <ReportButton
                                 book={props.book}
                                 contextLangIso={props.contextLangIso}
@@ -322,7 +323,6 @@ const BookDetailInternal: React.FunctionComponent<{
                     />
                 )}
 
-                <SharingButtons book={props.book} />
                 <BookExtraPanels book={props.book} />
             </div>
         </div>
