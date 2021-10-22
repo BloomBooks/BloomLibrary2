@@ -77,6 +77,13 @@ export function convertContentfulCollectionToICollection(
         expandChildCollectionRows: item.fields.expandChildCollectionRows,
         showBookCountInRowDisplay: item.fields.showBookCountInRowDisplay,
     };
+    if (!result.filter) {
+        // many collections just need to bring in all the books that Bloom uploading process has given the tag "bookshelf: blah",
+        // when the Bloom Collection settings have pointed to that bookshelf. Without this default, we have to add an explicit
+        // filter for each of these in the Contentful collection record.
+        // Oddly, {bookshelf: result.urlKey} did not work, even though bookshelf is a field of IFilter.
+        result.filter = { otherTags: "bookshelf:" + result.urlKey };
+    }
     return result;
 }
 
