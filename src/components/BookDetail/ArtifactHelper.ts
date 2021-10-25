@@ -63,7 +63,6 @@ export function getRawBookNameFromUrl(baseUrl: string): string | undefined {
     }
     return leadin.substring(slashBeforeBookName + 3); // includes leading slash (%2f)
 }
-
 export function getBookNameFromUrl(baseUrl: string): string | undefined {
     const baseFileName = getRawBookNameFromUrl(baseUrl);
     if (!baseFileName) {
@@ -91,56 +90,6 @@ export function getBookNameFromUrl(baseUrl: string): string | undefined {
     }
     return result;
 }
-
-// Get the URL where we find book thumbnails if they have not been harvested recently
-// enough tohave a harvester-produced thumbnail. Includes a fake query designed to defeat
-// caching of the thumbnail if the book might have been modified since last cached.
-// export function getLegacyThumbnailUrl(book: Book | IBasicBookInfo): string {
-//     return (
-//         getCloudFlareUrl(book.baseUrl) +
-//         "thumbnail-256.png?version=" +
-//         book.updatedAt
-//     );
-// }
-
-// Get the URL where we find book thumbnails if they have been harvested recently
-// enough tohave a harvester-produced thumbnail. Includes a fake query designed to defeat
-// caching of the thumbnail if the book might have been modified since last cached.
-export function getHarvesterProducedThumbnailUrl(
-    book: Book,
-    size: string
-): string | undefined {
-    const harvestTime = book.harvestStartedAt;
-    if (!harvestTime || new Date(harvestTime.iso) < new Date(2020, 1, 11, 11)) {
-        // That data above is FEBRUARY 12! at 11am. If the harvest time is before that,
-        // the book was not harvested recently enough to have a useful harvester thumbnail.
-        // (We'd prefer to do this with harvester version, or even to just be
-        // able to assume that any harvested book has this, but it's not yet so.
-        // When it is, we can use harvestState === "Done" and remove harvestStartedAt from
-        // Book, IBasicBookInfo, and the keys for BookGroup queries.)
-        return undefined;
-    }
-    const harvesterBaseUrl = Book.getHarvesterBaseUrl(book);
-    if (!harvesterBaseUrl) {
-        return undefined;
-    }
-    return (
-        Book.getCloudFlareUrl(harvesterBaseUrl) +
-        `thumbnails/thumbnail-${size}.png?version=${book.updatedAt}`
-    );
-}
-
-// Get the place we should look for a book thumbnail.
-// export function getThumbnailUrl(
-//     book: Book | IBasicBookInfo
-// ): { thumbnailUrl: string; isModernThumbnail: boolean } {
-//     const h = getHarvesterProducedThumbnailUrl(book, 256);
-//     if (h) return { thumbnailUrl: h, isModernThumbnail: true };
-//     return {
-//         thumbnailUrl: getLegacyThumbnailUrl(book),
-//         isModernThumbnail: false,
-//     };
-// }
 
 function getDownloadUrl(book: Book, fileType: string): string | undefined {
     const harvesterBaseUrl = Book.getHarvesterBaseUrl(book);
