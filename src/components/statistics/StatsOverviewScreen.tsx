@@ -143,7 +143,7 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
             </StatsCard>
             <StatsCard
                 subitems={[
-                    { label: "bloomPub", value: stats.downloadsBloomPub },
+                    { label: "bloomPUB", value: stats.downloadsBloomPub },
                     { label: "ePUB", value: stats.downloadsEpub },
                     { label: "PDF", value: stats.downloadsPDF },
                     {

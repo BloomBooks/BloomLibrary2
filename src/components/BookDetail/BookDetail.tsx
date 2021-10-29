@@ -27,11 +27,11 @@ import { FeaturesGroup } from "./FeaturesGroup";
 import { useIsEmbedded } from "../EmbeddingHost";
 import { commonUI } from "../../theme";
 import { IBookDetailProps } from "./BookDetailCodeSplit";
-import { MissingFontNotice } from "./MissingFontNotice";
 import { HarvesterProgressNotice } from "./HarvestProgressNotice";
 import { LoggedInUser } from "../../connection/LoggedInUser";
 import { ReactComponent as DraftIcon } from "../../assets/DRAFT-Stamp.svg";
 import { useResponsiveChoice } from "../../responsiveUtilities";
+import { HarvesterProblemNotice } from "./HarvesterProblemNotice";
 
 const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     const l10n = useIntl();
@@ -168,7 +168,7 @@ const BookDetailInternal: React.FunctionComponent<{
                     </div>
                 )}
                 <HarvesterProgressNotice book={props.book} />
-                <MissingFontNotice book={props.book} />
+                <HarvesterProblemNotice book={props.book} />
                 {divider}
                 <Detail2ColumnRow>
                     <FeaturesGroup book={props.book} />
