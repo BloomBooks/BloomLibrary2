@@ -155,7 +155,12 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
         }
         if (props.setExportData) {
             props.setExportData(
-                columnNamesInDisplayOrder,
+                columnNamesInDisplayOrder.filter((cn) =>
+                    // `columns` correctly only includes those columns the user has access to
+                    // (e.g. it might filter out `uploader` if the user is not logged in as a moderator).
+                    // So we want to be sure we are not including anything not in `columns` in the export.
+                    columns.map((c) => c.name).includes(cn)
+                ),
                 hiddenColumnNames,
                 sortings.map((s) => ({
                     columnName: s.columnName,
