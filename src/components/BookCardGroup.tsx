@@ -135,8 +135,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
     }
 
     const wantMoreCard =
-        search.totalMatchingRecords > (props.skip ?? 0) + maxCardsToRetrieve &&
-        props.collection.urlKey !== "new-arrivals";
+        search.totalMatchingRecords > (props.skip ?? 0) + maxCardsToRetrieve;
 
     let bookList: React.ReactElement | undefined;
 

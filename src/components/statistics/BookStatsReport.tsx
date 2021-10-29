@@ -73,7 +73,7 @@ export const BookStatsReport: React.FunctionComponent<IStatsProps> = (
         },
         {
             name: "bloomPubDownloads",
-            title: "bloomPub Downloads",
+            title: "bloomPUB Downloads",
             l10nId: "stats.booksRead.bloomPubDownloads",
         },
     ];

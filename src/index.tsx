@@ -13,7 +13,7 @@ try {
     if (window.location.hostname.indexOf("bloomlibrary.org") > -1) {
         Sentry.init({
             dsn:
-                "https://f33c34679bd044ba93eebb6fdf2132e3@sentry.keyman.com/18",
+                "https://f33c34679bd044ba93eebb6fdf2132e3@o1009031.ingest.sentry.io/5983533",
             environment: window.location.hostname,
             attachStacktrace: true,
         });
