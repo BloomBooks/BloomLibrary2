@@ -367,7 +367,7 @@ export function makeCollectionForSearch(
         );
         label = `${localizedBaseCollectionLabel} - ${label}`;
     }
-    let urlKey = ":search:" + search;
+    let urlKey = ":search:" + encodeURIComponent(search);
     if (baseCollection?.urlKey) {
         urlKey = baseCollection.urlKey + "/" + urlKey;
     }
