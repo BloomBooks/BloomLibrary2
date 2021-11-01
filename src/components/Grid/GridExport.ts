@@ -88,7 +88,8 @@ function exportData(): string[][] {
 function getStringForItem(book: Book, key: string): string {
     switch (key) {
         case "url":
-            return `${window.location.origin}/book/${book.id}`;
+            // Excel and Google Sheets will interpret =HYPERLINK to make it a link, even in a csv. Supposedly Libre Office will, too.
+            return `=HYPERLINK("${window.location.origin}/book/${book.id}")`;
         case "languages":
             return book.languages.map((lang) => lang.name).join(", ");
         case "uploader":

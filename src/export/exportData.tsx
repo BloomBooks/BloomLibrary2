@@ -59,7 +59,7 @@ export function exportCsv(name: string, exportDataFn: ExportDataFn) {
 
 function csvEncode(value: string): string {
     let needsQuotes = false;
-    needsQuotes = value.indexOf(",") > -1;
+    needsQuotes = value.indexOf(",") > -1 || value.startsWith("=HYPERLINK(");
 
     // escape newline characters
     value = value.replace(/\n/g, "\\n").replace(/\r/g, "\\r");
