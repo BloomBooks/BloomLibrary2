@@ -427,7 +427,8 @@ export class Book {
     // enough to have a harvester-produced thumbnail. Includes a fake query designed to defeat
     // caching of the thumbnail if the book might have been modified since last cached.
     public static getHarvesterProducedThumbnailUrl(
-        book: Book | IBasicBookInfo
+        book: Book | IBasicBookInfo,
+        size: string
     ): string | undefined {
         const harvestTime = book.harvestStartedAt;
         if (
@@ -448,7 +449,7 @@ export class Book {
         }
         return (
             Book.getCloudFlareUrl(harvesterBaseUrl) +
-            "thumbnails/thumbnail-256.png?version=" +
+            `thumbnails/thumbnail-${size}.png?version=` +
             book.updatedAt
         );
     }
@@ -506,7 +507,7 @@ export class Book {
     public static getThumbnailUrl(
         book: Book | IBasicBookInfo
     ): { thumbnailUrl: string; isModernThumbnail: boolean } {
-        const h = Book.getHarvesterProducedThumbnailUrl(book);
+        const h = Book.getHarvesterProducedThumbnailUrl(book, "256");
         if (h) return { thumbnailUrl: h, isModernThumbnail: true };
         return {
             thumbnailUrl: Book.getLegacyThumbnailUrl(book),

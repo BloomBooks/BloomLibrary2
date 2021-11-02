@@ -419,11 +419,26 @@ function trimLeft(s: string, char: string) {
     return s.replace(new RegExp("^[" + char + "]+"), "");
 }
 
-export function getContextLangIso(urlKey: string) {
+// REVIEW: I'm unsure as to what the relationship between these two ways (next two methods)
+// of getting the context language iso code should be. We were already getting it from the
+// two different methods in different places. For now, at least I've brought them together in
+// one place and made the names explicit so the caller knows exactly what it's getting.
+
+export function getContextLangIsoFromLanguageSegment(urlKey: string) {
     return urlKey.startsWith("language:")
         ? // we don't want anything after a slash as part of the isoCode
           urlKey.substring("language:".length).split("/")[0]
         : undefined;
+}
+
+export function getContextLangIsoFromUrlSearchParams(
+    query: URLSearchParams
+): string | undefined {
+    const lang = query.get("lang");
+    if (lang) {
+        return lang;
+    }
+    return undefined;
 }
 
 export function useSetBrowserTabTitle(title: string | undefined) {
