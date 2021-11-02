@@ -21,6 +21,7 @@ import {
     useSetBrowserTabTitle,
     getUrlForTarget,
     previousPathname,
+    getContextLangIsoFromUrlSearchParams,
 } from "./Routes";
 import {
     sendPlayerClosingAnalytics,
@@ -46,15 +47,15 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
     // That causes the url to change which re-renders the iframe and causes havoc. See BL-8866.
     const autoFullScreen = mobile && (!widerThanPhone || !higherThanPhone);
 
-    const query = new URLSearchParams(location.search);
     const [, setCounter] = useState(0); // used to force render after going to full screen
-    const lang = query.get("lang");
     const [historyProblem, setHistoryProblem] = useState("normal");
     const [rotateParams, setRotateParams] = useState({
         canRotate: true,
         isLandscape: false,
     });
-    const contextLangIso = lang ? lang : undefined;
+    const contextLangIso = getContextLangIsoFromUrlSearchParams(
+        new URLSearchParams(location.search)
+    );
     const fullScreenChangeHandler = () => {
         setCounter((oldCount) => oldCount + 1); // force a render
     };
@@ -147,9 +148,9 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
                         // come direct to the read-book page by following a URL, and
                         // we want this arrow to give us a way into the Bloom site.
                         let whereToGo = `/book/${id}`;
-                        // wish all this knowedge didn't have to be here
-                        if (lang) {
-                            whereToGo += `?lang=${lang}`;
+                        // wish all this knowledge didn't have to be here
+                        if (contextLangIso) {
+                            whereToGo += `?lang=${contextLangIso}`;
                         }
                         history.push("/" + getUrlForTarget(whereToGo));
                     } else if (r.messageType === "reportBookProperties") {
@@ -174,7 +175,7 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
             autoFullScreen,
             history,
             id,
-            lang,
+            contextLangIso,
             rotateParams.canRotate,
             rotateParams.isLandscape,
         ]

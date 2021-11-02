@@ -70,6 +70,11 @@ function exportData(): string[][] {
     const headerRow = static_columnsInOrder.filter(
         (item) => !static_hiddenColumns.includes(item)
     );
+
+    // Add url after title; if no title, add url as first column
+    const iTitle = headerRow.indexOf("title");
+    headerRow.splice(iTitle + 1, 0, "url");
+
     all.push(headerRow);
 
     static_books.forEach((book) => {
@@ -82,6 +87,9 @@ function exportData(): string[][] {
 
 function getStringForItem(book: Book, key: string): string {
     switch (key) {
+        case "url":
+            // Excel and Google Sheets will interpret =HYPERLINK to make it a link, even in a csv. Supposedly Libre Office will, too.
+            return `=HYPERLINK("${window.location.origin}/book/${book.id}")`;
         case "languages":
             return book.languages.map((lang) => lang.name).join(", ");
         case "uploader":
