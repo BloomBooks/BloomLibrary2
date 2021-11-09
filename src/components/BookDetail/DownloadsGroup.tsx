@@ -16,6 +16,7 @@ import { BloomPubIcon } from "./BloomPubIcon";
 
 import { ArtifactType, Book } from "../../model/Book";
 import {
+    getArtifactDownloadAltText,
     getArtifactUrl,
     getArtifactVisibilitySettings,
 } from "./ArtifactHelper";
@@ -133,11 +134,10 @@ export const DownloadsGroup: React.FunctionComponent<{
                             icon: (p: React.SVGProps<SVGSVGElement>) => (
                                 <BloomPubIcon {...p}></BloomPubIcon>
                             ),
-                            alt: l10n.formatMessage({
-                                id: "book.artifacts.bloompub",
-                                defaultMessage:
-                                    "Download BloomPUB for Bloom Reader or BloomPub Viewer",
-                            }),
+                            alt: getArtifactDownloadAltText(
+                                ArtifactType.bloomReader,
+                                l10n
+                            ),
                             type: ArtifactType.bloomReader,
                             settings: bloomReaderSettings,
                             enabled: enableBloomPub,
@@ -162,10 +162,10 @@ export const DownloadsGroup: React.FunctionComponent<{
                             icon: (p: React.SVGProps<SVGSVGElement>) => (
                                 <PdfIcon {...p}></PdfIcon>
                             ),
-                            alt: l10n.formatMessage({
-                                id: "book.artifacts.pdf",
-                                defaultMessage: "Download PDF",
-                            }),
+                            alt: getArtifactDownloadAltText(
+                                ArtifactType.pdf,
+                                l10n
+                            ),
                             type: ArtifactType.pdf,
                             settings: pdfSettings,
                             enabled: pdfSettings?.decision === true,
@@ -176,10 +176,10 @@ export const DownloadsGroup: React.FunctionComponent<{
                             icon: (p: React.SVGProps<SVGSVGElement>) => (
                                 <EPUBIcon {...p}></EPUBIcon>
                             ),
-                            alt: l10n.formatMessage({
-                                id: "book.artifacts.epub",
-                                defaultMessage: "Download ePUB",
-                            }),
+                            alt: getArtifactDownloadAltText(
+                                ArtifactType.epub,
+                                l10n
+                            ),
                             type: ArtifactType.epub,
                             settings: epubSettings,
                             enabled:
