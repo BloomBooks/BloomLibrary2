@@ -19,7 +19,11 @@ import { DeleteButton } from "./DeleteButton";
 import { ReportButton } from "./ReportButton";
 import { Breadcrumbs } from "../Breadcrumbs";
 import { useTrack } from "../../analytics/Analytics";
-import { splitPathname, useSetBrowserTabTitle } from "../Routes";
+import {
+    splitPathname,
+    useSetBrowserTabTitle,
+    getContextLangIsoFromUrlSearchParams,
+} from "../Routes";
 import { useLocation } from "react-router-dom";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -32,14 +36,16 @@ import { LoggedInUser } from "../../connection/LoggedInUser";
 import { ReactComponent as DraftIcon } from "../../assets/DRAFT-Stamp.svg";
 import { useResponsiveChoice } from "../../responsiveUtilities";
 import { HarvesterProblemNotice } from "./HarvesterProblemNotice";
+import { SharingButtons } from "./SharingButtons";
 
 const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     const l10n = useIntl();
     const id = props.id;
     const book = useGetBookDetail(id);
     const location = useLocation();
-    const query = new URLSearchParams(location.search);
-    const contextLangIso = getContextLang(query);
+    const contextLangIso = getContextLangIsoFromUrlSearchParams(
+        new URLSearchParams(location.search)
+    );
     const bestTitle = book ? book.getBestTitle(contextLangIso) : "";
     useSetBrowserTabTitle(
         l10n.formatMessage(
@@ -82,14 +88,6 @@ const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
         );
     }
 };
-
-function getContextLang(query: URLSearchParams): string | undefined {
-    const lang = query.get("lang");
-    if (lang) {
-        return lang;
-    }
-    return undefined;
-}
 
 const BookDetailInternal: React.FunctionComponent<{
     book: Book;
@@ -204,6 +202,7 @@ const BookDetailInternal: React.FunctionComponent<{
                                 display: flex;
                             `}
                         >
+                            <SharingButtons book={props.book} />
                             <ReportButton
                                 book={props.book}
                                 contextLangIso={props.contextLangIso}

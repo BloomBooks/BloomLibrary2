@@ -176,7 +176,7 @@ export const CollectionSubsetPage: React.FunctionComponent<{
     let noMatches: JSX.Element | undefined;
     if (parts.length === 2 && parts[1].startsWith(":search:")) {
         const match = parts[1].substring(":search:".length);
-        noMatches = <NoSearchResults match={match} />;
+        noMatches = <NoSearchResults match={decodeURIComponent(match)} />;
     }
     return (
         <React.Fragment>

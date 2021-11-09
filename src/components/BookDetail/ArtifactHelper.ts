@@ -3,6 +3,7 @@ import {
     ArtifactVisibilitySettings,
     ArtifactVisibilitySettingsGroup,
 } from "../../model/ArtifactVisibilitySettings";
+import { IntlShape } from "react-intl";
 
 export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
     let url;
@@ -29,6 +30,37 @@ export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
     }
     if (!url) return "";
     return url;
+}
+
+export function getArtifactDownloadAltText(
+    artifactType: ArtifactType,
+    l10n: IntlShape
+): string {
+    switch (artifactType) {
+        case ArtifactType.pdf:
+            return l10n.formatMessage({
+                id: "book.artifacts.pdf",
+                defaultMessage: "Download PDF",
+            });
+        case ArtifactType.epub:
+            return l10n.formatMessage({
+                id: "book.artifacts.epub",
+                defaultMessage: "Download ePUB",
+            });
+        case ArtifactType.bloomReader:
+            return l10n.formatMessage({
+                id: "book.artifacts.bloompub",
+                defaultMessage:
+                    "Download BloomPUB for Bloom Reader or BloomPub Viewer",
+            });
+        case ArtifactType.readOnline:
+            return "";
+        case ArtifactType.shellbook:
+            return l10n.formatMessage({
+                id: "book.detail.translateButton.download",
+                defaultMessage: "Download into Bloom Editor",
+            });
+    }
 }
 
 // Note that this may MODIFY the object, if it previously had no settings at all
