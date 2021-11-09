@@ -11,6 +11,7 @@ import {
     FormControl,
     Select,
     FormHelperText,
+    Tooltip,
 } from "@material-ui/core";
 import { ArtifactVisibilitySettings } from "../../../model/ArtifactVisibilitySettings";
 
@@ -22,6 +23,8 @@ import translationIcon from "../../../assets/Translation.svg";
 import { commonUI } from "../../../theme";
 import { useGetLoggedInUser } from "../../../connection/LoggedInUser";
 import { ArtifactType } from "../../../model/Book";
+import { getArtifactDownloadAltText } from "../ArtifactHelper";
+import { useIntl } from "react-intl";
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -69,6 +72,7 @@ export const ArtifactAndChoice: React.FunctionComponent<{
     onChange: (show: string) => void;
     currentUserIsUploader: boolean;
 }> = (props) => {
+    const l10n = useIntl();
     const classes = useStyles();
     const user = useGetLoggedInUser();
 
@@ -137,59 +141,55 @@ export const ArtifactAndChoice: React.FunctionComponent<{
 
     const getArtifactIcon = (): React.ReactNode => {
         let src;
-        let alt;
         switch (props.type) {
             case ArtifactType.pdf:
                 src = pdfIcon;
-                alt = "PDF";
                 break;
             case ArtifactType.epub:
                 src = epubIcon;
-                alt = "epub";
                 break;
             case ArtifactType.bloomReader:
                 src = bloomReaderIcon;
-                alt = "Bloom Reader";
                 break;
             case ArtifactType.readOnline:
                 src = readIcon;
-                alt = "Read online";
                 break;
             case ArtifactType.shellbook:
                 src = translationIcon;
-                alt = "Download Translation";
                 break;
         }
-        return <img src={src} alt={alt} />;
+        return <img src={src} alt="" />;
     };
 
     const getArtifactButtonText = (): string | undefined => {
         if (props.type === "readOnline") {
-            return "Read";
+            return l10n.formatMessage({
+                id: "book.detail.readButton",
+                defaultMessage: "READ",
+            });
         }
         return undefined;
     };
 
     const getButton = (): React.ReactNode => {
         const text = getArtifactButtonText();
-        if (text) {
-            return (
+        return (
+            <Tooltip
+                title={getArtifactDownloadAltText(props.type, l10n)}
+                arrow={true}
+            >
                 <Button
                     variant="outlined"
-                    className={`${classes.button} ${classes.buttonWithText}`}
-                    startIcon={getArtifactIcon()}
+                    className={`${classes.button} ${
+                        text
+                            ? classes.buttonWithText
+                            : classes.buttonWithIconOnly
+                    }`}
+                    startIcon={text ? getArtifactIcon() : undefined}
                 >
-                    {text}
+                    {text ? text : getArtifactIcon()}
                 </Button>
-            );
-        }
-        return (
-            <Button
-                variant="outlined"
-                className={`${classes.button} ${classes.buttonWithIconOnly}`}
-            >
-                {getArtifactIcon()}
-            </Button>
+            </Tooltip>
         );
     };
 
