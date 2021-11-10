@@ -10,6 +10,7 @@ import { ICollection } from "../model/ContentInterfaces";
 import { FormattedMessage } from "react-intl";
 import { useResponsiveChoice } from "../responsiveUtilities";
 import { commonUI } from "../theme";
+import { useLocation } from "react-router";
 
 // const image = css`
 //     height: 100px;
@@ -27,11 +28,15 @@ interface IProps {
 }
 export const MoreCard: React.FunctionComponent<IProps> = (props) => {
     const getResponsiveChoice = useResponsiveChoice();
+    const location = useLocation();
 
-    const href =
-        "/" +
-        [props.collection.urlKey] +
-        (props.skip ? "/:skip:" + props.skip : "");
+    let href = `/${[props.collection.urlKey]}`;
+    if (href === location.pathname) {
+        // This means we are the more card at the end of a long list of books (not just a row). Show everything.
+        href = href + "/:all:true";
+    }
+
+    href = href + (props.skip ? "/:skip:" + props.skip : "");
 
     return (
         <CheapCard

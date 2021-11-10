@@ -25,8 +25,12 @@ import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 // Given a collection and a string like level:1/topic:anthropology/search:dogs,
 // creates a corresponding collection by adding appropriate filters.
 // If filters is empty it will just return the input collection.
-// As a somewhat special case, filters may end with skip:n for paging through
-// a parent collection.
+//
+// Special cases:
+// - all:true
+//   - will load the collection using the all-books layout
+// - skip:n - Doesn't seem to be used as of 10/2021
+//   - for paging through a parent collection.
 export function generateCollectionFromFilters(
     collection: ICollection,
     filters: string[],
@@ -34,6 +38,7 @@ export function generateCollectionFromFilters(
 ): { filteredCollection: ICollection; skip: number } {
     let filteredCollection = collection;
     let skip = 0;
+    let all = false;
     if (filters) {
         for (const filter of filters) {
             const parts = filter.split(":");
@@ -71,8 +76,14 @@ export function generateCollectionFromFilters(
                 case "skip":
                     skip = parseInt(parts[1], 10);
                     break;
+                case "all":
+                    all = parts[1] === "true";
+                    break;
             }
         }
+    }
+    if (all) {
+        filteredCollection.layout = "all-books";
     }
     return { filteredCollection, skip };
 }
@@ -152,23 +163,30 @@ export const CollectionSubsetPage: React.FunctionComponent<{
     // But at this stage we don't have access to a count of items in the collection, or any way to
     // know whether a particular way of subdividing them will actually break things up.
     let subList = <ByLevelGroups collection={subcollection} />;
-    if ((props.collectionName + props.filters).indexOf("level:") >= 0) {
+    let showAll = false;
+    let maxRows: number | undefined = subcollection.rows; // can be undefined, in which case it's the default
+    if (props.filters.includes("all:true")) {
+        showAll = true;
+        maxRows = 1000;
+    } else if ((props.collectionName + props.filters).indexOf("level:") >= 0) {
         subList = <ByTopicsGroups collection={subcollection} />;
-        let maxRows: number | undefined = subcollection.rows; // can be undefined, in which case it's the default
         // If we had previously gone down a topic trail, then just show them all.
         if ((props.collectionName + props.filters).indexOf("topic:") >= 0) {
+            showAll = true;
             if (!maxRows) {
                 maxRows = 1000; // show all of the books (or 5000 of them anyway)
             }
-            subList = (
-                <BookCardGroup
-                    title={getLocalizedCollectionLabel(subcollection)}
-                    collection={subcollection}
-                    rows={maxRows}
-                    skip={skip}
-                />
-            );
         }
+    }
+    if (showAll) {
+        subList = (
+            <BookCardGroup
+                title={getLocalizedCollectionLabel(subcollection)}
+                collection={subcollection}
+                rows={maxRows}
+                skip={skip}
+            />
+        );
     }
 
     const parts = subcollection.urlKey.split("/");

@@ -125,6 +125,9 @@ export const Breadcrumbs: React.FunctionComponent = () => {
                     { searchTerms: labelParts.slice(1).join(":") }
                 );
                 break;
+            case "skip":
+            case "all":
+                continue;
         }
         crumbs.push(
             <li key={item}>
