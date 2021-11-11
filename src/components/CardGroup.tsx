@@ -1,3 +1,9 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import React from "react";
 import { useGetCollection } from "../model/Collections";
 import { CardRow } from "./CardRow";
@@ -7,6 +13,7 @@ import { ICollection } from "../model/ContentInterfaces";
 import { useStoryCardSpec } from "./StoryCard";
 import { CollectionCardLayout, useCollectionCardSpec } from "./CollectionCard";
 import { useResponsiveChoice } from "../responsiveUtilities";
+import { CollectionLabel } from "../localization/CollectionLabel";
 
 export interface ICardSpec {
     cardWidthPx: number;
@@ -45,15 +52,16 @@ export const CardGroup: React.FunctionComponent<{
     }
 
     if (collection.childCollections.length > 0) {
-        return <RowOfCollectionCards collection={collection} />;
+        return <GroupOfCollectionCards collection={collection} />;
     } else {
         return <BookCardGroup collection={collection} rows={props.rows} />;
     }
 };
 
-const RowOfCollectionCards: React.FunctionComponent<{
+const GroupOfCollectionCards: React.FunctionComponent<{
     collection: ICollection;
 }> = (props) => {
+    const getResponsiveChoice = useResponsiveChoice();
     const cardSpecs: { [id: string]: ICardSpec } = {};
     cardSpecs["row-of-story-cards"] = useStoryCardSpec();
     cardSpecs["row-of-cards-with-just-labels"] = useCollectionCardSpec(
@@ -94,17 +102,42 @@ const RowOfCollectionCards: React.FunctionComponent<{
     //     x.label.localeCompare(y.label)
     // );
 
-    const childCollections = props.collection.childCollections;
-
-    return (
-        <CardRow
-            collection={props.collection}
-            data={childCollections}
-            cardSpec={cardSpec}
-            getCards={(childCollection: ICollection, index) =>
-                cardSpec.createFromCollection!(childCollection)
-            }
-            layout={props.collection.layout}
-        />
-    );
+    // So `expandChildCollectionRows` is an unfortunate name. It just means wrap when you run out of space, instead of introducing a slider.
+    if (props.collection.expandChildCollectionRows) {
+        return (
+            <React.Fragment>
+                <h1
+                    css={css`
+                        font-size: ${getResponsiveChoice(10, 14)}pt;
+                    `}
+                >
+                    <CollectionLabel
+                        collection={props.collection}
+                    ></CollectionLabel>
+                </h1>
+                <ul
+                    css={css`
+                        display: flex;
+                        flex-wrap: wrap;
+                        padding-inline-start: 0;
+                    `}
+                >
+                    {props.collection.childCollections.map((childCollection) =>
+                        cardSpec.createFromCollection!(childCollection)
+                    )}
+                </ul>
+            </React.Fragment>
+        );
+    } else
+        return (
+            <CardRow
+                collection={props.collection}
+                data={props.collection.childCollections}
+                cardSpec={cardSpec}
+                getCards={(childCollection: ICollection, index) =>
+                    cardSpec.createFromCollection!(childCollection)
+                }
+                layout={props.collection.layout}
+            />
+        );
 };
