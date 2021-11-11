@@ -1,140 +1,110 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
-import React, { ReactElement } from "react";
-import LazyLoad from "react-lazyload";
-import { CardSwiperLazy } from "./CardSwiper";
+import React from "react";
+import { useGetCollection } from "../model/Collections";
+import { CardRow } from "./CardRow";
+import { BookCardGroup } from "./BookCardGroup";
+import { PageNotFound } from "./PageNotFound";
 import { ICollection } from "../model/ContentInterfaces";
-import {
-    CollectionLabel,
-    useGetLocalizedCollectionLabel,
-} from "../localization/CollectionLabel";
+import { useStoryCardSpec } from "./StoryCard";
+import { CollectionCardLayout, useCollectionCardSpec } from "./CollectionCard";
 import { useResponsiveChoice } from "../responsiveUtilities";
-import { ICardSpec } from "./RowOfCards";
-import { BookCount } from "./BookCount";
-import { getFilterForCollectionAndChildren } from "../model/Collections";
 
-interface IProps {
-    collection: ICollection;
-    layout: string;
-    data: any[];
-    getCards: (x: any, index: number) => ReactElement;
-    cardSpec: ICardSpec;
+export interface ICardSpec {
+    cardWidthPx: number;
+    cardHeightPx: number;
+    // Currently, this corresponds to horizontal *and* vertical spacing between cards.
+    // JH said he wants them the same for now, but we may need to create separate variables eventually.
+    cardSpacingPx: number;
+    // not used by language card & other things that are not collection-based
+    createFromCollection?: (collection: ICollection) => any;
 }
 
-export const CardGroup: React.FunctionComponent<IProps> = (props) => {
+export function useBaseCardSpec(): ICardSpec {
     const getResponsiveChoice = useResponsiveChoice();
-    //tricky to test because it's for lazy loading
-    const rowHeightPx = getResponsiveChoice(
-        props.cardSpec.cardHeightPx + 10,
-        props.cardSpec.cardHeightPx + 20
-    ) as number;
-    const cards = (
-        <div
-            // We want this to be a UL. But accessibility checker insists UL may have
-            // only LI as children, and a couple of layers of Swiper divs get in the way.
-            css={css`
-                padding-left: 0;
-            `}
-        >
-            <CardSwiperLazy
-                wrapperRole="list"
-                data={props.data}
-                getReactElement={props.getCards}
-                cardSpec={props.cardSpec}
-            />
-        </div>
+    return {
+        cardSpacingPx: getResponsiveChoice(10, 20) as number,
+
+        // These are not currently used.
+        // Until they are, keep them simple and fast (not responsive).
+        cardWidthPx: 100,
+        cardHeightPx: 100,
+    };
+}
+
+// These can be a group of book cards, collection cards, story page cards, or generic page cards
+export const CardGroup: React.FunctionComponent<{
+    urlKey: string;
+    rows?: number;
+}> = (props) => {
+    const { collection, loading } = useGetCollection(props.urlKey);
+    if (loading) {
+        return null;
+    }
+
+    if (!collection) {
+        return <PageNotFound />;
+    }
+
+    if (collection.childCollections.length > 0) {
+        return <RowOfCollectionCards collection={collection} />;
+    } else {
+        return <BookCardGroup collection={collection} rows={props.rows} />;
+    }
+};
+
+const RowOfCollectionCards: React.FunctionComponent<{
+    collection: ICollection;
+}> = (props) => {
+    const cardSpecs: { [id: string]: ICardSpec } = {};
+    cardSpecs["row-of-story-cards"] = useStoryCardSpec();
+    cardSpecs["row-of-cards-with-just-labels"] = useCollectionCardSpec(
+        CollectionCardLayout.short
+    );
+    cardSpecs["row-of-icon-cards"] = useCollectionCardSpec(
+        CollectionCardLayout.iconAndBookCount
+    );
+    cardSpecs[
+        "row-of-cards-with-just-labels-and-book-count"
+    ] = useCollectionCardSpec(CollectionCardLayout.shortWithBookCount);
+
+    /* TODO we're in transition in our model... currently we are conflating the
+    card layout and size with how to lay out book cards. And if the former is
+    not defined, then we have code that sets the (semantically conflated) layout
+    to "by-topic". Until we fix that, show those cards as ones with icons. */
+    cardSpecs["by-topic"] = useCollectionCardSpec(
+        CollectionCardLayout.iconAndBookCount
     );
 
-    let group;
-    switch (props.layout) {
-        case "layout: description-followed-by-row-of-books":
-            break;
-        default:
-            const bookCountSize = getResponsiveChoice(10, 14); // same as book card count
-            const heading = props.collection.kind !== "Simple Page Links" && (
-                <div
-                    css={css`
-                        display: flex;
-                        flex-direction: row;
-                        align-items: baseline;
-                    `}
-                >
-                    <h1
-                        css={css`
-                            font-size: ${getResponsiveChoice(10, 14)}pt;
-                        `}
-                    >
-                        <CollectionLabel
-                            collection={props.collection}
-                        ></CollectionLabel>
-                    </h1>
-                    {props.collection.showBookCountInRowDisplay && (
-                        <div
-                            css={css`
-                                font-size: ${bookCountSize}px;
-                                margin-left: ${bookCountSize}px; // Convenient to use the same number
-                            `}
-                        >
-                            <BookCount
-                                filter={
-                                    props.collection.filter
-                                        ? props.collection.filter
-                                        : getFilterForCollectionAndChildren(
-                                              props.collection
-                                          )
-                                }
-                            />
-                        </div>
-                    )}
-                </div>
-            );
-            group = (
-                <React.Fragment>
-                    {heading}
-                    {cards}
-                </React.Fragment>
-            );
-            break;
+    if (
+        !props.collection.childCollections ||
+        props.collection.childCollections.length === 0
+    ) {
+        return null;
     }
-    const collectionLabel = useGetLocalizedCollectionLabel(props.collection);
+
+    const cardSpec = cardSpecs[props.collection.layout];
+    console.assert(
+        cardSpec,
+        `No cardSpec for layout "${props.collection.layout}".`
+    );
+
+    // https://issues.bloomlibrary.org/youtrack/issue/BL-9089 likely we do want some kinds of rows
+    // sorted, and others not sorted. For now, let's require the librarian to hand-sort the ones
+    // she wants sorted
+    // const childCollections = props.collection.childCollections.sort((x, y) =>
+    //     x.label.localeCompare(y.label)
+    // );
+
+    const childCollections = props.collection.childCollections;
 
     return (
-        // Enhance: LazyLoad has parameters (height and offset) that should help
-        // but so far I haven't got them to work well. It has many other
-        // parameters too that someone should look into. Make sure to test
-        // with the phone sizes in the browser debugger, and have the network
-        // tab open, set to "XHR". That will show you when a new query happens
-        // because this has loaded a new BookGroupInner.
-        // If the params are good, this list will grow as you scroll.
-        // If the params are bad, some groups at the end will NEVER show.
-
-        // Set offset to keep one more item expanded, so keyboard shortcuts can find them
-        // Set placeholder so that ul child items are of correct accessible class.
-        // Note that explicit placeholders must control their own height.
-
-        /* Note, this currently breaks strict mode. See app.tsx */
-        <LazyLoad
-            height={rowHeightPx}
-            offset={rowHeightPx}
-            placeholder={
-                <li
-                    className="placeholder"
-                    style={{ height: `${rowHeightPx}px` }}
-                ></li>
+        <CardRow
+            collection={props.collection}
+            data={childCollections}
+            cardSpec={cardSpec}
+            getCards={(childCollection: ICollection, index) =>
+                cardSpec.createFromCollection!(childCollection)
             }
-        >
-            <li
-                css={css`
-                    margin-top: ${getResponsiveChoice(15, 20)}px;
-                `}
-                role="region"
-                aria-label={collectionLabel}
-            >
-                {group}
-            </li>
-        </LazyLoad>
+            layout={props.collection.layout}
+        />
     );
 };

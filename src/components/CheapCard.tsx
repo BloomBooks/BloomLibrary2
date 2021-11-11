@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import { getUrlForTarget } from "./Routes";
 import { BlorgLink } from "./BlorgLink";
-import { useBaseCardSpec } from "./RowOfCards";
+import { useBaseCardSpec } from "./CardGroup";
 import { useCardHoverStyles } from "../theme";
 
 interface IProps extends React.HTMLProps<HTMLDivElement> {
