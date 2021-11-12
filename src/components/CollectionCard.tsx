@@ -20,7 +20,7 @@ import {
 } from "../localization/CollectionLabel";
 import { ICollection } from "../model/ContentInterfaces";
 import { useResponsiveChoice } from "../responsiveUtilities";
-import { ICardSpec, useBaseCardSpec } from "./RowOfCards";
+import { ICardSpec, useBaseCardSpec } from "./CardGroup";
 import { commonUI } from "../theme";
 import TruncateMarkup from "react-truncate-markup";
 import { getFilterForCollectionAndChildren } from "../model/Collections";

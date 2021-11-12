@@ -12,7 +12,7 @@ import { LanguageFeatureList } from "./LanguageFeatureList";
 import { Book, getBestBookTitle } from "../model/Book";
 import { useIntl } from "react-intl";
 import { useResponsiveChoice } from "../responsiveUtilities";
-import { ICardSpec, useBaseCardSpec } from "./RowOfCards";
+import { ICardSpec, useBaseCardSpec } from "./CardGroup";
 import { SmartTruncateMarkup } from "./SmartTruncateMarkup";
 import { ReactComponent as DraftIcon } from "../assets/DRAFT-Stamp.svg";
 
