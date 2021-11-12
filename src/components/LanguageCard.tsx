@@ -11,7 +11,7 @@ import { commonUI } from "../theme";
 import { useResponsiveChoice } from "../responsiveUtilities";
 import { FormattedMessage } from "react-intl";
 import TruncateMarkup from "react-truncate-markup";
-import { ICardSpec, useBaseCardSpec } from "./RowOfCards";
+import { ICardSpec, useBaseCardSpec } from "./CardGroup";
 import { SmartTruncateMarkup } from "./SmartTruncateMarkup";
 
 export function useLanguageCardSpecs(): ICardSpec {
