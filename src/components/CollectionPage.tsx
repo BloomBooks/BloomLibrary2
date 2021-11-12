@@ -8,7 +8,7 @@ import React, { useMemo, useState } from "react";
 
 import { ContentfulBanner } from "./banners/ContentfulBanner";
 import { useGetCollection } from "../model/Collections";
-import { RowOfCards } from "./RowOfCards";
+import { CardGroup } from "./CardGroup";
 import { ByLevelGroups } from "./ByLevelGroups";
 import { ListOfBookGroups } from "./ListOfBookGroups";
 import { LanguageGroup } from "./LanguageGroup";
@@ -59,7 +59,7 @@ export const CollectionPage: React.FunctionComponent<{
             // Ref BL-10063.
             const rows = collection.expandChildCollectionRows ? 1000 : 1;
 
-            return <RowOfCards key={c.urlKey} urlKey={c.urlKey} rows={rows} />;
+            return <CardGroup key={c.urlKey} urlKey={c.urlKey} rows={rows} />;
         });
 
         let booksComponent: React.ReactElement | null = null;

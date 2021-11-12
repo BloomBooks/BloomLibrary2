@@ -15,7 +15,7 @@ import { Link } from "react-router-dom";
 import { getUrlForTarget } from "./Routes";
 import { useContentfulPage } from "./pages/ContentfulPage";
 import { useResponsiveChoice, useSmallScreen } from "../responsiveUtilities";
-import { ICardSpec } from "./RowOfCards";
+import { ICardSpec } from "./CardGroup";
 import TruncateMarkup from "react-truncate-markup";
 import { useCardHoverStyles } from "../theme";
 
