@@ -12558,10 +12558,15 @@ mem@^4.0.0:
     mimic-fn "^2.0.0"
     p-is-promise "^2.0.0"
 
-memoize-one@^5.0.0, memoize-one@^5.1.1:
+memoize-one@^5.0.0:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/memoize-one/-/memoize-one-5.1.1.tgz#047b6e3199b508eaec03504de71229b8eb1d75c0"
   integrity sha512-HKeeBpWvqiVJD57ZUAsJNm71eHTykffzcLZVYWiVfQeI1rJtuEaS7hQiEpWfVVk18donPwJEcFKIkCmPJNOhHA==
+
+memoize-one@^5.1.1:
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/memoize-one/-/memoize-one-5.2.1.tgz#8337aa3c4335581839ec01c3d594090cebe8f00e"
+  integrity sha512-zYiwtZUcYyXKo/np96AGZAckk+FWWsUdJ3cHGGmld7+AhvcWmQyGCYUh1hc4Q/pkOhb65dQR/pqCyK0cOaHz4Q==
 
 memoizerific@^1.11.3:
   version "1.11.3"
@@ -15718,14 +15723,14 @@ react-transition-group@^4.3.0:
     prop-types "^15.6.2"
 
 react-truncate-markup@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/react-truncate-markup/-/react-truncate-markup-5.0.0.tgz#46dd40423b48864c8be901b646811e9c5a442909"
-  integrity sha512-zB/VNeIDrHWccFvD/W/zhNMBLfRkXLqklL6naczQSMN+kIAD2sSYgddBzzvlcNyHRzCmjpj8SOiEkcdKd/XUMg==
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/react-truncate-markup/-/react-truncate-markup-5.1.0.tgz#632f263a7d70925ab6368d5620ef32f066c2857a"
+  integrity sha512-TTp8gj63w/o5jQC7HnLMEeAHp9jjSxFlA5lzklvPzcSubcurkEI4g0YjW67YG1yNAJHqQwCadj4mTUvz58S1wQ==
   dependencies:
     line-height "0.3.1"
     memoize-one "^5.1.1"
     prop-types "^15.6.0"
-    resize-observer-polyfill "1.5.0"
+    resize-observer-polyfill "1.5.x"
 
 react@^16.11.0, react@^16.8.3:
   version "16.11.0"
@@ -16088,12 +16093,7 @@ reserved-words@^0.1.2:
   resolved "https://registry.yarnpkg.com/reserved-words/-/reserved-words-0.1.2.tgz#00a0940f98cd501aeaaac316411d9adc52b31ab1"
   integrity sha1-AKCUD5jNUBrqqsMWQR2a3FKzGrE=
 
-resize-observer-polyfill@1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/resize-observer-polyfill/-/resize-observer-polyfill-1.5.0.tgz#660ff1d9712a2382baa2cad450a4716209f9ca69"
-  integrity sha512-M2AelyJDVR/oLnToJLtuDJRBBWUGUvvGigj1411hXhAdyFWqMaqHp7TixW3FpiLuVaikIcR1QL+zqoJoZlOgpg==
-
-resize-observer-polyfill@^1.5.0, resize-observer-polyfill@^1.5.1:
+resize-observer-polyfill@1.5.x, resize-observer-polyfill@^1.5.0, resize-observer-polyfill@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/resize-observer-polyfill/-/resize-observer-polyfill-1.5.1.tgz#0e9020dd3d21024458d4ebd27e23e40269810464"
   integrity sha512-LwZrotdHOo12nQuZlHEmtuXdqGoOD0OhaxopaNFxWzInpEgaLWoVuAMbTzixuosCx2nEG58ngzW3vxdWoxIgdg==

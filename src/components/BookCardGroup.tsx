@@ -23,6 +23,7 @@ import Typography from "@material-ui/core/Typography";
 import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 import { useGetResponsiveBookGroupTopMargin } from "./BookGroup";
 import { BlorgMarkdown } from "./markdown/BlorgMarkdown";
+import { AllCard } from "./AllCard";
 
 interface IProps {
     title?: string;
@@ -125,7 +126,10 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
         books = books.filter((b) => props.collection.secondaryFilter!(b));
     }
 
-    // our more card, if clicked, will result in skipping more than this time.
+    // As of 11/2021, this skip stuff is not really being used. In theory it would all still work if
+    // anything initiated the skipping. But our more cards now just loads the whole (filtered) collection.
+    // Below here, comments in this little code section reflect the original intention/state of the skipping logic.
+    // Our more card, if clicked, will result in skipping more than this time.
     let nextSkip: number | undefined;
     if (props.skip === undefined) {
         nextSkip = 0; // typically, displaying one row, more will display a lot starting from 0.
@@ -134,14 +138,14 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
         nextSkip = props.skip + maxCardsToRetrieve;
     }
 
-    const wantMoreCard =
+    const wantMoreOrAllCard =
         search.totalMatchingRecords > (props.skip ?? 0) + maxCardsToRetrieve;
 
     let bookList: React.ReactElement | undefined;
 
     if (showInOneRow) {
         const data: (IBasicBookInfo | "more")[] = [...books];
-        if (wantMoreCard) {
+        if (wantMoreOrAllCard) {
             data.push("more");
         }
         bookList = (
@@ -186,13 +190,13 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
             />
         ));
 
-        // Enhance: allow using a MoreCard even with a fixed set of known books, rather than only if we're using a filter.
-        if (wantMoreCard) {
+        if (wantMoreOrAllCard && props.collection.urlKey !== "new-arrivals") {
+            // The AllCard on new arrivals would display all books (well, up to the current 5000 max),
+            // but we decided we don't want to do that.
             cards.push(
-                <MoreCard
-                    key="more"
+                <AllCard
+                    key="all"
                     collection={props.collection}
-                    skip={nextSkip}
                     css={css`
                         margin-bottom: ${verticalSpacing}px;
                     `}
