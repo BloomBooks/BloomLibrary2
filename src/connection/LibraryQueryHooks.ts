@@ -817,9 +817,7 @@ export function useCollectionStats(
         apiFilter.toDate = getISODateString(statsProps.dateRange.endDate);
     }
 
-    const url = `${getBloomApiUrl()}/v1/stats/${urlSuffix}`;
-    // Use this when debugging changes to the Azure function
-    //const url = `http://localhost:7071/v1/stats/${urlSuffix}`;
+    const url = `${getBloomApiUrl()}/stats/${urlSuffix}`;
 
     // Just below here, axios is going to decide whether or not to send another
     // query based on the values in apiFilter (the trigger parameter).
