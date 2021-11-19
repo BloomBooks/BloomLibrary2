@@ -37,7 +37,7 @@ export async function retrieveBookStats(
     skipCount: number,
     limitCount: number
 ) {
-    return axios.post(`${getBloomApiUrl()}/v1/stats/reading/per-book`, {
+    return axios.post(`${getBloomApiUrl()}/stats/reading/per-book`, {
         filter: {
             parseDBQuery: {
                 url: `${getConnection().url}classes/books`,

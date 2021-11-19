@@ -11,6 +11,7 @@ import Tooltip from "react-tooltip-lite";
 import infoIcon from "../../assets/info.png";
 import { Book } from "../../model/Book";
 import { FormattedMessage, useIntl } from "react-intl";
+import { getBloomApiUrl } from "../../connection/ApiConnection";
 
 // The casing here is unfortunate, but that's what the database gives us no matter what we do there.
 // Could be enhanced by remapping all the fields in the Azure function or here, but those
@@ -46,15 +47,22 @@ export const BookStats: React.FunctionComponent<{
 }> = (props) => {
     function useGetBookStats(book: Book): IBookStats {
         const { response } = useAxios({
-            url: `https://api.bloomlibrary.org/v1/stats?book=${book.id}&book-instance-id=${book.bookInstanceId}`,
-            // Use this when debugging changes to the Azure function
-            // url: `http://localhost:7071/v1/stats?book=${book.id}&book-instance-id=${book.bookInstanceId}`,
-            method: "GET",
+            url: `${getBloomApiUrl()}/stats/reading/book`,
+            method: "POST",
+            options: {
+                data: {
+                    filter: {
+                        // The database function is currently written to get some information (blorg stuff) via bookId (parse ID)
+                        // and some (BR stuff) by bookInstanceId.
+                        // I think we may be able to switch to only using bookInstanceId at some point.
+                        bookId: book.id,
+                        bookInstanceId: book.bookInstanceId,
+                    },
+                },
+            },
             trigger: book.id,
         });
-        if (response && response["data"] && response["data"]["bookstats"])
-            return response["data"]["bookstats"];
-        return getInitialBookStats();
+        return response?.["data"]?.["stats"]?.[0] ?? getInitialBookStats();
     }
 
     const bookStats = useGetBookStats(props.book);
