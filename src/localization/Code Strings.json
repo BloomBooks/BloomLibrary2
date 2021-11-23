@@ -214,6 +214,10 @@
         "description": "",
         "message": "book thumbnail"
     },
+    "book.detail.draftDescription": {
+        "message": "Show this book only to reviewers with whom I share the URL of this page.",
+        "description": "Label for a check box which, if checked, marks the book as 'DRAFT' and prevents the book from showing in most views"
+    },
     "book.metadata.level": {
         "description": "",
         "message": "Level {levelNumber}"
@@ -361,6 +365,10 @@
     "book.concerns": {
         "description": "",
         "message": "What concerns do you have about this book?"
+    },
+    "book.share": {
+        "message": "Share",
+        "description": "If clicked, the user will get an interface to share the book on social media (initially Facebook)"
     },
     "book.summary": {
         "description": "",
