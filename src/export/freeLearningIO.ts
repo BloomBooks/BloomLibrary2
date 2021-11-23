@@ -5,6 +5,7 @@ import {
 } from "../model/Book";
 import { axios } from "@use-hooks/axios";
 import { getArtifactUrl } from "../components/BookDetail/ArtifactHelper";
+import { getBloomApiUrl } from "../connection/ApiConnection";
 const FileSaver = require("file-saver");
 
 export async function giveFreeLearningCsv() {
@@ -136,7 +137,9 @@ function fields(book: Book, isoCode: string): Array<string | undefined> {
 
         return [
             title.trim(),
-            `https://api.bloomlibrary.org/v1/fs/harvest/${book.id}/thumbnails/thumbnail-256.png?version=${book.updatedAt}`,
+            `${getBloomApiUrl()}/fs/harvest/${
+                book.id
+            }/thumbnails/thumbnail-256.png?version=${book.updatedAt}`,
             book.summary || "", // description
             isoCode || "", // dc:language
             book.getBestLevel() || "", // book.getTagValue("computedLevel") || "", //

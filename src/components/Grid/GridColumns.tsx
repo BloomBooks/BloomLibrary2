@@ -209,6 +209,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             name: "harvestStartedAt",
             getCellValue: (b: Book) => b.harvestStartedAt?.iso,
             defaultVisible: false,
+            sortingEnabled: true,
         },
         {
             name: "summary",
