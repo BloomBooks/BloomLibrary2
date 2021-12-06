@@ -933,6 +933,7 @@ export function splitString(
         "feature:",
         "originalPublisher:", // must come before "publisher:", since "originalPublisher:" includes the other as a substring
         "publisher:",
+        "language:",
     ];
 
     const possibleParts = [...facets, ...allTagsInDatabase];
@@ -1154,6 +1155,9 @@ export function constructParseBookQuery(
                     break;
                 case "harvestState":
                     params.where.harvestState = facetValue;
+                    break;
+                case "language":
+                    f.language = facetValue;
                     break;
                 case "level":
                     if (facetValue === "empty") {
