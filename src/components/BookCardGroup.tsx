@@ -24,6 +24,8 @@ import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 import { useGetResponsiveBookGroupTopMargin } from "./BookGroup";
 import { BlorgMarkdown } from "./markdown/BlorgMarkdown";
 import { AllCard } from "./AllCard";
+import { ByLanguageGroups } from "./ByLanguageGroups";
+import { useIntl } from "react-intl";
 
 interface IProps {
     title?: string;
@@ -97,6 +99,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
         },
         collectionFilter
     );
+    const l10n = useIntl();
 
     // We make life hard on <Lazy> components by thinking maybe we'll show, for example, a row of Level 1 books at
     // the top of the screen. So the <Lazy> thing may think "well, no room for me then until they scroll". But
@@ -269,6 +272,53 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
 
     let group;
     switch (props.collection.layout) {
+        // This represents a child collection that wants to be sorted by language;
+        // e.g. Look, Listen and Live (GRN) has "Landscape Read-aloud Version" and
+        // "Portrait Read-aloud Version", each with language-labeled subgroups of books.
+        case "by-language":
+            group = (
+                <React.Fragment>
+                    <h1
+                        css={css`
+                            font-size: ${getResponsiveChoice(10, 14)}pt;
+                        `}
+                    >
+                        {label}
+                        {props.collection.urlKey === "new-arrivals" || (
+                            <span
+                                css={css`
+                                    font-size: 9pt;
+                                    color: ${commonUI.colors.minContrastGray};
+                                    margin-left: 1em;
+                                `}
+                            >
+                                {countToShow}
+                            </span>
+                        )}
+                    </h1>
+                    {search.waiting || (
+                        <ByLanguageGroups
+                            titlePrefix=""
+                            filter={props.collection.filter}
+                            //excludeLanguages={["en"]} Suzanne may want this too. Not sure yet.
+                            reportBooksAndLanguages={(books, languages) =>
+                                l10n.formatMessage(
+                                    {
+                                        id: "bookCount.inLanguages",
+                                        defaultMessage:
+                                            "{bookCount} books in {languageCount} languages",
+                                    },
+                                    {
+                                        bookCount: books,
+                                        languageCount: languages,
+                                    }
+                                )
+                            }
+                        />
+                    )}
+                </React.Fragment>
+            );
+            break;
         // this is used in the "Create" screen
         case "layout: description-followed-by-row-of-books":
             group = (
