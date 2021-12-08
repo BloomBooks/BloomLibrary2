@@ -24,6 +24,7 @@ import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 import { useGetResponsiveBookGroupTopMargin } from "./BookGroup";
 import { BlorgMarkdown } from "./markdown/BlorgMarkdown";
 import { AllCard } from "./AllCard";
+import { ByLanguageGroups } from "./ByLanguageGroups";
 
 interface IProps {
     title?: string;
@@ -267,8 +268,55 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
         </div>
     );
 
+    const responsiveHeaderAndCount = (
+        <h1
+            css={css`
+                font-size: ${getResponsiveChoice(10, 14)}pt;
+            `}
+        >
+            {label}
+            {props.collection.urlKey === "new-arrivals" || (
+                <span
+                    css={css`
+                        font-size: 9pt;
+                        color: ${commonUI.colors.minContrastGray};
+                        margin-left: 1em;
+                    `}
+                >
+                    {countToShow}
+                </span>
+            )}
+        </h1>
+    );
+
     let group;
     switch (props.collection.layout) {
+        // This represents a child collection that wants to be sorted by language;
+        // e.g. Look, Listen and Live (GRN) has "Landscape Read-aloud Version" and
+        // "Portrait Read-aloud Version", each with language-labeled subgroups of books.
+        // We've only gotten away with doing this embedding because ByLanguageGroups is not
+        // implemented using BookCardGroup. If it did, we would end up recursing when we call
+        // ByLanguageGroups below.
+        case "by-language":
+            group = (
+                <React.Fragment>
+                    {responsiveHeaderAndCount}
+                    {search.waiting || (
+                        <div
+                            css={css`
+                                margin-left: ${getResponsiveChoice(10, 40)}px;
+                            `}
+                        >
+                            <ByLanguageGroups
+                                titlePrefix=""
+                                filter={props.collection.filter}
+                                //excludeLanguages={["en"]} Suzanne may want this. Not sure yet.
+                            />
+                        </div>
+                    )}
+                </React.Fragment>
+            );
+            break;
         // this is used in the "Create" screen
         case "layout: description-followed-by-row-of-books":
             group = (
@@ -311,24 +359,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
         default:
             group = (
                 <React.Fragment>
-                    <h1
-                        css={css`
-                            font-size: ${getResponsiveChoice(10, 14)}pt;
-                        `}
-                    >
-                        {label}
-                        {props.collection.urlKey === "new-arrivals" || (
-                            <span
-                                css={css`
-                                    font-size: 9pt;
-                                    color: ${commonUI.colors.minContrastGray};
-                                    margin-left: 1em;
-                                `}
-                            >
-                                {countToShow}
-                            </span>
-                        )}
-                    </h1>
+                    {responsiveHeaderAndCount}
                     {search.waiting || bookList}
                 </React.Fragment>
             );
