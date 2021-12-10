@@ -24,7 +24,7 @@ import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 import { useGetResponsiveBookGroupTopMargin } from "./BookGroup";
 import { BlorgMarkdown } from "./markdown/BlorgMarkdown";
 import { AllCard } from "./AllCard";
-import { ByLanguageGroups } from "./ByLanguageGroups";
+import { CollectionLayout } from "./CollectionLayout";
 
 interface IProps {
     title?: string;
@@ -290,81 +290,97 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
     );
 
     let group;
-    switch (props.collection.layout) {
-        // This represents a child collection that wants to be sorted by language;
-        // e.g. Look, Listen and Live (GRN) has "Landscape Read-aloud Version" and
-        // "Portrait Read-aloud Version", each with language-labeled subgroups of books.
-        // We've only gotten away with doing this embedding because ByLanguageGroups is not
-        // implemented using BookCardGroup. If it did, we would end up recursing when we call
-        // ByLanguageGroups below.
-        case "by-language":
-            group = (
-                <React.Fragment>
-                    {responsiveHeaderAndCount}
-                    {search.waiting || (
-                        <div
-                            css={css`
-                                margin-left: ${getResponsiveChoice(10, 40)}px;
-                            `}
-                        >
-                            <ByLanguageGroups
-                                titlePrefix=""
-                                filter={props.collection.filter}
-                                //excludeLanguages={["en"]} Suzanne may want this. Not sure yet.
-                            />
-                        </div>
-                    )}
-                </React.Fragment>
-            );
-            break;
-        // this is used in the "Create" screen
-        case "layout: description-followed-by-row-of-books":
-            group = (
-                <React.Fragment>
-                    <div
-                        css={css`
-                            position: relative;
-                        `}
-                    >
-                        {isSmall ? (
-                            <React.Fragment>
-                                {descriptionBlock}
+    // this is used in the "Create" screen
+    if (
+        props.collection.layout ===
+        "layout: description-followed-by-row-of-books"
+    ) {
+        group = (
+            <React.Fragment>
+                <div
+                    css={css`
+                        position: relative;
+                    `}
+                >
+                    {isSmall ? (
+                        <React.Fragment>
+                            {descriptionBlock}
+                            {search.waiting || bookList}
+                        </React.Fragment>
+                    ) : (
+                        // Would much prefer to use a div with display:flex here, or just make the containing
+                        // div display:flex with a conditional direction. But Swiper behaves weirdly if its
+                        // parent is a horizontal flexbox, especially if everything fits. The last card is not
+                        // created properly (gets rendered with visible:false) and the Next button is shown
+                        // even though everything fits. There may be a better workaround, but so far this is
+                        // the best I can find: the old-fashioned approach, where we make a row
+                        // by positioning one child absolutely and padding the other to leave room for it.
+                        <React.Fragment>
+                            {descriptionBlock}
+                            <div
+                                css={css`
+                                    padding-left: ${descriptionBlockWidth +
+                                    descriptionBlockLargeRightMargin}px;
+                                `}
+                            >
                                 {search.waiting || bookList}
-                            </React.Fragment>
-                        ) : (
-                            // Would much prefer to use a div with display:flex here, or just make the containing
-                            // div display:flex with a conditional direction. But Swiper behaves weirdly if its
-                            // parent is a horizontal flexbox, especially if everything fits. The last card is not
-                            // created properly (gets rendered with visible:false) and the Next button is shown
-                            // even though everything fits. There may be a better workaround, but so far this is
-                            // the best I can find: the old-fashioned approach, where we make a row
-                            // by positioning one child absolutely and padding the other to leave room for it.
-                            <React.Fragment>
-                                {descriptionBlock}
-                                <div
-                                    css={css`
-                                        padding-left: ${descriptionBlockWidth +
-                                        descriptionBlockLargeRightMargin}px;
-                                    `}
-                                >
-                                    {search.waiting || bookList}
-                                </div>
-                            </React.Fragment>
-                        )}
-                    </div>
-                </React.Fragment>
-            );
-
-            break;
-        default:
-            group = (
-                <React.Fragment>
-                    {responsiveHeaderAndCount}
-                    {search.waiting || bookList}
-                </React.Fragment>
-            );
-            break;
+                            </div>
+                        </React.Fragment>
+                    )}
+                </div>
+            </React.Fragment>
+        );
+    } else {
+        group = (
+            <React.Fragment>
+                {responsiveHeaderAndCount}
+                {search.waiting || (
+                    <CollectionLayout
+                        collection={props.collection}
+                        nestingLevel={2}
+                    />
+                )}
+            </React.Fragment>
+        );
     }
+    // switch (props.collection.layout) {
+    //     // This represents a child collection that wants to be sorted by language;
+    //     // e.g. Look, Listen and Live (GRN) has "Landscape Read-aloud Version" and
+    //     // "Portrait Read-aloud Version", each with language-labeled subgroups of books.
+    //     // The "ByLanguageGroups" section below is very similar to the other use of that component
+    //     // in CollectionPage.tsx, but we may need to pass the excludeLanguages prop and we don't
+    //     // need (so far anyway) the state reference inside of the "reportBooksAndLanguages" function.
+    //     // It would be nice to pass a parameter to "ByLanguageGroups" to make the size of the
+    //     // language name label responsive like we do with the main collection title (h1) here.
+    //     case "by-language":
+    //         group = (
+    //             <React.Fragment>
+    //                 {responsiveHeaderAndCount}
+    //                 {search.waiting || (
+    //                     <div
+    //                         css={css`
+    //                             margin-left: ${getResponsiveChoice(10, 40)}px;
+    //                         `}
+    //                     >
+    //                         <ByLanguageGroups
+    //                             titlePrefix=""
+    //                             filter={props.collection.filter}
+    //                             //excludeLanguages={["en"]} Suzanne may want this. Not sure yet.
+    //                         />
+    //                     </div>
+    //                 )}
+    //             </React.Fragment>
+    //         );
+    //         break;
+    //     default:
+    //         group = (
+    //             <React.Fragment>
+    //                 {responsiveHeaderAndCount}
+    //                 {search.waiting || bookList}
+    //             </React.Fragment>
+    //         );
+    //         break;
+    // }
 
     const topMarginPx = useGetResponsiveBookGroupTopMargin();
     const minHeightPx = cardSpec.cardHeightPx + topMarginPx;
