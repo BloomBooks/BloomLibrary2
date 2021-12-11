@@ -69,6 +69,7 @@ export function convertContentfulCollectionToICollection(
         childCollections: getSubCollections(item.fields.childCollections),
         bannerId,
         layout: item.fields.layout?.fields?.name || "by-topic",
+        rawLayout: item.fields.layout?.fields?.name,
         rows: item.fields.rows,
         order,
         type: item.fields.urlKey.startsWith("http")

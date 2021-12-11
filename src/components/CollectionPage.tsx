@@ -56,14 +56,20 @@ export const CollectionPage: React.FunctionComponent<{
             // Ref BL-10063.
             const rows = collection.expandChildCollectionRows ? 1000 : 1;
 
-            return <CardGroup key={c.urlKey} urlKey={c.urlKey} rows={rows} />;
+            return (
+                <CardGroup
+                    key={c.urlKey}
+                    urlKey={c.urlKey}
+                    rows={rows}
+                    useCollectionLayoutSettingForBookCards={true}
+                />
+            );
         });
 
         const booksComponent: React.ReactElement | null = (
             <CollectionLayout
                 collection={collection}
                 setBooksAndLanguagesCallback={setBooksAndLanguages}
-                nestingLevel={1}
             />
         );
 
