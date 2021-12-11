@@ -9,16 +9,15 @@ import { BookCardGroup } from "./BookCardGroup";
 export const CollectionLayout: React.FunctionComponent<{
     collection: ICollection;
     setBooksAndLanguagesCallback?: (value: string) => void;
-    nestingLevel: number;
 }> = (props) => {
     const l10n = useIntl();
-    //const getResponsiveChoice = useResponsiveChoice();
 
     let booksComponent: React.ReactElement | null = null;
     if (props.collection.filter) {
         // "layout" is a choice that we can set in Contentful
         switch (props.collection.layout) {
             default:
+            case "by-topic": // still true??: untested on this path, though ByTopicsGroup is used in AllResultsPage
                 booksComponent = (
                     <ByTopicsGroups collection={props.collection} />
                 );
@@ -67,12 +66,6 @@ export const CollectionLayout: React.FunctionComponent<{
                         }}
                     />
                 );
-                break;
-            case "by-topic": // untested on this path, though ByTopicsGroup is used in AllResultsPage
-                booksComponent = (
-                    <ByTopicsGroups collection={props.collection} />
-                );
-
                 break;
         }
     }
