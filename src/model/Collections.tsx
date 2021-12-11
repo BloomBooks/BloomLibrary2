@@ -411,6 +411,7 @@ export function getDummyCollectionForPreview(bannerId: string): ICollection {
         bannerId,
         iconForCardAndDefaultBanner: undefined,
         layout: "by-level",
+        rawLayout: "by-level",
         type: "collection",
         description: "",
         expandChildCollectionRows: false,
@@ -430,6 +431,7 @@ function makeTopicCollectionsForCards(): ICollection[] {
                 filter: { topic: t },
                 bannerId: "", // this will never be used because it's just for the card
                 layout: "by-level", // this will never be used because it's just for the card
+                rawLayout: "by-level",
                 type: "collection",
                 description: "",
                 expandChildCollectionRows: false,

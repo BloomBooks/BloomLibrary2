@@ -8,20 +8,32 @@ import { BookCardGroup } from "./BookCardGroup";
 
 export const CollectionLayout: React.FunctionComponent<{
     collection: ICollection;
+
+    // ENHANCE:
+    // Originally, this layout-to-component logic only lived in CollectionPage,
+    // and we had decided that if a collection didn't have a layout defined, we would
+    // just default to using ByTopicsGroups. Then we extracted the logic, creating this
+    // component, so it could be used when laying out subcollections on a page (in BookCardGroup).
+    // In that case, the default should just be the list of books the way BookCardGroup was
+    // doing it previously. In theory, we could move that simple list-of-books layout
+    // here as an additional layout option and get rid of this hacky override logic.
+    // But we are also considering totally revamping how layouts are defined in various contexts,
+    // so it isn't worth the refactoring at the moment.
+    defaultLayoutOverride?: JSX.Element;
+
     setBooksAndLanguagesCallback?: (value: string) => void;
-    nestingLevel: number;
 }> = (props) => {
     const l10n = useIntl();
-    //const getResponsiveChoice = useResponsiveChoice();
 
     let booksComponent: React.ReactElement | null = null;
     if (props.collection.filter) {
+        if (props.defaultLayoutOverride && !props.collection.rawLayout)
+            return props.defaultLayoutOverride;
+
         // "layout" is a choice that we can set in Contentful
         switch (props.collection.layout) {
             default:
-                booksComponent = (
-                    <ByTopicsGroups collection={props.collection} />
-                );
+                <ByTopicsGroups collection={props.collection} />;
                 break;
             case "no-books": // leave it null
                 break;

@@ -25,6 +25,7 @@ import { useGetResponsiveBookGroupTopMargin } from "./BookGroup";
 import { BlorgMarkdown } from "./markdown/BlorgMarkdown";
 import { AllCard } from "./AllCard";
 import { CollectionLayout } from "./CollectionLayout";
+import { ListOfBookGroups } from "./ListOfBookGroups";
 
 interface IProps {
     title?: string;
@@ -36,6 +37,8 @@ interface IProps {
     skip?: number; // of items in collection (used for paging through with More)
 
     contextLangIso?: string;
+
+    useCollectionLayoutSettingForBookCards?: boolean;
 }
 
 export const BookCardGroup: React.FunctionComponent<IProps> = (props) => {
@@ -334,53 +337,20 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
         group = (
             <React.Fragment>
                 {responsiveHeaderAndCount}
-                {search.waiting || (
-                    <CollectionLayout
-                        collection={props.collection}
-                        nestingLevel={2}
-                    />
-                )}
+                {search.waiting ||
+                    (props.useCollectionLayoutSettingForBookCards ? (
+                        <ListOfBookGroups>
+                            <CollectionLayout
+                                collection={props.collection}
+                                defaultLayoutOverride={bookList}
+                            />
+                        </ListOfBookGroups>
+                    ) : (
+                        bookList
+                    ))}
             </React.Fragment>
         );
     }
-    // switch (props.collection.layout) {
-    //     // This represents a child collection that wants to be sorted by language;
-    //     // e.g. Look, Listen and Live (GRN) has "Landscape Read-aloud Version" and
-    //     // "Portrait Read-aloud Version", each with language-labeled subgroups of books.
-    //     // The "ByLanguageGroups" section below is very similar to the other use of that component
-    //     // in CollectionPage.tsx, but we may need to pass the excludeLanguages prop and we don't
-    //     // need (so far anyway) the state reference inside of the "reportBooksAndLanguages" function.
-    //     // It would be nice to pass a parameter to "ByLanguageGroups" to make the size of the
-    //     // language name label responsive like we do with the main collection title (h1) here.
-    //     case "by-language":
-    //         group = (
-    //             <React.Fragment>
-    //                 {responsiveHeaderAndCount}
-    //                 {search.waiting || (
-    //                     <div
-    //                         css={css`
-    //                             margin-left: ${getResponsiveChoice(10, 40)}px;
-    //                         `}
-    //                     >
-    //                         <ByLanguageGroups
-    //                             titlePrefix=""
-    //                             filter={props.collection.filter}
-    //                             //excludeLanguages={["en"]} Suzanne may want this. Not sure yet.
-    //                         />
-    //                     </div>
-    //                 )}
-    //             </React.Fragment>
-    //         );
-    //         break;
-    //     default:
-    //         group = (
-    //             <React.Fragment>
-    //                 {responsiveHeaderAndCount}
-    //                 {search.waiting || bookList}
-    //             </React.Fragment>
-    //         );
-    //         break;
-    // }
 
     const topMarginPx = useGetResponsiveBookGroupTopMargin();
     const minHeightPx = cardSpec.cardHeightPx + topMarginPx;
