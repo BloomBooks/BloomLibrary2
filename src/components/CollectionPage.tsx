@@ -9,13 +9,9 @@ import React, { useMemo, useState } from "react";
 import { ContentfulBanner } from "./banners/ContentfulBanner";
 import { useGetCollection } from "../model/Collections";
 import { CardGroup } from "./CardGroup";
-import { ByLevelGroups } from "./ByLevelGroups";
 import { ListOfBookGroups } from "./ListOfBookGroups";
 import { LanguageGroup } from "./LanguageGroup";
 
-import { BookCardGroup } from "./BookCardGroup";
-import { ByLanguageGroups } from "./ByLanguageGroups";
-import { ByTopicsGroups } from "./ByTopicsGroups";
 import { useTrack } from "../analytics/Analytics";
 import { IEmbedSettings } from "../model/ContentInterfaces";
 import { useSetBrowserTabTitle } from "./Routes";
@@ -24,6 +20,7 @@ import { useIntl } from "react-intl";
 import { useGetLocalizedCollectionLabel } from "../localization/CollectionLabel";
 import { PageNotFound } from "./PageNotFound";
 import { useResponsiveChoice } from "../responsiveUtilities";
+import { CollectionLayout } from "./CollectionLayout";
 
 export const CollectionPage: React.FunctionComponent<{
     collectionName: string;
@@ -59,61 +56,22 @@ export const CollectionPage: React.FunctionComponent<{
             // Ref BL-10063.
             const rows = collection.expandChildCollectionRows ? 1000 : 1;
 
-            return <CardGroup key={c.urlKey} urlKey={c.urlKey} rows={rows} />;
+            return (
+                <CardGroup
+                    key={c.urlKey}
+                    urlKey={c.urlKey}
+                    rows={rows}
+                    useCollectionLayoutSettingForBookCards={true}
+                />
+            );
         });
 
-        let booksComponent: React.ReactElement | null = null;
-        if (collection.filter) {
-            // "layout" is a choice that we can set in Contentful
-            switch (collection.layout) {
-                default:
-                    booksComponent = <ByTopicsGroups collection={collection} />;
-                    break;
-                case "no-books": // leave it null
-                    break;
-                case "all-books": // used by at least RISE-PNG
-                    booksComponent = (
-                        <BookCardGroup
-                            collection={collection}
-                            rows={collection.rows ? collection.rows : 1000} // all-books = all books
-                        />
-                    );
-                    break;
-                case "by-level":
-                    booksComponent = <ByLevelGroups collection={collection} />;
-                    break;
-                case "by-language":
-                    // enhance: may want to use reportBooksAndLanguages callback so we can insert
-                    // a string like "X books in Y languages" into our banner. But as yet the
-                    // ContentfulBanner has no way to do that.
-                    booksComponent = (
-                        <ByLanguageGroups
-                            titlePrefix=""
-                            filter={collection.filter}
-                            reportBooksAndLanguages={(books, languages) =>
-                                setBooksAndLanguages(
-                                    l10n.formatMessage(
-                                        {
-                                            id: "bookCount.inLanguages",
-                                            defaultMessage:
-                                                "{bookCount} books in {languageCount} languages",
-                                        },
-                                        {
-                                            bookCount: books,
-                                            languageCount: languages,
-                                        }
-                                    )
-                                )
-                            }
-                        />
-                    );
-                    break;
-                case "by-topic": // untested on this path, though ByTopicsGroup is used in AllResultsPage
-                    booksComponent = <ByTopicsGroups collection={collection} />;
-
-                    break;
-            }
-        }
+        const booksComponent: React.ReactElement | null = (
+            <CollectionLayout
+                collection={collection}
+                setBooksAndLanguagesCallback={setBooksAndLanguages}
+            />
+        );
 
         const banner = (
             <ContentfulBanner
