@@ -33,25 +33,29 @@ export const LanguageGroup: React.FunctionComponent = () => {
     const getResponsiveChoice = useResponsiveChoice();
     const cardSpec = useLanguageCardSpec();
 
-    let filteredLanguages: ILanguage[] = [];
+    let languagesToDisplay: ILanguage[] = [];
 
-    const getFilteredLanguages = (filter: string | null): ILanguage[] => {
+    const getLanguagesMatchingSearchTerm = (
+        searchTerm: string | null
+    ): ILanguage[] => {
         // MatchSorter is an npm module that does smart autocomplete over a list of values.
-        return matchSorter(languages, filter || "", {
+        return matchSorter(languages, searchTerm || "", {
             keys: ["englishName", "name", "isoCode"],
         });
     };
-    const getFilterLanguagesUI = (
-        filter: string | null,
+    const getRelevantLanguageCardsOrNoMatchMessage = (
+        searchTerm: string | null,
         getItemProps: (options: GetItemPropsOptions<any>) => {},
         getMenuProps: (options: GetMenuPropsOptions) => {}
     ) => {
-        filteredLanguages = getFilteredLanguages(filter);
-        if (filteredLanguages.length) {
+        languagesToDisplay = getLanguagesMatchingSearchTerm(searchTerm).filter(
+            (lang) => lang.usageCount
+        );
+        if (languagesToDisplay.length) {
             return (
                 <div {...getMenuProps({})}>
                     <CardSwiperLazy
-                        data={filteredLanguages}
+                        data={languagesToDisplay}
                         cardSpec={cardSpec}
                         getReactElement={(l: ILanguage, index: number) => (
                             // JohnT: I think this comment is wrong; getLabelProps is actually to do with a label for
@@ -83,7 +87,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                     <FormattedMessage
                         id="noLanguageMatch"
                         defaultMessage="We could not find any book with languages matching {searchString}"
-                        values={{ searchString: filter }}
+                        values={{ searchString: searchTerm }}
                     />
                 </div>
             );
@@ -92,8 +96,8 @@ export const LanguageGroup: React.FunctionComponent = () => {
 
     const handleKeyPress = (e: React.KeyboardEvent) => {
         if (e.key === "Enter") {
-            if (filteredLanguages.length) {
-                setLangChosen(filteredLanguages[0].isoCode);
+            if (languagesToDisplay.length) {
+                setLangChosen(languagesToDisplay[0].isoCode);
             }
         }
     };
@@ -219,7 +223,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                     />
                                 </div>
                             </div>
-                            {getFilterLanguagesUI(
+                            {getRelevantLanguageCardsOrNoMatchMessage(
                                 currentInputBoxText,
                                 getItemProps,
                                 getMenuProps
