@@ -35,7 +35,9 @@ export const LanguageGroup: React.FunctionComponent = () => {
 
     let filteredLanguages: ILanguage[] = [];
 
-    const getFilteredLanguages = (filter: string | null): ILanguage[] => {
+    const getLanguagesFilteredBySearchTerm = (
+        filter: string | null
+    ): ILanguage[] => {
         // MatchSorter is an npm module that does smart autocomplete over a list of values.
         return matchSorter(languages, filter || "", {
             keys: ["englishName", "name", "isoCode"],
@@ -46,7 +48,9 @@ export const LanguageGroup: React.FunctionComponent = () => {
         getItemProps: (options: GetItemPropsOptions<any>) => {},
         getMenuProps: (options: GetMenuPropsOptions) => {}
     ) => {
-        filteredLanguages = getFilteredLanguages(filter);
+        filteredLanguages = getLanguagesFilteredBySearchTerm(filter).filter(
+            (lang) => lang.usageCount
+        );
         if (filteredLanguages.length) {
             return (
                 <div {...getMenuProps({})}>
