@@ -48,23 +48,27 @@ export const CollectionPage: React.FunctionComponent<{
         if (!collection) {
             return <PageNotFound />;
         }
-        const collectionRows = collection.childCollections.map((c) => {
-            if (c.urlKey === "language-chooser") {
-                return <LanguageGroup key="lang" />;
+        const collectionRows = collection.childCollections.map(
+            (childCollection) => {
+                if (childCollection.urlKey === "language-chooser") {
+                    return <LanguageGroup key="lang" />;
+                }
+
+                // Ref BL-10063.
+                const rows = collection.expandChildCollectionRows ? 1000 : 1;
+
+                return (
+                    <CardGroup
+                        key={childCollection.urlKey}
+                        urlKey={childCollection.urlKey}
+                        rows={rows}
+                        useCollectionLayoutSettingForBookCards={
+                            collection.urlKey !== "root.read"
+                        }
+                    />
+                );
             }
-
-            // Ref BL-10063.
-            const rows = collection.expandChildCollectionRows ? 1000 : 1;
-
-            return (
-                <CardGroup
-                    key={c.urlKey}
-                    urlKey={c.urlKey}
-                    rows={rows}
-                    useCollectionLayoutSettingForBookCards={true}
-                />
-            );
-        });
+        );
 
         const booksComponent: React.ReactElement | null = (
             <CollectionLayout
