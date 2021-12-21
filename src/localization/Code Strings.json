@@ -230,6 +230,12 @@
         "description": "",
         "message": "License:"
     },
+    "book.metadata.license.ask": {
+        "message": "Ask the copyright holder"
+    },
+    "book.metadata.license.custom": {
+        "message": "custom"
+    },
     "book.metadata.uploadedBy": {
         "description": "",
         "message": "Uploaded {date} by {email}"

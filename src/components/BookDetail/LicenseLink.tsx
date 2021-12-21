@@ -9,51 +9,65 @@ import React, { useState } from "react";
 import { BlorgLink } from "../BlorgLink";
 import { Alert } from "../Alert";
 import Link from "@material-ui/core/Link";
+import { FormattedMessage } from "react-intl";
 export const LicenseLink: React.FunctionComponent<{
     book: Book;
 }> = (props) => {
     const [alertText, setAlertText] = useState("");
-    if (props.book.license === "custom") {
-        return (
-            <React.Fragment>
-                <Alert
-                    open={alertText !== ""}
-                    close={() => {
-                        setAlertText("");
-                    }}
-                    message={alertText!}
+
+    if (!props.book.license) return <span>???</span>;
+
+    switch (props.book.license) {
+        case "custom":
+            return (
+                <React.Fragment>
+                    <Alert
+                        open={alertText !== ""}
+                        close={() => {
+                            setAlertText("");
+                        }}
+                        message={alertText!}
+                    />
+                    <Link
+                        // Not a BlorgLink (or any ordinary link) because we don't have an href
+                        // These tricks are needed to make it look more like BlorgLink.
+                        css={css`
+                            font-family: inherit;
+                            font-size: inherit;
+                            margin-top: -1px;
+                        `}
+                        component="button" // makes the actual HTML created be a button, so accessibility checkers are happy with no HREF
+                        color="secondary"
+                        onClick={() => setAlertText(props.book.licenseNotes)}
+                    >
+                        <FormattedMessage
+                            id="book.metadata.license.custom"
+                            defaultMessage="custom"
+                        />
+                    </Link>
+                </React.Fragment>
+            );
+        case "ask":
+            return (
+                <FormattedMessage
+                    id="book.metadata.license.ask"
+                    defaultMessage="Ask the copyright holder"
                 />
-                <Link
-                    // Not a BlorgLink (or any ordinary link) because we don't have an href
-                    // These tricks are needed to make it look more like BlorgLink.
-                    css={css`
-                        font-family: inherit;
-                        font-size: inherit;
-                        margin-top: -1px;
-                    `}
-                    component="button" // makes the actual HTML created be a button, so accessibility checkers are happy with no HREF
+            );
+        default:
+            return (
+                <BlorgLink
                     color="secondary"
-                    onClick={() => setAlertText(props.book.licenseNotes)}
+                    href={
+                        // enhance: can we point to the actual version?
+                        `https://creativecommons.org/licenses/${props.book.license.replace(
+                            "cc-",
+                            ""
+                        )}/4.0/`
+                    }
                 >
-                    custom
-                </Link>
-            </React.Fragment>
-        );
+                    {props.book.license}
+                </BlorgLink>
+            );
     }
-    return props.book.license ? (
-        <BlorgLink
-            color="secondary"
-            href={
-                // enhance: can we point to the actual version?
-                `https://creativecommons.org/licenses/${props.book.license.replace(
-                    "cc-",
-                    ""
-                )}/4.0/`
-            }
-        >
-            {props.book.license}
-        </BlorgLink>
-    ) : (
-        <span>???</span>
-    );
 };
