@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import firebase from "firebase/app"; // think this is just a namespace import, doesn't bring a lot of code
+// Note, currently using the "compat" version of firebase v9, which doesn't support treeshaking. No reason, just a TODO to upgrade to full v9 API.
+// See https://firebase.google.com/docs/web/modular-upgrade
+import firebase from "firebase/compat/app";
 import { getFirebaseAuth } from "./firebase";
 
 // StyledFirebaseAuth wrapped twice so that we can keep all the javascript involved in Firebase

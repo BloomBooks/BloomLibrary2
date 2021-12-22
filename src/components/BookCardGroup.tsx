@@ -24,6 +24,8 @@ import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 import { useGetResponsiveBookGroupTopMargin } from "./BookGroup";
 import { BlorgMarkdown } from "./markdown/BlorgMarkdown";
 import { AllCard } from "./AllCard";
+import { CollectionLayout } from "./CollectionLayout";
+import { ListOfBookGroups } from "./ListOfBookGroups";
 
 interface IProps {
     title?: string;
@@ -35,6 +37,8 @@ interface IProps {
     skip?: number; // of items in collection (used for paging through with More)
 
     contextLangIso?: string;
+
+    useCollectionLayoutSettingForBookCards?: boolean;
 }
 
 export const BookCardGroup: React.FunctionComponent<IProps> = (props) => {
@@ -267,72 +271,90 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
         </div>
     );
 
-    let group;
-    switch (props.collection.layout) {
-        // this is used in the "Create" screen
-        case "layout: description-followed-by-row-of-books":
-            group = (
-                <React.Fragment>
-                    <div
-                        css={css`
-                            position: relative;
-                        `}
-                    >
-                        {isSmall ? (
-                            <React.Fragment>
-                                {descriptionBlock}
-                                {search.waiting || bookList}
-                            </React.Fragment>
-                        ) : (
-                            // Would much prefer to use a div with display:flex here, or just make the containing
-                            // div display:flex with a conditional direction. But Swiper behaves weirdly if its
-                            // parent is a horizontal flexbox, especially if everything fits. The last card is not
-                            // created properly (gets rendered with visible:false) and the Next button is shown
-                            // even though everything fits. There may be a better workaround, but so far this is
-                            // the best I can find: the old-fashioned approach, where we make a row
-                            // by positioning one child absolutely and padding the other to leave room for it.
-                            <React.Fragment>
-                                {descriptionBlock}
-                                <div
-                                    css={css`
-                                        padding-left: ${descriptionBlockWidth +
-                                        descriptionBlockLargeRightMargin}px;
-                                    `}
-                                >
-                                    {search.waiting || bookList}
-                                </div>
-                            </React.Fragment>
-                        )}
-                    </div>
-                </React.Fragment>
-            );
+    const responsiveHeaderAndCount = (
+        <h1
+            css={css`
+                font-size: ${getResponsiveChoice(10, 14)}pt;
+            `}
+        >
+            {label}
+            {props.collection.urlKey === "new-arrivals" || (
+                <span
+                    css={css`
+                        font-size: 9pt;
+                        color: ${commonUI.colors.minContrastGray};
+                        margin-left: 1em;
+                    `}
+                >
+                    {countToShow}
+                </span>
+            )}
+        </h1>
+    );
 
-            break;
-        default:
-            group = (
-                <React.Fragment>
-                    <h1
-                        css={css`
-                            font-size: ${getResponsiveChoice(10, 14)}pt;
-                        `}
-                    >
-                        {label}
-                        {props.collection.urlKey === "new-arrivals" || (
-                            <span
+    let group;
+    // this is used in the "Create" screen
+    if (
+        props.collection.layout ===
+        "layout: description-followed-by-row-of-books"
+    ) {
+        group = (
+            <React.Fragment>
+                <div
+                    css={css`
+                        position: relative;
+                    `}
+                >
+                    {isSmall ? (
+                        <React.Fragment>
+                            {descriptionBlock}
+                            {search.waiting || bookList}
+                        </React.Fragment>
+                    ) : (
+                        // Would much prefer to use a div with display:flex here, or just make the containing
+                        // div display:flex with a conditional direction. But Swiper behaves weirdly if its
+                        // parent is a horizontal flexbox, especially if everything fits. The last card is not
+                        // created properly (gets rendered with visible:false) and the Next button is shown
+                        // even though everything fits. There may be a better workaround, but so far this is
+                        // the best I can find: the old-fashioned approach, where we make a row
+                        // by positioning one child absolutely and padding the other to leave room for it.
+                        <React.Fragment>
+                            {descriptionBlock}
+                            <div
                                 css={css`
-                                    font-size: 9pt;
-                                    color: ${commonUI.colors.minContrastGray};
-                                    margin-left: 1em;
+                                    padding-left: ${descriptionBlockWidth +
+                                    descriptionBlockLargeRightMargin}px;
                                 `}
                             >
-                                {countToShow}
-                            </span>
-                        )}
-                    </h1>
-                    {search.waiting || bookList}
-                </React.Fragment>
-            );
-            break;
+                                {search.waiting || bookList}
+                            </div>
+                        </React.Fragment>
+                    )}
+                </div>
+            </React.Fragment>
+        );
+    } else {
+        group = (
+            <React.Fragment>
+                {responsiveHeaderAndCount}
+                {search.waiting ||
+                    (props.useCollectionLayoutSettingForBookCards &&
+                    // If contentful didn't set a layout, we don't want to use the normal default in CollectionLayout.
+                    // Instead just use our bookList. See comment below.
+                    props.collection.rawLayout ? (
+                        <ListOfBookGroups>
+                            <CollectionLayout collection={props.collection} />
+                        </ListOfBookGroups>
+                    ) : (
+                        // ENHANCE:
+                        // In theory, we could move the logic which creates bookList (above) into CollectionLayout
+                        // since these simple book lists are "layouts" we might want to reuse elsewhere.
+                        // But we are also considering totally revamping how layouts are defined in various contexts,
+                        // so it isn't worth the refactoring at the moment.
+                        bookList
+                    ))}
+            </React.Fragment>
+        );
     }
 
     const topMarginPx = useGetResponsiveBookGroupTopMargin();

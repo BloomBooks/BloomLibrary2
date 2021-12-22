@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "engines": {
-        "node": "~12.14.0"
+        "node": "~16.13.1"
     },
     "scripts": {
         "//start": " browser=none prevents opening a normal browser tab, then corsChrome gives us a browser that ignores CORS problems",
@@ -41,7 +41,7 @@
         "dom-to-image-more": "^2.8.0",
         "downshift": "^3.2.10",
         "file-saver": "^2.0.2",
-        "firebase": "^7.8.1",
+        "firebase": "^9.6.1",
         "markdown-to-jsx": "^6.11.4",
         "match-sorter": "^4.0.1",
         "mobx": "^6.0.4",
@@ -52,7 +52,7 @@
         "react-avatar": "^3.9.0",
         "react-calendar": "^3.1.0",
         "react-dom": "^16.11.0",
-        "react-firebaseui": "^4.1.0",
+        "react-firebaseui": "^6.0.0",
         "react-image": "^2.3.0",
         "react-intl": "^5.0.2",
         "react-json-view": "^1.19.1",
