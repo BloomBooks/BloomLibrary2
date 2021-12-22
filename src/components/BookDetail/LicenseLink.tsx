@@ -43,6 +43,7 @@ export const LicenseLink: React.FunctionComponent<{
                         <FormattedMessage
                             id="book.metadata.license.custom"
                             defaultMessage="custom"
+                            description="Describes a license which is not a creative commons license. Follows 'License: '"
                         />
                     </Link>
                 </React.Fragment>
@@ -52,6 +53,7 @@ export const LicenseLink: React.FunctionComponent<{
                 <FormattedMessage
                     id="book.metadata.license.ask"
                     defaultMessage="Ask the copyright holder"
+                    description="Describes a restricted license. Follows 'License: '"
                 />
             );
         default:
