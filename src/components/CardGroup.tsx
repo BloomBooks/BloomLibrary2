@@ -41,6 +41,7 @@ export function useBaseCardSpec(): ICardSpec {
 export const CardGroup: React.FunctionComponent<{
     urlKey: string;
     rows?: number;
+    useCollectionLayoutSettingForBookCards?: boolean;
 }> = (props) => {
     const { collection, loading } = useGetCollection(props.urlKey);
     if (loading) {
@@ -54,7 +55,15 @@ export const CardGroup: React.FunctionComponent<{
     if (collection.childCollections.length > 0) {
         return <GroupOfCollectionCards collection={collection} />;
     } else {
-        return <BookCardGroup collection={collection} rows={props.rows} />;
+        return (
+            <BookCardGroup
+                collection={collection}
+                rows={props.rows}
+                useCollectionLayoutSettingForBookCards={
+                    props.useCollectionLayoutSettingForBookCards
+                }
+            />
+        );
     }
 };
 
