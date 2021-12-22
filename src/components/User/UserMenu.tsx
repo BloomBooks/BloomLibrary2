@@ -7,8 +7,9 @@ import { jsx } from "@emotion/core";
 import React, { useState, useEffect } from "react";
 import { Button, Menu, MenuItem, useTheme } from "@material-ui/core";
 import loginIcon from "../../assets/NoUser.svg";
-// these two firebase imports are strange, but not an error. See https://github.com/firebase/firebase-js-sdk/issues/1832
-import firebase from "firebase/app";
+// Note, currently using the "compat" version of firebase v9, which doesn't support treeshaking. No reason, just a TODO to upgrade to full v9 API.
+// See https://firebase.google.com/docs/web/modular-upgrade
+import firebase from "firebase/compat/app";
 import { ShowLoginDialog } from "./LoginDialog";
 import { logout as logoutFromParseServer } from "../../connection/ParseServerConnection";
 import { track } from "../../analytics/Analytics";

@@ -1,6 +1,8 @@
 // Wrapper for various things that use firebase.
 // This file should NOT import firebase/auth as a module but may import it, once, using a function call (as a code split)
-import firebase from "firebase/app"; // think this is just a namespace import, doesn't bring a lot of code
+// Note, currently using the "compat" version of firebase v9, which doesn't support treeshaking. No reason, just a TODO to upgrade to full v9 API.
+// See https://firebase.google.com/docs/web/modular-upgrade
+import firebase from "firebase/compat/app";
 import { connectParseServer } from "../connection/ParseServerConnection";
 import { getCookie } from "../Utilities";
 
@@ -67,7 +69,9 @@ export async function getCurrentUser() {
 // Call this only once! Firebase complains if it is repeatedly imported or initialized.
 async function getFirebaseAuthInternal() {
     // This has the vital side effect of initializing firebase.auth to the appropriate object.
-    await import(/* webpackChunkName: "firebase" */ "firebase/auth");
+    // Note, currently using the "compat" version of firebase v9, which doesn't support treeshaking. No reason, just a TODO to upgrade to full v9 API.
+    // See https://firebase.google.com/docs/web/modular-upgrade
+    await import(/* webpackChunkName: "firebase" */ "firebase/compat/auth");
 
     firebase.initializeApp(firebaseConfig);
 
