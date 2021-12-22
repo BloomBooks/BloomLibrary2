@@ -231,10 +231,12 @@
         "message": "License:"
     },
     "book.metadata.license.ask": {
-        "message": "Ask the copyright holder"
+        "message": "Ask the copyright holder",
+        "description": "Describes a restricted license. Follows 'License: '"
     },
     "book.metadata.license.custom": {
-        "message": "custom"
+        "message": "custom",
+        "description": "Describes a license which is not a creative commons license. Follows 'License: '"
     },
     "book.metadata.uploadedBy": {
         "description": "",
