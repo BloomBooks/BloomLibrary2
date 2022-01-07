@@ -82,7 +82,7 @@ function useGetContentfulCollection(
                   // As of Jan 2021, we save about 17% by restricting fields this way. Replacing all the fields.* items with just "fields"
                   // is also worth considering...we save 16% just by cutting out unused sys fields.
                   select:
-                      "fields.bookSortOrder,fields.banner,fields.urlKey,fields.iconForCardAndDefaultBanner,fields.sponsorshipImage,fields.filter,fields.label,fields.richTextLabel,fields.description,fields.statisticsQuerySpec,fields.hideLabelOnCardAndDefaultBanner,fields.childCollections,fields.expandChildCollectionRows,fields.layout,fields.rows,sys.contentType,sys.id,sys.type",
+                      "fields.bookSortOrder,fields.banner,fields.urlKey,fields.iconForCardAndDefaultBanner,fields.sponsorshipImage,fields.filter,fields.label,fields.richTextLabel,fields.description,fields.urlForBloomPubBundle,fields.urlForBloomSourceBundle,fields.statisticsQuerySpec,fields.hideLabelOnCardAndDefaultBanner,fields.childCollections,fields.expandChildCollectionRows,fields.layout,fields.rows,sys.contentType,sys.id,sys.type",
                   include: 10, // depth
                   "fields.urlKey[in]": `${collectionName},${templateKey}`,
               }
@@ -414,6 +414,8 @@ export function getDummyCollectionForPreview(bannerId: string): ICollection {
         rawLayout: "by-level",
         type: "collection",
         description: "",
+        urlForBloomPubBundle: "",
+        urlForBloomSourceBundle: "",
         expandChildCollectionRows: false,
         showBookCountInRowDisplay: false,
     };
@@ -434,6 +436,8 @@ function makeTopicCollectionsForCards(): ICollection[] {
                 rawLayout: "by-level",
                 type: "collection",
                 description: "",
+                urlForBloomPubBundle: "",
+                urlForBloomSourceBundle: "",
                 expandChildCollectionRows: false,
                 showBookCountInRowDisplay: false,
             },

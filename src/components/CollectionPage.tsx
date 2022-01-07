@@ -21,6 +21,9 @@ import { useGetLocalizedCollectionLabel } from "../localization/CollectionLabel"
 import { PageNotFound } from "./PageNotFound";
 import { useResponsiveChoice } from "../responsiveUtilities";
 import { CollectionLayout } from "./CollectionLayout";
+import { DownloadBundleButton } from "./banners/DownloadBundleButton";
+
+const kLeftMarginOnCollectionPages = "20px";
 
 export const CollectionPage: React.FunctionComponent<{
     collectionName: string;
@@ -98,6 +101,42 @@ export const CollectionPage: React.FunctionComponent<{
         return (
             <div>
                 {!!props.embeddedSettings || banner}
+                {/* This is used (at least) for PNG collections where they host a bloombundle and then provide a link to it in the description. See  http://localhost:3000/PNG-EERRP/PNG-EERRP-SJ-S2*/}
+                {collection.urlForBloomPubBundle && (
+                    <span
+                        css={css`
+                            margin-left: ${kLeftMarginOnCollectionPages};
+                        `}
+                    >
+                        <DownloadBundleButton
+                            url={collection.urlForBloomPubBundle}
+                        >
+                            {l10n.formatMessage({
+                                id: "banner.downloadAllBloomPUBsToBloomReader",
+                                defaultMessage:
+                                    "Download this set of books to Bloom Reader",
+                            })}
+                        </DownloadBundleButton>
+                    </span>
+                )}
+                {/* At the moment we don't have an example of this */}
+                {collection.urlForBloomSourceBundle && (
+                    <span
+                        css={css`
+                            margin-left: ${kLeftMarginOnCollectionPages};
+                        `}
+                    >
+                        <DownloadBundleButton
+                            url={collection.urlForBloomSourceBundle}
+                        >
+                            {l10n.formatMessage({
+                                id: "banner.downloadAllShellsToBloomEditor",
+                                defaultMessage:
+                                    "Download this set of shellbooks for translating in Bloom Editor",
+                            })}
+                        </DownloadBundleButton>
+                    </span>
+                )}
                 <ListOfBookGroups>
                     {collectionRows}
                     {booksComponent}
