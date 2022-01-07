@@ -323,6 +323,14 @@
         "description": "",
         "message": "Download BloomPUB for Bloom Reader or BloomPub Viewer"
     },
+    "banner.downloadAllBloomPUBsToBloomReader": {
+        "description": "",
+        "message": "Download this set of books to Bloom Reader"
+    },
+    "banner.downloadAllShellsToBloomEditor": {
+        "description": "",
+        "message": "Download this set of shellbooks for translating in Bloom Editor"
+    },
     "footer.support": {
         "description": "",
         "message": "Support"
