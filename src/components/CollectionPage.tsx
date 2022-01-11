@@ -22,6 +22,8 @@ import { PageNotFound } from "./PageNotFound";
 import { useResponsiveChoice } from "../responsiveUtilities";
 import { CollectionLayout } from "./CollectionLayout";
 import { DownloadBundleButton } from "./banners/DownloadBundleButton";
+import { Helmet } from "react-helmet";
+import { useLocation } from "react-router-dom";
 
 const kLeftMarginOnCollectionPages = "20px";
 
@@ -37,6 +39,7 @@ export const CollectionPage: React.FunctionComponent<{
     const { params, sendIt } = getCollectionAnalyticsInfo(collection);
     useSetBrowserTabTitle(useGetLocalizedCollectionLabel(collection));
     useTrack("Open Collection", params, sendIt);
+    const location = useLocation();
 
     // We seem to get some spurious renders of CollectionPage (at least one extra one on the home page)
     // where nothing significant has changed. Keeping the results in a memo saves time.
@@ -100,6 +103,13 @@ export const CollectionPage: React.FunctionComponent<{
 
         return (
             <div>
+                <Helmet>
+                    <link
+                        rel="canonical"
+                        // trying to avoid having search engines consider this canonical: https://bloomlibrary.org/#!/language:tpi
+                        href={document.location.origin + location.pathname}
+                    />
+                </Helmet>
                 {!!props.embeddedSettings || banner}
                 {/* This is used (at least) for PNG collections where they host a bloombundle and then provide a link to it in the description. See  http://localhost:3000/PNG-EERRP/PNG-EERRP-SJ-S2*/}
                 {collection.urlForBloomPubBundle && (
@@ -187,6 +197,7 @@ export const CollectionPage: React.FunctionComponent<{
         l10n,
         loading,
         props.embeddedSettings,
+        location.pathname,
     ]);
     return result;
 };
