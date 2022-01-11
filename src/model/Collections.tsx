@@ -321,6 +321,8 @@ export function makeLanguageCollection(
         urlKey: "language:" + langCode,
         filter: { language: langCode },
         label,
+        title: `Free ${languageDisplayName} books`,
+        metaDescription: `A collection of free books in the ${languageDisplayName} language.`,
     };
 }
 
@@ -405,6 +407,8 @@ export function makeCollectionForPHash(
 export function getDummyCollectionForPreview(bannerId: string): ICollection {
     return {
         label: "dummy",
+        title: "dummy",
+        metaDescription: "dummy",
         urlKey: "dummy",
         filter: {},
         childCollections: [],
@@ -429,6 +433,8 @@ function makeTopicCollectionsForCards(): ICollection[] {
             {
                 urlKey: "topic:" + t,
                 label: t,
+                title: `Free ${t} books`,
+                metaDescription: `Free books about ${t}.`,
                 childCollections: [],
                 filter: { topic: t },
                 bannerId: "", // this will never be used because it's just for the card
