@@ -24,6 +24,8 @@ export interface IBanner {
 // This mostly corresponds to the fields of a Collection from Contentful.
 // Some of the raw data we get from there gets processed to make simpler fields here.
 export interface ICollection {
+    title: string; //used in the <head>, important for SEO
+    metaDescription: string; //used in the <head>, important for SEO
     bannerId: string; // contentful ID of banner object. (fields.banner.id)
     layout: string; // from layout.fields.name; or a default if not set in contentful
     rawLayout: string | undefined; // from layout.fields.name; in at least one scenario, we need to know if `layout` is a default or not

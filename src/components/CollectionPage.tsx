@@ -14,7 +14,6 @@ import { LanguageGroup } from "./LanguageGroup";
 
 import { useTrack } from "../analytics/Analytics";
 import { IEmbedSettings } from "../model/ContentInterfaces";
-import { useSetBrowserTabTitle } from "./Routes";
 import { getCollectionAnalyticsInfo } from "../analytics/CollectionAnalyticsInfo";
 import { useIntl } from "react-intl";
 import { useGetLocalizedCollectionLabel } from "../localization/CollectionLabel";
@@ -37,7 +36,13 @@ export const CollectionPage: React.FunctionComponent<{
     const [booksAndLanguages, setBooksAndLanguages] = useState("");
     const { collection, loading } = useGetCollection(props.collectionName);
     const { params, sendIt } = getCollectionAnalyticsInfo(collection);
-    useSetBrowserTabTitle(useGetLocalizedCollectionLabel(collection));
+    const localizedLabel = useGetLocalizedCollectionLabel(collection);
+
+    // generated collections (topics, language) fill in a good title
+    const title = collection?.title
+        ? collection?.title
+        : // enhance: ideally, we'd want localizedLabel + "books", also localized (with correct word order)
+          localizedLabel;
     useTrack("Open Collection", params, sendIt);
     const location = useLocation();
 
@@ -104,6 +109,12 @@ export const CollectionPage: React.FunctionComponent<{
         return (
             <div>
                 <Helmet>
+                    <title>{title}</title>
+                    <meta
+                        name="Description"
+                        // enhance: what should we do about localizing?
+                        content={collection.metaDescription}
+                    />
                     <link
                         rel="canonical"
                         // trying to avoid having search engines consider this canonical: https://bloomlibrary.org/#!/language:tpi
@@ -197,6 +208,7 @@ export const CollectionPage: React.FunctionComponent<{
         l10n,
         loading,
         props.embeddedSettings,
+        title,
         location.pathname,
     ]);
     return result;
