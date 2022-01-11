@@ -311,6 +311,10 @@
         "description": "",
         "message": "Our system was not confident about scaling the book to this format."
     },
+    "book.artifacts.doesnotexist": {
+        "description": "",
+        "message": "BloomLibrary does not have the book in this format."
+    },
     "book.artifacts.pdf": {
         "description": "",
         "message": "Download PDF"
