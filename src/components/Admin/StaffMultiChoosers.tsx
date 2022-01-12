@@ -17,6 +17,7 @@ export const BookshelvesChooser: React.FunctionComponent<{
     const bookshelfKeys = availableBookshelves.map((b) => b.key).sort();
     return (
         <MultiChooser
+            isDisabled={true}
             label="Bookshelves"
             availableValues={bookshelfKeys}
             getLabelForValue={(key) => key}
