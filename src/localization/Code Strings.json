@@ -311,6 +311,10 @@
         "description": "",
         "message": "Our system was not confident about scaling the book to this format."
     },
+    "book.artifacts.doesnotexist": {
+        "description": "",
+        "message": "BloomLibrary does not have the book in this format."
+    },
     "book.artifacts.pdf": {
         "description": "",
         "message": "Download PDF"
@@ -322,6 +326,14 @@
     "book.artifacts.bloompub": {
         "description": "",
         "message": "Download BloomPUB for Bloom Reader or BloomPub Viewer"
+    },
+    "banner.downloadAllBloomPUBsToBloomReader": {
+        "description": "",
+        "message": "Download this set of books to Bloom Reader"
+    },
+    "banner.downloadAllShellsToBloomEditor": {
+        "description": "",
+        "message": "Download this set of shellbooks for translating in Bloom Editor"
     },
     "footer.support": {
         "description": "",

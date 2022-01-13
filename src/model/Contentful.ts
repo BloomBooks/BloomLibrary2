@@ -56,9 +56,15 @@ export function convertContentfulCollectionToICollection(
 
     const result: ICollection = {
         urlKey: item.fields.urlKey as string,
+        // By the time we get to displaying a page from this collection, this will be either the localized label or a template based on it
+        title: "",
+        //  We could eventually make this a field in Contentful. It's just for google and other search engines.
+        metaDescription: `Free books from our ${item.fields.label} collection.`,
         label: item.fields.label,
         richTextLabel: item.fields.richTextLabel,
         description: item.fields.description,
+        urlForBloomPubBundle: item.fields.urlForBloomPubBundle,
+        urlForBloomSourceBundle: item.fields.urlForBloomSourceBundle,
         filter: item.fields.filter,
         statisticsQuerySpec: item.fields.statisticsQuerySpec,
         iconForCardAndDefaultBanner: icon,

@@ -14,13 +14,17 @@ import { LanguageGroup } from "./LanguageGroup";
 
 import { useTrack } from "../analytics/Analytics";
 import { IEmbedSettings } from "../model/ContentInterfaces";
-import { useSetBrowserTabTitle } from "./Routes";
 import { getCollectionAnalyticsInfo } from "../analytics/CollectionAnalyticsInfo";
 import { useIntl } from "react-intl";
 import { useGetLocalizedCollectionLabel } from "../localization/CollectionLabel";
 import { PageNotFound } from "./PageNotFound";
 import { useResponsiveChoice } from "../responsiveUtilities";
 import { CollectionLayout } from "./CollectionLayout";
+import { DownloadBundleButton } from "./banners/DownloadBundleButton";
+import { Helmet } from "react-helmet";
+import { useLocation } from "react-router-dom";
+
+const kLeftMarginOnCollectionPages = "20px";
 
 export const CollectionPage: React.FunctionComponent<{
     collectionName: string;
@@ -32,8 +36,15 @@ export const CollectionPage: React.FunctionComponent<{
     const [booksAndLanguages, setBooksAndLanguages] = useState("");
     const { collection, loading } = useGetCollection(props.collectionName);
     const { params, sendIt } = getCollectionAnalyticsInfo(collection);
-    useSetBrowserTabTitle(useGetLocalizedCollectionLabel(collection));
+    const localizedLabel = useGetLocalizedCollectionLabel(collection);
+
+    // generated collections (topics, language) fill in a good title
+    const title = collection?.title
+        ? collection?.title
+        : // enhance: ideally, we'd want localizedLabel + "books", also localized (with correct word order)
+          localizedLabel;
     useTrack("Open Collection", params, sendIt);
+    const location = useLocation();
 
     // We seem to get some spurious renders of CollectionPage (at least one extra one on the home page)
     // where nothing significant has changed. Keeping the results in a memo saves time.
@@ -97,7 +108,56 @@ export const CollectionPage: React.FunctionComponent<{
 
         return (
             <div>
+                <Helmet>
+                    <title>{title}</title>
+                    <meta
+                        name="Description"
+                        // enhance: what should we do about localizing?
+                        content={collection.metaDescription}
+                    />
+                    <link
+                        rel="canonical"
+                        // trying to avoid having search engines consider this canonical: https://bloomlibrary.org/#!/language:tpi
+                        href={document.location.origin + location.pathname}
+                    />
+                </Helmet>
                 {!!props.embeddedSettings || banner}
+                {/* This is used (at least) for PNG collections where they host a bloombundle and then provide a link to it in the description. See  http://localhost:3000/PNG-EERRP/PNG-EERRP-SJ-S2*/}
+                {collection.urlForBloomPubBundle && (
+                    <span
+                        css={css`
+                            margin-left: ${kLeftMarginOnCollectionPages};
+                        `}
+                    >
+                        <DownloadBundleButton
+                            url={collection.urlForBloomPubBundle}
+                        >
+                            {l10n.formatMessage({
+                                id: "banner.downloadAllBloomPUBsToBloomReader",
+                                defaultMessage:
+                                    "Download this set of books to Bloom Reader",
+                            })}
+                        </DownloadBundleButton>
+                    </span>
+                )}
+                {/* At the moment we don't have an example of this */}
+                {collection.urlForBloomSourceBundle && (
+                    <span
+                        css={css`
+                            margin-left: ${kLeftMarginOnCollectionPages};
+                        `}
+                    >
+                        <DownloadBundleButton
+                            url={collection.urlForBloomSourceBundle}
+                        >
+                            {l10n.formatMessage({
+                                id: "banner.downloadAllShellsToBloomEditor",
+                                defaultMessage:
+                                    "Download this set of shellbooks for translating in Bloom Editor",
+                            })}
+                        </DownloadBundleButton>
+                    </span>
+                )}
                 <ListOfBookGroups>
                     {collectionRows}
                     {booksComponent}
@@ -148,6 +208,8 @@ export const CollectionPage: React.FunctionComponent<{
         l10n,
         loading,
         props.embeddedSettings,
+        title,
+        location.pathname,
     ]);
     return result;
 };
