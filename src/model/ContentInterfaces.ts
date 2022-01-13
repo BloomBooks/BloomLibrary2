@@ -24,6 +24,8 @@ export interface IBanner {
 // This mostly corresponds to the fields of a Collection from Contentful.
 // Some of the raw data we get from there gets processed to make simpler fields here.
 export interface ICollection {
+    title: string; //used in the <head>, important for SEO
+    metaDescription: string; //used in the <head>, important for SEO
     bannerId: string; // contentful ID of banner object. (fields.banner.id)
     layout: string; // from layout.fields.name; or a default if not set in contentful
     rawLayout: string | undefined; // from layout.fields.name; in at least one scenario, we need to know if `layout` is a default or not
@@ -35,6 +37,8 @@ export interface ICollection {
     // enhance: maybe instead provide a function that would return the react nodes, so we could hide this Contentful-specific type?
     richTextLabel?: any; // NB: here we are leaking the Contentful "Document", which does not have an exported type
     description: string;
+    urlForBloomPubBundle: string; // used where someone (i.e. Education for Life) is providing a link to a bloomBundle of all the books in the collection.
+    urlForBloomSourceBundle: string; // used for collections of shells where it is common for people to want to translate the whole set
     filter: IFilter;
     statisticsQuerySpec?: IStatisticsQuerySpec;
     iconForCardAndDefaultBanner?: IMedia;

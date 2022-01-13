@@ -22,6 +22,7 @@ export const MultiChooser: React.FunctionComponent<{
     getSelectedValues: () => any[];
     getLabelForValue: (v: any) => string;
     getStylingForValue?: (v: any) => object;
+    isDisabled?: boolean | undefined;
 }> = (props) => {
     const [chosenItems, setChosenItems] = useState(props.getSelectedValues());
 
@@ -51,6 +52,7 @@ export const MultiChooser: React.FunctionComponent<{
         <FormControl fullWidth variant={"outlined"} color={"primary"}>
             <FormLabel component="legend">{props.label}</FormLabel>
             <Select
+                isDisabled={props.isDisabled === true}
                 styles={{
                     // Fixes the zindex being too low so that you "see through it"
                     menu: (provided) => ({ ...provided, zIndex: 9999 }),

@@ -1,5 +1,5 @@
 import css from "@emotion/css/macro";
-import React from "react"; // see https://github.com/emotion-js/emotion/issues/1156
+import React, { useContext } from "react"; // see https://github.com/emotion-js/emotion/issues/1156
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
@@ -10,6 +10,7 @@ import { ButtonRow } from "../ButtonRow";
 import { CollectionLabel } from "../../localization/CollectionLabel";
 import { BlorgMarkdown } from "../markdown/BlorgMarkdown";
 import { useIntl } from "react-intl";
+import { OSFeaturesContext } from "../OSFeaturesContext";
 
 export const Blurb: React.FunctionComponent<{
     collection: ICollection;
@@ -75,6 +76,8 @@ const BannerTitle: React.FunctionComponent<{
     const l10n = useIntl();
     let bannerTitle: React.ReactNode;
 
+    const { mobile } = useContext(OSFeaturesContext);
+
     // e.g. we have collection with titles [Default banner], [Default topic banner], [Default Language Banner].
     if (props.banner.title.startsWith("[Default")) {
         // enhance: move to IBanner.useCollectionLabel
@@ -102,18 +105,21 @@ const BannerTitle: React.FunctionComponent<{
             </React.Fragment>
         );
     }
+
     return (
         (!props.hideTitle && (
             <h1
                 css={css`
-                    font-size: 36px;
+                    font-size: ${mobile ? 18 : 36}px;
                     margin-top: 0;
                     /*flex-grow: 1; // push the rest to the bottom*/
                     // For the sake of uniformity, the only styling we allow in richTextLabel is normal, h1, h2, and h3.
                     // Here we define what they will look like. H1 continues to get the default
                     // 36px we use for plain labels. (Review: or, make H2 that, and let H1 be a way to get bigger?)
                     h1 {
-                        font-size: 36px; // rich text will produce an h1 nested inside the h1 above.
+                        font-size: ${mobile
+                            ? 18
+                            : 36}px; // rich text will produce an h1 nested inside the h1 above.
                     }
                     h2 {
                         font-size: 32px;
