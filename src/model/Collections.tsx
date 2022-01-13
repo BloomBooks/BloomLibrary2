@@ -82,7 +82,7 @@ function useGetContentfulCollection(
                   // As of Jan 2021, we save about 17% by restricting fields this way. Replacing all the fields.* items with just "fields"
                   // is also worth considering...we save 16% just by cutting out unused sys fields.
                   select:
-                      "fields.bookSortOrder,fields.banner,fields.urlKey,fields.iconForCardAndDefaultBanner,fields.sponsorshipImage,fields.filter,fields.label,fields.richTextLabel,fields.description,fields.statisticsQuerySpec,fields.hideLabelOnCardAndDefaultBanner,fields.childCollections,fields.expandChildCollectionRows,fields.layout,fields.rows,sys.contentType,sys.id,sys.type",
+                      "fields.bookSortOrder,fields.banner,fields.urlKey,fields.iconForCardAndDefaultBanner,fields.sponsorshipImage,fields.filter,fields.label,fields.richTextLabel,fields.description,fields.urlForBloomPubBundle,fields.urlForBloomSourceBundle,fields.statisticsQuerySpec,fields.hideLabelOnCardAndDefaultBanner,fields.childCollections,fields.expandChildCollectionRows,fields.layout,fields.rows,sys.contentType,sys.id,sys.type",
                   include: 10, // depth
                   "fields.urlKey[in]": `${collectionName},${templateKey}`,
               }
@@ -321,6 +321,8 @@ export function makeLanguageCollection(
         urlKey: "language:" + langCode,
         filter: { language: langCode },
         label,
+        title: `Free ${languageDisplayName} books`,
+        metaDescription: `A collection of free books in the ${languageDisplayName} language.`,
     };
 }
 
@@ -405,6 +407,8 @@ export function makeCollectionForPHash(
 export function getDummyCollectionForPreview(bannerId: string): ICollection {
     return {
         label: "dummy",
+        title: "dummy",
+        metaDescription: "dummy",
         urlKey: "dummy",
         filter: {},
         childCollections: [],
@@ -414,6 +418,8 @@ export function getDummyCollectionForPreview(bannerId: string): ICollection {
         rawLayout: "by-level",
         type: "collection",
         description: "",
+        urlForBloomPubBundle: "",
+        urlForBloomSourceBundle: "",
         expandChildCollectionRows: false,
         showBookCountInRowDisplay: false,
     };
@@ -427,6 +433,8 @@ function makeTopicCollectionsForCards(): ICollection[] {
             {
                 urlKey: "topic:" + t,
                 label: t,
+                title: `Free ${t} books`,
+                metaDescription: `Free books about ${t}.`,
                 childCollections: [],
                 filter: { topic: t },
                 bannerId: "", // this will never be used because it's just for the card
@@ -434,6 +442,8 @@ function makeTopicCollectionsForCards(): ICollection[] {
                 rawLayout: "by-level",
                 type: "collection",
                 description: "",
+                urlForBloomPubBundle: "",
+                urlForBloomSourceBundle: "",
                 expandChildCollectionRows: false,
                 showBookCountInRowDisplay: false,
             },

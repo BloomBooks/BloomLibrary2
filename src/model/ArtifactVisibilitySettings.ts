@@ -7,22 +7,30 @@ export class ArtifactVisibilitySettings {
     public harvester: boolean | undefined;
     public librarian: boolean | undefined;
     public user: boolean | undefined;
+    public exists: boolean | undefined;
 
     constructor(
         harvester?: boolean | undefined,
         librarian?: boolean | undefined,
-        user?: boolean | undefined
+        user?: boolean | undefined,
+        exists?: boolean | undefined
     ) {
         makeObservable(this, {
             harvester: observable,
             librarian: observable,
             user: observable,
-            decision: computed
+            exists: observable,
+            decision: computed,
         });
 
         this.harvester = harvester;
         this.librarian = librarian;
         this.user = user;
+        this.exists = exists;
+    }
+
+    public doesNotExist(): boolean {
+        return this.exists === false;
     }
 
     public isUserHide(): boolean {
@@ -98,6 +106,12 @@ export class ArtifactVisibilitySettings {
                             defaultMessage:
                                 "Our system was not confident about scaling the book to this format.",
                         })) ||
+                    (this.doesNotExist() &&
+                        l10n.formatMessage({
+                            id: "book.artifacts.doesnotexist",
+                            defaultMessage:
+                                "BloomLibrary does not have the book in this format.",
+                        })) ||
                     undefined
                 );
             default:
@@ -108,6 +122,9 @@ export class ArtifactVisibilitySettings {
     // This duplicates some logic in other methods, but if we use them,
     // they probably have to be @computed too...
     public get decision(): boolean {
+        if (this.exists === false) {
+            return this.exists;
+        }
         if (this.user !== undefined) {
             return this.user;
         }
@@ -152,7 +169,7 @@ export class ArtifactVisibilitySettingsGroup {
             epub: observable,
             bloomReader: observable,
             readOnline: observable,
-            shellbook: observable
+            shellbook: observable,
         });
     }
 

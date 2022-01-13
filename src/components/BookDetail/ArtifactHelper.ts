@@ -100,10 +100,7 @@ export function getBookNameFromUrl(baseUrl: string): string | undefined {
     if (!baseFileName) {
         return undefined;
     }
-    // This code mimics Bloom Desktop's SanitizeNameForFileSystem() function,
-    // mainly the logic in RemoveDangerousCharacters(). This is how the harvester comes
-    // up with the name to save artifacts under.
-    let result = baseFileName.replace(/["<>|:*?\\/\u00a0&'{},;()$@]/g, " ");
+    let result = decodeURIComponent(baseFileName);
     while (
         result.startsWith(".") ||
         result.startsWith(" ") ||
