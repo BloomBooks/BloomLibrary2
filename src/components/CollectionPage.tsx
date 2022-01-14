@@ -127,6 +127,7 @@ export const CollectionPage: React.FunctionComponent<{
                     <span
                         css={css`
                             margin-left: ${kLeftMarginOnCollectionPages};
+                            display: block;
                         `}
                     >
                         <DownloadBundleButton
@@ -145,6 +146,7 @@ export const CollectionPage: React.FunctionComponent<{
                     <span
                         css={css`
                             margin-left: ${kLeftMarginOnCollectionPages};
+                            display: block;
                         `}
                     >
                         <DownloadBundleButton
