@@ -345,9 +345,10 @@ interface IGridResult {
 
 export const gridBookKeys =
     "objectId,bookInstanceId," +
-    "title,baseUrl,license,licenseNotes,inCirculation,draft,summary,copyright,harvestState,harvestLog,harvestStartedAt," +
-    "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits,bookshelves," +
-    "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,publisher,originalPublisher,keywords,edition";
+    "title,baseUrl,license,licenseNotes,inCirculation,draft,summary,copyright,harvestState," +
+    "harvestLog,harvestStartedAt,tags,pageCount,phashOfFirstContentImage,show,credits,country," +
+    "features,internetLimits,bookshelves,librarianNote,uploader,langPointers,importedBookSourceUrl," +
+    "downloadCount,publisher,originalPublisher,keywords,edition";
 
 export const gridBookIncludeFields = "uploader,langPointers";
 
@@ -715,7 +716,7 @@ export function useSearchBooks(
         count: 1,
         keys:
             // this should be all the fields of IBasicBookInfo
-            "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition, draft",
+            "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft",
         ...params,
     };
     const bookResultsStatus: IAxiosAnswer = useBookQueryInternal(
@@ -934,6 +935,7 @@ export function splitString(
         "originalPublisher:", // must come before "publisher:", since "originalPublisher:" includes the other as a substring
         "publisher:",
         "language:",
+        "brandingProjectName:",
     ];
 
     const possibleParts = [...facets, ...allTagsInDatabase];
@@ -1122,6 +1124,7 @@ export function constructParseBookQuery(
                 case "publisher":
                 case "originalPublisher":
                 case "edition":
+                case "brandingProjectName":
                     params.where[facetLabel] = regex(facetValue);
                     break;
                 case "uploader":
@@ -1354,21 +1357,24 @@ export function constructParseBookQuery(
     // We (gjm and jt) aren't sure why these two "delete" lines were ever needed, but now that we
     // add params for both publisher and originalPublisher, it doesn't work to delete them here.
     // If removing the delete lines causes a problem, we'll need to look for a different solution.
+    // And now (01/18/2022) we've added edition and we're adding brandingProjectName. It makes sense
+    // to do the delete if we're about to fill it in from the filter. Otherwise, it undoes the
+    // 'facet' work above.
 
-    //delete params.where.publisher;
     if (f.publisher) {
+        delete params.where.publisher;
         params.where.publisher = f.publisher;
     }
-    //delete params.where.originalPublisher;
     if (f.originalPublisher) {
+        delete params.where.originalPublisher;
         params.where.originalPublisher = f.originalPublisher;
     }
-    delete params.where.edition;
     if (f.edition) {
+        delete params.where.edition;
         params.where.edition = f.edition;
     }
-    delete params.where.brandingProjectName;
     if (f.brandingProjectName) {
+        delete params.where.brandingProjectName;
         params.where.brandingProjectName = f.brandingProjectName;
     }
 
