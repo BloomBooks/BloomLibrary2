@@ -1,3 +1,9 @@
+// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+import css from "@emotion/css/macro";
+// these two lines make the css prop work on react elements
+import { jsx } from "@emotion/core";
+/** @jsx jsx */
+
 import React, { useContext } from "react";
 import { observer } from "mobx-react-lite";
 import { FilterHolder } from "./BulkEditPage";
@@ -12,23 +18,33 @@ export const AddBookshelfPanel: React.FunctionComponent<{
 }> = observer((props) => {
     const { bookshelves } = useContext(CachedTablesContext);
     return (
-        <BulkEditPanel
-            choices={bookshelves.map((b) => b.key)}
-            panelLabel="Add Bookshelf"
-            newValueLabel="New Bookshelf"
-            actionButtonLabel="Add Bookshelf"
-            performChangesToAllMatchingBooks={(
-                filter,
-                bookshelf,
-                refreshWhenDone
-            ) =>
-                AddBookshelfToAllBooksInFilter(
+        <fieldset
+            // This disables all input in its descendents.
+            // (Temporary fix while working on BL-10838)
+            disabled
+            css={css`
+                margin: 0;
+                padding: 0;
+            `}
+        >
+            <BulkEditPanel
+                choices={bookshelves.map((b) => b.key)}
+                panelLabel="Add Bookshelf"
+                newValueLabel="New Bookshelf"
+                actionButtonLabel="Add Bookshelf"
+                performChangesToAllMatchingBooks={(
                     filter,
                     bookshelf,
                     refreshWhenDone
-                )
-            }
-            {...props}
-        />
+                ) =>
+                    AddBookshelfToAllBooksInFilter(
+                        filter,
+                        bookshelf,
+                        refreshWhenDone
+                    )
+                }
+                {...props}
+            />
+        </fieldset>
     );
 });
