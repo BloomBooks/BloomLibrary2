@@ -18,6 +18,7 @@ import {
 import { BookCard, useBookCardSpec } from "./BookCard";
 import { SingleRowCardSwiper } from "./SingleRowCardSwiper";
 import { useResponsiveChoice } from "../responsiveUtilities";
+import { CollectionInfoWidget } from "./CollectionInfoWidget";
 
 interface IProps {
     title: string;
@@ -203,6 +204,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
                         {props.predeterminedBooks
                             ? props.predeterminedBooks.length
                             : search.totalMatchingRecords}
+                        <CollectionInfoWidget filter={props.filter} />
                     </span>
                 </h1>
                 {ready && bookList}
