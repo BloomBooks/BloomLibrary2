@@ -292,3 +292,18 @@ it("builds proper parse query for recursive anyOfThese field", () => {
         '{"count":1,"limit":0,"where":{"tags":"bookshelf:first","inCirculation":{"$in":[true,null]},"draft":{"$in":[false,null]},"$or":[{"tags":"bookshelf:second"},{"$or":[{"tags":"bookshelf:third"}]}]}}'
     );
 });
+
+it("builds proper parse query for tag field ending with *", () => {
+    const inputFilter: IFilter = {
+        otherTags: "list:Bible*",
+    };
+    const result = constructParseBookQuery(
+        { count: 1, limit: 0 },
+        inputFilter,
+        []
+    );
+    const resultString = JSON.stringify(result);
+    expect(resultString).toBe(
+        '{"count":1,"limit":0,"where":{"tags":{"$regex":"^list:Bible"},"inCirculation":{"$in":[true,null]},"draft":{"$in":[false,null]}}}'
+    );
+});
