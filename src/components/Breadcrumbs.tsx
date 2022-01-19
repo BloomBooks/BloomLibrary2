@@ -12,6 +12,7 @@ import { splitPathname } from "./Routes";
 import { CollectionLabel } from "../localization/CollectionLabel";
 import { BlorgLink } from "./BlorgLink";
 import { FormattedMessage, useIntl } from "react-intl";
+import { CollectionInfoWidget } from "./CollectionInfoWidget";
 
 export const Breadcrumbs: React.FunctionComponent = () => {
     const location = useLocation();
@@ -199,6 +200,7 @@ const CollectionCrumb: React.FunctionComponent<{
                     ""
                 )}
             </BlorgLink>
+            <CollectionInfoWidget collection={collection} />
         </li>
     );
 };

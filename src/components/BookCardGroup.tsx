@@ -26,6 +26,7 @@ import { BlorgMarkdown } from "./markdown/BlorgMarkdown";
 import { AllCard } from "./AllCard";
 import { CollectionLayout } from "./CollectionLayout";
 import { ListOfBookGroups } from "./ListOfBookGroups";
+import { CollectionInfoWidget } from "./CollectionInfoWidget";
 
 interface IProps {
     title?: string;
@@ -268,6 +269,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
             <Typography variant="body2" color="textSecondary" component="p">
                 <BlorgMarkdown markdown={props.collection.description} />
             </Typography>
+            <CollectionInfoWidget collection={props.collection} />
         </div>
     );
 
@@ -289,6 +291,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
                     {countToShow}
                 </span>
             )}
+            <CollectionInfoWidget collection={props.collection} />
         </h1>
     );
 
