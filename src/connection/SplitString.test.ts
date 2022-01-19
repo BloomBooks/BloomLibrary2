@@ -140,6 +140,34 @@ it("handles publisher and original publisher with spaces", () => {
     expect(specialParts.includes("publisher:African Storybook Project"));
 });
 
+it("handles brandingProjectName", () => {
+    const {
+        otherSearchTerms,
+        specialParts,
+    } = splitString("frogs brandingProjectName:fred topic:Math", [
+        "something irrelevant",
+        "topic:Math",
+    ]);
+    expect(otherSearchTerms).toEqual("frogs");
+    expect(specialParts.length).toBe(2);
+    expect(specialParts.includes("brandingProjectName:fred"));
+    expect(specialParts.includes("topic:Math"));
+});
+
+it("handles branding alias", () => {
+    const {
+        otherSearchTerms,
+        specialParts,
+    } = splitString("frogs branding:Bob topic:Math", [
+        "something irrelevant",
+        "topic:Math",
+    ]);
+    expect(otherSearchTerms).toEqual("frogs");
+    expect(specialParts.length).toBe(2);
+    expect(specialParts.includes("branding:Bob"));
+    expect(specialParts.includes("topic:Math"));
+});
+
 it("handles corner case of facet with no content", () => {
     const { otherSearchTerms, specialParts } = splitString("frogs publisher:", [
         "something irrelevant",
