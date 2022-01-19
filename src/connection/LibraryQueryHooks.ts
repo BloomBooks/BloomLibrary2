@@ -1293,7 +1293,13 @@ export function constructParseBookQuery(
     }
     // Now we need to assemble topicsAll and tagParts
     if (tagsAll.length === 1 && tagParts.length === 0) {
-        params.where.tags = tagsAll[0];
+        if (tagsAll[0].endsWith("*")) {
+            // Anchor the regex and leave it case sensitive.  This is the most efficient form of regex.
+            const tagPrefix = tagsAll[0].substring(0, tagsAll[0].length - 1);
+            params.where.tags = { $regex: "^" + processRegExp(tagPrefix) };
+        } else {
+            params.where.tags = tagsAll[0];
+        }
     } else {
         if (tagsAll.length) {
             // merge topicsAll into tagsAll
@@ -1407,7 +1413,6 @@ export function constructParseBookQuery(
             params.where.$or.push(pbq.where);
         }
     }
-
     return params;
 }
 
