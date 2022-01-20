@@ -1455,11 +1455,14 @@ function processDerivedFrom(
     // this wants to be something like {$not: {where: innerWhere}}
     // but I can't find any variation of that which works.
     // For now, we just support these three kinds of parent filters
-    // (and only bookshelf ones that are simple, exact matches).
+    // (and only bookshelf ones that are simple, exact matches, or
+    // otherTags ones that are simple, exact matches of single tags).
     let nonParentFilter: any;
     const parentBookShelf = f.derivedFrom.bookshelf;
     if (parentBookShelf) {
         nonParentFilter = { bookshelves: { $ne: parentBookShelf } };
+    } else if (f.derivedFrom.otherTags) {
+        nonParentFilter = { tags: { $ne: f.derivedFrom.otherTags } };
     } else if (f.derivedFrom.publisher) {
         nonParentFilter = {
             publisher: { $ne: f.derivedFrom.publisher },
