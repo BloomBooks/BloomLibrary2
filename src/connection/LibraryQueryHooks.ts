@@ -1460,6 +1460,8 @@ function processDerivedFrom(
     const parentBookShelf = f.derivedFrom.bookshelf;
     if (parentBookShelf) {
         nonParentFilter = { bookshelves: { $ne: parentBookShelf } };
+    } else if (f.derivedFrom.otherTags) {
+        nonParentFilter = { tags: { $ne: f.derivedFrom.otherTags } };
     } else if (f.derivedFrom.publisher) {
         nonParentFilter = {
             publisher: { $ne: f.derivedFrom.publisher },

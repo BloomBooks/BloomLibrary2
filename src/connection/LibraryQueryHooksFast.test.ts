@@ -122,3 +122,20 @@ it("build proper parse query for no topic and tag field ending with *", () => {
         '{"count":1,"limit":0,"where":{"$and":[{"tags":{"$nin":["topic:Agriculture","topic:Animal Stories","topic:Business","topic:Community Living","topic:Culture","topic:Dictionary","topic:Environment","topic:Fiction","topic:Health","topic:How To","topic:Math","topic:Non Fiction","topic:Personal Development","topic:Primer","topic:Science","topic:Spiritual","topic:Story Book","topic:Traditional Story"]}},{"tags":{"$regex":"^bookshelf:Resources for the Blind"}}],"inCirculation":{"$in":[true,null]},"draft":{"$in":[false,null]}}}'
     );
 });
+
+it("build proper parse query for derivedFrom", () => {
+    const inputFilter: IFilter = {
+        derivedFrom: {
+            otherTags: "bookshelf:African Storybook",
+        },
+    };
+    const result = constructParseBookQuery(
+        { count: 1, limit: 0 },
+        inputFilter,
+        []
+    );
+    const resultString = JSON.stringify(result);
+    expect(resultString).toBe(
+        '{"count":1,"limit":0,"where":{"inCirculation":{"$in":[true,null]},"draft":{"$in":[false,null]},"$and":[{"bookLineageArray":{"$select":{"query":{"className":"books","where":{"tags":"bookshelf:African Storybook","inCirculation":{"$in":[true,null]},"draft":{"$in":[false,null]}}},"key":"bookInstanceId"}}},{"tags":{"$ne":"bookshelf:African Storybook"}}]}}'
+    );
+});
