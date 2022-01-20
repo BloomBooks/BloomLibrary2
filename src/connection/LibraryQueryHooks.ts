@@ -1310,9 +1310,13 @@ export function constructParseBookQuery(
                     tagsAll2.push(tag);
                 }
             });
-            tagParts.push({
-                $all: tagsAll2,
-            });
+            if (tagsAll2.length === 1) {
+                tagParts.push(tagsAll2[0]);
+            } else {
+                tagParts.push({
+                    $all: tagsAll2,
+                });
+            }
         }
         if (tagParts.length === 1) {
             params.where.tags = tagParts[0];
