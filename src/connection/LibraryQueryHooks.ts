@@ -1293,18 +1293,25 @@ export function constructParseBookQuery(
     }
     // Now we need to assemble topicsAll and tagParts
     if (tagsAll.length === 1 && tagParts.length === 0) {
-        if (tagsAll[0].endsWith("*")) {
-            // Anchor the regex and leave it case sensitive.  This is the most efficient form of regex.
-            const tagPrefix = tagsAll[0].substring(0, tagsAll[0].length - 1);
-            params.where.tags = { $regex: "^" + processRegExp(tagPrefix) };
+        if (tagsAll[0].startsWith("*") || tagsAll[0].endsWith("*")) {
+            const tagRegex = getPossiblyAnchoredRegex(tagsAll[0]);
+            params.where.tags = { $regex: tagRegex };
         } else {
             params.where.tags = tagsAll[0];
         }
     } else {
         if (tagsAll.length) {
             // merge topicsAll into tagsAll
+            const tagsAll2: any[] = [];
+            tagsAll.forEach((tag) => {
+                if (tag.startsWith("*") || tag.endsWith("*")) {
+                    tagsAll2.push({ $regex: getPossiblyAnchoredRegex(tag) });
+                } else {
+                    tagsAll2.push(tag);
+                }
+            });
             tagParts.push({
-                $all: tagsAll,
+                $all: tagsAll2,
             });
         }
         if (tagParts.length === 1) {
@@ -1540,3 +1547,20 @@ const useAsync = <T>(
     }, [trigger]);
     return { response, loading, error };
 };
+
+function getPossiblyAnchoredRegex(tagValue: string): string {
+    if (tagValue.startsWith("*") && tagValue.endsWith("*")) {
+        // floating regex, but case sensitive.
+        return processRegExp(
+            tagValue.substring(0, tagValue.length - 1).substring(1)
+        );
+    }
+    // Anchor the regex if possible and leave it case sensitive.  This is the most efficient form of regex.
+    if (tagValue.endsWith("*")) {
+        const tagPrefix = tagValue.substring(0, tagValue.length - 1);
+        return "^" + processRegExp(tagPrefix);
+    }
+    // must start with "*": anchor the regex at the end
+    const tagSuffix = tagValue.substring(1);
+    return processRegExp(tagSuffix) + "$";
+}
