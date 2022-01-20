@@ -1,5 +1,8 @@
 import { IFilter } from "../IFilter";
-import { constructParseBookQuery } from "./LibraryQueryHooks";
+import {
+    constructParseBookQuery,
+    kNameOfNoTopicCollection,
+} from "./LibraryQueryHooks";
 
 // Test code in LibraryQueryHooks.ts that doesn't need to use axios (ie, hit the internet)
 
@@ -101,5 +104,21 @@ it("builds proper parse query for topic and tag field ending with *", () => {
     const resultString = JSON.stringify(result);
     expect(resultString).toBe(
         '{"count":1,"limit":0,"where":{"tags":{"$all":[{"$regex":"^list:Bible"},"topic:Animal Stories"]},"inCirculation":{"$in":[true,null]},"draft":{"$in":[false,null]}}}'
+    );
+});
+
+it("build proper parse query for no topic and tag field ending with *", () => {
+    const inputFilter: IFilter = {
+        otherTags: "bookshelf:Resources for the Blind*",
+        topic: kNameOfNoTopicCollection,
+    };
+    const result = constructParseBookQuery(
+        { count: 1, limit: 0 },
+        inputFilter,
+        []
+    );
+    const resultString = JSON.stringify(result);
+    expect(resultString).toBe(
+        '{"count":1,"limit":0,"where":{"$and":[{"tags":{"$nin":["topic:Agriculture","topic:Animal Stories","topic:Business","topic:Community Living","topic:Culture","topic:Dictionary","topic:Environment","topic:Fiction","topic:Health","topic:How To","topic:Math","topic:Non Fiction","topic:Personal Development","topic:Primer","topic:Science","topic:Spiritual","topic:Story Book","topic:Traditional Story"]}},{"tags":{"$regex":"^bookshelf:Resources for the Blind"}}],"inCirculation":{"$in":[true,null]},"draft":{"$in":[false,null]}}}'
     );
 });
