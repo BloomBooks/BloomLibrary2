@@ -36,6 +36,7 @@ import { ScreenOptionsSelect } from "./ScreenOptionsSelect";
 import { useGetLocalizedCollectionLabel } from "../../localization/CollectionLabel";
 import { ICollectionStatsPageProps } from "./CollectionStatsPageCodeSplit";
 import { PageNotFound } from "../PageNotFound";
+import { StatsCredits } from "./StatsCredits";
 
 export const Pretend: React.FunctionComponent<IStatsProps> = (props) => {
     return <h1>Pretend</h1>;
@@ -339,7 +340,14 @@ export const CollectionStatsPage: React.FunctionComponent<ICollectionStatsPagePr
                     <QueryDescription
                         collection={collection}
                         dateRange={dateRange}
-                    ></QueryDescription>
+                    />
+                </div>
+                <div
+                    css={css`
+                        padding: 10px;
+                    `}
+                >
+                    <StatsCredits />
                 </div>
             </div>
         </div>
