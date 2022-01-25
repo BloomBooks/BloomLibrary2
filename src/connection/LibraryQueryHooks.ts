@@ -1076,10 +1076,6 @@ export function constructParseBookQuery(
         );
     }
 
-    // todo: I don't know why this is undefined
-    console.assert(filter, "Filter is unexpectedly falsey. Investigate why.");
-    const f: IFilter = filter ? filter : {};
-
     if (limit) {
         params.limit = limit;
     }
@@ -1109,9 +1105,9 @@ export function constructParseBookQuery(
     // we can use params.where.tags = tagParts[0]. If it contains more than one, we need
     // params.where.$and:[{tags: tagParts[0]}, {tags: tagParts[1]}... {tags: {$all:topicsAll}}]
     const tagParts: object[] = [];
-    if (!!f.search) {
+    if (!!filter.search) {
         const { otherSearchTerms, specialParts } = splitString(
-            f.search!,
+            filter.search!,
             allTagsFromDatabase
         );
 
@@ -1164,7 +1160,7 @@ export function constructParseBookQuery(
                     params.where.harvestState = facetValue;
                     break;
                 case "language":
-                    f.language = facetValue;
+                    filter.language = facetValue;
                     break;
                 case "level":
                     if (facetValue === "empty") {
@@ -1226,11 +1222,11 @@ export function constructParseBookQuery(
         params.order = "title";
     }
     // if f.language is set, add the query needed to restrict books to those with that language
-    if (f.language != null) {
+    if (filter.language != null) {
         delete params.where.language; // remove that, we need to make it more complicated because we need a join.
         params.where.langPointers = {
             $inQuery: {
-                where: { isoCode: f.language },
+                where: { isoCode: filter.language },
                 className: "language",
             },
         };
@@ -1245,13 +1241,13 @@ export function constructParseBookQuery(
     //     ]
     // };
     // }
-    if (f.otherTags != null) {
+    if (filter.otherTags != null) {
         delete params.where.otherTags;
-        f.otherTags.split(",").forEach((t) => tagsAll.push(t));
+        filter.otherTags.split(",").forEach((t) => tagsAll.push(t));
     }
     // we can search for bookshelves by category (org, project, etc) using useGetBookshelves(). But
     // we cannot, here, filter books by category. We cannot say "give me all the books that are listed in all project bookshelves"
-    if (f.bookShelfCategory != null) {
+    if (filter.bookShelfCategory != null) {
         delete params.where.bookShelfCategory;
     }
 
@@ -1263,22 +1259,22 @@ export function constructParseBookQuery(
 
     // allow regex searches on bookshelf. Handing for counting up, for example, all the books with bookshelf tags
     // that start with "Enabling Writers" (and then go on to list country and sub-project).
-    if (f.bookshelf) {
+    if (filter.bookshelf) {
         delete params.where.bookshelf;
-        params.where.bookshelves = regex(f.bookshelf);
+        params.where.bookshelves = regex(filter.bookshelf);
     }
     // I think you can also do topic via search, but I need a way to do an "OR" in order to combine several topics for STEM
     // take `f.topic` to be a comma-separated list
-    if (f.topic) {
+    if (filter.topic) {
         delete params.where.topic;
-        if (f.topic === kNameOfNoTopicCollection) {
+        if (filter.topic === kNameOfNoTopicCollection) {
             // optimize: is it more efficient to try to come up with a regex that will
             // fail if it finds topic:?
             tagParts.push({
                 $nin: kTopicList.map((t) => "topic:" + t),
             });
-        } else if (f.topic.indexOf(",") >= 0) {
-            const topicsRegex = f.topic
+        } else if (filter.topic.indexOf(",") >= 0) {
+            const topicsRegex = filter.topic
                 .split(",")
                 .map((s) => "topic:" + processRegExp(s))
                 .join("|");
@@ -1288,7 +1284,7 @@ export function constructParseBookQuery(
             });
         } else {
             // just one topic, more efficient not to use regex
-            tagsAll.push("topic:" + f.topic);
+            tagsAll.push("topic:" + filter.topic);
         }
     }
     // Now we need to assemble topicsAll and tagParts
@@ -1328,17 +1324,17 @@ export function constructParseBookQuery(
             });
         }
     }
-    if (f.feature != null) {
+    if (filter.feature != null) {
         delete params.where.feature;
-        const features = f.feature.split(" OR ");
+        const features = filter.feature.split(" OR ");
         if (features.length === 1) {
-            params.where.features = f.feature; //my understanding is that this means it just has to contain this, could have others
+            params.where.features = filter.feature; //my understanding is that this means it just has to contain this, could have others
         } else {
             params.where.features = { $in: features };
         }
     }
     delete params.where.inCirculation;
-    switch (f.inCirculation) {
+    switch (filter.inCirculation) {
         case undefined:
         case BooleanOptions.Yes:
             params.where.inCirculation = { $in: [true, null] };
@@ -1352,7 +1348,7 @@ export function constructParseBookQuery(
     }
     // Unless the filter explicitly allows draft books, don't include them.
     delete params.where.draft;
-    switch (f.draft) {
+    switch (filter.draft) {
         case BooleanOptions.Yes:
             params.where.draft = true;
             break;
@@ -1368,8 +1364,8 @@ export function constructParseBookQuery(
     // keywordsText is not a real column. Don't pass this through
     // Instead, convert it to search against keywordStems
     delete params.where.keywordsText;
-    if (f.keywordsText) {
-        const [, keywordStems] = Book.getKeywordsAndStems(f.keywordsText);
+    if (filter.keywordsText) {
+        const [, keywordStems] = Book.getKeywordsAndStems(filter.keywordsText);
         params.where.keywordStems = {
             $all: keywordStems,
         };
@@ -1384,36 +1380,36 @@ export function constructParseBookQuery(
     // delete params.where.originalPublisher;
     // delete params.where.edition;
     // delete params.where.brandingProjectName;
-    if (f.publisher) {
-        params.where.publisher = f.publisher;
+    if (filter.publisher) {
+        params.where.publisher = filter.publisher;
     }
-    if (f.originalPublisher) {
-        params.where.originalPublisher = f.originalPublisher;
+    if (filter.originalPublisher) {
+        params.where.originalPublisher = filter.originalPublisher;
     }
-    if (f.edition) {
-        params.where.edition = f.edition;
+    if (filter.edition) {
+        params.where.edition = filter.edition;
     }
-    if (f.brandingProjectName) {
-        params.where.brandingProjectName = f.brandingProjectName;
+    if (filter.brandingProjectName) {
+        params.where.brandingProjectName = filter.brandingProjectName;
     }
 
     delete params.where.derivedFrom;
     delete params.where.bookLineageArray;
-    if (f.derivedFrom) {
-        processDerivedFrom(f, allTagsFromDatabase, params);
+    if (filter.derivedFrom) {
+        processDerivedFrom(filter, allTagsFromDatabase, params);
     }
 
     delete params.where.originalCredits;
-    if (f.originalCredits) {
+    if (filter.originalCredits) {
         // NB: According to https://issues.bloomlibrary.org/youtrack/issue/BL-7990, the "Credits" column
         // on parse is actually the "original credits" in Bloom
-        params.where.credits = f.originalCredits;
+        params.where.credits = filter.originalCredits;
     }
 
-    if (f.anyOfThese) {
+    if (filter.anyOfThese) {
         delete params.where.anyOfThese;
         params.where.$or = [];
-        for (const child of f.anyOfThese) {
+        for (const child of filter.anyOfThese) {
             const pbq = constructParseBookQuery({}, child, []) as any;
             if (!child.inCirculation) {
                 delete pbq.where.inCirculation;
