@@ -91,6 +91,10 @@ export function convertContentfulCollectionToICollection(
         // Oddly, {bookshelf: result.urlKey} did not work, even though bookshelf is a field of IFilter.
         result.filter = { otherTags: "bookshelf:" + result.urlKey };
     }
+
+    // while not strictly part of the filter, collectionUrlKey ends up being logically used as such by the logic that deals with the exclusiveCollections field of books.
+    result.filter.collectionUrlKey = result.urlKey;
+
     return result;
 }
 

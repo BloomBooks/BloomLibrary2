@@ -270,7 +270,7 @@ export const bookDetailFields =
     "title,allTitles,baseUrl,bookOrder,inCirculation,draft,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
     "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits," +
     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,suitableForMakingShells,lastUploaded," +
-    "harvestStartedAt,bookshelves,publisher,originalPublisher,keywords,bookInstanceId,brandingProjectName,edition";
+    "harvestStartedAt,bookshelves,publisher,originalPublisher,keywords,bookInstanceId,brandingProjectName,edition,exclusiveCollections";
 export function useGetBookDetail(bookId: string): Book | undefined | null {
     const { response, loading, error } = useAxios({
         url: `${getConnection().url}classes/books`,
@@ -348,7 +348,7 @@ export const gridBookKeys =
     "title,baseUrl,license,licenseNotes,inCirculation,draft,summary,copyright,harvestState," +
     "harvestLog,harvestStartedAt,tags,pageCount,phashOfFirstContentImage,show,credits,country," +
     "features,internetLimits,bookshelves,librarianNote,uploader,langPointers,importedBookSourceUrl," +
-    "downloadCount,publisher,originalPublisher,keywords,edition";
+    "downloadCount,publisher,originalPublisher,keywords,edition,exclusiveCollections";
 
 export const gridBookIncludeFields = "uploader,langPointers";
 
@@ -1360,6 +1360,20 @@ export function constructParseBookQuery(
             // just don't include it in the query
             break;
     }
+
+    // exclusiveCollections are explained in BL-10865
+    if (filter.collectionUrlKey) {
+        // if we are showing or counting the books of a contentful collection, then include:
+        //  * any books that fit the filter and have an empty exclusiveCollections field (as usual)
+        //  * but also allow books that fit the filter and have an exclusiveCollections field that matches the urlKey of the collection.
+        params.where.exclusiveCollections = {
+            $in: [filter.collectionUrlKey, null],
+        };
+    } else {
+        // normally, we just omit any books that have anything in their exclusiveCollections field
+        params.where.exclusiveCollections = null;
+    }
+    delete params.where.collectionUrlKey;
 
     // keywordsText is not a real column. Don't pass this through
     // Instead, convert it to search against keywordStems

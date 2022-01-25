@@ -40,4 +40,7 @@ export interface IFilter {
     // provides a means to define a set of alternatives that are combined together as a set UNION.
     // NB: At the moment, there is no way to specify this on contentful.
     anyOfThese?: IFilter[];
+
+    // while not strictly part of the filter, it ends up being logically used as such by the logic that deals with the exclusiveCollections field of books.
+    collectionUrlKey?: string;
 }

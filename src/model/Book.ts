@@ -78,6 +78,7 @@ export class Book {
     public brandingProjectName = "";
     public suitableForMakingShells = false; // that is, the book is a template.
     public originalTitle: string = "";
+    public exclusiveCollections: string[] = []; // if this array is not empty, the book (as of early 2022) is just a clone of other books, so we restrict where it is counted and shows up.
 
     // things that can be edited on the site are observable so that the rest of the UI will update if they are changed.
     public title: string = "";
