@@ -6,6 +6,7 @@ import { featureSpecs } from "../FeatureHelper";
 import { commonUI } from "../../theme";
 import { MultiChooser } from "./MultiChooser";
 import { CreatableMultiChooser } from "./CreatableMultiChooser";
+import { useContentful } from "../../connection/UseContentful";
 
 export const BookshelvesChooser: React.FunctionComponent<{
     book: Book;
@@ -50,6 +51,34 @@ export const FeaturesChooser: React.FunctionComponent<{
             getSelectedValues={() => props.book.features.slice().sort()}
             setSelectedValues={(keys: any[]) => {
                 props.book.features = keys;
+            }}
+            {...props}
+        />
+    );
+};
+
+export const ExclusiveCollectionsChooser: React.FunctionComponent<{
+    book: Book;
+    setModified: (modified: boolean) => void;
+}> = (props) => {
+    const collectionsResults = useContentful({
+        content_type: "collection",
+        select: "fields.urlKey",
+    });
+
+    return (
+        <MultiChooser
+            label="Exclusive Collections"
+            helpText="Set this on books that just clones of other books and so should not be counted or shown outside of one or more collections that are intended to showcase them."
+            availableValues={
+                collectionsResults.result
+                    ? collectionsResults.result.map((r) => r.fields.urlKey)
+                    : []
+            }
+            getLabelForValue={(v) => v}
+            getSelectedValues={() => props.book.exclusiveCollections}
+            setSelectedValues={(items: any[]) => {
+                props.book.exclusiveCollections = items;
             }}
             {...props}
         />

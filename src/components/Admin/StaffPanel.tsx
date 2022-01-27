@@ -21,6 +21,7 @@ import {
     BookLanguagesChooser,
     BookshelvesChooser,
     FeaturesChooser,
+    ExclusiveCollectionsChooser,
 } from "./StaffMultiChoosers";
 import { Prompt } from "react-router-dom";
 import { commonUI } from "../../theme";
@@ -165,6 +166,7 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                 width: 100%;
                 display: flex;
                 flex-direction: column;
+                row-gap: 15px;
             `}
         >
             <Prompt
@@ -329,10 +331,14 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                     ></TextField>
                 </div>
             </div>
+            <ExclusiveCollectionsChooser
+                setModified={setModified}
+                book={props.book}
+            />
             <BookshelvesChooser
                 setModified={setModified}
                 book={props.book}
-            ></BookshelvesChooser>{" "}
+            ></BookshelvesChooser>
             <BookLanguagesChooser
                 setModified={setModified}
                 book={props.book}

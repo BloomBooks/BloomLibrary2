@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Select from "react-select";
 import FormControl from "@material-ui/core/FormControl/FormControl";
 import { FormLabel } from "@material-ui/core";
-
+import InfoIcon from "@material-ui/icons/InfoOutlined";
 interface IOption {
     value: any;
     label: string;
@@ -23,6 +23,7 @@ export const MultiChooser: React.FunctionComponent<{
     getLabelForValue: (v: any) => string;
     getStylingForValue?: (v: any) => object;
     isDisabled?: boolean | undefined;
+    helpText?: string;
 }> = (props) => {
     const [chosenItems, setChosenItems] = useState(props.getSelectedValues());
 
@@ -50,7 +51,15 @@ export const MultiChooser: React.FunctionComponent<{
 
     return (
         <FormControl fullWidth variant={"outlined"} color={"primary"}>
-            <FormLabel component="legend">{props.label}</FormLabel>
+            <FormLabel component="legend">
+                {props.label}
+                {props.helpText && (
+                    <span title={props.helpText}>
+                        <InfoIcon style={{ height: "15px" }} />
+                    </span>
+                )}
+            </FormLabel>
+
             <Select
                 isDisabled={props.isDisabled === true}
                 styles={{

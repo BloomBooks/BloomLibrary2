@@ -290,6 +290,7 @@ export class Book {
             keywordStems: this.keywordStems,
             edition: this.edition,
             harvestState: this.harvestState,
+            exclusiveCollections: this.exclusiveCollections,
         });
     }
 
