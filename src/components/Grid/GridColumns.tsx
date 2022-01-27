@@ -304,6 +304,15 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             },
         },
         {
+            name: "exclusiveCollections",
+            defaultVisible: false,
+            sortingEnabled: true,
+            getCellValue: (b: Book) => b.exclusiveCollections.join(", "),
+            addToFilter: (filter: IFilter, value: string) => {
+                filter.exclusiveCollections = value;
+            },
+        },
+        {
             name: "bookInstanceId",
             title: "Book Instance ID",
             sortingEnabled: true,

@@ -55,8 +55,8 @@ export function getConnection(): IConnection {
     }
 
     if (window.location.hostname === "localhost") {
-        return prod;
-        // return dev;
+        // return prod;
+        return dev; // TODO don't check in
         // return local;
     }
 

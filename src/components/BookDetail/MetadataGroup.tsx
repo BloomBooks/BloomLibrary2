@@ -4,21 +4,35 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useContext } from "react";
+import React, { useMemo } from "react";
 import { Book } from "../../model/Book";
 import { observer } from "mobx-react-lite";
 import { LicenseLink } from "./LicenseLink";
 import { BookStats } from "./BookStats";
-import { CachedTablesContext } from "../../model/CacheProvider";
 import { useGetRelatedBooks } from "../../connection/LibraryQueryHooks";
-import { Bookshelf } from "../../model/Bookshelf";
 import { KeywordLinks } from "./KeywordLinks";
 import { BlorgLink } from "../BlorgLink";
 import { FormattedMessage, useIntl } from "react-intl";
+import WarningRoundedIcon from "@material-ui/icons/WarningRounded";
 
 export const LeftMetadata: React.FunctionComponent<{
     book: Book;
 }> = observer((props) => {
+    const exclusionInfo = useMemo(() => {
+        if (
+            props.book.exclusiveCollections &&
+            props.book.exclusiveCollections.length > 0
+        ) {
+            return (
+                "This book is a near duplicate of another book, and so we are not including it in other counts of books on this site, and we only shown in the context of these collections: " +
+                props.book.exclusiveCollections
+                    .map((urlKey) => urlKey)
+                    .join(", ")
+            );
+        }
+        return undefined;
+    }, [props.book.exclusiveCollections]);
+
     return (
         <div
             css={css`
@@ -82,6 +96,15 @@ export const LeftMetadata: React.FunctionComponent<{
                         </BlorgLink>
                     </div>
                 )}
+
+            {exclusionInfo && (
+                <div title={exclusionInfo}>
+                    <WarningRoundedIcon
+                        color="secondary"
+                        style={{ height: "20px" }}
+                    />
+                </div>
+            )}
             <BookStats book={props.book} />
         </div>
     );
@@ -90,10 +113,8 @@ export const LeftMetadata: React.FunctionComponent<{
 export const RightMetadata: React.FunctionComponent<{
     book: Book;
 }> = observer((props) => {
-    const { bookshelves } = useContext(CachedTablesContext);
     const relatedBooks = useGetRelatedBooks(props.book.id);
     const l10n = useIntl();
-
     return (
         <div css={css``}>
             <div>
@@ -121,14 +142,10 @@ export const RightMetadata: React.FunctionComponent<{
                     })
                     .join(", ")}
             </div>
-            <div>
-                <FormattedMessage
-                    id="book.metadata.keywords"
-                    defaultMessage="Keywords:"
-                />{" "}
-                <KeywordLinks book={props.book}></KeywordLinks>
-            </div>
-            <div>
+
+            <KeywordLinks book={props.book}></KeywordLinks>
+
+            {/* <div>
                 <FormattedMessage
                     id="book.metadata.bookshelves"
                     defaultMessage="Bookshelves:"
@@ -140,7 +157,8 @@ export const RightMetadata: React.FunctionComponent<{
                                 .displayNameWithParent
                     )
                     .join(", ")}
-            </div>
+            </div> */}
+
             {relatedBooks?.length > 0 && (
                 <div>
                     <FormattedMessage

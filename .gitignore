@@ -31,3 +31,5 @@ public/bloom-player/
 
 debug.log
 *.orig
+
+__azurite_db_table__.json

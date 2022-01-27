@@ -383,7 +383,9 @@ function CombineGridAndSearchBoxFilter(
         ...decodedFilter,
         inCirculation: BooleanOptions.All,
         draft: BooleanOptions.All,
+        booksWithExclusiveCollections: BooleanOptions.All,
     };
+
     gridFilters.forEach((g) => {
         // the business of contains vs. equals has not been worked out yet, on the grid ui side nor the actual query side
         if (g.operation !== "contains") {

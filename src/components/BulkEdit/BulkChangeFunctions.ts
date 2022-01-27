@@ -237,3 +237,55 @@ export async function AddBookshelfToAllBooksInFilter(
             alert(error);
         });
 }
+
+export async function AddExclusiveCollectionToAllBooksInFilter(
+    filter: IFilter,
+    urlKey: string,
+    refresh: () => void
+) {
+    const finalParams = constructParseBookQuery({}, filter, CachedTables.tags);
+    const headers = getConnection().headers;
+    const books = await axios.get(`${getConnection().url}classes/books`, {
+        headers,
+
+        params: {
+            limit: Number.MAX_SAFE_INTEGER,
+            count: 1,
+            keys: "objectId,title,exclusiveCollections",
+            ...finalParams,
+        },
+    });
+    assertAllParseRecordsReturned(books);
+
+    const putData: any = {};
+    putData.updateSource = "bloom-library-bulk-edit";
+
+    const promises: Array<Promise<unknown>> = [];
+    for (const book of books.data.results) {
+        //console.log(book.title);
+        putData.exclusiveCollections = book.exclusiveCollections || [];
+        if (urlKey[0] === "-") {
+            const keyToRemove = urlKey.substring(1).toLowerCase();
+            putData.exclusiveCollections = putData.exclusiveCollections.filter(
+                (s: string) => s.toLowerCase() !== keyToRemove
+            );
+        } else if (putData.exclusiveCollections.indexOf(urlKey) < 0) {
+            putData.exclusiveCollections.push(urlKey);
+        }
+        promises.push(
+            axios.put(
+                `${getConnection().url}classes/books/${book.objectId}`,
+                {
+                    ...putData,
+                },
+                { headers }
+            )
+        );
+    }
+
+    Promise.all(promises)
+        .then(() => refresh())
+        .catch((error) => {
+            alert(error);
+        });
+}

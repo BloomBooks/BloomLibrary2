@@ -41,6 +41,11 @@ export interface IFilter {
     // NB: At the moment, there is no way to specify this on contentful.
     anyOfThese?: IFilter[];
 
-    // while not strictly part of the filter, it ends up being logically used as such by the logic that deals with the exclusiveCollections field of books.
+    // In grid, we show all the books. But elsewhere, we default to hiding and not counting books with something in exclusiveCollections
+    booksWithExclusiveCollections?: BooleanOptions;
+    //In grid and bulk edit we use exclusiveCollections to select just these books that have an exclusiveCollection (which are normally hidden in most context in blorg)
+    exclusiveCollections?: string;
+
+    // while not strictly part of the filter, collectionUrlKey ends up being logically used as such by the logic that deals with the exclusiveCollections field of books.
     collectionUrlKey?: string;
 }
