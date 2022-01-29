@@ -264,13 +264,9 @@ export const CollectionCard: React.FunctionComponent<{
                 {(props.collection.filter ||
                     props.collection.childCollections) && (
                     <BookCount
-                        filter={
-                            props.collection.filter
-                                ? props.collection.filter
-                                : getFilterForCollectionAndChildren(
-                                      props.collection
-                                  )
-                        }
+                        filter={getFilterForCollectionAndChildren(
+                            props.collection
+                        )}
                     />
                 )}
             </div>

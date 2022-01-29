@@ -103,13 +103,9 @@ export const StandardBannerLayout: React.FunctionComponent<{
                     props.collection?.urlKey !== "create" &&
                     (props.bookCount || (
                         <BookCount
-                            filter={
-                                props.filter
-                                    ? props.filter
-                                    : getFilterForCollectionAndChildren(
-                                          props.collection
-                                      )
-                            }
+                            filter={getFilterForCollectionAndChildren(
+                                props.collection
+                            )}
                         />
                     ))}
                 <BannerImageCredits {...props} />

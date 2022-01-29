@@ -80,13 +80,9 @@ export const CardRow: React.FunctionComponent<IProps> = (props) => {
                             `}
                         >
                             <BookCount
-                                filter={
-                                    props.collection.filter
-                                        ? props.collection.filter
-                                        : getFilterForCollectionAndChildren(
-                                              props.collection
-                                          )
-                                }
+                                filter={getFilterForCollectionAndChildren(
+                                    props.collection
+                                )}
                             />
                         </div>
                     )}

@@ -65,7 +65,7 @@ export function convertContentfulCollectionToICollection(
         description: item.fields.description,
         urlForBloomPubBundle: item.fields.urlForBloomPubBundle,
         urlForBloomSourceBundle: item.fields.urlForBloomSourceBundle,
-        filter: item.fields.filter || {},
+        filter: item.fields.filter,
         statisticsQuerySpec: item.fields.statisticsQuerySpec,
         iconForCardAndDefaultBanner: icon,
         sponsorshipImage: sponsorshipImage,
@@ -84,17 +84,36 @@ export function convertContentfulCollectionToICollection(
         expandChildCollectionRows: item.fields.expandChildCollectionRows,
         showBookCountInRowDisplay: item.fields.showBookCountInRowDisplay,
     };
+
+    // note:, the filter is commonly undefined in two cases (in Jan 2022, anyhow):
+    // 1) this page is just a collection of sub-collections, no actual books
+    // 2) useSimpleBookshelfFilter has been set to true so we are supposed to figure out the filter based on the urlKey
     if (!result.filter && item.fields.useSimpleBookshelfFilter) {
         // many collections just need to bring in all the books that Bloom uploading process has given the tag "bookshelf: blah",
         // when the Bloom Collection settings have pointed to that bookshelf. Without this default, we have to add an explicit
         // filter for each of these in the Contentful collection record.
         // Oddly, {bookshelf: result.urlKey} did not work, even though bookshelf is a field of IFilter.
         result.filter = { otherTags: "bookshelf:" + result.urlKey };
+
+        // while true, we aren't putting this here because in prior code, the result.filter we return would not have been undefined in this situations: result.filter.contentfulFilterWasEmpty = true;
+    }
+
+    if (!result.filter) {
+        // gives all 11k books  (in count and on page)
+        result.filter = {};
+
+        // This fits the common situation of a page existing solely to show sub-collection.
+        // The count will be determined by looking at the sub collections. No books will be listed as "raw" children of the page.
+        //result.filter = { search: "DontReturnAnyBooks" };
+
+        // gives proper set of books (in count and on page). But violates the signature.
+        //(result as any).filter = undefined;
+
+        result.filter.contentfulFilterWasEmpty = true;
     }
 
     // while not strictly part of the filter, collectionUrlKey ends up being logically used as such by the logic that deals with the exclusiveCollections field of books.
     result.filter.collectionUrlKey = result.urlKey;
-
     return result;
 }
 

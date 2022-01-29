@@ -529,11 +529,15 @@ function useBookQueryInternal(
 // returns true if either we have retrieved the needed filter from the collection named in filter.derivedFromCollectionName,
 //  or we do not need to retrieve it because none is named.
 export function useProcessDerivativeFilter(filter: IFilter): boolean {
+    console.log(
+        `useProcessDerivativeFilter ${filter.derivedFromCollectionName}`
+    );
     const collectionName = filter?.derivedFromCollectionName || "";
     const { collection: derivedFromCollection, loading } = useGetCollection(
         collectionName
     );
     if (!collectionName) return true;
+    console.log(`useProcessDerivativeFilter ${collectionName}`);
     if (loading) return false;
     if (!filter.derivedFrom) {
         filter.derivedFrom = derivedFromCollection?.filter;
@@ -552,6 +556,8 @@ function makeBookQueryAxiosParams(
     doNotActuallyRunQuery?: boolean,
     tags?: string[]
 ): IParams<any> {
+    if (!filter) throw new Error("filter was falsey");
+
     // Parse server's default limit is 100, which is basically never helpful to us.
     // There is a corner case in useCollectionStats for which we currently want 0. See BL-10126.
     // Note, if we ever change this to get all books, be sure to set inCirculation appropriately.
@@ -773,9 +779,9 @@ export function useCollectionStats(
     statsProps: IStatsProps,
     urlSuffix: string
 ): IAxiosAnswer {
-    const collectionFilter = statsProps.collection.filter
-        ? statsProps.collection.filter
-        : getFilterForCollectionAndChildren(statsProps.collection);
+    const collectionFilter = getFilterForCollectionAndChildren(
+        statsProps.collection
+    );
     const collectionReady = useProcessDerivativeFilter(
         collectionFilter as IFilter
     );
@@ -1068,12 +1074,21 @@ export function constructParseBookQuery(
     limit?: number, //pagination
     skip?: number //pagination
 ): object {
+    if (!filter) {
+        console.error("filter was falsey");
+        if (window.location.hostname === "localhost")
+            throw new Error("filter was falsey");
+    }
+
     if (filter?.derivedFromCollectionName) {
         // We should have already converted from derivedFromCollectionName to derivedFrom by now. See useProcessDerivativeFilter().
-        alert("Attempted to load books with an invalid filter.");
         console.error(
             `Called constructParseBookQuery with a filter containing truthy derivedFromCollectionName (${filter.derivedFromCollectionName}). See useProcessDerivativeFilter().`
         );
+        // alert(
+        //     "Attempted to load books with an invalid filter: should not have 'derivedFromCollectionName'."
+        // );
+        return { where: {} }; // TODO
     }
 
     if (limit) {
@@ -1089,7 +1104,9 @@ export function constructParseBookQuery(
 
     // doing a clone here because the semantics of deleting language from filter were not what was expected.
     // it removed the "language" param from the filter parameter itself.
-    params.where = filter ? JSON.parse(JSON.stringify(filter)) : {};
+    params.where = filter.contentfulFilterWasEmpty
+        ? {}
+        : JSON.parse(JSON.stringify(filter));
 
     // parse server does not handle spaces in this comma-separated list,
     // so guard against programmer accidentally inserting one.
@@ -1361,42 +1378,42 @@ export function constructParseBookQuery(
             break;
     }
 
-    // ---------- exclusiveCollections support. See BL-10865. ----------
-    // these are field in Parse, don't try to search on them
+    // // ---------- exclusiveCollections support. See BL-10865. ----------
+    // // these are field in Parse, don't try to search on them
     delete params.where.collectionUrlKey;
     delete params.where.booksWithExclusiveCollections;
-    // in practice, this switch is just implementing two different rules: one for grid, and one for everywhere else.
-    switch (filter.booksWithExclusiveCollections) {
-        // the undefined state here is the normal, default one.
-        case undefined:
-            if (filter.collectionUrlKey) {
-                // if we are showing or counting the books of a contentful collection, then include:
-                //  * any books that fit the filter and have an empty exclusiveCollections field (as usual)
-                //  * but also allow books that fit the filter and have an exclusiveCollections field that matches the urlKey of the collection.
-                params.where.exclusiveCollections = {
-                    $in: [filter.collectionUrlKey, null],
-                };
-            } else {
-                // normally, we just omit any books that have anything in their exclusiveCollections field
-                params.where.exclusiveCollections = null;
-            }
-            break;
-        // the grid (in Jan 2022 ) always sets this to BooleanOptions.All
-        case BooleanOptions.All:
-            // don't un-select any books for having something in exclusiveCollections. But if filter.exclusiveCollections has something,
-            // then we get the query we need automatically, e.g. where:{"exclusiveCollections":"asia-foundation"}
-            break;
-        // (in Jan 2022) nothing set this to BooleanOptions.No
-        case BooleanOptions.No:
-            params.where.exclusiveCollections = null;
-            break;
-        // (in Jan 2022) nothing set this to BooleanOptions.Yes
-        case BooleanOptions.Yes:
-            // I would just implement it, but I don't know how to express the idea of "array must be non-empty"
-            throw new Error(
-                "Unexpected value for filter.booksWithExclusiveCollections"
-            );
-    }
+    // // in practice, this switch is just implementing two different rules: one for grid, and one for everywhere else.
+    // switch (filter.booksWithExclusiveCollections) {
+    //     // the undefined state here is the normal, default one.
+    //     case undefined:
+    //         if (filter.collectionUrlKey) {
+    //             // if we are showing or counting the books of a contentful collection, then include:
+    //             //  * any books that fit the filter and have an empty exclusiveCollections field (as usual)
+    //             //  * but also allow books that fit the filter and have an exclusiveCollections field that matches the urlKey of the collection.
+    //             params.where.exclusiveCollections = {
+    //                 $in: [filter.collectionUrlKey, null],
+    //             };
+    //         } else {
+    //             // normally, we just omit any books that have anything in their exclusiveCollections field
+    //             params.where.exclusiveCollections = null;
+    //         }
+    //         break;
+    //     // the grid (in Jan 2022 ) always sets this to BooleanOptions.All
+    //     case BooleanOptions.All:
+    //         // don't un-select any books for having something in exclusiveCollections. But if filter.exclusiveCollections has something,
+    //         // then we get the query we need automatically, e.g. where:{"exclusiveCollections":"asia-foundation"}
+    //         break;
+    //     // (in Jan 2022) nothing set this to BooleanOptions.No
+    //     case BooleanOptions.No:
+    //         params.where.exclusiveCollections = null;
+    //         break;
+    //     // (in Jan 2022) nothing set this to BooleanOptions.Yes
+    //     case BooleanOptions.Yes:
+    //         // I would just implement it, but I don't know how to express the idea of "array must be non-empty"
+    //         throw new Error(
+    //             "Unexpected value for filter.booksWithExclusiveCollections"
+    //         );
+    // }
 
     // keywordsText is not a real column. Don't pass this through
     // Instead, convert it to search against keywordStems
@@ -1483,7 +1500,7 @@ function processDerivedFrom(
     allTagsFromDatabase: string[],
     params: any
 ) {
-    if (!f || !f.derivedFrom) return;
+    if (!f || !f.derivedFrom || f.contentfulFilterWasEmpty) return;
 
     // this wants to be something like {$not: {where: innerWhere}}
     // but I can't find any variation of that which works.

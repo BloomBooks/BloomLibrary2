@@ -493,11 +493,29 @@ function Capitalize(s: string): string {
 
 export function getFilterForCollectionAndChildren(collection: ICollection) {
     if (!collection) return undefined;
+
+    // REVIEW: if contentful has a filter, AND the collection has sub-collections,
+    // then it seems like the Count should be the size of the union of the both,
+    // while the books shown are only the former.
+
+    // review: I (JH) don't know if this is correct or not, but it follows the logic that
+    // was duplicated in 4 places previously, that we ignore the children if the parent
+    // collection has a filter.
+    //          if (collection.filter) return collection.filter;
+    // However to make the exclusiveCollections stuff work, if the contentfulFIlter is empty,
+    // we have to stick something bogus in it otherwise we get *all* books. So we change the
+    // predicate here to this value that remembers if the filter was empty before we stuck
+    // in the kludge element:
+    if (!collection.filter.contentfulFilterWasEmpty) return collection.filter;
+
     const filters: IFilter[] = [];
     gatherCollectionAndChildrenFilters(collection, filters);
-    const filter: IFilter = {
-        anyOfThese: filters,
-    };
+    const filter: IFilter =
+        filters.length === 0
+            ? collection.filter
+            : {
+                  anyOfThese: filters,
+              };
     return filter;
 }
 
@@ -508,7 +526,7 @@ function gatherCollectionAndChildrenFilters(
     filters: IFilter[]
 ): void {
     if (!collection) return;
-    if (collection.filter) {
+    if (collection.filter && !collection.filter.contentfulFilterWasEmpty) {
         filters.push(collection.filter);
     }
     for (const mychild of collection.childCollections) {

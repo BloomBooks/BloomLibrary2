@@ -48,4 +48,10 @@ export interface IFilter {
 
     // while not strictly part of the filter, collectionUrlKey ends up being logically used as such by the logic that deals with the exclusiveCollections field of books.
     collectionUrlKey?: string;
+
+    // There was a generation of our code where various things operated differently if the filter was undefined (despite the fact that the signature did not allow that)
+    // It could get undefined as the data came in, Typescript couldn't type check it.
+    // Nowadays, we don't allow that because we need to put stuff in there even if, in contentful, it was empty.
+    // So instead, code should use this to determine if it was empty in Contentful, before we created an empty one, or added things, or whatever.
+    contentfulFilterWasEmpty?: boolean;
 }

@@ -38,7 +38,8 @@ const BookCountInternal: React.FunctionComponent<IProps> = (props) => {
     // If filter is undefined (Some collections w/child collections are like this), rather than calculating the number of books in Bloom Library,
     // just don't display any book count.
     // Note though that the home page has filter is empty, and in that case, we want shouldSkipQuery to return false.
-    const shouldSkipQuery = props.filter === undefined;
+    const shouldSkipQuery =
+        props.filter === undefined || props.filter.contentfulFilterWasEmpty;
     const bookCountResult = useGetBookCountRaw(
         props.filter || {},
         shouldSkipQuery
