@@ -253,42 +253,4 @@ it("doesn't crash with a facet non-value", async () => {
     expect(result.data.results[1].title).toBe(title3);
 });
 
-it("builds proper parse query for anyOfThese field", () => {
-    const inputFilter: IFilter = {
-        anyOfThese: [
-            { otherTags: "bookshelf:first" },
-            { otherTags: "bookshelf:second" },
-            { otherTags: "bookshelf:third" },
-        ],
-    };
-    const result = constructParseBookQuery(
-        { count: 1, limit: 0 },
-        inputFilter,
-        []
-    );
-    const resultString = JSON.stringify(result);
-    expect(resultString).toBe(
-        '{"count":1,"limit":0,"where":{"inCirculation":{"$in":[true,null]},"draft":{"$in":[false,null]},"$or":[{"tags":"bookshelf:first"},{"tags":"bookshelf:second"},{"tags":"bookshelf:third"}]}}'
-    );
-});
-
-it("builds proper parse query for recursive anyOfThese field", () => {
-    const inputFilter: IFilter = {
-        otherTags: "bookshelf:first",
-        anyOfThese: [
-            { otherTags: "bookshelf:second" },
-            {
-                anyOfThese: [{ otherTags: "bookshelf:third" }],
-            },
-        ],
-    };
-    const result = constructParseBookQuery(
-        { count: 1, limit: 0 },
-        inputFilter,
-        []
-    );
-    const resultString = JSON.stringify(result);
-    expect(resultString).toBe(
-        '{"count":1,"limit":0,"where":{"tags":"bookshelf:first","inCirculation":{"$in":[true,null]},"draft":{"$in":[false,null]},"$or":[{"tags":"bookshelf:second"},{"$or":[{"tags":"bookshelf:third"}]}]}}'
-    );
-});
+// Unit tests that don't use axios have been moved to LibraryQueryHooksFast.test.ts
