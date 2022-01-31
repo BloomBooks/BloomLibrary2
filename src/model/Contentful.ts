@@ -54,6 +54,11 @@ export function convertContentfulCollectionToICollection(
         delete item.fields.filter.tag;
     }
 
+    // Prepare for work on BL-10865. For now, prevent this new filter messing things up before we are ready for it. Will remove this
+    if (item.fields.filter?.hideRebrands) {
+        delete item.fields.filter.hideRebrands;
+    }
+
     const result: ICollection = {
         urlKey: item.fields.urlKey as string,
         // By the time we get to displaying a page from this collection, this will be either the localized label or a template based on it
