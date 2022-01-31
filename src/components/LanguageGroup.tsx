@@ -214,6 +214,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                 <div
                                     css={css`
                                         margin-top: 4px;
+                                        line-height: 1em;
                                     `}
                                 >
                                     <FormattedMessage

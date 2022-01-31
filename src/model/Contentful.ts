@@ -56,7 +56,7 @@ export function convertContentfulCollectionToICollection(
 
     // Prepare for work on BL-10865. For now, prevent this new filter messing things up before we are ready for it. Will remove this
     if (item.fields.filter?.hideRebrands) {
-        delete item.fields.filter.hideRebrands;
+        delete item.fields.filter.rebrand;
     }
 
     const result: ICollection = {
