@@ -1383,37 +1383,37 @@ export function constructParseBookQuery(
     delete params.where.collectionUrlKey;
     delete params.where.booksWithExclusiveCollections;
     // // in practice, this switch is just implementing two different rules: one for grid, and one for everywhere else.
-    // switch (filter.booksWithExclusiveCollections) {
-    //     // the undefined state here is the normal, default one.
-    //     case undefined:
-    //         if (filter.collectionUrlKey) {
-    //             // if we are showing or counting the books of a contentful collection, then include:
-    //             //  * any books that fit the filter and have an empty exclusiveCollections field (as usual)
-    //             //  * but also allow books that fit the filter and have an exclusiveCollections field that matches the urlKey of the collection.
-    //             params.where.exclusiveCollections = {
-    //                 $in: [filter.collectionUrlKey, null],
-    //             };
-    //         } else {
-    //             // normally, we just omit any books that have anything in their exclusiveCollections field
-    //             params.where.exclusiveCollections = null;
-    //         }
-    //         break;
-    //     // the grid (in Jan 2022 ) always sets this to BooleanOptions.All
-    //     case BooleanOptions.All:
-    //         // don't un-select any books for having something in exclusiveCollections. But if filter.exclusiveCollections has something,
-    //         // then we get the query we need automatically, e.g. where:{"exclusiveCollections":"asia-foundation"}
-    //         break;
-    //     // (in Jan 2022) nothing set this to BooleanOptions.No
-    //     case BooleanOptions.No:
-    //         params.where.exclusiveCollections = null;
-    //         break;
-    //     // (in Jan 2022) nothing set this to BooleanOptions.Yes
-    //     case BooleanOptions.Yes:
-    //         // I would just implement it, but I don't know how to express the idea of "array must be non-empty"
-    //         throw new Error(
-    //             "Unexpected value for filter.booksWithExclusiveCollections"
-    //         );
-    // }
+    switch (filter.booksWithExclusiveCollections) {
+        // the undefined state here is the normal, default one.
+        case undefined:
+            if (filter.collectionUrlKey) {
+                // if we are showing or counting the books of a contentful collection, then include:
+                //  * any books that fit the filter and have an empty exclusiveCollections field (as usual)
+                //  * but also allow books that fit the filter and have an exclusiveCollections field that matches the urlKey of the collection.
+                params.where.exclusiveCollections = {
+                    $in: [filter.collectionUrlKey, null],
+                };
+            } else {
+                // normally, we just omit any books that have anything in their exclusiveCollections field
+                params.where.exclusiveCollections = null;
+            }
+            break;
+        // the grid (in Jan 2022 ) always sets this to BooleanOptions.All
+        case BooleanOptions.All:
+            // don't un-select any books for having something in exclusiveCollections. But if filter.exclusiveCollections has something,
+            // then we get the query we need automatically, e.g. where:{"exclusiveCollections":"asia-foundation"}
+            break;
+        // (in Jan 2022) nothing set this to BooleanOptions.No
+        case BooleanOptions.No:
+            params.where.exclusiveCollections = null;
+            break;
+        // (in Jan 2022) nothing set this to BooleanOptions.Yes
+        case BooleanOptions.Yes:
+            // I would just implement it, but I don't know how to express the idea of "array must be non-empty"
+            throw new Error(
+                "Unexpected value for filter.booksWithExclusiveCollections"
+            );
+    }
 
     // keywordsText is not a real column. Don't pass this through
     // Instead, convert it to search against keywordStems
