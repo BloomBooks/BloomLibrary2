@@ -11,6 +11,7 @@ import {
     getNoResultsElement,
 } from "../connection/GetQueryResultsUI";
 import { FormattedMessage } from "react-intl";
+import { CollectionInfoWidget } from "./CollectionInfoWidget";
 
 interface IProps {
     message?: string;
@@ -121,6 +122,7 @@ const BookCountInternal: React.FunctionComponent<IProps> = (props) => {
                         values={{ count }}
                     />
                 )}
+                <CollectionInfoWidget filter={props.filter} />
             </span>
         )
     );

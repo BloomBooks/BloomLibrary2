@@ -1293,13 +1293,30 @@ export function constructParseBookQuery(
     }
     // Now we need to assemble topicsAll and tagParts
     if (tagsAll.length === 1 && tagParts.length === 0) {
-        params.where.tags = tagsAll[0];
+        if (tagsAll[0].startsWith("*") || tagsAll[0].endsWith("*")) {
+            const tagRegex = getPossiblyAnchoredRegex(tagsAll[0]);
+            params.where.tags = { $regex: tagRegex };
+        } else {
+            params.where.tags = tagsAll[0];
+        }
     } else {
         if (tagsAll.length) {
             // merge topicsAll into tagsAll
-            tagParts.push({
-                $all: tagsAll,
+            const tagsAll2: any[] = [];
+            tagsAll.forEach((tag) => {
+                if (tag.startsWith("*") || tag.endsWith("*")) {
+                    tagsAll2.push({ $regex: getPossiblyAnchoredRegex(tag) });
+                } else {
+                    tagsAll2.push(tag);
+                }
             });
+            if (tagsAll2.length === 1) {
+                tagParts.push(tagsAll2[0]);
+            } else {
+                tagParts.push({
+                    $all: tagsAll2,
+                });
+            }
         }
         if (tagParts.length === 1) {
             params.where.tags = tagParts[0];
@@ -1407,7 +1424,6 @@ export function constructParseBookQuery(
             params.where.$or.push(pbq.where);
         }
     }
-
     return params;
 }
 
@@ -1439,11 +1455,14 @@ function processDerivedFrom(
     // this wants to be something like {$not: {where: innerWhere}}
     // but I can't find any variation of that which works.
     // For now, we just support these three kinds of parent filters
-    // (and only bookshelf ones that are simple, exact matches).
+    // (and only bookshelf ones that are simple, exact matches, or
+    // otherTags ones that are simple, exact matches of single tags).
     let nonParentFilter: any;
     const parentBookShelf = f.derivedFrom.bookshelf;
     if (parentBookShelf) {
         nonParentFilter = { bookshelves: { $ne: parentBookShelf } };
+    } else if (f.derivedFrom.otherTags) {
+        nonParentFilter = { tags: { $ne: f.derivedFrom.otherTags } };
     } else if (f.derivedFrom.publisher) {
         nonParentFilter = {
             publisher: { $ne: f.derivedFrom.publisher },
@@ -1535,3 +1554,20 @@ const useAsync = <T>(
     }, [trigger]);
     return { response, loading, error };
 };
+
+function getPossiblyAnchoredRegex(tagValue: string): string {
+    if (tagValue.startsWith("*") && tagValue.endsWith("*")) {
+        // floating regex, but case sensitive.
+        return processRegExp(
+            tagValue.substring(0, tagValue.length - 1).substring(1)
+        );
+    }
+    // Anchor the regex if possible and leave it case sensitive.  This is the most efficient form of regex.
+    if (tagValue.endsWith("*")) {
+        const tagPrefix = tagValue.substring(0, tagValue.length - 1);
+        return "^" + processRegExp(tagPrefix);
+    }
+    // must start with "*": anchor the regex at the end
+    const tagSuffix = tagValue.substring(1);
+    return processRegExp(tagSuffix) + "$";
+}
