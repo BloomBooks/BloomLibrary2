@@ -90,7 +90,6 @@ export class Book {
     public publisher: string = "";
     public originalPublisher: string = "";
     public features: string[] = [];
-    public bookshelves: string[] = [];
     public edition: string = "";
 
     // This scalar string format is easier for the user/UI to modify,
@@ -136,7 +135,6 @@ export class Book {
             publisher: observable,
             originalPublisher: observable,
             features: observable,
-            bookshelves: observable,
             edition: observable,
             keywordsText: observable,
             keywords: observable,
@@ -279,7 +277,6 @@ export class Book {
             draft: this.draft,
             summary: this.summary?.trim(),
             librarianNote: this.librarianNote,
-            bookshelves: this.bookshelves,
             publisher: this.publisher,
             originalPublisher: this.originalPublisher,
             langPointers: reconstructedLanguagePointers,

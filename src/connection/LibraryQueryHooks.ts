@@ -137,18 +137,6 @@ export function useGetTopicList() {
     return useLibraryQuery("tag", { limit: 1000, count: 1000 });
 }
 
-export function useGetBookshelvesByCategory(
-    category?: string
-): IBookshelfResult[] {
-    const axiosResult = useLibraryQuery<IBookshelfResult>("bookshelf", {
-        where: category ? { category } : null,
-        //,keys: "englishName,key"
-    });
-
-    const fullBookShelfDescriptions = axiosResult.response?.data?.results;
-    return fullBookShelfDescriptions ?? [];
-}
-
 export function useGetLanguageInfo(language: string): ILanguage[] {
     const axiosResult = useLibraryQuery<ILanguage>("language", {
         where: { isoCode: language },
@@ -270,7 +258,7 @@ export const bookDetailFields =
     "title,allTitles,baseUrl,bookOrder,inCirculation,draft,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
     "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits," +
     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,suitableForMakingShells,lastUploaded," +
-    "harvestStartedAt,bookshelves,publisher,originalPublisher,keywords,bookInstanceId,brandingProjectName,edition";
+    "harvestStartedAt,publisher,originalPublisher,keywords,bookInstanceId,brandingProjectName,edition";
 export function useGetBookDetail(bookId: string): Book | undefined | null {
     const { response, loading, error } = useAxios({
         url: `${getConnection().url}classes/books`,
@@ -347,7 +335,7 @@ export const gridBookKeys =
     "objectId,bookInstanceId," +
     "title,baseUrl,license,licenseNotes,inCirculation,draft,summary,copyright,harvestState," +
     "harvestLog,harvestStartedAt,tags,pageCount,phashOfFirstContentImage,show,credits,country," +
-    "features,internetLimits,bookshelves,librarianNote,uploader,langPointers,importedBookSourceUrl," +
+    "features,internetLimits,librarianNote,uploader,langPointers,importedBookSourceUrl," +
     "downloadCount,publisher,originalPublisher,keywords,edition";
 
 export const gridBookIncludeFields = "uploader,langPointers";
@@ -1249,8 +1237,8 @@ export function constructParseBookQuery(
         delete params.where.otherTags;
         f.otherTags.split(",").forEach((t) => tagsAll.push(t));
     }
-    // we can search for bookshelves by category (org, project, etc) using useGetBookshelves(). But
-    // we cannot, here, filter books by category. We cannot say "give me all the books that are listed in all project bookshelves"
+
+    // I can't tell that f.bookShelfCategory is ever used for filtering.
     if (f.bookShelfCategory != null) {
         delete params.where.bookShelfCategory;
     }
@@ -1261,11 +1249,9 @@ export function constructParseBookQuery(
 
     // }
 
-    // allow regex searches on bookshelf. Handing for counting up, for example, all the books with bookshelf tags
-    // that start with "Enabling Writers" (and then go on to list country and sub-project).
+    // bookshelf is no longer used for filtering.
     if (f.bookshelf) {
         delete params.where.bookshelf;
-        params.where.bookshelves = regex(f.bookshelf);
     }
     // I think you can also do topic via search, but I need a way to do an "OR" in order to combine several topics for STEM
     // take `f.topic` to be a comma-separated list
@@ -1455,13 +1441,9 @@ function processDerivedFrom(
     // this wants to be something like {$not: {where: innerWhere}}
     // but I can't find any variation of that which works.
     // For now, we just support these three kinds of parent filters
-    // (and only bookshelf ones that are simple, exact matches, or
-    // otherTags ones that are simple, exact matches of single tags).
+    // (and only otherTags ones that are simple, exact matches of single tags).
     let nonParentFilter: any;
-    const parentBookShelf = f.derivedFrom.bookshelf;
-    if (parentBookShelf) {
-        nonParentFilter = { bookshelves: { $ne: parentBookShelf } };
-    } else if (f.derivedFrom.otherTags) {
+    if (f.derivedFrom.otherTags) {
         nonParentFilter = { tags: { $ne: f.derivedFrom.otherTags } };
     } else if (f.derivedFrom.publisher) {
         nonParentFilter = {

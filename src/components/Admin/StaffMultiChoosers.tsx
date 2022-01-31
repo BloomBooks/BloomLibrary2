@@ -3,37 +3,9 @@ import React, { useContext } from "react";
 import { CachedTablesContext } from "../../model/CacheProvider";
 
 import { featureSpecs } from "../FeatureHelper";
-import { commonUI } from "../../theme";
 import { MultiChooser } from "./MultiChooser";
 import { CreatableMultiChooser } from "./CreatableMultiChooser";
 
-export const BookshelvesChooser: React.FunctionComponent<{
-    book: Book;
-    setModified: (modified: boolean) => void;
-}> = (props) => {
-    const { bookshelves: availableBookshelves } = useContext(
-        CachedTablesContext
-    );
-    const bookshelfKeys = availableBookshelves.map((b) => b.key).sort();
-    return (
-        <MultiChooser
-            isDisabled={true}
-            label="Bookshelves"
-            availableValues={bookshelfKeys}
-            getLabelForValue={(key) => key}
-            getSelectedValues={() => props.book.bookshelves.slice().sort()}
-            setSelectedValues={(keys: any[]) => {
-                props.book.bookshelves = keys;
-            }}
-            getStylingForValue={(t) => {
-                return {
-                    backgroundColor: commonUI.colors.bloomBlue,
-                };
-            }}
-            {...props}
-        />
-    );
-};
 export const FeaturesChooser: React.FunctionComponent<{
     book: Book;
     setModified: (modified: boolean) => void;

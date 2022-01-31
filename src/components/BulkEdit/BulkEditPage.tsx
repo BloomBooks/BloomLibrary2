@@ -11,7 +11,6 @@ import { observable, makeObservable } from "mobx";
 import { AssignPublisherPanel } from "./AssignPublisherPanel";
 import { Filter as GridFilter } from "@devexpress/dx-react-grid";
 import { AddTagPanel } from "./AddTagPanel";
-import { AddBookshelfPanel } from "./AddBookshelfPanel";
 import { useSetBrowserTabTitle } from "../Routes";
 import { AssignOriginalPublisherPanel } from "./AssignOriginalPublisherPanel";
 import { IBulkEditPageProps } from "./BulkEditPageCodeSplit";
@@ -53,11 +52,6 @@ const BulkEditPage: React.FunctionComponent<IBulkEditPageProps> = (props) => {
             />
             <AddFeaturePanel
                 backgroundColor="aquamarine"
-                filterHolder={staticCurrentFilter}
-                refresh={() => setRefreshIndex(refreshIndex + 1)}
-            />
-            <AddBookshelfPanel
-                backgroundColor="lightyellow"
                 filterHolder={staticCurrentFilter}
                 refresh={() => setRefreshIndex(refreshIndex + 1)}
             />

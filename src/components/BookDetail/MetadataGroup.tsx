@@ -4,14 +4,12 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useContext } from "react";
+import React from "react";
 import { Book } from "../../model/Book";
 import { observer } from "mobx-react-lite";
 import { LicenseLink } from "./LicenseLink";
 import { BookStats } from "./BookStats";
-import { CachedTablesContext } from "../../model/CacheProvider";
 import { useGetRelatedBooks } from "../../connection/LibraryQueryHooks";
-import { Bookshelf } from "../../model/Bookshelf";
 import { KeywordLinks } from "./KeywordLinks";
 import { BlorgLink } from "../BlorgLink";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -90,7 +88,6 @@ export const LeftMetadata: React.FunctionComponent<{
 export const RightMetadata: React.FunctionComponent<{
     book: Book;
 }> = observer((props) => {
-    const { bookshelves } = useContext(CachedTablesContext);
     const relatedBooks = useGetRelatedBooks(props.book.id);
     const l10n = useIntl();
 
@@ -127,19 +124,6 @@ export const RightMetadata: React.FunctionComponent<{
                     defaultMessage="Keywords:"
                 />{" "}
                 <KeywordLinks book={props.book}></KeywordLinks>
-            </div>
-            <div>
-                <FormattedMessage
-                    id="book.metadata.bookshelves"
-                    defaultMessage="Bookshelves:"
-                />{" "}
-                {props.book.bookshelves
-                    .map(
-                        (shelfKey) =>
-                            Bookshelf.parseBookshelfKey(shelfKey, bookshelves)
-                                .displayNameWithParent
-                    )
-                    .join(", ")}
             </div>
             {relatedBooks?.length > 0 && (
                 <div>
