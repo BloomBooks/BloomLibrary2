@@ -15,6 +15,7 @@ import { Bookshelf } from "../../model/Bookshelf";
 import { KeywordLinks } from "./KeywordLinks";
 import { BlorgLink } from "../BlorgLink";
 import { FormattedMessage, useIntl } from "react-intl";
+import { BookDetailInfoWidget } from "./BookDetailInfoWidget";
 
 export const LeftMetadata: React.FunctionComponent<{
     book: Book;
@@ -82,6 +83,21 @@ export const LeftMetadata: React.FunctionComponent<{
                         </BlorgLink>
                     </div>
                 )}
+
+            {props.book.rebrand && (
+                <div
+                    css={css`
+                        display: flex;
+                    `}
+                >
+                    {"Rebrand"}
+                    <BookDetailInfoWidget>
+                        {
+                            "This book appears to be a duplicate of another book, except with a new branding. For this reason, we do not include it in the general counts of books, and we don't show it in places where it would be a confusing duplicate."
+                        }
+                    </BookDetailInfoWidget>
+                </div>
+            )}
             <BookStats book={props.book} />
         </div>
     );
