@@ -19,7 +19,6 @@ import { HideBookControl } from "./HideBookControl";
 import {
     TagsChooser,
     BookLanguagesChooser,
-    BookshelvesChooser,
     FeaturesChooser,
 } from "./StaffMultiChoosers";
 import { Prompt } from "react-router-dom";
@@ -329,10 +328,6 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                     ></TextField>
                 </div>
             </div>
-            <BookshelvesChooser
-                setModified={setModified}
-                book={props.book}
-            ></BookshelvesChooser>{" "}
             <BookLanguagesChooser
                 setModified={setModified}
                 book={props.book}

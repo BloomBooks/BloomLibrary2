@@ -32,7 +32,6 @@ export interface IGridColumn extends DevExpressColumn {
 
 // For some tags, we want to give them their own column. So we don't want to show them in the tags column.
 const kTagsToFilterOutOfTagsList = [
-    "bookshelf:",
     "topic:",
     "system:Incoming",
     "level:",
@@ -109,16 +108,6 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                     {...props}
                 />
             ),
-        },
-        {
-            name: "bookshelves",
-            title: "Bookshelves",
-            defaultVisible: true,
-            sortingEnabled: true,
-            getCellValue: (b: Book) => b.bookshelves.join(","),
-            addToFilter: (filter: IFilter, value: string) => {
-                filter.bookshelf = value;
-            },
         },
         {
             name: "features",
