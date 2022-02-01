@@ -232,6 +232,25 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                 // otherwise don't mention it
             },
         },
+
+        {
+            name: "Is Rebrand",
+            getCellValue: (b: Book) => <RebrandCheckbox book={b} />,
+            getCustomFilterComponent: (props: TableFilterRow.CellProps) => (
+                <ChoicesFilterCell
+                    choices={["All", "Only Rebranded", "Hide Rebranded"]}
+                    {...props}
+                />
+            ),
+            addToFilter: (filter: IFilter, value: string) => {
+                if (value === "Only Rebranded")
+                    filter.rebrand = BooleanOptions.Yes;
+                if (value === "Hide Rebranded")
+                    filter.rebrand = BooleanOptions.No;
+                // otherwise don't mention it
+            },
+        },
+
         { name: "license", sortingEnabled: true },
         {
             name: "copyright",
@@ -363,6 +382,21 @@ const TagCheckbox: React.FunctionComponent<{
             onChange={(e) => {
                 props.book.setBooleanTagAndSave(props.tag, e.target.checked);
                 setPresent(e.target.checked);
+            }}
+        />
+    );
+};
+const RebrandCheckbox: React.FunctionComponent<{
+    book: Book;
+}> = (props) => {
+    const [checked, setChecked] = useState(props.book.rebrand);
+    return (
+        <Checkbox
+            checked={checked}
+            onChange={(e) => {
+                props.book.rebrand = e.target.checked;
+                props.book.saveAdminDataToParse();
+                setChecked(e.target.checked);
             }}
         />
     );

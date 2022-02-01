@@ -1,3 +1,4 @@
+import { parseBooleanOptions } from "../IFilter";
 import {
     IBanner,
     IMedia,
@@ -89,6 +90,12 @@ export function convertContentfulCollectionToICollection(
         expandChildCollectionRows: item.fields.expandChildCollectionRows,
         showBookCountInRowDisplay: item.fields.showBookCountInRowDisplay,
     };
+    if (item.fields.filter && item.fields.filter.rebrand !== undefined) {
+        // having an item.fields.filter does mean there is a result.filter but TS can't tell, hence the "!"
+        result.filter!.rebrand = parseBooleanOptions(
+            item.fields.filter.rebrand
+        );
+    }
     if (!result.filter && item.fields.useSimpleBookshelfFilter) {
         // many collections just need to bring in all the books that Bloom uploading process has given the tag "bookshelf: blah",
         // when the Bloom Collection settings have pointed to that bookshelf. Without this default, we have to add an explicit

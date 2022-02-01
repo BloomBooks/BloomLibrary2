@@ -91,6 +91,7 @@ export class Book {
     public originalPublisher: string = "";
     public features: string[] = [];
     public edition: string = "";
+    public rebrand: boolean = false; // the book is the exact same as an existing book except that it has different branding. BL-10865.
 
     // This scalar string format is easier for the user/UI to modify,
     // but in the database, we store it as an array of strings instead
@@ -139,6 +140,7 @@ export class Book {
             keywordsText: observable,
             keywords: observable,
             artifactsToOfferToUsers: observable,
+            rebrand: observable,
         });
     }
 
@@ -286,6 +288,7 @@ export class Book {
             keywordStems: this.keywordStems,
             edition: this.edition,
             harvestState: this.harvestState,
+            rebrand: this.rebrand,
         });
     }
 
