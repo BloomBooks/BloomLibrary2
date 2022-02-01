@@ -6,12 +6,10 @@ import { jsx } from "@emotion/core";
 
 import React from "react";
 import useAxios from "@use-hooks/axios";
-import Tooltip from "react-tooltip-lite";
-
-import infoIcon from "../../assets/info.png";
 import { Book } from "../../model/Book";
 import { FormattedMessage, useIntl } from "react-intl";
 import { getBloomApiUrl } from "../../connection/ApiConnection";
+import { BookDetailInfoWidget } from "./BookDetailInfoWidget";
 
 // The casing here is unfortunate, but that's what the database gives us no matter what we do there.
 // Could be enhanced by remapping all the fields in the Azure function or here, but those
@@ -159,18 +157,7 @@ export const BookStats: React.FunctionComponent<{
         >
             <div>{statsSummary}</div>
 
-            <Tooltip
-                className={"infoTooltip"}
-                content={tooltipcontents}
-                arrow
-                useDefaultStyles
-            >
-                <img
-                    src={infoIcon}
-                    style={{ height: "1em", width: "1em", marginLeft: "5px" }}
-                    alt=""
-                />
-            </Tooltip>
+            <BookDetailInfoWidget>{tooltipcontents}</BookDetailInfoWidget>
         </div>
     );
 };
