@@ -319,7 +319,7 @@ export function makeLanguageCollection(
         ...templateCollection,
         ...explicitCollection,
         urlKey: "language:" + langCode,
-        filter: { language: langCode },
+        filter: { ...templateCollection.filter, language: langCode },
         label,
         title: `Free ${languageDisplayName} books`,
         metaDescription: `A collection of free books in the ${languageDisplayName} language.`,
