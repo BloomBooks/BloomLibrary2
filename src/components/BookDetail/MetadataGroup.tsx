@@ -4,17 +4,16 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useContext } from "react";
+import React from "react";
 import { Book } from "../../model/Book";
 import { observer } from "mobx-react-lite";
 import { LicenseLink } from "./LicenseLink";
 import { BookStats } from "./BookStats";
-import { CachedTablesContext } from "../../model/CacheProvider";
 import { useGetRelatedBooks } from "../../connection/LibraryQueryHooks";
-import { Bookshelf } from "../../model/Bookshelf";
 import { KeywordLinks } from "./KeywordLinks";
 import { BlorgLink } from "../BlorgLink";
 import { FormattedMessage, useIntl } from "react-intl";
+import { BookDetailInfoWidget } from "./BookDetailInfoWidget";
 
 export const LeftMetadata: React.FunctionComponent<{
     book: Book;
@@ -82,6 +81,21 @@ export const LeftMetadata: React.FunctionComponent<{
                         </BlorgLink>
                     </div>
                 )}
+
+            {props.book.rebrand && (
+                <div
+                    css={css`
+                        display: flex;
+                    `}
+                >
+                    {"Rebrand"}
+                    <BookDetailInfoWidget>
+                        {
+                            "This book appears to be a duplicate of another book, except with a new branding. For this reason, we do not include it in the general counts of books, and we don't show it in places where it would be a confusing duplicate."
+                        }
+                    </BookDetailInfoWidget>
+                </div>
+            )}
             <BookStats book={props.book} />
         </div>
     );
@@ -90,7 +104,6 @@ export const LeftMetadata: React.FunctionComponent<{
 export const RightMetadata: React.FunctionComponent<{
     book: Book;
 }> = observer((props) => {
-    const { bookshelves } = useContext(CachedTablesContext);
     const relatedBooks = useGetRelatedBooks(props.book.id);
     const l10n = useIntl();
 
@@ -127,19 +140,6 @@ export const RightMetadata: React.FunctionComponent<{
                     defaultMessage="Keywords:"
                 />{" "}
                 <KeywordLinks book={props.book}></KeywordLinks>
-            </div>
-            <div>
-                <FormattedMessage
-                    id="book.metadata.bookshelves"
-                    defaultMessage="Bookshelves:"
-                />{" "}
-                {props.book.bookshelves
-                    .map(
-                        (shelfKey) =>
-                            Bookshelf.parseBookshelfKey(shelfKey, bookshelves)
-                                .displayNameWithParent
-                    )
-                    .join(", ")}
             </div>
             {relatedBooks?.length > 0 && (
                 <div>

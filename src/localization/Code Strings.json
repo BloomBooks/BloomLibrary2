@@ -262,10 +262,6 @@
         "description": "",
         "message": "Keywords:"
     },
-    "book.metadata.bookshelves": {
-        "description": "",
-        "message": "Bookshelves:"
-    },
     "book.metadata.related": {
         "description": "",
         "message": "Related Books:"
