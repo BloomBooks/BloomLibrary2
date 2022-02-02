@@ -24,6 +24,7 @@ export interface IBanner {
 // This mostly corresponds to the fields of a Collection from Contentful.
 // Some of the raw data we get from there gets processed to make simpler fields here.
 export interface ICollection {
+    contentfulId?: string; // should be undefined if the collection is created by code instead of contentful
     title: string; //used in the <head>, important for SEO
     metaDescription: string; //used in the <head>, important for SEO
     bannerId: string; // contentful ID of banner object. (fields.banner.id)
@@ -39,7 +40,7 @@ export interface ICollection {
     description: string;
     urlForBloomPubBundle: string; // used where someone (i.e. Education for Life) is providing a link to a bloomBundle of all the books in the collection.
     urlForBloomSourceBundle: string; // used for collections of shells where it is common for people to want to translate the whole set
-    filter: IFilter;
+    filter?: IFilter; // contentful does give us undefined if this field is empty
     statisticsQuerySpec?: IStatisticsQuerySpec;
     iconForCardAndDefaultBanner?: IMedia;
     iconCredits?: string;

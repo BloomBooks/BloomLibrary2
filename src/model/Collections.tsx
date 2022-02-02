@@ -406,6 +406,7 @@ export function makeCollectionForPHash(
 
 export function getDummyCollectionForPreview(bannerId: string): ICollection {
     return {
+        contentfulId: undefined, // this is made up here: it's not from contentful
         label: "dummy",
         title: "dummy",
         metaDescription: "dummy",
@@ -431,6 +432,7 @@ function makeTopicCollectionsForCards(): ICollection[] {
     return [...kTopicList].sort().map((t) =>
         makeTopicCollection(
             {
+                contentfulId: undefined, // this is made up here: it's not from contentful
                 urlKey: "topic:" + t,
                 label: t,
                 title: `Free ${t} books`,

@@ -1,5 +1,5 @@
 import * as Contentful from "contentful";
-const kContentfulSpace = "72i7e2mqidxz";
+export const kContentfulSpace = "72i7e2mqidxz";
 
 // there's a problem with the TS types in the Contentful library, hence this "any"
 const contentfulClientPublished = Contentful.createClient({
