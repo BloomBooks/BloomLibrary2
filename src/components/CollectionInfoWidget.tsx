@@ -5,9 +5,10 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import FilterTiltShiftIcon from "@material-ui/icons/FilterTiltShift";
 
-import { IFilter } from "../IFilter";
+import { BooleanOptions, IFilter } from "../IFilter";
 import { ICollection } from "../model/ContentInterfaces";
 import { useGetLoggedInUser } from "../connection/LoggedInUser";
+import { kContentfulSpace } from "../ContentfulContext";
 
 export const CollectionInfoWidget: React.FunctionComponent<{
     // provide the collection if you have it
@@ -28,17 +29,40 @@ export const CollectionInfoWidget: React.FunctionComponent<{
                     user-select: none;
                     position: absolute;
                 `}
-                title={`This widget shows because you are a moderator.\r\n${collectionInfo}\r\n${filterInfoString(
-                    filter
-                )}`}
+                title={`This widget shows because you are a moderator.\r\n${
+                    props.collection?.contentfulId
+                        ? "Click the icon to edit in Contentful\r\n"
+                        : ""
+                }${collectionInfo}\r\n${filterInfoString(filter)}`}
             >
                 <FilterTiltShiftIcon
                     css={css`
                         width: 6px;
                         margin-left: 10px;
-                        color: #1ac8eb;
+                        // this might not be worth keeping forever, but at the moment we're going through
+                        // deciding which collections should allow rebrands, so it's helpful.
+                        * {
+                            color: ${filter?.rebrand === BooleanOptions.No
+                                ? "red"
+                                : "#1ac8eb"} !important;
+                        }
                     `}
                     fontSize={"small"}
+                    onClick={() => {
+                        if (props.collection?.contentfulId)
+                            window
+                                .open(
+                                    `https://app.contentful.com/spaces/${kContentfulSpace}/entries/` +
+                                        props.collection?.contentfulId,
+
+                                    "_blank"
+                                )
+                                ?.focus();
+                        else
+                            window.alert(
+                                "It looks like this collection is created by code, not Contentful, so we can't take you there."
+                            );
+                    }}
                 />
             </span>
         );

@@ -56,6 +56,7 @@ export function convertContentfulCollectionToICollection(
     }
 
     const result: ICollection = {
+        contentfulId: item.sys.id as string,
         urlKey: item.fields.urlKey as string,
         // By the time we get to displaying a page from this collection, this will be either the localized label or a template based on it
         title: "",
