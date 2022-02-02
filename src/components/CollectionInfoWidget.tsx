@@ -5,7 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import FilterTiltShiftIcon from "@material-ui/icons/FilterTiltShift";
 
-import { IFilter } from "../IFilter";
+import { BooleanOptions, IFilter } from "../IFilter";
 import { ICollection } from "../model/ContentInterfaces";
 import { useGetLoggedInUser } from "../connection/LoggedInUser";
 import { kContentfulSpace } from "../ContentfulContext";
@@ -39,7 +39,11 @@ export const CollectionInfoWidget: React.FunctionComponent<{
                     css={css`
                         width: 6px;
                         margin-left: 10px;
-                        color: #1ac8eb;
+                        // this might not be worth keeping forever, but at the moment we're going through
+                        // deciding which collections should allow rebrands, so it's helpful.
+                        color: ${filter?.rebrand === BooleanOptions.No
+                            ? "red"
+                            : "#1ac8eb"};
                     `}
                     fontSize={"small"}
                     onClick={() => {

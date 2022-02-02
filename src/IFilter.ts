@@ -1,7 +1,7 @@
 export enum BooleanOptions {
-    All,
-    No,
-    Yes,
+    No = "No",
+    Yes = "Yes",
+    All = "All",
 }
 export function parseBooleanOptions(value: any): BooleanOptions {
     switch (value) {
