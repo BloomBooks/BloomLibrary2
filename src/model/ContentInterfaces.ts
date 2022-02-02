@@ -24,6 +24,7 @@ export interface IBanner {
 // This mostly corresponds to the fields of a Collection from Contentful.
 // Some of the raw data we get from there gets processed to make simpler fields here.
 export interface ICollection {
+    contentfulId?: string; // should be undefined if the collection is created by code instead of contentful
     title: string; //used in the <head>, important for SEO
     metaDescription: string; //used in the <head>, important for SEO
     bannerId: string; // contentful ID of banner object. (fields.banner.id)
