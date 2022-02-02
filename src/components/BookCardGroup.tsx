@@ -25,7 +25,6 @@ import { useGetResponsiveBookGroupTopMargin } from "./BookGroup";
 import { BlorgMarkdown } from "./markdown/BlorgMarkdown";
 import { AllCard } from "./AllCard";
 import { CollectionLayout } from "./CollectionLayout";
-import { ListOfBookGroups } from "./ListOfBookGroups";
 import { CollectionInfoWidget } from "./CollectionInfoWidget";
 
 interface IProps {
@@ -40,6 +39,8 @@ interface IProps {
     contextLangIso?: string;
 
     useCollectionLayoutSettingForBookCards?: boolean;
+
+    hideHeaderAndCount?: boolean;
 }
 
 export const BookCardGroup: React.FunctionComponent<IProps> = (props) => {
@@ -339,15 +340,16 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
     } else {
         group = (
             <React.Fragment>
-                {responsiveHeaderAndCount}
+                {props.hideHeaderAndCount || responsiveHeaderAndCount}
                 {search.waiting ||
                     (props.useCollectionLayoutSettingForBookCards &&
                     // If contentful didn't set a layout, we don't want to use the normal default in CollectionLayout.
                     // Instead just use our bookList. See comment below.
                     props.collection.rawLayout ? (
-                        <ListOfBookGroups>
-                            <CollectionLayout collection={props.collection} />
-                        </ListOfBookGroups>
+                        <CollectionLayout
+                            collection={props.collection}
+                            hideHeaderAndCount={true} // we've already shown the header and count for this collection
+                        />
                     ) : (
                         // ENHANCE:
                         // In theory, we could move the logic which creates bookList (above) into CollectionLayout
