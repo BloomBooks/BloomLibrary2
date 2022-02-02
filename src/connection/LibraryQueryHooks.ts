@@ -1,6 +1,6 @@
 import useAxios, { IReturns, axios, IParams } from "@use-hooks/axios";
 import { AxiosResponse } from "axios";
-import { IFilter, BooleanOptions } from "../IFilter";
+import { IFilter, BooleanOptions, parseBooleanOptions } from "../IFilter";
 import { getConnection } from "./ParseServerConnection";
 import { getBloomApiUrl } from "./ApiConnection";
 import { retrieveBookData, retrieveBookStats } from "./LibraryQueries";
@@ -258,7 +258,7 @@ export const bookDetailFields =
     "title,allTitles,baseUrl,bookOrder,inCirculation,draft,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
     "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits," +
     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,suitableForMakingShells,lastUploaded," +
-    "harvestStartedAt,publisher,originalPublisher,keywords,bookInstanceId,brandingProjectName,edition";
+    "harvestStartedAt,publisher,originalPublisher,keywords,bookInstanceId,brandingProjectName,edition,rebrand";
 export function useGetBookDetail(bookId: string): Book | undefined | null {
     const { response, loading, error } = useAxios({
         url: `${getConnection().url}classes/books`,
@@ -336,7 +336,7 @@ export const gridBookKeys =
     "title,baseUrl,license,licenseNotes,inCirculation,draft,summary,copyright,harvestState," +
     "harvestLog,harvestStartedAt,tags,pageCount,phashOfFirstContentImage,show,credits,country," +
     "features,internetLimits,librarianNote,uploader,langPointers,importedBookSourceUrl," +
-    "downloadCount,publisher,originalPublisher,keywords,edition";
+    "downloadCount,publisher,originalPublisher,keywords,edition,rebrand";
 
 export const gridBookIncludeFields = "uploader,langPointers";
 
@@ -645,7 +645,7 @@ export interface IBasicBookInfo {
 }
 
 const kFieldsOfIBasicBookInfo =
-    "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft";
+    "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft,rebrand";
 
 // uses the human "level:" tag if present, otherwise falls back to computedLevel
 export function getBestLevelStringOrEmpty(basicBookInfo: IBasicBookInfo) {
@@ -704,7 +704,7 @@ export function useSearchBooks(
         count: 1,
         keys:
             // this should be all the fields of IBasicBookInfo
-            "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft",
+            "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft,rebrand",
         ...params,
     };
     const bookResultsStatus: IAxiosAnswer = useBookQueryInternal(
@@ -925,6 +925,7 @@ export function splitString(
         "language:",
         "brandingProjectName:",
         "branding:",
+        "rebrand:",
     ];
 
     const possibleParts = [...facets, ...allTagsInDatabase];
@@ -1150,6 +1151,9 @@ export function constructParseBookQuery(
                     break;
                 case "harvestState":
                     params.where.harvestState = facetValue;
+                    break;
+                case "rebrand":
+                    f.rebrand = parseBooleanOptions(facetValue);
                     break;
                 case "language":
                     f.language = facetValue;
@@ -1394,6 +1398,20 @@ export function constructParseBookQuery(
         // NB: According to https://issues.bloomlibrary.org/youtrack/issue/BL-7990, the "Credits" column
         // on parse is actually the "original credits" in Bloom
         params.where.credits = f.originalCredits;
+    }
+
+    delete params.where.rebrand;
+    switch (f.rebrand) {
+        case BooleanOptions.Yes:
+            params.where.rebrand = true;
+            break;
+        case BooleanOptions.No:
+            // can't use false because old records have undefined. Undefined and false both mean NOT branded. So we query for "not true".
+            params.where.rebrand = { $ne: true };
+            break;
+        case BooleanOptions.All:
+            // don't mention it
+            break;
     }
 
     if (f.anyOfThese) {
