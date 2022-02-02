@@ -41,9 +41,11 @@ export const CollectionInfoWidget: React.FunctionComponent<{
                         margin-left: 10px;
                         // this might not be worth keeping forever, but at the moment we're going through
                         // deciding which collections should allow rebrands, so it's helpful.
-                        color: ${filter?.rebrand === BooleanOptions.No
-                            ? "red"
-                            : "#1ac8eb"};
+                        * {
+                            color: ${filter?.rebrand === BooleanOptions.No
+                                ? "red"
+                                : "#1ac8eb"} !important;
+                        }
                     `}
                     fontSize={"small"}
                     onClick={() => {
