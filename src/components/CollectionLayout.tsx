@@ -9,6 +9,7 @@ import { BookCardGroup } from "./BookCardGroup";
 export const CollectionLayout: React.FunctionComponent<{
     collection: ICollection;
     setBooksAndLanguagesCallback?: (value: string) => void;
+    hideHeaderAndCount?: boolean;
 }> = (props) => {
     const l10n = useIntl();
 
@@ -31,6 +32,7 @@ export const CollectionLayout: React.FunctionComponent<{
                         rows={
                             props.collection.rows ? props.collection.rows : 1000
                         } // all-books = all books
+                        hideHeaderAndCount={props.hideHeaderAndCount}
                     />
                 );
                 break;
