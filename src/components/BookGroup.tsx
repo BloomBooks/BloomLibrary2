@@ -9,7 +9,6 @@ import LazyLoad, {
     forceCheck as forceCheckLazyLoadComponents,
 } from "react-lazyload";
 
-import { commonUI } from "../theme";
 import { IFilter } from "../IFilter";
 import {
     useSearchBooks,
@@ -18,7 +17,6 @@ import {
 import { BookCard, useBookCardSpec } from "./BookCard";
 import { SingleRowCardSwiper } from "./SingleRowCardSwiper";
 import { useResponsiveChoice } from "../responsiveUtilities";
-import { CollectionInfoWidget } from "./CollectionInfoWidget";
 
 interface IProps {
     title: string;
@@ -209,21 +207,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
                 role="region"
                 aria-label={props.title}
             >
-                <h1>
-                    {props.title}
-                    <span
-                        css={css`
-                            font-size: 9pt;
-                            color: ${commonUI.colors.minContrastGray};
-                            margin-left: 1em;
-                        `}
-                    >
-                        {props.predeterminedBooks
-                            ? props.predeterminedBooks.length
-                            : search.totalMatchingRecords}
-                        <CollectionInfoWidget filter={props.filter} />
-                    </span>
-                </h1>
+                <h1>{props.title}</h1>
                 {ready && bookList}
             </li>
         )
