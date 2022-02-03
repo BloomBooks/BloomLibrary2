@@ -9,12 +9,11 @@ import { BooleanOptions, IFilter } from "../IFilter";
 import { ICollection } from "../model/ContentInterfaces";
 import { useGetUserIsModerator } from "../connection/LoggedInUser";
 import { kContentfulSpace } from "../ContentfulContext";
+import { getFilterForCollectionAndChildren } from "../model/Collections";
 
 export const CollectionInfoWidget: React.FunctionComponent<{
     // provide the collection if you have it
-    collection?: ICollection;
-    // else we'll take just a filter
-    filter?: IFilter;
+    collection: ICollection;
 }> = (props) => {
     const isModerator = useGetUserIsModerator();
     try {
@@ -22,7 +21,9 @@ export const CollectionInfoWidget: React.FunctionComponent<{
         const collectionInfo = props.collection
             ? `UrlKey = ${props.collection.urlKey}`
             : "";
-        const filter = props.filter ? props.filter : props.collection?.filter;
+        const filter = props.collection?.filter
+            ? props.collection.filter
+            : getFilterForCollectionAndChildren(props.collection!);
         return (
             <span
                 css={css`

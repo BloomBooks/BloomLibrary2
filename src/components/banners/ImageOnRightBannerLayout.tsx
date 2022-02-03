@@ -5,7 +5,6 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import { BannerImageCredits } from "./ImageCreditsTooltip";
-import { IFilter } from "../../IFilter";
 import { IBanner, ICollection } from "../../model/ContentInterfaces";
 import { Blurb } from "./Blurb";
 import useMedia from "use-media";
@@ -15,7 +14,6 @@ import { BookCount } from "../BookCount";
 export const ImageOnRightBannerLayout: React.FunctionComponent<{
     collection: ICollection;
     banner: IBanner;
-    filter?: IFilter;
     bookCount?: string; // often undefined, meaning compute from filter
 }> = (props) => {
     // don't try to show the image on phones
@@ -44,7 +42,9 @@ export const ImageOnRightBannerLayout: React.FunctionComponent<{
                 >
                     <Blurb {...props} hideTitle={props.banner.hideTitle} />
                 </div>
-                {props.bookCount || <BookCount filter={props.filter || {}} />}
+                {props.bookCount || (
+                    <BookCount collection={props.collection || {}} />
+                )}
             </div>
             {showImage && (
                 // the classname here is used by stylesheets in contentful
