@@ -38,6 +38,8 @@ export const LoggedInUser: UserHolder = new UserHolder();
 // causing whatever calls this to re-render when the user changes.
 // Previously done with mobx useObserver, which looked much simpler, but is
 // now deprecated, this seems to be the best available replacement.
+// NB: IF THIS IS WORKING UNRELIABLY, TRY MAKING THE PARENT A MOBX `observer`
+// OR USE A MORE SPECIFIC HOOK LIKE useGetUserIsModerator().
 export function useGetLoggedInUser(): User | undefined {
     const [user, setUser] = useState(LoggedInUser.current);
     autorun(() => {
@@ -46,4 +48,16 @@ export function useGetLoggedInUser(): User | undefined {
         }
     });
     return user;
+}
+
+export function useGetUserIsModerator(): boolean | undefined {
+    const [isModerator, setUserIsModerator] = useState(
+        LoggedInUser.current?.moderator
+    );
+    autorun(() => {
+        if (LoggedInUser.current?.moderator !== isModerator) {
+            setUserIsModerator(LoggedInUser.current?.moderator);
+        }
+    });
+    return isModerator;
 }
