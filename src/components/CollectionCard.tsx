@@ -23,7 +23,6 @@ import { useResponsiveChoice } from "../responsiveUtilities";
 import { ICardSpec, useBaseCardSpec } from "./CardGroup";
 import { commonUI } from "../theme";
 import TruncateMarkup from "react-truncate-markup";
-import { getFilterForCollectionAndChildren } from "../model/Collections";
 
 export enum CollectionCardLayout {
     short,
@@ -263,15 +262,7 @@ export const CollectionCard: React.FunctionComponent<{
             >
                 {(props.collection.filter ||
                     props.collection.childCollections) && (
-                    <BookCount
-                        filter={
-                            props.collection.filter
-                                ? props.collection.filter
-                                : getFilterForCollectionAndChildren(
-                                      props.collection
-                                  )
-                        }
-                    />
+                    <BookCount collection={props.collection} />
                 )}
             </div>
         </CheapCard>

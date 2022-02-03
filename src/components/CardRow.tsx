@@ -14,7 +14,6 @@ import {
 import { useResponsiveChoice } from "../responsiveUtilities";
 import { ICardSpec } from "./CardGroup";
 import { BookCount } from "./BookCount";
-import { getFilterForCollectionAndChildren } from "../model/Collections";
 
 interface IProps {
     collection: ICollection;
@@ -79,15 +78,7 @@ export const CardRow: React.FunctionComponent<IProps> = (props) => {
                                 margin-left: ${bookCountSize}px; // Convenient to use the same number
                             `}
                         >
-                            <BookCount
-                                filter={
-                                    props.collection.filter
-                                        ? props.collection.filter
-                                        : getFilterForCollectionAndChildren(
-                                              props.collection
-                                          )
-                                }
-                            />
+                            <BookCount collection={props.collection} />
                         </div>
                     )}
                 </div>
