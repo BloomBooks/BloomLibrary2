@@ -6,12 +6,16 @@ export enum BooleanOptions {
 export function parseBooleanOptions(value: any): BooleanOptions {
     switch (value) {
         case true:
+        case "True":
         case "true":
+        case "Yes":
         case "yes":
             return BooleanOptions.Yes;
 
         case false:
+        case "False":
         case "false":
+        case "No":
         case "no":
             return BooleanOptions.No;
 
