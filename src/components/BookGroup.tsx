@@ -44,14 +44,25 @@ export function useGetResponsiveBookGroupTopMargin(): number {
 }
 
 export const BookGroup: React.FunctionComponent<IProps> = (props) => {
+    const windowWidth =
+        window.innerWidth ||
+        document.documentElement.clientWidth ||
+        document.body.clientWidth;
+    const cardSpec = useBookCardSpec();
+    // An approximate (but fairly accurate) cards per row measurement is needed to prevent overly
+    // lazy behavior in some cases.  See https://issues.bloomlibrary.org/youtrack/issue/BL-10676.
+    const cardsPerRow = Math.floor(
+        (windowWidth - cardSpec.cardSpacingPx) / // approximate accounting for padding
+            (cardSpec.cardWidthPx + cardSpec.cardSpacingPx)
+    );
+
     // typically props.rows, if large, is intended as a maximum; very often the real size is
     // much less. We get less gigantic scroll bar ranges by limiting it.
     let rowCount = Math.min(props.rows ?? 1, 5);
     if (props.predeterminedBooks && props.rows !== 1) {
-        rowCount = Math.ceil(props.predeterminedBooks.length / 5); // still rough, but better than just using the max.
+        rowCount = Math.ceil(props.predeterminedBooks.length / cardsPerRow); // still rough, but better than just using the max.
     }
 
-    const cardSpec = useBookCardSpec();
     // note, if the number of cards is too small to fill up those rows, this will expect
     // to be taller than it is, but then when it is replaced by the actual content, the
     // scrollbar will adjust, so no big deal?
