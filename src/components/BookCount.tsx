@@ -5,17 +5,17 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import { useGetBookCountRaw } from "../connection/LibraryQueryHooks";
-import { IFilter } from "../IFilter";
 import {
     getResultsOrMessageElement,
     getNoResultsElement,
 } from "../connection/GetQueryResultsUI";
 import { FormattedMessage } from "react-intl";
 import { CollectionInfoWidget } from "./CollectionInfoWidget";
+import { ICollection } from "../model/ContentInterfaces";
 
 interface IProps {
     message?: string;
-    filter?: IFilter;
+    collection?: ICollection;
     noMatches?: JSX.Element;
     //ClassName?: string;
 }
@@ -38,9 +38,9 @@ const BookCountInternal: React.FunctionComponent<IProps> = (props) => {
     // If filter is undefined (Some collections w/child collections are like this), rather than calculating the number of books in Bloom Library,
     // just don't display any book count.
     // Note though that the home page has filter is empty, and in that case, we want shouldSkipQuery to return false.
-    const shouldSkipQuery = props.filter === undefined;
+    const shouldSkipQuery = props.collection?.filter === undefined;
     const bookCountResult = useGetBookCountRaw(
-        props.filter || {},
+        props.collection?.filter || {},
         shouldSkipQuery
     );
     const { noResultsElement, count } = getResultsOrMessageElement(
@@ -54,7 +54,7 @@ const BookCountInternal: React.FunctionComponent<IProps> = (props) => {
         // when it might help to prevent a spurious display of noMatches
         reportedCount: true,
     });
-    const filterString = JSON.stringify(props.filter);
+    const filterString = JSON.stringify(props.collection?.filter);
 
     if (filterString !== state.filterString) {
         // new filter string different from old filter string:
@@ -122,7 +122,7 @@ const BookCountInternal: React.FunctionComponent<IProps> = (props) => {
                         values={{ count }}
                     />
                 )}
-                <CollectionInfoWidget filter={props.filter} />
+                <CollectionInfoWidget collection={props.collection} />
             </span>
         )
     );

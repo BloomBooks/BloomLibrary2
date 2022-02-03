@@ -12,21 +12,23 @@ import {
     featureIsLanguageDependent,
 } from "./FeatureHelper";
 import { useIntl } from "react-intl";
+import { ICollection } from "../model/ContentInterfaces";
 
 export const ByLanguageGroups: React.FunctionComponent<{
     titlePrefix: string;
-    filter: IFilter;
+    collection: ICollection;
     reportBooksAndLanguages?: (bookCount: number, langCount: number) => void;
     rowsPerLanguage?: number;
     // Sometimes it's nice to drop English, in particular.
     excludeLanguages?: string[];
 }> = (props) => {
+    const filter: IFilter = props.collection.filter!;
     const searchResults = useSearchBooks(
         {
             include: "langPointers",
             limit: 10000, // we want them all! If we get more than 10000 books in a single filter we may need to redesign, though.
         },
-        props.filter
+        filter
     );
     const l10n = useIntl();
     const unknown = l10n.formatMessage({
@@ -40,8 +42,7 @@ export const ByLanguageGroups: React.FunctionComponent<{
     const reportBooksAndLanguages = props.reportBooksAndLanguages; // to avoid useEffect depending on props.
     const waiting = searchResults.waiting;
     const needLangCheck =
-        props.filter.feature &&
-        featureIsLanguageDependent(props.filter.feature);
+        filter.feature && featureIsLanguageDependent(filter.feature);
     useEffect(() => {
         if (!waiting) {
             const newRows = new Map<string, IBasicBookInfo[]>();
@@ -83,7 +84,7 @@ export const ByLanguageGroups: React.FunctionComponent<{
                             needLangCheck &&
                             !bookHasFeatureInLanguage(
                                 book.features,
-                                props.filter.feature!,
+                                filter.feature!,
                                 langCode
                             )
                         ) {

@@ -48,7 +48,7 @@ export const CollectionLayout: React.FunctionComponent<{
                 booksComponent = (
                     <ByLanguageGroups
                         titlePrefix=""
-                        filter={props.collection.filter}
+                        collection={props.collection}
                         reportBooksAndLanguages={(books, languages) => {
                             if (props.setBooksAndLanguagesCallback) {
                                 props.setBooksAndLanguagesCallback(
