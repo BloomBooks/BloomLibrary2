@@ -320,10 +320,18 @@ export function useGetBasicBookInfos(
                     objectId: { $in: ids.map((id) => id) },
                 },
                 keys: kFieldsOfIBasicBookInfo,
+                include: kIncludeForIBasicBookInfo,
             },
         },
     });
-    return response ? response["data"]["results"] : undefined;
+    if (response) {
+        return response["data"]["results"].map((rawInfo: any) => {
+            const bookInfo: IBasicBookInfo = { ...rawInfo };
+            bookInfo.languages = rawInfo.langPointers;
+            return bookInfo;
+        });
+    }
+    return undefined;
 }
 
 interface IGridResult {
@@ -646,6 +654,7 @@ export interface IBasicBookInfo {
 
 const kFieldsOfIBasicBookInfo =
     "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft,rebrand";
+const kIncludeForIBasicBookInfo = "langPointers";
 
 // uses the human "level:" tag if present, otherwise falls back to computedLevel
 export function getBestLevelStringOrEmpty(basicBookInfo: IBasicBookInfo) {
