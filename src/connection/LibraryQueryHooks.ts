@@ -320,10 +320,19 @@ export function useGetBasicBookInfos(
                     objectId: { $in: ids.map((id) => id) },
                 },
                 keys: kFieldsOfIBasicBookInfo,
+                include: "langPointers", // get the actual language objects pointed to by langPointers
             },
         },
     });
-    return response ? response["data"]["results"] : undefined;
+    if (response) {
+        return response["data"]["results"].map((rawInfo: any) => {
+            const bookInfo: IBasicBookInfo = { ...rawInfo };
+            // Here langPointers is not just the "pointers". It's the actual language objects.
+            bookInfo.languages = rawInfo.langPointers;
+            return bookInfo;
+        });
+    }
+    return undefined;
 }
 
 interface IGridResult {
