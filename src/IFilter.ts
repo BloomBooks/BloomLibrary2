@@ -1,7 +1,27 @@
 export enum BooleanOptions {
-    All,
-    No,
-    Yes,
+    No = "No",
+    Yes = "Yes",
+    All = "All",
+}
+export function parseBooleanOptions(value: any): BooleanOptions {
+    switch (value) {
+        case true:
+        case "True":
+        case "true":
+        case "Yes":
+        case "yes":
+            return BooleanOptions.Yes;
+
+        case false:
+        case "False":
+        case "false":
+        case "No":
+        case "no":
+            return BooleanOptions.No;
+
+        default:
+            return BooleanOptions.All;
+    }
 }
 export interface IFilter {
     language?: string; // review: what is this exactly? BCP 47? Our Parse has duplicate "ethnologueCode" and "isoCode" columns, which actually contain code and full script tags.
@@ -40,4 +60,8 @@ export interface IFilter {
     // provides a means to define a set of alternatives that are combined together as a set UNION.
     // NB: At the moment, there is no way to specify this on contentful.
     anyOfThese?: IFilter[];
+
+    // BL-10865. Controls whether we include books that are marked as being exact duplicates except for branding.
+    // Can be true (only rebrands), false (no rebrands), or "all", which means ignore that property.
+    rebrand?: BooleanOptions;
 }

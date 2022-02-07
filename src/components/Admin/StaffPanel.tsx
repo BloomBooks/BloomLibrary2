@@ -13,13 +13,13 @@ import {
     FormControlLabel,
     Radio,
     Button,
+    Checkbox,
 } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { HideBookControl } from "./HideBookControl";
 import {
     TagsChooser,
     BookLanguagesChooser,
-    BookshelvesChooser,
     FeaturesChooser,
 } from "./StaffMultiChoosers";
 import { Prompt } from "react-router-dom";
@@ -329,10 +329,6 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                     ></TextField>
                 </div>
             </div>
-            <BookshelvesChooser
-                setModified={setModified}
-                book={props.book}
-            ></BookshelvesChooser>{" "}
             <BookLanguagesChooser
                 setModified={setModified}
                 book={props.book}
@@ -409,7 +405,25 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                     width: 100%;
                 `}
             >
-                <HideBookControl book={props.book} setModified={setModified} />
+                <div>
+                    <FormControlLabel
+                        //Is exactly the same as another book except for the branding (BL-10685)"
+                        label={"Is a Rebrand"}
+                        control={
+                            <Checkbox
+                                checked={props.book.rebrand}
+                                onChange={(e) => {
+                                    props.book.rebrand = e.target.checked;
+                                    setModified(true);
+                                }}
+                            ></Checkbox>
+                        }
+                    ></FormControlLabel>
+                    <HideBookControl
+                        book={props.book}
+                        setModified={setModified}
+                    />
+                </div>
                 <div
                     css={css`
                         border: 2px solid ${borderColor};

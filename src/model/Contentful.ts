@@ -1,3 +1,4 @@
+import { parseBooleanOptions } from "../IFilter";
 import {
     IBanner,
     IMedia,
@@ -55,6 +56,7 @@ export function convertContentfulCollectionToICollection(
     }
 
     const result: ICollection = {
+        contentfulId: item.sys.id as string,
         urlKey: item.fields.urlKey as string,
         // By the time we get to displaying a page from this collection, this will be either the localized label or a template based on it
         title: "",
@@ -84,11 +86,16 @@ export function convertContentfulCollectionToICollection(
         expandChildCollectionRows: item.fields.expandChildCollectionRows,
         showBookCountInRowDisplay: item.fields.showBookCountInRowDisplay,
     };
+    if (item.fields.filter && item.fields.filter.rebrand !== undefined) {
+        // having an item.fields.filter does mean there is a result.filter but TS can't tell, hence the "!"
+        result.filter!.rebrand = parseBooleanOptions(
+            item.fields.filter.rebrand
+        );
+    }
     if (!result.filter && item.fields.useSimpleBookshelfFilter) {
         // many collections just need to bring in all the books that Bloom uploading process has given the tag "bookshelf: blah",
         // when the Bloom Collection settings have pointed to that bookshelf. Without this default, we have to add an explicit
         // filter for each of these in the Contentful collection record.
-        // Oddly, {bookshelf: result.urlKey} did not work, even though bookshelf is a field of IFilter.
         result.filter = { otherTags: "bookshelf:" + result.urlKey };
     }
     return result;

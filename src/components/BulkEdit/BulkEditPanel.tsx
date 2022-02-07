@@ -44,7 +44,6 @@ export const BulkEditPanel: React.FunctionComponent<{
     // that means the operator is probably confused. It's not occurring to me how to say that, so
     // instead I'm just listing some likely filters; if I miss one, that's fine, we can add them.
     const notFilteredYet = !(
-        !!props.filterHolder.completeFilter.bookshelf ||
         !!props.filterHolder.completeFilter.otherTags ||
         !!props.filterHolder.completeFilter.language ||
         !!props.filterHolder.completeFilter.derivedFrom ||
