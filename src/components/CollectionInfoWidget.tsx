@@ -7,7 +7,7 @@ import FilterTiltShiftIcon from "@material-ui/icons/FilterTiltShift";
 
 import { BooleanOptions, IFilter } from "../IFilter";
 import { ICollection } from "../model/ContentInterfaces";
-import { useGetLoggedInUser } from "../connection/LoggedInUser";
+import { useGetUserIsModerator } from "../connection/LoggedInUser";
 import { kContentfulSpace } from "../ContentfulContext";
 
 export const CollectionInfoWidget: React.FunctionComponent<{
@@ -16,9 +16,9 @@ export const CollectionInfoWidget: React.FunctionComponent<{
     // else we'll take just a filter
     filter?: IFilter;
 }> = (props) => {
-    const user = useGetLoggedInUser();
+    const isModerator = useGetUserIsModerator();
     try {
-        if (!user || !user.moderator) return null;
+        if (!isModerator) return null;
         const collectionInfo = props.collection
             ? `UrlKey = ${props.collection.urlKey}`
             : "";
@@ -60,7 +60,7 @@ export const CollectionInfoWidget: React.FunctionComponent<{
                                 ?.focus();
                         else
                             window.alert(
-                                "It looks like this collection is created by code, not Contentful, so we can't take you there."
+                                "TODO: Contentful id isn't available here yet. Try going to the page itself."
                             );
                     }}
                 />

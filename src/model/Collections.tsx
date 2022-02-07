@@ -64,7 +64,10 @@ interface IContentfulCollectionQueryResponse {
 // without doing an actual query.
 function useGetContentfulCollection(
     collectionName?: string
-): { loading: boolean; result: IRawCollection[] } {
+): {
+    loading: boolean;
+    result: IRawCollection[];
+} {
     const nameParts = (collectionName || "").split(":");
     let templateKey = "-";
     if (nameParts.length > 1) {
@@ -319,7 +322,7 @@ export function makeLanguageCollection(
         ...templateCollection,
         ...explicitCollection,
         urlKey: "language:" + langCode,
-        filter: { language: langCode },
+        filter: { ...templateCollection.filter, language: langCode },
         label,
         title: `Free ${languageDisplayName} books`,
         metaDescription: `A collection of free books in the ${languageDisplayName} language.`,
@@ -342,7 +345,7 @@ export function makeTopicCollection(
         ...explicitCollection,
         urlKey: "topic:" + topicName,
         label: templateCollection.label.replace("$1", topicName) || topicName,
-        filter: { topic: topicName },
+        filter: { ...templateCollection.filter, topic: topicName },
     };
 }
 
