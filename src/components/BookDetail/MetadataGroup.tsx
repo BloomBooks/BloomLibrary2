@@ -18,6 +18,16 @@ import { BookDetailInfoWidget } from "./BookDetailInfoWidget";
 export const LeftMetadata: React.FunctionComponent<{
     book: Book;
 }> = observer((props) => {
+    const l10n = useIntl();
+    const rebrandLabel = l10n.formatMessage({
+        id: "book.metadata.rebrand",
+        defaultMessage: "Rebrand",
+    });
+    const rebrandMsg = l10n.formatMessage({
+        id: "book.metadata.rebrandMessage",
+        defaultMessage:
+            "This book appears to be a duplicate of another book, except with a new branding. For this reason, we do not include it in the general counts of books, and we don't show it in places where it would be a confusing duplicate.",
+    });
     return (
         <div
             css={css`
@@ -88,12 +98,8 @@ export const LeftMetadata: React.FunctionComponent<{
                         display: flex;
                     `}
                 >
-                    {"Rebrand"}
-                    <BookDetailInfoWidget>
-                        {
-                            "This book appears to be a duplicate of another book, except with a new branding. For this reason, we do not include it in the general counts of books, and we don't show it in places where it would be a confusing duplicate."
-                        }
-                    </BookDetailInfoWidget>
+                    {rebrandLabel}
+                    <BookDetailInfoWidget>{rebrandMsg}</BookDetailInfoWidget>
                 </div>
             )}
             <BookStats book={props.book} />
