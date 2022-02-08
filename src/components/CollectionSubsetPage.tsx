@@ -207,10 +207,7 @@ export const CollectionSubsetPage: React.FunctionComponent<{
                 `}
             >
                 <Breadcrumbs />
-                <BookCount
-                    filter={subcollection.filter}
-                    noMatches={noMatches}
-                />
+                <BookCount collection={subcollection} noMatches={noMatches} />
             </div>
 
             {/* <SearchBanner filter={props.filter} /> */}
