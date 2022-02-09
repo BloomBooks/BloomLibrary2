@@ -88,11 +88,15 @@ export const LeftMetadata: React.FunctionComponent<{
                         display: flex;
                     `}
                 >
-                    {"Rebrand"}
+                    <FormattedMessage
+                        id="book.metadata.rebrand"
+                        defaultMessage="Rebrand"
+                    />
                     <BookDetailInfoWidget>
-                        {
-                            "This book appears to be a duplicate of another book, except with a new branding. For this reason, we do not include it in the general counts of books, and we don't show it in places where it would be a confusing duplicate."
-                        }
+                        <FormattedMessage
+                            id="book.metadata.rebrandMessage"
+                            defaultMessage="This book appears to be a duplicate of another book, except with a new branding. For this reason, we do not include it in the general counts of books, and we don't show it in places where it would be a confusing duplicate."
+                        />
                     </BookDetailInfoWidget>
                 </div>
             )}

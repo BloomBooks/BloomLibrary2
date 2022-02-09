@@ -9,12 +9,10 @@ import { BooleanOptions, IFilter } from "../IFilter";
 import { ICollection } from "../model/ContentInterfaces";
 import { useGetUserIsModerator } from "../connection/LoggedInUser";
 import { kContentfulSpace } from "../ContentfulContext";
+import { getFilterForCollectionAndChildren } from "../model/Collections";
 
 export const CollectionInfoWidget: React.FunctionComponent<{
-    // provide the collection if you have it
-    collection?: ICollection;
-    // else we'll take just a filter
-    filter?: IFilter;
+    collection: ICollection;
 }> = (props) => {
     const isModerator = useGetUserIsModerator();
     try {
@@ -22,7 +20,9 @@ export const CollectionInfoWidget: React.FunctionComponent<{
         const collectionInfo = props.collection
             ? `UrlKey = ${props.collection.urlKey}`
             : "";
-        const filter = props.filter ? props.filter : props.collection?.filter;
+        const filter = props.collection.filter
+            ? props.collection.filter
+            : getFilterForCollectionAndChildren(props.collection!);
         return (
             <span
                 css={css`
@@ -30,7 +30,7 @@ export const CollectionInfoWidget: React.FunctionComponent<{
                     position: absolute;
                 `}
                 title={`This widget shows because you are a moderator.\r\n${
-                    props.collection?.contentfulId
+                    props.collection.contentfulId
                         ? "Click the icon to edit in Contentful\r\n"
                         : ""
                 }${collectionInfo}\r\n${filterInfoString(filter)}`}
@@ -49,11 +49,11 @@ export const CollectionInfoWidget: React.FunctionComponent<{
                     `}
                     fontSize={"small"}
                     onClick={() => {
-                        if (props.collection?.contentfulId)
+                        if (props.collection.contentfulId)
                             window
                                 .open(
                                     `https://app.contentful.com/spaces/${kContentfulSpace}/entries/` +
-                                        props.collection?.contentfulId,
+                                        props.collection.contentfulId,
 
                                     "_blank"
                                 )

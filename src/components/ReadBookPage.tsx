@@ -222,7 +222,7 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
     const iframeSrc =
         `${bloomPlayerUrl}?url=${encodeURIComponent(
             url
-        )}&showBackButton=${showBackButton}&centerVertically=false&useOriginalPageSize=true` +
+        )}&showBackButton=${showBackButton}&centerVertically=false&useOriginalPageSize=true&allowToggleAppBar=true` +
         `${langParam}&hideFullScreenButton=${autoFullScreen}&independent=false&host=bloomlibrary`;
 
     // Lint would like us to add dependencies to this, but it doesn't work if I do.
