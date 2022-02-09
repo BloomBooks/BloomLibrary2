@@ -262,6 +262,14 @@
         "description": "",
         "message": "Keywords:"
     },
+    "book.metadata.rebrand": {
+        "description": "See the message for book.metadata.rebrandMessage.  That should explain what we mean by 'Rebrand'.",
+        "message": "Rebrand"
+    },
+    "book.metadata.rebrandMessage": {
+        "description": "",
+        "message": "This book appears to be a duplicate of another book, except with a new branding. For this reason, we do not include it in the general counts of books, and we don't show it in places where it would be a confusing duplicate."
+    },
     "book.metadata.related": {
         "description": "",
         "message": "Related Books:"

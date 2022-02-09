@@ -200,7 +200,7 @@ const CollectionCrumb: React.FunctionComponent<{
                     ""
                 )}
             </BlorgLink>
-            <CollectionInfoWidget collection={collection} />
+            {collection ? <CollectionInfoWidget collection={collection} /> : ""}
         </li>
     );
 };
