@@ -6,20 +6,17 @@ import { jsx } from "@emotion/core";
 
 import { Breadcrumbs } from "../Breadcrumbs";
 import { BookCount } from "../BookCount";
-import { IFilter } from "../../IFilter";
 import { ICollection, IBanner } from "../../model/ContentInterfaces";
 import { ImgWithCredits } from "../../ImgWithCredits";
 import { Blurb } from "./Blurb";
 import { useMediaQuery } from "@material-ui/core";
 import { BannerImageCredits } from "./ImageCreditsTooltip";
-import { getFilterForCollectionAndChildren } from "../../model/Collections";
 
 export const standardBannerHeight = "260px";
 
 export const StandardBannerLayout: React.FunctionComponent<{
     collection: ICollection;
     banner: IBanner;
-    filter?: IFilter;
     bookCount?: string; // often undefined, meaning compute from filter
 }> = (props) => {
     const backgroundImage = props.banner.backgroundImage?.url ?? "";
@@ -102,15 +99,7 @@ export const StandardBannerLayout: React.FunctionComponent<{
                 {props.collection?.urlKey !== "new-arrivals" &&
                     props.collection?.urlKey !== "create" &&
                     (props.bookCount || (
-                        <BookCount
-                            filter={
-                                props.filter
-                                    ? props.filter
-                                    : getFilterForCollectionAndChildren(
-                                          props.collection
-                                      )
-                            }
-                        />
+                        <BookCount collection={props.collection} />
                     ))}
                 <BannerImageCredits {...props} />
             </div>
