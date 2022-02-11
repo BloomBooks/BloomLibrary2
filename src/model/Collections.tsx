@@ -441,7 +441,7 @@ function makeTopicCollectionsForCards(): ICollection[] {
                 title: `Free ${t} books`,
                 metaDescription: `Free books about ${t}.`,
                 childCollections: [],
-                filter: { topic: t },
+                filter: { rebrand: BooleanOptions.No, topic: t }, // topics don't want to show rebranded books (BL-10899)
                 bannerId: "", // this will never be used because it's just for the card
                 layout: "by-level", // this will never be used because it's just for the card
                 rawLayout: "by-level",
