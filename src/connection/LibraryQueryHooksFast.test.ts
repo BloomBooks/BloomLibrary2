@@ -139,3 +139,37 @@ it("build proper parse query for derivedFrom", () => {
         '{"count":1,"limit":0,"where":{"inCirculation":{"$in":[true,null]},"draft":{"$in":[false,null]},"$and":[{"bookLineageArray":{"$select":{"query":{"className":"books","where":{"tags":"bookshelf:African Storybook","inCirculation":{"$in":[true,null]},"draft":{"$in":[false,null]}}},"key":"bookInstanceId"}}},{"tags":{"$ne":"bookshelf:African Storybook"}}]}}'
     );
 });
+
+it("build proper parse query for derivedFrom with topic and 'search':'level:1'", () => {
+    const inputFilter: IFilter = {
+        topic: "Animal Stories",
+        derivedFrom: { otherTags: "bookshelf:African Storybook" },
+        search: "level:1",
+    };
+    const result = constructParseBookQuery(
+        { count: 1, limit: 0 },
+        inputFilter,
+        []
+    );
+    const resultString = JSON.stringify(result);
+    expect(resultString).toBe(
+        '{"count":1,"limit":0,"where":{"$and":[{"tags":{"$in":["computedLevel:1","level:1"]}},{"tags":"topic:Animal Stories"},{"bookLineageArray":{"$select":{"query":{"className":"books","where":{"tags":"bookshelf:African Storybook","inCirculation":{"$in":[true,null]},"draft":{"$in":[false,null]}}},"key":"bookInstanceId"}}},{"tags":{"$ne":"bookshelf:African Storybook"}}],"inCirculation":{"$in":[true,null]},"draft":{"$in":[false,null]}}}'
+    );
+});
+
+it("build proper parse query for derivedFrom with topic and 'search':'level:empty'", () => {
+    const inputFilter: IFilter = {
+        topic: "Animal Stories",
+        derivedFrom: { otherTags: "bookshelf:African Storybook" },
+        search: "level:empty",
+    };
+    const result = constructParseBookQuery(
+        { count: 1, limit: 0 },
+        inputFilter,
+        []
+    );
+    const resultString = JSON.stringify(result);
+    expect(resultString).toBe(
+        '{"count":1,"limit":0,"where":{"$and":[{"tags":{"$nin":["level:1","level:2","level:3","level:4","computedLevel:1","computedLevel:2","computedLevel:3","computedLevel:4"]}},{"tags":"topic:Animal Stories"},{"bookLineageArray":{"$select":{"query":{"className":"books","where":{"tags":"bookshelf:African Storybook","inCirculation":{"$in":[true,null]},"draft":{"$in":[false,null]}}},"key":"bookInstanceId"}}},{"tags":{"$ne":"bookshelf:African Storybook"}}],"inCirculation":{"$in":[true,null]},"draft":{"$in":[false,null]}}}'
+    );
+});
