@@ -1112,7 +1112,6 @@ export function constructParseBookQuery(
             f.search!,
             allTagsFromDatabase
         );
-
         for (const part of specialParts) {
             const facetParts = part.split(":").map((p) => p.trim());
             let facetLabel = facetParts[0];
@@ -1493,16 +1492,19 @@ function processDerivedFrom(
         f.derivedFrom,
         allTagsFromDatabase
     ) as any).where;
-    params.where.$and = [
-        {
-            bookLineageArray: {
-                $select: {
-                    query: { className: "books", where: innerWhere },
-                    key: "bookInstanceId",
-                },
+    const bookLineage = {
+        bookLineageArray: {
+            $select: {
+                query: { className: "books", where: innerWhere },
+                key: "bookInstanceId",
             },
         },
-    ];
+    };
+    if (params.where.$and) {
+        params.where.$and.push(bookLineage);
+    } else {
+        params.where.$and = [bookLineage];
+    }
     if (nonParentFilter) {
         params.where.$and.push(nonParentFilter);
     }
