@@ -37,6 +37,7 @@ import { useGetLocalizedCollectionLabel } from "../../localization/CollectionLab
 import { ICollectionStatsPageProps } from "./CollectionStatsPageCodeSplit";
 import { PageNotFound } from "../PageNotFound";
 import { StatsCredits } from "./StatsCredits";
+import { StatsLocationScreen } from "./StatsLocationScreen";
 
 export const Pretend: React.FunctionComponent<IStatsProps> = (props) => {
     return <h1>Pretend</h1>;
@@ -93,6 +94,15 @@ export const CollectionStatsPage: React.FunctionComponent<ICollectionStatsPagePr
                     <BookStatsReport {...p}></BookStatsReport>
                 ),
             },
+            {
+                label: l10n.formatMessage({
+                    id: "stats.locations",
+                    defaultMessage: "Locations",
+                }),
+                component: (p: IStatsProps) => (
+                    <StatsLocationScreen {...p}></StatsLocationScreen>
+                ),
+            },
         ].sort((a, b) => a.label.localeCompare(b.label));
         // But keep the overview at the top, outside of the sort order
         x.unshift({
@@ -105,7 +115,7 @@ export const CollectionStatsPage: React.FunctionComponent<ICollectionStatsPagePr
         return x;
     }, [l10n]);
 
-    const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
+    const [currentScreenIndex, setCurrentScreenIndex] = useState(4); // TODO do not commit
     const [exportDataFn, setExportDataFn] = useState<
         ExportDataFn | undefined
     >();
@@ -190,7 +200,7 @@ export const CollectionStatsPage: React.FunctionComponent<ICollectionStatsPagePr
                         css={css`
                             padding-left: 0;
                             min-width: 300px;
-
+                            background-color: white;
                             select {
                                 padding: 10px !important;
                             }

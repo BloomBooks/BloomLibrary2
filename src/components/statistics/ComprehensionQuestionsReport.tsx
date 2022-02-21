@@ -19,6 +19,7 @@ import { IStatsProps } from "./StatsInterfaces";
 import { useGetBookComprehensionEventStats } from "./useGetBookStats";
 import { useProvideDataForExport } from "../../export/exportData";
 import { useIntl } from "react-intl";
+import { StatsGridWrapper } from "./GridWrapper";
 
 export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> = (
     props
@@ -63,10 +64,10 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> 
 
     // Configure numeric sorts for the last two columns (so 453 is not less than 5)
     const [integratedSortingColumnExtensions] = useState([
-        { columnName: "questions", compare: compareNumbers },
-        { columnName: "quizzesTaken", compare: compareNumbers },
-        { columnName: "meanCorrect", compare: compareNumbers },
-        { columnName: "medianCorrect", compare: compareNumbers },
+        { columnName: "questions" },
+        { columnName: "quizzesTaken" },
+        { columnName: "meanCorrect" },
+        { columnName: "medianCorrect" },
     ]);
 
     const CustomTableHeaderCell = (cellProps: any) => {
@@ -121,81 +122,38 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> 
         }
     };
 
-    const gotRows = stats && stats.length > 0;
-
     //  const [headerColumnExtensions] = useState([
     //      { columnName: "quizzesTaken", wordWrapEnabled: true },
     //      { columnName: "meanCorrect", wordWrapEnabled: true },
     //      { columnName: "medianCorrect", wordWrapEnabled: true },
     //  ]);
     return (
-        <div
-            css={css`
-                background-color: ${gotRows && "white"};
-                thead.MuiTableHead-root * {
-                    line-height: 15px;
-                    vertical-align: top;
-                }
-                // make the table line up with the rest of the page
-                // (but don't interfere with the space between columns)
-                th:first-child,
-                td:first-child {
-                    padding-left: 0 !important;
-                }
-            `}
-        >
-            {gotRows || <div>No data found</div>}
-            {gotRows && (
-                <Grid rows={stats!} columns={columns}>
-                    <SortingState
-                        defaultSorting={[
-                            { columnName: "quizzesTaken", direction: "desc" },
-                        ]}
-                    />
-                    <IntegratedSorting
-                        columnExtensions={integratedSortingColumnExtensions}
-                    />
-                    <Table
-                        columnExtensions={tableColumnExtensions}
-                        cellComponent={CustomTableCell}
-                    />
-                    <TableColumnResizing
-                        resizingMode={"nextColumn"}
-                        defaultColumnWidths={columns.map((c) => ({
-                            columnName: c.name,
-                            width: "auto",
-                        }))}
-                    />
-                    <TableHeaderRow
-                        cellComponent={CustomTableHeaderCell}
-                        showSortingControls
-                    />
-                </Grid>
-            )}
-        </div>
+        <StatsGridWrapper stats={stats}>
+            <Grid rows={stats!} columns={columns}>
+                <SortingState
+                    defaultSorting={[
+                        { columnName: "quizzesTaken", direction: "desc" },
+                    ]}
+                />
+                <IntegratedSorting
+                    columnExtensions={integratedSortingColumnExtensions}
+                />
+                <Table
+                    columnExtensions={tableColumnExtensions}
+                    cellComponent={CustomTableCell}
+                />
+                <TableColumnResizing
+                    resizingMode={"nextColumn"}
+                    defaultColumnWidths={columns.map((c) => ({
+                        columnName: c.name,
+                        width: "auto",
+                    }))}
+                />
+                <TableHeaderRow
+                    cellComponent={CustomTableHeaderCell}
+                    showSortingControls
+                />
+            </Grid>
+        </StatsGridWrapper>
     );
-};
-
-const compareNumbers = (
-    a: string | undefined | null,
-    b: string | undefined | null
-): number => {
-    // First check for falsy strings. These are problematic.
-    // If you don't handle them, the list will become sorted in arbitrary order.
-    // We'll just define nulls as being worse than 0... so... negative infinity.
-    let numA = a ? parseFloat(a) : Number.NEGATIVE_INFINITY;
-    if (isNaN(numA)) {
-        // Parse errors are also problematic.
-        numA = Number.NEGATIVE_INFINITY;
-    }
-
-    let numB = b ? parseFloat(b) : Number.NEGATIVE_INFINITY;
-    if (isNaN(numB)) {
-        numB = Number.NEGATIVE_INFINITY;
-    }
-
-    if (numA === numB) {
-        return 0;
-    }
-    return numA < numB ? -1 : 1;
 };

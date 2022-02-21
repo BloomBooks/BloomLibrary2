@@ -20,6 +20,7 @@ import { useProvideDataForExport } from "../../export/exportData";
 import { CachedTablesContext } from "../../model/CacheProvider";
 import { getDisplayNamesFromLanguageCode } from "../../model/Language";
 import { useIntl } from "react-intl";
+import { StatsGridWrapper } from "./GridWrapper";
 
 export const BookStatsReport: React.FunctionComponent<IStatsProps> = (
     props
@@ -129,57 +130,28 @@ export const BookStatsReport: React.FunctionComponent<IStatsProps> = (
 
     // Configure numeric sorts for the last two columns (so 453 is not less than 5)
     const [integratedSortingColumnExtensions] = useState([
-        { columnName: "finishedCount", compare: compareNumbers },
-        { columnName: "startedCount", compare: compareNumbers },
+        { columnName: "finishedCount" },
+        { columnName: "startedCount" },
     ]);
 
-    const gotRows = stats && stats.length > 0;
     return (
-        <div
-            css={css`
-                background-color: ${gotRows && "white"};
-                thead.MuiTableHead-root * {
-                    line-height: 15px;
-                    vertical-align: top;
-                }
-                // make the table line up with the rest of the page
-                // (but don't interfere with the space between columns)
-                th:first-child,
-                td:first-child {
-                    padding-left: 0 !important;
-                }
-            `}
-        >
-            {gotRows || <div>No data found</div>}
-            {gotRows && (
-                <Grid rows={stats!} columns={columns}>
-                    <SortingState
-                        defaultSorting={[
-                            { columnName: "title", direction: "asc" },
-                        ]}
-                    />
-                    <IntegratedSorting
-                        columnExtensions={integratedSortingColumnExtensions}
-                    />
-                    <Table
-                        columnExtensions={tableColumnExtensions}
-                        //cellComponent={CustomTableCell}
-                    />
-                    <TableHeaderRow
-                        cellComponent={CustomTableHeaderCell}
-                        showSortingControls
-                    />
-                </Grid>
-            )}
-        </div>
+        <StatsGridWrapper stats={stats}>
+            <Grid rows={stats!} columns={columns}>
+                <SortingState
+                    defaultSorting={[{ columnName: "title", direction: "asc" }]}
+                />
+                <IntegratedSorting
+                    columnExtensions={integratedSortingColumnExtensions}
+                />
+                <Table
+                    columnExtensions={tableColumnExtensions}
+                    //cellComponent={CustomTableCell}
+                />
+                <TableHeaderRow
+                    cellComponent={CustomTableHeaderCell}
+                    showSortingControls
+                />
+            </Grid>
+        </StatsGridWrapper>
     );
-};
-
-const compareNumbers = (a: string, b: string): number => {
-    const numA = parseInt(a);
-    const numB = parseInt(b);
-    if (numA === numB) {
-        return 0;
-    }
-    return numA < numB ? -1 : 1;
 };
