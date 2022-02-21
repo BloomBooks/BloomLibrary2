@@ -18,6 +18,13 @@ import { BookDetailInfoWidget } from "./BookDetailInfoWidget";
 export const LeftMetadata: React.FunctionComponent<{
     book: Book;
 }> = observer((props) => {
+    const originalUploadDateAsString = props.book.uploadDate!.toLocaleDateString();
+    const lastUploadDateAsString = props.book.lastUploadedDate
+        ? props.book.lastUploadedDate!.toLocaleDateString()
+        : undefined;
+    const displayLastUploadDate =
+        originalUploadDateAsString !== lastUploadDateAsString;
+
     return (
         <div
             css={css`
@@ -48,26 +55,39 @@ export const LeftMetadata: React.FunctionComponent<{
                 />{" "}
                 <LicenseLink book={props.book} />
             </div>
-            <div>
-                <FormattedMessage
-                    id="book.metadata.uploadedBy"
-                    defaultMessage="Uploaded {date} by {email}"
-                    values={{
-                        date: props.book.uploadDate!.toLocaleDateString(),
-                        email: obfuscateEmail(props.book.uploader),
-                    }}
-                />
-            </div>
-            {props.book.lastUploadedDate && (
+            {!displayLastUploadDate ? (
                 <div>
                     <FormattedMessage
-                        id="book.metadata.lastUploaded"
-                        defaultMessage="Last uploaded on {date}"
+                        id="book.metadata.uploadedBy"
+                        defaultMessage="Uploaded {date} by {email}"
                         values={{
-                            date: props.book.lastUploadedDate!.toLocaleDateString(),
+                            date: originalUploadDateAsString,
+                            email: obfuscateEmail(props.book.uploader),
                         }}
                     />
                 </div>
+            ) : (
+                <>
+                    <div>
+                        <FormattedMessage
+                            id="book.metadata.firstUploadedBy"
+                            defaultMessage="First uploaded {date} by {email}"
+                            values={{
+                                date: originalUploadDateAsString,
+                                email: obfuscateEmail(props.book.uploader),
+                            }}
+                        />
+                    </div>
+                    <div>
+                        <FormattedMessage
+                            id="book.metadata.updatedOn"
+                            defaultMessage="Updated on {date}"
+                            values={{
+                                date: lastUploadDateAsString,
+                            }}
+                        />
+                    </div>
+                </>
             )}
             {props.book.importedBookSourceUrl &&
                 props.book.importedBookSourceUrl.length > 0 && (
