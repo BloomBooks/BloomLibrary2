@@ -22,7 +22,7 @@ import {
     DataTypeProvider,
 } from "@devexpress/dx-react-grid";
 import { IGridColumn } from "../Grid/GridColumns";
-import { StatsGridWrapper } from "./GridWrapper";
+import { StatsGridWrapper } from "./StatsGridWrapper";
 import { FormControl, MenuItem, Select } from "@material-ui/core";
 
 export const StatsLocationScreen: React.FunctionComponent<IStatsProps> = (

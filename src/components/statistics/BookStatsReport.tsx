@@ -20,7 +20,7 @@ import { useProvideDataForExport } from "../../export/exportData";
 import { CachedTablesContext } from "../../model/CacheProvider";
 import { getDisplayNamesFromLanguageCode } from "../../model/Language";
 import { useIntl } from "react-intl";
-import { StatsGridWrapper } from "./GridWrapper";
+import { StatsGridWrapper } from "./StatsGridWrapper";
 
 export const BookStatsReport: React.FunctionComponent<IStatsProps> = (
     props

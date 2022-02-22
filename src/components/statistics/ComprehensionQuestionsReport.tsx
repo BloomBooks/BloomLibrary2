@@ -19,7 +19,7 @@ import { IStatsProps } from "./StatsInterfaces";
 import { useGetBookComprehensionEventStats } from "./useGetBookStats";
 import { useProvideDataForExport } from "../../export/exportData";
 import { useIntl } from "react-intl";
-import { StatsGridWrapper } from "./GridWrapper";
+import { StatsGridWrapper } from "./StatsGridWrapper";
 
 export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> = (
     props
