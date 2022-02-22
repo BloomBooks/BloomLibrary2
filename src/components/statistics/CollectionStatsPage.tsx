@@ -115,7 +115,7 @@ export const CollectionStatsPage: React.FunctionComponent<ICollectionStatsPagePr
         return x;
     }, [l10n]);
 
-    const [currentScreenIndex, setCurrentScreenIndex] = useState(4); // TODO do not commit
+    const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
     const [exportDataFn, setExportDataFn] = useState<
         ExportDataFn | undefined
     >();
