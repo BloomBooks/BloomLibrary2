@@ -1,6 +1,5 @@
 {
     "name": "blorg",
-    "version": "0.1.0",
     "private": true,
     "engines": {
         "node": "~16.13.1"
@@ -42,6 +41,7 @@
         "downshift": "^3.2.10",
         "file-saver": "^2.0.2",
         "firebase": "^9.6.1",
+        "lodash": "^4.17.21",
         "markdown-to-jsx": "^6.11.4",
         "match-sorter": "^4.0.1",
         "mobx": "^6.0.4",
@@ -93,6 +93,7 @@
         "@types/file-saver": "^2.0.1",
         "@types/fs-extra": "^9.0.4",
         "@types/jest": "^25.1.2",
+        "@types/lodash": "^4.14.178",
         "@types/markdown-to-jsx": "^6.11.2",
         "@types/match-sorter": "^4.0.0",
         "@types/node": "12.7.2",
