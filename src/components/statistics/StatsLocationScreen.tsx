@@ -109,7 +109,14 @@ export const StatsLocationScreen: React.FunctionComponent<IStatsProps> = (
                     <IntegratedSummary />
                     <Table />
                     <TableHeaderRow showSortingControls />
-                    <TableSummaryRow messages={{ count: "Number of Cities" }} />
+                    <TableSummaryRow
+                        messages={{
+                            count:
+                                view === "countryTable"
+                                    ? "Number of Countries"
+                                    : "Number of Cities",
+                        }}
+                    />
                 </Grid>
             </StatsGridWrapper>
         </>
