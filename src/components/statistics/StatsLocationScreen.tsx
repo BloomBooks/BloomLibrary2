@@ -7,12 +7,14 @@ import { jsx } from "@emotion/core";
 import React, { useMemo, useState } from "react";
 import { IStatsProps } from "./StatsInterfaces";
 import { useProvideDataForExport } from "../../export/exportData";
+//import "@formatjs/intl-numberformat/polyfill"; // until we can get es2020 going... this is for Intl.NumberFormat
+
 import {
     ICityStat,
     ICountryStat,
     useGetLocationStats,
 } from "./useGetLocationStats";
-import { ResponsiveChoropleth } from "@nivo/geo";
+import { Choropleth } from "@nivo/geo";
 import {
     Grid,
     TableHeaderRow,
@@ -29,6 +31,7 @@ import {
 import { IGridColumn } from "../Grid/GridColumns";
 import { StatsGridWrapper } from "./StatsGridWrapper";
 import { FormControl, MenuItem, Select } from "@material-ui/core";
+import { IDateRange } from "./DateRangePicker";
 const countryShapes = require("./world_countries.json");
 const countryIds = require("./country_ids.json");
 
@@ -64,7 +67,12 @@ export const StatsLocationScreen: React.FunctionComponent<IStatsProps> = (
                 </Select>
             </FormControl>
             {view === "countryMap" && (
-                <StatsLocationMap stats={stats} view={view} />
+                <StatsLocationMap
+                    stats={stats}
+                    view={view}
+                    collection={props.collection.label}
+                    dateRange={props.dateRange}
+                />
             )}
             {(view === "countryTable" || view === "cityTable") && (
                 <StatsLocationTable stats={stats} view={view} />
@@ -75,66 +83,161 @@ export const StatsLocationScreen: React.FunctionComponent<IStatsProps> = (
 const StatsLocationMap: React.FunctionComponent<{
     stats: ICityStat[] | ICountryStat[] | undefined;
     view: string;
+    collection: string;
+    dateRange: IDateRange;
 }> = (props) => {
     const countryStats = props.stats as ICountryStat[];
 
-    // Our database doesn't currently give us country ids, so we do a lookup.
-    // Enhance: probably that DB has this info, we should include it in the stats so we can put it in the CSV export
-    // Enhance: or just move this lookup to to the fn that gets the data, so it will be in the CSV export
+    // This function spreads out the values to give us a better choropleth map, especially when the data has a bimodal distribution,
+    // as is often the case because a set of books is primarily targeted at one country.
+    const distributionFn = (n: number) => {
+        return Math.log10(n);
+    };
+    // This function returns the original value, for use in displaying the value to the user.
+    const reverseDistributionFn = (n: number) => {
+        return Math.pow(10, n);
+    };
+
+    const formatter = Intl.NumberFormat(undefined /* use whatever locale */, {
+        maximumFractionDigits: 0,
+        notation: "compact", // does thinks like use "k" for thousands
+        // `notation` is implemented in es2020, but I couldn't get our tsconfig and eslint to look there... was stuck on es5
+        // So that's what this casting is about
+    } as Intl.NumberFormatOptions);
+
+    // Our database gives us 2 letter country ids, but the map comes with 3 letter country ids. So we do the conversion here.
     const data =
         useMemo(() => {
             if (!props.stats) return { countries: [], maxReads: 0 };
             let maxReads = 0;
-            const x = countryStats?.map((e) => {
-                const c = countryIds.find((c: any) => c.name === e.country);
-                if (!c) {
-                    console.warn(`Unknown Country: ${e.country}`);
-                    return null;
+            const countriesStatsWith3LetterCodes = countryStats?.map((e) => {
+                let matchingCountry = countryIds.find(
+                    (c: any) => c.a2 === e.country_code
+                );
+                if (!matchingCountry) {
+                    matchingCountry = countryIds.find(
+                        (c: any) => c.n === e.country
+                    );
+                    if (!matchingCountry) {
+                        console.warn(
+                            `Unknown Country: ${e.country} with code ${e.country_code} had ${e.reads} reads.`
+                        );
+                        return null;
+                    } else {
+                        console.warn(
+                            `Country: ${e.country} lacked a code, but we found it by searching the name: ${matchingCountry.n}`
+                        );
+                    }
                 }
                 maxReads = Math.max(maxReads, e.reads || 0);
                 return {
-                    id: c.alpha3.toUpperCase(),
-                    value: e.reads,
+                    id: matchingCountry.a3.toUpperCase(), // 3 letter country code
+                    value: distributionFn(e.reads || 0),
+                    allReads: e.reads,
                 };
             });
-            return { countries: x, maxReads: maxReads };
+            return {
+                countries: countriesStatsWith3LetterCodes,
+                maxReads: maxReads,
+            };
         }, [countryStats, props.stats]) || [];
 
-    console.log("maxreads: ", data.maxReads);
+    // Enhance: it would be great if this was responsive. Although there is a ResponsiveChoropleth component,
+    // all that does is use react-measure to listen to the size of the parent, and I found that any wrapper
+    // that didn't have an absolute size would cause it to just keep growing. So... needs some css work. For
+    // now, just using these constants that work decently.
+    const mapWidth = 1000;
+    const mapHeight = mapWidth * 0.6;
+
     return (
         <div
+            id="svg-wrapper" // nb: the svg download button looks for this id
             css={css`
-                height: 500px;
-                width: 800px;
+                height: ${mapHeight + 0}px;
+                width: ${mapWidth}px;
+                height: aut;
+                border: solid thin;
+                background-color: #f9fdf9;
+                padding: 10px;
+                overflow-y: clip; // Enhance: why is this causing overflow anyhow?
             `}
         >
-            <ResponsiveChoropleth
-                //features="/* please have a look at the description for usage */"
+            <h3
+                css={css`
+                    margin-block-end: 0;
+                `}
+            >{`Bloom Book Reads by Country from "${props.collection}" Collection`}</h3>
+            <div
+                css={css`
+                    margin-block-start: 0;
+                    margin-block-end: 1em;
+                `}
+            >
+                {`${
+                    props.dateRange.startDate
+                        ? props.dateRange.startDate.toISOString().split("T")[0]
+                        : "Start"
+                } —
+                    ${
+                        props.dateRange.endDate
+                            ? props.dateRange.endDate
+                                  .toISOString()
+                                  .split("T")[0]
+                            : " Today"
+                    }`}
+                <br />
+                All Digital Sources: Web, Bloom Reader, Apps.
+            </div>
+
+            <Choropleth
+                height={mapHeight}
+                width={mapWidth}
                 features={countryShapes.features}
                 data={data.countries}
                 margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-                colors="nivo"
-                domain={[0, data.maxReads]}
-                unknownColor="#666666"
+                colors={"GnBu"}
+                domain={[0, distributionFn(data.maxReads)]}
+                unknownColor="#ffffff"
                 label="properties.name"
-                valueFormat=","
-                projectionTranslation={[0.5, 0.5]}
-                projectionRotation={[0, 0, 0]}
-                graticuleLineColor="#dddddd"
+                valueFormat={(reads) => {
+                    return formatter.format(reverseDistributionFn(reads));
+                }}
+                projectionTranslation={[0.45, 0.45]} // the constant here was chosen to fit the map; a different map would require a different value
+                projectionScale={mapWidth / 5.2} // the constant here was chosen to fit the map; a different map would require a different value
+                projectionType={"naturalEarth1"}
                 borderWidth={0.5}
-                borderColor="#152538"
+                borderColor="#343d34"
                 isInteractive={true}
-                // tooltip={(props) => (
-                //     <div
-                //         css={css`
-                //             background-color: white;
-                //             border: solid black;
-                //             padding: 20px;
-                //         `}
-                //     >
-                //         {`${props.feature.label}:${props.feature.value}`}
-                //     </div>
-                // )}
+                tooltip={(props) => (
+                    <div
+                        css={css`
+                            background-color: white;
+                            border: solid 1px gray;
+                            padding: 10px;
+                        `}
+                    >
+                        {`  ${
+                            props.feature.label ||
+                            (props.feature as any).properties.name
+                        }: ${(
+                            props.feature.data?.allReads || 0
+                        ).toLocaleString()} `}
+                    </div>
+                )}
+                legends={[
+                    {
+                        anchor: "bottom-left",
+                        direction: "column",
+                        justify: true,
+                        translateX: 50,
+                        translateY: -150,
+                        itemsSpacing: 0,
+                        itemWidth: 85,
+                        itemHeight: 18,
+                        itemDirection: "left-to-right",
+                        symbolSize: 18,
+                    },
+                ]}
             />
         </div>
     );
@@ -157,7 +260,6 @@ const StatsLocationTable: React.FunctionComponent<{
             name: "reads",
             title: "Reads",
             l10nId: "reads",
-            //getCellValue: (row: any, columnName: string) => `${row.reads}`,
         },
     ];
 
