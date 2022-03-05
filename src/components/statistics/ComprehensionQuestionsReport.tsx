@@ -15,13 +15,13 @@ import {
 } from "@devexpress/dx-react-grid-material-ui";
 import { IGridColumn } from "../Grid/GridColumns";
 import React, { useState } from "react";
-import { IStatsProps } from "./StatsInterfaces";
+import { IStatsPageProps } from "./StatsInterfaces";
 import { useGetBookComprehensionEventStats } from "./useGetBookStats";
 import { useProvideDataForExport } from "../../export/exportData";
 import { useIntl } from "react-intl";
 import { StatsGridWrapper } from "./StatsGridWrapper";
 
-export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsProps> = (
+export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsPageProps> = (
     props
 ) => {
     const l10n = useIntl();

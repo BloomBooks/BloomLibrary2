@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import React, { useMemo } from "react";
-import { IDateRange, rangeToString } from "./DateRangePicker";
+import { IDateRange, getPublishableDateRangeString } from "./DateRangePicker";
 import { useIntl } from "react-intl";
 import { ICollection } from "../../model/ContentInterfaces";
 import { getLocalizedCollectionLabel } from "../../localization/CollectionLabel";
@@ -64,11 +64,11 @@ export const QueryDescription: React.FunctionComponent<{
                         ? "--" // instead of N/A so that doesn't have to be translated
                         : getLocalizedCollectionLabel(props.collection)}
                 </li>
-                <li>
+                {/* <li>
                     {T("branding", "Books with branding:")}{" "}
                     {props.collection?.statisticsQuerySpec?.branding ??
                         localizedAny}
-                </li>
+                </li> */}
                 <li>
                     {T("country", "From users inside of country:")}{" "}
                     {props.collection?.statisticsQuerySpec?.country ??
@@ -76,7 +76,11 @@ export const QueryDescription: React.FunctionComponent<{
                 </li>
                 <li>
                     {T("dateRange", "Date range:")}{" "}
-                    {rangeToString(props.dateRange, l10n)}
+                    {getPublishableDateRangeString(
+                        props.dateRange,
+                        false,
+                        l10n
+                    )}
                 </li>
             </ul>
             {T(
