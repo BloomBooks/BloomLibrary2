@@ -24,8 +24,11 @@ export function useGetLocationStats(
 ): ICityStat[] | ICountryStat[] | undefined {
     const { response } = useCollectionStats(props, "reading/locations");
 
-    const mergeReadsFn = (o: any, s: any, k: string) =>
-        k === "reads" ? o + s : o;
+    const mergeTwoRowsBySummingReadsTogether = (
+        row1Value: any,
+        row2Value: any,
+        key: string
+    ) => (key === "reads" ? row1Value + row2Value : row1Value);
 
     const stats = useMemo(() => {
         if (response && response["data"] && response["data"]["stats"]) {
@@ -54,7 +57,11 @@ export function useGetLocationStats(
                         );
                         return g[0];
                     } else {
-                        return _.mergeWith(g[0], g[1], mergeReadsFn);
+                        return _.mergeWith(
+                            g[0],
+                            g[1],
+                            mergeTwoRowsBySummingReadsTogether
+                        );
                     }
                 })
                 .value();

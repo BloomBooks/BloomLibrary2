@@ -7,7 +7,6 @@ import { jsx } from "@emotion/core";
 import React, { useMemo, useState } from "react";
 import { IStatsProps } from "./StatsInterfaces";
 import { useProvideDataForExport } from "../../export/exportData";
-//import "@formatjs/intl-numberformat/polyfill"; // until we can get es2020 going... this is for Intl.NumberFormat
 
 import {
     ICityStat,
@@ -100,7 +99,7 @@ const StatsLocationMap: React.FunctionComponent<{
 
     const formatter = Intl.NumberFormat(undefined /* use whatever locale */, {
         maximumFractionDigits: 0,
-        notation: "compact", // does thinks like use "k" for thousands
+        notation: "compact", // does things like use "k" for thousands
         // `notation` is implemented in es2020, but I couldn't get our tsconfig and eslint to look there... was stuck on es5
         // So that's what this casting is about
     } as Intl.NumberFormatOptions);
