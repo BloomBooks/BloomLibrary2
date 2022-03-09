@@ -25,7 +25,7 @@ export const ReadOfflineButton: React.FunctionComponent<IProps> = (props) => {
     const parts = artifactUrl.split("/");
     const fileName = parts[parts.length - 1];
     return (
-        // A link to download the .bloomd file
+        // A link to download the .bloomd/.bloompub file
         <a
             href={artifactUrl}
             // This is more than a hint. Without an explicit download attribute,
