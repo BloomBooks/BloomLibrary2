@@ -130,7 +130,11 @@ function getDownloadUrl(book: Book, fileType: string): string | undefined {
 
     if (bookName) {
         if (fileType === "bloompub") {
-            return harvesterBaseUrl + bookName + ".bloomd";
+            const fileExt =
+                book.bloomPUBVersion && book.bloomPUBVersion >= 1
+                    ? ".bloompub"
+                    : ".bloomd";
+            return harvesterBaseUrl + bookName + fileExt;
         }
         return harvesterBaseUrl + fileType + "/" + bookName + "." + fileType;
     }
