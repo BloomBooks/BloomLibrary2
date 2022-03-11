@@ -286,7 +286,7 @@ const StatsLocationTable: React.FunctionComponent<{
 
 // Returns a function (trivial react component) that nivo can use as a layer in svg charts and maps.
 // This is better than showing a title using HTML because it is then included in the SVG download.
-export function makeTitleLayerForMap(
+export function makeSimpleTitleLayer(
     title: string,
     dateRangeInfo: string,
     sourcesInfo: string
