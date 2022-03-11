@@ -255,7 +255,7 @@ export function getPublishableDateRangeString(
     if (range.startDate) {
         result = `${formatFn(range.startDate)} -- `;
     } else {
-        result = " Through "; // enhance: I18N
+        result = "Through "; // enhance: I18N
     }
     result += ` ${
         range.endDate ? formatFn(range.endDate) : formatFn(new Date(Date.now()))

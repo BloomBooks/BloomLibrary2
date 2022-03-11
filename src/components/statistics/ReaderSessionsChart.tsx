@@ -14,10 +14,7 @@ import { toYyyyMmDd } from "../../Utilities";
 import { FormattedMessage, useIntl } from "react-intl";
 import React from "react";
 
-import {
-    makeTitleLayer as makeSimpleTitleLayer,
-    ScreenOptionsRow,
-} from "./CollectionStatsPage";
+import { makeSimpleTitleLayer, ScreenOptionsRow } from "./CollectionStatsPage";
 import { FormControl, MenuItem, Select } from "@material-ui/core";
 import { useQueryParam } from "use-query-params";
 

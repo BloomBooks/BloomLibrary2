@@ -177,9 +177,9 @@ export const CollectionStatsPage: React.FunctionComponent<ICollectionStatsPagePr
     const localizedBrowserTabTitle = l10n.formatMessage(
         {
             id: "collectionStatistics",
-            defaultMessage: "{collectionLabel} statistics",
+            defaultMessage: "Statistics for Collection: {collectionLabel}",
             description:
-                "Used to label the statistics for a particular collection. For example, COVID-19 Books statistics. {collectionLabel} gets replaced by the name of the collection.",
+                "Used to label the statistics for a particular collection. For example, 'Statics for Collection: COVID-19 Books'. {collectionLabel} gets replaced by the name of the collection.",
         },
         { collectionLabel: localizedCollectionLabel }
     );
@@ -207,7 +207,7 @@ export const CollectionStatsPage: React.FunctionComponent<ICollectionStatsPagePr
                 }
             `}
         >
-            <h2>{`Statistics for Collection: ${localizedCollectionLabel}`}</h2>
+            <h2>{localizedBrowserTabTitle}</h2>
             <div
                 css={css`
                     margin-bottom: 20px;
@@ -447,7 +447,7 @@ export const ScreenOptionsRow: React.FunctionComponent<{}> = (props) => {
 
 // Returns a function (trivial react component) that nivo can use as a layer in svg charts (but not maps, currently).
 // This is better than showing a title using HTML because it is then included in the SVG download.
-export function makeTitleLayer(title: string) {
+export function makeSimpleTitleLayer(title: string) {
     return () => (
         <text
             x={10}
