@@ -366,7 +366,7 @@ function getHarvesterBaseUrl(book: Book) {
             .replace("BloomLibraryBooks", "bloomharvest") + "/"
     );
     // Using slash rather than %2f at the end helps us download as the filename we want.
-    // Otherwise, the filename can be something like ken@example.com_007b3c03-52b7-4689-80bd-06fd4b6f9f28_Fox+and+Frog.bloomd
+    // Otherwise, the filename can be something like ken@example.com_007b3c03-52b7-4689-80bd-06fd4b6f9f28_Fox+and+Frog.bloompub
 }
 
 // though we normally don't like to export defaults, this is required for react.lazy (code splitting)

@@ -1,0 +1,20 @@
+diff --git a/node_modules/@nivo/geo/index.d.ts b/node_modules/@nivo/geo/index.d.ts
+index 5bb799a..56a0d34 100644
+--- a/node_modules/@nivo/geo/index.d.ts
++++ b/node_modules/@nivo/geo/index.d.ts
+@@ -1,6 +1,6 @@
+ import * as React from 'react'
+ import { Dimensions, Theme, Box, BoxAlign } from '@nivo/core'
+-
++import { LegendProps } from '@nivo/legends'
+ declare module '@nivo/geo' {
+     ///////////////////////////////////////////////////////////////////////////
+     // Common
+@@ -113,6 +113,7 @@ declare module '@nivo/geo' {
+         borderColor?: string | FeatureAccessor<ChoroplethBoundFeature, number>
+ 
+         tooltip?: ChoroplethTooltip
++        legends?: LegendProps[]
+ 
+         onMouseEnter?: ChoroplethEventHandler
+         onMouseMove?: ChoroplethEventHandler
