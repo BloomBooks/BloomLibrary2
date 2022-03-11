@@ -19,6 +19,7 @@ import Button from "@material-ui/core/Button";
 import { saveAs } from "file-saver";
 import DownloadPngIcon from "./download-png.svg";
 import DownloadCsvIcon from "../../export/download-csv.svg";
+import DownloadSvgIcon from "./download-svg.svg";
 import {
     IStatsProps,
     IScreenOption,
@@ -38,6 +39,7 @@ import { ICollectionStatsPageProps } from "./CollectionStatsPageCodeSplit";
 import { PageNotFound } from "../PageNotFound";
 import { StatsCredits } from "./StatsCredits";
 import { StatsLocationScreen } from "./StatsLocationScreen";
+const SvgSaver = require("svgsaver"); // note: domtoimage has svg export also, but there are problems with what it produces (figma can't load)
 
 export const Pretend: React.FunctionComponent<IStatsProps> = (props) => {
     return <h1>Pretend</h1>;
@@ -128,6 +130,11 @@ export const CollectionStatsPage: React.FunctionComponent<ICollectionStatsPagePr
             endDate: undefined, // today
         }
     );
+
+    // this will normally be undefined. It gets defined if there is an svg we want to make downloadable
+    const svgForDownloading = document.querySelector(
+        "#svg-wrapper svg"
+    )! as HTMLElement;
 
     // they come back from localStorage as strings.
     if (typeof dateRange.startDate === "string") {
@@ -304,6 +311,27 @@ export const CollectionStatsPage: React.FunctionComponent<ICollectionStatsPagePr
                         justify-content: flex-end;
                     `}
                 >
+                    {svgForDownloading && (
+                        <Button
+                            onClick={() => {
+                                svgForDownloading.setAttribute(
+                                    "title",
+                                    `${props.collectionName}-${screens[currentScreenIndex].label}`
+                                );
+                                const svgsaver = new SvgSaver();
+                                svgsaver.asSvg(svgForDownloading);
+                            }}
+                            aria-label="download SVG map"
+                        >
+                            <img
+                                alt={l10n.formatMessage({
+                                    id: "stats.download.svgIcon",
+                                    defaultMessage: "download SVG map",
+                                })}
+                                src={DownloadSvgIcon}
+                            />
+                        </Button>
+                    )}
                     <Button
                         onClick={() => {
                             downloadAsPng(

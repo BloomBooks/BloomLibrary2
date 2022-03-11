@@ -121,6 +121,7 @@ export class Book {
     public ePUBVisible: boolean = false;
 
     public languages: ILanguage[] = [];
+    public bloomPUBVersion: number | undefined;
 
     public stats: IBookStat = getDefaultBookStat();
 
@@ -141,6 +142,7 @@ export class Book {
             keywords: observable,
             artifactsToOfferToUsers: observable,
             rebrand: observable,
+            bloomPUBVersion: observable,
         });
     }
 
@@ -559,7 +561,7 @@ export class Book {
                 .replace("BloomLibraryBooks", "bloomharvest") + "/"
         );
         // Using slash rather than %2f at the end helps us download as the filename we want.
-        // Otherwise, the filename can be something like ken@example.com_007b3c03-52b7-4689-80bd-06fd4b6f9f28_Fox+and+Frog.bloomd
+        // Otherwise, the filename can be something like ken@example.com_007b3c03-52b7-4689-80bd-06fd4b6f9f28_Fox+and+Frog.bloompub
     }
     public static isHarvested(book: Book | IBasicBookInfo) {
         return book && book.harvestState === "Done";
