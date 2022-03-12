@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import React from "react";
-import { IStatsProps } from "./StatsInterfaces";
+import { IStatsPageProps, kStatsPageGray } from "./StatsInterfaces";
 import { StatsCard } from "./StatsCard";
 import { useProvideDataForExport } from "../../export/exportData";
 import { useGetOverviewStats } from "./useGetOverviewStats";
@@ -17,15 +17,16 @@ export interface IItem {
     label: string;
     value: number;
 }
-export const StatsOverviewScreen: React.FunctionComponent<IStatsProps> = (
+export const StatsOverviewScreen: React.FunctionComponent<IStatsPageProps> = (
     props
 ) => {
     const stats = useGetOverviewStats(props);
 
     const i18n = useIntl();
 
-    useProvideDataForExport(stats ? [stats] : undefined, props);
+    props.setBackgroundColor(kStatsPageGray);
 
+    useProvideDataForExport(stats ? [stats] : undefined, props);
     if (!stats) return <React.Fragment />;
 
     return (

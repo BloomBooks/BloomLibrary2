@@ -14,7 +14,7 @@ import {
 import { SortingState, IntegratedSorting } from "@devexpress/dx-react-grid";
 import { IGridColumn } from "../Grid/GridColumns";
 import React, { useState, useContext } from "react";
-import { IStatsProps } from "./StatsInterfaces";
+import { IStatsPageProps } from "./StatsInterfaces";
 import { useGetBookStats } from "./useGetBookStats";
 import { useProvideDataForExport } from "../../export/exportData";
 import { CachedTablesContext } from "../../model/CacheProvider";
@@ -22,7 +22,7 @@ import { getDisplayNamesFromLanguageCode } from "../../model/Language";
 import { useIntl } from "react-intl";
 import { StatsGridWrapper } from "./StatsGridWrapper";
 
-export const BookStatsReport: React.FunctionComponent<IStatsProps> = (
+export const BookStatsReport: React.FunctionComponent<IStatsPageProps> = (
     props
 ) => {
     const l10n = useIntl();

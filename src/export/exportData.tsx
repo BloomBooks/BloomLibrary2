@@ -7,6 +7,8 @@ export function useProvideDataForExport(
     rows: object[] | undefined, // undefined if data not available
     props: any
 ) {
+    const { screenTitleRef, ...propsToWatch } = props;
+
     useEffect(() => {
         // getting an undefined rows collection indicates we don't have a query result yet.
         // (possibly after starting a new axios call after changing params)
@@ -39,7 +41,9 @@ export function useProvideDataForExport(
         // eslint-disable-next-line react-hooks/exhaustive-deps
         rows?.length,
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        JSON.stringify(props) /* regenerate when we get different props*/,
+        JSON.stringify(
+            propsToWatch
+        ) /* regenerate when we get different props*/,
     ]);
 }
 

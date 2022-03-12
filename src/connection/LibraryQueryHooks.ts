@@ -12,7 +12,7 @@ import { processRegExp } from "../Utilities";
 import { kTopicList } from "../model/ClosedVocabularies";
 import {
     IBookStat,
-    IStatsProps,
+    IStatsPageProps,
 } from "../components/statistics/StatsInterfaces";
 import { toYyyyMmDd } from "../Utilities";
 import {
@@ -767,7 +767,7 @@ export function useSearchBooks(
 
 // Sends a request to get the stats for all books matching the filters
 export function useCollectionStats(
-    statsProps: IStatsProps,
+    statsProps: IStatsPageProps,
     urlSuffix: string
 ): IAxiosAnswer {
     const collectionFilter = statsProps.collection.filter
