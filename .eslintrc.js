@@ -11,6 +11,10 @@ module.exports = {
         "no-var": "warn",
         "prefer-const": "warn",
         "no-bitwise": "warn",
+        "no-warning-comments": [
+            1,
+            { terms: ["nocommit"], location: "anywhere" },
+        ],
     },
 };
 
