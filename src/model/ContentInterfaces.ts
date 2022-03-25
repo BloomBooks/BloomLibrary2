@@ -55,6 +55,7 @@ export interface ICollection {
     // E.g., we need to run code like getBestLevelStringOrEmpty() to get at the filter
     secondaryFilter?: (basicBookInfo: IBasicBookInfo) => boolean;
     sponsorshipImage?: IMedia;
+    country?: string;
 }
 
 // A "raw" collection freshly obtained from Contentful before processing into an ICollection
