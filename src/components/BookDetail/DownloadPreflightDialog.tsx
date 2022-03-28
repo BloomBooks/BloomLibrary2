@@ -60,26 +60,32 @@ export const DownloadPreflightDialog: React.FunctionComponent<IDownloadPreflight
                     }}
                     description="{bookTitle} will be replaced by the title of the book being downloaded. The text inside <link></link> will be a link to the downloads page of the Bloom library website."
                 />
-
-                <FormControlLabel
-                    css={css`
-                        margin-top: 15px;
-                    `}
-                    control={
-                        <Checkbox
-                            checked={dontShowAgain}
-                            onChange={(e) => {
-                                setDontShowAgain(e.target.checked);
-                            }}
-                        />
-                    }
-                    label={l10n.formatMessage({
-                        id: "downloadShellbook.aboutToDownload.dontShowAgain",
-                        defaultMessage: "I get it. Don't show me this again.",
-                        description:
-                            "Label for a check box which, if checked, prevents the extra dialog from appearing before downloading a shellbook.",
-                    })}
-                />
+                {/* This div is needed to allow arbitrarily long book titles in FormattedMessage without
+                    running into the Checkbox contained in the FormControlLabel.
+                    See https://issues.bloomlibrary.org/youtrack/issue/BL-9847. */}
+                <div>
+                    <FormControlLabel
+                        css={css`
+                            margin-top: 15px;
+                        `}
+                        control={
+                            <Checkbox
+                                checked={dontShowAgain}
+                                onChange={(e) => {
+                                    setDontShowAgain(e.target.checked);
+                                }}
+                            />
+                        }
+                        label={l10n.formatMessage({
+                            id:
+                                "downloadShellbook.aboutToDownload.dontShowAgain",
+                            defaultMessage:
+                                "I get it. Don't show me this again.",
+                            description:
+                                "Label for a check box which, if checked, prevents the extra dialog from appearing before downloading a shellbook.",
+                        })}
+                    />
+                </div>
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleCancel} color="primary">
