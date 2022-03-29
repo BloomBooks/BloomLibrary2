@@ -49,6 +49,10 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
             className={`base-contentful-page contentful-page ${props.urlKey}`}
             css={css`
                 ${page.css}
+                img {
+                    // Before changing this see the image at https://bloomlibrary.org/page/create/creators-Chetana in a phone-size screen.
+                    width: 100%;
+                }
             `}
         >
             {titleElementIfWanted}
