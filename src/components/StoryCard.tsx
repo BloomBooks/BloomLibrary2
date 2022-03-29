@@ -60,6 +60,7 @@ export const StoryCard: React.FunctionComponent<{ story: ICollection }> = (
                 <CardMedia
                     css={css`
                         height: 160px;
+                        background-size: contain; // Check Chetana story card if you change this
                     `}
                     image={page.cardImage?.url}
                 />
