@@ -451,7 +451,7 @@ export function makeSimpleTitleLayer(title: string) {
     return () => (
         <text
             x={10}
-            y={20}
+            y={-20} // negative to move up into the "margin" so that tall bars cannot reach it
             css={css`
                 font-weight: bold;
             `}

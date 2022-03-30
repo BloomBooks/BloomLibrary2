@@ -188,7 +188,7 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsPageProps> = (
                     indexBy="date"
                     groupMode={"stacked"}
                     layout={"vertical"}
-                    height={200}
+                    height={250}
                     width={graphWidth}
                     colors={[commonUI.colors.bloomRed]}
                     labelSkipHeight={1} // attempt to make labels show on very short bars, did not work.
@@ -224,7 +224,7 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsPageProps> = (
                     axisLeft={{ tickValues: [] }}
                     // height/width need to include enough space for margin too
                     margin={{
-                        top: 10,
+                        top: 50,
                         right: 20,
                         bottom: 70,
                         left: 10,
