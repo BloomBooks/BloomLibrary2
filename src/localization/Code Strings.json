@@ -242,9 +242,13 @@
         "description": "",
         "message": "Uploaded {date} by {email}"
     },
-    "book.metadata.lastUploaded": {
+    "book.metadata.firstUploadedBy": {
         "description": "",
-        "message": "Last uploaded on {date}"
+        "message": "First uploaded {date} by {email}"
+    },
+    "book.metadata.updatedOn": {
+        "description": "",
+        "message": "Updated on {date}"
     },
     "book.metadata.features": {
         "description": "",

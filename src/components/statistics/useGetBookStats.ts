@@ -1,10 +1,12 @@
-import { IStatsProps, IBookStat } from "./StatsInterfaces";
+import { IStatsPageProps, IBookStat } from "./StatsInterfaces";
 import {
     useCollectionStats,
     extractBookStatFromRawData,
 } from "../../connection/LibraryQueryHooks";
 
-export function useGetBookStats(props: IStatsProps): IBookStat[] | undefined {
+export function useGetBookStats(
+    props: IStatsPageProps
+): IBookStat[] | undefined {
     const { response } = useCollectionStats(props, "reading/per-book");
 
     if (response && response["data"] && response["data"]["stats"])
@@ -15,7 +17,7 @@ export function useGetBookStats(props: IStatsProps): IBookStat[] | undefined {
 }
 
 export function useGetBookComprehensionEventStats(
-    props: IStatsProps
+    props: IStatsPageProps
 ): IBookStat[] | undefined {
     const { response } = useCollectionStats(props, "reading/per-book");
 

@@ -85,6 +85,7 @@ export function convertContentfulCollectionToICollection(
             : item.sys.contentType.sys.id,
         expandChildCollectionRows: item.fields.expandChildCollectionRows,
         showBookCountInRowDisplay: item.fields.showBookCountInRowDisplay,
+        country: item.fields.country,
     };
     if (item.fields.filter && item.fields.filter.rebrand !== undefined) {
         // having an item.fields.filter does mean there is a result.filter but TS can't tell, hence the "!"

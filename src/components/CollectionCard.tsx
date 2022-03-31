@@ -226,6 +226,22 @@ export const CollectionCard: React.FunctionComponent<{
 
     const { ...propsToPassDown } = props; // prevent react warnings
 
+    // If not small screen, show full country name (already prevented as more than 11 characters in Contentful).
+    // Otherwise, truncate; don't show if starts with a number (like "6 countries").
+    const countryName = props.collection.country
+        ? getResponsiveChoice(
+              props.collection.country.match(/^\d/)
+                  ? ""
+                  : // Why 4? Experimentation.
+                    // Note: TruncateMarkup is not useful in this context
+                    // because it is on the same line as the book count.
+                    // (We might be able to make it work with a fixed width.)
+                    props.collection.country?.substring(0, 4) +
+                        (props.collection.country.length > 4 ? "…" : ""),
+              props.collection.country
+          )
+        : "";
+
     return (
         <CheapCard
             {...propsToPassDown} // needed for swiper to work
@@ -253,17 +269,20 @@ export const CollectionCard: React.FunctionComponent<{
             {/* TODO: we would like to truncate, but TruncateMarkup says it cannot handle react elements */}
             {titleElement}
             <div
-                className="book-count"
                 css={css`
                     margin-top: auto;
-                    text-align: left;
+                    display: flex;
+                    justify-content: space-between;
                     font-size: ${getResponsiveChoice(10, 14)}px;
                 `}
             >
-                {(props.collection.filter ||
-                    props.collection.childCollections) && (
-                    <BookCount collection={props.collection} />
-                )}
+                <div className="book-count">
+                    {(props.collection.filter ||
+                        props.collection.childCollections) && (
+                        <BookCount collection={props.collection} />
+                    )}
+                </div>
+                <div>{countryName}</div>
             </div>
         </CheapCard>
     );
