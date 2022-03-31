@@ -4,8 +4,8 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useMemo, useState } from "react";
-import { IStatsProps } from "./StatsInterfaces";
+import React, { useMemo } from "react";
+import { IStatsPageProps } from "./StatsInterfaces";
 import { useProvideDataForExport } from "../../export/exportData";
 
 import {
@@ -29,43 +29,27 @@ import {
 } from "@devexpress/dx-react-grid";
 import { IGridColumn } from "../Grid/GridColumns";
 import { StatsGridWrapper } from "./StatsGridWrapper";
-import { FormControl, MenuItem, Select } from "@material-ui/core";
-import { IDateRange } from "./DateRangePicker";
+import { getPublishableDateRangeString, IDateRange } from "./DateRangePicker";
+import { useIntl } from "react-intl";
+
 const countryShapes = require("./world_countries.json");
 const countryIds = require("./country_ids.json");
 
-export const StatsLocationScreen: React.FunctionComponent<IStatsProps> = (
-    props
-) => {
-    const [view, setView] = useState("countryMap");
+export const StatsLocationScreen: React.FunctionComponent<
+    IStatsPageProps & { view: "country-map" | "country-table" | "city-table" }
+> = (props) => {
+    const view = props.view;
+
     const stats = useGetLocationStats(
         props,
-        ["countryTable", "countryMap"].includes(view)
+        ["country-table", "country-map"].includes(view)
     );
+
     useProvideDataForExport(stats ? stats : undefined, props);
 
     return (
         <>
-            <FormControl
-                className="choice-control"
-                css={css`
-                    margin-bottom: 1em;
-                    * {
-                        font-size: 0.875rem;
-                    }
-                `}
-            >
-                <Select
-                    value={view}
-                    onChange={(e) => setView(e.target.value as string)}
-                    autoWidth
-                >
-                    <MenuItem value="countryMap">Country Map</MenuItem>
-                    <MenuItem value="countryTable">Table by Country</MenuItem>
-                    <MenuItem value="cityTable">Table by City</MenuItem>
-                </Select>
-            </FormControl>
-            {view === "countryMap" && (
+            {view === "country-map" && (
                 <StatsLocationMap
                     stats={stats}
                     view={view}
@@ -73,7 +57,7 @@ export const StatsLocationScreen: React.FunctionComponent<IStatsProps> = (
                     dateRange={props.dateRange}
                 />
             )}
-            {(view === "countryTable" || view === "cityTable") && (
+            {(view === "country-table" || view === "city-table") && (
                 <StatsLocationTable stats={stats} view={view} />
             )}
         </>
@@ -86,7 +70,7 @@ const StatsLocationMap: React.FunctionComponent<{
     dateRange: IDateRange;
 }> = (props) => {
     const countryStats = props.stats as ICountryStat[];
-
+    const l10n = useIntl();
     // This function spreads out the values to give us a better choropleth map, especially when the data has a bimodal distribution,
     // as is often the case because a set of books is primarily targeted at one country.
     const distributionFn = (n: number) => {
@@ -155,8 +139,9 @@ const StatsLocationMap: React.FunctionComponent<{
                 height: ${mapHeight + 0}px;
                 width: ${mapWidth}px;
                 height: aut;
-                border: solid thin;
-                background-color: #f9fdf9;
+                border: none;
+                border-radius: 5px;
+                background-color: white; //#f9fdf9;
                 padding: 10px;
                 overflow-y: clip; // Enhance: why is this causing overflow anyhow?
             `}
@@ -172,22 +157,13 @@ const StatsLocationMap: React.FunctionComponent<{
                     margin-block-end: 1em;
                 `}
             >
-                {`${
-                    props.dateRange.startDate
-                        ? props.dateRange.startDate.toISOString().split("T")[0]
-                        : "Start"
-                } —
-                    ${
-                        props.dateRange.endDate
-                            ? props.dateRange.endDate
-                                  .toISOString()
-                                  .split("T")[0]
-                            : " Today"
-                    }`}
+                {getPublishableDateRangeString(props.dateRange, false, l10n)}
                 <br />
                 All Digital Sources: Web, Bloom Reader, Apps.
             </div>
-
+            {/* Note: the Nivo maps, unlike Nivo charts, do not currently have the `layers` attribute that would be needed to easily
+            include the title in the SVG. It could be done by modifying the svg dom at download time, but we
+            judged that not worth the effort at this time. */}
             <Choropleth
                 height={mapHeight}
                 width={mapWidth}
@@ -280,7 +256,7 @@ const StatsLocationTable: React.FunctionComponent<{
             <Grid
                 rows={props.stats!}
                 columns={
-                    props.view === "countryTable"
+                    props.view === "country-table"
                         ? countryTableColumns
                         : cityTableColumns
                 }
@@ -305,7 +281,7 @@ const StatsLocationTable: React.FunctionComponent<{
                 <TableSummaryRow
                     messages={{
                         count:
-                            props.view === "countryTable"
+                            props.view === "country-table"
                                 ? "Number of Countries"
                                 : "Number of Cities",
                     }}
@@ -314,3 +290,29 @@ const StatsLocationTable: React.FunctionComponent<{
         </StatsGridWrapper>
     );
 };
+
+// Returns a function (trivial react component) that nivo can use as a layer in svg charts and maps.
+// This is better than showing a title using HTML because it is then included in the SVG download.
+export function makeSimpleTitleLayer(
+    title: string,
+    dateRangeInfo: string,
+    sourcesInfo: string
+) {
+    const kLeft = 10;
+    return () => (
+        <>
+            <text
+                x={kLeft}
+                y={20}
+                css={css`
+                    font-weight: bold;
+                `}
+            >
+                {title}
+            </text>
+            <text x={kLeft} y={40}>
+                {dateRangeInfo}
+            </text>
+        </>
+    );
+}

@@ -1,11 +1,11 @@
 import {
-    IStatsProps,
+    IStatsPageProps,
     IDailyBookStat as IDailyBookEventStat,
 } from "./StatsInterfaces";
 import { useCollectionStats } from "../../connection/LibraryQueryHooks";
 
 export function useGetDailyBookEventStats(
-    props: IStatsProps
+    props: IStatsPageProps
 ): IDailyBookEventStat[] | undefined {
     const { response } = useCollectionStats(props, "reading/per-day");
 

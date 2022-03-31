@@ -179,10 +179,6 @@
         "description": "",
         "message": "Bloom Reader Sessions"
     },
-    "stats.header": {
-        "description": "",
-        "message": "Bloom Collection Statistics"
-    },
     "stats.overview": {
         "description": "",
         "message": "Overview"
@@ -200,8 +196,8 @@
         "description": "Used to specify a filter which is unused. For example, country: any or branding: any."
     },
     "collectionStatistics": {
-        "message": "{collectionLabel} statistics",
-        "description": "Used to label the statistics for a particular collection. For example, COVID-19 Books statistics. {collectionLabel} gets replaced by the name of the collection."
+        "message": "Statistics for Collection: {collectionLabel}",
+        "description": "Used to label the statistics for a particular collection. For example, 'Statics for Collection: COVID-19 Books'. {collectionLabel} gets replaced by the name of the collection."
     },
     "report.title": {
         "description": "",

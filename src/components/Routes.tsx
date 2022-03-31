@@ -133,9 +133,9 @@ export const Routes: React.FunctionComponent<{}> = () => {
                             );
                         }}
                     />
-                    {/* the colon here is not literally there in the url */}
+
                     <Route
-                        path={"/:segments*/stats"}
+                        path={"/:segments*/stats/:screen*"}
                         render={({ match }) => {
                             if (window.self !== window.top) {
                                 throw new Error(
@@ -148,6 +148,7 @@ export const Routes: React.FunctionComponent<{}> = () => {
                             return (
                                 <CollectionStatsPageCodeSplit
                                     collectionName={collectionName}
+                                    screen={match.params.screen}
                                 />
                             );
                         }}

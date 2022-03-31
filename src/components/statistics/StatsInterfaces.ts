@@ -9,11 +9,9 @@ export interface IScreenOption {
     value: any;
 }
 
-// In the future individual charts might have further settings, but it seems like then they should define new interfaces?
-export interface IStatsProps {
+export interface IStatsPageProps {
     collection: ICollection;
     dateRange: IDateRange;
-    options: IScreenOption[];
     registerExportDataFn: (
         // undefined if we can't currently export data,
         // either because we haven't gotten it yet, or because
@@ -21,6 +19,7 @@ export interface IStatsProps {
         fn: ExportDataFn | undefined,
         waiting: boolean // true if we are waiting for results.
     ) => void;
+    setBackgroundColor: (color: string) => void;
 }
 
 export interface IOverviewStats {
@@ -92,9 +91,9 @@ export function getDefaultBookStat(): IBookStat {
 }
 
 export interface IScreen {
+    urlKey: string;
     label: string;
-    component: React.FunctionComponent<IStatsProps>;
-    options?: IScreenOption[];
+    component: React.FunctionComponent<IStatsPageProps>;
 }
 
-export const kStatsPageGray = "#ececec";
+export const kStatsPageGray = "#efeeee";
