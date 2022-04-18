@@ -21,7 +21,14 @@ export const ReleaseNotes: React.FunctionComponent<{ channel: string }> = (
     });
 
     return (
-        <Container maxWidth="md">
+        <Container
+            maxWidth="md"
+            css={css`
+                img {
+                    max-width: 100%;
+                }
+            `}
+        >
             <ThemeForLocation urlKey={"create"}>
                 <h1
                     css={css`
