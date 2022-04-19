@@ -21,9 +21,6 @@ export function convertContentfulBannerToIBanner(fields: any): IBanner {
 export function convertContentfulCollectionToICollection(
     item: any
 ): ICollection {
-    // if (!fields || !item.fields.urlKey) {
-    //     return undefined;
-    // }
     let bannerId = item.fields.banner?.sys?.id;
     if (!bannerId) {
         if (item.fields.urlKey.startsWith("language:")) {
@@ -73,7 +70,7 @@ export function convertContentfulCollectionToICollection(
         layout: item.fields.layout?.fields?.name || "by-topic",
         rawLayout: item.fields.layout?.fields?.name,
         rows: item.fields.rows,
-        order: item.fields.bookSortOrder,
+        orderingScheme: item.fields.bookSortOrder,
         type: item.fields.urlKey.startsWith("http")
             ? "link"
             : item.sys.contentType.sys.id,

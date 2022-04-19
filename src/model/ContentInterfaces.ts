@@ -21,6 +21,17 @@ export interface IBanner {
     buttonRow: any;
 }
 
+// The string values here must match what we have Contentful putting out.
+// So do not edit them unless you plan to migrate the values on Contentful.
+export enum BookOrderingScheme {
+    Default = "default",
+    NewestCreationsFirst = "newest-first",
+    LastUploadedFirst = "last-uploaded-first",
+    TitleAlphabetical = "title",
+    TitleAlphaIgnoringNumbers = "title-ignore-numbers",
+    None = "none", // this is used for queries getting counts instead of actual lists of books
+}
+
 // This mostly corresponds to the fields of a Collection from Contentful.
 // Some of the raw data we get from there gets processed to make simpler fields here.
 export interface ICollection {
@@ -31,8 +42,7 @@ export interface ICollection {
     layout: string; // from layout.fields.name; or a default if not set in contentful
     rawLayout: string | undefined; // from layout.fields.name; in at least one scenario, we need to know if `layout` is a default or not
     rows?: number;
-    order?: string; // suitable for parse server order: param (e.g., -createdAt)
-
+    orderingScheme?: BookOrderingScheme;
     urlKey: string; // used in react router urls; can be used to look up in contentful
     label: string; // used in subheadings and cards
     // enhance: maybe instead provide a function that would return the react nodes, so we could hide this Contentful-specific type?
