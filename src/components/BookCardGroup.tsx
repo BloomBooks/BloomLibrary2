@@ -98,11 +98,12 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
         {
             include: "langPointers",
             // the following is arbitrary. I don't even yet no what the ux is that we want.
-            limit: maxCardsToRetrieve,
-            order: props.collection.order || "titleOrScore",
+            limit: maxCardsToRetrieve, // note that if the selected BookOrderingScheme requires client-side sorting, this will be ignored
             skip: props.skip,
         },
-        collectionFilter
+        collectionFilter,
+        props.collection.orderingScheme,
+        props.contextLangIso
     );
 
     // We make life hard on <Lazy> components by thinking maybe we'll show, for example, a row of Level 1 books at

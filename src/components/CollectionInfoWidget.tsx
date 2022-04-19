@@ -18,7 +18,7 @@ export const CollectionInfoWidget: React.FunctionComponent<{
     try {
         if (!isModerator) return null;
         const collectionInfo = props.collection
-            ? `UrlKey = ${props.collection.urlKey}`
+            ? `UrlKey = ${props.collection.urlKey}\r\nSort Order = ${props.collection.orderingScheme}`
             : "";
         const filter = props.collection.filter
             ? props.collection.filter

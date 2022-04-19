@@ -17,6 +17,7 @@ import {
 import { BookCard, useBookCardSpec } from "./BookCard";
 import { SingleRowCardSwiper } from "./SingleRowCardSwiper";
 import { useResponsiveChoice } from "../responsiveUtilities";
+import { BookOrderingScheme } from "../model/ContentInterfaces";
 
 interface IProps {
     title: string;
@@ -41,6 +42,7 @@ export function useGetResponsiveBookGroupTopMargin(): number {
     return getResponsiveChoice(3, 20) as number;
 }
 
+// BookGroup is only used by ByLanguageGroup (enhance: why?). BookCardGroup is used everywhere else. They both show <BookCard>s.
 export const BookGroup: React.FunctionComponent<IProps> = (props) => {
     const documentWidth =
         document.documentElement.clientWidth ||
@@ -106,9 +108,11 @@ export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
             include: "langPointers",
             // the following is arbitrary. I don't even yet no what the ux is that we want.
             limit: maxCardsToRetrieve,
-            order: props.order || "titleOrScore",
+            order: props.order,
         },
         props.filter || { language: "not going to find me" }, /// REVIEW: what happens when this is intentionally undefined
+        BookOrderingScheme.NewestCreationsFirst,
+        props.contextLangIso,
         !!props.predeterminedBooks // skip this if we already have books
     );
 
