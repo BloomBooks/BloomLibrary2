@@ -10,13 +10,14 @@ import { ThemeProvider } from "@material-ui/core";
 import { LoginDialog } from "./components/User/LoginDialog";
 import { LocalizationProvider } from "./localization/LocalizationProvider";
 import UnderConstruction from "./components/UnderConstruction";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import { RouterContent } from "./model/RouterContent";
 import CacheProvider from "./model/CacheProvider";
 import { OSFeaturesProvider } from "./components/OSFeaturesContext";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import ScrollToTop from "./ScrollToTop";
 import { configure } from "mobx";
+import { QueryParamProvider } from "use-query-params";
 
 // Turn off "mobx" strict mode, so we can set observables without the boilerplate
 // of wrapping methods annotated as 'actions'.
@@ -56,8 +57,12 @@ export const App: React.FunctionComponent<{}> = (props) => {
                             <OSFeaturesProvider>
                                 <UnderConstruction />
                                 <Router>
-                                    <ScrollToTop />
-                                    <RouterContent />
+                                    <QueryParamProvider
+                                        ReactRouterRoute={Route}
+                                    >
+                                        <ScrollToTop />
+                                        <RouterContent />
+                                    </QueryParamProvider>
                                 </Router>
                             </OSFeaturesProvider>
                         </CacheProvider>

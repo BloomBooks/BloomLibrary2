@@ -1,4 +1,4 @@
-import { IStatsProps } from "./StatsInterfaces";
+import { IStatsPageProps } from "./StatsInterfaces";
 import { useCollectionStats } from "../../connection/LibraryQueryHooks";
 import * as _ from "lodash";
 import { useMemo } from "react";
@@ -19,7 +19,7 @@ export interface ICountryStat {
 }
 
 export function useGetLocationStats(
-    props: IStatsProps,
+    props: IStatsPageProps,
     groupByCountry: boolean
 ): ICityStat[] | ICountryStat[] | undefined {
     const { response } = useCollectionStats(props, "reading/locations");

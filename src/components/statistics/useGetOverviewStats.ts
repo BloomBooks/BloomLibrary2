@@ -1,8 +1,8 @@
-import { IStatsProps, IOverviewStats } from "./StatsInterfaces";
+import { IStatsPageProps, IOverviewStats } from "./StatsInterfaces";
 import { useCollectionStats } from "../../connection/LibraryQueryHooks";
 
 export function useGetOverviewStats(
-    props: IStatsProps
+    props: IStatsPageProps
 ): IOverviewStats | undefined {
     const { response } = useCollectionStats(props, "reading/overview");
 

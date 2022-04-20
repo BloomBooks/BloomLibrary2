@@ -1,5 +1,5 @@
 // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-//import css from "@emotion/css/macro";
+import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
@@ -7,12 +7,16 @@ import { jsx } from "@emotion/core";
 import { Bar, LabelFormatter } from "@nivo/bar";
 import { commonUI } from "../../theme";
 import { useGetDailyBookEventStats } from "./useGetDailyBookEventStats";
-import { IStatsProps } from "./StatsInterfaces";
+import { IStatsPageProps } from "./StatsInterfaces";
 import { useProvideDataForExport } from "../../export/exportData";
 import { getFakeUtcDate } from "./DateRangePicker";
 import { toYyyyMmDd } from "../../Utilities";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import React from "react";
+
+import { makeSimpleTitleLayer, ScreenOptionsRow } from "./CollectionStatsPage";
+import { FormControl, MenuItem, Select } from "@material-ui/core";
+import { useQueryParam } from "use-query-params";
 
 // Given a UTC date, format as MMM YYYY
 function toMmmYyyy(input: Date): string {
@@ -20,13 +24,17 @@ function toMmmYyyy(input: Date): string {
     return ds.substring(4, 8) + ds.substring(11);
 }
 
-export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
+export const ReaderSessionsChart: React.FunctionComponent<IStatsPageProps> = (
     props
 ) => {
+    const [groupingRaw, setGrouping] = useQueryParam<string | undefined>(
+        "grouping"
+    );
+    const grouping = groupingRaw ? groupingRaw : "month";
+    const byMonth = grouping === "month";
+
+    const l10n = useIntl();
     const dayStats = useGetDailyBookEventStats(props);
-    // if (dayStats) {
-    //     console.log("daystats: " + JSON.stringify(dayStats));
-    // }
     useProvideDataForExport(dayStats, props);
 
     if (!dayStats)
@@ -40,10 +48,6 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
     const counts = new Map<string, number>();
     let maxCount = 0;
     // we are hardwired here to accept only a single option
-    const byMonth =
-        props.options &&
-        props.options.length > 0 &&
-        props.options[0].value === "month";
 
     dayStats.forEach((dailyInfo) => {
         // Since dateEventLocal is formatted YYYY-MM-DD, we can reliably expect it to
@@ -143,63 +147,107 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsProps> = (
     const graphWidth = Math.max(600, 30 * mapData.length);
 
     return (
-        <div>
-            <Bar
-                data={mapData}
-                keys={["sessionCount"]}
-                indexBy="date"
-                groupMode={"stacked"}
-                layout={"vertical"}
-                height={200}
-                width={graphWidth}
-                colors={[commonUI.colors.bloomRed]}
-                labelSkipHeight={1} // attempt to make labels show on very short bars, did not work.
-                theme={{
-                    background: "white",
-                    //axis: { ticks: { text: { fill: "#eee" } } },
-                    grid: {
-                        line: {
-                            stroke: "darkgrey",
-                            strokeOpacity: 1,
-                            strokeWidth: 1,
+        <>
+            <ScreenOptionsRow>
+                <FormControl
+                    className="choice-control"
+                    variant="outlined"
+                    size="small"
+                    css={css`
+                        margin-bottom: 1em;
+                        * {
+                            font-size: 0.875rem;
+                        }
+                        background-color: white;
+                    `}
+                >
+                    <Select
+                        value={grouping}
+                        onChange={(e) => setGrouping(e.target.value as string)}
+                        autoWidth
+                    >
+                        <MenuItem value="week">
+                            {l10n.formatMessage({
+                                id: "stats.options.By Week",
+                                defaultMessage: "By Week",
+                            })}
+                        </MenuItem>
+                        <MenuItem value="month">
+                            {l10n.formatMessage({
+                                id: "stats.options.By Month",
+                                defaultMessage: "By Month",
+                            })}
+                        </MenuItem>
+                    </Select>
+                </FormControl>
+            </ScreenOptionsRow>
+            <div id="svg-wrapper" css={css``}>
+                <Bar
+                    data={mapData}
+                    keys={["sessionCount"]}
+                    indexBy="date"
+                    groupMode={"stacked"}
+                    layout={"vertical"}
+                    height={250}
+                    width={graphWidth}
+                    colors={[commonUI.colors.bloomRed]}
+                    labelSkipHeight={1} // attempt to make labels show on very short bars, did not work.
+                    theme={{
+                        background: "white",
+                        //axis: { ticks: { text: { fill: "#eee" } } },
+                        grid: {
+                            line: {
+                                stroke: "darkgrey",
+                                strokeOpacity: 1,
+                                strokeWidth: 1,
+                            },
                         },
-                    },
-                }}
-                // The default tooltip is designed to tell you which of several stacked
-                // datasets the hover applies to, and therefore includes a label
-                // and color block that are redundant for us. Just show which column
-                // it is and its full-precision value.
-                tooltip={(data) => {
-                    const { value, indexValue } = data;
-                    // const result = document.createElement("div");
-                    // result.innerText = value.toString();
-                    return (
-                        <div>
-                            {indexValue + ": "} <strong>{fixVal(value)}</strong>
-                        </div>
-                    );
-                }}
-                labelTextColor="white"
-                labelFormat={labelFormatter}
-                gridYValues={[]}
-                axisLeft={{ tickValues: [] }}
-                // height/width need to include enough space for margin too
-                margin={{
-                    top: 10,
-                    right: 20,
-                    bottom: 70,
-                    left: 10,
-                }}
-                axisBottom={{
-                    tickSize: 5,
-                    tickPadding: 5,
-                    tickRotation: -90,
-                    legendPosition: "middle",
-                    legendOffset: 60,
-                    //renderTick: () => <span>"x"</span>,
-                }}
-            ></Bar>
-        </div>
+                    }}
+                    // The default tooltip is designed to tell you which of several stacked
+                    // datasets the hover applies to, and therefore includes a label
+                    // and color block that are redundant for us. Just show which column
+                    // it is and its full-precision value.
+                    tooltip={(data) => {
+                        const { value, indexValue } = data;
+                        // const result = document.createElement("div");
+                        // result.innerText = value.toString();
+                        return (
+                            <div>
+                                {indexValue + ": "}{" "}
+                                <strong>{fixVal(value)}</strong>
+                            </div>
+                        );
+                    }}
+                    labelTextColor="white"
+                    labelFormat={labelFormatter}
+                    gridYValues={[]}
+                    axisLeft={{ tickValues: [] }}
+                    // height/width need to include enough space for margin too
+                    margin={{
+                        top: 50,
+                        right: 20,
+                        bottom: 70,
+                        left: 10,
+                    }}
+                    axisBottom={{
+                        tickSize: 5,
+                        tickPadding: 5,
+                        tickRotation: -90,
+                        legendPosition: "middle",
+                        legendOffset: 60,
+                        //renderTick: () => <span>"x"</span>,
+                    }}
+                    layers={[
+                        "grid",
+                        "axes",
+                        "bars",
+                        "markers",
+                        "legends",
+                        makeSimpleTitleLayer("Bloom Reader Sessions"),
+                    ]}
+                ></Bar>
+            </div>
+        </>
     );
 };
 

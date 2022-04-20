@@ -2,6 +2,7 @@ import React from "react";
 
 export interface ICollectionStatsPageProps {
     collectionName: string;
+    screen?: string;
 }
 
 // This is wrapped so that we can keep all the javascript involved in the CollectionStatsPage

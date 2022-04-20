@@ -10,6 +10,7 @@ import { Header } from "../components/header/Header";
 import { Routes } from "../components/Routes";
 import { Footer } from "../components/Footer";
 import { useIsEmbedded } from "../components/EmbeddingHost";
+import { kStatsPageGray } from "../components/statistics/StatsInterfaces";
 
 // What we want inside the <Router> component. Has to be its own component so that we can have
 // useLocation(), which only works inside the Router.
@@ -32,6 +33,10 @@ export const RouterContent: React.FunctionComponent<{}> = (props) => {
                 id="expandableContent"
                 css={css`
                     ${showingPlayer ? "height: 100%;" : "flex: 1 0 auto;"}
+                    // I apologize for this hack
+                    ${location.pathname.indexOf("/stats") > -1
+                        ? `background-color:${kStatsPageGray}`
+                        : ""}
                 `}
                 role="main"
             >

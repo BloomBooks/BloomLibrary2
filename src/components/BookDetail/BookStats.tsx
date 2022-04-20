@@ -65,51 +65,55 @@ export const BookStats: React.FunctionComponent<{
 
     const bookStats = useGetBookStats(props.book);
 
-    const tooltipcontents = (
-        <div>
-            <ul
-                css={css`
-                    list-style: disc;
-                    margin-left: 16px;
-                    padding: 0;
-                    li {
-                        margin-bottom: 1em;
-                    }
-                `}
-            >
-                <li>
+    const tooltipcontents = React.useMemo(
+        () => (
+            <div>
+                <ul
+                    css={css`
+                        list-style: disc;
+                        margin-left: 16px;
+                        padding: 0;
+                        li {
+                            margin-bottom: 1em;
+                        }
+                    `}
+                >
+                    <li>
+                        <FormattedMessage
+                            id="stats.book.summaryString.readExplanation"
+                            defaultMessage="'reads' is a count of how many times someone has read this book in a digital form from which we receive analytics. We cannot currently get analytics from epub versions. Because books can be read offline, we may not have a record of all reads."
+                        />
+                    </li>
+                    <li>
+                        <FormattedMessage
+                            id="stats.book.summaryString.deviceExplanation"
+                            defaultMessage="'devices' is a count of how many phones/tablets/computers have this book installed in Bloom Reader."
+                        />
+                    </li>
+                    <li>
+                        <FormattedMessage
+                            id="stats.book.summaryString.downloadForTranslationExplanation"
+                            defaultMessage="'downloads for translation' is a count of how times someone has clicked 'Translate into your own language' in order to load the book into Bloom for translation."
+                        />
+                    </li>
+                </ul>
+                <p>
                     <FormattedMessage
-                        id="stats.book.summaryString.readExplanation"
-                        defaultMessage="'reads' is a count of how many times someone has read this book in a digital form from which we receive analytics. We cannot currently get analytics from epub versions. Because books can be read offline, we may not have a record of all reads."
+                        id="stats.book.summaryString.range"
+                        defaultMessage="This starting date for these statistics vary by when we started recording them. They are updated every 24 hours."
                     />
-                </li>
-                <li>
+                </p>
+                <p>
                     <FormattedMessage
-                        id="stats.book.summaryString.deviceExplanation"
-                        defaultMessage="'devices' is a count of how many phones/tablets/computers have this book installed in Bloom Reader."
+                        id="stats.book.summaryString.furtherStats"
+                        defaultMessage="Enterprise customers can get a set of charts and downloadable data which includes information on all of their books, including where books are being read and growth over time."
                     />
-                </li>
-                <li>
-                    <FormattedMessage
-                        id="stats.book.summaryString.downloadForTranslationExplanation"
-                        defaultMessage="'downloads for translation' is a count of how times someone has clicked 'Translate into your own language' in order to load the book into Bloom for translation."
-                    />
-                </li>
-            </ul>
-            <p>
-                <FormattedMessage
-                    id="stats.book.summaryString.range"
-                    defaultMessage="This starting date for these statistics vary by when we started recording them. They are updated every 24 hours."
-                />
-            </p>
-            <p>
-                <FormattedMessage
-                    id="stats.book.summaryString.furtherStats"
-                    defaultMessage="Enterprise customers can get a set of charts and downloadable data which includes information on all of their books, including where books are being read and growth over time."
-                />
-            </p>
-        </div>
+                </p>
+            </div>
+        ),
+        []
     );
+
     // just show the stats that we have values for
     const l10n = useIntl();
     const statStrings = [];

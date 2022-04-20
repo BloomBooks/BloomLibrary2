@@ -56,7 +56,7 @@ export const DateRangePicker: React.FunctionComponent<{
                         margin-left: 10px;
                     `}
                 >
-                    {rangeToString(props.range, l10n)}
+                    {getPickerRangeString(props.range, l10n)}
                 </span>
             </Button>
             {open && (
@@ -218,7 +218,11 @@ export function toUTCLocaleDateString(input: Date): string {
     return getFakeUtcDate(input).toLocaleDateString();
 }
 
-export function rangeToString(range: IDateRange, l10n: IntlShape): string {
+// this one is more contextual, using things like "all time" & "today" that are not good for charts/graphs that you might publish
+export function getPickerRangeString(
+    range: IDateRange,
+    l10n: IntlShape
+): string {
     return range.startDate || range.endDate
         ? (range.startDate ? toUTCLocaleDateString(range.startDate) : "∞") +
               " — " +
@@ -232,4 +236,29 @@ export function rangeToString(range: IDateRange, l10n: IntlShape): string {
               id: "rangePicker.allTime",
               defaultMessage: "All Time",
           });
+}
+
+export function getPublishableDateRangeString(
+    range: IDateRange,
+    giveEmptyIfAllTime: boolean,
+    l10n: IntlShape // enhance: use this
+): string {
+    const formatFn = (d: Date) =>
+        d.toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+        });
+
+    if (giveEmptyIfAllTime && !range.startDate && !range.endDate) return "";
+    let result = "";
+    if (range.startDate) {
+        result = `${formatFn(range.startDate)} -- `;
+    } else {
+        result = "Through "; // enhance: I18N
+    }
+    result += ` ${
+        range.endDate ? formatFn(range.endDate) : formatFn(new Date(Date.now()))
+    }`;
+    return result;
 }
