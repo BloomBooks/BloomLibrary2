@@ -4,6 +4,7 @@ import {
     IMedia,
     ICollection,
     IEmbedSettings,
+    BookOrderingScheme,
 } from "./ContentInterfaces";
 
 /* The aim is to keep knowledge of Contentful limited to this file, to the extent
@@ -79,19 +80,16 @@ export function convertContentfulCollectionToICollection(
         country: item.fields.country,
     };
 
-    // Migrate or Strip out sort orders that this version does not understand, returning the collection to default ordering,
+    // Strip out sort orders that this version does not understand, returning the collection to default ordering,
     // so that future versions can be tested on alpha more easily. This won't help if we already had a non-default
     // ordering and are testing with a new one. In that case, we'll have to stick with "preview" or just test
-    // the new ordering on other collections.
-    switch (result.order) {
-        case "newest-first":
-            result.order = "-createdAt";
-            break;
-        case "-createdAt": // I can't actually search this field in contentful, but I don't think we actually have this. But it would be ok, so I'm letting it through.
-            break;
-        default:
-            result.order = undefined;
-    }
+    // the new ordering on other collections. But at least the worst that can happen is that we lose the special
+    // ordering instead of crashing.
+    if (
+        result.orderingScheme &&
+        !Object.values(BookOrderingScheme).includes(result.orderingScheme)
+    )
+        result.orderingScheme = undefined;
 
     if (item.fields.filter && item.fields.filter.rebrand !== undefined) {
         // having an item.fields.filter does mean there is a result.filter but TS can't tell, hence the "!"
