@@ -24,12 +24,6 @@ export function convertContentfulCollectionToICollection(
     // if (!fields || !item.fields.urlKey) {
     //     return undefined;
     // }
-    let order: string | undefined;
-    switch (item.fields.bookSortOrder) {
-        case "newest-first":
-            order = "-createdAt";
-            break;
-    }
     let bannerId = item.fields.banner?.sys?.id;
     if (!bannerId) {
         if (item.fields.urlKey.startsWith("language:")) {
@@ -79,7 +73,7 @@ export function convertContentfulCollectionToICollection(
         layout: item.fields.layout?.fields?.name || "by-topic",
         rawLayout: item.fields.layout?.fields?.name,
         rows: item.fields.rows,
-        order,
+        order: item.fields.bookSortOrder,
         type: item.fields.urlKey.startsWith("http")
             ? "link"
             : item.sys.contentType.sys.id,
@@ -87,6 +81,21 @@ export function convertContentfulCollectionToICollection(
         showBookCountInRowDisplay: item.fields.showBookCountInRowDisplay,
         country: item.fields.country,
     };
+
+    // Migrate or Strip out sort orders that this version does not understand, returning the collection to default ordering,
+    // so that future versions can be tested on alpha more easily. This won't help if we already had a non-default
+    // ordering and are testing with a new one. In that case, we'll have to stick with "preview" or just test
+    // the new ordering on other collections.
+    switch (result.order) {
+        case "newest-first":
+            result.order = "-createdAt";
+            break;
+        case "-createdAt": // I can't actually search this field in contentful, but I don't think we actually have this. But it would be ok, so I'm letting it through.
+            break;
+        default:
+            result.order = undefined;
+    }
+
     if (item.fields.filter && item.fields.filter.rebrand !== undefined) {
         // having an item.fields.filter does mean there is a result.filter but TS can't tell, hence the "!"
         result.filter!.rebrand = parseBooleanOptions(
