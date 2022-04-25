@@ -2,7 +2,7 @@ import { BookOrderingScheme } from "../model/ContentInterfaces";
 import {
     getTitleParts,
     IBookInfoForSorting,
-    doExpensiveClientSideSorting,
+    doExpensiveClientSideSortingIfNeeded,
     getBookSortKey,
 } from "./sorting";
 
@@ -39,7 +39,7 @@ it("sorts books with leading numbers correctly", () => {
             allTitles: t,
         };
     });
-    const sorted = doExpensiveClientSideSorting(
+    const sorted = doExpensiveClientSideSortingIfNeeded(
         books,
         BookOrderingScheme.TitleAlphaIgnoringNumbers
     ) as any[];
@@ -57,11 +57,30 @@ it("sorts books with leading a & b correctly", () => {
             allTitles: t,
         };
     });
-    const sorted = doExpensiveClientSideSorting(
+    const sorted = doExpensiveClientSideSortingIfNeeded(
         books,
         BookOrderingScheme.TitleAlphaIgnoringNumbers
     ) as any[];
     expect(sorted[0].title).toBe("a nice boy");
+});
+
+it("sorts as if leading zeros are not there", () => {
+    // expect(
+    //     getBookSortKey("002 foo", BookOrderingScheme.TitleAlphabetical)
+    // ).toBe("2 foo");
+
+    const titles = ["3 foo", "002 foo"];
+    const books: IBookInfoForSorting[] = titles.map((t) => {
+        return {
+            title: t,
+            allTitles: t,
+        };
+    });
+    const sorted = doExpensiveClientSideSortingIfNeeded(
+        books,
+        BookOrderingScheme.TitleAlphabetical
+    ) as any[];
+    expect(sorted[0].title).toBe("002 foo");
 });
 
 it("sorts using locale rules", () => {
@@ -72,13 +91,13 @@ it("sorts using locale rules", () => {
             allTitles: "",
         };
     });
-    let sorted = doExpensiveClientSideSorting(
+    let sorted = doExpensiveClientSideSortingIfNeeded(
         books,
         BookOrderingScheme.TitleAlphabetical,
         "en"
     ) as any[];
     expect(sorted[0].title).toBe("AA");
-    sorted = doExpensiveClientSideSorting(
+    sorted = doExpensiveClientSideSortingIfNeeded(
         books,
         BookOrderingScheme.TitleAlphabetical,
         "da"
@@ -91,13 +110,13 @@ it("sorts using the title from locale if available", () => {
         { title: "1", allTitles: '{"en":"a", "da":"z"}' },
         { title: "2", allTitles: '{"en":"z", "da":"a"}' },
     ];
-    let sorted = doExpensiveClientSideSorting(
+    let sorted = doExpensiveClientSideSortingIfNeeded(
         books,
         BookOrderingScheme.TitleAlphabetical,
         "en"
     ) as any[];
     expect(sorted[0].title).toBe("1");
-    sorted = doExpensiveClientSideSorting(
+    sorted = doExpensiveClientSideSortingIfNeeded(
         books,
         BookOrderingScheme.TitleAlphabetical,
         "da"

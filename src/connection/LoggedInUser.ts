@@ -14,12 +14,14 @@ export class User {
         this.email = userRecord.email;
         this.username = userRecord.username;
         this.moderator = userRecord.moderator;
+        this.showTroubleshootingStuff = false; // this is a runtime flag set from a menu
     }
     public objectId: string;
     public sessionId: string;
     public email: string;
     public username: string;
     public moderator: boolean; // set by ParseServerConnection.checkIfUserIsModerator() after successful login; not a built-in field.
+    public showTroubleshootingStuff: boolean;
 }
 
 // This just exists to facilitate mobx auto-re-rendering when we login or log out.
@@ -60,4 +62,17 @@ export function useGetUserIsModerator(): boolean | undefined {
         }
     });
     return isModerator;
+}
+
+export function useGetShowTroubleshootingStuff(): [
+    boolean,
+    (on: boolean) => void
+] {
+    const user = useGetLoggedInUser();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [on, setOn] = useState(false);
+
+    if (!user) return [false, () => {}];
+    if (!user.moderator) return [false, () => {}];
+    return [user.showTroubleshootingStuff, setOn];
 }
