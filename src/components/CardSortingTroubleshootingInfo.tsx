@@ -5,48 +5,50 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import React from "react";
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
-import { getBookSortKey } from "../connection/sorting";
-import { BookOrderingScheme } from "../model/ContentInterfaces";
 
 // this can be used when testing sorting to give info on sort keys and dates, so that you can see if the
 // card is sorting like you expect.
-export const SortInfo: React.FunctionComponent<{
+export const CardSortingTroubleshootingInfo: React.FunctionComponent<{
     title: string;
     book: IBasicBookInfo;
 }> = (props) => {
-    //{sortTestingMode && props.basicBookInfo.lastUploaded?.iso && (
-
     const lastUploaded = props.book.lastUploaded?.iso.substring(0, 10);
     const createdAt = props.book.createdAt.substring(0, 10);
-    const sortKey = getBookSortKey(
-        props.title,
-        BookOrderingScheme.TitleAlphaIgnoringNumbers
-    );
+
     // only show the key if it has, for example, a preceding number or whatever
-    const keyToShow = sortKey !== props.title ? sortKey : "";
+    // At the moment, we don't have any plans to actually use the sort option that ignores numbers,
+    // so I'm commenting this out to keep things more simple, visually.
+
+    const sortKey = (props.book as any).sortKey || "";
 
     return (
         <div
             css={css`
-                font-size: 6pt;
+                font-size: 7pt;
             `}
         >
             <span
                 css={css`
-                    color: blue;
+                    color: ${sortKey === props.title ? "green" : "red"};
                 `}
             >
-                {keyToShow}
+                {sortKey
+                    ? (props.book as any).sortKey.substring(0, 15) + "..."
+                    : ""}
             </span>
-            <span>{`${lastUploaded}`}</span>
+            <span
+                css={css`
+                    color: blue;
+                `}
+            >{` ${createdAt}`}</span>
 
             {/* show the createAt only if different */}
             {createdAt !== lastUploaded && (
                 <span
                     css={css`
-                        color: red;
+                        color: green;
                     `}
-                >{`ca=${createdAt}`}</span>
+                >{` lu=${lastUploaded}`}</span>
             )}
         </div>
     );

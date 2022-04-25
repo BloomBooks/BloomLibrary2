@@ -1,3 +1,5 @@
+import { useCookies } from "react-cookie";
+
 // Escape characters which would otherwise be treated as special characters in a regular expression.
 // If input is surrounded by forward slashes, assume the user entered a deliberate regular expression,
 // so don't escape, and return only the contents.
@@ -24,18 +26,32 @@ export function removePunctuation(text: string): string {
 export const propsToHideAccessibilityElement =
     "position:absolute;left_-10000px;top:auto;width:1px;height:1px;overflow:hidden;";
 
-export function setCookie(
-    cookieName: string,
-    cookieValue: string,
-    daysToExpiration: number
-) {
-    const expirationTime = new Date();
-    expirationTime.setTime(
-        expirationTime.getTime() + daysToExpiration * 24 * 60 * 60 * 1000
-    );
-    const expires = "expires=" + expirationTime.toUTCString();
-    document.cookie =
-        cookieName + "=" + cookieValue + ";" + expires + ";path=/";
+// export function setCookie(
+//     cookieName: string,
+//     cookieValue: string,
+//     daysToExpiration: number
+// ) {
+//     const expirationTime = new Date();
+//     expirationTime.setTime(
+//         expirationTime.getTime() + daysToExpiration * 24 * 60 * 60 * 1000
+//     );
+//     const expires = "expires=" + expirationTime.toUTCString();
+//     document.cookie =
+//         cookieName + "=" + cookieValue + ";" + expires + ";path=/";
+// }
+
+export function useShowTroubleshootingStuff(): [
+    on: boolean,
+    setOn: (on: boolean) => void
+] {
+    const [cookies, setCookie] = useCookies(["showTroubleshootingStuff"]);
+
+    return [
+        cookies.showTroubleshootingStuff === "true",
+        (on: boolean) => {
+            setCookie("showTroubleshootingStuff", on.toString());
+        },
+    ];
 }
 
 export function getCookie(cookieName: string) {

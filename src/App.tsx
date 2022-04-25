@@ -18,6 +18,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import ScrollToTop from "./ScrollToTop";
 import { configure } from "mobx";
 import { QueryParamProvider } from "use-query-params";
+import { CookiesProvider } from "react-cookie";
 
 // Turn off "mobx" strict mode, so we can set observables without the boilerplate
 // of wrapping methods annotated as 'actions'.
@@ -29,16 +30,17 @@ export const App: React.FunctionComponent<{}> = (props) => {
     return (
         <React.Fragment>
             <CssBaseline />
-            <LocalizationProvider>
-                <div
-                    css={css`
-                        display: flex;
-                        flex-direction: column;
-                        margin-left: 0;
-                        height: 100%;
-                    `}
-                >
-                    {/* <React.StrictMode>
+            <CookiesProvider>
+                <LocalizationProvider>
+                    <div
+                        css={css`
+                            display: flex;
+                            flex-direction: column;
+                            margin-left: 0;
+                            height: 100%;
+                        `}
+                    >
+                        {/* <React.StrictMode>
                 In StrictMode,
                     * react-image 2.3.0 makes this complain about UNSAFE_componentWillReceiveProps
                     * react-lazyload 2.6.5 makes it complain about finDomNode
@@ -52,25 +54,26 @@ export const App: React.FunctionComponent<{}> = (props) => {
 
                 See also https://github.com/facebook/react/issues/16362
                 */}
-                    <ThemeProvider theme={theme}>
-                        <CacheProvider>
-                            <OSFeaturesProvider>
-                                <UnderConstruction />
-                                <Router>
-                                    <QueryParamProvider
-                                        ReactRouterRoute={Route}
-                                    >
-                                        <ScrollToTop />
-                                        <RouterContent />
-                                    </QueryParamProvider>
-                                </Router>
-                            </OSFeaturesProvider>
-                        </CacheProvider>
-                    </ThemeProvider>
-                    {embeddedMode || <LoginDialog />}{" "}
-                    {/* </React.StrictMode> */}
-                </div>
-            </LocalizationProvider>
+                        <ThemeProvider theme={theme}>
+                            <CacheProvider>
+                                <OSFeaturesProvider>
+                                    <UnderConstruction />
+                                    <Router>
+                                        <QueryParamProvider
+                                            ReactRouterRoute={Route}
+                                        >
+                                            <ScrollToTop />
+                                            <RouterContent />
+                                        </QueryParamProvider>
+                                    </Router>
+                                </OSFeaturesProvider>
+                            </CacheProvider>
+                        </ThemeProvider>
+                        {embeddedMode || <LoginDialog />}
+                        {/* </React.StrictMode> */}
+                    </div>
+                </LocalizationProvider>
+            </CookiesProvider>
         </React.Fragment>
     );
 };

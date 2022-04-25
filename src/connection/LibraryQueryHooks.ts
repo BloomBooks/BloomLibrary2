@@ -19,7 +19,7 @@ import {
     useGetCollection,
     getFilterForCollectionAndChildren,
 } from "../model/Collections";
-import { doExpensiveClientSideSorting } from "./sorting";
+import { doExpensiveClientSideSortingIfNeeded } from "./sorting";
 import { BookOrderingScheme } from "../model/ContentInterfaces";
 
 /**
@@ -767,18 +767,13 @@ export function useSearchBooks(
             Book.sanitizeFeaturesArray(b.features);
             return b;
         });
-        switch (orderingScheme) {
-            case BookOrderingScheme.TitleAlphaIgnoringNumbers:
-            case BookOrderingScheme.TitleAlphabetical:
-                //https://issues.bloomlibrary.org/youtrack/issue/BL-11137#focus=Comments-102-43829.0-0
-                return doExpensiveClientSideSorting(
-                    books,
-                    orderingScheme,
-                    languageForSorting
-                ) as IBasicBookInfo[];
-            default:
-                return books; // we already ordered them on the server
-        }
+
+        //https://issues.bloomlibrary.org/youtrack/issue/BL-11137#focus=Comments-102-43829.0-0
+        return doExpensiveClientSideSortingIfNeeded(
+            books,
+            orderingScheme,
+            languageForSorting
+        ) as IBasicBookInfo[];
     }, [simplifiedResultStatus.books, orderingScheme, languageForSorting]);
 
     return {
