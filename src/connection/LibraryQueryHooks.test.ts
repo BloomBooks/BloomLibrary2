@@ -21,7 +21,11 @@ async function getBook(filter: IFilter) {
         ]),
     });
 }
-async function createBook(book: object) {
+async function createBook(book: any) {
+    // We have a rule on the server which says all books must have a title, bookInstanceId, and uploader
+    book.title = book.title || "test title";
+    book.bookInstanceId = book.bookInstanceId || book.title;
+
     const result = await axios.post(`${unitTestBaseUrl}classes/books`, book, {
         headers,
     });
