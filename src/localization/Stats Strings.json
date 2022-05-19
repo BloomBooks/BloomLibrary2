@@ -29,7 +29,7 @@
     },
     "stats.queryDescription.intro": {
         "description": "",
-        "message": "These statistic are from events we received which fit the following criteria:"
+        "message": "These statistics are from events we received which fit the following criteria:"
     },
     "stats.queryDescription.collection": {
         "description": "",
@@ -69,7 +69,7 @@
     },
     "stats.book.summaryString.range": {
         "description": "",
-        "message": "This starting date for these statistics vary by when we started recording them. They are updated every 24 hours."
+        "message": "The starting dates for these statistics vary by when we started recording them. They are updated every 24 hours."
     },
     "stats.book.summaryString.furtherStats": {
         "description": "",

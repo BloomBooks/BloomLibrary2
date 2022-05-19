@@ -100,7 +100,7 @@ export const BookStats: React.FunctionComponent<{
                 <p>
                     <FormattedMessage
                         id="stats.book.summaryString.range"
-                        defaultMessage="This starting date for these statistics vary by when we started recording them. They are updated every 24 hours."
+                        defaultMessage="The starting dates for these statistics vary by when we started recording them. They are updated every 24 hours."
                     />
                 </p>
                 <p>
