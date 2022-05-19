@@ -48,7 +48,7 @@ export const QueryDescription: React.FunctionComponent<{
             </h4>
             {T(
                 "intro",
-                "These statistic are from events we received which fit the following criteria:"
+                "These statistics are from events we received which fit the following criteria:"
             )}
             <ul
                 css={css`
