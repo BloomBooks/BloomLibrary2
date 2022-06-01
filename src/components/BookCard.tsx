@@ -76,6 +76,7 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                 height: ${cardSpec.cardHeightPx}px;
                 width: ${cardSpec.cardWidthPx}px;
                 line-height: normal; // counteract css reset
+                font-family: Roboto, Noto, Andika, sans-serif;
             `}
             key={props.basicBookInfo.baseUrl}
             target={`book/${props.basicBookInfo.objectId}${langParam}`}
