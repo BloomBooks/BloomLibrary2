@@ -36,6 +36,11 @@ export const App: React.FunctionComponent<{}> = (props) => {
                         flex-direction: column;
                         margin-left: 0;
                         height: 100%;
+                        // CssBaseLine changes the default font-family from what is set in index.css,
+                        // so we change it here again to what we want (Andika added to the list of
+                        // sans-serif fonts).
+                        font-family: Roboto, Noto, Andika, "Open Sans",
+                            sans-serif;
                     `}
                 >
                     {/* <React.StrictMode>
