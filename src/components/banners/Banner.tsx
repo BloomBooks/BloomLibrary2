@@ -8,12 +8,16 @@ import { ICollection, IBanner } from "../../model/ContentInterfaces";
 import { StandardBannerLayout } from "./StandardBannerLayout";
 import { ImageOnRightBannerLayout } from "./ImageOnRightBannerLayout";
 import { useClassForSmallScreen } from "../../responsiveUtilities";
+import { useLocation } from "react-router-dom";
+import { ReaderBannerLayout } from "./ReaderBannerLayout";
 export const Banner: React.FunctionComponent<{
     collection: ICollection;
     banner: IBanner;
     bookCount?: string; // often undefined, meaning compute from filter
 }> = (props) => {
     const defaultTextColor = props.banner.backgroundImage ? "white" : "black";
+    const location = useLocation();
+    const useReaderBanner = location.pathname.startsWith("/reader/");
     return (
         <div
             className={useClassForSmallScreen()}
@@ -35,18 +39,26 @@ export const Banner: React.FunctionComponent<{
                 ${props.banner.css}
             `}
         >
-            {(props.banner.backgroundColor && (
-                <ImageOnRightBannerLayout
+            {useReaderBanner ? (
+                <ReaderBannerLayout
                     {...props}
                     banner={props.banner}
                     bookCount={props.bookCount}
                 />
-            )) || (
-                <StandardBannerLayout
-                    {...props}
-                    banner={props.banner}
-                    bookCount={props.bookCount}
-                />
+            ) : (
+                (props.banner.backgroundColor && (
+                    <ImageOnRightBannerLayout
+                        {...props}
+                        banner={props.banner}
+                        bookCount={props.bookCount}
+                    />
+                )) || (
+                    <StandardBannerLayout
+                        {...props}
+                        banner={props.banner}
+                        bookCount={props.bookCount}
+                    />
+                )
             )}
         </div>
     );

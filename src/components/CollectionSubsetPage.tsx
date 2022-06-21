@@ -21,6 +21,9 @@ import { setBloomLibraryTitle } from "./Routes";
 import { NoSearchResults } from "./NoSearchResults";
 import { IntlShape, useIntl } from "react-intl";
 import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
+import { useLocation } from "react-router-dom";
+import { Helmet } from "react-helmet";
+import { readerPadding } from "./banners/ReaderBannerLayout";
 
 // Given a collection and a string like level:1/topic:anthropology/search:dogs,
 // creates a corresponding collection by adding appropriate filters.
@@ -142,6 +145,8 @@ export const CollectionSubsetPage: React.FunctionComponent<{
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [whatDeterminesSubCollection]);
 
+    const location = useLocation();
+
     if (loading) {
         return null;
     }
@@ -155,6 +160,44 @@ export const CollectionSubsetPage: React.FunctionComponent<{
         skip,
     } = generateCollectionFromFilters(collection, props.filters, l10n);
     possibleSubCollection = subcollection;
+
+    let title = "";
+    const readerMode = location.pathname.startsWith("/reader/");
+    if (readerMode) {
+        // We want a very specific title for language collections in our book reader (BL-11254)
+        let label = collection?.label;
+        if (label) {
+            label = label.replace(/\s*\(.*\)/, ""); // strip off English name in parens
+            // Some languages, e.g. English, have a non-generated label like "English Books"
+            // which gives us a duplicated "books"
+            label = label.replace(/\sBooks\b/, "");
+            for (const f of props.filters) {
+                const filterName = f.replace(/:.*/, "");
+                // This is good for 'topic', the only other filter currently in use in
+                // reader/language. Just leaving it out means we get shorter labels like
+                // "Get more Swahili level 2 Animal Story books"
+                let filterLabel = "";
+                if (filterName === "level") {
+                    filterLabel = l10n.formatMessage({
+                        id: "reader." + filterName,
+                        defaultMessage: filterName,
+                    });
+                }
+                // strip off the filter prefix to the first colon, then any remaining colons become spaces.
+                const filterVal = f.replace(/.*?:/, "").replace(/:/g, " ");
+                label +=
+                    " " + filterLabel + (filterLabel ? " " : "") + filterVal;
+            }
+            label = label.trim();
+            title = l10n.formatMessage(
+                {
+                    id: "reader.getMoreBooks",
+                    defaultMessage: "Get more {label} books",
+                },
+                { label }
+            );
+        }
+    }
 
     // The idea here is that by default we break things up by level. If we already did, divide by topic.
     // If we already used both, make a flat list.
@@ -201,9 +244,18 @@ export const CollectionSubsetPage: React.FunctionComponent<{
     }
     return (
         <React.Fragment>
+            {title && (
+                <Helmet>
+                    <title>{title}</title>
+                </Helmet>
+            )}
             <div
                 css={css`
-                    padding: 20px;
+                    ${readerMode
+                        ? "background-color: #4180bb; color:white !important; padding: 3px " +
+                          readerPadding +
+                          "; a {color:white !important;}"
+                        : "padding: 20px;"}
                 `}
             >
                 <Breadcrumbs />
@@ -211,7 +263,18 @@ export const CollectionSubsetPage: React.FunctionComponent<{
             </div>
 
             {/* <SearchBanner filter={props.filter} /> */}
-            <ListOfBookGroups>{subList}</ListOfBookGroups>
+            <ListOfBookGroups
+                // tighten things up a bit in a view designed for a phone.
+                css={css`
+                    ${readerMode
+                        ? "padding-left: " +
+                          readerPadding +
+                          " !important; margin-block-start: 0"
+                        : ""}
+                `}
+            >
+                {subList}
+            </ListOfBookGroups>
         </React.Fragment>
     );
 };

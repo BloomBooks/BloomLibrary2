@@ -17,10 +17,11 @@ import { kStatsPageGray } from "../components/statistics/StatsInterfaces";
 export const RouterContent: React.FunctionComponent<{}> = (props) => {
     const location = useLocation();
     const showingPlayer = location.pathname.startsWith("/player/");
+    const readerMode = location.pathname.startsWith("/reader/");
     const embeddedMode = useIsEmbedded();
     return (
         <React.Fragment>
-            {embeddedMode || showingPlayer || <Header />}
+            {embeddedMode || readerMode || showingPlayer || <Header />}
             {/* This div takes up all the space available so that the footer
         is either at the bottom or pushed off screen. If we're showing the player,
         we don't have a header or footer. In most browsers, flex 1 0 auto would
@@ -32,7 +33,9 @@ export const RouterContent: React.FunctionComponent<{}> = (props) => {
             <div
                 id="expandableContent"
                 css={css`
-                    ${showingPlayer ? "height: 100%;" : "flex: 1 0 auto;"}
+                    ${showingPlayer || readerMode
+                        ? "height: 100%;"
+                        : "flex: 1 0 auto;"}
                     // I apologize for this hack
                     ${location.pathname.indexOf("/stats") > -1
                         ? `background-color:${kStatsPageGray}`
@@ -42,7 +45,7 @@ export const RouterContent: React.FunctionComponent<{}> = (props) => {
             >
                 <Routes />
             </div>
-            {embeddedMode || showingPlayer || <Footer />}
+            {embeddedMode || readerMode || showingPlayer || <Footer />}
         </React.Fragment>
     );
 };

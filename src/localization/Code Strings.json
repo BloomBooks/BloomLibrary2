@@ -154,6 +154,10 @@
         "description": "",
         "message": "Find Books By Language"
     },
+    "languageSearch": {
+        "description": "This string is the heading of a page designed for a phone screen. It should fit across the width of such a screen. It labels a box where the user can type a partial language name and a page of matching language cards.",
+        "message": "Language?"
+    },
     "book.detail.tabLabel": {
         "description": "",
         "message": "About - {title}"
@@ -480,5 +484,17 @@
     "sponsorshipHeading": {
         "message": "This project was supported by",
         "description": "Example, see the bottom of https://bloomlibrary.org/kyrgyzstan-OkuuKeremet"
+    },
+    "reader.chooseLanguage": {
+        "message": "Choose a language",
+        "description": "Becomes a header title and shown in Bloom Reader"
+    },
+    "reader.getMoreBooks": {
+        "message": "Get more {label} books",
+        "description": "Becomes a header title and shown in Bloom Reader. Label is typically a language name."
+    },
+    "reader.level": {
+        "message": "level",
+        "description": "Appears before a digit in something like 'Getting more French level 2 books"
     }
 }

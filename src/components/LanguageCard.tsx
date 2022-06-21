@@ -26,6 +26,7 @@ export function useLanguageCardSpecs(): ICardSpec {
 export const LanguageCard: React.FunctionComponent<
     ILanguage & {
         role?: string; // accessibility role, passed on as part of propsToPassDown
+        targetPrefix?: string; // if not null, what to use before lang id in target URL
     }
 > = (props) => {
     const {
@@ -33,12 +34,14 @@ export const LanguageCard: React.FunctionComponent<
         isoCode,
         usageCount,
         englishName,
+        targetPrefix,
         ...propsToPassDown
     } = props; // Prevent React warnings
 
     const { primary, secondary } = getDisplayNamesForLanguage(props);
     const getResponsiveChoice = useResponsiveChoice();
     const { cardWidthPx, cardHeightPx } = useLanguageCardSpecs();
+    const urlPrefix = props.targetPrefix ?? "/language:";
     return (
         <CheapCard
             {...propsToPassDown} // makes swiper work
@@ -53,7 +56,7 @@ export const LanguageCard: React.FunctionComponent<
                     commonUI.paddingForCollectionAndLanguageCardsPx
                 )}px;
             `}
-            target={`/language:${props.isoCode}`}
+            url={`${urlPrefix}${props.isoCode}`}
             onClick={undefined} // we just want to follow the href, whatever might be in propsToPassDown
         >
             <div

@@ -24,6 +24,7 @@ import { TestEmbeddingPage } from "./TestEmbedding";
 import { ReleaseNotes } from "./ReleaseNotes";
 import { ThemeForLocation } from "./pages/ThemeForLocation";
 import { CollectionReportSplit } from "./reports/CollectionReportSplit";
+import { ReaderLanguageGroup } from "./Reader/ReaderLanguageGroup";
 
 export let previousPathname = "";
 let currentPathname = "";
@@ -89,6 +90,12 @@ export const Routes: React.FunctionComponent<{}> = () => {
                             );
                         }}
                     />
+                    <Route
+                        path={"/reader/langs"}
+                        render={({ match }) => {
+                            return <ReaderLanguageGroup />;
+                        }}
+                    ></Route>
                     <Route
                         path="*/release-notes/:channel"
                         render={({ match }) => {
@@ -464,6 +471,7 @@ export function useSetBrowserTabTitle(title: string | undefined) {
 // This is used where we can't use useDocumentTitle, typically because
 // we don't know the title until after some conditional logic prevented by
 // rules of hooks.
+// Note: some components instead use <Helmet> to set document title and other metadata.
 export function setBloomLibraryTitle(title: string): void {
     document.title = "Bloom Library: " + title;
 }

@@ -12,12 +12,13 @@ import { useCardHoverStyles } from "../theme";
 interface IProps extends React.HTMLProps<HTMLDivElement> {
     className?: string;
     target?: string; // what we're calling "target" is the last part of url, where the url is <breadcrumb stuff>/<target>
+    url?: string; // if present, this overrides target and is used unmodified as the url to go to.
     role?: string;
 }
 
 // just a wrapper around the children you provide, made to look like a card and responsive to a click.
 export const CheapCard: React.FunctionComponent<IProps> = (props) => {
-    const url = getUrlForTarget(props.target || "");
+    const url = props.url ?? getUrlForTarget(props.target || "");
     const cardSpacing = useBaseCardSpec().cardSpacingPx;
     const hoverStyles = useCardHoverStyles();
     return (

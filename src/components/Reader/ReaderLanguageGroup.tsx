@@ -5,35 +5,44 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React, { useContext, useState } from "react";
-import {
-    LanguageCard,
-    useLanguageCardSpecs as useLanguageCardSpec,
-} from "./LanguageCard";
+import { LanguageCard } from "../LanguageCard";
+import logo from "../../assets/BloomLibrary Logo.svg";
 import Downshift, {
     GetItemPropsOptions,
     GetMenuPropsOptions,
     GetRootPropsOptions,
 } from "downshift";
 import matchSorter from "match-sorter";
-import searchIcon from "../search.png";
-import { CachedTablesContext } from "../model/CacheProvider";
-import { ILanguage } from "../model/Language";
-import { CardSwiperLazy } from "./CardSwiper";
+import searchIcon from "../../search.png";
+import { CachedTablesContext } from "../../model/CacheProvider";
+import { ILanguage } from "../../model/Language";
 import { Redirect } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
-import { propsToHideAccessibilityElement } from "../Utilities";
-import { useResponsiveChoice } from "../responsiveUtilities";
+import { propsToHideAccessibilityElement } from "../../Utilities";
+import { useResponsiveChoice } from "../../responsiveUtilities";
+import { useSetBrowserTabTitle } from "../Routes";
+import { Helmet } from "react-helmet";
 
-export const LanguageGroup: React.FunctionComponent = () => {
+// This class is uncomfortably similar to LanguageGroup. It provides the different layout we want
+// when displaying a page of language choices (typically on a phone) as opposed to a row of them
+// in part of a larger page. Components are differently ordered and grouped and have different
+// classes applied. It may be possible to factor out more common code, but it won't be easy.
+export const ReaderLanguageGroup: React.FunctionComponent = () => {
     const l10n = useIntl();
     const { languagesByBookCount: languages } = useContext(CachedTablesContext);
     // setting this to a language code causes a <Redirect> to render and open the page
     // for that code (currently when the user has selected a language by typing and pressing Enter)
     const [langChosen, setLangChosen] = useState("");
     const getResponsiveChoice = useResponsiveChoice();
-    const cardSpec = useLanguageCardSpec();
 
     let languagesToDisplay: ILanguage[] = [];
+
+    // We'll use Helmet to make this the document's title in its metadata, for use
+    // in BloomReader.
+    const title = l10n.formatMessage({
+        id: "reader.chooseLanguage",
+        defaultMessage: "Choose a language",
+    });
 
     const getLanguagesMatchingSearchTerm = (
         searchTerm: string | null
@@ -53,15 +62,26 @@ export const LanguageGroup: React.FunctionComponent = () => {
         );
         if (languagesToDisplay.length) {
             return (
-                <div {...getMenuProps({})}>
-                    <CardSwiperLazy
-                        data={languagesToDisplay}
-                        cardSpec={cardSpec}
-                        getReactElement={(l: ILanguage, index: number) => (
-                            // JohnT: I think this comment is wrong; getLabelProps is actually to do with a label for
-                            // the whole chooser.
-                            // TODO: to complete the accessibility, we need to pass the Downshift getLabelProps into LanguageCard
-                            // and apply it to the actual label.
+                <div
+                    css={css`
+                        display: flex;
+                        flex-direction: column;
+                        flex-basis: 100px;
+                        flex-grow: 100;
+                    `}
+                    {...getMenuProps({})}
+                >
+                    <div
+                        css={css`
+                            display: flex;
+                            flex-wrap: wrap;
+                            flex-grow: 100;
+                            flex-basis: 100px;
+                            align-content: flex-start;
+                            overflow-y: scroll;
+                        `}
+                    >
+                        {languagesToDisplay.map((l, index) => (
                             <LanguageCard
                                 {...getItemProps({ item: l })}
                                 key={index}
@@ -70,10 +90,11 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                 usageCount={l.usageCount}
                                 isoCode={l.isoCode}
                                 objectId={l.objectId}
+                                targetPrefix="/reader/language:"
                                 role="option"
                             />
-                        )}
-                    />
+                        ))}
+                    </div>
                 </div>
             );
         } else {
@@ -111,20 +132,65 @@ export const LanguageGroup: React.FunctionComponent = () => {
     const contentHeight = getResponsiveChoice(140, 170);
 
     return langChosen ? (
-        <Redirect to={"/language:" + langChosen} />
+        <Redirect to={"/reader/language:" + langChosen} />
     ) : (
-        <li role="region" aria-labelledby="findBooksByLanguage">
-            <h1
-                // This has an ID to match the aria-labelledby above.
-                // The FormattedMessage has an ID to look up the message, but its ID does not
-                // appear in the generated document so there is no confusion.
-                id="findBooksByLanguage"
+        <li
+            role="region"
+            aria-labelledby="findBooksByLanguage"
+            css={css`
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                margin-left: 15px;
+                margin-right: 15px;
+            `}
+        >
+            <Helmet>
+                <title>{title}</title>
+            </Helmet>
+            <img
+                css={css`
+                    max-width: 300px;
+                    margin-top: 15px;
+                `}
+                src={logo}
+                alt={l10n.formatMessage({
+                    id: "header.bloomLogo",
+                    defaultMessage: "Bloom Logo",
+                })}
+            />
+            <div
+                css={css`
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: baseline;
+                    flex-grow: 0;
+                `}
             >
-                <FormattedMessage
+                <h1
+                    // This has an ID to match the aria-labelledby above.
+                    // The FormattedMessage has an ID to look up the message, but its ID does not
+                    // appear in the generated document so there is no confusion.
                     id="findBooksByLanguage"
-                    defaultMessage="Find Books By Language"
-                />
-            </h1>
+                >
+                    <FormattedMessage
+                        id="languageSearch"
+                        defaultMessage="Language?"
+                    />
+                </h1>
+                <div
+                    css={css`
+                        margin-top: 4px;
+                        line-height: 1em;
+                    `}
+                >
+                    <FormattedMessage
+                        id="languagesCount"
+                        defaultMessage="{count} Languages"
+                        values={{ count: languages.length }}
+                    />
+                </div>
+            </div>
 
             {(languages.length && (
                 /* Downshift handles telling us when to recompute the list of matching items.
@@ -149,7 +215,11 @@ export const LanguageGroup: React.FunctionComponent = () => {
                     }) => (
                         <div
                             css={css`
-                                height: ${contentHeight}px;
+                                //height: ${contentHeight}px;
+                                flex-grow: 100;
+                                flex-basis: 100px; // smallish basis, large grow, it will fill the available space
+                                display: flex;
+                                flex-direction: column;
                             `}
                         >
                             <div
@@ -157,6 +227,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                     display: flex;
                                     margin-bottom: 2px;
                                     height: 32px;
+                                    flex-grow: 0;
                                 `}
                                 {...getRootProps(rootPropsOptions)}
                             >
@@ -166,8 +237,8 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                         border: 1px solid #ccc;
                                         border-radius: 5px;
                                         padding-left: 5px;
-                                        margin-right: 10px;
                                         height: 26px;
+                                        width: 100%;
                                         background-color: white; // the whole thing, not just the input, looks better.
                                     `}
                                 >
@@ -185,6 +256,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                         css={css`
                                             display: block;
                                             border: 0;
+                                            width: 100%;
                                             // Inputs smaller than 16pt cause Safari on IOS to zoom in (BL-9204), messing up our
                                             // responsive web site by making it wider than the display.
                                             // It would be better if there was a way to say "at least 16px" in case
@@ -209,19 +281,6 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                             id: "search",
                                             defaultMessage: "Search",
                                         })}
-                                    />
-                                </div>
-
-                                <div
-                                    css={css`
-                                        margin-top: 4px;
-                                        line-height: 1em;
-                                    `}
-                                >
-                                    <FormattedMessage
-                                        id="languagesCount"
-                                        defaultMessage="{count} Languages"
-                                        values={{ count: languages.length }}
                                     />
                                 </div>
                             </div>

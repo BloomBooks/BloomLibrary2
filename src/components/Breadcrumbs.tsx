@@ -14,7 +14,9 @@ import { BlorgLink } from "./BlorgLink";
 import { FormattedMessage, useIntl } from "react-intl";
 import { CollectionInfoWidget } from "./CollectionInfoWidget";
 
-export const Breadcrumbs: React.FunctionComponent = () => {
+export const Breadcrumbs: React.FunctionComponent<{ className?: string }> = (
+    props
+) => {
     const location = useLocation();
     const l10n = useIntl();
     // TODO: this doesn't look good on a narrow screen (phone) when the breadcrumbs get very long.
@@ -47,6 +49,7 @@ export const Breadcrumbs: React.FunctionComponent = () => {
             color: transparent;
         }
     `;
+    const readerMode = location.pathname.startsWith("/reader/");
     const crumbs: React.ReactElement[] = [];
     crumbs.push(
         <li key="home">
@@ -57,7 +60,7 @@ export const Breadcrumbs: React.FunctionComponent = () => {
                         text-decoration: underline !important;
                     }
                 `}
-                href="/"
+                href={readerMode ? "/reader/langs" : "/"}
             >
                 <FormattedMessage id="header.home" defaultMessage="Home" />
             </BlorgLink>
@@ -79,13 +82,17 @@ export const Breadcrumbs: React.FunctionComponent = () => {
         breadcrumbs.splice(0, 1);
     }
     breadcrumbs.forEach((c, i) => {
-        crumbs.push(
-            <CollectionCrumb
-                key={c}
-                collectionName={c}
-                previousBreadcrumbs={breadcrumbs.slice(0, i)}
-            />
-        );
+        if (c !== "reader") {
+            // We want to keep "reader" in the list of breadcrumbs so it will be part of any
+            // url we jump to, but it's not actually a place we can go to.
+            crumbs.push(
+                <CollectionCrumb
+                    key={c}
+                    collectionName={c}
+                    previousBreadcrumbs={breadcrumbs.slice(0, i)}
+                />
+            );
+        }
     });
     // We may not have a collection name, especially for a book or player url without
     // breadcrumbs.
@@ -145,7 +152,11 @@ export const Breadcrumbs: React.FunctionComponent = () => {
         );
     }
 
-    return <ul css={breadcrumbsStyle}>{crumbs}</ul>;
+    return (
+        <ul css={breadcrumbsStyle} className={props.className}>
+            {crumbs}
+        </ul>
+    );
 };
 //     const router = useContext(RouterContext);
 //     if (!router) {

@@ -66,12 +66,13 @@ export const Blurb: React.FunctionComponent<{
     );
 };
 
-const BannerTitle: React.FunctionComponent<{
+export const BannerTitle: React.FunctionComponent<{
     collection: ICollection;
     banner: IBanner;
     width?: string;
     padding?: string;
     hideTitle: boolean;
+    className?: string;
 }> = (props) => {
     const l10n = useIntl();
     let bannerTitle: React.ReactNode;
@@ -133,6 +134,7 @@ const BannerTitle: React.FunctionComponent<{
                         font-size: 24px;
                     }
                 `}
+                className={props.className} // support css
             >
                 {bannerTitle}
             </h1>

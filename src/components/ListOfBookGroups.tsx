@@ -17,7 +17,9 @@ import React from "react";
     flex-grow: 1;
 }*/
 
-export const ListOfBookGroups: React.FunctionComponent = (props) => (
+export const ListOfBookGroups: React.FunctionComponent<{
+    className?: string;
+}> = (props) => (
     // A ul apparently defaults to flex-shrink:1. And that's a problem for us, because it's parent
     // is display:flex and height:100% and a list of book groups is usually more than a screen high.
     // So the browser tries to shrink it. It can't really do so, but it does anyway, so now
@@ -30,6 +32,7 @@ export const ListOfBookGroups: React.FunctionComponent = (props) => (
             flex-shrink: 0;
             list-style: none;
         `}
+        className={props.className} // for css
     >
         {props.children}
     </ul>
