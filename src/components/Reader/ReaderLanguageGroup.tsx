@@ -20,7 +20,6 @@ import { Redirect } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
 import { propsToHideAccessibilityElement } from "../../Utilities";
 import { useResponsiveChoice } from "../../responsiveUtilities";
-import { useSetBrowserTabTitle } from "../Routes";
 import { Helmet } from "react-helmet";
 
 // This class is uncomfortably similar to LanguageGroup. It provides the different layout we want

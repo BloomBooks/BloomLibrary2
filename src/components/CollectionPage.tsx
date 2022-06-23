@@ -243,6 +243,7 @@ export const CollectionPage: React.FunctionComponent<{
         props.embeddedSettings,
         title,
         location.pathname,
+        readerMode,
     ]);
     return result;
 };

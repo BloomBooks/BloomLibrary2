@@ -132,11 +132,11 @@ export const ReaderDownloadButton: React.FunctionComponent<IProps> = (
 
 // Get the size of the thing that the specified URL would obtain.
 function get_filesize(url: string, callback: (size: number) => void) {
-    var xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
     xhr.open("HEAD", url, true); // Notice "HEAD" instead of "GET",
     //  to get only the header
     xhr.onreadystatechange = function () {
-        if (this.readyState == this.DONE) {
+        if (this.readyState === this.DONE) {
             const size = xhr.getResponseHeader("Content-Length");
             if (size) {
                 callback(parseInt(size));
