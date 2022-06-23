@@ -66,11 +66,6 @@ export const ReaderDownloadButton: React.FunctionComponent<IProps> = (
                             ? "?lang=" + props.contextLangIso
                             : "")
                 );
-                // Things are set up so this can pass the URL to BloomReader
-                const brReceiver = (window as any).ParentProxy?.postMessage;
-                if (brReceiver) {
-                    brReceiver("download:" + artifactUrl);
-                }
             }}
         >
             <Button
