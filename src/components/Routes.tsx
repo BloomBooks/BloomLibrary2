@@ -25,6 +25,7 @@ import { ReleaseNotes } from "./ReleaseNotes";
 import { ThemeForLocation } from "./pages/ThemeForLocation";
 import { CollectionReportSplit } from "./reports/CollectionReportSplit";
 import { ReaderLanguageGroup } from "./Reader/ReaderLanguageGroup";
+import { ReaderDownloadingPage } from "./Reader/ReaderDownloadingPage";
 
 export let previousPathname = "";
 let currentPathname = "";
@@ -94,6 +95,12 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         path={"/reader/langs"}
                         render={({ match }) => {
                             return <ReaderLanguageGroup />;
+                        }}
+                    ></Route>
+                    <Route
+                        path={"/reader/downloading"}
+                        render={({ match }) => {
+                            return <ReaderDownloadingPage />;
                         }}
                     ></Route>
                     <Route

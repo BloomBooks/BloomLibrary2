@@ -489,6 +489,13 @@
         "message": "Choose a language",
         "description": "Becomes a header title and shown in Bloom Reader"
     },
+    "reader.weAreDownloading": {
+        "message": "Great! We are downloading that book now. It will appear in your list of books when the download is complete."
+    },
+    "reader.downloading": {
+        "message": "Downloading",
+        "description": "Eventually appears as a page heading in Bloom Reader while downloading a book"
+    },
     "reader.getMoreBooks": {
         "message": "Get more {label} books",
         "description": "Becomes a header title and shown in Bloom Reader. Label is typically a language name."
@@ -496,5 +503,17 @@
     "reader.level": {
         "message": "level",
         "description": "Appears before a digit in something like 'Getting more French level 2 books"
+    },
+    "reader.bookInfo": {
+        "message": "Book information",
+        "description": "Appears in metadata title, used by Bloom Reader"
+    },
+    "reader.detailsOnBlorg": {
+        "message": "Details on BloomLibrary.org",
+        "description": "Takes you to a page with more detailed information about a book"
+    },
+    "reader.nowDownloading": {
+        "message": "Details on BloomLibrary.org",
+        "description": "Takes you to a page with more detailed information about a book"
     }
 }
