@@ -48,7 +48,7 @@ export const CardSortingTroubleshootingInfo: React.FunctionComponent<{
                     css={css`
                         color: green;
                     `}
-                >{` lu=${lastUploaded}`}</span>
+                >{` upd=${lastUploaded}`}</span>
             )}
         </div>
     );
