@@ -58,15 +58,7 @@ export function doExpensiveClientSideSortingIfNeeded(
     switch (orderingScheme) {
         case BookOrderingScheme.TitleAlphaIgnoringNumbers:
         case BookOrderingScheme.TitleAlphabetical:
-            // const profileLabel = `sorting ${books.length} books...`;
-            // console.profile(profileLabel);
             books.forEach((b: any) => {
-                // if (
-                //     languageForSorting === "en" &&
-                //     (b as IBasicBookInfo).objectId === "fDs1sg3wzF"
-                // ) {
-                //     console.log(JSON.stringify(b));
-                // }
                 const t = getBestBookTitle(
                     b.title,
                     b.allTitles,
@@ -83,7 +75,6 @@ export function doExpensiveClientSideSortingIfNeeded(
                 (a: IBookInfoForSorting, b: IBookInfoForSorting) =>
                     comparator.compare(a.sortKey!, b.sortKey!)
             );
-            //console.profileEnd(profileLabel);
             return r;
         default:
             return books; // we already ordered them on the server
