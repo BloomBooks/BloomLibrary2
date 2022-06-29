@@ -3,7 +3,6 @@ import {
     getTitleParts,
     IBookInfoForSorting,
     doExpensiveClientSideSortingIfNeeded,
-    getBookSortKey,
 } from "./sorting";
 
 const titles = [
@@ -21,18 +20,20 @@ test.each(titles)("regex that divides sections", (title) => {
     expect(mainPart).toBe("foo");
 });
 
-const titlesForKeys = ["foo", "002 foo", "- 3b - foo"];
-test.each(titlesForKeys)("titlesForKeys", (title) => {
-    expect(getBookSortKey(title, BookOrderingScheme.TitleAlphabetical)).toBe(
-        title
-    );
-    expect(
-        getBookSortKey(title, BookOrderingScheme.TitleAlphaIgnoringNumbers)
-    ).toBe("foo");
+it("handles multiple hyphens correctly", () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [numberPart, mainPart] = getTitleParts("- 1 - Letters from a - g");
+    expect(mainPart).toBe("Letters from a - g");
+});
+
+test.each(titles)("regex that divides sections", (title) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [numberPart, mainPart] = getTitleParts(title);
+    expect(mainPart).toBe("foo");
 });
 
 it("sorts books with leading numbers correctly", () => {
-    const titles = ["77 bb", "cc", "- 99 - aa"];
+    const titles = ["77 cc", "aa", "- 99 - bb"];
     const books: IBookInfoForSorting[] = titles.map((t) => {
         return {
             title: t,
@@ -43,14 +44,14 @@ it("sorts books with leading numbers correctly", () => {
         books,
         BookOrderingScheme.TitleAlphaIgnoringNumbers
     ) as any[];
-    expect(sorted[0].title).toBe("- 99 - aa");
-    expect(sorted[1].title).toBe("77 bb");
-    expect(sorted[2].title).toBe("cc");
+    expect(sorted[0].title).toBe("aa");
+    expect(sorted[1].title).toBe("- 99 - bb");
+    expect(sorted[2].title).toBe("77 cc");
 });
 
 // a and b are special in the regex because of things like "3a. foo". Make sure that doesn't mess up "a nice boy"
 it("sorts books with leading a & b correctly", () => {
-    const titles = ["nice boy", "a nice boy"];
+    const titles = ["good boy", "a nice boy"];
     const books: IBookInfoForSorting[] = titles.map((t) => {
         return {
             title: t,
@@ -65,11 +66,7 @@ it("sorts books with leading a & b correctly", () => {
 });
 
 it("sorts as if leading zeros are not there", () => {
-    // expect(
-    //     getBookSortKey("002 foo", BookOrderingScheme.TitleAlphabetical)
-    // ).toBe("2 foo");
-
-    const titles = ["3 foo", "002 foo"];
+    const titles = ["3 foo", "004 bar"];
     const books: IBookInfoForSorting[] = titles.map((t) => {
         return {
             title: t,
@@ -80,7 +77,7 @@ it("sorts as if leading zeros are not there", () => {
         books,
         BookOrderingScheme.TitleAlphabetical
     ) as any[];
-    expect(sorted[0].title).toBe("002 foo");
+    expect(sorted[0].title).toBe("3 foo");
 });
 
 it("sorts using locale rules", () => {

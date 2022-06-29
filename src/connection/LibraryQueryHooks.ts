@@ -644,7 +644,7 @@ export interface IBasicBookInfo {
     baseUrl: string;
     harvestState?: string;
     //note, here in a "BasicBookInfo", this is just JSON, intentionally not parsed yet,
-    // in case we don't need it (update: but do we ever not need it now that we use it for sorting?).
+    // in case we don't need it.
     allTitles: string;
     // conceptually a date, but uploaded from parse server this is what it has.
     harvestStartedAt?: { iso: string } | undefined;
@@ -1460,7 +1460,7 @@ function configureQueryParamsForOrderingScheme(
         case undefined:
         case BookOrderingScheme.Default:
             if (params.where.search) {
-                params.order = "$score";
+                params.order = "$score"; // Parse's full text search
                 if (params.keys === undefined) {
                     throw new Error(
                         "params.keys must be set in order to to use auto-sort-order"
@@ -1470,7 +1470,7 @@ function configureQueryParamsForOrderingScheme(
                     params.keys = "$score," + params.keys;
                 }
             } else {
-                // Note that "title" sounds like the right default, but it useless in many cases because it is just one of
+                // Note that "title" sounds like the right default, but it is useless in many cases because it is just one of
                 // the languages, not the language that is in context of this page. See BL-11137.
                 params.order = "-createdAt";
             }

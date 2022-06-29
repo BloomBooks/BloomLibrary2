@@ -23,7 +23,8 @@ import { doExpensiveClientSideSortingIfNeeded } from "../connection/sorting";
 *   3) If we're doing client-side sorting, then sort all the books within each group
 *
 *   On pages like https://bloomlibrary.org/bible/ims-motionbook-templates, this is pretty expensive (about 5 seconds of script time on a fast desktop with empty cache).
-*   Note that on fast desktop, I was not able to measure a significant difference between client-side sorting and no client-side sorting.
+*   Note that on fast desktop, I was not able to measure a significant difference between client-side sorting and no client-side sorting. In other words,
+*   what is expensive is retrieving all the books, not the actual client-side sorting.
 *
 *   Alternatively, we could
 *       1) query for a list of all languages that match the query
@@ -32,6 +33,8 @@ import { doExpensiveClientSideSortingIfNeeded } from "../connection/sorting";
 *
 *   This might give a more responsive page, and would work in the future when we don't have to do client-side
 *   sorting whereas the current approach will need to be re-organized.
+*
+*   Possibly, we might be able to retrieve less fields initially, for sorting purposes, then retrieve more as needed?
 ---------------------------------------------------------------------------------------------------------------- */
 
 export const ByLanguageGroups: React.FunctionComponent<{

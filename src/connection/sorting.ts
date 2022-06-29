@@ -13,11 +13,20 @@ export function getTitleParts(s: string): string[] {
     const parts = s.match(
         // For testing this online with unit tests: https://regex101.com/r/T9zEvK/1
         // NOTE that this link has TWO kinds of tests: teh "Test String" and a set of "Unit Tests".
+
+        // Note that there are two capture groups here:  The first is the prefix
+        // we want to ignore in sorting, and the second is the part we DO want
+        // to sort by. (The strings matched become parts[1] and parts[2] and
+        // eventually the two items in the array this method returns.
+
         // eslint-disable-next-line no-useless-escape
         /^([-,(,\[,\s]*[0-9]+(?:[\-]\s*[0-9]*)*[a,b]*(?:\s*[-,),\],\.])*)?\s*(.*)$/
     );
-    // ... to the end by making their sort key start with a symbol that sorts last
-    return parts ? parts.splice(1) : [s];
+
+    // At this point parts would be [full string that was matched, the prefix, the rest of the string]
+    // So we drop the first one and return the other two. We don't expect that its possible for this
+    // particular RE to fail to match, so the conditional here is just to keep the compiler happy.
+    return parts ? parts.splice(1) : ["", s];
 }
 
 export function getBookSortKey(s: string, orderingScheme: BookOrderingScheme) {
