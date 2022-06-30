@@ -1462,8 +1462,10 @@ function configureQueryParamsForOrderingScheme(
             if (params.where.search) {
                 params.order = "$score"; // Parse's full text search
                 if (params.keys === undefined) {
+                    console.error(`Params was: ${JSON.stringify(params)}`);
                     throw new Error(
-                        "params.keys must be set in order to to use auto-sort-order"
+                        "params.keys must be set in order to to use auto-sort-order." +
+                            JSON.stringify(params)
                     );
                 }
                 if (params.keys.indexOf("$score") < 0) {

@@ -7,6 +7,8 @@
     "scripts": {
         "//start": " browser=none prevents opening a normal browser tab, then corsChrome gives us a browser that ignores CORS problems",
         "start": "set BROWSER=none&&concurrently \"react-scripts start\" \"npm:corsChrome\" \"npm:copyInBloomPlayer\"",
+        "//start-performance": "There is a HUGE speed difference in what you get with build vs. start, so use this approach if you're measuring.",
+        "start-performance": "yarn build && npx serve -s build",
         "build": "yarn copyInBloomPlayer && react-scripts build",
         "build:ci": "set CI=true&&yarn copyInBloomPlayer&&react-scripts build",
         "copyInBloomPlayer": "ncp node_modules/bloom-player/dist public/bloom-player",
