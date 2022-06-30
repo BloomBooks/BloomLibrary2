@@ -91,7 +91,11 @@ export const ReaderDownloadingPage: React.FunctionComponent = (props) => {
                 css={css`
                     ${buttonCss}
                 `}
-                onClick={() => history.push("/reader/langs")}
+                onClick={() => {
+                    history.push("/reader/langs");
+                    // This can be detected by BloomReader.
+                    (window as any).ParentProxy?.postMessage("go_home");
+                }}
             >
                 {home}
             </Button>
