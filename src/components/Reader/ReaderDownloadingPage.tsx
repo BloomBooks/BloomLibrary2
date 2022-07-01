@@ -93,8 +93,8 @@ export const ReaderDownloadingPage: React.FunctionComponent = (props) => {
                 `}
                 onClick={() => {
                     history.push("/reader/langs");
-                    // This can be detected by BloomReader.
-                    (window as any).ParentProxy?.postMessage("go_home");
+                    // This can be detected by BloomReader. See class comment on WebAppInterface.
+                    (window as any).ParentProxy?.receiveMessage("go_home");
                 }}
             >
                 {home}
