@@ -1089,6 +1089,9 @@ export function constructParseBookQuery(
     limit?: number, //pagination
     skip?: number //pagination
 ): object {
+    if (orderingScheme === undefined)
+        orderingScheme = BookOrderingScheme.Default;
+
     if (filter?.derivedFromCollectionName) {
         // We should have already converted from derivedFromCollectionName to derivedFrom by now. See useProcessDerivativeFilter().
         alert("Attempted to load books with an invalid filter.");
@@ -1225,6 +1228,19 @@ export function constructParseBookQuery(
                     },
                 },
             };
+            if (orderingScheme === BookOrderingScheme.Default) {
+                if (params.keys === undefined) {
+                    // If you don't specify *any* keys, then you get them all, fine.
+                    // But if you only specify "$score", then that's all you will
+                    // get and that's not enough to even identify the book.
+                    throw new Error(
+                        "params.keys must be set to use default ordering"
+                    );
+                }
+                if (params.keys.indexOf("$score") < 0) {
+                    params.keys = "$score," + params.keys;
+                }
+            }
         } else {
             delete params.where.search;
         }
@@ -1451,26 +1467,16 @@ export function constructParseBookQuery(
 
 function configureQueryParamsForOrderingScheme(
     params: any,
-    orderingScheme?: BookOrderingScheme
+    orderingScheme: BookOrderingScheme
 ) {
     switch (orderingScheme) {
         case BookOrderingScheme.None: // used when we're just getting a count
             delete params.order;
             break;
-        case undefined:
+
         case BookOrderingScheme.Default:
-            if (params.where.search) {
+            if (params.key && params.keys.indexOf("$score") >= 0) {
                 params.order = "$score"; // Parse's full text search
-                if (params.keys === undefined) {
-                    console.error(`Params was: ${JSON.stringify(params)}`);
-                    throw new Error(
-                        "params.keys must be set in order to to use auto-sort-order." +
-                            JSON.stringify(params)
-                    );
-                }
-                if (params.keys.indexOf("$score") < 0) {
-                    params.keys = "$score," + params.keys;
-                }
             } else {
                 // Note that "title" sounds like the right default, but it is useless in many cases because it is just one of
                 // the languages, not the language that is in context of this page. See BL-11137.
