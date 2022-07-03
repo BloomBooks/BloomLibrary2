@@ -1,5 +1,6 @@
 import { ILanguage } from "./Language";
 import { trySpecialSearch, noPushCode } from "./SpecialSearch";
+import { it, test, expect } from "vitest";
 
 const testLanguageData: ILanguage[] = [
     { isoCode: "de", name: "German", objectId: "fakeId_de", usageCount: 10 },

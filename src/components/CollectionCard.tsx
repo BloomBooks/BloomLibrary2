@@ -213,9 +213,9 @@ export const CollectionCard: React.FunctionComponent<{
                     margin-bottom: ${hideTitle ? "auto" : "10px"};
                 `}
                 // While we're waiting, show the text title
-                loader={titleElementIfNoImage}
+                // TODO    loader={titleElementIfNoImage}
                 // If we could not get an image, show the text title
-                unloader={titleElementIfNoImage}
+                //TODO                unloader={titleElementIfNoImage}
                 // If we have an explicit altText, use it.
                 // An explicit empty alt text indicates it is only decorative, at
                 // least from the viewpoint of a screen reader (BL-8963).

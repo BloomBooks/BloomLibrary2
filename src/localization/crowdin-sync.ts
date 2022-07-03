@@ -13,7 +13,7 @@ const Retry = require("async-retry");
 
 const kTargetDirectory = "./public/translations";
 
-const crowdinApiToken: string = process.env.bloomCrowdinApiToken || "";
+const crowdinApiToken: string = import.meta.env.bloomCrowdinApiToken || "";
 const kCrowdinProjectId = 261564;
 
 async function requestAndWaitForCrowdinBuild(): Promise<number | undefined> {

@@ -1,3 +1,4 @@
+import { it, expect } from "vitest";
 import { getFeaturesAvailableForOneLanguageOfBook } from "./FeatureHelper";
 it("getLanguageFeatures finds no features when passed empty list", () => {
     const result = getFeaturesAvailableForOneLanguageOfBook(undefined, "en");
