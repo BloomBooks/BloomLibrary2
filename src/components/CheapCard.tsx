@@ -1,8 +1,5 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
+import { css } from "@emotion/react";
 // these two make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
 import React from "react";
 import { getUrlForTarget } from "./Routes";
 import { BlorgLink } from "./BlorgLink";

@@ -1,6 +1,6 @@
 import { Book } from "../../model/Book";
 import React, { useState } from "react";
-import Select from "react-select";
+//import Select from "react-select";
 import FormControl from "@material-ui/core/FormControl/FormControl";
 import { FormLabel } from "@material-ui/core";
 
@@ -51,7 +51,7 @@ export const MultiChooser: React.FunctionComponent<{
     return (
         <FormControl fullWidth variant={"outlined"} color={"primary"}>
             <FormLabel component="legend">{props.label}</FormLabel>
-            <Select
+            {/* <Select
                 isDisabled={props.isDisabled === true}
                 styles={{
                     // Fixes the zindex being too low so that you "see through it"
@@ -96,7 +96,7 @@ export const MultiChooser: React.FunctionComponent<{
                 //     setTypeAheadString(newValue.toLowerCase());
                 // }}
                 isMulti
-            />
+            /> */}
         </FormControl>
     );
 };

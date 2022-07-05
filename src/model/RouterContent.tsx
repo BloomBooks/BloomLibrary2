@@ -1,9 +1,3 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
-
 import React from "react";
 import { useLocation } from "react-router-dom";
 import { Header } from "../components/header/Header";
@@ -11,6 +5,7 @@ import { Routes } from "../components/Routes";
 import { Footer } from "../components/Footer";
 import { useIsEmbedded } from "../components/EmbeddingHost";
 import { kStatsPageGray } from "../components/statistics/StatsInterfaces";
+import { css } from "@emotion/react";
 
 // What we want inside the <Router> component. Has to be its own component so that we can have
 // useLocation(), which only works inside the Router.

@@ -1,9 +1,10 @@
 {
     "compilerOptions": {
-        "target": "esnext",
-        "module": "esnext",
+        "jsxImportSource": "@emotion/react",
+        "target": "ESNext",
+        "module": "ESNext",
         "sourceMap": true,
-        "jsx": "react",
+        "jsx": "react-jsx",
         "lib": ["dom", "esnext"], // ["dom", "es5", "scripthost", "es2017.object"],
         "allowSyntheticDefaultImports": true,
         "forceConsistentCasingInFileNames": true,
@@ -20,7 +21,12 @@
         "moduleResolution": "node",
         "isolatedModules": true,
         "noEmit": true,
-        "types": ["vite/client", "vite-plugin-svgr/client", "vitest/globals"],
+        // "types": [
+        //     "vite/client",
+        //     "vite-plugin-svgr/client",
+        //     "vitest/globals",
+        //     "@emotion/react/types/css-prop"
+        // ],
         "plugins": [
             {
                 "name": "typescript-styled-plugin",

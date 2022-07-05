@@ -1,6 +1,6 @@
 import { Book } from "../../model/Book";
 import React, { useState } from "react";
-import CreatableSelect from "react-select/creatable";
+//import CreatableSelect from "react-select/creatable";
 import FormControl from "@material-ui/core/FormControl/FormControl";
 import { FormLabel } from "@material-ui/core";
 
@@ -54,7 +54,7 @@ export const CreatableMultiChooser: React.FunctionComponent<{
     return (
         <FormControl fullWidth variant={"outlined"} color={"primary"}>
             <FormLabel component="legend">{props.label}</FormLabel>
-            <CreatableSelect
+            {/* <CreatableSelect
                 styles={{
                     // Fixes the zindex being too low so that you "see through it"
                     menu: (provided) => ({ ...provided, zIndex: 9999 }),
@@ -80,7 +80,7 @@ export const CreatableMultiChooser: React.FunctionComponent<{
                 //     setTypeAheadString(newValue.toLowerCase());
                 // }}
                 isMulti
-            />
+            /> */}
         </FormControl>
     );
 };
