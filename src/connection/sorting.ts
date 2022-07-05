@@ -24,7 +24,7 @@ export function getTitleParts(s: string): string[] {
     );
 
     // At this point parts would be [full string that was matched, the prefix, the rest of the string]
-    // So we drop the first one and return the other two. We don't expect that its possible for this
+    // So we drop the first one and return the other two. We don't expect that it's possible for this
     // particular RE to fail to match, so the conditional here is just to keep the compiler happy.
     return parts ? parts.splice(1) : ["", s];
 }
@@ -78,7 +78,7 @@ export function doExpensiveClientSideSortingIfNeeded(
 
             const comparator = new Intl.Collator(
                 languageForSorting /* it's ok if this is missing */,
-                { numeric: true }
+                { numeric: true } // will strip off leading 0's.
             );
             const r = books.sort(
                 (a: IBookInfoForSorting, b: IBookInfoForSorting) =>
