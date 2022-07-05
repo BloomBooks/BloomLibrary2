@@ -176,11 +176,11 @@ beforeAll(async () => {
         console.log(JSON.stringify(error));
         throw error;
     }
-}, 20000); // This function can take a while to run, give it up to 20s
+}, 60000); // This function can take a while to run, give it up to 20s
 
 afterAll(async () => {
     await cleanup();
-}, 20000); // This function can take a while to run, give it up to 20s
+}, 60000); // This function can take a while to run, give it up to 20s
 
 it("retrieves a parse book using full-text search", async () => {
     try {
