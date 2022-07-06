@@ -39,6 +39,10 @@ import { HarvesterProblemNotice } from "./HarvesterProblemNotice";
 import { SharingButtons } from "./SharingButtons";
 import { BlorgLink } from "../BlorgLink";
 import { Helmet } from "react-helmet";
+import {
+    removeAppHostedFromPath,
+    useIsAppHosted,
+} from "../appHosted/AppHostedUtils";
 
 const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     const l10n = useIntl();
@@ -112,7 +116,7 @@ const BookDetailInternal: React.FunctionComponent<{
 
     const embeddedMode = useIsEmbedded();
     const location = useLocation();
-    const readerMode = location.pathname.startsWith("/reader/");
+    const appHostedMode = useIsAppHosted();
     const user = LoggedInUser.current;
     const userIsUploader = user?.username === props.book.uploader?.username;
     const l10n = useIntl();
@@ -130,11 +134,11 @@ const BookDetailInternal: React.FunctionComponent<{
                 max-width: 800px;
             `}
         >
-            {readerMode && (
+            {appHostedMode && (
                 <Helmet>
                     <title>
                         {l10n.formatMessage({
-                            id: "reader.bookInfo",
+                            id: "appHosted.bookInfo",
                             defaultMessage: "Book information",
                         })}
                     </title>
@@ -148,7 +152,7 @@ const BookDetailInternal: React.FunctionComponent<{
                     }
                 `}
             >
-                {embeddedMode || readerMode || <Breadcrumbs />}
+                {embeddedMode || appHostedMode || <Breadcrumbs />}
             </div>
 
             <div
@@ -181,19 +185,19 @@ const BookDetailInternal: React.FunctionComponent<{
                 )}
                 <HarvesterProgressNotice book={props.book} />
                 <HarvesterProblemNotice book={props.book} />
-                {readerMode ? (
+                {appHostedMode ? (
                     <BlorgLink
                         css={css`
                             color: black;
                             text-decoration: underline;
                         `}
                         href={
-                            location.pathname.replace("/reader", "") +
+                            removeAppHostedFromPath(location.pathname) +
                             location.search
                         }
                     >
                         {l10n.formatMessage({
-                            id: "reader.detailsOnBlorg",
+                            id: "appHosted.detailsOnBlorg",
                             defaultMessage: "Details on BloomLibrary.org",
                         })}
                     </BlorgLink>

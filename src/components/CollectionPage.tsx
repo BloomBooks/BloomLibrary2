@@ -24,6 +24,7 @@ import { DownloadBundleButton } from "./banners/DownloadBundleButton";
 import { Helmet } from "react-helmet";
 import { useLocation } from "react-router-dom";
 import { readerPadding } from "./banners/ReaderBannerLayout";
+import { useIsAppHosted } from "./appHosted/AppHostedUtils";
 
 const kLeftMarginOnCollectionPages = "20px";
 
@@ -46,9 +47,9 @@ export const CollectionPage: React.FunctionComponent<{
         : // enhance: ideally, we'd want localizedLabel + "books", also localized (with correct word order)
           localizedLabel;
     // Review: should we make this a prop instead? And pass all the way down from router?
-    const readerMode = location.pathname.startsWith("/reader/");
-    if (readerMode) {
-        // We want a very specific title for language collections in our book reader (BL-11254)
+    const appHostedMode = useIsAppHosted();
+    if (appHostedMode) {
+        // We want a very specific title for language collections when app-hosted (BL-11254)
         let label = collection?.label;
         if (label) {
             // Label commonly includes the English name in parens, but we don't have room for
@@ -59,7 +60,7 @@ export const CollectionPage: React.FunctionComponent<{
             label = label.replace(/\sBooks\b/, "");
             title = l10n.formatMessage(
                 {
-                    id: "reader.getMoreBooks",
+                    id: "appHosted.getMoreBooks",
                     defaultMessage: "Get more {label} books",
                 },
                 { label }
@@ -185,7 +186,7 @@ export const CollectionPage: React.FunctionComponent<{
                 <ListOfBookGroups
                     // tighten things up a bit in a view designed for a phone.
                     css={css`
-                        ${readerMode
+                        ${appHostedMode
                             ? "padding-left: " +
                               readerPadding +
                               " !important; margin-block-start: 0"
@@ -243,7 +244,7 @@ export const CollectionPage: React.FunctionComponent<{
         props.embeddedSettings,
         title,
         location.pathname,
-        readerMode,
+        appHostedMode,
     ]);
     return result;
 };

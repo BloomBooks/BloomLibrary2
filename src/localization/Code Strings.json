@@ -485,34 +485,34 @@
         "message": "This project was supported by",
         "description": "Example, see the bottom of https://bloomlibrary.org/kyrgyzstan-OkuuKeremet"
     },
-    "reader.chooseLanguage": {
+    "appHosted.chooseLanguage": {
         "message": "Choose a language",
         "description": "Becomes a header title and shown in Bloom Reader"
     },
-    "reader.weAreDownloading": {
+    "appHosted.weAreDownloading": {
         "message": "Great! We are downloading that book now. It will appear in your list of books when the download is complete."
     },
-    "reader.downloading": {
+    "appHosted.downloading": {
         "message": "Downloading",
         "description": "Eventually appears as a page heading in Bloom Reader while downloading a book"
     },
-    "reader.getMoreBooks": {
+    "appHosted.getMoreBooks": {
         "message": "Get more {label} books",
         "description": "Becomes a header title and shown in Bloom Reader. Label is typically a language name."
     },
-    "reader.level": {
+    "appHosted.level": {
         "message": "level",
         "description": "Appears before a digit in something like 'Getting more French level 2 books"
     },
-    "reader.bookInfo": {
+    "appHosted.bookInfo": {
         "message": "Book information",
         "description": "Appears in metadata title, used by Bloom Reader"
     },
-    "reader.detailsOnBlorg": {
+    "appHosted.detailsOnBlorg": {
         "message": "Details on BloomLibrary.org",
         "description": "Takes you to a page with more detailed information about a book"
     },
-    "reader.nowDownloading": {
+    "appHosted.nowDownloading": {
         "message": "Details on BloomLibrary.org",
         "description": "Takes you to a page with more detailed information about a book"
     }

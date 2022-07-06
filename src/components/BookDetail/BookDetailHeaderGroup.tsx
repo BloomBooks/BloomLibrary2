@@ -25,6 +25,7 @@ import { DownloadToBloomButton } from "./DownloadToBloomButton";
 import { BloomReaderDownloadButton } from "./BloomReaderDownloadButton";
 import { useLocation } from "react-router-dom";
 import { ReaderDownloadButton } from "../appHosted/AppHostedDownloadButton";
+import { useIsAppHosted } from "../appHosted/AppHostedUtils";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{
     book: Book;
@@ -33,11 +34,10 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
     contextLangIso?: string;
 }> = observer((props) => {
     const isEmbedded = useIsEmbedded();
-    const location = useLocation();
     const { bloomDesktopAvailable, bloomReaderAvailable } = useContext(
         OSFeaturesContext
     );
-    const readerMode = location.pathname.startsWith("/reader/");
+    const appHostedMode = useIsAppHosted();
     const readOnlineSettings = getArtifactVisibilitySettings(
         props.book,
         ArtifactType.readOnline
@@ -68,7 +68,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
         !isEmbedded && // BL-8698, a this point, people embed BL to publish books, not encourage translation.
         shellBookSettings &&
         shellBookSettings.decision && // it's OK to download and translate the book
-        !readerMode && // bloomDesktopAVailable would block this normally, but when simulating on a desktop this makes sure.
+        !appHostedMode && // bloomDesktopAVailable would block this normally, but when simulating on a desktop this makes sure.
         bloomDesktopAvailable; // and this platform can run the software for doing it
 
     const bloomReaderSettings = getArtifactVisibilitySettings(
@@ -82,7 +82,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
         bloomReaderAvailable && // and we're on a platform that supports bloom reader
         // If we're embedded inside BR, we show a different Download button for the book
         // and don't offer to install BR!
-        !readerMode;
+        !appHostedMode;
 
     const fullWidthButtons = useMediaQuery(
         `(max-width:${commonUI.detailViewBreakpointForTwoColumns})`
@@ -246,7 +246,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                 {showBloomReaderButton && (
                     <BloomReaderDownloadButton fullWidth={fullWidthButtons} />
                 )}
-                {readerMode && (
+                {appHostedMode && (
                     <ReaderDownloadButton
                         book={props.book}
                         fullWidth={fullWidthButtons}

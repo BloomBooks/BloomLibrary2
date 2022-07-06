@@ -13,7 +13,9 @@ import { Book, ArtifactType } from "../../model/Book";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { track } from "../../analytics/Analytics";
 import { FormattedMessage, useIntl } from "react-intl";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
+import { appHostedMarker } from "./AppHostedUtils";
+import { useCookies } from "react-cookie";
 
 interface IProps {
     book: Book;
@@ -32,6 +34,10 @@ export const ReaderDownloadButton: React.FunctionComponent<IProps> = (
     const parts = artifactUrl.split("/");
     const fileName = parts[parts.length - 1];
     const [fileSize, setFileSize] = useState("");
+    const [cookies, setCookie] = useCookies(["preferredLanguages"]);
+    const { search } = useLocation();
+    const currentLangCode = new URLSearchParams(search).get("lang");
+
     useEffect(() => {
         if (artifactUrl) {
             get_filesize(artifactUrl, (size) => {
@@ -61,11 +67,42 @@ export const ReaderDownloadButton: React.FunctionComponent<IProps> = (
                 );
                 track("Download Book", params);
                 history.push(
-                    "/reader/downloading" +
+                    "/" +
+                        appHostedMarker +
+                        "/downloading" +
                         (props.contextLangIso
                             ? "?lang=" + props.contextLangIso
                             : "")
                 );
+                if (currentLangCode) {
+                    // currentLangCode moves to the head of preferredLanguages.
+                    // Its length is reduced to three.
+                    // The current UI language will stay in the list until books have been downloaded from three
+                    // other language collections.
+                    // Enhance: consider inserting the language of any collection that gets opened
+                    // as the last thing in the list. Thus, any collection you just opened would always
+                    // be in the list, and there can be up to three recently opened collections until you start
+                    // downloading, but once you do that, the first two slots are
+                    // reserved for languages from which you have downloaded books.
+                    // This gives priority to collections where you found something worth reading, but helps
+                    // you get back to at least the MOST recent one you looked at.
+                    const preferredLangsString = cookies["preferredLanguages"];
+                    const preferredLangCodes = preferredLangsString
+                        ? preferredLangsString.split(",")
+                        : [l10n.locale];
+                    const index = preferredLangCodes.indexOf(currentLangCode);
+                    if (index > 0) {
+                        preferredLangCodes.splice(index, 1); // remove it from non-initial position
+                    }
+                    if (index !== 0) {
+                        preferredLangCodes.splice(0, 0, [currentLangCode]); // now first
+                        preferredLangCodes.splice(3); // limit to 3, typically one row in BR
+                        setCookie(
+                            "preferredLanguages",
+                            preferredLangCodes.join()
+                        );
+                    }
+                }
             }}
         >
             <Button

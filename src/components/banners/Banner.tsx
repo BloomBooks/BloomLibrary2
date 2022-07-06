@@ -10,14 +10,14 @@ import { ImageOnRightBannerLayout } from "./ImageOnRightBannerLayout";
 import { useClassForSmallScreen } from "../../responsiveUtilities";
 import { useLocation } from "react-router-dom";
 import { ReaderBannerLayout } from "./ReaderBannerLayout";
+import { useIsAppHosted } from "../appHosted/AppHostedUtils";
 export const Banner: React.FunctionComponent<{
     collection: ICollection;
     banner: IBanner;
     bookCount?: string; // often undefined, meaning compute from filter
 }> = (props) => {
     const defaultTextColor = props.banner.backgroundImage ? "white" : "black";
-    const location = useLocation();
-    const useReaderBanner = location.pathname.startsWith("/reader/");
+    const useAppHostedBanner = useIsAppHosted();
     return (
         <div
             className={useClassForSmallScreen()}
@@ -39,7 +39,7 @@ export const Banner: React.FunctionComponent<{
                 ${props.banner.css}
             `}
         >
-            {useReaderBanner ? (
+            {useAppHostedBanner ? (
                 <ReaderBannerLayout
                     {...props}
                     banner={props.banner}

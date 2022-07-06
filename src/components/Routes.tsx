@@ -26,6 +26,7 @@ import { ThemeForLocation } from "./pages/ThemeForLocation";
 import { CollectionReportSplit } from "./reports/CollectionReportSplit";
 import { ReaderLanguageGroup } from "./appHosted/AppHostedLanguageGroup";
 import { ReaderDownloadingPage } from "./appHosted/AppHostedDownloadingPage";
+import { appHostedMarker } from "./appHosted/AppHostedUtils";
 
 export let previousPathname = "";
 let currentPathname = "";
@@ -92,13 +93,13 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         }}
                     />
                     <Route
-                        path={"/reader/langs"}
+                        path={"/" + appHostedMarker + "/langs"}
                         render={({ match }) => {
                             return <ReaderLanguageGroup />;
                         }}
                     ></Route>
                     <Route
-                        path={"/reader/downloading"}
+                        path={"/" + appHostedMarker + "/downloading"}
                         render={({ match }) => {
                             return <ReaderDownloadingPage />;
                         }}

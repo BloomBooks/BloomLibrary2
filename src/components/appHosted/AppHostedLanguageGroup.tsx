@@ -22,6 +22,7 @@ import { propsToHideAccessibilityElement } from "../../Utilities";
 import { useResponsiveChoice } from "../../responsiveUtilities";
 import { Helmet } from "react-helmet";
 import { useCookies } from "react-cookie";
+import { appHostedMarker } from "./AppHostedUtils";
 
 // This class is uncomfortably similar to LanguageGroup. It provides the different layout we want
 // when displaying a page of language choices (typically on a phone) as opposed to a row of them
@@ -57,7 +58,7 @@ export const ReaderLanguageGroup: React.FunctionComponent = () => {
     // We'll use Helmet to make this the document's title in its metadata, for use
     // in BloomReader.
     const title = l10n.formatMessage({
-        id: "reader.chooseLanguage",
+        id: "appHosted.chooseLanguage",
         defaultMessage: "Choose a language",
     });
 
@@ -108,7 +109,9 @@ export const ReaderLanguageGroup: React.FunctionComponent = () => {
                                 usageCount={l.usageCount}
                                 isoCode={l.isoCode}
                                 objectId={l.objectId}
-                                targetPrefix="/reader/language:"
+                                targetPrefix={
+                                    "/" + appHostedMarker + "/language:"
+                                }
                                 role="option"
                             />
                         ))}
@@ -132,7 +135,9 @@ export const ReaderLanguageGroup: React.FunctionComponent = () => {
                                 usageCount={l.usageCount}
                                 isoCode={l.isoCode}
                                 objectId={l.objectId}
-                                targetPrefix="/reader/language:"
+                                targetPrefix={
+                                    "/" + appHostedMarker + "/language:"
+                                }
                                 role="option"
                             />
                         ))}
@@ -174,7 +179,7 @@ export const ReaderLanguageGroup: React.FunctionComponent = () => {
     const contentHeight = getResponsiveChoice(140, 170);
 
     return langChosen ? (
-        <Redirect to={"/reader/language:" + langChosen} />
+        <Redirect to={"/" + appHostedMarker + "/language:" + langChosen} />
     ) : (
         <li
             role="region"

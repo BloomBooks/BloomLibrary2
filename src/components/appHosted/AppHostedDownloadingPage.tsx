@@ -13,6 +13,7 @@ import { commonUI } from "../../theme";
 import { useHistory, useLocation } from "react-router-dom";
 import { useGetCollection } from "../../model/Collections";
 import { Helmet } from "react-helmet";
+import { appHostedMarker } from "./AppHostedUtils";
 
 // A simple status page used when embedded in Bloom Reader to indicate we have started downloading
 // a book and offer the user a couple of likely options for what to do next.
@@ -26,7 +27,7 @@ export const ReaderDownloadingPage: React.FunctionComponent = (props) => {
     const lang = params.get("lang");
     const { collection } = useGetCollection("language:" + lang);
     const weAreDownloading = l10n.formatMessage({
-        id: "reader.weAreDownloading",
+        id: "appHosted.weAreDownloading",
         defaultMessage:
             "Great! We are downloading that book now. It will appear in your list of books when the download is complete.",
     });
@@ -42,7 +43,7 @@ export const ReaderDownloadingPage: React.FunctionComponent = (props) => {
     }
     const getMore = l10n.formatMessage(
         {
-            id: "reader.getMoreBooks",
+            id: "appHosted.getMoreBooks",
             defaultMessage: "Get more {label} books", // Review: mockup just has "More ...books"...if this is OK we can avoid having another string to localize.
         },
         { label }
@@ -57,7 +58,7 @@ export const ReaderDownloadingPage: React.FunctionComponent = (props) => {
             <Helmet>
                 <title>
                     {l10n.formatMessage({
-                        id: "reader.downloading",
+                        id: "appHosted.downloading",
                         defaultMessage: "Downloading",
                     })}
                 </title>
@@ -78,7 +79,11 @@ export const ReaderDownloadingPage: React.FunctionComponent = (props) => {
                     css={css`
                         ${buttonCss}
                     `}
-                    onClick={() => history.push("/reader/language:" + lang)}
+                    onClick={() =>
+                        history.push(
+                            "/" + appHostedMarker + "/language:" + lang
+                        )
+                    }
                 >
                     {getMore}
                 </Button>
@@ -92,7 +97,7 @@ export const ReaderDownloadingPage: React.FunctionComponent = (props) => {
                     ${buttonCss}
                 `}
                 onClick={() => {
-                    history.push("/reader/langs");
+                    history.push("/" + appHostedMarker + "/langs");
                     // This can be detected by BloomReader. See class comment on WebAppInterface.
                     (window as any).ParentProxy?.receiveMessage("go_home");
                 }}
