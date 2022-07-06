@@ -26,7 +26,9 @@ export function useLanguageCardSpecs(): ICardSpec {
 export const LanguageCard: React.FunctionComponent<
     ILanguage & {
         role?: string; // accessibility role, passed on as part of propsToPassDown
-        targetPrefix?: string; // if not null, what to use before lang id in target URL
+        // if not null, what to use before lang id in target URL
+        // For example, this allows a language card in app-hosted mode to link to a page still in app-hosted mode.
+        targetPrefix?: string;
     }
 > = (props) => {
     const {
