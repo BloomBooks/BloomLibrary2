@@ -14,7 +14,7 @@ import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { track } from "../../analytics/Analytics";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useHistory, useLocation } from "react-router-dom";
-import { appHostedMarker } from "./AppHostedUtils";
+import { appHostedMarker, useGetArtifactSize } from "./AppHostedUtils";
 import { useCookies } from "react-cookie";
 
 interface IProps {
@@ -33,24 +33,11 @@ export const ReaderDownloadButton: React.FunctionComponent<IProps> = (
     const artifactUrl = getArtifactUrl(props.book, ArtifactType.bloomReader);
     const parts = artifactUrl.split("/");
     const fileName = parts[parts.length - 1];
-    const [fileSize, setFileSize] = useState("");
+    const fileSize = useGetArtifactSize(artifactUrl);
     const [cookies, setCookie] = useCookies(["preferredLanguages"]);
     const { search } = useLocation();
     const currentLangCode = new URLSearchParams(search).get("lang");
 
-    useEffect(() => {
-        if (artifactUrl) {
-            get_filesize(artifactUrl, (size) => {
-                if (size > 1000000) {
-                    const mbTimes10 = Math.round(size / 1000000);
-                    setFileSize(mbTimes10 / 10 + "MB");
-                } else {
-                    const kbSize = Math.round(size / 1000);
-                    setFileSize(kbSize + "KB");
-                }
-            });
-        }
-    }, [artifactUrl]);
     return (
         // A link to download the .bloomd/.bloompub file
         <a
@@ -166,19 +153,3 @@ export const ReaderDownloadButton: React.FunctionComponent<IProps> = (
         </a>
     );
 };
-
-// Get the size of the thing that the specified URL would obtain.
-function get_filesize(url: string, callback: (size: number) => void) {
-    const xhr = new XMLHttpRequest();
-    xhr.open("HEAD", url, true); // Notice "HEAD" instead of "GET",
-    //  to get only the header
-    xhr.onreadystatechange = function () {
-        if (this.readyState === this.DONE) {
-            const size = xhr.getResponseHeader("Content-Length");
-            if (size) {
-                callback(parseInt(size));
-            }
-        }
-    };
-    xhr.send();
-}

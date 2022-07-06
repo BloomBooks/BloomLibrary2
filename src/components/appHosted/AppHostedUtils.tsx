@@ -25,3 +25,33 @@ export function useIsAppHosted() {
 export function removeAppHostedFromPath(path: string): string {
     return path.replace("/" + appHostedMarker + "/", "/");
 }
+
+// Get the size of an artifact (file) we could possibly download from the web,
+// without actually downloading it.
+export function useGetArtifactSize(artifactUrl: string): string {
+    const [artifactSize, setArtifactSize] = useState("");
+    useEffect(() => {
+        if (artifactUrl) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("HEAD", artifactUrl, true); // Notice "HEAD" instead of "GET",
+            //  to get only the header
+            xhr.onreadystatechange = function () {
+                if (this.readyState === this.DONE) {
+                    const sizeString = xhr.getResponseHeader("Content-Length");
+                    if (sizeString) {
+                        const size = parseInt(sizeString);
+                        if (size > 1000000) {
+                            const mbTimes10 = Math.round(size / 1000000);
+                            setArtifactSize(mbTimes10 / 10 + "MB");
+                        } else {
+                            const kbSize = Math.round(size / 1000);
+                            setArtifactSize(kbSize + "KB");
+                        }
+                    }
+                }
+            };
+            xhr.send();
+        }
+    }, [artifactUrl]);
+    return artifactSize;
+}
