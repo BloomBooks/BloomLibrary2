@@ -6,6 +6,7 @@ import { jsx } from "@emotion/core";
 
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useIntl } from "react-intl";
 
 // This file exports some constants and functions that are useful in various places where
 // BloomLibrary behaves differently when embedded in an app (currently BloomReader).
@@ -54,4 +55,36 @@ export function useGetArtifactSize(artifactUrl: string): string {
         }
     }, [artifactUrl]);
     return artifactSize;
+}
+
+// Get the label we want to use to describe a collection or collection subset
+// in app-hosted mode. (To allow it to be a hook, so it can useIntl, we arrange
+// that it just returns undefined if we're not in that mode.)
+export function useAppHostedCollectionLabel(
+    collectionLabel: string | undefined,
+    filters: string[],
+    appHostedMode: boolean
+) {
+    const l10n = useIntl();
+    if (!collectionLabel || !appHostedMode) {
+        return undefined;
+    }
+    let label = collectionLabel.replace(/\s*\(.*\)/, ""); // strip off English name in parens
+    for (const f of filters) {
+        const filterName = f.replace(/:.*/, "");
+        // This is good for 'topic', the only other filter currently in use in
+        // app-hosted-v1/language. Just leaving it out means we get shorter labels like
+        // "Get more Swahili level 2 Animal Story books"
+        let filterLabel = "";
+        if (filterName === "level") {
+            filterLabel = l10n.formatMessage({
+                id: "appHosted." + filterName,
+                defaultMessage: filterName,
+            });
+        }
+        // strip off the filter prefix to the first colon, then any remaining colons become spaces.
+        const filterVal = f.replace(/.*?:/, "").replace(/:/g, " ");
+        label += " " + filterLabel + (filterLabel ? " " : "") + filterVal;
+    }
+    return label.trim();
 }

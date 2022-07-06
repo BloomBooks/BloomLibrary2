@@ -24,7 +24,10 @@ import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 import { useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { readerPadding } from "./banners/ReaderBannerLayout";
-import { useIsAppHosted } from "./appHosted/AppHostedUtils";
+import {
+    useAppHostedCollectionLabel,
+    useIsAppHosted,
+} from "./appHosted/AppHostedUtils";
 
 // Given a collection and a string like level:1/topic:anthropology/search:dogs,
 // creates a corresponding collection by adding appropriate filters.
@@ -147,6 +150,11 @@ export const CollectionSubsetPage: React.FunctionComponent<{
     }, [whatDeterminesSubCollection]);
 
     const appHostedMode = useIsAppHosted();
+    const label = useAppHostedCollectionLabel(
+        collection?.label,
+        props.filters,
+        appHostedMode
+    );
 
     if (loading) {
         return null;
@@ -164,36 +172,13 @@ export const CollectionSubsetPage: React.FunctionComponent<{
 
     let title = "";
     if (appHostedMode) {
-        // We want a very specific title for language collections in our book reader (BL-11254)
-        let label = collection?.label;
-        if (label) {
-            label = label.replace(/\s*\(.*\)/, ""); // strip off English name in parens
-            for (const f of props.filters) {
-                const filterName = f.replace(/:.*/, "");
-                // This is good for 'topic', the only other filter currently in use in
-                // app-hosted-v1/language. Just leaving it out means we get shorter labels like
-                // "Get more Swahili level 2 Animal Story books"
-                let filterLabel = "";
-                if (filterName === "level") {
-                    filterLabel = l10n.formatMessage({
-                        id: "appHosted." + filterName,
-                        defaultMessage: filterName,
-                    });
-                }
-                // strip off the filter prefix to the first colon, then any remaining colons become spaces.
-                const filterVal = f.replace(/.*?:/, "").replace(/:/g, " ");
-                label +=
-                    " " + filterLabel + (filterLabel ? " " : "") + filterVal;
-            }
-            label = label.trim();
-            title = l10n.formatMessage(
-                {
-                    id: "appHosted.getMoreBooks",
-                    defaultMessage: "Get more {label} books",
-                },
-                { label }
-            );
-        }
+        title = l10n.formatMessage(
+            {
+                id: "appHosted.getMoreBooks",
+                defaultMessage: "Get more {label} books",
+            },
+            { label }
+        );
     }
 
     // The idea here is that by default we break things up by level. If we already did, divide by topic.

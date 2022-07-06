@@ -24,7 +24,10 @@ import { DownloadBundleButton } from "./banners/DownloadBundleButton";
 import { Helmet } from "react-helmet";
 import { useLocation } from "react-router-dom";
 import { readerPadding } from "./banners/ReaderBannerLayout";
-import { useIsAppHosted } from "./appHosted/AppHostedUtils";
+import {
+    useAppHostedCollectionLabel,
+    useIsAppHosted,
+} from "./appHosted/AppHostedUtils";
 
 const kLeftMarginOnCollectionPages = "20px";
 
@@ -48,25 +51,22 @@ export const CollectionPage: React.FunctionComponent<{
           localizedLabel;
     // Review: should we make this a prop instead? And pass all the way down from router?
     const appHostedMode = useIsAppHosted();
+    const label = useAppHostedCollectionLabel(
+        collection?.label,
+        [],
+        appHostedMode
+    );
     if (appHostedMode) {
         // We want a very specific title for language collections when app-hosted (BL-11254)
-        let label = collection?.label;
-        if (label) {
-            // Label commonly includes the English name in parens, but we don't have room for
-            // that here, so get rid of it.
-            label = label.replace(/\s*\(.*\)/, "");
-            // Some languages, e.g. English, have a non-generated label like "English Books"
-            // which gives us a duplicated "books"
-            label = label.replace(/\sBooks\b/, "");
-            title = l10n.formatMessage(
-                {
-                    id: "appHosted.getMoreBooks",
-                    defaultMessage: "Get more {label} books",
-                },
-                { label }
-            );
-        }
+        title = l10n.formatMessage(
+            {
+                id: "appHosted.getMoreBooks",
+                defaultMessage: "Get more {label} books",
+            },
+            { label }
+        );
     }
+
     useTrack("Open Collection", params, sendIt);
 
     // We seem to get some spurious renders of CollectionPage (at least one extra one on the home page)

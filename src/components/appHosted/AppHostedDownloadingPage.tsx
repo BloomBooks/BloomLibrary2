@@ -35,16 +35,11 @@ export const ReaderDownloadingPage: React.FunctionComponent = (props) => {
         id: "header.home",
         defaultMessage: "Home",
     });
-    let label = collection?.label;
-    if (label) {
-        // Some languages, e.g. English, have a non-generated label like "English Books"
-        // which gives us a duplicated "books"
-        label = label.replace(/\sBooks\b/, "");
-    }
+    const label = collection?.label;
     const getMore = l10n.formatMessage(
         {
             id: "appHosted.getMoreBooks",
-            defaultMessage: "Get more {label} books", // Review: mockup just has "More ...books"...if this is OK we can avoid having another string to localize.
+            defaultMessage: "Get more {label} books", // Review: mockup just has "More ...books"...if what I have here is OK we can avoid having another string to localize.
         },
         { label }
     );
