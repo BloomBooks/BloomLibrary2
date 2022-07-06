@@ -24,7 +24,7 @@ import { BlorgLink } from "../BlorgLink";
 import { DownloadToBloomButton } from "./DownloadToBloomButton";
 import { BloomReaderDownloadButton } from "./BloomReaderDownloadButton";
 import { useLocation } from "react-router-dom";
-import { ReaderDownloadButton } from "../Reader/ReaderDownloadButton";
+import { ReaderDownloadButton } from "../appHosted/AppHostedDownloadButton";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{
     book: Book;

@@ -24,8 +24,8 @@ import { TestEmbeddingPage } from "./TestEmbedding";
 import { ReleaseNotes } from "./ReleaseNotes";
 import { ThemeForLocation } from "./pages/ThemeForLocation";
 import { CollectionReportSplit } from "./reports/CollectionReportSplit";
-import { ReaderLanguageGroup } from "./Reader/ReaderLanguageGroup";
-import { ReaderDownloadingPage } from "./Reader/ReaderDownloadingPage";
+import { ReaderLanguageGroup } from "./appHosted/AppHostedLanguageGroup";
+import { ReaderDownloadingPage } from "./appHosted/AppHostedDownloadingPage";
 
 export let previousPathname = "";
 let currentPathname = "";

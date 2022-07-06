@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useMemo } from "react";
 import { LanguageCard } from "../LanguageCard";
 import logo from "../../assets/BloomLibrary Logo.svg";
 import Downshift, {
@@ -21,6 +21,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { propsToHideAccessibilityElement } from "../../Utilities";
 import { useResponsiveChoice } from "../../responsiveUtilities";
 import { Helmet } from "react-helmet";
+import { useCookies } from "react-cookie";
 
 // This class is uncomfortably similar to LanguageGroup. It provides the different layout we want
 // when displaying a page of language choices (typically on a phone) as opposed to a row of them
@@ -33,6 +34,23 @@ export const ReaderLanguageGroup: React.FunctionComponent = () => {
     // for that code (currently when the user has selected a language by typing and pressing Enter)
     const [langChosen, setLangChosen] = useState("");
     const getResponsiveChoice = useResponsiveChoice();
+    const [cookies] = useCookies(["preferredLanguages"]);
+    const preferredLangsString: string = cookies["preferredLanguages"];
+    const [preferredLangs, preferredLangCodes] = useMemo(() => {
+        const preferredCodes = preferredLangsString
+            ? preferredLangsString.split(",")
+            : [l10n.locale];
+        const preferredLangs: ILanguage[] = [];
+        // This could be just a filter, but then they are ordered by number of books.
+        // We are keeping the codes in order so that the most recently downloaded comes first.
+        preferredCodes.forEach((code) => {
+            const match = languages.find((lang) => lang.isoCode === code);
+            if (match) {
+                preferredLangs.push(match);
+            }
+        });
+        return [preferredLangs, preferredCodes];
+    }, [preferredLangsString, l10n.locale, languages]);
 
     let languagesToDisplay: ILanguage[] = [];
 
@@ -57,7 +75,8 @@ export const ReaderLanguageGroup: React.FunctionComponent = () => {
         getMenuProps: (options: GetMenuPropsOptions) => {}
     ) => {
         languagesToDisplay = getLanguagesMatchingSearchTerm(searchTerm).filter(
-            (lang) => lang.usageCount
+            (lang) =>
+                lang.usageCount && preferredLangCodes.indexOf(lang.isoCode) < 0
         );
         if (languagesToDisplay.length) {
             return (
@@ -70,6 +89,30 @@ export const ReaderLanguageGroup: React.FunctionComponent = () => {
                     `}
                     {...getMenuProps({})}
                 >
+                    <div
+                        css={css`
+                            display: flex;
+                            flex-wrap: wrap;
+                            flex-grow: 0;
+                            //flex-basis: 100px;
+                            align-content: flex-start;
+                            //overflow-y: scroll;
+                        `}
+                    >
+                        {preferredLangs.map((l, index) => (
+                            <LanguageCard
+                                {...getItemProps({ item: l })}
+                                key={index}
+                                name={l.name}
+                                englishName={l.englishName}
+                                usageCount={l.usageCount}
+                                isoCode={l.isoCode}
+                                objectId={l.objectId}
+                                targetPrefix="/reader/language:"
+                                role="option"
+                            />
+                        ))}
+                    </div>
                     <div
                         css={css`
                             display: flex;

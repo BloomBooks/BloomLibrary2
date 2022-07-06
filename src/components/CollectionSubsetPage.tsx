@@ -168,9 +168,6 @@ export const CollectionSubsetPage: React.FunctionComponent<{
         let label = collection?.label;
         if (label) {
             label = label.replace(/\s*\(.*\)/, ""); // strip off English name in parens
-            // Some languages, e.g. English, have a non-generated label like "English Books"
-            // which gives us a duplicated "books"
-            label = label.replace(/\sBooks\b/, "");
             for (const f of props.filters) {
                 const filterName = f.replace(/:.*/, "");
                 // This is good for 'topic', the only other filter currently in use in
