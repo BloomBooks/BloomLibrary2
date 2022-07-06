@@ -23,7 +23,6 @@ import { BookThumbnail } from "./BookThumbnail";
 import { BlorgLink } from "../BlorgLink";
 import { DownloadToBloomButton } from "./DownloadToBloomButton";
 import { BloomReaderDownloadButton } from "./BloomReaderDownloadButton";
-import { useLocation } from "react-router-dom";
 import { ReaderDownloadButton } from "../appHosted/AppHostedDownloadButton";
 import { useIsAppHosted } from "../appHosted/AppHostedUtils";
 

@@ -8,7 +8,6 @@ import { ICollection, IBanner } from "../../model/ContentInterfaces";
 import { StandardBannerLayout } from "./StandardBannerLayout";
 import { ImageOnRightBannerLayout } from "./ImageOnRightBannerLayout";
 import { useClassForSmallScreen } from "../../responsiveUtilities";
-import { useLocation } from "react-router-dom";
 import { ReaderBannerLayout } from "./ReaderBannerLayout";
 import { useIsAppHosted } from "../appHosted/AppHostedUtils";
 export const Banner: React.FunctionComponent<{

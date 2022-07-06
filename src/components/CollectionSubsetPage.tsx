@@ -21,7 +21,6 @@ import { setBloomLibraryTitle } from "./Routes";
 import { NoSearchResults } from "./NoSearchResults";
 import { IntlShape, useIntl } from "react-intl";
 import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
-import { useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { readerPadding } from "./banners/ReaderBannerLayout";
 import {
