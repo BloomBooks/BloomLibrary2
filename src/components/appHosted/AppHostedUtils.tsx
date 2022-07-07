@@ -7,9 +7,11 @@ import { useIntl } from "react-intl";
 
 // If we're constructing an app-hosted URL, this is what we insert.
 // we're including a v1 in case we one day need a later version of this.
-export const appHostedMarker = "app-hosted-v1";
+export const appHostedSegment = "app-hosted-v1";
 
 // If this prefix is found in a URL, we're in app-hosted mode.
+// We deliberately don't check the version, though eventually, if we need another version,
+// something will presumably notice the difference.
 export function useIsAppHosted() {
     const location = useLocation();
     return location.pathname.startsWith("/app-hosted-");
@@ -18,7 +20,7 @@ export function useIsAppHosted() {
 // Return the equivalent URL path not in the app-hosted space.
 // If necessary we could make this smarter about working with any version.
 export function removeAppHostedFromPath(path: string): string {
-    return path.replace("/" + appHostedMarker + "/", "/");
+    return path.replace("/" + appHostedSegment + "/", "/");
 }
 
 // Get the size of an artifact (file) we could possibly download from the web,
@@ -63,7 +65,8 @@ export function useAppHostedCollectionLabel(
     if (!collectionLabel || !appHostedMode) {
         return undefined;
     }
-    let label = collectionLabel.replace(/\s*\(.*\)/, ""); // strip off English name in parens
+    // or collectionLabel.replace(/\s*\(.*\)/, ""); if we need to strip off English name in parens
+    let label = collectionLabel;
     for (const f of filters) {
         const filterName = f.replace(/:.*/, "");
         // This is good for 'topic', the only other filter currently in use in

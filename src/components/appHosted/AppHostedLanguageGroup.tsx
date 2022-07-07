@@ -22,7 +22,7 @@ import { propsToHideAccessibilityElement } from "../../Utilities";
 import { useResponsiveChoice } from "../../responsiveUtilities";
 import { Helmet } from "react-helmet";
 import { useCookies } from "react-cookie";
-import { appHostedMarker } from "./AppHostedUtils";
+import { appHostedSegment } from "./AppHostedUtils";
 
 // This class is uncomfortably similar to LanguageGroup. It provides the different layout we want
 // when displaying a page of language choices (typically on a phone) as opposed to a row of them
@@ -110,7 +110,7 @@ export const ReaderLanguageGroup: React.FunctionComponent = () => {
                                 isoCode={l.isoCode}
                                 objectId={l.objectId}
                                 targetPrefix={
-                                    "/" + appHostedMarker + "/language:"
+                                    "/" + appHostedSegment + "/language:"
                                 }
                                 role="option"
                             />
@@ -136,7 +136,7 @@ export const ReaderLanguageGroup: React.FunctionComponent = () => {
                                 isoCode={l.isoCode}
                                 objectId={l.objectId}
                                 targetPrefix={
-                                    "/" + appHostedMarker + "/language:"
+                                    "/" + appHostedSegment + "/language:"
                                 }
                                 role="option"
                             />
@@ -179,7 +179,7 @@ export const ReaderLanguageGroup: React.FunctionComponent = () => {
     const contentHeight = getResponsiveChoice(140, 170);
 
     return langChosen ? (
-        <Redirect to={"/" + appHostedMarker + "/language:" + langChosen} />
+        <Redirect to={"/" + appHostedSegment + "/language:" + langChosen} />
     ) : (
         <li
             role="region"

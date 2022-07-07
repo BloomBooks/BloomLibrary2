@@ -10,6 +10,7 @@ import { useGetLoggedInUser } from "../connection/LoggedInUser";
 import { BooleanOptions, IFilter } from "../IFilter";
 import { IntlShape, useIntl } from "react-intl";
 import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
+import { appHostedSegment } from "../components/appHosted/AppHostedUtils";
 
 /* From original design: Each collection has
     id
@@ -302,21 +303,33 @@ export function makeLanguageCollection(
     langCode: string,
     languages: ILanguage[]
 ): ICollection {
-    let languageDisplayName = getDisplayNamesFromLanguageCode(
-        langCode!,
-        languages
-    )?.combined;
+    const appHostedMode = window.location.pathname.startsWith(
+        "/" + appHostedSegment
+    );
+    const languageNames = getDisplayNamesFromLanguageCode(langCode!, languages);
+    // In app-hosted mode, we're probably on a phone screen, and space is at a premium,
+    // especially in the app navbar which is one place we end up using the collection label.
+    // Also, we're expecting that the user has selected his own language and is probably
+    // comfortable with the autonymn. So just use that.
+    // It's slighly unfortunate that to get this effect we have to ignore any label in
+    // contentful, but those are pretty consistently primary (secondary) or just primary.
+    let languageDisplayName = appHostedMode
+        ? languageNames?.secondary || languageNames?.primary
+        : languageNames?.combined;
     if (!languageDisplayName) languageDisplayName = langCode;
 
     // We need the label in [Template Language Collection] to be $1.
     // Then we allow an explicit collection to define its own label, else we
     // need it to have "$1" in the label.
 
-    let label = explicitCollection?.label
-        ? explicitCollection.label.replace("$1", languageDisplayName)
-        : templateCollection.label.replace("$1", languageDisplayName);
-    // if we still don't have anything
-    label = label || languageDisplayName;
+    let label = languageDisplayName;
+    if (!appHostedMode) {
+        label = explicitCollection?.label
+            ? explicitCollection.label.replace("$1", languageDisplayName)
+            : templateCollection.label.replace("$1", languageDisplayName);
+        // if we still don't have anything
+        label = label || languageDisplayName;
+    }
     return {
         // last wins
         ...templateCollection,

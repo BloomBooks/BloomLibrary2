@@ -13,7 +13,7 @@ import { CollectionLabel } from "../localization/CollectionLabel";
 import { BlorgLink } from "./BlorgLink";
 import { FormattedMessage, useIntl } from "react-intl";
 import { CollectionInfoWidget } from "./CollectionInfoWidget";
-import { appHostedMarker, useIsAppHosted } from "./appHosted/AppHostedUtils";
+import { appHostedSegment, useIsAppHosted } from "./appHosted/AppHostedUtils";
 
 export const Breadcrumbs: React.FunctionComponent<{ className?: string }> = (
     props
@@ -61,7 +61,7 @@ export const Breadcrumbs: React.FunctionComponent<{ className?: string }> = (
                         text-decoration: underline !important;
                     }
                 `}
-                href={appHostedMode ? "/" + appHostedMarker + "/langs" : "/"}
+                href={appHostedMode ? "/" + appHostedSegment + "/langs" : "/"}
             >
                 <FormattedMessage id="header.home" defaultMessage="Home" />
             </BlorgLink>
@@ -83,7 +83,7 @@ export const Breadcrumbs: React.FunctionComponent<{ className?: string }> = (
         breadcrumbs.splice(0, 1);
     }
     breadcrumbs.forEach((c, i) => {
-        if (c !== appHostedMarker) {
+        if (c !== appHostedSegment) {
             // We want to keep "app-hosted-v1" in the list of breadcrumbs so it will be part of any
             // url we jump to, but it's not actually a place we can go to.
             crumbs.push(

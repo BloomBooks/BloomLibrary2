@@ -14,7 +14,7 @@ import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { track } from "../../analytics/Analytics";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useHistory, useLocation } from "react-router-dom";
-import { appHostedMarker, useGetArtifactSize } from "./AppHostedUtils";
+import { appHostedSegment, useGetArtifactSize } from "./AppHostedUtils";
 import { useCookies } from "react-cookie";
 
 interface IProps {
@@ -55,7 +55,7 @@ export const ReaderDownloadButton: React.FunctionComponent<IProps> = (
                 track("Download Book", params);
                 history.push(
                     "/" +
-                        appHostedMarker +
+                        appHostedSegment +
                         "/downloading" +
                         (props.contextLangIso
                             ? "?lang=" + props.contextLangIso

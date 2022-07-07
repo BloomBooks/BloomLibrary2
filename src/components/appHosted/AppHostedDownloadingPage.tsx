@@ -13,7 +13,7 @@ import { commonUI } from "../../theme";
 import { useHistory, useLocation } from "react-router-dom";
 import { useGetCollection } from "../../model/Collections";
 import { Helmet } from "react-helmet";
-import { appHostedMarker } from "./AppHostedUtils";
+import { appHostedSegment } from "./AppHostedUtils";
 
 // A simple status page used when embedded in Bloom Reader to indicate we have started downloading
 // a book and offer the user a couple of likely options for what to do next.
@@ -76,7 +76,7 @@ export const ReaderDownloadingPage: React.FunctionComponent = (props) => {
                     `}
                     onClick={() =>
                         history.push(
-                            "/" + appHostedMarker + "/language:" + lang
+                            "/" + appHostedSegment + "/language:" + lang
                         )
                     }
                 >
@@ -92,9 +92,9 @@ export const ReaderDownloadingPage: React.FunctionComponent = (props) => {
                     ${buttonCss}
                 `}
                 onClick={() => {
-                    history.push("/" + appHostedMarker + "/langs");
+                    history.push("/" + appHostedSegment + "/langs");
                     // This can be detected by BloomReader. See class comment on WebAppInterface.
-                    (window as any).ParentProxy?.receiveMessage("go_home");
+                    (window as any).ParentProxy?.postMessage("go_home");
                 }}
             >
                 {home}
