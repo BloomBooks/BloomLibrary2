@@ -17,17 +17,14 @@ import { useHistory, useLocation } from "react-router-dom";
 import { appHostedSegment, useGetArtifactSize } from "./AppHostedUtils";
 import { useCookies } from "react-cookie";
 
-interface IProps {
+// A button designed to be used when BL is embedded in Bloom Reader. It iniates download of the book
+// passed in its props and brings up the ReaderDownloadingPage.
+export const ReaderDownloadButton: React.FunctionComponent<{
     book: Book;
     fullWidth?: boolean;
     contextLangIso?: string;
-}
-
-// A button designed to be used when BL is embedded in Bloom Reader. It iniates download of the book
-// passed in its props and brings up the ReaderDownloadingPage.
-export const ReaderDownloadButton: React.FunctionComponent<IProps> = (
-    props
-) => {
+    className?: string;
+}> = (props) => {
     const l10n = useIntl();
     const history = useHistory();
     const artifactUrl = getArtifactUrl(props.book, ArtifactType.bloomReader);
@@ -46,6 +43,7 @@ export const ReaderDownloadButton: React.FunctionComponent<IProps> = (
             // the browser will reload the whole SPA as it first tries to navigate
             // to the URL, then discovers that it's just a download.
             download={fileName}
+            className={props.className} // support emotion
             onClick={() => {
                 const params = getBookAnalyticsInfo(
                     props.book,
@@ -142,7 +140,7 @@ export const ReaderDownloadButton: React.FunctionComponent<IProps> = (
                         css={css`
                             margin-bottom: 0;
                             margin-top: 0;
-                            font-size: 9px;
+                            font-size: 0.75rem;
                             text-transform: none;
                         `}
                     >
