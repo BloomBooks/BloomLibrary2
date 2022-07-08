@@ -15,7 +15,7 @@ import Downshift, {
 import matchSorter from "match-sorter";
 import searchIcon from "../../search.png";
 import { CachedTablesContext } from "../../model/CacheProvider";
-import { ILanguage } from "../../model/Language";
+import { getDisplayNamesForLanguage, ILanguage } from "../../model/Language";
 import { Redirect } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
 import { propsToHideAccessibilityElement } from "../../Utilities";
@@ -30,7 +30,20 @@ import { appHostedSegment } from "./AppHostedUtils";
 // classes applied. It may be possible to factor out more common code, but it won't be easy.
 export const ReaderLanguageGroup: React.FunctionComponent = () => {
     const l10n = useIntl();
-    const { languagesByBookCount: languages } = useContext(CachedTablesContext);
+    const { languagesByBookCount } = useContext(CachedTablesContext);
+    // We want the languages sorted by their primary name. Unfortunately the Language objects
+    // don't directly expose that. We need to call a function on each of them to obtain it,
+    // then use that to sort them.
+    const languages: ILanguage[] = useMemo(() => {
+        const languagesWithPrimaryName = languagesByBookCount.map((l) => {
+            const names = getDisplayNamesForLanguage(l);
+            return { ...l, primary: names.primary };
+        });
+        return languagesWithPrimaryName.sort(
+            (x: { primary: string }, y: { primary: string }) =>
+                x.primary.localeCompare(y.primary)
+        );
+    }, [languagesByBookCount]);
     // setting this to a language code causes a <Redirect> to render and open the page
     // for that code (currently when the user has selected a language by typing and pressing Enter)
     const [langChosen, setLangChosen] = useState("");

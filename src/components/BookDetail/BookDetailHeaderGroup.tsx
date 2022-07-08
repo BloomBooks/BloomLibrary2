@@ -171,26 +171,27 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                                         )
                                     )}
 
-                                    {countOfBooksWithMatchingPhash > 0 && (
-                                        <li>
-                                            <BlorgLink
-                                                css={css`
-                                                    font-size: 9pt;
-                                                `}
-                                                newTabIfEmbedded={true}
-                                                color="secondary"
-                                                href={`/phash:${sanitizedPhashOfFirstContentImage}`}
-                                            >
-                                                <FormattedMessage
-                                                    id="book.detail.translations"
-                                                    defaultMessage="{count} books that may be translations"
-                                                    values={{
-                                                        count: countOfBooksWithMatchingPhash,
-                                                    }}
-                                                />
-                                            </BlorgLink>
-                                        </li>
-                                    )}
+                                    {!appHostedMode &&
+                                        countOfBooksWithMatchingPhash > 0 && (
+                                            <li>
+                                                <BlorgLink
+                                                    css={css`
+                                                        font-size: 9pt;
+                                                    `}
+                                                    newTabIfEmbedded={true}
+                                                    color="secondary"
+                                                    href={`/phash:${sanitizedPhashOfFirstContentImage}`}
+                                                >
+                                                    <FormattedMessage
+                                                        id="book.detail.translations"
+                                                        defaultMessage="{count} books that may be translations"
+                                                        values={{
+                                                            count: countOfBooksWithMatchingPhash,
+                                                        }}
+                                                    />
+                                                </BlorgLink>
+                                            </li>
+                                        )}
                                 </ul>
                             )) || (
                             <FormattedMessage
@@ -247,6 +248,10 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                 )}
                 {appHostedMode && (
                     <ReaderDownloadButton
+                        css={css`
+                            margin-top: 20px;
+                            margin-bottom: 20px;
+                        `}
                         book={props.book}
                         fullWidth={fullWidthButtons}
                         contextLangIso={props.contextLangIso}
