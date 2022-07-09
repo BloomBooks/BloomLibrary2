@@ -20,6 +20,7 @@
         "esModuleInterop": true,
         "moduleResolution": "node",
         "isolatedModules": true,
+        "useDefineForClassFields": true, //for mobx v6 https://mobx.js.org/migrating-from-4-or-5.html#getting-started
         "noEmit": true,
         // "types": [
         //     "vite/client",

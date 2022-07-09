@@ -4,7 +4,8 @@ import * as React from "react";
 import UseAxios from "axios-hooks";
 import { toYyyyMmDd } from "../../Utilities";
 import { BlorgLink } from "../BlorgLink";
-const parser = require("xml2json-light");
+// @ts-ignore
+import parser from "xml2json-light";
 
 export const AllBloomInstallers: React.FunctionComponent<{}> = (props) => {
     const [{ response, loading, error }] = UseAxios({

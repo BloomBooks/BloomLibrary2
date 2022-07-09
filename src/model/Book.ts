@@ -10,7 +10,9 @@ import {
     IBookStat,
     getDefaultBookStat,
 } from "../components/statistics/StatsInterfaces";
-const stem = require("wink-porter2-stemmer");
+
+// @ts-ignore
+import stem from "wink-porter2-stemmer";
 
 export function createBookFromParseServerData(pojo: any): Book {
     const b = Object.assign(new Book(), pojo);
