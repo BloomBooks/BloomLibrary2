@@ -6,7 +6,7 @@ import InfoIcon from "@material-ui/icons/InfoOutlined";
 import { IBanner } from "../../model/ContentInterfaces";
 
 export const ImageCreditsTooltip: React.FunctionComponent<{
-    imageCredits: React.ReactNode;
+    imageCredits: React.ReactChild;
 }> = (props) => (
     <Tooltip
         // didn't work: classes={{ popper: "popper", tooltip: "tooltip" }}

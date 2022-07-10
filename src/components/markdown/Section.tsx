@@ -12,6 +12,7 @@ export interface IColoredBlockProps extends React.HTMLAttributes<HTMLElement> {
     textColor?: string;
     className?: string;
     prose?: boolean;
+    children?: React.ReactNode;
 }
 
 export const Section: React.FunctionComponent<IColoredBlockProps> = (props) => {
@@ -32,7 +33,7 @@ export const Section: React.FunctionComponent<IColoredBlockProps> = (props) => {
         >
             {/* we want prose blocks to be narrower */}
             <Container maxWidth={props.prose ? "sm" : "md"}>
-                {props.children}
+                {React.Children.only(props.children) || React.Fragment}
             </Container>
         </section>
     );

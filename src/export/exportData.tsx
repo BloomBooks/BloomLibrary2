@@ -34,13 +34,11 @@ export function useProvideDataForExport(
                 return all;
             }, false);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         !!rows /*regenerate when we get stats*/,
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
         rows?.length,
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
         JSON.stringify(
             propsToWatch
         ) /* regenerate when we get different props*/,

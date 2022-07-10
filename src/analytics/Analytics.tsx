@@ -134,7 +134,6 @@ export function useTrack(event: string, params: object, sendIt: boolean) {
             setOldParamsString(paramsString);
             track(event, params);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [event, paramsString, sendIt]);
 }
 

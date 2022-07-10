@@ -225,7 +225,7 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
     // Not entirely sure why, but I'm at least sure this is safe, since the setHistory
     // calls form a progression that terminates: once it is in state "repaired"
     // future renders won't do anything, at least until the history problem goes away.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     useEffect(() => {
         if (
             window.history.length - history.length > 0 &&

@@ -1561,7 +1561,6 @@ const useAsync = <T>(
         return () => {
             cancel = true;
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [trigger]);
     return { response, loading, error };
 };

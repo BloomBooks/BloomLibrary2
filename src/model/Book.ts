@@ -59,46 +59,46 @@ export enum ArtifactType {
 // We can't reasonably improve the data model there, but we improve it in
 // various ways as we construct this object from the Parse Server data.
 export class Book {
-    public id: string = "";
+    public id = "";
     //public debugInstance: number = Math.random();
     public allTitles = new Map<string, string>();
     public allTitlesRaw = "";
-    public license: string = "";
-    public licenseNotes: string = "";
-    public baseUrl: string = "";
-    public copyright: string = "";
-    public country: string = "";
-    public credits: string = "";
-    public pageCount: string = "";
-    public bookOrder: string = "";
-    public downloadCount: number = -1;
+    public license = "";
+    public licenseNotes = "";
+    public baseUrl = "";
+    public copyright = "";
+    public country = "";
+    public credits = "";
+    public pageCount = "";
+    public bookOrder = "";
+    public downloadCount = -1;
     public harvestLog: string[] = [];
-    public harvestState: string = "";
-    public phashOfFirstContentImage: string = "";
-    public bookInstanceId: string = "";
+    public harvestState = "";
+    public phashOfFirstContentImage = "";
+    public bookInstanceId = "";
     public internetLimits: IInternetLimits = {};
     public brandingProjectName = "";
     public suitableForMakingShells = false; // that is, the book is a template.
-    public originalTitle: string = "";
+    public originalTitle = "";
 
     // things that can be edited on the site are observable so that the rest of the UI will update if they are changed.
-    public title: string = "";
-    public summary: string = "";
+    public title = "";
+    public summary = "";
     public tags: string[] = [];
-    public level: string = "";
-    public librarianNote: string = "";
-    public inCirculation: boolean = true;
-    public draft: boolean = false;
-    public publisher: string = "";
-    public originalPublisher: string = "";
+    public level = "";
+    public librarianNote = "";
+    public inCirculation = true;
+    public draft = false;
+    public publisher = "";
+    public originalPublisher = "";
     public features: string[] = [];
-    public edition: string = "";
-    public rebrand: boolean = false; // the book is the exact same as an existing book except that it has different branding. BL-10865.
+    public edition = "";
+    public rebrand = false; // the book is the exact same as an existing book except that it has different branding. BL-10865.
 
     // This scalar string format is easier for the user/UI to modify,
     // but in the database, we store it as an array of strings instead
     // StaffPanel component observes this
-    public keywordsText: string = "";
+    public keywordsText = "";
 
     // KeywordLinks component observes this
     public keywords: string[] = [];
@@ -109,7 +109,7 @@ export class Book {
     // this is the raw ISO date we get from the query. These dates are automatically included
     // in every real query, even when not listed in the keys list. However, they may be omitted
     // in instances created by test code, so we make the public one optional.
-    private createdAt: string = "";
+    private createdAt = "";
     public updatedAt?: string = "";
     // which we parse into
     public uploadDate: Date | undefined;
@@ -120,7 +120,7 @@ export class Book {
     public harvestStartedAt: { iso: string } | undefined;
     public importedBookSourceUrl?: string;
     // todo: We need to handle limited visibility, i.e. by country
-    public ePUBVisible: boolean = false;
+    public ePUBVisible = false;
 
     public languages: ILanguage[] = [];
     public bloomPUBVersion: number | undefined;

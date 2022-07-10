@@ -107,7 +107,6 @@ export const ByLanguageGroups: React.FunctionComponent<{
             });
             setRows(newRows);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         // Including this:
         //   searchResults.books,

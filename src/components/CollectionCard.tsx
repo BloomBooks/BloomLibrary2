@@ -294,6 +294,7 @@ function reduceHeadingLevel(input: Document): Document {
 }
 
 function reduceHeadingLevelInternal(input: object): object {
+    // eslint-disable-next-line no-prototype-builtins
     if (input.hasOwnProperty("content") && input.hasOwnProperty("nodeType")) {
         const result: any = { ...input };
         result.content = result.content.map((x: object) =>

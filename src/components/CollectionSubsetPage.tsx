@@ -139,7 +139,6 @@ export const CollectionSubsetPage: React.FunctionComponent<{
                 getLocalizedCollectionLabel(possibleSubCollection)
             );
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [whatDeterminesSubCollection]);
 
     const location = useLocation();

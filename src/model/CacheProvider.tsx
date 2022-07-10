@@ -32,7 +32,6 @@ export const CacheProvider: React.FunctionComponent = (props) => {
     CachedTables.tags = useGetTagList();
     CachedTables.languagesByBookCount = useGetCleanedAndOrderedLanguageList();
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     const resultData =
         CachedTables.tags.length && CachedTables.languagesByBookCount.length
             ? {

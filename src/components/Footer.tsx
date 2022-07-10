@@ -23,7 +23,6 @@ export const Footer: React.FunctionComponent = () => {
     );
 
     const sil = (
-        // eslint-disable-next-line react/jsx-no-target-blank
         <a
             href="https://www.sil.org"
             rel="noopener"
@@ -54,7 +53,6 @@ export const Footer: React.FunctionComponent = () => {
     );
 
     const github = (
-        // eslint-disable-next-line react/jsx-no-target-blank
         <a href="https://github.com/bloombooks" rel="noopener" target="_blank">
             <img
                 css={css`
@@ -69,7 +67,6 @@ export const Footer: React.FunctionComponent = () => {
         </a>
     );
     const contentful = (
-        // eslint-disable-next-line react/jsx-no-target-blank
         <a
             href="https://www.contentful.com/"
             rel="noopener"

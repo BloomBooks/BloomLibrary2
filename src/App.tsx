@@ -19,7 +19,7 @@ import { QueryParamProvider } from "use-query-params";
 // of wrapping methods annotated as 'actions'.
 configure({ enforceActions: "never" });
 
-export const App: React.FunctionComponent<{}> = (props) => {
+export const App: React.FunctionComponent = () => {
     const embeddedMode = window.self !== window.top;
 
     return (
