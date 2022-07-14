@@ -75,7 +75,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                             </CacheProvider>
                         </CookiesProvider>
                     </ThemeProvider>
-                    {embeddedMode || <LoginDialog />}{" "}
+                    {embeddedMode || <LoginDialog />}
                     {/* </React.StrictMode> */}
                 </div>
             </LocalizationProvider>

@@ -19,6 +19,8 @@ import {
     useGetCollection,
     getFilterForCollectionAndChildren,
 } from "../model/Collections";
+import { doExpensiveClientSideSortingIfNeeded } from "./sorting";
+import { BookOrderingScheme } from "../model/ContentInterfaces";
 
 /**
  * @summary The minimum fields returned by Parse
@@ -153,6 +155,7 @@ export function useGetBookCountRaw(filter: IFilter, shouldSkipQuery?: boolean) {
     return useBookQueryInternal(
         { limit: 0, count: 1 },
         filter,
+        BookOrderingScheme.None,
         undefined,
         undefined,
         shouldSkipQuery
@@ -160,7 +163,11 @@ export function useGetBookCountRaw(filter: IFilter, shouldSkipQuery?: boolean) {
 }
 
 export function useGetBookCount(filter: IFilter): number {
-    const answer = useBookQueryInternal({ limit: 0, count: 1 }, filter);
+    const answer = useBookQueryInternal(
+        { limit: 0, count: 1 },
+        filter,
+        BookOrderingScheme.None
+    );
     if (!answer.response) {
         return 0;
     }
@@ -493,13 +500,14 @@ export function extractBookStatFromRawData(statRow: any): IBookStat {
 // we just want a better name
 export interface IAxiosAnswer extends IReturns<any> {}
 
-// May set param.order to "titleOrScore" to indicate that books should be
+// May set param.order to "auto-sort-order" to indicate that books should be
 // sorted by title unless the search is a keyword search that makes a ranking
 // score available. For this to work, params must also specify keys.
 function useBookQueryInternal(
     params: {}, // this is the order, which fields, limits, etc.
 
     filter: IFilter, // this is *which* records to return
+    orderingScheme?: BookOrderingScheme,
     limit?: number, //pagination
     skip?: number, //pagination
     doNotActuallyRunQuery?: boolean
@@ -510,6 +518,7 @@ function useBookQueryInternal(
     const axiosParams = makeBookQueryAxiosParams(
         params,
         filter,
+        orderingScheme,
         limit,
         skip,
         doNotActuallyRunQuery || !collectionReady,
@@ -544,6 +553,7 @@ export function useProcessDerivativeFilter(filter: IFilter): boolean {
 function makeBookQueryAxiosParams(
     params: {}, // this is the order, which fields, limits, etc.
     filter: IFilter, // this is *which* records to return
+    orderingScheme?: BookOrderingScheme,
     limit?: number, //pagination
     skip?: number, //pagination
     doNotActuallyRunQuery?: boolean,
@@ -561,6 +571,7 @@ function makeBookQueryAxiosParams(
             params,
             filter,
             tags || [],
+            orderingScheme,
             limit,
             skip
         );
@@ -632,7 +643,8 @@ export interface IBasicBookInfo {
     objectId: string;
     baseUrl: string;
     harvestState?: string;
-    //note, here in a "BasicBookInfo", this is just JSON, intentionally not parsed yet, as we normally don't need it.
+    //note, here in a "BasicBookInfo", this is just JSON, intentionally not parsed yet,
+    // in case we don't need it.
     allTitles: string;
     // conceptually a date, but uploaded from parse server this is what it has.
     harvestStartedAt?: { iso: string } | undefined;
@@ -654,7 +666,7 @@ export interface IBasicBookInfo {
 }
 
 const kFieldsOfIBasicBookInfo =
-    "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft,rebrand";
+    "title,baseUrl,objectId,langPointers,tags,features,lastUploaded,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft,rebrand";
 
 // uses the human "level:" tag if present, otherwise falls back to computedLevel
 export function getBestLevelStringOrEmpty(basicBookInfo: IBasicBookInfo) {
@@ -694,7 +706,7 @@ interface ISimplifiedAxiosResult {
 
 // the idea is for this to be higher level than useQueryLibrary. Initially
 // with a separate count for the full number, but eventually with paging.
-// May set param.order to "titleOrScore" to indicate that books should be
+// May set param.order to "auto-sort-order" to indicate that books should be
 // sorted by title unless the search is a keyword search that makes a ranking
 // score available. For this to work, params must also specify keys.
 //
@@ -707,18 +719,21 @@ interface ISimplifiedAxiosResult {
 export function useSearchBooks(
     params: {}, // this is the order, which fields, limits, etc.
     filter: IFilter, // this is *which* books to return
+    orderingScheme?: BookOrderingScheme,
+    languageForSorting?: string,
     doNotActuallyRunQuery?: boolean
 ): ISearchBooksResult {
     const fullParams = {
         count: 1,
         keys:
             // this should be all the fields of IBasicBookInfo
-            "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft,rebrand",
+            "title,baseUrl,objectId,langPointers,tags,features,lastUploaded,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft,rebrand",
         ...params,
     };
     const bookResultsStatus: IAxiosAnswer = useBookQueryInternal(
         fullParams,
         filter,
+        orderingScheme,
         undefined,
         undefined,
         doNotActuallyRunQuery
@@ -744,16 +759,22 @@ export function useSearchBooks(
     // (Actually this isn't guaranteed by the useMemo contract...occasionally it might
     // discard and rebuild the memo cache...but it will be true enough of the time to prevent
     // significant wasted work.)
-    const typeSafeBookRecords: IBasicBookInfo[] = useMemo(
-        () =>
-            simplifiedResultStatus.books.map((rawFromREST: any) => {
-                const b: IBasicBookInfo = { ...rawFromREST };
-                b.languages = rawFromREST.langPointers;
-                Book.sanitizeFeaturesArray(b.features);
-                return b;
-            }),
-        [simplifiedResultStatus.books]
-    );
+    const typeSafeBookRecords: IBasicBookInfo[] = useMemo(() => {
+        if (!simplifiedResultStatus.books.length) return [];
+        const books = simplifiedResultStatus.books.map((rawFromREST: any) => {
+            const b: IBasicBookInfo = { ...rawFromREST };
+            b.languages = rawFromREST.langPointers;
+            Book.sanitizeFeaturesArray(b.features);
+            return b;
+        });
+
+        //https://issues.bloomlibrary.org/youtrack/issue/BL-11137#focus=Comments-102-43829.0-0
+        return doExpensiveClientSideSortingIfNeeded(
+            books,
+            orderingScheme,
+            languageForSorting
+        ) as IBasicBookInfo[];
+    }, [simplifiedResultStatus.books, orderingScheme, languageForSorting]);
 
     return {
         totalMatchingRecords: simplifiedResultStatus.count,
@@ -793,6 +814,7 @@ export function useCollectionStats(
         const bookQueryParams = makeBookQueryAxiosParams(
             params,
             collectionFilter || {},
+            BookOrderingScheme.None,
             limit,
             skip,
             doNotRunQuery || !collectionReady
@@ -1063,9 +1085,13 @@ export function constructParseBookQuery(
     params: any,
     filter: IFilter,
     allTagsFromDatabase: string[],
+    orderingScheme?: BookOrderingScheme,
     limit?: number, //pagination
     skip?: number //pagination
 ): object {
+    if (orderingScheme === undefined)
+        orderingScheme = BookOrderingScheme.Default;
+
     if (filter?.derivedFromCollectionName) {
         // We should have already converted from derivedFromCollectionName to derivedFrom by now. See useProcessDerivativeFilter().
         alert("Attempted to load books with an invalid filter.");
@@ -1202,11 +1228,13 @@ export function constructParseBookQuery(
                     },
                 },
             };
-            if (params.order === "titleOrScore") {
-                params.order = "$score";
+            if (orderingScheme === BookOrderingScheme.Default) {
                 if (params.keys === undefined) {
+                    // If you don't specify *any* keys, then you get them all, fine.
+                    // But if you only specify "$score", then that's all you will
+                    // get and that's not enough to even identify the book.
                     throw new Error(
-                        "params.keys must be set to use titleOrScore"
+                        "params.keys must be set to use default ordering"
                     );
                 }
                 if (params.keys.indexOf("$score") < 0) {
@@ -1221,10 +1249,8 @@ export function constructParseBookQuery(
         delete params.where.search;
     }
 
-    if (params.order === "titleOrScore") {
-        // We've passed the point where a Score search might be indicated. Use title
-        params.order = "title";
-    }
+    configureQueryParamsForOrderingScheme(params, orderingScheme);
+
     // if f.language is set, add the query needed to restrict books to those with that language
     if (f.language != null) {
         delete params.where.language; // remove that, we need to make it more complicated because we need a join.
@@ -1439,6 +1465,42 @@ export function constructParseBookQuery(
     return params;
 }
 
+function configureQueryParamsForOrderingScheme(
+    params: any,
+    orderingScheme: BookOrderingScheme
+) {
+    switch (orderingScheme) {
+        case BookOrderingScheme.None: // used when we're just getting a count
+            delete params.order;
+            break;
+
+        case BookOrderingScheme.Default:
+            if (params.key && params.keys.indexOf("$score") >= 0) {
+                params.order = "$score"; // Parse's full text search
+            } else {
+                // Note that "title" sounds like the right default, but it is useless in many cases because it is just one of
+                // the languages, not the language that is in context of this page. See BL-11137.
+                params.order = "-createdAt";
+            }
+            break;
+        case BookOrderingScheme.NewestCreationsFirst:
+            params.order = "-createdAt";
+            break;
+        case BookOrderingScheme.LastUploadedFirst:
+            params.order = "-lastUploaded";
+            break;
+        case BookOrderingScheme.TitleAlphabetical:
+        case BookOrderingScheme.TitleAlphaIgnoringNumbers:
+            delete params.order;
+            // We need to sort these client-side for now. When we switch to postgresql, we can do it in the query.
+            // Sorting client-side requires that we get all of them (yes, we're going to use this mode SPARINGLY).
+            params.limit = Number.MAX_SAFE_INTEGER; // we can't sort unless we get all of them
+            break;
+
+        default:
+            throw new Error("Unhandled book ordering scheme");
+    }
+}
 function removeUnwantedSearchTerms(searchTerms: string): string {
     const termsToRemove = [
         "book",

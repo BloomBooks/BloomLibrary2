@@ -12,7 +12,30 @@ import {
     featureIsLanguageDependent,
 } from "./FeatureHelper";
 import { useIntl } from "react-intl";
-import { ICollection } from "../model/ContentInterfaces";
+import { BookOrderingScheme, ICollection } from "../model/ContentInterfaces";
+import { doExpensiveClientSideSortingIfNeeded } from "../connection/sorting";
+
+/* ----------------------------------------------------------------------------------------------------------------
+*   Future Enhancement
+*   Currently this is what we do
+*   1) query all books
+*   2) make a group for each language, copying the books
+*   3) If we're doing client-side sorting, then sort all the books within each group
+*
+*   On pages like https://bloomlibrary.org/bible/ims-motionbook-templates, this is pretty expensive (about 5 seconds of script time on a fast desktop with empty cache).
+*   Note that on fast desktop, I was not able to measure a significant difference between client-side sorting and no client-side sorting. In other words,
+*   what is expensive is retrieving all the books, not the actual client-side sorting.
+*
+*   Alternatively, we could
+*       1) query for a list of all languages that match the query
+*       2) create lazy UI groups for each language
+*       3) as needed, do the query+sort for each language
+*
+*   This might give a more responsive page, and would work in the future when we don't have to do client-side
+*   sorting whereas the current approach will need to be re-organized.
+*
+*   Possibly, we might be able to retrieve less fields initially, for sorting purposes, then retrieve more as needed?
+---------------------------------------------------------------------------------------------------------------- */
 
 export const ByLanguageGroups: React.FunctionComponent<{
     titlePrefix: string;
@@ -29,6 +52,9 @@ export const ByLanguageGroups: React.FunctionComponent<{
             limit: 10000, // we want them all! If we get more than 10000 books in a single filter we may need to redesign, though.
         },
         filter
+        // NO! We don't want to sort on this top level.
+        // We need to wait  until we have divided into language groups since each group will have its own title language.
+        // props.collection.orderingScheme
     );
     const l10n = useIntl();
     const unknown = l10n.formatMessage({
@@ -45,7 +71,7 @@ export const ByLanguageGroups: React.FunctionComponent<{
         filter.feature && featureIsLanguageDependent(filter.feature);
     useEffect(() => {
         if (!waiting) {
-            const newRows = new Map<string, IBasicBookInfo[]>();
+            const mapOfLangToBookArray = new Map<string, IBasicBookInfo[]>();
             // for b in books
             // for langIndex = 1... arbitraryMaxLangsPerBook
             // lang = book.langs[langIndex]
@@ -56,19 +82,19 @@ export const ByLanguageGroups: React.FunctionComponent<{
                 let foundOneLanguage = false;
                 const key = ComparisonKey(book);
                 const addBookToLang = (langCode: string) => {
-                    const rowForLang = newRows.get(langCode);
-                    if (!rowForLang) {
-                        newRows.set(langCode, [book]);
-                    } else {
-                        if (
-                            key === undefined || // if we can't come up with a key, just add this book to the row
-                            !rowForLang.find(
-                                (bookAlreadyInRow) =>
-                                    key === ComparisonKey(bookAlreadyInRow)
-                            )
-                        ) {
-                            rowForLang.push(book);
-                        }
+                    if (!mapOfLangToBookArray.get(langCode)) {
+                        mapOfLangToBookArray.set(langCode, []);
+                    }
+                    const booksInLang = mapOfLangToBookArray.get(langCode)!;
+                    if (
+                        key === undefined || // if we can't come up with a key, just add this book to the row
+                        !booksInLang.find(
+                            // do we already have a similar book for this row?
+                            (book) => key === ComparisonKey(book)
+                        )
+                    ) {
+                        // shallow copy this so that it's easier to debug issues related to the sortKey we may add to each version of the book depending on the language of the row (if the selected ordering scheme sorts by title).
+                        booksInLang.push(Object.assign({}, book));
                     }
                 };
                 for (
@@ -105,7 +131,11 @@ export const ByLanguageGroups: React.FunctionComponent<{
                     addBookToLang("unknown");
                 }
             });
-            setRows(newRows);
+            sortBooksWithinEachLanguageRow(
+                mapOfLangToBookArray,
+                props.collection.orderingScheme
+            );
+            setRows(mapOfLangToBookArray);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
@@ -149,25 +179,14 @@ export const ByLanguageGroups: React.FunctionComponent<{
         () => languages.filter((l) => rows.get(l.isoCode)),
         [languages, rows]
     );
-    const sortedRows = useMemo(() => {
-        rows.forEach((row) => {
-            row.sort((a, b) =>
-                a.title
-                    .trimLeft()
-                    .localeCompare(b.title.trimLeft(), l10n.locale, {
-                        numeric: true,
-                    })
-            );
-        });
-        return rows;
-    }, [rows, l10n.locale]);
+
     if (waiting) {
         return <React.Fragment />;
     }
     return (
         <React.Fragment>
             {languagesWithTheseBooks.map((l) => {
-                const books = sortedRows.get(l.isoCode)!;
+                const books = rows.get(l.isoCode)!;
                 return (
                     <BookGroup
                         key={l.isoCode}
@@ -207,4 +226,13 @@ function HashStringArray(arrayOfStrings: string[]): string {
     }
     // The minimal result will be "0", if the array is empty or only contains empty strings.
     return hash.toString(10);
+}
+
+function sortBooksWithinEachLanguageRow(
+    rows: Map<string, IBasicBookInfo[]>,
+    orderingScheme?: BookOrderingScheme
+) {
+    rows.forEach((books: IBasicBookInfo[], languageId: string) => {
+        doExpensiveClientSideSortingIfNeeded(books, orderingScheme, languageId);
+    });
 }

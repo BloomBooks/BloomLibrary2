@@ -14,7 +14,7 @@ const unitTestBaseUrl =
 async function getBook(filter: IFilter) {
     return axios.get(`${unitTestBaseUrl}classes/books`, {
         headers,
-        params: constructParseBookQuery({ count: 5 }, filter, [
+        params: constructParseBookQuery({ keys: "title", count: 5 }, filter, [
             "region:Pacific",
             "topic:Math",
             "bookshelf:Enabling writers workshops",
@@ -241,8 +241,13 @@ it("retrieves a book with quoted publisher value", async () => {
         search: 'publisher: "Unlikely Publisher"',
     });
     expect(result.data.results.length).toBe(2);
-    expect(result.data.results[0].title).toBe(title1);
-    expect(result.data.results[1].title).toBe(title3);
+    // we're not specifying an order
+    expect(
+        result.data.results.some((x: { title: string }) => x.title === title1)
+    );
+    expect(
+        result.data.results.some((x: { title: string }) => x.title === title3)
+    );
 });
 
 it("retrieves a book with quoted originalPublisher value", async () => {
@@ -258,8 +263,12 @@ it("doesn't crash with a facet non-value", async () => {
         search: "publisher:",
     });
     expect(result.data.results.length).toBe(2);
-    expect(result.data.results[0].title).toBe(title1);
-    expect(result.data.results[1].title).toBe(title3);
+    expect(
+        result.data.results.some((x: { title: string }) => x.title === title1)
+    );
+    expect(
+        result.data.results.some((x: { title: string }) => x.title === title3)
+    );
 });
 
 // Unit tests that don't use axios have been moved to LibraryQueryHooksFast.test.ts
