@@ -53,7 +53,7 @@ export const CollectionPage: React.FunctionComponent<{
     const appHostedMode = useIsAppHosted();
     const label = useAppHostedCollectionLabel(
         collection?.label,
-        [],
+        [], // root page has no filters
         appHostedMode
     );
     if (appHostedMode) {

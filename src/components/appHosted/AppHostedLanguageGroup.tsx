@@ -178,7 +178,11 @@ export const ReaderLanguageGroup: React.FunctionComponent = () => {
     const handleKeyPress = (e: React.KeyboardEvent) => {
         if (e.key === "Enter") {
             if (languagesToDisplay.length) {
-                setLangChosen(languagesToDisplay[0].isoCode);
+                // On an android device, we think the most natural Enter behavior is to close the keyboard.
+                // May want to revisit this in the case of a physical keyboard on the device?
+                // We currently think it doesn't make sense to close the keyboard if there are no matches.
+                //setLangChosen(languagesToDisplay[0].isoCode);
+                (window as any).ParentProxy?.postMessage("close_keyboard");
             }
         }
     };
@@ -238,18 +242,20 @@ export const ReaderLanguageGroup: React.FunctionComponent = () => {
                         defaultMessage="Language?"
                     />
                 </h1>
-                <div
-                    css={css`
-                        margin-top: 4px;
-                        line-height: 1em;
-                    `}
-                >
-                    <FormattedMessage
-                        id="languagesCount"
-                        defaultMessage="{count} Languages"
-                        values={{ count: languages.length }}
-                    />
-                </div>
+                {!!languages.length && ( // !! prevents seeing the zero when languages.length is zero.
+                    <div
+                        css={css`
+                            margin-top: 4px;
+                            line-height: 1em;
+                        `}
+                    >
+                        <FormattedMessage
+                            id="languagesCount"
+                            defaultMessage="{count} Languages"
+                            values={{ count: languages.length }}
+                        />
+                    </div>
+                )}
             </div>
 
             {(languages.length && (
