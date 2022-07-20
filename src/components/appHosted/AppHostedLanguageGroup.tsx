@@ -46,7 +46,9 @@ export const ReaderLanguageGroup: React.FunctionComponent = () => {
     }, [languagesByBookCount]);
     // setting this to a language code causes a <Redirect> to render and open the page
     // for that code (currently when the user has selected a language by typing and pressing Enter)
-    const [langChosen, setLangChosen] = useState("");
+    // Note: currently languages are only chosen by clicking a button, which is handled elsewhere.
+    // But I think it's worth keeping this mechanism, in case we change our minds.
+    const [langChosen /*setLangChosen */] = useState("");
     const getResponsiveChoice = useResponsiveChoice();
     const [cookies] = useCookies(["preferredLanguages"]);
     const preferredLangsString: string = cookies["preferredLanguages"];
