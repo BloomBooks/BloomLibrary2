@@ -18,6 +18,14 @@ export const LanguageLink: React.FunctionComponent<{
     );
 };
 
+// This one is similar but when we don't want it to be (or look like) a link.
+export const LanguageLabel: React.FunctionComponent<{
+    language: ILanguage;
+}> = (props) => {
+    const displayName = getNameDisplay(props.language);
+    return <React.Fragment>{displayName}</React.Fragment>;
+};
+
 // filter the list to contain only one out of any group that have the same
 // display name.
 // I'm sure there's a more efficient way to do this, but this approach

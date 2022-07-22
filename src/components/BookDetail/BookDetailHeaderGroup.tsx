@@ -8,7 +8,7 @@ import React, { useContext } from "react";
 import { ArtifactType, Book } from "../../model/Book";
 import { observer } from "mobx-react-lite";
 import { ReadButton } from "./ReadButton";
-import { LanguageLink } from "../LanguageLink";
+import { LanguageLabel, LanguageLink } from "../LanguageLink";
 import { getArtifactVisibilitySettings } from "./ArtifactHelper";
 import { ILanguage } from "../../model/Language";
 import { ReadOfflineButton } from "./ReadOfflineButton";
@@ -166,7 +166,15 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                                     {props.book.languages.map(
                                         (l: ILanguage) => (
                                             <li key={l.isoCode}>
-                                                <LanguageLink language={l} />
+                                                {appHostedMode ? (
+                                                    <LanguageLabel
+                                                        language={l}
+                                                    />
+                                                ) : (
+                                                    <LanguageLink
+                                                        language={l}
+                                                    />
+                                                )}
                                             </li>
                                         )
                                     )}

@@ -4,7 +4,6 @@ import React from "react"; // see https://github.com/emotion-js/emotion/issues/1
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import { Breadcrumbs } from "../Breadcrumbs";
 import { BookCount } from "../BookCount";
 import { ICollection, IBanner } from "../../model/ContentInterfaces";
 import { BannerTitle } from "./Blurb";

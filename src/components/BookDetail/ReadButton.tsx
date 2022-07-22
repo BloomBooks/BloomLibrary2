@@ -12,6 +12,7 @@ import { Book } from "../../model/Book";
 import { useHistory } from "react-router-dom";
 import { getUrlForTarget } from "../Routes";
 import { FormattedMessage, useIntl } from "react-intl";
+import { useIsAppHosted } from "../appHosted/AppHostedUtils";
 
 interface IProps {
     book: Book;
@@ -22,6 +23,11 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
     const l10n = useIntl();
     const history = useHistory();
     const url = getUrlForTarget(`player/${props.book.id}`);
+    const isAppHosted = useIsAppHosted();
+
+    const buttonTextId =
+        "book.detail." + isAppHosted ? "readOnlineButton" : "readButton";
+    const buttonText = isAppHosted ? "READ ONLINE" : "READ";
 
     // This inserts breadcrumbs, embedding information, etc., which we don't want
     // since it interferes with the route for /player/X
@@ -34,8 +40,8 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
                 <img
                     src={ReadIcon}
                     alt={l10n.formatMessage({
-                        id: "book.detail.readButton",
-                        defaultMessage: "READ",
+                        id: buttonTextId,
+                        defaultMessage: buttonText,
                     })}
                     css={css`
                         width: 35px;
@@ -85,8 +91,8 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
                 `}
             >
                 <FormattedMessage
-                    id="book.detail.readButton"
-                    defaultMessage="READ"
+                    id={buttonTextId}
+                    defaultMessage={buttonText}
                 />
             </h1>
         </Button>

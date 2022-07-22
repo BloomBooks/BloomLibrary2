@@ -132,6 +132,8 @@ const BookDetailInternal: React.FunctionComponent<{
                 padding: 1em;
                 label: BookDetail;
                 max-width: 800px;
+                box-sizing: border-box;
+                ${appHostedMode ? "height: 100%;" : ""}
             `}
         >
             {appHostedMode && (
@@ -159,6 +161,10 @@ const BookDetailInternal: React.FunctionComponent<{
                 // position is relative so this is the basis div for absolutely positioning the DRAFT overlay
                 css={css`
                     position: relative;
+                    box-sizing: border-box;
+                    ${appHostedMode
+                        ? "height: 100%; display: flex; flex-direction: column;"
+                        : ""}
                 `}
             >
                 <BookDetailHeaderGroup
@@ -186,21 +192,29 @@ const BookDetailInternal: React.FunctionComponent<{
                 <HarvesterProgressNotice book={props.book} />
                 <HarvesterProblemNotice book={props.book} />
                 {appHostedMode ? (
-                    <BlorgLink
-                        css={css`
-                            color: black;
-                            text-decoration: underline;
-                        `}
-                        href={
-                            removeAppHostedFromPath(location.pathname) +
-                            location.search
-                        }
-                    >
-                        {l10n.formatMessage({
-                            id: "appHosted.detailsOnBlorg",
-                            defaultMessage: "Details on BloomLibrary.org",
-                        })}
-                    </BlorgLink>
+                    <React.Fragment>
+                        <div
+                            css={css`
+                                flex-grow: 1;
+                            `}
+                        />
+                        <BlorgLink
+                            css={css`
+                                color: black;
+                                text-decoration: underline;
+                                margin-top: auto;
+                            `}
+                            href={
+                                removeAppHostedFromPath(location.pathname) +
+                                location.search
+                            }
+                        >
+                            {l10n.formatMessage({
+                                id: "appHosted.detailsOnBlorg",
+                                defaultMessage: "Details on BloomLibrary.org",
+                            })}
+                        </BlorgLink>
+                    </React.Fragment>
                 ) : (
                     <React.Fragment>
                         {divider}
