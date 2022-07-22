@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useContext, useState, useMemo } from "react";
+import React, { useContext, useState, useMemo, useEffect } from "react";
 import { LanguageCard } from "../LanguageCard";
 import logo from "../../assets/BloomLibrary Logo.svg";
 import Downshift, {
@@ -23,6 +23,8 @@ import { useResponsiveChoice } from "../../responsiveUtilities";
 import { Helmet } from "react-helmet";
 import { useCookies } from "react-cookie";
 import { appHostedSegment } from "./AppHostedUtils";
+import { commonUI } from "../../theme";
+import { Divider } from "@material-ui/core";
 
 // This class is uncomfortably similar to LanguageGroup. It provides the different layout we want
 // when displaying a page of language choices (typically on a phone) as opposed to a row of them
@@ -52,9 +54,10 @@ export const ReaderLanguageGroup: React.FunctionComponent = () => {
     const getResponsiveChoice = useResponsiveChoice();
     const [cookies] = useCookies(["preferredLanguages"]);
     const preferredLangsString: string = cookies["preferredLanguages"];
+    const [showAll, setShowAll] = useState(false);
     const [preferredLangs, preferredLangCodes] = useMemo(() => {
         const preferredCodes = preferredLangsString
-            ? preferredLangsString.split(",")
+            ? preferredLangsString.split(",").splice(2) // we only have room for 2 currently, and only want one row
             : [l10n.locale];
         const preferredLangs: ILanguage[] = [];
         // This could be just a filter, but then they are ordered by number of books.
@@ -67,6 +70,20 @@ export const ReaderLanguageGroup: React.FunctionComponent = () => {
         });
         return [preferredLangs, preferredCodes];
     }, [preferredLangsString, l10n.locale, languages]);
+    // This implements a crude form of laziness. We'll show up to 20 results immediately.
+    // The others, which are typically off-screen on a phone, we show after one second, so they
+    // are there ready to be scrolled to.
+    // I chose this crude approach because I could not get LazyLoad to work here. Possibly it
+    // is something to do with rendering the cards inside Downshift. (FWIW: I experimented with
+    // using display:block instead of flex/wrap, and also setting height and scrollContainer
+    // on the LazyLoad. Since we have to fetch all the languages anyway to sort them and get
+    // names to match, we would not save much by being truly lazy about generating the ones
+    // that are off-screen, but it is nice to show the user something quickly.
+    useEffect(() => {
+        setTimeout(() => {
+            setShowAll(true);
+        }, 1000);
+    }, []);
 
     let languagesToDisplay: ILanguage[] = [];
 
@@ -94,6 +111,10 @@ export const ReaderLanguageGroup: React.FunctionComponent = () => {
             (lang) =>
                 lang.usageCount && preferredLangCodes.indexOf(lang.isoCode) < 0
         );
+        const prefColor = commonUI.colors.bloomRed;
+        // if (!showAll && languagesToDisplay.length > 10) {
+        //     languagesToDisplay.splice(10);
+        // }
         if (languagesToDisplay.length) {
             return (
                 <div
@@ -117,6 +138,18 @@ export const ReaderLanguageGroup: React.FunctionComponent = () => {
                     >
                         {preferredLangs.map((l, index) => (
                             <LanguageCard
+                                css={css`
+                                    // Review: should I instead give CheapCard, and everything between,
+                                    // a new prop to control color? That's one kind of nasty complexity,
+                                    // reaching inside a component like this to change its appearance is another.
+                                    color: ${prefColor} !important;
+                                    // This is copied from CheapCard's box-shadow, but using BloomRed.
+                                    // Cheapcard uses black with transparency of 12% and 24%.
+                                    // The transparencies I chose here, apart from being in the same ratio,
+                                    // we just found experimentally to give a red shadow about equally visible.
+                                    box-shadow: 0 1px 3px ${prefColor}45,
+                                        0 1px 2px ${prefColor}90 !important;
+                                `}
                                 {...getItemProps({ item: l })}
                                 key={index}
                                 name={l.name}
@@ -124,6 +157,7 @@ export const ReaderLanguageGroup: React.FunctionComponent = () => {
                                 usageCount={l.usageCount}
                                 isoCode={l.isoCode}
                                 objectId={l.objectId}
+                                larger={true}
                                 targetPrefix={
                                     "/" + appHostedSegment + "/language:"
                                 }
@@ -131,7 +165,15 @@ export const ReaderLanguageGroup: React.FunctionComponent = () => {
                             />
                         ))}
                     </div>
+                    <Divider
+                        css={css`
+                            // puts it in the middle of the gap without taking up extra space.
+                            margin-top: -10px;
+                            margin-bottom: 10px;
+                        `}
+                    />
                     <div
+                        id="app-hosted-lang-group-scroller"
                         css={css`
                             display: flex;
                             flex-wrap: wrap;
@@ -141,21 +183,32 @@ export const ReaderLanguageGroup: React.FunctionComponent = () => {
                             overflow-y: scroll;
                         `}
                     >
-                        {languagesToDisplay.map((l, index) => (
-                            <LanguageCard
-                                {...getItemProps({ item: l })}
-                                key={index}
-                                name={l.name}
-                                englishName={l.englishName}
-                                usageCount={l.usageCount}
-                                isoCode={l.isoCode}
-                                objectId={l.objectId}
-                                targetPrefix={
-                                    "/" + appHostedSegment + "/language:"
-                                }
-                                role="option"
-                            />
-                        ))}
+                        {languagesToDisplay.map((l, index) =>
+                            showAll || index < 20 ? (
+                                <LanguageCard
+                                    {...getItemProps({ item: l })}
+                                    key={index}
+                                    name={l.name}
+                                    englishName={l.englishName}
+                                    usageCount={l.usageCount}
+                                    isoCode={l.isoCode}
+                                    objectId={l.objectId}
+                                    larger={true}
+                                    targetPrefix={
+                                        "/" + appHostedSegment + "/language:"
+                                    }
+                                    role="option"
+                                />
+                            ) : (
+                                <div
+                                    css={css`
+                                        height: 125px;
+                                        width: 150px;
+                                        margin: 0 20px 20px 0;
+                                    `}
+                                ></div>
+                            )
+                        )}
                     </div>
                 </div>
             );

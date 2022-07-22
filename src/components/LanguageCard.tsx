@@ -14,11 +14,11 @@ import TruncateMarkup from "react-truncate-markup";
 import { ICardSpec, useBaseCardSpec } from "./CardGroup";
 import { SmartTruncateMarkup } from "./SmartTruncateMarkup";
 
-export function useLanguageCardSpecs(): ICardSpec {
+export function useLanguageCardSpecs(larger?: boolean): ICardSpec {
     const getResponsiveChoice = useResponsiveChoice();
     return {
-        cardWidthPx: getResponsiveChoice(100, 150) as number,
-        cardHeightPx: getResponsiveChoice(90, 125) as number,
+        cardWidthPx: larger ? 150 : (getResponsiveChoice(100, 150) as number),
+        cardHeightPx: larger ? 125 : (getResponsiveChoice(90, 125) as number),
         cardSpacingPx: useBaseCardSpec().cardSpacingPx,
     };
 }
@@ -29,6 +29,8 @@ export const LanguageCard: React.FunctionComponent<
         // if not null, what to use before lang id in target URL
         // For example, this allows a language card in app-hosted mode to link to a page still in app-hosted mode.
         targetPrefix?: string;
+        larger?: boolean;
+        className?: string;
     }
 > = (props) => {
     const {
@@ -42,8 +44,24 @@ export const LanguageCard: React.FunctionComponent<
 
     const { primary, secondary } = getDisplayNamesForLanguage(props);
     const getResponsiveChoice = useResponsiveChoice();
-    const { cardWidthPx, cardHeightPx } = useLanguageCardSpecs();
+    const { cardWidthPx, cardHeightPx } = useLanguageCardSpecs(props.larger);
     const urlPrefix = props.targetPrefix ?? "/language:";
+
+    // In the main website, we want language cards to be responsive: smaller and with smaller text on small screens.
+    // In the language chooser intended to be embedded in BloomReader, we want larger sizes.
+    // The description said "about a third larger" which happens to be, for most measurements, what the large-screen
+    // size already was. But as long as I was messing with it, I decided to support an actually distinct size
+    // for the BloomReader ("props.larger") view, and specify it in REMs which is current best-practice. The REM values are chosen
+    // to make the BR font size the same as the large-screen size, unless the user has configured a non-standard
+    // font setting in the browser (which I'm not sure is possible in BR, but it may inherit some system setting).
+    const chooseSize = (
+        larger: string,
+        smallScreen: string,
+        largeScreen: string
+    ): string =>
+        props.larger
+            ? larger
+            : (getResponsiveChoice(smallScreen, largeScreen) as string);
     return (
         <CheapCard
             {...propsToPassDown} // makes swiper work
@@ -53,23 +71,25 @@ export const LanguageCard: React.FunctionComponent<
                 width: ${cardWidthPx}px;
                 // When choosing a height, search on "x-" to see some tall ones
                 height: ${cardHeightPx}px;
-                padding: ${getResponsiveChoice(
-                    commonUI.paddingForSmallCollectionAndLanguageCardsPx,
-                    commonUI.paddingForCollectionAndLanguageCardsPx
-                )}px;
+                padding: ${chooseSize(
+                    commonUI.paddingForCollectionAndLanguageCardsPx + "px",
+                    commonUI.paddingForSmallCollectionAndLanguageCardsPx + "px",
+                    commonUI.paddingForCollectionAndLanguageCardsPx + "px"
+                )};
             `}
             url={`${urlPrefix}${props.isoCode}`}
             onClick={undefined} // we just want to follow the href, whatever might be in propsToPassDown
         >
             <div
                 css={css`
-                    font-size: ${getResponsiveChoice(9, 12)}pt;
+                    font-size: ${chooseSize("1rem", "9pt", "12pt")};
                     // allows the child, the actual secondary name, to be absolute positioned to the bottom
                     position: relative;
-                    height: ${getResponsiveChoice(
-                        25,
-                        35
-                    )}px; // push the next name, the primary name, into the center of the card
+                    height: ${chooseSize(
+                        "35px",
+                        "25px",
+                        "35px"
+                    )}; // push the next name, the primary name, into the center of the card
                     margin-bottom: 5px;
                 `}
             >
@@ -92,7 +112,7 @@ export const LanguageCard: React.FunctionComponent<
             </div>
             <h2
                 css={css`
-                    font-size: ${getResponsiveChoice(9, 16)}pt;
+                    font-size: ${chooseSize("1.333rem", "9pt", "16pt")};
                     //text-align: center;
                     max-height: 40px;
                     margin-top: 0;
@@ -108,7 +128,7 @@ export const LanguageCard: React.FunctionComponent<
             </h2>
             <div
                 css={css`
-                    font-size: ${getResponsiveChoice(10, 14)}px;
+                    font-size: ${chooseSize("0.875rem", "10px", "14px")};
                     position: absolute;
                     bottom: 4px;
                 `}
