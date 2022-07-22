@@ -146,6 +146,10 @@
     "bookCount.inLanguages": {
         "message": "{bookCount} books in {languageCount} languages"
     },
+    "booksTitle": {
+        "description": "",
+        "message": "{langName} books"
+    },
     "languagesCount": {
         "description": "",
         "message": "{count} Languages"

@@ -25,6 +25,7 @@ import { useCookies } from "react-cookie";
 import { appHostedSegment } from "./AppHostedUtils";
 import { commonUI } from "../../theme";
 import { Divider } from "@material-ui/core";
+import { useBaseCardSpec } from "../CardGroup";
 
 // This class is uncomfortably similar to LanguageGroup. It provides the different layout we want
 // when displaying a page of language choices (typically on a phone) as opposed to a row of them
@@ -84,6 +85,8 @@ export const ReaderLanguageGroup: React.FunctionComponent = () => {
             setShowAll(true);
         }, 1000);
     }, []);
+
+    const cardSpacing = useBaseCardSpec().cardSpacingPx;
 
     let languagesToDisplay: ILanguage[] = [];
 
@@ -168,8 +171,10 @@ export const ReaderLanguageGroup: React.FunctionComponent = () => {
                     <Divider
                         css={css`
                             // puts it in the middle of the gap without taking up extra space.
-                            margin-top: -10px;
-                            margin-bottom: 10px;
+                            // (Somewhat weirdly, the gap between the two groups of cards is produced by
+                            // the bottom margin on CheapCard.)
+                            margin-top: -${cardSpacing / 2 - 1}px;
+                            margin-bottom: ${cardSpacing / 2 - 1}px;
                         `}
                     />
                     <div

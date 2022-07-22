@@ -37,13 +37,6 @@ export const ReaderBannerLayout: React.FunctionComponent<{
                     overflow: hidden;
                 `}
             >
-                <Breadcrumbs
-                    css={css`
-                        margin: 0 !important;
-                        margin-bottom: 3px !important;
-                    `}
-                />
-
                 <BannerTitle
                     hideTitle={false}
                     {...props}

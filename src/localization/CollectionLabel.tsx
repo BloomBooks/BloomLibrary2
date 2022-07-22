@@ -28,6 +28,15 @@ function getLabelL10nId(collection: ICollection): string {
 export const CollectionLabel: React.FunctionComponent<{
     collection: ICollection;
 }> = (props) => {
-    const label = useGetLocalizedCollectionLabel(props.collection);
+    let label = useGetLocalizedCollectionLabel(props.collection);
+    const l10n = useIntl();
+    const isLanguageCollection =
+        (props.collection.urlKey ?? "").indexOf("language:") >= 0;
+    if (isLanguageCollection) {
+        label = l10n.formatMessage(
+            { id: "booksTitle", defaultMessage: "{langName} books" },
+            { langName: label }
+        );
+    }
     return <React.Fragment>{label}</React.Fragment>;
 };

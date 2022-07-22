@@ -96,22 +96,27 @@ export const BannerTitle: React.FunctionComponent<{
             );
         }
     } else {
-        bannerTitle = (
-            <React.Fragment>
-                {l10n.formatMessage({
-                    // NB: the format of this id come from the azure function that reads contenful and writes to crowdin
-                    id: "banner." + props.banner.title,
-                    defaultMessage: props.banner.title,
-                })}
-            </React.Fragment>
-        );
+        const isLanguageCollection =
+            (props.collection.urlKey ?? "").indexOf("language:") >= 0;
+        let label = l10n.formatMessage({
+            // NB: the format of this id come from the azure function that reads contenful and writes to crowdin
+            id: "banner." + props.banner.title,
+            defaultMessage: props.banner.title,
+        });
+        if (isLanguageCollection) {
+            label = l10n.formatMessage(
+                { id: "booksTitle", defaultMessage: "{langName} books" },
+                { langName: label }
+            );
+        }
+        bannerTitle = <React.Fragment>{label}</React.Fragment>;
     }
 
     return (
         (!props.hideTitle && (
             <h1
                 css={css`
-                    font-size: ${mobile ? 18 : 36}px;
+                    font-size: ${mobile ? 24 : 36}px;
                     margin-top: 0;
                     /*flex-grow: 1; // push the rest to the bottom*/
                     // For the sake of uniformity, the only styling we allow in richTextLabel is normal, h1, h2, and h3.
