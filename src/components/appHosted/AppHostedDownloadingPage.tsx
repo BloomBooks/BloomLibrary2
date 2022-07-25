@@ -32,8 +32,8 @@ export const ReaderDownloadingPage: React.FunctionComponent = (props) => {
             "Great! We are downloading that book now. It will appear in your list of books when the download is complete.",
     });
     const home = l10n.formatMessage({
-        id: "header.home",
-        defaultMessage: "Home",
+        id: "usermenu.myBooks", // reusing this ID, but I think it's safe, and avoids adding another thing to localize.
+        defaultMessage: "My Books",
     });
     const label = collection?.label;
     const getMore = l10n.formatMessage(
