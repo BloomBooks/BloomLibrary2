@@ -206,6 +206,12 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             sortingEnabled: true,
         },
         {
+            name: "notes",
+            getCellValue: (b: Book) => b.librarianNote,
+            defaultVisible: false,
+            sortingEnabled: true,
+        },
+        {
             name: "inCirculation",
             sortingEnabled: false, // parse server doesn't seem to be able to sort on booleans?
             getCellValue: (b: Book) => (b.inCirculation ? "Yes" : "No"),

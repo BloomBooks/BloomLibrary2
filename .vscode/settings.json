@@ -1,4 +1,10 @@
 {
+    "workbench.colorCustomizations": {
+        "statusBar.background": "#49d668",
+        "statusBar.debuggingBackground": "#49d668",
+        "statusBar.noFolderBackground": "#49d668",
+        "statussBar.prominentBackground": "#D65649"
+    },
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "cSpell.words": [
