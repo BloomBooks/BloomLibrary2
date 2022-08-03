@@ -19,6 +19,7 @@ import { HideBooksPanel } from "./HideBooksPanel";
 import { AddFeaturePanel } from "./AddFeaturePanel";
 import { Select } from "@material-ui/core";
 import { RebrandPanel } from "./RebrandPanel";
+import { AssignNotesPanel } from "./AssignNotesPanel";
 
 // The Bulk Edit page is for moderators; it has a series of panels for making changes, followed by a grid
 // for selecting what books will be changed.
@@ -57,6 +58,16 @@ const BulkEditPage: React.FunctionComponent<IBulkEditPageProps> = (props) => {
             control: (
                 <AddTagPanel
                     backgroundColor="lightblue"
+                    filterHolder={staticCurrentFilter}
+                    refresh={() => setRefreshIndex(refreshIndex + 1)}
+                />
+            ),
+        },
+        {
+            name: "Notes",
+            control: (
+                <AssignNotesPanel
+                    backgroundColor="#ffc668"
                     filterHolder={staticCurrentFilter}
                     refresh={() => setRefreshIndex(refreshIndex + 1)}
                 />
