@@ -2,7 +2,7 @@
     "name": "blorg",
     "private": true,
     "engines": {
-        "node": "~16.13.1"
+        "node": "~16"
     },
     "scripts": {
         "//start": " browser=none prevents opening a normal browser tab, then corsChrome gives us a browser that ignores CORS problems",
