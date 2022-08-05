@@ -17,9 +17,9 @@ import { useHistory, useLocation } from "react-router-dom";
 import { appHostedSegment, useGetArtifactSize } from "./AppHostedUtils";
 import { useCookies } from "react-cookie";
 
-// A button designed to be used when BL is embedded in Bloom Reader. It iniates download of the book
-// passed in its props and brings up the ReaderDownloadingPage.
-export const ReaderDownloadButton: React.FunctionComponent<{
+// A button designed to be used when BL is embedded in Bloom Reader. It initiates download of the book
+// passed in its props and brings up the AppHostedDownloadingPage.
+export const AppHostedDownloadButton: React.FunctionComponent<{
     book: Book;
     fullWidth?: boolean;
     contextLangIso?: string;

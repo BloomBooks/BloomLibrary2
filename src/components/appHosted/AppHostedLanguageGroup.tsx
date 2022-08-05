@@ -31,7 +31,7 @@ import { useBaseCardSpec } from "../CardGroup";
 // when displaying a page of language choices (typically on a phone) as opposed to a row of them
 // in part of a larger page. Components are differently ordered and grouped and have different
 // classes applied. It may be possible to factor out more common code, but it won't be easy.
-export const ReaderLanguageGroup: React.FunctionComponent = () => {
+export const AppHostedLanguageGroup: React.FunctionComponent = () => {
     const l10n = useIntl();
     const { languagesByBookCount } = useContext(CachedTablesContext);
     // We want the languages sorted by their primary name. Unfortunately the Language objects

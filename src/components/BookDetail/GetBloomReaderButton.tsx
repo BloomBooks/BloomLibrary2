@@ -14,7 +14,7 @@ interface IProps {
     fullWidth?: boolean;
 }
 
-export const BloomReaderDownloadButton: React.FunctionComponent<IProps> = (
+export const GetBloomReaderButton: React.FunctionComponent<IProps> = (
     props
 ) => {
     return (

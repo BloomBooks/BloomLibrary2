@@ -24,8 +24,8 @@ import { TestEmbeddingPage } from "./TestEmbedding";
 import { ReleaseNotes } from "./ReleaseNotes";
 import { ThemeForLocation } from "./pages/ThemeForLocation";
 import { CollectionReportSplit } from "./reports/CollectionReportSplit";
-import { ReaderLanguageGroup } from "./appHosted/AppHostedLanguageGroup";
-import { ReaderDownloadingPage } from "./appHosted/AppHostedDownloadingPage";
+import { AppHostedLanguageGroup } from "./appHosted/AppHostedLanguageGroup";
+import { AppHostedDownloadingPage } from "./appHosted/AppHostedDownloadingPage";
 import { appHostedSegment } from "./appHosted/AppHostedUtils";
 
 export let previousPathname = "";
@@ -95,13 +95,13 @@ export const Routes: React.FunctionComponent<{}> = () => {
                     <Route
                         path={"/" + appHostedSegment + "/langs"}
                         render={({ match }) => {
-                            return <ReaderLanguageGroup />;
+                            return <AppHostedLanguageGroup />;
                         }}
                     ></Route>
                     <Route
                         path={"/" + appHostedSegment + "/downloading"}
                         render={({ match }) => {
-                            return <ReaderDownloadingPage />;
+                            return <AppHostedDownloadingPage />;
                         }}
                     ></Route>
                     <Route

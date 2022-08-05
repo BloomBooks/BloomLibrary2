@@ -22,8 +22,8 @@ import { FormattedMessage } from "react-intl";
 import { BookThumbnail } from "./BookThumbnail";
 import { BlorgLink } from "../BlorgLink";
 import { DownloadToBloomButton } from "./DownloadToBloomButton";
-import { BloomReaderDownloadButton } from "./BloomReaderDownloadButton";
-import { ReaderDownloadButton } from "../appHosted/AppHostedDownloadButton";
+import { GetBloomReaderButton } from "./GetBloomReaderButton";
+import { AppHostedDownloadButton } from "../appHosted/AppHostedDownloadButton";
 import { useIsAppHosted } from "../appHosted/AppHostedUtils";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{
@@ -74,14 +74,18 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
         props.book,
         ArtifactType.bloomReader
     );
-    const showBloomReaderButton =
+
+    const allowBloomPUBDownload =
         props.book.harvestState === "Done" &&
         bloomReaderSettings && // harvester made a bloomd
         bloomReaderSettings.decision && // no one decided it was not fit to use
-        bloomReaderAvailable && // and we're on a platform that supports bloom reader
+        bloomReaderAvailable; // and we're on a platform that supports bloom reader
+    const showBloomReaderButton =
+        allowBloomPUBDownload &&
         // If we're embedded inside BR, we show a different Download button for the book
         // and don't offer to install BR!
         !appHostedMode;
+    const showAppHostedDownloadButton = allowBloomPUBDownload && appHostedMode;
 
     const fullWidthButtons = useMediaQuery(
         `(max-width:${commonUI.detailViewBreakpointForTwoColumns})`
@@ -245,17 +249,17 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                     />
                 )}
                 {showBloomReaderButton && (
-                    <ReadOfflineButton
-                        book={props.book}
-                        fullWidth={fullWidthButtons}
-                        contextLangIso={props.contextLangIso}
-                    />
+                    <>
+                        <ReadOfflineButton
+                            book={props.book}
+                            fullWidth={fullWidthButtons}
+                            contextLangIso={props.contextLangIso}
+                        />
+                        <GetBloomReaderButton fullWidth={fullWidthButtons} />
+                    </>
                 )}
-                {showBloomReaderButton && (
-                    <BloomReaderDownloadButton fullWidth={fullWidthButtons} />
-                )}
-                {appHostedMode && (
-                    <ReaderDownloadButton
+                {showAppHostedDownloadButton && (
+                    <AppHostedDownloadButton
                         css={css`
                             margin-top: 20px;
                             margin-bottom: 20px;
