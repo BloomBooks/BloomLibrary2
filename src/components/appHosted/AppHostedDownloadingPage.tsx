@@ -19,7 +19,7 @@ import { appHostedSegment } from "./AppHostedUtils";
 // a book and offer the user a couple of likely options for what to do next.
 // Review: another very likely thing the user wants to do next is to escape from embedded-BL mode
 // and read the book he just downloaded. Can we have a button here to make that easier?
-export const ReaderDownloadingPage: React.FunctionComponent = (props) => {
+export const AppHostedDownloadingPage: React.FunctionComponent = (props) => {
     const l10n = useIntl();
     const { search } = useLocation();
     const params = useMemo(() => new URLSearchParams(search), [search]);
