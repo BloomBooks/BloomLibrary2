@@ -13,8 +13,8 @@ import { Book, ArtifactType } from "../../model/Book";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { track } from "../../analytics/Analytics";
 import { FormattedMessage, useIntl } from "react-intl";
-import { useHistory, useLocation } from "react-router-dom";
-import { appHostedSegment, useGetArtifactSize } from "./AppHostedUtils";
+import { useLocation } from "react-router-dom";
+import { useGetArtifactSize } from "./AppHostedUtils";
 import { useCookies } from "react-cookie";
 
 // A button designed to be used when BL is embedded in Bloom Reader. It initiates download of the book
@@ -26,7 +26,6 @@ export const AppHostedDownloadButton: React.FunctionComponent<{
     className?: string;
 }> = (props) => {
     const l10n = useIntl();
-    const history = useHistory();
     const artifactUrl = getArtifactUrl(props.book, ArtifactType.bloomReader);
     const parts = artifactUrl.split("/");
     const fileName = parts[parts.length - 1];
@@ -51,14 +50,6 @@ export const AppHostedDownloadButton: React.FunctionComponent<{
                     "bloompub"
                 );
                 track("Download Book", params);
-                history.push(
-                    "/" +
-                        appHostedSegment +
-                        "/downloading" +
-                        (props.contextLangIso
-                            ? "?lang=" + props.contextLangIso
-                            : "")
-                );
                 if (currentLangCode) {
                     // currentLangCode moves to the head of preferredLanguages.
                     // Its length is reduced to three.
@@ -92,7 +83,7 @@ export const AppHostedDownloadButton: React.FunctionComponent<{
         >
             <Button
                 variant="contained"
-                color="secondary"
+                color="primary"
                 startIcon={
                     <img
                         src={DownloadIcon}

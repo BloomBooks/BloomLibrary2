@@ -25,6 +25,7 @@ export const commonUI = {
     detailViewMargin: "1em",
     detailViewMainButtonWidth: "250px",
     detailViewMainButtonHeight: "80px",
+    detailViewSmallerButtonHeight: "55px",
     detailViewBreakpointForTwoColumns: "540px",
 };
 

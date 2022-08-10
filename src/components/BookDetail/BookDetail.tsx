@@ -38,7 +38,6 @@ import { useResponsiveChoice } from "../../responsiveUtilities";
 import { HarvesterProblemNotice } from "./HarvesterProblemNotice";
 import { SharingButtons } from "./SharingButtons";
 import { BlorgLink } from "../BlorgLink";
-import { Helmet } from "react-helmet";
 import {
     removeAppHostedFromPath,
     useIsAppHosted,
@@ -136,16 +135,6 @@ const BookDetailInternal: React.FunctionComponent<{
                 ${appHostedMode ? "height: 100%;" : ""}
             `}
         >
-            {appHostedMode && (
-                <Helmet>
-                    <title>
-                        {l10n.formatMessage({
-                            id: "appHosted.bookInfo",
-                            defaultMessage: "Book information",
-                        })}
-                    </title>
-                </Helmet>
-            )}
             <div
                 css={css`
                     a,

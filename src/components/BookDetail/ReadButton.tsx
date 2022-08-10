@@ -7,6 +7,7 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import Button from "@material-ui/core/Button";
 import ReadIcon from "../../assets/Read.svg";
+import ReadOnlineIcon from "../../assets/ReadOnline.svg";
 import { commonUI } from "../../theme";
 import { Book } from "../../model/Book";
 import { useHistory } from "react-router-dom";
@@ -34,17 +35,17 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
     //const url = getUrlForTarget(`/player/${props.book.id}`);
     return (
         <Button
-            variant="contained"
+            variant={isAppHosted ? "outlined" : "contained"}
             color="primary"
             startIcon={
                 <img
-                    src={ReadIcon}
+                    src={isAppHosted ? ReadOnlineIcon : ReadIcon}
                     alt={l10n.formatMessage({
                         id: buttonTextId,
                         defaultMessage: buttonText,
                     })}
                     css={css`
-                        width: 35px;
+                        width: ${isAppHosted ? "50px" : "35px"};
                         margin-right: 10px;
                     `}
                 />
@@ -54,7 +55,9 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
                 width: ${props.fullWidth
                     ? "100%"
                     : commonUI.detailViewMainButtonWidth};
-                height: ${commonUI.detailViewMainButtonHeight};
+                height: ${isAppHosted
+                    ? commonUI.detailViewSmallerButtonHeight
+                    : commonUI.detailViewMainButtonHeight};
                 margin-bottom: 10px !important;
                 float: right;
             `}

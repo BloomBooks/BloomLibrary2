@@ -234,6 +234,17 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                     flex-direction: column;
                 `}
             >
+                {showAppHostedDownloadButton && (
+                    <AppHostedDownloadButton
+                        css={css`
+                            margin-top: 20px;
+                            margin-bottom: 20px;
+                        `}
+                        book={props.book}
+                        fullWidth={fullWidthButtons}
+                        contextLangIso={props.contextLangIso}
+                    />
+                )}
                 {showReadOnLine && (
                     <ReadButton
                         book={props.book}
@@ -257,17 +268,6 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                         />
                         <GetBloomReaderButton fullWidth={fullWidthButtons} />
                     </>
-                )}
-                {showAppHostedDownloadButton && (
-                    <AppHostedDownloadButton
-                        css={css`
-                            margin-top: 20px;
-                            margin-bottom: 20px;
-                        `}
-                        book={props.book}
-                        fullWidth={fullWidthButtons}
-                        contextLangIso={props.contextLangIso}
-                    />
                 )}
             </div>
         </div>
