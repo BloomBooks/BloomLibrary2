@@ -72,7 +72,7 @@ export const AppHostedDownloadButton: React.FunctionComponent<{
                     }
                     if (index !== 0) {
                         preferredLangCodes.splice(0, 0, [currentLangCode]); // now first
-                        preferredLangCodes.splice(3); // limit to 3, typically one row in BR
+                        preferredLangCodes.length = 3; // limit to 3, typically one row in BR
                         setCookie(
                             "preferredLanguages",
                             preferredLangCodes.join()
