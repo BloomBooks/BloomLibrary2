@@ -16,6 +16,9 @@ export function useIsAppHosted() {
     const location = useLocation();
     return location.pathname.startsWith("/app-hosted-");
 }
+export function isAppHosted() {
+    return window.location.pathname.startsWith("/app-hosted-");
+}
 
 // Return the equivalent URL path not in the app-hosted space.
 // If necessary we could make this smarter about working with any version.
