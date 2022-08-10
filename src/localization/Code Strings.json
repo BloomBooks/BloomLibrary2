@@ -512,10 +512,6 @@
         "message": "level",
         "description": "Appears before a digit in something like 'Getting more French level 2 books"
     },
-    "appHosted.bookInfo": {
-        "message": "Book information",
-        "description": "Appears in metadata title, used by Bloom Reader"
-    },
     "appHosted.detailsOnBlorg": {
         "message": "Details on BloomLibrary.org",
         "description": "Takes you to a page with more detailed information about a book"
