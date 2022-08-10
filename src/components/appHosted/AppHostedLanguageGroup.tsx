@@ -58,8 +58,9 @@ export const AppHostedLanguageGroup: React.FunctionComponent = () => {
     const [showAll, setShowAll] = useState(false);
     const [preferredLangs, preferredLangCodes] = useMemo(() => {
         const preferredCodes = preferredLangsString
-            ? preferredLangsString.split(",").splice(2) // we only have room for 2 currently, and only want one row
+            ? preferredLangsString.split(",")
             : [l10n.locale];
+        preferredCodes.length = 2; // we only have room for 2 currently, and only want one row
         const preferredLangs: ILanguage[] = [];
         // This could be just a filter, but then they are ordered by number of books.
         // We are keeping the codes in order so that the most recently downloaded comes first.
