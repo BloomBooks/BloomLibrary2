@@ -7,13 +7,15 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import { Alert, AlertTitle } from "@material-ui/lab";
 import { Snackbar } from "@material-ui/core";
+import { isAppHosted } from "./appHosted/AppHostedUtils";
 
 export const UnderConstruction: React.FunctionComponent<{}> = () => {
     const showUnderConstruction =
         window.location.hostname !== "bloomlibrary.org" &&
         window.location.hostname !== "embed.bloomlibrary.org" &&
         !window.location.hostname.startsWith("dev") &&
-        window.location.hostname !== "localhost";
+        window.location.hostname !== "localhost" &&
+        !isAppHosted();
 
     const [open, setOpen] = React.useState(true);
     const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
