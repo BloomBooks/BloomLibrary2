@@ -114,7 +114,6 @@ const BookDetailInternal: React.FunctionComponent<{
     );
 
     const embeddedMode = useIsEmbedded();
-    const location = useLocation();
     const appHostedMode = useIsAppHosted();
     const user = LoggedInUser.current;
     const userIsUploader = user?.username === props.book.uploader?.username;
@@ -193,10 +192,10 @@ const BookDetailInternal: React.FunctionComponent<{
                                 text-decoration: underline;
                                 margin-top: auto;
                             `}
-                            href={
-                                removeAppHostedFromPath(location.pathname) +
-                                location.search
-                            }
+                            // We want the hosting app to handle this link so it can route it to an external browser.
+                            // Therefore, we need BlorgLink to treat it like an external link (i.e. not use our SPA router).
+                            // By ensuring the link starts with http(s), we get the desired behavior.
+                            href={removeAppHostedFromPath(window.location.href)}
                         >
                             {l10n.formatMessage({
                                 id: "appHosted.detailsOnBlorg",
