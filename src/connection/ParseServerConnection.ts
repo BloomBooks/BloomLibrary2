@@ -20,7 +20,8 @@ const prod: IConnection = {
         "Content-Type": "text/json",
         "X-Parse-Application-Id": "R6qNTeumQXjJCMutAJYAwPtip1qBulkFyLefkCE5",
     },
-    url: "https://bloom-parse-server-production.azurewebsites.net/parse/",
+    url:
+        "https://bloom-parse-server-production-staging.azurewebsites.net/parse/",
 };
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const dev: IConnection = {
