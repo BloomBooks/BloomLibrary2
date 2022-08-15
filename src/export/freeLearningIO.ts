@@ -159,7 +159,7 @@ function getFreeLearningBooks(): Promise<any[]> {
     return new Promise<any[]>((resolve, reject) =>
         axios
             .get(
-                "https://bloom-parse-server-production.azurewebsites.net/parse/classes/books",
+                "https://bloom-parse-server-production-staging.azurewebsites.net/parse/classes/books",
                 {
                     headers: {
                         "X-Parse-Application-Id":
