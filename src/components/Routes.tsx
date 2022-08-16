@@ -26,7 +26,7 @@ import { ThemeForLocation } from "./pages/ThemeForLocation";
 import { CollectionReportSplit } from "./reports/CollectionReportSplit";
 import { AppHostedLanguageGroup } from "./appHosted/AppHostedLanguageGroup";
 import { AppHostedDownloadingPage } from "./appHosted/AppHostedDownloadingPage";
-import { appHostedSegment } from "./appHosted/AppHostedUtils";
+import { appHostedSegment, isAppHosted } from "./appHosted/AppHostedUtils";
 
 export let previousPathname = "";
 let currentPathname = "";
@@ -463,6 +463,12 @@ export function useSetBrowserTabTitle(title: string | undefined) {
         if (!title) {
             document.title = "Loading...";
         } else {
+            // When app-hosted, we often have different titles we want to show.
+            // Currently, those are being implemented using Helmet.
+            // At least in one case, this code was running after Helmet had set the title;
+            // thus the wrong title was being shown.
+            if (isAppHosted()) return;
+
             // we support titles coming in from the URL to support book playback
             // (I'm not sure why that's different, but it is).
             const urlParams = new URLSearchParams(location.search);
