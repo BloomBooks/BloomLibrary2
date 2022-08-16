@@ -166,7 +166,7 @@ function getFreeLearningBooks(): Promise<any[]> {
                             "R6qNTeumQXjJCMutAJYAwPtip1qBulkFyLefkCE5",
                     },
                     params: {
-                        limit: 10000,
+                        limit: 1000000,
                         where: {
                             harvestState: "Done",
                             inCirculation: { $in: [true, null] },
