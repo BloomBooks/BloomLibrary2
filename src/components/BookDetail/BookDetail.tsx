@@ -9,6 +9,7 @@ import { useGetBookDetail } from "../../connection/LibraryQueryHooks";
 import { Book } from "../../model/Book";
 
 import { Checkbox, Divider, FormControlLabel } from "@material-ui/core";
+import { Alert } from "@material-ui/lab";
 
 import { observer } from "mobx-react-lite";
 import { BookExtraPanels } from "./BookExtraPanels";
@@ -366,6 +367,21 @@ const BookDetailInternal: React.FunctionComponent<{
                                     top: ${getResponsiveChoice(-26, -12)}px;
                                 `}
                             />
+                        )}
+                        {userIsUploader && (
+                            <Alert
+                                severity="info"
+                                css={css`
+                                    margin-top: 20px;
+                                `}
+                            >
+                                <FormattedMessage
+                                    id={"book.detail.updateBookNotice"}
+                                    defaultMessage={
+                                        "If you want to update this book with any changes, just upload it again from Bloom, using the same account. Your new version will replace this one."
+                                    }
+                                />
+                            </Alert>
                         )}
 
                         <BookExtraPanels book={props.book} />
