@@ -13,6 +13,7 @@ import { FormattedMessage } from "react-intl";
 import TruncateMarkup from "react-truncate-markup";
 import { ICardSpec, useBaseCardSpec } from "./CardGroup";
 import { SmartTruncateMarkup } from "./SmartTruncateMarkup";
+import { useIsAppHosted } from "./appHosted/AppHostedUtils";
 
 export function useLanguageCardSpecs(larger?: boolean): ICardSpec {
     const getResponsiveChoice = useResponsiveChoice();
@@ -46,6 +47,7 @@ export const LanguageCard: React.FunctionComponent<
     const getResponsiveChoice = useResponsiveChoice();
     const { cardWidthPx, cardHeightPx } = useLanguageCardSpecs(props.larger);
     const urlPrefix = props.targetPrefix ?? "/language:";
+    const showCount = !useIsAppHosted();
 
     // In the main website, we want language cards to be responsive: smaller and with smaller text on small screens.
     // In the language chooser intended to be embedded in BloomReader, we want larger sizes.
@@ -133,7 +135,7 @@ export const LanguageCard: React.FunctionComponent<
                     bottom: 4px;
                 `}
             >
-                {props.usageCount ? (
+                {props.usageCount && showCount ? (
                     <FormattedMessage
                         id="bookCount"
                         defaultMessage="{count} books"
