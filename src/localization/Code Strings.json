@@ -230,6 +230,10 @@
         "message": "Show this book only to reviewers with whom I share the URL of this page.",
         "description": "Label for a check box which, if checked, marks the book as 'DRAFT' and prevents the book from showing in most views"
     },
+    "book.detail.updateBookNotice": {
+        "message": "If you want to update this book with any changes, just upload it again from Bloom, using the same account. Your new version will replace this one.",
+        "description": ""
+    },
     "book.metadata.level": {
         "description": "",
         "message": "Level {levelNumber}"
