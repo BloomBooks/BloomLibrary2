@@ -157,12 +157,13 @@ export const Routes: React.FunctionComponent<{}> = () => {
                                     "Stats not available in embedding."
                                 );
                             }
-                            const { collectionName } = splitPathname(
+                            const { collectionName, filters } = splitPathname(
                                 match.params.segments
                             );
                             return (
                                 <CollectionStatsPageCodeSplit
                                     collectionName={collectionName}
+                                    filters={filters}
                                     screen={match.params.screen}
                                 />
                             );
