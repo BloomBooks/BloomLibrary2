@@ -42,6 +42,7 @@ import {
     removeAppHostedFromPath,
     useIsAppHosted,
 } from "../appHosted/AppHostedUtils";
+import { Helmet } from "react-helmet";
 
 const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     const l10n = useIntl();
@@ -134,6 +135,14 @@ const BookDetailInternal: React.FunctionComponent<{
                 ${appHostedMode ? "height: 100%;" : ""}
             `}
         >
+            {appHostedMode && (
+                <Helmet>
+                    {/* &#65279; is U+FEFF ZERO WIDTH NO-BREAK SPACE which gives us nothing visible.
+                    Trying to set title to nothing results in an ugly browser default, showing part of the url.
+                    In this case, we want nothing because in the host app, the book title is already the thing at the top of the screen */}
+                    <title>&#65279;</title>
+                </Helmet>
+            )}
             <div
                 css={css`
                     a,
@@ -144,7 +153,6 @@ const BookDetailInternal: React.FunctionComponent<{
             >
                 {embeddedMode || appHostedMode || <Breadcrumbs />}
             </div>
-
             <div
                 // position is relative so this is the basis div for absolutely positioning the DRAFT overlay
                 css={css`
