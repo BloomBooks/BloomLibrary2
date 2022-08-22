@@ -131,3 +131,14 @@ function getQueryParamsToForward(
     const paramString = params.join("&");
     return paramString;
 }
+
+export function addParamToUrl(url: string, key: string, value: string): string {
+    const urlObject = new URL(url);
+    const params = urlObject.searchParams;
+    params.set(key, value);
+    return urlObject.toString();
+}
+
+export function addExternalParamToUrl(url: string): string {
+    return addParamToUrl(url, "external", "true");
+}
