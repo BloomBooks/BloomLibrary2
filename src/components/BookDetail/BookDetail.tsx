@@ -37,7 +37,7 @@ import { ReactComponent as DraftIcon } from "../../assets/DRAFT-Stamp.svg";
 import { useResponsiveChoice } from "../../responsiveUtilities";
 import { HarvesterProblemNotice } from "./HarvesterProblemNotice";
 import { SharingButtons } from "./SharingButtons";
-import { BlorgLink } from "../BlorgLink";
+import { addExternalParamToUrl, BlorgLink } from "../BlorgLink";
 import {
     removeAppHostedFromPath,
     useIsAppHosted,
@@ -203,7 +203,9 @@ const BookDetailInternal: React.FunctionComponent<{
                             // We want the hosting app to handle this link so it can route it to an external browser.
                             // Therefore, we need BlorgLink to treat it like an external link (i.e. not use our SPA router).
                             // By ensuring the link starts with http(s), we get the desired behavior.
-                            href={removeAppHostedFromPath(window.location.href)}
+                            href={addExternalParamToUrl(
+                                removeAppHostedFromPath(window.location.href)
+                            )}
                         >
                             {l10n.formatMessage({
                                 id: "appHosted.detailsOnBlorg",
