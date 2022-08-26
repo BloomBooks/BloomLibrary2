@@ -158,24 +158,21 @@ function fields(book: Book, isoCode: string): Array<string | undefined> {
 function getFreeLearningBooks(): Promise<any[]> {
     return new Promise<any[]>((resolve, reject) =>
         axios
-            .get(
-                "https://bloom-parse-server-production.azurewebsites.net/parse/classes/books",
-                {
-                    headers: {
-                        "X-Parse-Application-Id":
-                            "R6qNTeumQXjJCMutAJYAwPtip1qBulkFyLefkCE5",
+            .get("https://server.bloomlibrary.org/parse/classes/books", {
+                headers: {
+                    "X-Parse-Application-Id":
+                        "R6qNTeumQXjJCMutAJYAwPtip1qBulkFyLefkCE5",
+                },
+                params: {
+                    limit: 1000000,
+                    where: {
+                        harvestState: "Done",
+                        inCirculation: { $in: [true, null] },
+                        tags: { $all: ["system:FreeLearningIO"] },
                     },
-                    params: {
-                        limit: 10000,
-                        where: {
-                            harvestState: "Done",
-                            inCirculation: { $in: [true, null] },
-                            tags: { $all: ["system:FreeLearningIO"] },
-                        },
-                        include: "langPointers",
-                    },
-                }
-            )
+                    include: "langPointers",
+                },
+            })
             .then((result) => {
                 resolve(result.data.results);
             })
