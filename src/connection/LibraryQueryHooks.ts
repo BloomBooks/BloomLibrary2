@@ -21,6 +21,7 @@ import {
 } from "../model/Collections";
 import { doExpensiveClientSideSortingIfNeeded } from "./sorting";
 import { BookOrderingScheme } from "../model/ContentInterfaces";
+import { isAppHosted } from "../components/appHosted/AppHostedUtils";
 
 /**
  * @summary The minimum fields returned by Parse
@@ -1446,6 +1447,10 @@ export function constructParseBookQuery(
         case BooleanOptions.All:
             // don't mention it
             break;
+    }
+
+    if (isAppHosted()) {
+        params.where.hasBloomPub = true;
     }
 
     if (f.anyOfThese) {
