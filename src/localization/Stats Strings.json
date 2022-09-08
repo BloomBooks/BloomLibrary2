@@ -107,6 +107,10 @@
         "description": "",
         "message": "Custom"
     },
+    "stats.booksWithAnalytics": {
+        "description": "Given a set of books, we may only have received analytics from a subset of them. This is the count of those books.",
+        "message": "Books with Analytics"
+    },
     "stats.booksRead.finishedCount": {
         "description": "",
         "message": "Finished"
@@ -165,7 +169,7 @@
     },
     "stats.reads.info": {
         "description": "",
-        "message": "The number of times the book was read, in part or whole."
+        "message": "The number of times a book was read, in part or whole."
     },
     "stats.reads.web": {
         "description": "",
