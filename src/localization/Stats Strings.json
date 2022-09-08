@@ -145,7 +145,7 @@
     },
     "stats.devices.info": {
         "description": "",
-        "message": "Count of devices for which we received notice that at least one book from this collection had been loaded."
+        "message": "Count of devices for which we received notice that at least one book from this collection had been read."
     },
     "stats.devices.bloomReader": {
         "description": "",
@@ -165,7 +165,7 @@
     },
     "stats.reads.info": {
         "description": "",
-        "message": "The number of times the book was read, in part or whole. We are currently only showing reads on Bloom Reader. We will soon add reads on the Web, in apps, and in the desktop."
+        "message": "The number of times the book was read, in part or whole."
     },
     "stats.reads.web": {
         "description": "",

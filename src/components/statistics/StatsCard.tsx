@@ -10,11 +10,10 @@ import CardContent from "@material-ui/core/CardContent";
 import { IItem, kDarkGrey } from "./StatsOverviewScreen";
 import InfoIcon from "@material-ui/icons/InfoOutlined";
 import { IconButton } from "@material-ui/core";
-import { kStatsPageGray } from "./StatsInterfaces";
 import Tooltip from "react-tooltip-lite";
 
 export const StatsCard: React.FunctionComponent<{
-    overrideTotal?: number;
+    overrideTotal?: number | React.FunctionComponent;
     subitems?: IItem[];
     info?: string;
 }> = (props) => (
@@ -46,7 +45,7 @@ export const StatsCard: React.FunctionComponent<{
                     top: 0;
                     right: 0;
                     span {
-                        color: ${kStatsPageGray};
+                        color: ${kDarkGrey};
                     }
                 }
             `}
@@ -81,13 +80,16 @@ export const StatsCard: React.FunctionComponent<{
                     margin-bottom: 0;
                 `}
             >
-                {formatNumber(
-                    props.overrideTotal
-                        ? props.overrideTotal
-                        : props.subitems
+                {/* overrideTotal can be either a number or a function supplying a react component*/}
+                {props.overrideTotal === undefined
+                    ? formatNumber(
+                          props.subitems
                               ?.map((i) => i.value)
                               .reduce((t: number, i: number) => t + i, 0)
-                )}
+                      )
+                    : typeof props.overrideTotal === "number"
+                    ? formatNumber(props.overrideTotal)
+                    : props.overrideTotal({})}
             </div>
             <div
                 css={css`
