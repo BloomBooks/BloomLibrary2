@@ -23,7 +23,8 @@ export interface IStatsPageProps {
 }
 
 export interface IOverviewStats {
-    books: number;
+    // In a given set of books, we'll have analytics for some of them, and not for others
+    booksWithAnalytics: number;
     languages: number;
     topics: number;
 

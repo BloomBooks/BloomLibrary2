@@ -9,6 +9,7 @@ import { StatsCard } from "./StatsCard";
 import { useProvideDataForExport } from "../../export/exportData";
 import { useGetOverviewStats } from "./useGetOverviewStats";
 import { FormattedMessage, useIntl } from "react-intl";
+import { BookCount } from "../BookCount";
 
 //const gapWidth = "10px";
 export const kDarkGrey = "#5d5d5d";
@@ -50,7 +51,7 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsPageProps> = (
             <StatsCard
                 //  I don't think we're ready for translation on this one yet...
                 info={
-                    "These statistics are for books that were read during the time period. This may be different from the count of books in the collection, if some books were not read during the time period, or if some books were removed from the collection."
+                    "These statistics are for books that were read during the selected time period. If we have not received any analytics from some books during the selected time period, then 'Books with Analytics' will be smaller than the total number of books. If 'Books with Analytics' is larger than the total, that means that we have analytics for some books that are currently not a part of this collection."
                 }
                 subitems={[
                     {
@@ -67,8 +68,20 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsPageProps> = (
                         }),
                         value: stats.topics,
                     },
+                    {
+                        label: i18n.formatMessage({
+                            id: "books-with-analytics",
+                            defaultMessage: "Books with Analytics",
+                        }),
+                        value: stats.booksWithAnalytics,
+                    },
                 ]}
-                overrideTotal={stats.books}
+                overrideTotal={() => (
+                    <BookCount
+                        collection={props.collection}
+                        message="{0}" // just show the number
+                    ></BookCount>
+                )}
             >
                 <FormattedMessage id="books" defaultMessage="Books" />
             </StatsCard>
@@ -77,7 +90,7 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsPageProps> = (
                 info={i18n.formatMessage({
                     id: "stats.devices.info",
                     defaultMessage:
-                        "Count of devices for which we received notice that at least one book from this collection had been loaded.",
+                        "Count of devices for which we received notice that at least one book from this collection had been read.",
                 })}
                 overrideTotal={stats.bloomPubDeviceMobile}
                 // subitems={[
@@ -114,7 +127,7 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsPageProps> = (
                 info={i18n.formatMessage({
                     id: "stats.reads.info",
                     defaultMessage:
-                        "The number of times the book was read, in part or whole. We are currently only showing reads on Bloom Reader. We will soon add reads on the Web, in apps, and in the desktop.",
+                        "The number of times a book was read, in part or whole.",
                 })}
                 subitems={[
                     {
