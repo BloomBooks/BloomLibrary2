@@ -181,3 +181,6 @@ export const Footer: React.FunctionComponent = () => {
         </div>
     );
 };
+
+// though we normally don't like to export defaults, this is required for react.lazy (code splitting)
+export default Footer;

@@ -7,6 +7,7 @@ import * as serviceWorker from "./serviceWorker";
 import { createBrowserHistory } from "history";
 import { isEmbedded } from "./components/EmbeddingHost";
 import { initializeFirebase } from "./firebase/firebase";
+import { isAppHosted } from "./components/appHosted/AppHostedUtils";
 
 try {
     // we're sending errors so long as we're not running on localhost
@@ -24,7 +25,8 @@ try {
 
 // supports authentication, including automatic login if a cookie supports it.
 // We don't ever allow things to behave as logged-in in embedded Bloom Library instances.
-if (!isEmbedded()) {
+// Or in app-hosted mode.
+if (!isEmbedded() && !isAppHosted()) {
     initializeFirebase();
 }
 

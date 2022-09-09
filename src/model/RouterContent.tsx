@@ -8,7 +8,7 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 import { Header } from "../components/header/Header";
 import { Routes } from "../components/Routes";
-import { Footer } from "../components/Footer";
+import { FooterCodeSplit } from "../components/FooterCodeSplit";
 import { useIsEmbedded } from "../components/EmbeddingHost";
 import { kStatsPageGray } from "../components/statistics/StatsInterfaces";
 import { useIsAppHosted } from "../components/appHosted/AppHostedUtils";
@@ -46,7 +46,9 @@ export const RouterContent: React.FunctionComponent<{}> = (props) => {
             >
                 <Routes />
             </div>
-            {embeddedMode || appHostedMode || showingPlayer || <Footer />}
+            {embeddedMode || appHostedMode || showingPlayer || (
+                <FooterCodeSplit />
+            )}
         </React.Fragment>
     );
 };

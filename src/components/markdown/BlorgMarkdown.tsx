@@ -3,7 +3,9 @@ import Markdown from "markdown-to-jsx";
 import { BloomReaderVersionNumber } from "../BloomReaderVersionNumber";
 import { WindowsInstallerDownload } from "./WindowsInstallerDownload";
 import { WindowsInstallerLink } from "./WindowsInstallerLink";
-import { Feature, FeatureGroup, FeatureMatrix } from "./FeatureMatrix";
+import { FeatureMatrixCodeSplit } from "./FeatureMatrix/FeatureMatrixCodeSplit";
+import { FeatureGroupCodeSplit } from "./FeatureMatrix/FeatureGroupCodeSplit";
+import { FeatureCodeSplit } from "./FeatureMatrix/FeatureCodeSplit";
 import { BlorgLink } from "../BlorgLink";
 import { MarkdownBookCards } from "./MarkdownBookCards";
 import { Section } from "./Section";
@@ -31,9 +33,9 @@ export const BlorgMarkdown: React.FunctionComponent<{
             WindowsInstallerDownload,
             WindowsInstallerLink,
             BloomReaderVersionNumber,
-            FeatureMatrix,
-            Feature,
-            FeatureGroup,
+            FeatureMatrix: { component: FeatureMatrixCodeSplit },
+            Feature: { component: FeatureCodeSplit },
+            FeatureGroup: { component: FeatureGroupCodeSplit },
             Section,
             Testimonial,
             Columns,
