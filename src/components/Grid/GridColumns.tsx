@@ -64,8 +64,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                 </BlorgLink>
             ),
             addToFilter: (filter: IFilter, value: string) => {
-                // enhance: at the moment we don't have a "title:" search axis, so this will search other fields as well
-                filter.search += ` ${value}`;
+                filter.search += ` title:${value}`;
             },
         },
         {

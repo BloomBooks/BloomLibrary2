@@ -1144,6 +1144,7 @@ export function constructParseBookQuery(
             let facetLabel = facetParts[0];
             const facetValue = facetParts[1];
             switch (facetLabel) {
+                case "title":
                 case "copyright":
                 case "country":
                 case "publisher":
@@ -1234,9 +1235,7 @@ export function constructParseBookQuery(
                     // If you don't specify *any* keys, then you get them all, fine.
                     // But if you only specify "$score", then that's all you will
                     // get and that's not enough to even identify the book.
-                    throw new Error(
-                        "params.keys must be set to use default ordering"
-                    );
+                    params.keys = bookDetailFields;
                 }
                 if (params.keys.indexOf("$score") < 0) {
                     params.keys = "$score," + params.keys;
