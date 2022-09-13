@@ -23,6 +23,7 @@ import {
 import { LoggedInUser } from "../../connection/LoggedInUser";
 import { useCookies } from "react-cookie";
 import { useShowTroubleshootingStuff } from "../../Utilities";
+import { IUserMenuProps } from "./UserMenuCodeSplit";
 
 // This React component displays a button for functions related to the user who may
 // be logged in. If no user is logged in, it displays a generic icon with pull-down
@@ -32,11 +33,7 @@ import { useShowTroubleshootingStuff } from "../../Utilities";
 // Currently, it is also responsible for handling a user who lacks a verified
 // email...currently just with an alert followed by forced logout. This functionality
 // might move when we decide what we really want to show.
-interface IProps extends React.HTMLProps<HTMLDivElement> {
-    buttonHeight: string;
-}
-
-export const UserMenu: React.FunctionComponent<IProps> = (props) => {
+export const UserMenu: React.FunctionComponent<IUserMenuProps> = (props) => {
     const l10n = useIntl();
     // This variable is used according to an apparently standard but rather
     // obscure convention for managing Material button/menu combinations.
@@ -340,3 +337,6 @@ export const UserMenu: React.FunctionComponent<IProps> = (props) => {
         // </FirebaseAuthConsumer>
     );
 };
+
+// though we normally don't like to export defaults, this is required for react.lazy (code splitting)
+export default UserMenu;

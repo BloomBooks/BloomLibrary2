@@ -13,7 +13,7 @@ import { ReadBookPageCodeSplit } from "./ReadBookPageCodeSplit";
 import { CollectionSubsetPage } from "./CollectionSubsetPage";
 import { ContentfulBanner } from "./banners/ContentfulBanner";
 import { CollectionPage } from "./CollectionPage";
-import { Footer } from "./Footer";
+import { FooterCodeSplit } from "./FooterCodeSplit";
 import { ContentfulPage } from "./pages/ContentfulPage";
 import { getDummyCollectionForPreview } from "../model/Collections";
 import { ErrorBoundary } from "./ErrorBoundary";
@@ -74,7 +74,7 @@ export const Routes: React.FunctionComponent<{}> = () => {
                                         )}
                                     />
                                 </div>
-                                <Footer />
+                                <FooterCodeSplit />
                             </React.Fragment>
                         )}
                     ></Route>
