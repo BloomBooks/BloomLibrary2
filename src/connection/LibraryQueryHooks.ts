@@ -945,6 +945,7 @@ export function splitString(
     }
     */
     const facets = [
+        "title",
         "uploader:",
         "copyright:",
         "harvestState:",
