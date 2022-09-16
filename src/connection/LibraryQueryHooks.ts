@@ -57,15 +57,19 @@ export interface IParseResponseDataWithCount<T = any> {
 /**
  * @summary For things other than books, which should use `useBookQuery()`
  * @param T The type of the result record returned by Parse. Or use "any" or omit to ignore types.
+ * If doNotActuallyRunQuery is true, the query will not be executed, and the result will always be empty.
+ * (This is useful when rules of hooks force us to call this unconditionally, but we sometimes don't want to.)
  */
 function useLibraryQuery<T = any>(
     queryClass: string,
-    params: {}
+    params: {},
+    doNotActuallyRunQuery?: boolean
 ): IReturns<IParseResponseData<T>> {
     return useAxios<IParseResponseData<T>>({
         url: `${getConnection().url}classes/${queryClass}`,
         method: "GET",
         trigger: "true",
+        forceDispatchEffect: () => !doNotActuallyRunQuery,
         options: {
             headers: getConnection().headers,
             params,
@@ -78,11 +82,14 @@ function useLibraryQuery<T = any>(
  */
 function useLibraryQueryWithCount<T = any>(
     queryClass: string,
-    params: {}
+    params: {},
+    doNotActuallyRunQuery?: boolean
 ): IReturns<IParseResponseDataWithCount<T>> {
-    return useLibraryQuery(queryClass, { ...params, count: 1 }) as IReturns<
-        IParseResponseDataWithCount<T>
-    >;
+    return useLibraryQuery(
+        queryClass,
+        { ...params, count: 1 },
+        doNotActuallyRunQuery
+    ) as IReturns<IParseResponseDataWithCount<T>>;
 }
 
 function useGetLanguagesList() {
@@ -103,10 +110,21 @@ export function useGetCleanedAndOrderedLanguageList(): ILanguage[] {
     return [];
 }
 export function useGetTagList(): string[] {
-    const axiosResult = useLibraryQueryWithCount("tag", {
-        limit: Number.MAX_SAFE_INTEGER,
-        order: "name",
-    });
+    // I'd prefer to use useAppHosted but it crashes, I think because this code runs outside the
+    // scope where it works.
+    const appHosted = window.location.pathname.startsWith("/app-hosted-v1");
+    console.log("useGetTagList: " + appHosted);
+    const axiosResult = useLibraryQueryWithCount(
+        "tag",
+        {
+            limit: Number.MAX_SAFE_INTEGER,
+            order: "name",
+        },
+        appHosted // don't actually run the query if we're app hosted; we don't need tags
+    );
+    if (appHosted) {
+        return ["dummy"]; // don't need the list, but need non-empty to stop waiting.
+    }
 
     if (axiosResult.response?.data?.results) {
         assertAllParseRecordsReturned(axiosResult.response);
