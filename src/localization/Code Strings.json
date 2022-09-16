@@ -13,9 +13,14 @@
     },
 
     "bloomReader": {
-        "description": "",
-        "message": "Bloom Reader"
+        "message": "Bloom Reader",
+        "description": "The name of an Android app (probably does not need to be translated)"
     },
+    "bloomPubViewer": {
+        "message": "BloomPUB Viewer",
+        "description": "The name of a software application (probably does not need to be translated)"
+    },
+
     "downloads": {
         "description": "",
         "message": "Downloads"
