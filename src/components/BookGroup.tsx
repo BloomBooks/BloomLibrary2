@@ -17,7 +17,7 @@ import {
 import { BookCard, useBookCardSpec } from "./BookCard";
 import { useResponsiveChoice } from "../responsiveUtilities";
 import { BookOrderingScheme } from "../model/ContentInterfaces";
-import { CardSwiperLazy } from "./CardSwiper";
+import { CardSwiperCodeSplit } from "./CardSwiperCodeSplit";
 
 interface IProps {
     title: string;
@@ -184,14 +184,14 @@ export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
     // not to try to fix it.
     const cardSpec = useBookCardSpec();
     const bookList = showInOneRow ? (
-        <CardSwiperLazy
+        <CardSwiperCodeSplit
             data={cards}
             getReactElement={(x) => x}
             wrapperRole="list"
             cardSpec={cardSpec}
         >
             {cards}
-        </CardSwiperLazy>
+        </CardSwiperCodeSplit>
     ) : (
         <div
             css={css`
