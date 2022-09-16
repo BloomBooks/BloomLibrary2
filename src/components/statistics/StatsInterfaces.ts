@@ -28,8 +28,10 @@ export interface IOverviewStats {
     languages: number;
     topics: number;
 
-    bloomPubDeviceMobile: number;
-    bloomPubDevicePC: number;
+    usersWeb: number;
+    usersApps: number;
+    usersBloomReader: number;
+    usersBloomPUBViewer: number;
 
     downloadsEpub: number;
     downloadsBloomPub: number;
@@ -39,6 +41,8 @@ export interface IOverviewStats {
     readsWeb: number;
     readsApps: number;
     readsBloomReader: number;
+
+    countries: number;
 }
 
 // These are query results in which each row represents one day.
