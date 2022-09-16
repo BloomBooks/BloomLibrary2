@@ -15,15 +15,17 @@ import {
     IBasicBookInfo,
 } from "../connection/LibraryQueryHooks";
 import { BookCard, useBookCardSpec } from "./BookCard";
-import { SingleRowCardSwiper } from "./SingleRowCardSwiper";
 import { useResponsiveChoice } from "../responsiveUtilities";
 import { BookOrderingScheme } from "../model/ContentInterfaces";
+import { CardSwiperLazy } from "./CardSwiper";
 
 interface IProps {
     title: string;
     order?: string;
     // I don't know... this could be "bookLimit" instead "rows". Have to think in terms
     // of mobile versus big screen.... hmmm...
+    // Warning: if rows is 1 or unspecified, BookGroup shows a swiper row; this does not seem to be
+    // working well at least in our stories, but it is not used in the real website as of Sep 2022.
     rows?: number;
 
     contextLangIso?: string;
@@ -172,10 +174,24 @@ export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
     //     );
     // }
 
-    // JH Jan 2020: I cannot find anywhere that this is showInOne Row is used.
-    // It's also puzzling that it has to have its own CardSwiper implementation.
+    // JT Sep 2022: showInOneRow is true only when BookGroup is either told to show exactly one row, or
+    // not told how many rows to show. Currently this happens only in the various stories which were written
+    // early on to test it; the only real use of BookGroup is in ByLanguageGroups, which passes 999.
+    // When I tried the stories in Sep 2022, they were working very badly: showing a set of cards
+    // with no spacing. I wanted to retire the obsolete SingleRowCardSwiper, so I switched this rather crudely
+    // to use our current CardSwiperLazy. This looks a bit better but the book cards are not getting their
+    // images. Since this currently only shows up in test stories that we don't seem to be using, I decided
+    // not to try to fix it.
+    const cardSpec = useBookCardSpec();
     const bookList = showInOneRow ? (
-        <SingleRowCardSwiper wrapperRole="list">{cards}</SingleRowCardSwiper>
+        <CardSwiperLazy
+            data={cards}
+            getReactElement={(x) => x}
+            wrapperRole="list"
+            cardSpec={cardSpec}
+        >
+            {cards}
+        </CardSwiperLazy>
     ) : (
         <div
             css={css`
