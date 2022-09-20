@@ -13,10 +13,11 @@ import "swiper/components/a11y/a11y.min.css";
 import { useResponsiveChoice } from "../responsiveUtilities";
 import { ICardSpec } from "./CardGroup";
 import { commonUI } from "../theme";
+import { ICardSwiperProps } from "./CardSwiperCodeSplit";
 
 SwiperCore.use([Navigation, A11y]);
 
-export const swiperConfig: Swiper = {
+const swiperConfig: Swiper = {
     preloadImages: false,
     lazy: {
         loadPrevNext: true,
@@ -48,22 +49,7 @@ export const swiperConfig: Swiper = {
 // small windows.
 // Enhance: this could be made generic, with a type param indicating that the type of objects in data
 // is the same as the type passed as the first argument of getReactElement
-export const CardSwiperLazy: React.FunctionComponent<{
-    data: any[];
-    // Given one of the items in data (and its index), return the react element that should be
-    // shown for that card when it is visible.
-    getReactElement: (card: any, index: number) => ReactElement;
-
-    // Typically the swiper is a list. I can't find a way to configure it so that the element containing
-    // the cards is a UL, but by setting this to 'list' and making items with role listitem we achieve
-    // the same accessibility goals. This role becomes the value of the role attribute of the swiper
-    // wrapper element, which is the immediate parent of the items. Note that it's not always a list, e.g.,
-    // in the LanguageGroup a further-out element is a listbox and the items have role 'option'.
-    // If you set a wrapperRole, make sure the children you pass have role listitem.
-    wrapperRole?: string;
-
-    cardSpec: ICardSpec;
-}> = (props) => {
+const CardSwiperLazy: React.FunctionComponent<ICardSwiperProps> = (props) => {
     const [swiper, setSwiper] = useState<any | null>(null);
     const getResponsiveChoice = useResponsiveChoice();
     const [showAll, setShowAll] = useState(false);
@@ -212,3 +198,5 @@ export const CardSwiperLazy: React.FunctionComponent<{
         </Swiper>
     );
 };
+
+export default CardSwiperLazy;

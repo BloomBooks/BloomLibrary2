@@ -41,7 +41,6 @@ export const ByLanguageGroups: React.FunctionComponent<{
     titlePrefix: string;
     collection: ICollection;
     reportBooksAndLanguages?: (bookCount: number, langCount: number) => void;
-    rowsPerLanguage?: number;
     // Sometimes it's nice to drop English, in particular.
     excludeLanguages?: string[];
 }> = (props) => {
@@ -195,7 +194,7 @@ export const ByLanguageGroups: React.FunctionComponent<{
                         }`}
                         predeterminedBooks={books}
                         contextLangIso={l.isoCode}
-                        rows={props.rowsPerLanguage ?? 999}
+                        rows={999}
                     />
                 );
             })}

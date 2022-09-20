@@ -18,7 +18,7 @@ import matchSorter from "match-sorter";
 import searchIcon from "../search.png";
 import { CachedTablesContext } from "../model/CacheProvider";
 import { ILanguage } from "../model/Language";
-import { CardSwiperLazy } from "./CardSwiper";
+import { CardSwiperCodeSplit } from "./CardSwiperCodeSplit";
 import { Redirect } from "react-router-dom";
 import { FormattedMessage, useIntl } from "react-intl";
 import { propsToHideAccessibilityElement } from "../Utilities";
@@ -54,7 +54,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
         if (languagesToDisplay.length) {
             return (
                 <div {...getMenuProps({})}>
-                    <CardSwiperLazy
+                    <CardSwiperCodeSplit
                         data={languagesToDisplay}
                         cardSpec={cardSpec}
                         getReactElement={(l: ILanguage, index: number) => (

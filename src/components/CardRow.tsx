@@ -5,7 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 import React, { ReactElement } from "react";
 import LazyLoad from "react-lazyload";
-import { CardSwiperLazy } from "./CardSwiper";
+import { CardSwiperCodeSplit } from "./CardSwiperCodeSplit";
 import { ICollection } from "../model/ContentInterfaces";
 import {
     CollectionLabel,
@@ -39,7 +39,7 @@ export const CardRow: React.FunctionComponent<IProps> = (props) => {
                 padding-left: 0;
             `}
         >
-            <CardSwiperLazy
+            <CardSwiperCodeSplit
                 wrapperRole="list"
                 data={props.data}
                 getReactElement={props.getCards}

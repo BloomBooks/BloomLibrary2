@@ -17,7 +17,7 @@ import {
 } from "../connection/LibraryQueryHooks";
 import { BookCard, useBookCardSpec } from "./BookCard";
 import { MoreCard } from "./MoreCard";
-import { CardSwiperLazy } from "./CardSwiper";
+import { CardSwiperCodeSplit } from "./CardSwiperCodeSplit";
 import { ICollection } from "../model/ContentInterfaces";
 import Typography from "@material-ui/core/Typography";
 import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
@@ -157,7 +157,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
             data.push("more");
         }
         bookList = (
-            <CardSwiperLazy
+            <CardSwiperCodeSplit
                 data={data}
                 cardSpec={cardSpec}
                 getReactElement={(item: IBasicBookInfo | "more", index) => {
@@ -180,7 +180,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
                         );
                     }
                 }}
-            ></CardSwiperLazy>
+            ></CardSwiperCodeSplit>
         );
     } else {
         const verticalSpacing = cardSpec.cardSpacingPx;
