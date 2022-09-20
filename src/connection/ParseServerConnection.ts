@@ -42,6 +42,9 @@ const local: IConnection = {
 
 export function getConnection(): IConnection {
     const result = prod;
+    // Some previous code which we don't need now...only one case returns anything but prod...
+    // but I think it's worth keeping to document the possibilities that we explicitly
+    // decided should be prod.
     // if (
     //     window.location.hostname === "bloomlibrary.org" ||
     //     window.location.hostname === "next.bloomlibrary.org" ||

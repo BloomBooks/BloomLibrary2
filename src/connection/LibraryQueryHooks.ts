@@ -112,8 +112,7 @@ export function useGetCleanedAndOrderedLanguageList(): ILanguage[] {
 export function useGetTagList(): string[] {
     // I'd prefer to use useAppHosted but it crashes, I think because this code runs outside the
     // scope where it works.
-    const appHosted = window.location.pathname.startsWith("/app-hosted-v1");
-    console.log("useGetTagList: " + appHosted);
+    const appHosted = isAppHosted();
     const axiosResult = useLibraryQueryWithCount(
         "tag",
         {
