@@ -16,131 +16,147 @@ export const StatsCard: React.FunctionComponent<{
     overrideTotal?: number | React.FunctionComponent;
     subitems?: IItem[];
     info?: string;
-}> = (props) => (
-    <Card
-        key={props.children?.toString()}
-        css={css`
-            width: 350px;
+}> = (props) => {
+    let totalAsCompactString = undefined;
+    let totalAsFormattedString = undefined;
+    let overrideComponent: React.FunctionComponent | undefined = undefined;
+    if (typeof props.overrideTotal === "number") {
+        totalAsCompactString = formatNumber(props.overrideTotal);
+        totalAsFormattedString = props.overrideTotal.toLocaleString();
+    } else if (props.overrideTotal === undefined) {
+        const v = props.subitems
+            ?.map((i) => i.value)
+            .reduce((t: number, i: number) => t + i, 0);
 
-            * {
-                text-align: center;
-            }
-        `}
-    >
-        <CardContent
+        totalAsCompactString = formatNumber(v);
+        totalAsFormattedString = v?.toLocaleString();
+    } else overrideComponent = props.overrideTotal;
+
+    return (
+        <Card
+            key={props.children?.toString()}
             css={css`
-                padding: 16px;
-                // Override MuiCardContent default which gives the last child (thus the card) a bottom of 24px.
-                :last-child {
-                    padding-bottom: 16px;
-                }
-                height: 200px;
+                width: 350px;
 
-                display: flex;
-                flex-direction: column;
-                // get the info icon in the upper left
-                position: relative;
-                .infoTooltip {
-                    position: absolute !important;
-                    top: 0;
-                    right: 0;
-                    span {
-                        color: ${kDarkGrey};
-                    }
+                * {
+                    text-align: center;
                 }
             `}
         >
-            {props.info && (
-                <Tooltip
-                    className={"infoTooltip"}
-                    content={props.info}
-                    arrow
-                    useDefaultStyles
-                >
-                    <IconButton>
-                        <InfoIcon></InfoIcon>
-                    </IconButton>
-                </Tooltip>
-            )}
-            <div
+            <CardContent
                 css={css`
-                    &,
-                    * {
-                        font-size: 20px;
-                        color: ${kDarkGrey};
+                    padding: 16px;
+                    // Override MuiCardContent default which gives the last child (thus the card) a bottom of 24px.
+                    :last-child {
+                        padding-bottom: 16px;
+                    }
+                    height: 200px;
+
+                    display: flex;
+                    flex-direction: column;
+                    // get the info icon in the upper left
+                    position: relative;
+                    .infoTooltip {
+                        position: absolute !important;
+                        top: 0;
+                        right: 0;
+                        span {
+                            color: ${kDarkGrey};
+                        }
                     }
                 `}
             >
-                {props.children}
-            </div>
-            <div
-                css={css`
-                    font-size: 48px;
-                    font-weight: bold;
-                    margin-bottom: 0;
-                `}
-            >
-                {/* overrideTotal can be either a number or a function supplying a react component*/}
-                {props.overrideTotal === undefined
-                    ? formatNumber(
-                          props.subitems
-                              ?.map((i) => i.value)
-                              .reduce((t: number, i: number) => t + i, 0)
-                      )
-                    : typeof props.overrideTotal === "number"
-                    ? formatNumber(props.overrideTotal)
-                    : props.overrideTotal({})}
-            </div>
-            <div
-                css={css`
-                    display: flex;
-                    flex-direction: row;
-                    margin-top: auto;
-                `}
-            >
-                {props.subitems?.map((i) => (
-                    // One sub item
-                    <div
-                        key={i.label}
-                        css={css`
-                            margin-right: 10px;
-                            min-width: 60px;
-
-                            &,
-                            * {
-                                text-align: left;
-                            }
-                        `}
+                {props.info && (
+                    <Tooltip
+                        className={"infoTooltip"}
+                        content={props.info}
+                        arrow
+                        useDefaultStyles
                     >
+                        <IconButton>
+                            <InfoIcon></InfoIcon>
+                        </IconButton>
+                    </Tooltip>
+                )}
+                <div
+                    css={css`
+                        &,
+                        * {
+                            font-size: 20px;
+                            color: ${kDarkGrey};
+                        }
+                    `}
+                >
+                    {props.children}
+                </div>
+                <div
+                    css={css`
+                        font-size: 48px;
+                        font-weight: bold;
+                        margin-bottom: 0;
+                    `}
+                    title={totalAsFormattedString}
+                >
+                    {/* overrideTotal can be either a number or a function supplying a react component*/}
+                    {totalAsCompactString || overrideComponent!({})}
+                </div>
+                <div
+                    css={css`
+                        display: flex;
+                        flex-direction: row;
+                        margin-top: auto;
+                    `}
+                >
+                    {props.subitems?.map((i) => (
+                        // One sub item
                         <div
+                            key={i.label}
                             css={css`
-                                color: ${kDarkGrey};
-                                font-size: 12px;
+                                margin-right: 10px;
+                                min-width: 60px;
 
-                                vertical-align: bottom;
-                                display: table-cell;
+                                &,
+                                * {
+                                    text-align: left;
+                                }
                             `}
                         >
-                            {i.label}
+                            <div
+                                css={css`
+                                    color: ${kDarkGrey};
+                                    font-size: 12px;
+
+                                    vertical-align: bottom;
+                                    display: table-cell;
+                                `}
+                            >
+                                {i.label}
+                            </div>
+                            <div
+                                css={css`
+                                    font-size: 24px;
+                                    font-weight: bold;
+                                `}
+                                title={Intl.NumberFormat([]).format(i.value)}
+                            >
+                                {formatNumber(i.value)}
+                            </div>
                         </div>
-                        <div
-                            css={css`
-                                font-size: 24px;
-                                font-weight: bold;
-                            `}
-                        >
-                            {formatNumber(i.value)}
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </CardContent>
-    </Card>
-);
+                    ))}
+                </div>
+            </CardContent>
+        </Card>
+    );
+};
 
 function formatNumber(i: number | undefined): string {
     if (i === undefined) {
         return "0";
     }
-    return i.toLocaleString();
+    // note, sadly, Chrome does not implement the "rounding" option, so this will
+    // sometimes round *up*, which I think is undesirable. We do show the exact
+    // number as a tooltip and mention this in the info at the bottom of the screen.
+    return Intl.NumberFormat([], { notation: "compact" })
+        .format(i)
+        .replace("K", "k");
 }

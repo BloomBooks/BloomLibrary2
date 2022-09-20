@@ -23,6 +23,10 @@
         "description": "",
         "message": "Note that the events that devices and browsers try to send to us are sometimes stopped by various network firewalls. Therefore we may be under counting."
     },
+    "stats.queryDescription.roundingNote": {
+        "description": "",
+        "message": "Large numbers that have been compacted with a 'k' or 'm' may be rounded up or down. Hover over the number to see the exact value."
+    },
     "stats.queryDescription.about": {
         "description": "",
         "message": "About this data"
