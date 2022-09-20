@@ -83,10 +83,18 @@ export const QueryDescription: React.FunctionComponent<{
                     )}
                 </li>
             </ul>
-            {T(
-                "underCountingNote",
-                "Note that the events that devices and browsers try to send to us are sometimes stopped by various network firewalls. Therefore we may be undercounting."
-            )}
+            <p>
+                {T(
+                    "underCountingNote",
+                    "Note that the events that devices and browsers try to send to us are sometimes stopped by various network firewalls. Therefore we may be undercounting."
+                )}
+            </p>
+            <p>
+                {T(
+                    "roundingNote",
+                    "Large numbers that have been compacted with a 'k' or 'm' may be rounded up or down. Hover over the number to see the exact value."
+                )}
+            </p>
         </div>
     );
 };
