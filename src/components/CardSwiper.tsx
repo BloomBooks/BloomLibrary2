@@ -4,14 +4,13 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { ReactElement, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import SwiperCore, { Navigation, A11y } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper.min.css";
 import "swiper/components/navigation/navigation.min.css";
 import "swiper/components/a11y/a11y.min.css";
 import { useResponsiveChoice } from "../responsiveUtilities";
-import { ICardSpec } from "./CardGroup";
 import { commonUI } from "../theme";
 import { ICardSwiperProps } from "./CardSwiperCodeSplit";
 
