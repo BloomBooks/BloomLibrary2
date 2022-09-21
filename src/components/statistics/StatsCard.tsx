@@ -16,6 +16,7 @@ export const StatsCard: React.FunctionComponent<{
     overrideTotal?: number | React.FunctionComponent;
     subitems?: IItem[];
     info?: string;
+    icon?: string;
 }> = (props) => {
     let totalAsCompactString = undefined;
     let totalAsFormattedString = undefined;
@@ -25,12 +26,34 @@ export const StatsCard: React.FunctionComponent<{
         totalAsFormattedString = props.overrideTotal.toLocaleString();
     } else if (props.overrideTotal === undefined) {
         const v = props.subitems
-            ?.map((i) => i.value)
+            ?.map((i) => (i.excludeFromTotal ? 0 : i.value))
             .reduce((t: number, i: number) => t + i, 0);
 
         totalAsCompactString = formatNumber(v);
         totalAsFormattedString = v?.toLocaleString();
     } else overrideComponent = props.overrideTotal;
+
+    function getSubItemRow(rowNum: number): JSX.Element {
+        const subItemsForRow = props.subitems
+            ?.filter((i) => {
+                if (!i.row || i.row < 1) i.row = 1;
+                return i.row === rowNum;
+            })
+            .map((i) => getSubItem(i));
+
+        return subItemsForRow?.length ? (
+            <div
+                css={css`
+                    display: flex;
+                    margin-top: ${rowNum === 1 ? "auto" : "10px"};
+                `}
+            >
+                {subItemsForRow}
+            </div>
+        ) : (
+            <React.Fragment />
+        );
+    }
 
     return (
         <Card
@@ -50,7 +73,7 @@ export const StatsCard: React.FunctionComponent<{
                     :last-child {
                         padding-bottom: 16px;
                     }
-                    height: 200px;
+                    height: 230px;
 
                     display: flex;
                     flex-direction: column;
@@ -78,6 +101,7 @@ export const StatsCard: React.FunctionComponent<{
                         </IconButton>
                     </Tooltip>
                 )}
+
                 <div
                     css={css`
                         &,
@@ -91,63 +115,93 @@ export const StatsCard: React.FunctionComponent<{
                 </div>
                 <div
                     css={css`
-                        font-size: 48px;
-                        font-weight: bold;
-                        margin-bottom: 0;
-                    `}
-                    title={totalAsFormattedString}
-                >
-                    {/* overrideTotal can be either a number or a function supplying a react component*/}
-                    {totalAsCompactString || overrideComponent!({})}
-                </div>
-                <div
-                    css={css`
                         display: flex;
-                        flex-direction: row;
-                        margin-top: auto;
+                        justify-content: center;
+                        align-items: center;
                     `}
                 >
-                    {props.subitems?.map((i) => (
-                        // One sub item
+                    {props.icon && (
                         <div
-                            key={i.label}
                             css={css`
-                                margin-right: 10px;
-                                min-width: 60px;
-
-                                &,
-                                * {
-                                    text-align: left;
-                                }
+                                line-height: 0;
+                                height: 60px;
+                                width: 60px; // define its width
+                                margin-inline-end: 15px; // give it margin to give space between it and the total
+                                margin-inline-start: -75px; // now move it over the sum of the previous two so the total can stay centered
                             `}
                         >
-                            <div
+                            <img
+                                src={props.icon}
                                 css={css`
-                                    color: ${kDarkGrey};
-                                    font-size: 12px;
-
-                                    vertical-align: bottom;
-                                    display: table-cell;
+                                    height: 60px;
+                                    width: 60px;
+                                    object-fit: contain;
                                 `}
-                            >
-                                {i.label}
-                            </div>
-                            <div
-                                css={css`
-                                    font-size: 24px;
-                                    font-weight: bold;
-                                `}
-                                title={Intl.NumberFormat([]).format(i.value)}
-                            >
-                                {formatNumber(i.value)}
-                            </div>
+                                alt=""
+                            />
                         </div>
-                    ))}
+                    )}
+                    <div
+                        css={css`
+                            font-size: 48px;
+                            font-weight: bold;
+                            margin-bottom: 0;
+                        `}
+                        title={totalAsFormattedString}
+                    >
+                        {/* overrideTotal can be either a number or a function supplying a react component*/}
+                        {totalAsCompactString || overrideComponent!({})}
+                    </div>
                 </div>
+                {getSubItemRow(1)}
+                {getSubItemRow(2)}
             </CardContent>
         </Card>
     );
 };
+
+function getSubItem(i: IItem): JSX.Element {
+    return (
+        <div
+            key={i.label}
+            css={css`
+                margin-right: 20px;
+                &:last-child {
+                    margin-right: 0;
+                }
+
+                max-width: max-content;
+
+                &,
+                * {
+                    text-align: left;
+                }
+            `}
+        >
+            <div
+                css={css`
+                    color: ${kDarkGrey};
+                    font-size: 11px;
+
+                    vertical-align: bottom;
+                    display: table-cell;
+                `}
+            >
+                {i.label}
+            </div>
+            <div
+                css={css`
+                    font-size: 24px;
+                    font-weight: bold;
+                    line-height: 1;
+                `}
+                title={Intl.NumberFormat([]).format(i.value)}
+            >
+                {formatNumber(i.value)}
+            </div>
+        </div>
+    );
+}
 
 function formatNumber(i: number | undefined): string {
     if (i === undefined) {
