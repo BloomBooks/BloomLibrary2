@@ -11,6 +11,7 @@
         "start-performance": "yarn build && npx serve -s build",
         "build": "yarn copyInBloomPlayer && react-scripts build",
         "build:ci": "set CI=true&&yarn copyInBloomPlayer&&react-scripts build",
+        "build:ci:alpha": "yarn upgrade bloom-player --network-timeout 1000000000&&yarn build:ci",
         "copyInBloomPlayer": "ncp node_modules/bloom-player/dist public/bloom-player",
         "test": "react-scripts test",
         "test:ci": "set CI=true&&react-scripts test --testResultsProcessor jest-teamcity-reporter",
