@@ -35,7 +35,9 @@ export const Section: React.FunctionComponent<IColoredBlockProps> = (props) => {
             `}
         >
             {/* we want prose blocks to be narrower */}
+
             <Container maxWidth={props.prose ? "sm" : "md"}>
+                {/* @ts-ignore:next-line */}
                 {props.children}
             </Container>
         </section>

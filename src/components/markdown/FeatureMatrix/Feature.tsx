@@ -45,7 +45,8 @@ export const Feature: React.FunctionComponent<IFeatureProps> = (props) => {
             >
                 {/* 1st column, feature label */}
                 <TableCell
-                    component="th"
+                    // @ts-ignore:next-line
+                    component={"th"}
                     scope="row"
                     css={css`
                         /* width: ${columOneWidth}; */
