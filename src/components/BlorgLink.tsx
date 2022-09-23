@@ -25,7 +25,16 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
 
     const isInIframe = window.self !== window.top;
 
+    /* REVIEW: this is causing problems... something is sneaking through that we don't want:*/
     const { newTabIfEmbedded, alwaysnewtab, ...propsToPassDown } = props; // Prevent React warnings
+
+    // const propsToPassDown = {
+    //     href: props.href,
+    //     css: props.css,
+    //     color: props.color,
+    //     onClick: props.onClick,
+    //     role: props.role,
+    // };
 
     // ABOUT MuiLink: we're using this to get the themed color for the link
 
@@ -33,6 +42,7 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
         // Open a new tab if appropriate
         if (props.alwaysnewtab || (isInIframe && props.newTabIfEmbedded)) {
             return (
+                // @ts-ignore:next-line
                 <MuiLink
                     target={"_blank"}
                     rel="noopener noreferrer"
@@ -56,8 +66,13 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
             // the Nielsen Norman Group: https://www.nngroup.com/articles/new-browser-windows-and-tabs/
             return (
                 // just a normal <a></a> element, styled to fit the theme
-                <MuiLink {...propsToPassDown} color={props.color || "primary"}>
-                    {props.children}
+                // @ts-ignore:next-line
+                <MuiLink
+                    {...propsToPassDown}
+                    target={props.target}
+                    color={props.color || "primary"}
+                >
+                    <div>"hello"</div>
                 </MuiLink>
             );
         }
@@ -71,16 +86,25 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
         /* The initial slash keeps url from just being 'tacked on' to existing url; not what we want here. */
         to = `/${to}`;
     }
+    // This is just to get typescript to allow the MuiLink below.
+    // We think we have some mismatch in the library or react type definitions somewhere.
+    // const WrapRouterLink: React.FunctionComponent<{}> = () => (
+    //     <React.Fragment>
+    //         <RouterLink to={to}></RouterLink>
+    //     </React.Fragment>
+    // );
 
     return (
-        <MuiLink
-            {...propsToPassDown}
-            component={RouterLink}
-            to={to}
-            color={props.color || "primary"}
-        >
+        // <MuiLink
+        //     {...propsToPassDown}
+        //     component={RouterLink}
+        //     color={props.color || "primary"}
+        // >
+        //     {props.children}
+        // </MuiLink>
+        <RouterLink to={props.href} {...propsToPassDown}>
             {props.children}
-        </MuiLink>
+        </RouterLink>
     );
 };
 
