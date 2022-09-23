@@ -94,17 +94,37 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
     //     </React.Fragment>
     // );
 
+    //  Types of property 'referrerPolicy' are incompatible. https://github.com/mui/material-ui/issues/15299
+    function WorkAroundLink(
+        props: React.DetailedHTMLProps<
+            React.AnchorHTMLAttributes<HTMLAnchorElement>,
+            HTMLAnchorElement
+        >,
+        // props: React.DetailedHTMLProps<
+        //     React.AnchorHTMLAttributes<HTMLAnchorElement>,
+        //     HTMLAnchorElement
+        // >,
+        ref: React.Ref<HTMLAnchorElement>
+    ) {
+        return (
+            // @ts-ignore:next-line   work around 'defaultValue' type incompatibility
+            <RouterLink ref={ref} to={props.href || ""} {...propsToPassDown}>
+                {props.children}
+            </RouterLink>
+            // <a href="foo" defaultValue={"foo"} referrerPolicy="origin">
+            //     h
+            // </a>
+        );
+    }
     return (
-        // <MuiLink
-        //     {...propsToPassDown}
-        //     component={RouterLink}
-        //     color={props.color || "primary"}
-        // >
-        //     {props.children}
-        // </MuiLink>
-        <RouterLink to={props.href} {...propsToPassDown}>
+        // @ts-ignore:next-line  To get it to accept the WorkAroundLink (types of referrerPolicy are incompatible)
+        <MuiLink
+            {...propsToPassDown}
+            component={WorkAroundLink}
+            color={props.color || "primary"}
+        >
             {props.children}
-        </RouterLink>
+        </MuiLink>
     );
 };
 
