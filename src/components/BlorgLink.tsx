@@ -6,8 +6,14 @@ import { Link as MuiLink } from "@material-ui/core";
 // for a discussion around how react-router link doesn't handle
 // external links, see https://github.com/ReactTraining/react-router/issues/1147
 
-export interface IBlorgLinkProps
-    extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+export interface IBlorgLinkProps {
+    // we'd prefer this extends but mismatching definitions have killed it for now
+    //extends React.AnchorHTMLAttributes<HTMLAnchorElement>
+    onClick?: (e: any) => void;
+    target?: string;
+    className?: string;
+    role?: string;
+    title?: string;
     href: string; // href is part of React.AnchorHTMLAttributes<HTMLAnchorElement> but optional; we want required
     newTabIfEmbedded?: boolean;
     alwaysnewtab?: boolean;
@@ -25,6 +31,7 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
 
     const isInIframe = window.self !== window.top;
 
+    /* REVIEW: this is causing problems... something is sneaking through that we don't want:*/
     const { newTabIfEmbedded, alwaysnewtab, ...propsToPassDown } = props; // Prevent React warnings
 
     // ABOUT MuiLink: we're using this to get the themed color for the link
@@ -56,7 +63,11 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
             // the Nielsen Norman Group: https://www.nngroup.com/articles/new-browser-windows-and-tabs/
             return (
                 // just a normal <a></a> element, styled to fit the theme
-                <MuiLink {...propsToPassDown} color={props.color || "primary"}>
+                <MuiLink
+                    {...propsToPassDown}
+                    target={props.target}
+                    color={props.color || "primary"}
+                >
                     {props.children}
                 </MuiLink>
             );
@@ -71,12 +82,11 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
         /* The initial slash keeps url from just being 'tacked on' to existing url; not what we want here. */
         to = `/${to}`;
     }
-
     return (
         <MuiLink
-            {...propsToPassDown}
+            to={props.href}
+            className={props.className}
             component={RouterLink}
-            to={to}
             color={props.color || "primary"}
         >
             {props.children}
