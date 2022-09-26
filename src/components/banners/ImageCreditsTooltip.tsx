@@ -12,7 +12,7 @@ export const ImageCreditsTooltip: React.FunctionComponent<{
 }> = (props) => (
     <Tooltip
         // didn't work: classes={{ popper: "popper", tooltip: "tooltip" }}
-        title={props.imageCredits}
+        title={props.imageCredits || ""}
         css={css`
             /* didn't work .tooltip {
                             border: solid blue !important;
