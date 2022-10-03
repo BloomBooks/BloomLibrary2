@@ -95,12 +95,21 @@ export function getRawBookNameFromUrl(baseUrl: string): string | undefined {
     }
     return leadin.substring(slashBeforeBookName + 3); // includes leading slash (%2f)
 }
-export function getBookNameFromUrl(baseUrl: string): string | undefined {
+
+// Given the URL stored in a book on parse, extract the part that corresponds to the file
+// name. This is to be made into a parallel URL in the harvester output, so we don't need
+// to decode or encode, just extract the relevant part and handle some special cases.
+// This needs to be consistent with how harvester works, so we get a URL that actually
+// locates the harvester artifact.
+export function getBookNamePartOfUrl(baseUrl: string): string | undefined {
     const baseFileName = getRawBookNameFromUrl(baseUrl);
     if (!baseFileName) {
         return undefined;
     }
-    let result = decodeURIComponent(baseFileName);
+    // don't be tempted to decode it. It's already part of a URL, and may be
+    // used as part of another, so decoding will mess up (e.g.) a character
+    // that started out as a plus and got converted to %2b.
+    let result = baseFileName;
     while (
         result.startsWith(".") ||
         result.startsWith(" ") ||
@@ -126,7 +135,7 @@ function getDownloadUrl(book: Book, fileType: string): string | undefined {
         return undefined;
     }
 
-    const bookName = getBookNameFromUrl(book.baseUrl);
+    const bookName = getBookNamePartOfUrl(book.baseUrl);
 
     if (bookName) {
         if (fileType === "bloompub") {
