@@ -100,7 +100,10 @@ export function getBookNameFromUrl(baseUrl: string): string | undefined {
     if (!baseFileName) {
         return undefined;
     }
-    let result = decodeURIComponent(baseFileName);
+    // don't be tempted to decode it. It's already part of a URL, and may be
+    // used as part of another, so decoding will mess up (e.g.) a character
+    // that started out as a plus and got converted to %2b.
+    let result = baseFileName;
     while (
         result.startsWith(".") ||
         result.startsWith(" ") ||
