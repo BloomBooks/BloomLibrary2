@@ -1,15 +1,17 @@
-import { getBookNameFromUrl } from "./BookDetail/ArtifactHelper";
+import { getBookNamePartOfUrl } from "./BookDetail/ArtifactHelper";
 
 it("finds folder from URL", () => {
     expect(
-        getBookNameFromUrl(
+        getBookNamePartOfUrl(
             "https://s3.amazonaws.com/BloomTests/abcde%2fA  nice  book%2findex.htm"
         )
     ).toBe("A  nice  book");
 });
 
-it("decodes URL", () => {
-    expect(getBookNameFromUrl("abcde%2fAn %40 was%20here%2findex.htm")).toBe(
-        "An @ was here"
-    );
+it("extracte book name part of URL", () => {
+    expect(
+        getBookNamePartOfUrl(
+            "https://s3.amazonaws.com/BloomLibraryBooks-Sandbox/john_thomson%40sil.org%2ffefab0ed-60b6-4c5d-9e7f-2a113106a441%2fBook+with+%23+and+%3d+n%c9%a8g%2f"
+        )
+    ).toBe("Book+with+%23+and+%3d+n%c9%a8g");
 });
