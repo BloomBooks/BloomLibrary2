@@ -44,7 +44,7 @@
         "contentful": "^7.14.4",
         "dom-to-image-more": "^2.8.0",
         "downshift": "^3.2.10",
-        "file-saver": "^2.0.2",
+        "file-saver": "2.0.5",
         "firebase": "^9.6.1",
         "lodash": "^4.17.21",
         "markdown-to-jsx": "^6.11.4",

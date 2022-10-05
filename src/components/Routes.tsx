@@ -27,6 +27,7 @@ import { CollectionReportSplit } from "./reports/CollectionReportSplit";
 import { AppHostedLanguageGroup } from "./appHosted/AppHostedLanguageGroup";
 import { AppHostedDownloadingPage } from "./appHosted/AppHostedDownloadingPage";
 import { appHostedSegment, isAppHosted } from "./appHosted/AppHostedUtils";
+import { LanguageReport } from "./statistics/LanguageReport";
 
 export let previousPathname = "";
 let currentPathname = "";
@@ -110,6 +111,12 @@ export const Routes: React.FunctionComponent<{}> = () => {
                             return (
                                 <ReleaseNotes channel={match.params.channel} />
                             );
+                        }}
+                    />
+                    <Route
+                        path="/language-report"
+                        render={({ match }) => {
+                            return <LanguageReport />;
                         }}
                     />
                     <Route
