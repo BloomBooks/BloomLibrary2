@@ -143,16 +143,7 @@ export const AppHostedLanguageGroup: React.FunctionComponent = () => {
                         {preferredLangs.map((l, index) => (
                             <LanguageCard
                                 css={css`
-                                    // Review: should I instead give CheapCard, and everything between,
-                                    // a new prop to control color? That's one kind of nasty complexity,
-                                    // reaching inside a component like this to change its appearance is another.
-                                    color: ${prefColor} !important;
-                                    // This is copied from CheapCard's box-shadow, but using BloomRed.
-                                    // Cheapcard uses black with transparency of 12% and 24%.
-                                    // The transparencies I chose here, apart from being in the same ratio,
-                                    // we just found experimentally to give a red shadow about equally visible.
-                                    box-shadow: 0 1px 3px ${prefColor}45,
-                                        0 1px 2px ${prefColor}90 !important;
+                                    background-color: ${prefColor};
                                 `}
                                 {...getItemProps({ item: l })}
                                 key={index}
@@ -161,6 +152,8 @@ export const AppHostedLanguageGroup: React.FunctionComponent = () => {
                                 usageCount={l.usageCount}
                                 isoCode={l.isoCode}
                                 objectId={l.objectId}
+                                primaryTextColorOverride="white"
+                                secondaryTextColorOverride="#FFFFFFE5" // E5 = 90%
                                 larger={true}
                                 targetPrefix={
                                     "/" + appHostedSegment + "/language:"
