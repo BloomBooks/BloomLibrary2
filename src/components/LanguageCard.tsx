@@ -50,6 +50,7 @@ export const LanguageCard: React.FunctionComponent<
     const { cardWidthPx, cardHeightPx } = useLanguageCardSpecs(props.larger);
     const urlPrefix = props.targetPrefix ?? "/language:";
     const showCount = !useIsAppHosted();
+    const cardSpacing = useBaseCardSpec().cardSpacingPx;
 
     // In the main website, we want language cards to be responsive: smaller and with smaller text on small screens.
     // In the language chooser intended to be embedded in BloomReader, we want larger sizes.
@@ -75,6 +76,10 @@ export const LanguageCard: React.FunctionComponent<
                 width: ${cardWidthPx}px;
                 // When choosing a height, search on "x-" to see some tall ones
                 height: ${cardHeightPx}px;
+                // This guarantees that on very narrow screens we get at least two cards per row.
+                // See BL-11573 for some bad effects of not fitting at least two in the app-hosted
+                // language group embedded in Bloom Reader.
+                max-width: calc(50% - ${cardSpacing}px);
                 padding: ${chooseSize(
                     commonUI.paddingForCollectionAndLanguageCardsPx + "px",
                     commonUI.paddingForSmallCollectionAndLanguageCardsPx + "px",
