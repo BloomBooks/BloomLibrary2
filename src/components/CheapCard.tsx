@@ -14,6 +14,7 @@ interface IProps extends React.HTMLProps<HTMLDivElement> {
     target?: string; // what we're calling "target" is the last part of url, where the url is <breadcrumb stuff>/<target>
     url?: string; // if present, this overrides target and is used unmodified as the url to go to.
     role?: string;
+    textColorOverride?: string;
 }
 
 // just a wrapper around the children you provide, made to look like a card and responsive to a click.
@@ -55,10 +56,16 @@ export const CheapCard: React.FunctionComponent<IProps> = (props) => {
                 text-decoration: none;
                 &,
                 &:visited {
-                    color: black;
+                    color: ${props.textColorOverride
+                        ? props.textColorOverride
+                        : "black"};
                 }
 
                 position: relative;
+
+                color: ${props.textColorOverride
+                    ? props.textColorOverride
+                    : "inherit"};
 
                 // NOTE! There are more css rules that can come from the parent
                 // component, e.g. collection card. In the debugger they'll all

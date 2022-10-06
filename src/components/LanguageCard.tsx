@@ -32,6 +32,7 @@ export const LanguageCard: React.FunctionComponent<
         targetPrefix?: string;
         larger?: boolean;
         className?: string;
+        textColorOverride?: string;
     }
 > = (props) => {
     const {
@@ -79,6 +80,7 @@ export const LanguageCard: React.FunctionComponent<
                     commonUI.paddingForCollectionAndLanguageCardsPx + "px"
                 )};
             `}
+            textColorOverride={props.textColorOverride}
             url={`${urlPrefix}${props.isoCode}`}
             onClick={undefined} // we just want to follow the href, whatever might be in propsToPassDown
         >
@@ -100,7 +102,9 @@ export const LanguageCard: React.FunctionComponent<
                         margin-top: auto;
                         position: absolute;
                         bottom: 0;
-                        color: ${commonUI.colors.minContrastGray};
+                        color: ${props.textColorOverride
+                            ? props.textColorOverride
+                            : commonUI.colors.minContrastGray};
                         line-height: 1em;
                     `}
                 >
