@@ -56,6 +56,7 @@ export const AppHostedLanguageGroup: React.FunctionComponent = () => {
     const [cookies] = useCookies(["preferredLanguages"]);
     const preferredLangsString: string = cookies["preferredLanguages"];
     const [showAll, setShowAll] = useState(false);
+    const [showPreferredLangs, setShowPreferredLangs] = useState(true);
     const [preferredLangs, preferredLangCodes] = useMemo(() => {
         const preferredCodes = preferredLangsString
             ? preferredLangsString.split(",")
@@ -130,38 +131,40 @@ export const AppHostedLanguageGroup: React.FunctionComponent = () => {
                     `}
                     {...getMenuProps({})}
                 >
-                    <div
-                        css={css`
-                            display: flex;
-                            flex-wrap: wrap;
-                            flex-grow: 0;
-                            //flex-basis: 100px;
-                            align-content: flex-start;
-                            //overflow-y: scroll;
-                        `}
-                    >
-                        {preferredLangs.map((l, index) => (
-                            <LanguageCard
-                                css={css`
-                                    background-color: ${prefColor};
-                                `}
-                                {...getItemProps({ item: l })}
-                                key={index}
-                                name={l.name}
-                                englishName={l.englishName}
-                                usageCount={l.usageCount}
-                                isoCode={l.isoCode}
-                                objectId={l.objectId}
-                                primaryTextColorOverride="white"
-                                secondaryTextColorOverride="#FFFFFFE5" // E5 = 90%
-                                larger={true}
-                                targetPrefix={
-                                    "/" + appHostedSegment + "/language:"
-                                }
-                                role="option"
-                            />
-                        ))}
-                    </div>
+                    {showPreferredLangs && (
+                        <div
+                            css={css`
+                                display: flex;
+                                flex-wrap: wrap;
+                                flex-grow: 0;
+                                //flex-basis: 100px;
+                                align-content: flex-start;
+                                //overflow-y: scroll;
+                            `}
+                        >
+                            {preferredLangs.map((l, index) => (
+                                <LanguageCard
+                                    css={css`
+                                        background-color: ${prefColor};
+                                    `}
+                                    {...getItemProps({ item: l })}
+                                    key={index}
+                                    name={l.name}
+                                    englishName={l.englishName}
+                                    usageCount={l.usageCount}
+                                    isoCode={l.isoCode}
+                                    objectId={l.objectId}
+                                    primaryTextColorOverride="white"
+                                    secondaryTextColorOverride="#FFFFFFE5" // E5 = 90%
+                                    larger={true}
+                                    targetPrefix={
+                                        "/" + appHostedSegment + "/language:"
+                                    }
+                                    role="option"
+                                />
+                            ))}
+                        </div>
+                    )}
                     <Divider
                         css={css`
                             // puts it in the middle of the gap without taking up extra space.
@@ -388,8 +391,12 @@ export const AppHostedLanguageGroup: React.FunctionComponent = () => {
                                             onKeyPress: (e) =>
                                                 handleKeyPress(e),
                                         })}
+                                        onFocus={() =>
+                                            setShowPreferredLangs(false)
+                                        }
                                         onBlur={() => {
-                                            // Overridden.
+                                            setShowPreferredLangs(true);
+                                            // Note: must override this, even if we don't need the above line.
                                             // Otherwise, the filtered list of cards reverts
                                             // to unfiltered BEFORE the click event, with the result
                                             // that the wrong card is selected.
