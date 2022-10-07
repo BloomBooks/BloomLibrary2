@@ -10,7 +10,7 @@ export const LanguageReport: React.FunctionComponent<{}> = (props) => {
         if (langs && langs.length > 0) {
             const langRows = langs.map(
                 (l: ILanguage) =>
-                    `${l.isoCode},${l.name},${l.englishName || ""},${
+                    `${l.isoCode},"${l.name}","${l.englishName || ""}",${
                         l.usageCount
                     }`
             );
