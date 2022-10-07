@@ -24,8 +24,6 @@ import { Helmet } from "react-helmet";
 import { useCookies } from "react-cookie";
 import { appHostedSegment } from "./AppHostedUtils";
 import { commonUI } from "../../theme";
-import { Divider } from "@material-ui/core";
-import { useBaseCardSpec } from "../CardGroup";
 
 // This class is uncomfortably similar to LanguageGroup. It provides the different layout we want
 // when displaying a page of language choices (typically on a phone) as opposed to a row of them
@@ -90,8 +88,6 @@ export const AppHostedLanguageGroup: React.FunctionComponent = () => {
         }, 1000);
     }, []);
 
-    const cardSpacing = useBaseCardSpec().cardSpacingPx;
-
     let languagesToDisplay: ILanguage[] = [];
 
     // We'll use Helmet to make this the document's title in its metadata, for use
@@ -129,11 +125,17 @@ export const AppHostedLanguageGroup: React.FunctionComponent = () => {
                         flex-direction: column;
                         flex-basis: 100px;
                         flex-grow: 100;
+                        h3 {
+                            color: ${commonUI.colors.minContrastGray};
+                            font-weight: normal;
+                            margin: 0;
+                            margin-block-end: 0.25em;
+                        }
                     `}
                     {...getMenuProps({})}
                 >
-                    {showPreferredLangs && (
-                        // This div shows a list of languages the user has recently downloaded books from.
+                    {
+                        // This section shows a list of languages the user has recently downloaded books from.
                         // We hide it when the user has focused the input for typing a partial language name.
                         // We'd rather not do this, but if we continue to show these cards above the list
                         // of matching languages, typically the on-screen keyboard covers almost the entire
@@ -143,48 +145,70 @@ export const AppHostedLanguageGroup: React.FunctionComponent = () => {
                         // presumably not currently interested in the ones that were already at the top
                         // of the list.)
                         // See BL-11575.
-                        <div
-                            css={css`
-                                display: flex;
-                                flex-wrap: wrap;
-                                flex-grow: 0;
-                                //flex-basis: 100px;
-                                align-content: flex-start;
-                                //overflow-y: scroll;
-                            `}
-                        >
-                            {preferredLangs.map((l, index) => (
-                                <LanguageCard
+                        showPreferredLangs && (
+                            <>
+                                <h3>
+                                    <FormattedMessage
+                                        id="favoriteLanguages"
+                                        defaultMessage="Favorite languages"
+                                    />
+                                </h3>
+                                <div
                                     css={css`
-                                        background-color: ${prefColor};
+                                        display: flex;
+                                        flex-wrap: wrap;
+                                        flex-grow: 0;
+                                        //flex-basis: 100px;
+                                        align-content: flex-start;
+                                        //overflow-y: scroll;
                                     `}
-                                    {...getItemProps({ item: l })}
-                                    key={index}
-                                    name={l.name}
-                                    englishName={l.englishName}
-                                    usageCount={l.usageCount}
-                                    isoCode={l.isoCode}
-                                    objectId={l.objectId}
-                                    primaryTextColorOverride="white"
-                                    secondaryTextColorOverride="#FFFFFFE5" // E5 = 90%
-                                    larger={true}
-                                    targetPrefix={
-                                        "/" + appHostedSegment + "/language:"
-                                    }
-                                    role="option"
-                                />
-                            ))}
-                        </div>
-                    )}
-                    <Divider
-                        css={css`
-                            // puts it in the middle of the gap without taking up extra space.
-                            // (Somewhat weirdly, the gap between the two groups of cards is produced by
-                            // the bottom margin on CheapCard.)
-                            margin-top: -${cardSpacing / 2 - 1}px;
-                            margin-bottom: ${cardSpacing / 2 - 1}px;
-                        `}
-                    />
+                                >
+                                    {preferredLangs.map((l, index) => (
+                                        <LanguageCard
+                                            css={css`
+                                                background-color: ${prefColor};
+                                            `}
+                                            {...getItemProps({ item: l })}
+                                            key={index}
+                                            name={l.name}
+                                            englishName={l.englishName}
+                                            usageCount={l.usageCount}
+                                            isoCode={l.isoCode}
+                                            objectId={l.objectId}
+                                            primaryTextColorOverride="white"
+                                            secondaryTextColorOverride="#FFFFFFE5" // E5 = 90%
+                                            larger={true}
+                                            targetPrefix={
+                                                "/" +
+                                                appHostedSegment +
+                                                "/language:"
+                                            }
+                                            role="option"
+                                        />
+                                    ))}
+                                </div>
+                                {/* This had some pretty specific rules someone figured out, so I kept it just in case */}
+                                {/* <Divider
+                                css={css`
+                                    // puts it in the middle of the gap without taking up extra space.
+                                    // (Somewhat weirdly, the gap between the two groups of cards is produced by
+                                    // the bottom margin on CheapCard.)
+                                    margin-top: -${cardSpacing / 2 - 1}px;
+                                    margin-bottom: ${cardSpacing / 2 - 1}px;
+                                `}
+                            /> */}
+                                <h3>
+                                    <FormattedMessage
+                                        id="moreLanguagesCount"
+                                        defaultMessage="{count} more languages"
+                                        values={{
+                                            count: languagesToDisplay.length,
+                                        }}
+                                    />
+                                </h3>
+                            </>
+                        )
+                    }
                     <div
                         id="app-hosted-lang-group-scroller"
                         css={css`
