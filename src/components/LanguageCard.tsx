@@ -76,15 +76,20 @@ export const LanguageCard: React.FunctionComponent<
                 width: ${cardWidthPx}px;
                 // When choosing a height, search on "x-" to see some tall ones
                 height: ${cardHeightPx}px;
-                // This guarantees that on very narrow screens we get at least two cards per row.
-                // See BL-11573 for some bad effects of not fitting at least two in the app-hosted
-                // language group embedded in Bloom Reader.
-                max-width: calc(50% - ${cardSpacing}px);
                 padding: ${chooseSize(
                     commonUI.paddingForCollectionAndLanguageCardsPx + "px",
                     commonUI.paddingForSmallCollectionAndLanguageCardsPx + "px",
                     commonUI.paddingForCollectionAndLanguageCardsPx + "px"
                 )};
+                #app-hosted-lang-group-scroller & {
+                    // This guarantees that on very narrow screens we get at least two cards per row.
+                    // See BL-11573 for some bad effects of not fitting at least two in the app-hosted
+                    // language group embedded in Bloom Reader.
+                    // This doesn't work and is unlikely to be needed in the normal view, where some
+                    // individual wrapping of language cards means that this causes them always to be
+                    // half width.
+                    max-width: calc(50% - ${cardSpacing}px);
+                }
             `}
             textColorOverride={props.primaryTextColorOverride}
             url={`${urlPrefix}${props.isoCode}`}
