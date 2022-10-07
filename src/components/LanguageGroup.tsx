@@ -35,11 +35,13 @@ export const LanguageGroup: React.FunctionComponent = () => {
 
     let languagesToDisplay: ILanguage[] = [];
 
+    const usedLanguages = languages.filter((l) => l.usageCount);
+
     const getLanguagesMatchingSearchTerm = (
         searchTerm: string | null
     ): ILanguage[] => {
         // MatchSorter is an npm module that does smart autocomplete over a list of values.
-        return matchSorter(languages, searchTerm || "", {
+        return matchSorter(usedLanguages, searchTerm || "", {
             keys: ["englishName", "name", "isoCode"],
         });
     };
@@ -48,9 +50,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
         getItemProps: (options: GetItemPropsOptions<any>) => {},
         getMenuProps: (options: GetMenuPropsOptions) => {}
     ) => {
-        languagesToDisplay = getLanguagesMatchingSearchTerm(searchTerm).filter(
-            (lang) => lang.usageCount
-        );
+        languagesToDisplay = getLanguagesMatchingSearchTerm(searchTerm);
         if (languagesToDisplay.length) {
             return (
                 <div {...getMenuProps({})}>
@@ -126,7 +126,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                 />
             </h1>
 
-            {(languages.length && (
+            {(usedLanguages.length && (
                 /* Downshift handles telling us when to recompute the list of matching items.
                 It also claims to present it all in a WAI-ARIA compliant accessible way (untested).
                 We give it a function that returns a react element that contains the
@@ -221,7 +221,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                     <FormattedMessage
                                         id="languagesCount"
                                         defaultMessage="{count} Languages"
-                                        values={{ count: languages.length }}
+                                        values={{ count: usedLanguages.length }}
                                     />
                                 </div>
                             </div>

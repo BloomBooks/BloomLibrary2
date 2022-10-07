@@ -38,10 +38,12 @@ export const AppHostedLanguageGroup: React.FunctionComponent = () => {
     // don't directly expose that. We need to call a function on each of them to obtain it,
     // then use that to sort them.
     const languages: ILanguage[] = useMemo(() => {
-        const languagesWithPrimaryName = languagesByBookCount.map((l) => {
-            const names = getDisplayNamesForLanguage(l);
-            return { ...l, primary: names.primary };
-        });
+        const languagesWithPrimaryName = languagesByBookCount
+            .filter((l) => l.usageCount)
+            .map((l) => {
+                const names = getDisplayNamesForLanguage(l);
+                return { ...l, primary: names.primary };
+            });
         return languagesWithPrimaryName.sort(
             (x: { primary: string }, y: { primary: string }) =>
                 x.primary.localeCompare(y.primary)
@@ -113,8 +115,7 @@ export const AppHostedLanguageGroup: React.FunctionComponent = () => {
         getMenuProps: (options: GetMenuPropsOptions) => {}
     ) => {
         languagesToDisplay = getLanguagesMatchingSearchTerm(searchTerm).filter(
-            (lang) =>
-                lang.usageCount && preferredLangCodes.indexOf(lang.isoCode) < 0
+            (lang) => preferredLangCodes.indexOf(lang.isoCode) < 0
         );
         const prefColor = commonUI.colors.bloomRed;
         // if (!showAll && languagesToDisplay.length > 10) {
