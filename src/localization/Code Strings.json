@@ -159,6 +159,12 @@
         "description": "",
         "message": "{count} Languages"
     },
+    "moreLanguagesCount": {
+        "message": "{count} more languages"
+    },
+    "favoriteLanguages": {
+        "message": "Favorite languages"
+    },
     "findBooksByLanguage": {
         "description": "",
         "message": "Find Books By Language"
