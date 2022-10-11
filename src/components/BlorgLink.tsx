@@ -84,9 +84,9 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
     }
     return (
         <MuiLink
-            to={props.href}
             className={props.className}
             component={RouterLink}
+            to={to}
             color={props.color || "primary"}
         >
             {props.children}
