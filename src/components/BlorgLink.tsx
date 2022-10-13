@@ -18,6 +18,8 @@ export interface IBlorgLinkProps {
     newTabIfEmbedded?: boolean;
     alwaysnewtab?: boolean;
     color?: "primary" | "secondary";
+    onMouseDown?: () => void;
+    onMouseUp?: () => void;
 }
 
 // A Link class that is clever about using a React Router Link for internal hrefs and
@@ -45,6 +47,8 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
                     rel="noopener noreferrer"
                     {...propsToPassDown}
                     color={props.color || "primary"}
+                    onMouseDown={props.onMouseDown}
+                    onMouseUp={props.onMouseUp}
                 >
                     {props.children}
                     {/* This might be a nice thing to do, but the color wasn't actually being applied (the css was there, but the svg didn't take it on)
@@ -67,6 +71,8 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
                     {...propsToPassDown}
                     target={props.target}
                     color={props.color || "primary"}
+                    onMouseDown={props.onMouseDown}
+                    onMouseUp={props.onMouseUp}
                 >
                     {props.children}
                 </MuiLink>
@@ -88,6 +94,8 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
             component={RouterLink}
             to={to}
             color={props.color || "primary"}
+            onMouseDown={props.onMouseDown}
+            onMouseUp={props.onMouseUp}
         >
             {props.children}
         </MuiLink>

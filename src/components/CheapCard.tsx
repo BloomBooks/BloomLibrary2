@@ -15,6 +15,8 @@ interface IProps extends React.HTMLProps<HTMLDivElement> {
     url?: string; // if present, this overrides target and is used unmodified as the url to go to.
     role?: string;
     textColorOverride?: string;
+    onMouseDown?: () => void;
+    onMouseUp?: () => void;
 }
 
 // just a wrapper around the children you provide, made to look like a card and responsive to a click.
@@ -73,6 +75,8 @@ export const CheapCard: React.FunctionComponent<IProps> = (props) => {
             `}
             href={url}
             role={props.role}
+            onMouseDown={props.onMouseDown}
+            onMouseUp={props.onMouseUp}
         >
             {/* the empty string here prevents a console warning from MuiLink when the children aren't available yet */}
             {props.children ?? ""}
