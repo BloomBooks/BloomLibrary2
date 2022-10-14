@@ -20,7 +20,7 @@ export const CollectionInfoWidget: React.FunctionComponent<{
         const collectionInfo = props.collection
             ? `UrlKey = ${props.collection.urlKey}\r\nSort Order = ${
                   props.collection.orderingScheme ||
-                  "(not set, should use default which is createdAt)"
+                  "(not set; using createdAt, or search score)"
               }`
             : "";
         const filter = props.collection.filter

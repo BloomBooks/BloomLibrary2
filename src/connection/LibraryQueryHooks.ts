@@ -681,6 +681,7 @@ export interface IBasicBookInfo {
     phashOfFirstContentImage?: string;
     edition: string;
     draft?: boolean;
+    score?: number;
 }
 
 const kFieldsOfIBasicBookInfo =
@@ -1497,7 +1498,7 @@ function configureQueryParamsForOrderingScheme(
             break;
 
         case BookOrderingScheme.Default:
-            if (params.key && params.keys.indexOf("$score") >= 0) {
+            if (params.keys && params.keys.indexOf("$score") >= 0) {
                 params.order = "$score"; // Parse's full text search
             } else {
                 // Note that "title" sounds like the right default, but it is useless in many cases because it is just one of

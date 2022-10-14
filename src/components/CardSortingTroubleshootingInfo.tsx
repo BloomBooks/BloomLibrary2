@@ -14,11 +14,6 @@ export const CardSortingTroubleshootingInfo: React.FunctionComponent<{
 }> = (props) => {
     const lastUploaded = props.book.lastUploaded?.iso.substring(0, 10);
     const createdAt = props.book.createdAt.substring(0, 10);
-
-    // only show the key if it has, for example, a preceding number or whatever
-    // At the moment, we don't have any plans to actually use the sort option that ignores numbers,
-    // so I'm commenting this out to keep things more simple, visually.
-
     const sortKey = (props.book as any).sortKey || "";
 
     return (
@@ -27,28 +22,39 @@ export const CardSortingTroubleshootingInfo: React.FunctionComponent<{
                 font-size: 7pt;
             `}
         >
-            <span
-                css={css`
-                    color: ${sortKey === props.title ? "green" : "red"};
-                `}
-            >
-                {sortKey
-                    ? (props.book as any).sortKey.substring(0, 15) + "..."
-                    : ""}
-            </span>
-            <span
-                css={css`
-                    color: blue;
-                `}
-            >{` ${createdAt}`}</span>
-
-            {/* show the createAt only if different */}
-            {createdAt !== lastUploaded && (
+            <div>
                 <span
                     css={css`
-                        color: green;
+                        color: ${sortKey === props.title ? "green" : "red"};
                     `}
-                >{` upd=${lastUploaded}`}</span>
+                >
+                    {sortKey
+                        ? (props.book as any).sortKey.substring(0, 15) + "..."
+                        : ""}
+                </span>
+                <span
+                    css={css`
+                        color: blue;
+                    `}
+                >{` ${createdAt}`}</span>
+
+                {/* show lastUploaded only if different */}
+                {createdAt !== lastUploaded && (
+                    <span
+                        css={css`
+                            color: green;
+                        `}
+                    >{` upd=${lastUploaded}`}</span>
+                )}
+            </div>
+            {props.book.score && (
+                <div>
+                    <span
+                        css={css`
+                            color: orange;
+                        `}
+                    >{` ${props.book.score}`}</span>
+                </div>
             )}
         </div>
     );
