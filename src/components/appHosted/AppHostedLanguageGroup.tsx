@@ -57,6 +57,7 @@ export const AppHostedLanguageGroup: React.FunctionComponent = () => {
     const preferredLangsString: string = cookies["preferredLanguages"];
     const [showAll, setShowAll] = useState(false);
     const [showPreferredLangs, setShowPreferredLangs] = useState(true);
+    const [buttondown, setButtonDown] = useState(false);
     const [preferredLangs, preferredLangCodes] = useMemo(() => {
         const preferredCodes = preferredLangsString
             ? preferredLangsString.split(",")
@@ -145,7 +146,13 @@ export const AppHostedLanguageGroup: React.FunctionComponent = () => {
                         // presumably not currently interested in the ones that were already at the top
                         // of the list.)
                         // See BL-11575.
-                        showPreferredLangs && (
+                        // When the user presses a language button while the input has focus, if we're not
+                        // careful the loss of focus takes effect and the button moves before the user
+                        // can complete the click/tap. So while a button is pressed we go on not showing
+                        // this block. (It looks as if there could be some flicker between when showPreferredLangs
+                        // is set false and when buttonDown gets set true, but somehow React is smart enough
+                        // that this is not noticeable and does not interfere with the click.)
+                        showPreferredLangs && !buttondown && (
                             <>
                                 <h3>
                                     <FormattedMessage
@@ -178,6 +185,12 @@ export const AppHostedLanguageGroup: React.FunctionComponent = () => {
                                             primaryTextColorOverride="white"
                                             secondaryTextColorOverride="#FFFFFFE5" // E5 = 90%
                                             larger={true}
+                                            onMouseDown={() =>
+                                                setButtonDown(true)
+                                            }
+                                            onMouseUp={() =>
+                                                setButtonDown(false)
+                                            }
                                             targetPrefix={
                                                 "/" +
                                                 appHostedSegment +
@@ -210,7 +223,6 @@ export const AppHostedLanguageGroup: React.FunctionComponent = () => {
                         )
                     }
                     <div
-                        id="app-hosted-lang-group-scroller"
                         css={css`
                             display: flex;
                             flex-wrap: wrap;
@@ -219,12 +231,15 @@ export const AppHostedLanguageGroup: React.FunctionComponent = () => {
                             align-content: flex-start;
                             overflow-y: scroll;
                         `}
+                        key="scroller"
                     >
                         {languagesToDisplay.map((l, index) =>
                             showAll || index < 20 ? (
                                 <LanguageCard
                                     {...getItemProps({ item: l })}
-                                    key={index}
+                                    // Don't use index here, we'd like the card for a given language to
+                                    // match even when the filtering adds and removes list items.
+                                    key={l.objectId}
                                     name={l.name}
                                     englishName={l.englishName}
                                     usageCount={l.usageCount}
@@ -243,6 +258,9 @@ export const AppHostedLanguageGroup: React.FunctionComponent = () => {
                                         width: 150px;
                                         margin: 0 20px 20px 0;
                                     `}
+                                    // Index is OK here, one placeholder is as good as another.
+                                    // (But React complains if we don't have any key).
+                                    key={index}
                                 ></div>
                             )
                         )}
@@ -291,6 +309,7 @@ export const AppHostedLanguageGroup: React.FunctionComponent = () => {
         <Redirect to={"/" + appHostedSegment + "/language:" + langChosen} />
     ) : (
         <li
+            id="app-hosted-lang-group-scroller"
             role="region"
             aria-labelledby="findBooksByLanguage"
             css={css`

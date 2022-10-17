@@ -34,6 +34,8 @@ export const LanguageCard: React.FunctionComponent<
         className?: string;
         primaryTextColorOverride?: string;
         secondaryTextColorOverride?: string;
+        onMouseDown?: () => void;
+        onMouseUp?: () => void;
     }
 > = (props) => {
     const {
@@ -94,6 +96,8 @@ export const LanguageCard: React.FunctionComponent<
             textColorOverride={props.primaryTextColorOverride}
             url={`${urlPrefix}${props.isoCode}`}
             onClick={undefined} // we just want to follow the href, whatever might be in propsToPassDown
+            onMouseDown={props.onMouseDown}
+            onMouseUp={props.onMouseUp}
         >
             <div
                 css={css`
