@@ -35,13 +35,11 @@ export const LanguageGroup: React.FunctionComponent = () => {
 
     let languagesToDisplay: ILanguage[] = [];
 
-    const usedLanguages = languages.filter((l) => l.usageCount);
-
     const getLanguagesMatchingSearchTerm = (
         searchTerm: string | null
     ): ILanguage[] => {
         // MatchSorter is an npm module that does smart autocomplete over a list of values.
-        return matchSorter(usedLanguages, searchTerm || "", {
+        return matchSorter(languages, searchTerm || "", {
             keys: ["englishName", "name", "isoCode"],
         });
     };
@@ -126,7 +124,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                 />
             </h1>
 
-            {(usedLanguages.length && (
+            {(languages.length && (
                 /* Downshift handles telling us when to recompute the list of matching items.
                 It also claims to present it all in a WAI-ARIA compliant accessible way (untested).
                 We give it a function that returns a react element that contains the
@@ -221,7 +219,7 @@ export const LanguageGroup: React.FunctionComponent = () => {
                                     <FormattedMessage
                                         id="languagesCount"
                                         defaultMessage="{count} Languages"
-                                        values={{ count: usedLanguages.length }}
+                                        values={{ count: languages.length }}
                                     />
                                 </div>
                             </div>

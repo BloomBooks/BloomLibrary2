@@ -95,6 +95,7 @@ function useLibraryQueryWithCount<T = any>(
 function useGetLanguagesList() {
     return useLibraryQuery<IParseCommonFields & ILanguage>("language", {
         keys: "name,englishName,usageCount,isoCode",
+        where: '{"usageCount":{"$gt":0}}',
         limit: 10000,
         order: "-usageCount",
     });
