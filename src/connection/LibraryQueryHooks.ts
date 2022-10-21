@@ -1235,6 +1235,19 @@ export function constructParseBookQuery(
                                 "level:" + facetValue,
                             ],
                         });
+                        // We don't want to get, for example, books whose computedLevel is 3
+                        // if they have some other value for level. computedLevel is only a fall-back
+                        // in case there is NO level.
+                        const otherPrimaryLevels = [
+                            "level:1",
+                            "level:2",
+                            "level:3",
+                            "level:4",
+                        ].filter((x) => x.indexOf(facetValue) < 0);
+
+                        tagParts.push({
+                            $nin: otherPrimaryLevels,
+                        });
                     }
                     break;
                 default:
