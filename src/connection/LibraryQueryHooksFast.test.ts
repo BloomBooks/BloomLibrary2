@@ -153,7 +153,7 @@ it("build proper parse query for derivedFrom with topic and 'search':'level:1'",
     );
     const resultString = JSON.stringify(result);
     expect(resultString).toBe(
-        '{"count":1,"limit":0,"where":{"$and":[{"tags":{"$in":["computedLevel:1","level:1"]}},{"tags":"topic:Animal Stories"},{"bookLineageArray":{"$select":{"query":{"className":"books","where":{"tags":"bookshelf:African Storybook","inCirculation":{"$in":[true,null]},"draft":{"$in":[false,null]}}},"key":"bookInstanceId"}}},{"tags":{"$ne":"bookshelf:African Storybook"}}],"inCirculation":{"$in":[true,null]},"draft":{"$in":[false,null]}},"order":"-createdAt"}'
+        '{"count":1,"limit":0,"where":{"$and":[{"tags":{"$in":["computedLevel:1","level:1"]}},{"tags":{"$nin":["level:2","level:3","level:4"]}},{"tags":"topic:Animal Stories"},{"bookLineageArray":{"$select":{"query":{"className":"books","where":{"tags":"bookshelf:African Storybook","inCirculation":{"$in":[true,null]},"draft":{"$in":[false,null]}}},"key":"bookInstanceId"}}},{"tags":{"$ne":"bookshelf:African Storybook"}}],"inCirculation":{"$in":[true,null]},"draft":{"$in":[false,null]}},"order":"-createdAt"}'
     );
 });
 
