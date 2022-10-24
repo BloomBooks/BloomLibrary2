@@ -5,127 +5,21 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React from "react";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";
-import { commonUI } from "../../theme";
 import IconButton from "@material-ui/core/IconButton";
 import Check from "@material-ui/icons/Check";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import Collapse from "@material-ui/core/Collapse";
-import { useResponsiveChoice } from "../../responsiveUtilities";
-
-const backgroundColor = "white";
-const headerColor = commonUI.colors.createAreaTextOnWhite;
+import { useResponsiveChoice } from "../../../responsiveUtilities";
+import { IFeatureProps } from "./FeatureCodeSplit";
 
 const blockColor = "white";
 const defaultColor = "black";
 const columOneWidth = "auto";
 
-export const FeatureMatrix: React.FunctionComponent<{
-    // These are passed in as props so they can be localized in Contentful.
-    freeLabel?: string;
-    communityLabel?: string;
-    enterpriseLabel?: string;
-}> = (props) => {
-    const getResponsiveChoice = useResponsiveChoice();
-    return (
-        <TableContainer
-            component={Paper}
-            css={css`
-                background-color: ${backgroundColor}!important;
-                margin-left: auto;
-                margin-right: auto;
-                width: ${getResponsiveChoice("", "fit-content")} !important;
-            `}
-        >
-            <Table
-                aria-label="feature matrix"
-                size="small" // makes dense
-                css={css`
-                    width: auto !important;
-                    .MuiTableCell-head {
-                        color: ${headerColor} !important;
-                    }
-                    th,
-                    td {
-                        border: none !important;
-                        padding-left: 0;
-                    }
-                    .levelName,
-                    .feature {
-                        font-size: ${getResponsiveChoice(10, 14)}px;
-                        line-height: 1em;
-                    }
-                `}
-            >
-                <TableHead>
-                    <TableRow
-                        css={css`
-                            * {
-                                color: ${headerColor} !important;
-                                font-weight: bold !important;
-
-                                vertical-align: bottom !important;
-                            }
-                        `}
-                    >
-                        <TableCell></TableCell>
-                        <TableCell className="levelName" align="center">
-                            {props.freeLabel || "Free"}
-                        </TableCell>
-                        <TableCell className="levelName" align="center">
-                            {props.communityLabel || "Local Community"}
-                        </TableCell>
-                        <TableCell className="levelName" align="center">
-                            {props.enterpriseLabel || "Enterprise"}
-                        </TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>{props.children}</TableBody>
-            </Table>
-        </TableContainer>
-    );
-};
-
-export const FeatureGroup: React.FunctionComponent<{ name: string }> = (
-    props
-) => {
-    return (
-        <React.Fragment>
-            <TableRow key={props.name} css={css``}>
-                <TableCell
-                    colSpan={99}
-                    scope="row"
-                    css={css`
-                        color: white !important;
-                        background-color: ${commonUI.colors.creationArea};
-                    `}
-                >
-                    <span
-                        css={css`
-                            width: 30px;
-                            display: inline-block;
-                        `}
-                    ></span>
-                    {props.name}
-                </TableCell>
-            </TableRow>
-            {props.children}
-        </React.Fragment>
-    );
-};
-
-export const Feature: React.FunctionComponent<{
-    name: string;
-    community: boolean;
-    enterprise: boolean;
-}> = (props) => {
+export const Feature: React.FunctionComponent<IFeatureProps> = (props) => {
     const [open, setOpen] = React.useState(false);
     const getResponsiveChoice = useResponsiveChoice();
     const all = !(props.community || props.enterprise);
@@ -151,7 +45,8 @@ export const Feature: React.FunctionComponent<{
             >
                 {/* 1st column, feature label */}
                 <TableCell
-                    component="th"
+                    // @ts-ignore:next-line
+                    component={"th"}
                     scope="row"
                     css={css`
                         /* width: ${columOneWidth}; */
@@ -241,3 +136,6 @@ export const Feature: React.FunctionComponent<{
         </React.Fragment>
     );
 };
+
+// though we normally don't like to export defaults, this is required for react.lazy (code splitting)
+export default Feature;

@@ -13,7 +13,7 @@ import { ReadBookPageCodeSplit } from "./ReadBookPageCodeSplit";
 import { CollectionSubsetPage } from "./CollectionSubsetPage";
 import { ContentfulBanner } from "./banners/ContentfulBanner";
 import { CollectionPage } from "./CollectionPage";
-import { Footer } from "./Footer";
+import { FooterCodeSplit } from "./FooterCodeSplit";
 import { ContentfulPage } from "./pages/ContentfulPage";
 import { getDummyCollectionForPreview } from "../model/Collections";
 import { ErrorBoundary } from "./ErrorBoundary";
@@ -24,6 +24,10 @@ import { TestEmbeddingPage } from "./TestEmbedding";
 import { ReleaseNotes } from "./ReleaseNotes";
 import { ThemeForLocation } from "./pages/ThemeForLocation";
 import { CollectionReportSplit } from "./reports/CollectionReportSplit";
+import { AppHostedLanguageGroup } from "./appHosted/AppHostedLanguageGroup";
+import { AppHostedDownloadingPage } from "./appHosted/AppHostedDownloadingPage";
+import { appHostedSegment, isAppHosted } from "./appHosted/AppHostedUtils";
+import { LanguageReport } from "./statistics/LanguageReport";
 
 export let previousPathname = "";
 let currentPathname = "";
@@ -71,7 +75,7 @@ export const Routes: React.FunctionComponent<{}> = () => {
                                         )}
                                     />
                                 </div>
-                                <Footer />
+                                <FooterCodeSplit />
                             </React.Fragment>
                         )}
                     ></Route>
@@ -90,11 +94,29 @@ export const Routes: React.FunctionComponent<{}> = () => {
                         }}
                     />
                     <Route
+                        path={"/" + appHostedSegment + "/langs"}
+                        render={({ match }) => {
+                            return <AppHostedLanguageGroup />;
+                        }}
+                    ></Route>
+                    <Route
+                        path={"/" + appHostedSegment + "/downloading"}
+                        render={({ match }) => {
+                            return <AppHostedDownloadingPage />;
+                        }}
+                    ></Route>
+                    <Route
                         path="*/release-notes/:channel"
                         render={({ match }) => {
                             return (
                                 <ReleaseNotes channel={match.params.channel} />
                             );
+                        }}
+                    />
+                    <Route
+                        path="/language-report"
+                        render={({ match }) => {
+                            return <LanguageReport />;
                         }}
                     />
                     <Route
@@ -142,12 +164,13 @@ export const Routes: React.FunctionComponent<{}> = () => {
                                     "Stats not available in embedding."
                                 );
                             }
-                            const { collectionName } = splitPathname(
+                            const { collectionName, filters } = splitPathname(
                                 match.params.segments
                             );
                             return (
                                 <CollectionStatsPageCodeSplit
                                     collectionName={collectionName}
+                                    filters={filters}
                                     screen={match.params.screen}
                                 />
                             );
@@ -448,6 +471,12 @@ export function useSetBrowserTabTitle(title: string | undefined) {
         if (!title) {
             document.title = "Loading...";
         } else {
+            // When app-hosted, we often have different titles we want to show.
+            // Currently, those are being implemented using Helmet.
+            // At least in one case, this code was running after Helmet had set the title;
+            // thus the wrong title was being shown.
+            if (isAppHosted()) return;
+
             // we support titles coming in from the URL to support book playback
             // (I'm not sure why that's different, but it is).
             const urlParams = new URLSearchParams(location.search);
@@ -464,6 +493,7 @@ export function useSetBrowserTabTitle(title: string | undefined) {
 // This is used where we can't use useDocumentTitle, typically because
 // we don't know the title until after some conditional logic prevented by
 // rules of hooks.
+// Note: some components instead use <Helmet> to set document title and other metadata.
 export function setBloomLibraryTitle(title: string): void {
     document.title = "Bloom Library: " + title;
 }

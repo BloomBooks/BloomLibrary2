@@ -23,6 +23,7 @@ export const LeftMetadata: React.FunctionComponent<{
         ? props.book.lastUploadedDate!.toLocaleDateString()
         : undefined;
     const displayLastUploadDate =
+        lastUploadDateAsString &&
         originalUploadDateAsString !== lastUploadDateAsString;
 
     return (

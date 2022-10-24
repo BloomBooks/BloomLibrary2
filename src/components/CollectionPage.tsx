@@ -23,6 +23,11 @@ import { CollectionLayout } from "./CollectionLayout";
 import { DownloadBundleButton } from "./banners/DownloadBundleButton";
 import { Helmet } from "react-helmet";
 import { useLocation } from "react-router-dom";
+import { readerPadding } from "./banners/ReaderBannerLayout";
+import {
+    useAppHostedCollectionLabel,
+    useIsAppHosted,
+} from "./appHosted/AppHostedUtils";
 
 const kLeftMarginOnCollectionPages = "20px";
 
@@ -37,14 +42,32 @@ export const CollectionPage: React.FunctionComponent<{
     const { collection, loading } = useGetCollection(props.collectionName);
     const { params, sendIt } = getCollectionAnalyticsInfo(collection);
     const localizedLabel = useGetLocalizedCollectionLabel(collection);
+    const location = useLocation();
 
     // generated collections (topics, language) fill in a good title
-    const title = collection?.title
+    let title = collection?.title
         ? collection?.title
         : // enhance: ideally, we'd want localizedLabel + "books", also localized (with correct word order)
           localizedLabel;
+    // Review: should we make this a prop instead? And pass all the way down from router?
+    const appHostedMode = useIsAppHosted();
+    const label = useAppHostedCollectionLabel(
+        collection?.label,
+        [], // root page has no filters
+        appHostedMode
+    );
+    if (appHostedMode) {
+        // We want a very specific title for language collections when app-hosted (BL-11254)
+        title = l10n.formatMessage(
+            {
+                id: "appHosted.getMoreBooks",
+                defaultMessage: "Get more {label} books",
+            },
+            { label }
+        );
+    }
+
     useTrack("Open Collection", params, sendIt);
-    const location = useLocation();
 
     // We seem to get some spurious renders of CollectionPage (at least one extra one on the home page)
     // where nothing significant has changed. Keeping the results in a memo saves time.
@@ -160,7 +183,16 @@ export const CollectionPage: React.FunctionComponent<{
                         </DownloadBundleButton>
                     </span>
                 )}
-                <ListOfBookGroups>
+                <ListOfBookGroups
+                    // tighten things up a bit in a view designed for a phone.
+                    css={css`
+                        ${appHostedMode
+                            ? "padding-left: " +
+                              readerPadding +
+                              " !important; margin-block-start: 0"
+                            : ""}
+                    `}
+                >
                     {collectionRows}
                     {booksComponent}
 
@@ -212,6 +244,7 @@ export const CollectionPage: React.FunctionComponent<{
         props.embeddedSettings,
         title,
         location.pathname,
+        appHostedMode,
     ]);
     return result;
 };

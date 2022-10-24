@@ -7,18 +7,21 @@ import FilterTiltShiftIcon from "@material-ui/icons/FilterTiltShift";
 
 import { BooleanOptions, IFilter } from "../IFilter";
 import { ICollection } from "../model/ContentInterfaces";
-import { useGetUserIsModerator } from "../connection/LoggedInUser";
 import { kContentfulSpace } from "../ContentfulContext";
 import { getFilterForCollectionAndChildren } from "../model/Collections";
+import { useShowTroubleshootingStuff } from "../Utilities";
 
 export const CollectionInfoWidget: React.FunctionComponent<{
     collection: ICollection;
 }> = (props) => {
-    const isModerator = useGetUserIsModerator();
+    const [showTroubleshootingStuff] = useShowTroubleshootingStuff();
     try {
-        if (!isModerator) return null;
+        if (!showTroubleshootingStuff) return null;
         const collectionInfo = props.collection
-            ? `UrlKey = ${props.collection.urlKey}`
+            ? `UrlKey = ${props.collection.urlKey}\r\nSort Order = ${
+                  props.collection.orderingScheme ||
+                  "(not set; using createdAt, or search score)"
+              }`
             : "";
         const filter = props.collection.filter
             ? props.collection.filter

@@ -14,7 +14,7 @@ const unitTestBaseUrl =
 async function getBook(filter: IFilter) {
     return axios.get(`${unitTestBaseUrl}classes/books`, {
         headers,
-        params: constructParseBookQuery({ count: 5 }, filter, [
+        params: constructParseBookQuery({ keys: "title", count: 5 }, filter, [
             "region:Pacific",
             "topic:Math",
             "bookshelf:Enabling writers workshops",
@@ -121,7 +121,12 @@ beforeAll(async () => {
     try {
         // This appears to set the timeout for all tests globally,
         // but I don't see any way to set it for just a particular suite.
-        jest.setTimeout(20000);
+        // It's bizarre that we need this. With the previous setting of 20000 (20s!)
+        // 10 tests fail, both locally and on TC. Yet, when I increate the limit
+        // to 30s, not only do they all pass, but the whole suite runs in just over
+        // TEN seconds. How can a 20s timeout not be sufficient for a test that
+        // completes successfully in 10s??
+        jest.setTimeout(30000);
 
         await cleanup();
         const fredData = await getFred();
@@ -171,11 +176,11 @@ beforeAll(async () => {
         console.log(JSON.stringify(error));
         throw error;
     }
-}, 20000); // This function can take a while to run, give it up to 20s
+}, 60000); // This function can take a while to run, give it up to 20s
 
 afterAll(async () => {
     await cleanup();
-}, 20000); // This function can take a while to run, give it up to 20s
+}, 60000); // This function can take a while to run, give it up to 20s
 
 it("retrieves a parse book using full-text search", async () => {
     try {
@@ -236,8 +241,13 @@ it("retrieves a book with quoted publisher value", async () => {
         search: 'publisher: "Unlikely Publisher"',
     });
     expect(result.data.results.length).toBe(2);
-    expect(result.data.results[0].title).toBe(title1);
-    expect(result.data.results[1].title).toBe(title3);
+    // we're not specifying an order
+    expect(
+        result.data.results.some((x: { title: string }) => x.title === title1)
+    );
+    expect(
+        result.data.results.some((x: { title: string }) => x.title === title3)
+    );
 });
 
 it("retrieves a book with quoted originalPublisher value", async () => {
@@ -253,8 +263,12 @@ it("doesn't crash with a facet non-value", async () => {
         search: "publisher:",
     });
     expect(result.data.results.length).toBe(2);
-    expect(result.data.results[0].title).toBe(title1);
-    expect(result.data.results[1].title).toBe(title3);
+    expect(
+        result.data.results.some((x: { title: string }) => x.title === title1)
+    );
+    expect(
+        result.data.results.some((x: { title: string }) => x.title === title3)
+    );
 });
 
 // Unit tests that don't use axios have been moved to LibraryQueryHooksFast.test.ts

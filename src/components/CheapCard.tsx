@@ -12,12 +12,16 @@ import { useCardHoverStyles } from "../theme";
 interface IProps extends React.HTMLProps<HTMLDivElement> {
     className?: string;
     target?: string; // what we're calling "target" is the last part of url, where the url is <breadcrumb stuff>/<target>
+    url?: string; // if present, this overrides target and is used unmodified as the url to go to.
     role?: string;
+    textColorOverride?: string;
+    onMouseDown?: () => void;
+    onMouseUp?: () => void;
 }
 
 // just a wrapper around the children you provide, made to look like a card and responsive to a click.
 export const CheapCard: React.FunctionComponent<IProps> = (props) => {
-    const url = getUrlForTarget(props.target || "");
+    const url = props.url ?? getUrlForTarget(props.target || "");
     const cardSpacing = useBaseCardSpec().cardSpacingPx;
     const hoverStyles = useCardHoverStyles();
     return (
@@ -54,10 +58,16 @@ export const CheapCard: React.FunctionComponent<IProps> = (props) => {
                 text-decoration: none;
                 &,
                 &:visited {
-                    color: black;
+                    color: ${props.textColorOverride
+                        ? props.textColorOverride
+                        : "black"};
                 }
 
                 position: relative;
+
+                color: ${props.textColorOverride
+                    ? props.textColorOverride
+                    : "inherit"};
 
                 // NOTE! There are more css rules that can come from the parent
                 // component, e.g. collection card. In the debugger they'll all
@@ -65,6 +75,8 @@ export const CheapCard: React.FunctionComponent<IProps> = (props) => {
             `}
             href={url}
             role={props.role}
+            onMouseDown={props.onMouseDown}
+            onMouseUp={props.onMouseUp}
         >
             {/* the empty string here prevents a console warning from MuiLink when the children aren't available yet */}
             {props.children ?? ""}

@@ -6,12 +6,20 @@ import { Link as MuiLink } from "@material-ui/core";
 // for a discussion around how react-router link doesn't handle
 // external links, see https://github.com/ReactTraining/react-router/issues/1147
 
-export interface IBlorgLinkProps
-    extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+export interface IBlorgLinkProps {
+    // we'd prefer this extends but mismatching definitions have killed it for now
+    //extends React.AnchorHTMLAttributes<HTMLAnchorElement>
+    onClick?: (e: any) => void;
+    target?: string;
+    className?: string;
+    role?: string;
+    title?: string;
     href: string; // href is part of React.AnchorHTMLAttributes<HTMLAnchorElement> but optional; we want required
     newTabIfEmbedded?: boolean;
     alwaysnewtab?: boolean;
     color?: "primary" | "secondary";
+    onMouseDown?: () => void;
+    onMouseUp?: () => void;
 }
 
 // A Link class that is clever about using a React Router Link for internal hrefs and
@@ -25,6 +33,7 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
 
     const isInIframe = window.self !== window.top;
 
+    /* REVIEW: this is causing problems... something is sneaking through that we don't want:*/
     const { newTabIfEmbedded, alwaysnewtab, ...propsToPassDown } = props; // Prevent React warnings
 
     // ABOUT MuiLink: we're using this to get the themed color for the link
@@ -38,6 +47,8 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
                     rel="noopener noreferrer"
                     {...propsToPassDown}
                     color={props.color || "primary"}
+                    onMouseDown={props.onMouseDown}
+                    onMouseUp={props.onMouseUp}
                 >
                     {props.children}
                     {/* This might be a nice thing to do, but the color wasn't actually being applied (the css was there, but the svg didn't take it on)
@@ -56,7 +67,13 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
             // the Nielsen Norman Group: https://www.nngroup.com/articles/new-browser-windows-and-tabs/
             return (
                 // just a normal <a></a> element, styled to fit the theme
-                <MuiLink {...propsToPassDown} color={props.color || "primary"}>
+                <MuiLink
+                    {...propsToPassDown}
+                    target={props.target}
+                    color={props.color || "primary"}
+                    onMouseDown={props.onMouseDown}
+                    onMouseUp={props.onMouseUp}
+                >
                     {props.children}
                 </MuiLink>
             );
@@ -71,13 +88,14 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
         /* The initial slash keeps url from just being 'tacked on' to existing url; not what we want here. */
         to = `/${to}`;
     }
-
     return (
         <MuiLink
-            {...propsToPassDown}
+            className={props.className}
             component={RouterLink}
             to={to}
             color={props.color || "primary"}
+            onMouseDown={props.onMouseDown}
+            onMouseUp={props.onMouseUp}
         >
             {props.children}
         </MuiLink>
@@ -130,4 +148,15 @@ function getQueryParamsToForward(
 
     const paramString = params.join("&");
     return paramString;
+}
+
+export function addParamToUrl(url: string, key: string, value: string): string {
+    const urlObject = new URL(url);
+    const params = urlObject.searchParams;
+    params.set(key, value);
+    return urlObject.toString();
+}
+
+export function addExternalParamToUrl(url: string): string {
+    return addParamToUrl(url, "external", "true");
 }

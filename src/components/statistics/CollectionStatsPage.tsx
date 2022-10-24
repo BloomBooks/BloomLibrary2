@@ -172,7 +172,10 @@ export const CollectionStatsPage: React.FunctionComponent<ICollectionStatsPagePr
 
     // remains empty (and unused) except in byLanguageGroups mode, when a callback sets it.
     //const [booksAndLanguages, setBooksAndLanguages] = useState("");
-    const { collection, loading } = useGetCollection(props.collectionName);
+    const { collection, loading } = useGetCollection(
+        props.collectionName,
+        props.filters
+    );
     const localizedCollectionLabel = useGetLocalizedCollectionLabel(collection);
     const localizedBrowserTabTitle = l10n.formatMessage(
         {

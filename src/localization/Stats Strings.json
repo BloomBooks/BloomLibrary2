@@ -3,6 +3,10 @@
         "message": "Most people should not translate this file",
         "description": "BloomLibrary has a function that shows charts and tables about collections, e.g. https://next.bloomlibrary.org/covid19/stats. Most visitors to BloomLibrary.org will never see this, and those that do can probably make do with the English, Spanish, or French translations. Therefore, please don't spend your time on Crowdin translating this file unless you know that it is important to someone that they be able to use the statistics screens in the language you are translating to."
     },
+    "countries": {
+        "description": "",
+        "message": "Countries"
+    },
     "stats.questions": {
         "description": "",
         "message": "Question"
@@ -22,6 +26,10 @@
     "stats.queryDescription.underCountingNote": {
         "description": "",
         "message": "Note that the events that devices and browsers try to send to us are sometimes stopped by various network firewalls. Therefore we may be under counting."
+    },
+    "stats.queryDescription.roundingNote": {
+        "description": "",
+        "message": "Large numbers that have been compacted with a 'k' or 'm' may be rounded up or down. Hover over the number to see the exact value."
     },
     "stats.queryDescription.about": {
         "description": "",
@@ -107,6 +115,10 @@
         "description": "",
         "message": "Custom"
     },
+    "stats.booksWithAnalytics": {
+        "description": "Given a set of books, we may only have received analytics from a subset of them. This is the count of those books.",
+        "message": "Books with Analytics"
+    },
     "stats.booksRead.finishedCount": {
         "description": "",
         "message": "Finished"
@@ -139,25 +151,13 @@
         "description": "",
         "message": "Comprehension Questions"
     },
-    "devices": {
-        "description": "",
-        "message": "Devices"
+    "stats.people.reached": {
+        "message": "People Reached",
+        "description": "A header for a card showing statistics on how many people have been reached with these books"
     },
-    "stats.devices.info": {
-        "description": "",
-        "message": "Count of devices for which we received notice that at least one book from this collection had been loaded."
-    },
-    "stats.devices.bloomReader": {
-        "description": "",
-        "message": "with Bloom Reader"
-    },
-    "stats.devices.mobile": {
-        "description": "",
-        "message": "Mobile"
-    },
-    "stats.devices.pc": {
-        "description": "",
-        "message": "PC"
+    "stats.people.reached.info": {
+        "message": "Will overcount when the same person reads one of these books via multiple devices or applications. Will undercount when firewalls or lack of connectivity permanently prevent analytics connections.",
+        "description": ""
     },
     "stats.reads": {
         "description": "",
@@ -165,7 +165,7 @@
     },
     "stats.reads.info": {
         "description": "",
-        "message": "The number of times the book was read, in part or whole. We are currently only showing reads on Bloom Reader. We will soon add reads on the Web, in apps, and in the desktop."
+        "message": "The number of times a book was read, in part or whole."
     },
     "stats.reads.web": {
         "description": "",

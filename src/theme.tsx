@@ -1,4 +1,4 @@
-import { createMuiTheme, MuiThemeProvider, useTheme } from "@material-ui/core";
+import { createTheme, MuiThemeProvider, useTheme } from "@material-ui/core";
 
 import React, { useState } from "react";
 export const commonUI = {
@@ -25,11 +25,12 @@ export const commonUI = {
     detailViewMargin: "1em",
     detailViewMainButtonWidth: "250px",
     detailViewMainButtonHeight: "80px",
+    detailViewSmallerButtonHeight: "55px",
     detailViewBreakpointForTwoColumns: "540px",
 };
 
 // lots of examples: https://github.com/search?q=createMuiTheme&type=Code
-const theme = createMuiTheme({
+const theme = createTheme({
     palette: {
         primary: { main: commonUI.colors.bloomRed },
         secondary: {
@@ -99,7 +100,7 @@ const creationPalette = {
     // eventually when materialui supports more names for the pallette, we can sort this out so that we just define the glow color
     secondary: { main: commonUI.colors.creationArea },
 };
-const creationTheme = createMuiTheme({ ...theme, palette: creationPalette });
+const creationTheme = createTheme({ ...theme, palette: creationPalette });
 export function CreationThemeProvider(props: any) {
     return (
         <MuiThemeProvider theme={creationTheme}>

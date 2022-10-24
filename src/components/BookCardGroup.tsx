@@ -17,7 +17,7 @@ import {
 } from "../connection/LibraryQueryHooks";
 import { BookCard, useBookCardSpec } from "./BookCard";
 import { MoreCard } from "./MoreCard";
-import { CardSwiperLazy } from "./CardSwiper";
+import { CardSwiperCodeSplit } from "./CardSwiperCodeSplit";
 import { ICollection } from "../model/ContentInterfaces";
 import Typography from "@material-ui/core/Typography";
 import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
@@ -98,11 +98,12 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
         {
             include: "langPointers",
             // the following is arbitrary. I don't even yet no what the ux is that we want.
-            limit: maxCardsToRetrieve,
-            order: props.collection.order || "titleOrScore",
+            limit: maxCardsToRetrieve, // note that if the selected BookOrderingScheme requires client-side sorting, this will be ignored
             skip: props.skip,
         },
-        collectionFilter
+        collectionFilter,
+        props.collection.orderingScheme,
+        props.contextLangIso
     );
 
     // We make life hard on <Lazy> components by thinking maybe we'll show, for example, a row of Level 1 books at
@@ -156,7 +157,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
             data.push("more");
         }
         bookList = (
-            <CardSwiperLazy
+            <CardSwiperCodeSplit
                 data={data}
                 cardSpec={cardSpec}
                 getReactElement={(item: IBasicBookInfo | "more", index) => {
@@ -179,7 +180,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
                         );
                     }
                 }}
-            ></CardSwiperLazy>
+            ></CardSwiperCodeSplit>
         );
     } else {
         const verticalSpacing = cardSpec.cardSpacingPx;

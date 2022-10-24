@@ -23,12 +23,15 @@ export interface IStatsPageProps {
 }
 
 export interface IOverviewStats {
-    books: number;
+    // In a given set of books, we'll have analytics for some of them, and not for others
+    booksWithAnalytics: number;
     languages: number;
     topics: number;
 
-    bloomPubDeviceMobile: number;
-    bloomPubDevicePC: number;
+    usersWeb: number;
+    usersApps: number;
+    usersBloomReader: number;
+    usersBloomPUBViewer: number;
 
     downloadsEpub: number;
     downloadsBloomPub: number;
@@ -38,6 +41,8 @@ export interface IOverviewStats {
     readsWeb: number;
     readsApps: number;
     readsBloomReader: number;
+
+    countries: number;
 }
 
 // These are query results in which each row represents one day.

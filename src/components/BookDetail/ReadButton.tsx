@@ -7,11 +7,13 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import Button from "@material-ui/core/Button";
 import ReadIcon from "../../assets/Read.svg";
+import ReadOnlineIcon from "../../assets/ReadOnline.svg";
 import { commonUI } from "../../theme";
 import { Book } from "../../model/Book";
 import { useHistory } from "react-router-dom";
 import { getUrlForTarget } from "../Routes";
 import { FormattedMessage, useIntl } from "react-intl";
+import { useIsAppHosted } from "../appHosted/AppHostedUtils";
 
 interface IProps {
     book: Book;
@@ -22,23 +24,28 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
     const l10n = useIntl();
     const history = useHistory();
     const url = getUrlForTarget(`player/${props.book.id}`);
+    const isAppHosted = useIsAppHosted();
+
+    const buttonTextId =
+        "book.detail." + isAppHosted ? "readOnlineButton" : "readButton";
+    const buttonText = isAppHosted ? "READ ONLINE" : "READ";
 
     // This inserts breadcrumbs, embedding information, etc., which we don't want
     // since it interferes with the route for /player/X
     //const url = getUrlForTarget(`/player/${props.book.id}`);
     return (
         <Button
-            variant="contained"
+            variant={isAppHosted ? "outlined" : "contained"}
             color="primary"
             startIcon={
                 <img
-                    src={ReadIcon}
+                    src={isAppHosted ? ReadOnlineIcon : ReadIcon}
                     alt={l10n.formatMessage({
-                        id: "book.detail.readButton",
-                        defaultMessage: "READ",
+                        id: buttonTextId,
+                        defaultMessage: buttonText,
                     })}
                     css={css`
-                        width: 35px;
+                        width: ${isAppHosted ? "50px" : "35px"};
                         margin-right: 10px;
                     `}
                 />
@@ -48,7 +55,9 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
                 width: ${props.fullWidth
                     ? "100%"
                     : commonUI.detailViewMainButtonWidth};
-                height: ${commonUI.detailViewMainButtonHeight};
+                height: ${isAppHosted
+                    ? commonUI.detailViewSmallerButtonHeight
+                    : commonUI.detailViewMainButtonHeight};
                 margin-bottom: 10px !important;
                 float: right;
             `}
@@ -85,8 +94,8 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
                 `}
             >
                 <FormattedMessage
-                    id="book.detail.readButton"
-                    defaultMessage="READ"
+                    id={buttonTextId}
+                    defaultMessage={buttonText}
                 />
             </h1>
         </Button>

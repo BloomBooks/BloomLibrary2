@@ -203,7 +203,7 @@ export const SearchBox: React.FunctionComponent<{
                 padding-left: 5px;
                 ${props.cssExtra || ""}
             `}
-            //onFocus={() => setShowTooltip(true)}
+            // @ts-ignore:next-line
             component="form"
             elevation={0}
             role="search"

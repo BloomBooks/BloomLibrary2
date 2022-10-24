@@ -8,12 +8,15 @@ import { ICollection, IBanner } from "../../model/ContentInterfaces";
 import { StandardBannerLayout } from "./StandardBannerLayout";
 import { ImageOnRightBannerLayout } from "./ImageOnRightBannerLayout";
 import { useClassForSmallScreen } from "../../responsiveUtilities";
+import { ReaderBannerLayout } from "./ReaderBannerLayout";
+import { useIsAppHosted } from "../appHosted/AppHostedUtils";
 export const Banner: React.FunctionComponent<{
     collection: ICollection;
     banner: IBanner;
     bookCount?: string; // often undefined, meaning compute from filter
 }> = (props) => {
     const defaultTextColor = props.banner.backgroundImage ? "white" : "black";
+    const useAppHostedBanner = useIsAppHosted();
     return (
         <div
             className={useClassForSmallScreen()}
@@ -35,18 +38,26 @@ export const Banner: React.FunctionComponent<{
                 ${props.banner.css}
             `}
         >
-            {(props.banner.backgroundColor && (
-                <ImageOnRightBannerLayout
+            {useAppHostedBanner ? (
+                <ReaderBannerLayout
                     {...props}
                     banner={props.banner}
                     bookCount={props.bookCount}
                 />
-            )) || (
-                <StandardBannerLayout
-                    {...props}
-                    banner={props.banner}
-                    bookCount={props.bookCount}
-                />
+            ) : (
+                (props.banner.backgroundColor && (
+                    <ImageOnRightBannerLayout
+                        {...props}
+                        banner={props.banner}
+                        bookCount={props.bookCount}
+                    />
+                )) || (
+                    <StandardBannerLayout
+                        {...props}
+                        banner={props.banner}
+                        bookCount={props.bookCount}
+                    />
+                )
             )}
         </div>
     );

@@ -8,7 +8,7 @@ import React, { useContext } from "react";
 import { ArtifactType, Book } from "../../model/Book";
 import { observer } from "mobx-react-lite";
 import { ReadButton } from "./ReadButton";
-import { LanguageLink } from "../LanguageLink";
+import { LanguageLabel, LanguageLink } from "../LanguageLink";
 import { getArtifactVisibilitySettings } from "./ArtifactHelper";
 import { ILanguage } from "../../model/Language";
 import { ReadOfflineButton } from "./ReadOfflineButton";
@@ -22,7 +22,9 @@ import { FormattedMessage } from "react-intl";
 import { BookThumbnail } from "./BookThumbnail";
 import { BlorgLink } from "../BlorgLink";
 import { DownloadToBloomButton } from "./DownloadToBloomButton";
-import { BloomReaderDownloadButton } from "./BloomReaderDownloadButton";
+import { GetBloomReaderButton } from "./GetBloomReaderButton";
+import { AppHostedDownloadButton } from "../appHosted/AppHostedDownloadButton";
+import { useIsAppHosted } from "../appHosted/AppHostedUtils";
 
 export const BookDetailHeaderGroup: React.FunctionComponent<{
     book: Book;
@@ -34,6 +36,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
     const { bloomDesktopAvailable, bloomReaderAvailable } = useContext(
         OSFeaturesContext
     );
+    const appHostedMode = useIsAppHosted();
     const readOnlineSettings = getArtifactVisibilitySettings(
         props.book,
         ArtifactType.readOnline
@@ -64,17 +67,25 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
         !isEmbedded && // BL-8698, a this point, people embed BL to publish books, not encourage translation.
         shellBookSettings &&
         shellBookSettings.decision && // it's OK to download and translate the book
+        !appHostedMode && // bloomDesktopAVailable would block this normally, but when simulating on a desktop this makes sure.
         bloomDesktopAvailable; // and this platform can run the software for doing it
 
     const bloomReaderSettings = getArtifactVisibilitySettings(
         props.book,
         ArtifactType.bloomReader
     );
-    const showBloomReaderButton =
+
+    const allowBloomPUBDownload =
         props.book.harvestState === "Done" &&
         bloomReaderSettings && // harvester made a bloomd
         bloomReaderSettings.decision && // no one decided it was not fit to use
         bloomReaderAvailable; // and we're on a platform that supports bloom reader
+    const showBloomReaderButton =
+        allowBloomPUBDownload &&
+        // If we're embedded inside BR, we show a different Download button for the book
+        // and don't offer to install BR!
+        !appHostedMode;
+    const showAppHostedDownloadButton = allowBloomPUBDownload && appHostedMode;
 
     const fullWidthButtons = useMediaQuery(
         `(max-width:${commonUI.detailViewBreakpointForTwoColumns})`
@@ -159,31 +170,40 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                                     {props.book.languages.map(
                                         (l: ILanguage) => (
                                             <li key={l.isoCode}>
-                                                <LanguageLink language={l} />
+                                                {appHostedMode ? (
+                                                    <LanguageLabel
+                                                        language={l}
+                                                    />
+                                                ) : (
+                                                    <LanguageLink
+                                                        language={l}
+                                                    />
+                                                )}
                                             </li>
                                         )
                                     )}
 
-                                    {countOfBooksWithMatchingPhash > 0 && (
-                                        <li>
-                                            <BlorgLink
-                                                css={css`
-                                                    font-size: 9pt;
-                                                `}
-                                                newTabIfEmbedded={true}
-                                                color="secondary"
-                                                href={`/phash:${sanitizedPhashOfFirstContentImage}`}
-                                            >
-                                                <FormattedMessage
-                                                    id="book.detail.translations"
-                                                    defaultMessage="{count} books that may be translations"
-                                                    values={{
-                                                        count: countOfBooksWithMatchingPhash,
-                                                    }}
-                                                />
-                                            </BlorgLink>
-                                        </li>
-                                    )}
+                                    {!appHostedMode &&
+                                        countOfBooksWithMatchingPhash > 0 && (
+                                            <li>
+                                                <BlorgLink
+                                                    css={css`
+                                                        font-size: 9pt;
+                                                    `}
+                                                    newTabIfEmbedded={true}
+                                                    color="secondary"
+                                                    href={`/phash:${sanitizedPhashOfFirstContentImage}`}
+                                                >
+                                                    <FormattedMessage
+                                                        id="book.detail.translations"
+                                                        defaultMessage="{count} books that may be translations"
+                                                        values={{
+                                                            count: countOfBooksWithMatchingPhash,
+                                                        }}
+                                                    />
+                                                </BlorgLink>
+                                            </li>
+                                        )}
                                 </ul>
                             )) || (
                             <FormattedMessage
@@ -214,6 +234,17 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                     flex-direction: column;
                 `}
             >
+                {showAppHostedDownloadButton && (
+                    <AppHostedDownloadButton
+                        css={css`
+                            margin-top: 20px;
+                            margin-bottom: 20px;
+                        `}
+                        book={props.book}
+                        fullWidth={fullWidthButtons}
+                        contextLangIso={props.contextLangIso}
+                    />
+                )}
                 {showReadOnLine && (
                     <ReadButton
                         book={props.book}
@@ -229,14 +260,14 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                     />
                 )}
                 {showBloomReaderButton && (
-                    <ReadOfflineButton
-                        book={props.book}
-                        fullWidth={fullWidthButtons}
-                        contextLangIso={props.contextLangIso}
-                    />
-                )}
-                {showBloomReaderButton && (
-                    <BloomReaderDownloadButton fullWidth={fullWidthButtons} />
+                    <>
+                        <ReadOfflineButton
+                            book={props.book}
+                            fullWidth={fullWidthButtons}
+                            contextLangIso={props.contextLangIso}
+                        />
+                        <GetBloomReaderButton fullWidth={fullWidthButtons} />
+                    </>
                 )}
             </div>
         </div>

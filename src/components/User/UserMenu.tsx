@@ -20,7 +20,10 @@ import {
     firebaseAuthStateChanged,
     getCurrentUser,
 } from "../../firebase/firebase";
-import { setCookie } from "../../Utilities";
+import { LoggedInUser } from "../../connection/LoggedInUser";
+import { useCookies } from "react-cookie";
+import { useShowTroubleshootingStuff } from "../../Utilities";
+import { IUserMenuProps } from "./UserMenuCodeSplit";
 
 // This React component displays a button for functions related to the user who may
 // be logged in. If no user is logged in, it displays a generic icon with pull-down
@@ -30,11 +33,7 @@ import { setCookie } from "../../Utilities";
 // Currently, it is also responsible for handling a user who lacks a verified
 // email...currently just with an alert followed by forced logout. This functionality
 // might move when we decide what we really want to show.
-interface IProps extends React.HTMLProps<HTMLDivElement> {
-    buttonHeight: string;
-}
-
-export const UserMenu: React.FunctionComponent<IProps> = (props) => {
+export const UserMenu: React.FunctionComponent<IUserMenuProps> = (props) => {
     const l10n = useIntl();
     // This variable is used according to an apparently standard but rather
     // obscure convention for managing Material button/menu combinations.
@@ -49,10 +48,19 @@ export const UserMenu: React.FunctionComponent<IProps> = (props) => {
     const [loggedInUser, setLoggedInUser] = useState<firebase.User | null>(
         null
     );
+    const user = LoggedInUser.current;
 
     const history = useHistory(); // used to jump to My Books
 
     const avatarColor = useTheme().palette.secondary.main;
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [unused, setCookie] = useCookies(["loggedIn"]);
+
+    const [
+        showTroubleshootingStuff,
+        setShowTroubleshootingStuff,
+    ] = useShowTroubleshootingStuff();
 
     /*useEffect(() => {
         firebase
@@ -85,13 +93,17 @@ export const UserMenu: React.FunctionComponent<IProps> = (props) => {
     useEffect(
         () =>
             firebaseAuthStateChanged(() => {
+                const ksecondsPerDay = 24 * 60 * 60;
                 // If someone is now logged in, and it wasnt' who we previously had logged
                 // in (or more likely no one was previously logged in), report login
                 if (
                     firebase.auth()?.currentUser?.email &&
                     loggedInUser?.email !== firebase.auth()?.currentUser?.email
                 ) {
-                    setCookie("loggedIn", "true", 360);
+                    setCookie("loggedIn", "true", {
+                        maxAge: 360 * ksecondsPerDay,
+                        path: "/",
+                    });
                     // In previous blorg, we tracked the user name, but we're avoiding PII now.
                     track("Log In", {});
                 }
@@ -102,7 +114,10 @@ export const UserMenu: React.FunctionComponent<IProps> = (props) => {
                     !firebase.auth()?.currentUser?.email &&
                     loggedInUser?.email
                 ) {
-                    setCookie("loggedIn", "false", 360);
+                    setCookie("loggedIn", "false", {
+                        maxAge: 360 * ksecondsPerDay,
+                        path: "/",
+                    });
                     track("Log Out", {});
                 }
                 setLoggedInUser(firebase.auth().currentUser);
@@ -111,7 +126,7 @@ export const UserMenu: React.FunctionComponent<IProps> = (props) => {
                 //         firebase.auth().currentUser
                 // );
             }),
-        [loggedInUser]
+        [loggedInUser, setCookie]
     );
     useEffect(() => {
         getCurrentUser().then((currentUser) => {
@@ -300,6 +315,20 @@ export const UserMenu: React.FunctionComponent<IProps> = (props) => {
                                 defaultMessage="Log Out"
                             />
                         </MenuItem>
+                        {user?.moderator && (
+                            <MenuItem
+                                onClick={() =>
+                                    setShowTroubleshootingStuff(
+                                        !showTroubleshootingStuff
+                                    )
+                                }
+                            >
+                                {/* I don't know why we have a custom MenuItem, and thus no "check" property, but it's true. */}
+                                {`${
+                                    showTroubleshootingStuff ? "✓" : ""
+                                } Show Troubleshooting Stuff (staff only)`}
+                            </MenuItem>
+                        )}
                     </Menu>
                 </React.Fragment>
             )}
@@ -308,3 +337,6 @@ export const UserMenu: React.FunctionComponent<IProps> = (props) => {
         // </FirebaseAuthConsumer>
     );
 };
+
+// though we normally don't like to export defaults, this is required for react.lazy (code splitting)
+export default UserMenu;

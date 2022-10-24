@@ -10,7 +10,7 @@ import * as Sentry from "@sentry/browser";
 interface IConnection {
     headers: {
         "Content-Type": string;
-        "X-Parse-Application-Id": string;
+        "X-Parse-Application-Id"?: string;
         "X-Parse-Session-Token"?: string;
     };
     url: string;
@@ -41,26 +41,47 @@ const local: IConnection = {
 };
 
 export function getConnection(): IConnection {
-    if (
-        window.location.hostname === "bloomlibrary.org" ||
-        window.location.hostname === "next.bloomlibrary.org" ||
-        window.location.hostname === "embed.bloomlibrary.org" ||
-        window.location.hostname === "alpha.bloomlibrary.org"
-    ) {
-        return prod;
-    }
+    const result = prod;
+    // Some previous code which we don't need now...only one case returns anything but prod...
+    // but I think it's worth keeping to document the possibilities that we explicitly
+    // decided should be prod.
+    // if (
+    //     window.location.hostname === "bloomlibrary.org" ||
+    //     window.location.hostname === "next.bloomlibrary.org" ||
+    //     window.location.hostname === "embed.bloomlibrary.org" ||
+    //     window.location.hostname === "alpha.bloomlibrary.org"
+    // ) {
+    //     return prod;
+    // }
 
     if (window.location.hostname.startsWith("dev")) {
         return dev;
     }
 
-    if (window.location.hostname === "localhost") {
-        return prod;
-        //return dev;
-        // return local;
+    // if (window.location.hostname === "localhost") {
+    //     return prod;
+    //     //return dev;
+    //     // return local;
+    // }
+
+    // The browser will not allow us to provide this key here if we're running on
+    // Bloom Reader, which intercepts web requests in order to enable zipping data
+    // (and possibly eventually to do extra caching, provide local versions of
+    // some reasources, etc.). However, it does not work with this mechanism
+    // to provide the parse application id here. Not only does it not get through
+    // to the parse server, even though BR attempts to pass on all headers,
+    // but also, some "pre-flight" check fails, the WebView decides the request
+    // is invalid, and it ignores the result. The only workaround I've found is
+    // to have BR insert a marker into the user agent, and if this is found, we
+    // suppress sending the parse application id. (The reader supplies it for the
+    // real query to parse.)
+    // Note: we'll probably have the same problem with X-Parse-Session-Token, if
+    // we ever do anything embedded in BR that needs it.
+    if (window.navigator.userAgent.indexOf("sil-bloom") >= 0) {
+        delete result.headers["X-Parse-Application-Id"];
     }
 
-    return prod;
+    return result;
 }
 
 // This should only be called when there is a current user logged in.

@@ -7,16 +7,18 @@ export function useGetOverviewStats(
     const { response } = useCollectionStats(props, "reading/overview");
 
     if (response && response["data"] && response["data"]["stats"]) {
-        const s = response["data"]["stats"][0];
+        const stats = response["data"]["stats"][0];
 
-        if (!s) {
+        if (!stats) {
             const defaultResult: IOverviewStats = {
-                books: 0,
+                booksWithAnalytics: 0,
                 languages: 0,
                 topics: 0,
 
-                bloomPubDeviceMobile: 0,
-                bloomPubDevicePC: 0,
+                usersWeb: 0,
+                usersApps: 0,
+                usersBloomReader: 0,
+                usersBloomPUBViewer: 0,
 
                 downloadsEpub: 0,
                 downloadsBloomPub: 0,
@@ -26,6 +28,8 @@ export function useGetOverviewStats(
                 readsBloomReader: 0,
                 readsWeb: 0,
                 readsApps: 0,
+
+                countries: 0,
             };
             return defaultResult;
         }
@@ -34,21 +38,25 @@ export function useGetOverviewStats(
         // Without them, js will treat them like strings even though typescript knows they are numbers.
         // Then the + operator will concatenate instead of add.
         const result: IOverviewStats = {
-            books: parseInt(s.bookcount, 10),
-            languages: parseInt(s.languagecount, 10),
-            topics: parseInt(s.topiccount, 10),
+            booksWithAnalytics: parseInt(stats.bookcount, 10),
+            languages: parseInt(stats.languagecount, 10),
+            topics: parseInt(stats.topiccount, 10),
 
-            bloomPubDeviceMobile: parseInt(s.devicemobilecount, 10),
-            bloomPubDevicePC: parseInt(s.devicepccount, 10),
+            usersWeb: parseInt(stats.userwebcount, 10),
+            usersApps: parseInt(stats.userappcount, 10),
+            usersBloomReader: parseInt(stats.userbloomreadercount, 10),
+            usersBloomPUBViewer: parseInt(stats.userbloompubviewercount, 10),
 
-            downloadsEpub: parseInt(s.downloadsepubcount, 10),
-            downloadsBloomPub: parseInt(s.downloadsbloompubcount, 10),
-            downloadsPDF: parseInt(s.downloadspdfcount, 10),
-            downloadsShellbooks: parseInt(s.downloadsshellbookscount, 10),
+            downloadsEpub: parseInt(stats.downloadsepubcount, 10),
+            downloadsBloomPub: parseInt(stats.downloadsbloompubcount, 10),
+            downloadsPDF: parseInt(stats.downloadspdfcount, 10),
+            downloadsShellbooks: parseInt(stats.downloadsshellbookscount, 10),
 
-            readsBloomReader: parseInt(s.readsbloomreadercount, 10),
-            readsWeb: parseInt(s.readswebcount, 10),
-            readsApps: parseInt(s.readsappscount, 10),
+            readsBloomReader: parseInt(stats.readsbloomreadercount, 10),
+            readsWeb: parseInt(stats.readswebcount, 10),
+            readsApps: parseInt(stats.readsappscount, 10),
+
+            countries: parseInt(stats.countrycount, 10),
         };
         return result;
     }
