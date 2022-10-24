@@ -530,9 +530,5 @@
     "appHosted.detailsOnBlorg": {
         "message": "Details on BloomLibrary.org",
         "description": "Takes you to a page with more detailed information about a book"
-    },
-    "appHosted.nowDownloading": {
-        "message": "Details on BloomLibrary.org",
-        "description": "Takes you to a page with more detailed information about a book"
     }
 }
