@@ -27,7 +27,7 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
     const isAppHosted = useIsAppHosted();
 
     const buttonTextId =
-        "book.detail." + isAppHosted ? "readOnlineButton" : "readButton";
+        "book.detail." + (isAppHosted ? "readOnlineButton" : "readButton");
     const buttonText = isAppHosted ? "READ ONLINE" : "READ";
 
     // This inserts breadcrumbs, embedding information, etc., which we don't want
