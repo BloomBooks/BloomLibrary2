@@ -9,13 +9,20 @@ import { StatsCard } from "./StatsCard";
 import { useProvideDataForExport } from "../../export/exportData";
 import { useGetOverviewStats } from "./useGetOverviewStats";
 import { FormattedMessage, useIntl } from "react-intl";
+import { BookCount } from "../BookCount";
 
-//const gapWidth = "10px";
+// If we need more control over the icon in the future, use:
+//import { ReactComponent as PeopleReachedIcon } from "../assets/Girl.svg";
+// This lets us a do a simple <img src={icon} />:
+import peopleReachedIcon from "../../assets/Girl.svg";
+
 export const kDarkGrey = "#5d5d5d";
 
 export interface IItem {
     label: string;
     value: number;
+    row?: number; //1-based
+    excludeFromTotal?: boolean;
 }
 export const StatsOverviewScreen: React.FunctionComponent<IStatsPageProps> = (
     props
@@ -48,9 +55,61 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsPageProps> = (
             `}
         >
             <StatsCard
+                icon={peopleReachedIcon}
+                info={i18n.formatMessage({
+                    id: "stats.people.reached.info",
+                    defaultMessage:
+                        "Will overcount when the same person reads one of these books via multiple devices or applications. Will undercount when firewalls or lack of connectivity permanently prevent analytics connections.",
+                })}
+                subitems={[
+                    {
+                        label: i18n.formatMessage({
+                            id: "stats.reads.web",
+                            defaultMessage: "Web",
+                        }),
+                        value: stats.usersWeb,
+                    },
+                    {
+                        label: i18n.formatMessage({
+                            id: "stats.reads.apps",
+                            defaultMessage: "Apps",
+                        }),
+                        value: stats.usersApps,
+                    },
+                    {
+                        label: i18n.formatMessage({
+                            id: "bloomReader",
+                            defaultMessage: "Bloom Reader",
+                        }),
+                        value: stats.usersBloomReader,
+                    },
+                    {
+                        label: i18n.formatMessage({
+                            id: "bloomPubViewer",
+                            defaultMessage: "BloomPUB Viewer",
+                        }),
+                        value: stats.usersBloomPUBViewer,
+                    },
+                    {
+                        label: i18n.formatMessage({
+                            id: "countries",
+                            defaultMessage: "Countries",
+                        }),
+                        value: stats.countries,
+                        row: 2,
+                        excludeFromTotal: true,
+                    },
+                ]}
+            >
+                <FormattedMessage
+                    id="stats.people.reached"
+                    defaultMessage="People Reached"
+                />
+            </StatsCard>
+            <StatsCard
                 //  I don't think we're ready for translation on this one yet...
                 info={
-                    "These statistics are for books that were read during the time period. This may be different from the count of books in the collection, if some books were not read during the time period, or if some books were removed from the collection."
+                    "These statistics are for books that were read during the selected time period. If we have not received any analytics from some books during the selected time period, then 'Books with Analytics' will be smaller than the total number of books. If 'Books with Analytics' is larger than the total, that means that we have analytics for some books that are currently not a part of this collection."
                 }
                 subitems={[
                     {
@@ -67,54 +126,29 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsPageProps> = (
                         }),
                         value: stats.topics,
                     },
+                    {
+                        label: i18n.formatMessage({
+                            id: "books-with-analytics",
+                            defaultMessage: "Books with Analytics",
+                        }),
+                        value: stats.booksWithAnalytics,
+                    },
                 ]}
-                overrideTotal={stats.books}
+                overrideTotal={() => (
+                    <BookCount
+                        collection={props.collection}
+                        message="{0}" // just show the number
+                    ></BookCount>
+                )}
             >
                 <FormattedMessage id="books" defaultMessage="Books" />
             </StatsCard>
 
             <StatsCard
                 info={i18n.formatMessage({
-                    id: "stats.devices.info",
-                    defaultMessage:
-                        "Count of devices for which we received notice that at least one book from this collection had been loaded.",
-                })}
-                overrideTotal={stats.bloomPubDeviceMobile}
-                // subitems={[
-                //     {
-                //         label: i18n.formatMessage({
-                //             id: "stats.devices.mobile",
-                //             defaultMessage: "Mobile",
-                //         }),
-                //         value: stats.bloomPubDeviceMobile,
-                //     },
-                // {
-                //     label: i18n.formatMessage({
-                //         id: "stats.devices.pc",
-                //         defaultMessage: "PC",
-                //     }),
-                //     value: stats.bloomPubDevicePC,
-                // },
-                // ]}
-            >
-                <FormattedMessage id="devices" defaultMessage="Devices" />
-                <div
-                    css={css`
-                        font-size: 12px;
-                    `}
-                >
-                    <FormattedMessage
-                        id="stats.devices.bloomReader"
-                        defaultMessage="with Bloom Reader"
-                    />
-                </div>
-            </StatsCard>
-
-            <StatsCard
-                info={i18n.formatMessage({
                     id: "stats.reads.info",
                     defaultMessage:
-                        "The number of times the book was read, in part or whole. We are currently only showing reads on Bloom Reader. We will soon add reads on the Web, in apps, and in the desktop.",
+                        "The number of times a book was read, in part or whole.",
                 })}
                 subitems={[
                     {

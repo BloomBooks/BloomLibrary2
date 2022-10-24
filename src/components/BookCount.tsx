@@ -48,6 +48,8 @@ const BookCountInternal: React.FunctionComponent<IProps> = (props) => {
     const { noResultsElement, count } = getResultsOrMessageElement(
         bookCountResult
     );
+    // note, we don't want the "compact" version of the string here, we want the exact count
+    const formattedCount = count === undefined ? "" : count.toLocaleString();
     const [state, setState] = useState({
         filterString: "", // what we're filtering for
         waitingForLoading: false, // do we need to wait for a return result with loading true before we believe results?
@@ -116,12 +118,12 @@ const BookCountInternal: React.FunctionComponent<IProps> = (props) => {
                 `}
             >
                 {props.message ? (
-                    props.message.replace("{0}", count)
+                    props.message.replace("{0}", formattedCount)
                 ) : (
                     <FormattedMessage
                         id="bookCount"
                         defaultMessage="{count} books"
-                        values={{ count }}
+                        values={{ count: formattedCount }}
                     />
                 )}
                 <CollectionInfoWidget collection={props.collection} />

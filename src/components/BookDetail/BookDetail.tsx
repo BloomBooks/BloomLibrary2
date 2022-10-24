@@ -9,6 +9,7 @@ import { useGetBookDetail } from "../../connection/LibraryQueryHooks";
 import { Book } from "../../model/Book";
 
 import { Checkbox, Divider, FormControlLabel } from "@material-ui/core";
+import { Alert } from "@material-ui/lab";
 
 import { observer } from "mobx-react-lite";
 import { BookExtraPanels } from "./BookExtraPanels";
@@ -37,6 +38,12 @@ import { ReactComponent as DraftIcon } from "../../assets/DRAFT-Stamp.svg";
 import { useResponsiveChoice } from "../../responsiveUtilities";
 import { HarvesterProblemNotice } from "./HarvesterProblemNotice";
 import { SharingButtons } from "./SharingButtons";
+import { addExternalParamToUrl, BlorgLink } from "../BlorgLink";
+import {
+    removeAppHostedFromPath,
+    useIsAppHosted,
+} from "../appHosted/AppHostedUtils";
+import { Helmet } from "react-helmet";
 
 const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     const l10n = useIntl();
@@ -109,6 +116,7 @@ const BookDetailInternal: React.FunctionComponent<{
     );
 
     const embeddedMode = useIsEmbedded();
+    const appHostedMode = useIsAppHosted();
     const user = LoggedInUser.current;
     const userIsUploader = user?.username === props.book.uploader?.username;
     const l10n = useIntl();
@@ -124,8 +132,18 @@ const BookDetailInternal: React.FunctionComponent<{
                 padding: 1em;
                 label: BookDetail;
                 max-width: 800px;
+                box-sizing: border-box;
+                ${appHostedMode ? "height: 100%;" : ""}
             `}
         >
+            {appHostedMode && (
+                <Helmet>
+                    {/* &#65279; is U+FEFF ZERO WIDTH NO-BREAK SPACE which gives us nothing visible.
+                    Trying to set title to nothing results in an ugly browser default, showing part of the url.
+                    In this case, we want nothing because in the host app, the book title is already the thing at the top of the screen */}
+                    <title>&#65279;</title>
+                </Helmet>
+            )}
             <div
                 css={css`
                     a,
@@ -134,13 +152,16 @@ const BookDetailInternal: React.FunctionComponent<{
                     }
                 `}
             >
-                {embeddedMode || <Breadcrumbs />}
+                {embeddedMode || appHostedMode || <Breadcrumbs />}
             </div>
-
             <div
                 // position is relative so this is the basis div for absolutely positioning the DRAFT overlay
                 css={css`
                     position: relative;
+                    box-sizing: border-box;
+                    ${appHostedMode
+                        ? "height: 100%; display: flex; flex-direction: column;"
+                        : ""}
                 `}
             >
                 <BookDetailHeaderGroup
@@ -167,51 +188,80 @@ const BookDetailInternal: React.FunctionComponent<{
                 )}
                 <HarvesterProgressNotice book={props.book} />
                 <HarvesterProblemNotice book={props.book} />
-                {divider}
-                <Detail2ColumnRow>
-                    <FeaturesGroup book={props.book} />
-                    <DownloadsGroup book={props.book} />
-                </Detail2ColumnRow>
-                {divider}
-                <Detail2ColumnRow>
-                    <LeftMetadata book={props.book} />
-                    <RightMetadata book={props.book} />
-                </Detail2ColumnRow>
-                {divider}
-                <div
-                    css={css`
-                        display: flex;
-                        justify-content: space-between;
-                    `}
-                >
-                    <div
-                        css={css`
-                            display: flex;
-                            width: 100%;
-                            justify-content: space-between;
-                            flex-wrap: wrap;
-                            align-items: center;
-                            @media (max-width: ${commonUI.detailViewBreakpointForTwoColumns}) {
-                                flex-direction: column-reverse;
-                                align-items: flex-start;
-                            }
-                        `}
-                    >
+                {appHostedMode ? (
+                    <React.Fragment>
+                        <div
+                            css={css`
+                                flex-grow: 1;
+                            `}
+                        />
+                        <BlorgLink
+                            css={css`
+                                color: black;
+                                text-decoration: underline;
+                                margin-top: auto;
+                            `}
+                            // We want the hosting app to handle this link so it can route it to an external browser.
+                            // Therefore, we need BlorgLink to treat it like an external link (i.e. not use our SPA router).
+                            // By ensuring the link starts with http(s), we get the desired behavior.
+                            href={addExternalParamToUrl(
+                                removeAppHostedFromPath(window.location.href)
+                            )}
+                        >
+                            {l10n.formatMessage({
+                                id: "appHosted.detailsOnBlorg",
+                                defaultMessage: "Details on BloomLibrary.org",
+                            })}
+                        </BlorgLink>
+                    </React.Fragment>
+                ) : (
+                    <React.Fragment>
+                        {divider}
+                        <Detail2ColumnRow>
+                            <FeaturesGroup book={props.book} />
+                            <DownloadsGroup book={props.book} />
+                        </Detail2ColumnRow>
+
+                        {divider}
+                        <Detail2ColumnRow>
+                            <LeftMetadata book={props.book} />
+                            <RightMetadata book={props.book} />
+                        </Detail2ColumnRow>
+                        {divider}
                         <div
                             css={css`
                                 display: flex;
+                                justify-content: space-between;
                             `}
                         >
-                            <SharingButtons book={props.book} />
-                            <ReportButton
-                                book={props.book}
-                                contextLangIso={props.contextLangIso}
-                            />
-                            <DeleteButton book={props.book} />
-                        </div>
+                            <div
+                                css={css`
+                                    display: flex;
+                                    width: 100%;
+                                    justify-content: space-between;
+                                    flex-wrap: wrap;
+                                    align-items: center;
+                                    @media (max-width: ${commonUI.detailViewBreakpointForTwoColumns}) {
+                                        flex-direction: column-reverse;
+                                        align-items: flex-start;
+                                    }
+                                `}
+                            >
+                                <div
+                                    css={css`
+                                        display: flex;
+                                    `}
+                                >
+                                    <SharingButtons book={props.book} />
+                                    <ReportButton
+                                        book={props.book}
+                                        contextLangIso={props.contextLangIso}
+                                    />
+                                    <DeleteButton book={props.book} />
+                                </div>
 
-                        {/* Enhance, maybe, add this and wire to some message <HowToPrintButton />*/}
-                        {/* This link is supposed to be an explanation of how to get Bloom desktop etc.
+                                {/* Enhance, maybe, add this and wire to some message <HowToPrintButton />*/}
+                                {/* This link is supposed to be an explanation of how to get Bloom desktop etc.
                         so you can translate the book. A such only needed where the Translate button
                         is missing, e.g., mobile and Mac. But we haven't created the page it should link
                         to yet, so we're not showing it anywhere.
@@ -258,69 +308,87 @@ const BookDetailInternal: React.FunctionComponent<{
                                 </div>
                             </BlorgLink>
                         )} */}
-                    </div>
-                </div>
-                {(user?.moderator || userIsUploader) && (
-                    <FormControlLabel
-                        css={css`
-                            margin-top: 15px;
-                            // By default, the checkbox has some padding used for animations on hover etc.
-                            // And then, apparently a corresponding negative margin on this control makes it look
-                            // aligned left. I think the amount of both is 8px. So a margin of -5px actually INCREASES
-                            // the indent, aligning it with the 3px that something indents the Report button icon.
-                            margin-left: -5px;
-                        `}
-                        control={
-                            <Checkbox
+                            </div>
+                        </div>
+                        {(user?.moderator || userIsUploader) && (
+                            <FormControlLabel
                                 css={css`
-                                    padding-top: 0;
-                                    margin-right: -5px;
-                                    padding-right: 1px;
+                                    margin-top: 15px;
+                                    // By default, the checkbox has some padding used for animations on hover etc.
+                                    // And then, apparently a corresponding negative margin on this control makes it look
+                                    // aligned left. I think the amount of both is 8px. So a margin of -5px actually INCREASES
+                                    // the indent, aligning it with the 3px that something indents the Report button icon.
+                                    margin-left: -5px;
                                 `}
-                                checked={props.book.draft}
-                                onChange={(e) => {
-                                    props.book.draft = e.target.checked;
-                                    props.book.saveAdminDataToParse();
-                                }}
+                                control={
+                                    <Checkbox
+                                        css={css`
+                                            padding-top: 0;
+                                            margin-right: -5px;
+                                            padding-right: 1px;
+                                        `}
+                                        checked={props.book.draft}
+                                        onChange={(e) => {
+                                            props.book.draft = e.target.checked;
+                                            props.book.saveAdminDataToParse();
+                                        }}
+                                    />
+                                }
+                                label={
+                                    <div
+                                        css={css`
+                                            display: flex;
+                                        `}
+                                    >
+                                        <DraftIcon
+                                            css={css`
+                                                width: 54px;
+                                            `}
+                                        />
+                                        <div>
+                                            {l10n.formatMessage({
+                                                id:
+                                                    "book.detail.draftDescription",
+                                                defaultMessage:
+                                                    "Show this book only to reviewers with whom I share the URL of this page.",
+                                                description:
+                                                    "Label for a check box which, if checked, marks the book as 'DRAFT' and prevents the book from showing in most views",
+                                            })}
+                                        </div>
+                                    </div>
+                                }
                             />
-                        }
-                        label={
-                            <div
+                        )}
+                        {props.book.draft && (
+                            <DraftIcon
                                 css={css`
-                                    display: flex;
+                                    width: 261px;
+                                    height: 197px;
+                                    position: absolute;
+                                    left: ${getResponsiveChoice(120, 180)}px;
+                                    top: ${getResponsiveChoice(-26, -12)}px;
+                                `}
+                            />
+                        )}
+                        {userIsUploader && (
+                            <Alert
+                                severity="info"
+                                css={css`
+                                    margin-top: 20px;
                                 `}
                             >
-                                <DraftIcon
-                                    css={css`
-                                        width: 54px;
-                                    `}
+                                <FormattedMessage
+                                    id={"book.detail.updateBookNotice"}
+                                    defaultMessage={
+                                        "If you want to update this book with any changes, just upload it again from Bloom, using the same account. Your new version will replace this one."
+                                    }
                                 />
-                                <div>
-                                    {l10n.formatMessage({
-                                        id: "book.detail.draftDescription",
-                                        defaultMessage:
-                                            "Show this book only to reviewers with whom I share the URL of this page.",
-                                        description:
-                                            "Label for a check box which, if checked, marks the book as 'DRAFT' and prevents the book from showing in most views",
-                                    })}
-                                </div>
-                            </div>
-                        }
-                    />
-                )}
-                {props.book.draft && (
-                    <DraftIcon
-                        css={css`
-                            width: 261px;
-                            height: 197px;
-                            position: absolute;
-                            left: ${getResponsiveChoice(120, 180)}px;
-                            top: ${getResponsiveChoice(-26, -12)}px;
-                        `}
-                    />
-                )}
+                            </Alert>
+                        )}
 
-                <BookExtraPanels book={props.book} />
+                        <BookExtraPanels book={props.book} />
+                    </React.Fragment>
+                )}
             </div>
         </div>
     );

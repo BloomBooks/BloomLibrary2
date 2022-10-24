@@ -7,7 +7,7 @@ import { jsx } from "@emotion/core";
 import React from "react";
 import logo from "./header-logo.svg";
 import { SearchBox } from "../SearchBox";
-import { UserMenu } from "../User/UserMenu";
+import { UserMenuCodeSplit } from "../User/UserMenuCodeSplit";
 import { commonUI } from "../../theme";
 import { useMediaQuery, Tab, Tabs } from "@material-ui/core";
 import { useHistory, useLocation } from "react-router-dom";
@@ -150,7 +150,7 @@ export const Header: React.FunctionComponent = () => {
                     </div>
                 )}
                 {showUserMenu && (
-                    <UserMenu
+                    <UserMenuCodeSplit
                         buttonHeight={normalToobarHeight}
                         css={css`
                             ${showSearchBelow ? "margin-left: auto" : ""};

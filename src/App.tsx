@@ -18,6 +18,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import ScrollToTop from "./ScrollToTop";
 import { configure } from "mobx";
 import { QueryParamProvider } from "use-query-params";
+import { CookiesProvider } from "react-cookie";
 
 // Turn off "mobx" strict mode, so we can set observables without the boilerplate
 // of wrapping methods annotated as 'actions'.
@@ -58,21 +59,23 @@ export const App: React.FunctionComponent<{}> = (props) => {
                 See also https://github.com/facebook/react/issues/16362
                 */}
                     <ThemeProvider theme={theme}>
-                        <CacheProvider>
-                            <OSFeaturesProvider>
-                                <UnderConstruction />
-                                <Router>
-                                    <QueryParamProvider
-                                        ReactRouterRoute={Route}
-                                    >
-                                        <ScrollToTop />
-                                        <RouterContent />
-                                    </QueryParamProvider>
-                                </Router>
-                            </OSFeaturesProvider>
-                        </CacheProvider>
+                        <CookiesProvider>
+                            <CacheProvider>
+                                <OSFeaturesProvider>
+                                    <UnderConstruction />
+                                    <Router>
+                                        <QueryParamProvider
+                                            ReactRouterRoute={Route}
+                                        >
+                                            <ScrollToTop />
+                                            <RouterContent />
+                                        </QueryParamProvider>
+                                    </Router>
+                                </OSFeaturesProvider>
+                            </CacheProvider>
+                        </CookiesProvider>
                     </ThemeProvider>
-                    {embeddedMode || <LoginDialog />}{" "}
+                    {embeddedMode || <LoginDialog />}
                     {/* </React.StrictMode> */}
                 </div>
             </LocalizationProvider>

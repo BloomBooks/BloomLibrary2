@@ -2,6 +2,7 @@ import React from "react";
 
 export interface ICollectionStatsPageProps {
     collectionName: string;
+    filters: string[];
     screen?: string;
 }
 

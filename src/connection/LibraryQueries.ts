@@ -18,6 +18,7 @@ export async function retrieveBookData(
     return axios.get(`${getConnection().url}classes/books`, {
         headers: getConnection().headers,
         params: {
+            ...query, // this is first so that the order that was part of the original query (and anything else) can be overridden by the user using the grid
             count: 1, // causes it to return the count
             order: sortOrder,
             skip: skipCount,
@@ -25,7 +26,6 @@ export async function retrieveBookData(
             keys: keysToGet ?? gridBookKeys,
             // fluff up fields that reference other tables
             include: gridBookIncludeFields,
-            ...query,
         },
     });
 }

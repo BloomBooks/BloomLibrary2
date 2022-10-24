@@ -19,6 +19,9 @@ import {
     useGetCollection,
     getFilterForCollectionAndChildren,
 } from "../model/Collections";
+import { doExpensiveClientSideSortingIfNeeded } from "./sorting";
+import { BookOrderingScheme } from "../model/ContentInterfaces";
+import { isAppHosted } from "../components/appHosted/AppHostedUtils";
 
 /**
  * @summary The minimum fields returned by Parse
@@ -54,15 +57,19 @@ export interface IParseResponseDataWithCount<T = any> {
 /**
  * @summary For things other than books, which should use `useBookQuery()`
  * @param T The type of the result record returned by Parse. Or use "any" or omit to ignore types.
+ * If doNotActuallyRunQuery is true, the query will not be executed, and the result will always be empty.
+ * (This is useful when rules of hooks force us to call this unconditionally, but we sometimes don't want to.)
  */
 function useLibraryQuery<T = any>(
     queryClass: string,
-    params: {}
+    params: {},
+    doNotActuallyRunQuery?: boolean
 ): IReturns<IParseResponseData<T>> {
     return useAxios<IParseResponseData<T>>({
         url: `${getConnection().url}classes/${queryClass}`,
         method: "GET",
         trigger: "true",
+        forceDispatchEffect: () => !doNotActuallyRunQuery,
         options: {
             headers: getConnection().headers,
             params,
@@ -75,16 +82,20 @@ function useLibraryQuery<T = any>(
  */
 function useLibraryQueryWithCount<T = any>(
     queryClass: string,
-    params: {}
+    params: {},
+    doNotActuallyRunQuery?: boolean
 ): IReturns<IParseResponseDataWithCount<T>> {
-    return useLibraryQuery(queryClass, { ...params, count: 1 }) as IReturns<
-        IParseResponseDataWithCount<T>
-    >;
+    return useLibraryQuery(
+        queryClass,
+        { ...params, count: 1 },
+        doNotActuallyRunQuery
+    ) as IReturns<IParseResponseDataWithCount<T>>;
 }
 
 function useGetLanguagesList() {
     return useLibraryQuery<IParseCommonFields & ILanguage>("language", {
         keys: "name,englishName,usageCount,isoCode",
+        where: '{"usageCount":{"$gt":0}}',
         limit: 10000,
         order: "-usageCount",
     });
@@ -100,10 +111,20 @@ export function useGetCleanedAndOrderedLanguageList(): ILanguage[] {
     return [];
 }
 export function useGetTagList(): string[] {
-    const axiosResult = useLibraryQueryWithCount("tag", {
-        limit: Number.MAX_SAFE_INTEGER,
-        order: "name",
-    });
+    // I'd prefer to use useAppHosted but it crashes, I think because this code runs outside the
+    // scope where it works.
+    const appHosted = isAppHosted();
+    const axiosResult = useLibraryQueryWithCount(
+        "tag",
+        {
+            limit: Number.MAX_SAFE_INTEGER,
+            order: "name",
+        },
+        appHosted // don't actually run the query if we're app hosted; we don't need tags
+    );
+    if (appHosted) {
+        return ["dummy"]; // don't need the list, but need non-empty to stop waiting.
+    }
 
     if (axiosResult.response?.data?.results) {
         assertAllParseRecordsReturned(axiosResult.response);
@@ -153,6 +174,7 @@ export function useGetBookCountRaw(filter: IFilter, shouldSkipQuery?: boolean) {
     return useBookQueryInternal(
         { limit: 0, count: 1 },
         filter,
+        BookOrderingScheme.None,
         undefined,
         undefined,
         shouldSkipQuery
@@ -160,7 +182,11 @@ export function useGetBookCountRaw(filter: IFilter, shouldSkipQuery?: boolean) {
 }
 
 export function useGetBookCount(filter: IFilter): number {
-    const answer = useBookQueryInternal({ limit: 0, count: 1 }, filter);
+    const answer = useBookQueryInternal(
+        { limit: 0, count: 1 },
+        filter,
+        BookOrderingScheme.None
+    );
     if (!answer.response) {
         return 0;
     }
@@ -493,13 +519,14 @@ export function extractBookStatFromRawData(statRow: any): IBookStat {
 // we just want a better name
 export interface IAxiosAnswer extends IReturns<any> {}
 
-// May set param.order to "titleOrScore" to indicate that books should be
+// May set param.order to "auto-sort-order" to indicate that books should be
 // sorted by title unless the search is a keyword search that makes a ranking
 // score available. For this to work, params must also specify keys.
 function useBookQueryInternal(
     params: {}, // this is the order, which fields, limits, etc.
 
     filter: IFilter, // this is *which* records to return
+    orderingScheme?: BookOrderingScheme,
     limit?: number, //pagination
     skip?: number, //pagination
     doNotActuallyRunQuery?: boolean
@@ -510,6 +537,7 @@ function useBookQueryInternal(
     const axiosParams = makeBookQueryAxiosParams(
         params,
         filter,
+        orderingScheme,
         limit,
         skip,
         doNotActuallyRunQuery || !collectionReady,
@@ -544,6 +572,7 @@ export function useProcessDerivativeFilter(filter: IFilter): boolean {
 function makeBookQueryAxiosParams(
     params: {}, // this is the order, which fields, limits, etc.
     filter: IFilter, // this is *which* records to return
+    orderingScheme?: BookOrderingScheme,
     limit?: number, //pagination
     skip?: number, //pagination
     doNotActuallyRunQuery?: boolean,
@@ -561,6 +590,7 @@ function makeBookQueryAxiosParams(
             params,
             filter,
             tags || [],
+            orderingScheme,
             limit,
             skip
         );
@@ -632,7 +662,8 @@ export interface IBasicBookInfo {
     objectId: string;
     baseUrl: string;
     harvestState?: string;
-    //note, here in a "BasicBookInfo", this is just JSON, intentionally not parsed yet, as we normally don't need it.
+    //note, here in a "BasicBookInfo", this is just JSON, intentionally not parsed yet,
+    // in case we don't need it.
     allTitles: string;
     // conceptually a date, but uploaded from parse server this is what it has.
     harvestStartedAt?: { iso: string } | undefined;
@@ -651,10 +682,11 @@ export interface IBasicBookInfo {
     phashOfFirstContentImage?: string;
     edition: string;
     draft?: boolean;
+    score?: number;
 }
 
 const kFieldsOfIBasicBookInfo =
-    "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft,rebrand";
+    "title,baseUrl,objectId,langPointers,tags,features,lastUploaded,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft,rebrand";
 
 // uses the human "level:" tag if present, otherwise falls back to computedLevel
 export function getBestLevelStringOrEmpty(basicBookInfo: IBasicBookInfo) {
@@ -694,7 +726,7 @@ interface ISimplifiedAxiosResult {
 
 // the idea is for this to be higher level than useQueryLibrary. Initially
 // with a separate count for the full number, but eventually with paging.
-// May set param.order to "titleOrScore" to indicate that books should be
+// May set param.order to "auto-sort-order" to indicate that books should be
 // sorted by title unless the search is a keyword search that makes a ranking
 // score available. For this to work, params must also specify keys.
 //
@@ -707,18 +739,21 @@ interface ISimplifiedAxiosResult {
 export function useSearchBooks(
     params: {}, // this is the order, which fields, limits, etc.
     filter: IFilter, // this is *which* books to return
+    orderingScheme?: BookOrderingScheme,
+    languageForSorting?: string,
     doNotActuallyRunQuery?: boolean
 ): ISearchBooksResult {
     const fullParams = {
         count: 1,
         keys:
             // this should be all the fields of IBasicBookInfo
-            "title,baseUrl,objectId,langPointers,tags,features,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft,rebrand",
+            "title,baseUrl,objectId,langPointers,tags,features,lastUploaded,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft,rebrand",
         ...params,
     };
     const bookResultsStatus: IAxiosAnswer = useBookQueryInternal(
         fullParams,
         filter,
+        orderingScheme,
         undefined,
         undefined,
         doNotActuallyRunQuery
@@ -744,16 +779,22 @@ export function useSearchBooks(
     // (Actually this isn't guaranteed by the useMemo contract...occasionally it might
     // discard and rebuild the memo cache...but it will be true enough of the time to prevent
     // significant wasted work.)
-    const typeSafeBookRecords: IBasicBookInfo[] = useMemo(
-        () =>
-            simplifiedResultStatus.books.map((rawFromREST: any) => {
-                const b: IBasicBookInfo = { ...rawFromREST };
-                b.languages = rawFromREST.langPointers;
-                Book.sanitizeFeaturesArray(b.features);
-                return b;
-            }),
-        [simplifiedResultStatus.books]
-    );
+    const typeSafeBookRecords: IBasicBookInfo[] = useMemo(() => {
+        if (!simplifiedResultStatus.books.length) return [];
+        const books = simplifiedResultStatus.books.map((rawFromREST: any) => {
+            const b: IBasicBookInfo = { ...rawFromREST };
+            b.languages = rawFromREST.langPointers;
+            Book.sanitizeFeaturesArray(b.features);
+            return b;
+        });
+
+        //https://issues.bloomlibrary.org/youtrack/issue/BL-11137#focus=Comments-102-43829.0-0
+        return doExpensiveClientSideSortingIfNeeded(
+            books,
+            orderingScheme,
+            languageForSorting
+        ) as IBasicBookInfo[];
+    }, [simplifiedResultStatus.books, orderingScheme, languageForSorting]);
 
     return {
         totalMatchingRecords: simplifiedResultStatus.count,
@@ -793,6 +834,7 @@ export function useCollectionStats(
         const bookQueryParams = makeBookQueryAxiosParams(
             params,
             collectionFilter || {},
+            BookOrderingScheme.None,
             limit,
             skip,
             doNotRunQuery || !collectionReady
@@ -922,6 +964,7 @@ export function splitString(
     }
     */
     const facets = [
+        "title",
         "uploader:",
         "copyright:",
         "harvestState:",
@@ -1063,9 +1106,13 @@ export function constructParseBookQuery(
     params: any,
     filter: IFilter,
     allTagsFromDatabase: string[],
+    orderingScheme?: BookOrderingScheme,
     limit?: number, //pagination
     skip?: number //pagination
 ): object {
+    if (orderingScheme === undefined)
+        orderingScheme = BookOrderingScheme.Default;
+
     if (filter?.derivedFromCollectionName) {
         // We should have already converted from derivedFromCollectionName to derivedFrom by now. See useProcessDerivativeFilter().
         alert("Attempted to load books with an invalid filter.");
@@ -1117,6 +1164,7 @@ export function constructParseBookQuery(
             let facetLabel = facetParts[0];
             const facetValue = facetParts[1];
             switch (facetLabel) {
+                case "title":
                 case "copyright":
                 case "country":
                 case "publisher":
@@ -1187,6 +1235,19 @@ export function constructParseBookQuery(
                                 "level:" + facetValue,
                             ],
                         });
+                        // We don't want to get, for example, books whose computedLevel is 3
+                        // if they have some other value for level. computedLevel is only a fall-back
+                        // in case there is NO level.
+                        const otherPrimaryLevels = [
+                            "level:1",
+                            "level:2",
+                            "level:3",
+                            "level:4",
+                        ].filter((x) => x.indexOf(facetValue) < 0);
+
+                        tagParts.push({
+                            $nin: otherPrimaryLevels,
+                        });
                     }
                     break;
                 default:
@@ -1202,12 +1263,12 @@ export function constructParseBookQuery(
                     },
                 },
             };
-            if (params.order === "titleOrScore") {
-                params.order = "$score";
+            if (orderingScheme === BookOrderingScheme.Default) {
                 if (params.keys === undefined) {
-                    throw new Error(
-                        "params.keys must be set to use titleOrScore"
-                    );
+                    // If you don't specify *any* keys, then you get them all, fine.
+                    // But if you only specify "$score", then that's all you will
+                    // get and that's not enough to even identify the book.
+                    params.keys = bookDetailFields;
                 }
                 if (params.keys.indexOf("$score") < 0) {
                     params.keys = "$score," + params.keys;
@@ -1221,10 +1282,8 @@ export function constructParseBookQuery(
         delete params.where.search;
     }
 
-    if (params.order === "titleOrScore") {
-        // We've passed the point where a Score search might be indicated. Use title
-        params.order = "title";
-    }
+    configureQueryParamsForOrderingScheme(params, orderingScheme);
+
     // if f.language is set, add the query needed to restrict books to those with that language
     if (f.language != null) {
         delete params.where.language; // remove that, we need to make it more complicated because we need a join.
@@ -1422,6 +1481,10 @@ export function constructParseBookQuery(
             break;
     }
 
+    if (isAppHosted()) {
+        params.where.hasBloomPub = true;
+    }
+
     if (f.anyOfThese) {
         delete params.where.anyOfThese;
         params.where.$or = [];
@@ -1439,6 +1502,42 @@ export function constructParseBookQuery(
     return params;
 }
 
+function configureQueryParamsForOrderingScheme(
+    params: any,
+    orderingScheme: BookOrderingScheme
+) {
+    switch (orderingScheme) {
+        case BookOrderingScheme.None: // used when we're just getting a count
+            delete params.order;
+            break;
+
+        case BookOrderingScheme.Default:
+            if (params.keys && params.keys.indexOf("$score") >= 0) {
+                params.order = "$score"; // Parse's full text search
+            } else {
+                // Note that "title" sounds like the right default, but it is useless in many cases because it is just one of
+                // the languages, not the language that is in context of this page. See BL-11137.
+                params.order = "-createdAt";
+            }
+            break;
+        case BookOrderingScheme.NewestCreationsFirst:
+            params.order = "-createdAt";
+            break;
+        case BookOrderingScheme.LastUploadedFirst:
+            params.order = "-lastUploaded";
+            break;
+        case BookOrderingScheme.TitleAlphabetical:
+        case BookOrderingScheme.TitleAlphaIgnoringNumbers:
+            delete params.order;
+            // We need to sort these client-side for now. When we switch to postgresql, we can do it in the query.
+            // Sorting client-side requires that we get all of them (yes, we're going to use this mode SPARINGLY).
+            params.limit = Number.MAX_SAFE_INTEGER; // we can't sort unless we get all of them
+            break;
+
+        default:
+            throw new Error("Unhandled book ordering scheme");
+    }
+}
 function removeUnwantedSearchTerms(searchTerms: string): string {
     const termsToRemove = [
         "book",

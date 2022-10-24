@@ -13,9 +13,14 @@
     },
 
     "bloomReader": {
-        "description": "",
-        "message": "Bloom Reader"
+        "message": "Bloom Reader",
+        "description": "The name of an Android app (probably does not need to be translated)"
     },
+    "bloomPubViewer": {
+        "message": "BloomPUB Viewer",
+        "description": "The name of a software application (probably does not need to be translated)"
+    },
+
     "downloads": {
         "description": "",
         "message": "Downloads"
@@ -146,13 +151,27 @@
     "bookCount.inLanguages": {
         "message": "{bookCount} books in {languageCount} languages"
     },
+    "booksTitle": {
+        "description": "",
+        "message": "{langName} books"
+    },
     "languagesCount": {
         "description": "",
         "message": "{count} Languages"
     },
+    "moreLanguagesCount": {
+        "message": "{count} more languages"
+    },
+    "favoriteLanguages": {
+        "message": "Favorite languages"
+    },
     "findBooksByLanguage": {
         "description": "",
         "message": "Find Books By Language"
+    },
+    "languageSearch": {
+        "description": "This string is the heading of a page designed for a phone screen. It should fit across the width of such a screen. It labels a box where the user can type a partial language name and a page of matching language cards.",
+        "message": "Language?"
     },
     "book.detail.tabLabel": {
         "description": "",
@@ -161,6 +180,10 @@
     "book.detail.readButton": {
         "description": "Uppercase only, please",
         "message": "READ"
+    },
+    "book.detail.readOnlineButton": {
+        "description": "Uppercase only, please",
+        "message": "READ ONLINE"
     },
     "book.detail.readOfflineButton": {
         "description": "Uppercase only, please",
@@ -217,6 +240,10 @@
     "book.detail.draftDescription": {
         "message": "Show this book only to reviewers with whom I share the URL of this page.",
         "description": "Label for a check box which, if checked, marks the book as 'DRAFT' and prevents the book from showing in most views"
+    },
+    "book.detail.updateBookNotice": {
+        "message": "If you want to update this book with any changes, just upload it again from Bloom, using the same account. Your new version will replace this one.",
+        "description": ""
     },
     "book.metadata.level": {
         "description": "",
@@ -480,5 +507,32 @@
     "sponsorshipHeading": {
         "message": "This project was supported by",
         "description": "Example, see the bottom of https://bloomlibrary.org/kyrgyzstan-OkuuKeremet"
+    },
+    "appHosted.chooseLanguage": {
+        "message": "Choose a language",
+        "description": "Becomes a header title and shown in Bloom Reader"
+    },
+    "appHosted.weAreDownloading": {
+        "message": "Great! We are downloading that book now. It will appear in your list of books when the download is complete."
+    },
+    "appHosted.downloading": {
+        "message": "Downloading",
+        "description": "Eventually appears as a page heading in Bloom Reader while downloading a book"
+    },
+    "appHosted.getMoreBooks": {
+        "message": "Get more {label} books",
+        "description": "Becomes a header title and shown in Bloom Reader. Label is typically a language name."
+    },
+    "appHosted.level": {
+        "message": "level",
+        "description": "Appears before a digit in something like 'Getting more French level 2 books"
+    },
+    "appHosted.detailsOnBlorg": {
+        "message": "Details on BloomLibrary.org",
+        "description": "Takes you to a page with more detailed information about a book"
+    },
+    "appHosted.nowDownloading": {
+        "message": "Details on BloomLibrary.org",
+        "description": "Takes you to a page with more detailed information about a book"
     }
 }
