@@ -217,6 +217,7 @@ export const AppHostedLanguageGroup: React.FunctionComponent = () => {
                             overflow-y: scroll;
                         `}
                         key="scroller"
+                        id="app-hosted-more-languages-container"
                     >
                         {languagesToDisplay.map((l, index) =>
                             showAll || index < 20 ? (
@@ -280,6 +281,9 @@ export const AppHostedLanguageGroup: React.FunctionComponent = () => {
                 (window as any).ParentProxy?.postMessage("close_keyboard");
             }
         }
+        document
+            .getElementById("app-hosted-more-languages-container")
+            ?.scrollTo(0, 0);
     };
     // This is working around the fact that our typedefs do not know that GetRootPropsOptions
     // is allowed to have a role property. The effect is to prevent the root div that contains
