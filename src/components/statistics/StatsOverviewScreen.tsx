@@ -103,7 +103,7 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsPageProps> = (
             >
                 <FormattedMessage
                     id="stats.people.reached"
-                    defaultMessage="People Reached"
+                    defaultMessage="People Reached Digitally"
                 />
             </StatsCard>
             <StatsCard
