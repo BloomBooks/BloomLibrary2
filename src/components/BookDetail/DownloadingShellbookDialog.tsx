@@ -63,7 +63,6 @@ export const DownloadingShellbookDialog: React.FunctionComponent<IDownloadingShe
                     onClick={() =>
                         downloadShellbook(props.book, props.contextLangIso)
                     }
-                    color="secondary"
                 >
                     <FormattedMessage
                         id="downloadShellbook.tryAgain"
