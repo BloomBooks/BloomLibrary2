@@ -152,7 +152,7 @@
         "message": "Comprehension Questions"
     },
     "stats.people.reached": {
-        "message": "People Reached",
+        "message": "People Reached Digitally",
         "description": "A header for a card showing statistics on how many people have been reached with these books"
     },
     "stats.people.reached.info": {
