@@ -49,6 +49,26 @@ export function getDisplayNamesForLanguage(
                   combined: "Chinese (简体中文)",
               };
     }
+    // this may not be needed for long. We are working on some fixes in BL-11754
+    if (language.isoCode === "ase-ML") {
+        return navigator.language.startsWith("fr")
+            ? {
+                  primary:
+                      "Langue des Signes des Écoles pour Déficients Auditifs au Mali",
+                  secondary:
+                      "Langue des Signes des Écoles pour Déficients Auditifs au Mali",
+                  combined:
+                      "Langue des Signes des Écoles pour Déficients Auditifs au Mali",
+              }
+            : {
+                  primary:
+                      "Sign Language of Schools for the Hearing Impaired in Mali",
+                  secondary:
+                      "Langue des Signes des Écoles pour Déficients Auditifs au Mali",
+                  combined:
+                      "Sign Language of Schools for the Hearing Impaired in Mali",
+              };
+    }
     let primary: string;
     let secondary: string | undefined;
 
