@@ -14,21 +14,23 @@ export const appHostedSegment = "app-hosted-v1";
 // something will presumably notice the difference.
 export function useIsAppHosted() {
     // Note: While the SPA is changing the history state, an intermediate URL is "/#!/app-hosted-[...]".
-    // The path is technically "/", not "/app-hosted", but we want to detect that as app-hosted too.
+    // The path is technically "/", not "/app-hosted-[...]", but we want to detect that as app-hosted too.
     // (Probably not too likely to happen in this hook version)
     const location = useLocation();
     return (
         location.pathname.startsWith("/app-hosted-") ||
-        location.pathname.startsWith("/#!/app-hosted-")
+        (location.pathname === "/" &&
+            location.hash.startsWith("#!/app-hosted-"))
     );
 }
 export function isAppHosted() {
     // Note: While the SPA is changing the history state, an intermediate URL is "/#!/app-hosted-[...]".
-    // The path is technically "/", not "/app-hosted", but we want to detect that as app-hosted too.
+    // The path is technically "/", not "/app-hosted-[...]", but we want to detect that as app-hosted too.
     // This is a very real possibility for context providers like OSFeaturesContext.
     return (
         window.location.pathname.startsWith("/app-hosted-") ||
-        window.location.pathname.startsWith("/#!/app-hosted-")
+        (window.location.pathname === "/" &&
+            window.location.hash.startsWith("#!/app-hosted-"))
     );
 }
 
