@@ -1,4 +1,5 @@
 import React from "react";
+import { isAppHosted as getIsAppHosted } from "./appHosted/AppHostedUtils";
 
 const windows = navigator.appVersion.indexOf("Win") >= 0;
 const android = navigator.appVersion.indexOf("Android") >= 0;
@@ -10,9 +11,13 @@ const linux =
         navigator.platform?.startsWith("Linux")) &&
     !android &&
     !chromeOS;
+
+const isAppHosted = getIsAppHosted();
+
 export const bloomDesktopAvailable = windows || linux;
 
-export const bloomReaderAvailable = android;
+// Assumption: app-hosted also provides a reading experience for the books
+export const bloomReaderAvailable = android || isAppHosted;
 // From discussion at https://stackoverflow.com/questions/9038625/detect-if-device-is-ios.
 // This will NOT detect an ipad running IOS 13 in desktop mode, which is probably what we
 // want, since the current application is hiding the bloomd download on non-desktop devices
@@ -31,7 +36,8 @@ const testingMobileIos = /\((iPhone|iPad|iPod)/.test(navigator.userAgent);
 // that important to do so on every possible mobile device. Of course, we REALLY
 // don't want to prevent downloading a bloomd on anything that can run BloomReader,
 // but cantUseBloomD is currently only relevant if bloomReaderAvailable is false.
-export const cantUseBloomD = ios || testingMobileIos;
+// Assumption: app-hosted can use BloomD files
+export const cantUseBloomD = (ios || testingMobileIos) && !isAppHosted;
 // We hide disabled download buttons on mobile (touch) devices because it not
 // easily discoverable why a button is disabled.
 export const mobile = android || ios || testingMobileIos;
