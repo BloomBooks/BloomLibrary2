@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link as RouterLink, useLocation } from "react-router-dom";
+import { Link as RouterLink, useLocation, useHistory } from "react-router-dom";
 import { Link as MuiLink } from "@material-ui/core";
 //import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 
@@ -30,6 +30,7 @@ export interface IBlorgLinkProps {
 // a MUI Link with component="button" (example in LicenseLink.tsx).
 export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
     const location = useLocation();
+    const history = useHistory();
 
     const isInIframe = window.self !== window.top;
 
@@ -96,6 +97,20 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
             color={props.color || "primary"}
             onMouseDown={props.onMouseDown}
             onMouseUp={props.onMouseUp}
+            onClick={() => {
+                // This is an ugly kludge intended to work around an occasional failure
+                // to navigate in IOS (BL-11736). Normally, a click will follow the href, which will
+                // change the URL, so nothing will happen in the timeout...even with 0 delay,
+                // the new URL is active. If that doesn't happen, we will navigate programmatically.
+                // (But without the check, the new URL gets in history twice, and it takes
+                // two clicks on Back to get back.)
+                const oldUrl = window.location.href;
+                setTimeout(() => {
+                    if (window.location.href === oldUrl) {
+                        history.push(to);
+                    }
+                }, 0);
+            }}
         >
             {props.children}
         </MuiLink>
