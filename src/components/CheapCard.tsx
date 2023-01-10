@@ -43,9 +43,9 @@ export const CheapCard: React.FunctionComponent<IProps> = (props) => {
                 @media (hover) {
                     // On IOS, if a hover effect is animated, it takes two clicks to activate the link.
                     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-                }
-                &:hover {
-                    ${hoverStyles}
+                    &:hover {
+                        ${hoverStyles}
+                    }
                 }
 
                 /* for on dark background*/
