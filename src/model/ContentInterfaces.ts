@@ -44,6 +44,7 @@ export interface ICollection {
     rows?: number;
     orderingScheme?: BookOrderingScheme;
     urlKey: string; // used in react router urls; can be used to look up in contentful
+    urlKeyToUseForLabelL10n?: string; // the urlKey we get from Contentful, if we need to change urlKey (e.g. [Template Phash Collection])
     label: string; // used in subheadings and cards
     // enhance: maybe instead provide a function that would return the react nodes, so we could hide this Contentful-specific type?
     richTextLabel?: any; // NB: here we are leaking the Contentful "Document", which does not have an exported type
