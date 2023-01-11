@@ -41,8 +41,13 @@ h2 {
     font-weight: bold;
 }
 
+@media (hover) {
+    a:hover {
+        text-decoration: underline;
+    }
+}
+
 a:hover {
-    text-decoration: underline;
     cursor: pointer;
 }
 
