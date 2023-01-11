@@ -50,6 +50,7 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
                     color={props.color || "primary"}
                     onMouseDown={props.onMouseDown}
                     onMouseUp={props.onMouseUp}
+                    underline="none"
                 >
                     {props.children}
                     {/* This might be a nice thing to do, but the color wasn't actually being applied (the css was there, but the svg didn't take it on)
@@ -74,6 +75,7 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
                     color={props.color || "primary"}
                     onMouseDown={props.onMouseDown}
                     onMouseUp={props.onMouseUp}
+                    underline="none"
                 >
                     {props.children}
                 </MuiLink>
@@ -97,6 +99,7 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
             color={props.color || "primary"}
             onMouseDown={props.onMouseDown}
             onMouseUp={props.onMouseUp}
+            underline="none"
             onClick={() => {
                 // This is an ugly kludge intended to work around an occasional failure
                 // to navigate in IOS (BL-11736). Normally, a click will follow the href, which will
