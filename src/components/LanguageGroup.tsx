@@ -136,6 +136,21 @@ export const LanguageGroup: React.FunctionComponent = () => {
                             : "No results found"
                     }
                     defaultIsOpen={true}
+                    // By default, Downshift adds touch event listeners to the window (the default environment)
+                    // which reset its entire content whenever something is touched outside the Downshift area.
+                    // I think the intent is to close the 'menu'; but in our case that is the list of languages
+                    // and we never want it hidden. But the reset is disastrous: for example, touching an arrow to scroll
+                    // the topic list unexpectedly clears the language search. Worse still, on IOS the touchEnd
+                    // and re-creation of the language list happens before Safari generates a mousemove, and before
+                    // it tests whether the document changed. When it detects that the document DID change,
+                    // it aborts the click, and all our buttons take two clicks to work.
+                    // We are therefore providing an 'environment' which gives Downshift access to the document,
+                    // but ignores its attempts to add event handlers.
+                    environment={{
+                        addEventListener: () => {},
+                        removeEventListener: () => {},
+                        document,
+                    }}
                 >
                     {({
                         getInputProps,
