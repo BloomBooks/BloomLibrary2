@@ -100,20 +100,6 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
             onMouseDown={props.onMouseDown}
             onMouseUp={props.onMouseUp}
             underline="none"
-            onClick={() => {
-                // This is an ugly kludge intended to work around an occasional failure
-                // to navigate in IOS (BL-11736). Normally, a click will follow the href, which will
-                // change the URL, so nothing will happen in the timeout...even with 0 delay,
-                // the new URL is active. If that doesn't happen, we will navigate programmatically.
-                // (But without the check, the new URL gets in history twice, and it takes
-                // two clicks on Back to get back.)
-                const oldUrl = window.location.href;
-                setTimeout(() => {
-                    if (window.location.href === oldUrl) {
-                        history.push(to);
-                    }
-                }, 0);
-            }}
         >
             {props.children}
         </MuiLink>
