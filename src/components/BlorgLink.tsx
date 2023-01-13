@@ -30,7 +30,6 @@ export interface IBlorgLinkProps {
 // a MUI Link with component="button" (example in LicenseLink.tsx).
 export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
     const location = useLocation();
-    const history = useHistory();
 
     const isInIframe = window.self !== window.top;
 
