@@ -151,6 +151,18 @@
         "description": "",
         "message": "Comprehension Questions"
     },
+    "stats.locations-city-table": {
+        "message": "Locations: City Table",
+        "description": ""
+    },
+    "stats.locations-country-map": {
+        "message": "Locations: Country Map",
+        "description": ""
+    },
+    "stats.locations-country-table": {
+        "message": "Locations: Country Table",
+        "description": ""
+    },
     "stats.people.reached": {
         "message": "People Reached Digitally",
         "description": "A header for a card showing statistics on how many people have been reached with these books"
@@ -158,6 +170,10 @@
     "stats.people.reached.info": {
         "message": "Will overcount when the same person reads one of these books via multiple devices or applications. Will undercount when firewalls or lack of connectivity permanently prevent analytics connections.",
         "description": ""
+    },
+    "stats.people.reached.subheader": {
+        "message": "(does not count the vast majority of readers, who use paper)",
+        "description": "Explanation under 'People Reached Digitally'"
     },
     "stats.reads": {
         "description": "",

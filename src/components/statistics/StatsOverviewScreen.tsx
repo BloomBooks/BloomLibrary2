@@ -105,6 +105,17 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsPageProps> = (
                     id="stats.people.reached"
                     defaultMessage="People Reached Digitally"
                 />
+                {/* Need a separate div to put it below the message above. */}
+                <div
+                    css={css`
+                        font-size: 8pt;
+                    `}
+                >
+                    <FormattedMessage
+                        id="stats.people.reached.subheader"
+                        defaultMessage="(does not count the vast majority of readers, who use paper)"
+                    />
+                </div>
             </StatsCard>
             <StatsCard
                 //  I don't think we're ready for translation on this one yet...
@@ -128,7 +139,7 @@ export const StatsOverviewScreen: React.FunctionComponent<IStatsPageProps> = (
                     },
                     {
                         label: i18n.formatMessage({
-                            id: "books-with-analytics",
+                            id: "stats.booksWithAnalytics",
                             defaultMessage: "Books with Analytics",
                         }),
                         value: stats.booksWithAnalytics,
