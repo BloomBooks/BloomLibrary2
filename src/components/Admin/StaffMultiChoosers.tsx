@@ -11,6 +11,7 @@ export const FeaturesChooser: React.FunctionComponent<{
     setModified: (modified: boolean) => void;
 }> = (props) => {
     const featureKeys = featureSpecs
+        .filter((f) => !f.languageDependent) // Language-dependent ones are problematic, because we don't have UI to specify their language. So filter them out.
         .map((f) => f.featureKey)
         .slice()
         .sort();
