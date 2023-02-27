@@ -41,7 +41,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                         // so we change it here again to what we want, which is Andika added to this
                         // list of sans-serif fonts.  (BL-11186)
                         font-family: Roboto, Noto, Andika, "Open Sans",
-                            sans-serif;
+                            sans-serif, "Noto Serif Toto"; /* Feb 2023 added toto for the Toto language */
                     `}
                 >
                     {/* <React.StrictMode>
