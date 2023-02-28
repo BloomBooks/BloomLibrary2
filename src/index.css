@@ -26,7 +26,8 @@ h3 {
     /* This default font list is duplicated in App.tsx because <CssBaseLine/> effectively
      * installs another font-family list for body.  We need Andika in the list to cover
      * some new/rare characters used by some languages. (BL-11186) */
-    font-family: "Roboto", "Noto", "Andika", "Open Sans", sans-serif;
+    font-family: "Roboto", "Noto", "Andika", "Open Sans", sans-serif,
+        "Noto Serif Toto"; /* Feb 2023 added toto for the Toto language */
 }
 h1 {
     text-align: left;
