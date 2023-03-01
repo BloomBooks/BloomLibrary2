@@ -448,6 +448,7 @@ export function makeCollectionForPHash(
         ...templateCollection,
         filter,
         urlKey,
+        urlKeyToUseForLabelL10n: templateCollection.urlKey,
         childCollections: [],
     };
     return result;

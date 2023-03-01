@@ -121,6 +121,10 @@ export const ByLanguageGroups: React.FunctionComponent<{
                 }
                 if (!foundOneLanguage) {
                     // book may have been uploaded without user setting the collection language for sign language.
+                    // (Note: Not really the case anymore. Uploading as a sign language book requires the SL language code to be set,
+                    // in both Bloom editor and in BulkUpload. However, still could be possible for the SL feature to be manually added
+                    // after the fact, and if you don't specify the lang code (and the Staff Panel doesn't let you...),
+                    // that'd lead to this case. [JS])
                     // We still want it to show up somewhere in the sign language collection page.
                     // Since this key is only used locally in this function, it doesn't matter that it's not a valid
                     // three-letter code; in fact, that ensures it won't conflict with a real one.

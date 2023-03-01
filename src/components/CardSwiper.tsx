@@ -126,9 +126,10 @@ const CardSwiperLazy: React.FunctionComponent<ICardSwiperProps> = (props) => {
                         font-size: ${getResponsiveChoice(16, 32)}px;
                     }
                 }
-
-                &:hover .swiper-button {
-                    color: ${commonUI.colors.bloomRed};
+                @media (hover) {
+                    &:hover .swiper-button {
+                        color: ${commonUI.colors.bloomRed};
+                    }
                 }
                 // Make the fading effect on the right indicating there are more cards.
                 // enhance: it would be nice NOT to do this if all the cards just exactly fit.

@@ -57,8 +57,10 @@ export const Breadcrumbs: React.FunctionComponent<{ className?: string }> = (
             <BlorgLink
                 css={css`
                     text-decoration: none !important;
-                    &:hover {
-                        text-decoration: underline !important;
+                    @media (hover) {
+                        &:hover {
+                            text-decoration: underline !important;
+                        }
                     }
                 `}
                 href={appHostedMode ? "/" + appHostedSegment + "/langs" : "/"}
@@ -200,8 +202,10 @@ const CollectionCrumb: React.FunctionComponent<{
             <BlorgLink
                 css={css`
                     text-decoration: none !important;
-                    &:hover {
-                        text-decoration: underline !important;
+                    @media (hover) {
+                        &:hover {
+                            text-decoration: underline !important;
+                        }
                     }
                 `}
                 href={"/" + path.join("/")}
