@@ -51,8 +51,10 @@ export const StoryCard: React.FunctionComponent<{ story: ICollection }> = (
                 margin: 1px;
                 // enhance: really we just want this margin in-between cards
                 margin-right: ${cardSpacingPx}px;
-                &:hover {
-                    ${hoverStyles}
+                @media (hover) {
+                    &:hover {
+                        ${hoverStyles}
+                    }
                 }
             `}
         >

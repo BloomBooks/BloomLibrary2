@@ -21,8 +21,13 @@ export function getLocalizedCollectionLabel(collection: ICollection) {
 }
 
 function getLabelL10nId(collection: ICollection): string {
-    const k = kNameToL10NKey[collection.urlKey];
-    return k ? k : "collection." + collection.urlKey;
+    const l10nKey = kNameToL10NKey[collection.urlKey];
+    if (l10nKey) return l10nKey;
+
+    if (collection.urlKeyToUseForLabelL10n)
+        return "collection." + collection.urlKeyToUseForLabelL10n;
+
+    return "collection." + collection.urlKey;
 }
 
 export const CollectionLabel: React.FunctionComponent<{

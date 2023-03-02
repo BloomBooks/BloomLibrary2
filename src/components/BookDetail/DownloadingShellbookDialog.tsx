@@ -56,8 +56,10 @@ export const DownloadingShellbookDialog: React.FunctionComponent<IDownloadingShe
                 <Button
                     css={css`
                         padding-left: 0 !important;
-                        &:hover {
-                            background-color: transparent !important;
+                        @media (hover) {
+                            &:hover {
+                                background-color: transparent !important;
+                            }
                         }
                     `}
                     onClick={() =>
