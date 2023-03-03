@@ -113,6 +113,7 @@ export const LogoOnBanner: React.FunctionComponent<{
     banner: IBanner;
     cssExtra?: string;
 }> = (props) => {
+    const imageHeight = 150;
     const logo = props.banner.logo
         ? props.banner.logo
         : props.collection.iconForCardAndDefaultBanner;
@@ -120,13 +121,13 @@ export const LogoOnBanner: React.FunctionComponent<{
         (logo && (
             <ImgWithCredits
                 credits={logo.credits}
-                src={logo.url}
+                src={logo.url + "?h=" + imageHeight} // ?h= tells contentful to only give us the size we need, no bigger
                 // If the logo doesn't supply an altText, don't add one.  See BL-8963.
                 alt={logo.altText ? logo.altText : ""}
                 // complicated stuff is going on here with the display:flex on the
                 // parent div, particularly in row mode. FlexBox has an unobvious idea
                 // of the natural and minimum size of various things. By default an img
-                // with specified height can neight grow nor shrink, so as things get narrow,
+                // with specified height can not grow nor shrink, so as things get narrow,
                 // it shrinks the text as much as it can. Usually what it thinks is the minimum size
                 // is slightly more than the width of the Global Digital Library link (unwrapped).
                 // The space available with an unshrunk image can easily end up narrower
@@ -137,7 +138,7 @@ export const LogoOnBanner: React.FunctionComponent<{
                 // object-position keeps it at the top left. Flex-box rather likes to shrink the
                 // margin-right; max-width:95% keeps SOME gap, though I haven't figured out exactly why.
                 css={css`
-                    height: 150px;
+                    height: ${imageHeight}px;
                     margin-right: 50px;
                     max-width: 95%;
                     object-fit: contain;

@@ -201,7 +201,7 @@ export const CollectionCard: React.FunctionComponent<{
         imgElement = (
             <ImgWithCredits
                 credits={props.collection.iconCredits}
-                src={imageUrl}
+                src={imageUrl + "?h=" + maxHeight} // ?h= tells contentful to only give us the size we need, no bigger
                 css={css`
                     min-height: ${maxHeight}px; // this is for our Book feature svg icons that otherwise want to be tiny. Alternatively, we could just set these svgs to want to be big.
                     max-height: ${maxHeight}px;
