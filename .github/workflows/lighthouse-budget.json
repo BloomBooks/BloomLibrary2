@@ -41,7 +41,7 @@
             },
             {
                 "resourceType": "total",
-                "budget": 750
+                "budget": 900
             }
         ],
         "resourceCounts": [
@@ -52,7 +52,7 @@
         ]
     },
     {
-        "path": "/covid19",
+        "path": "/#!/covid19",
         "resourceSizes": [
             {
                 "resourceType": "script",
