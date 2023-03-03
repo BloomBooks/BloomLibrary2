@@ -2,10 +2,7 @@
     {
         "path": "/*",
         "options": {
-            "firstPartyHostnames": [
-                "*.bloomlibrary.org",
-                "bloom-parse-server-production.azurewebsites.net"
-            ]
+            "firstPartyHostnames": ["*.bloomlibrary.org"]
         },
         "timings": [
             {
@@ -59,6 +56,10 @@
         "resourceSizes": [
             {
                 "resourceType": "script",
+                "budget": 900
+            },
+            {
+                "resourceType": "total",
                 "budget": 900
             }
         ]
