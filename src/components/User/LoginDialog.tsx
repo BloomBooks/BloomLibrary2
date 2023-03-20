@@ -9,7 +9,7 @@ import React, { useState } from "react";
 import { DialogTitle } from "@material-ui/core";
 import Dialog from "@material-ui/core/Dialog";
 import { FormattedMessage } from "react-intl";
-import { StyledFirebaseAuthCodeSplit } from "../../firebase/StyledFirebaseAuthCodeSplit";
+import { StyledFirebaseAuthCodeSplit } from "../../authentication/firebase/StyledFirebaseAuthCodeSplit";
 
 let staticShowLoginDialog: (doOpen: boolean) => void = () => {};
 export { staticShowLoginDialog as ShowLoginDialog };

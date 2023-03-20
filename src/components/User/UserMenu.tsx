@@ -19,7 +19,7 @@ import { useHistory } from "react-router-dom";
 import {
     firebaseAuthStateChanged,
     getCurrentUser,
-} from "../../firebase/firebase";
+} from "../../authentication/firebase/firebase";
 import { LoggedInUser } from "../../connection/LoggedInUser";
 import { useCookies } from "react-cookie";
 import { useShowTroubleshootingStuff } from "../../Utilities";

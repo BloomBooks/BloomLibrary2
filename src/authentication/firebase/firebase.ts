@@ -3,8 +3,8 @@
 // Note, currently using the "compat" version of firebase v9, which doesn't support treeshaking. No reason, just a TODO to upgrade to full v9 API.
 // See https://firebase.google.com/docs/web/modular-upgrade
 import firebase from "firebase/compat/app";
-import { connectParseServer } from "../connection/ParseServerConnection";
-import { getCookie } from "../Utilities";
+import { connectParseServer } from "../../connection/ParseServerConnection";
+import { getCookie } from "../../Utilities";
 
 const firebaseConfig = {
     apiKey: "AIzaSyACJ7fi7_Rg_bFgTIacZef6OQckr6QKoTY",

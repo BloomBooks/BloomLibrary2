@@ -6,7 +6,7 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { createBrowserHistory } from "history";
 import { isEmbedded } from "./components/EmbeddingHost";
-import { initializeFirebase } from "./firebase/firebase";
+import { initializeFirebase } from "./authentication/firebase/firebase";
 import { isAppHosted } from "./components/appHosted/AppHostedUtils";
 
 try {
