@@ -11,7 +11,6 @@ import loginIcon from "../../assets/NoUser.svg";
 // See https://firebase.google.com/docs/web/modular-upgrade
 import firebase from "firebase/compat/app";
 import { ShowLoginDialog } from "./LoginDialog";
-import { logout as logoutFromParseServer } from "../../connection/ParseServerConnection";
 import { track } from "../../analytics/Analytics";
 import * as Sentry from "@sentry/browser";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -24,6 +23,7 @@ import { LoggedInUser } from "../../connection/LoggedInUser";
 import { useCookies } from "react-cookie";
 import { useShowTroubleshootingStuff } from "../../Utilities";
 import { IUserMenuProps } from "./UserMenuCodeSplit";
+import { logOut } from "../../authentication/authentication";
 
 // This React component displays a button for functions related to the user who may
 // be logged in. If no user is logged in, it displays a generic icon with pull-down
@@ -93,15 +93,15 @@ export const UserMenu: React.FunctionComponent<IUserMenuProps> = (props) => {
     useEffect(
         () =>
             firebaseAuthStateChanged(() => {
-                const ksecondsPerDay = 24 * 60 * 60;
-                // If someone is now logged in, and it wasnt' who we previously had logged
+                const kSecondsPerDay = 24 * 60 * 60;
+                // If someone is now logged in, and it wasn't who we previously had logged
                 // in (or more likely no one was previously logged in), report login
                 if (
                     firebase.auth()?.currentUser?.email &&
                     loggedInUser?.email !== firebase.auth()?.currentUser?.email
                 ) {
                     setCookie("loggedIn", "true", {
-                        maxAge: 360 * ksecondsPerDay,
+                        maxAge: 360 * kSecondsPerDay,
                         path: "/",
                     });
                     // In previous blorg, we tracked the user name, but we're avoiding PII now.
@@ -115,7 +115,7 @@ export const UserMenu: React.FunctionComponent<IUserMenuProps> = (props) => {
                     loggedInUser?.email
                 ) {
                     setCookie("loggedIn", "false", {
-                        maxAge: 360 * ksecondsPerDay,
+                        maxAge: 360 * kSecondsPerDay,
                         path: "/",
                     });
                     track("Log Out", {});
@@ -142,20 +142,15 @@ export const UserMenu: React.FunctionComponent<IUserMenuProps> = (props) => {
     const closeMenu = () => setAnchorEl(null);
     const handleLogin = () => {
         closeMenu();
-        //loginWithRedirect();
         try {
             ShowLoginDialog(true);
         } catch (error) {
             Sentry.captureException(error); // probably won't happen, nothing seems to bring us here
-            // setState({ isLoading: false, error: error });
         }
     };
     const handleLogout = () => {
         closeMenu();
-        firebase
-            .auth()
-            .signOut()
-            .then(() => logoutFromParseServer());
+        logOut();
     };
     const handleMyBooks = () => {
         closeMenu();

@@ -32,7 +32,7 @@ export async function initializeFirebase() {
         await getFirebaseAuth();
     }
     // otherwise we deliberately don't initialize firebase until the user logs in,
-    // avoiding fetchng and loading a big chunk of code.
+    // avoiding fetching and loading a big chunk of code.
 }
 
 // When (and if) firebase is started up, register this function as an onAuthStateChanged callback.

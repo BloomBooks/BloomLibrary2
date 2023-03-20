@@ -28,6 +28,7 @@ import { AppHostedLanguageGroup } from "./appHosted/AppHostedLanguageGroup";
 import { AppHostedDownloadingPage } from "./appHosted/AppHostedDownloadingPage";
 import { appHostedSegment, isAppHosted } from "./appHosted/AppHostedUtils";
 import { LanguageReport } from "./statistics/LanguageReport";
+import { LoginForEditor } from "./User/LoginForEditor";
 
 export let previousPathname = "";
 let currentPathname = "";
@@ -91,6 +92,12 @@ export const Routes: React.FunctionComponent<{}> = () => {
                             return (
                                 <ReadBookPageCodeSplit id={match.params.id} />
                             );
+                        }}
+                    />
+                    <Route
+                        path="/login-for-editor"
+                        render={() => {
+                            return <LoginForEditor />;
                         }}
                     />
                     <Route

@@ -1,9 +1,3 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
-
 import React, { useState } from "react";
 
 import { DialogTitle } from "@material-ui/core";
@@ -32,31 +26,7 @@ export const LoginDialog: React.FunctionComponent<{}> = (props) => {
                 />
             </DialogTitle>
             {isOpen && (
-                <div css={css``}>
-                    {/* <Button
-                    variant="outlined"
-                    onClick={() => {
-                        firebase
-                            .auth()
-                            .signInWithRedirect(
-                                new firebase.auth.GoogleAuthProvider()
-                            );
-                    }}
-                >
-                    Sign in with Google
-                </Button>
-                <Button
-                    variant="contained"
-                    onClick={() => {
-                        firebase
-                            .auth()
-                            .signInWithRedirect(
-                                new firebase.auth.EmailAuthProvider()
-                            );
-                    }}
-                >
-                    Sign in with email
-                </Button> */}
+                <div>
                     <StyledFirebaseAuthCodeSplit
                         loginComplete={() => staticShowLoginDialog(false)}
                     />
