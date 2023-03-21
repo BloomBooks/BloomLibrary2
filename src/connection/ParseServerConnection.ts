@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LoggedInUser, User } from "./LoggedInUser";
+import { IInformEditorResult, LoggedInUser, User } from "./LoggedInUser";
 import * as Sentry from "@sentry/browser";
 
 // This file exports a function getConnection(), which returns the headers
@@ -67,7 +67,7 @@ export function getConnection(): IConnection {
     // The browser will not allow us to provide this key here if we're running on
     // Bloom Reader, which intercepts web requests in order to enable zipping data
     // (and possibly eventually to do extra caching, provide local versions of
-    // some reasources, etc.). However, it does not work with this mechanism
+    // some resources, etc.). However, it does not work with this mechanism
     // to provide the parse application id here. Not only does it not get through
     // to the parse server, even though BR attempts to pass on all headers,
     // but also, some "pre-flight" check fails, the WebView decides the request
@@ -168,6 +168,15 @@ export async function connectParseServer(
                             //Object.assign(CurrentUser, usersResult.data);
                             connection.headers["X-Parse-Session-Token"] =
                                 usersResult.data.sessionToken;
+
+                            if (
+                                window.location.pathname.includes(
+                                    "login-for-editor"
+                                )
+                            ) {
+                                informEditorOfSuccessfulLogin(usersResult.data);
+                            }
+
                             //console.log("Got ParseServer Session ID");
                             resolve(usersResult.data);
                             //returnParseUser(result.data);
@@ -237,4 +246,28 @@ export async function sendConcernEmail(
             headers: connection.headers,
         }
     );
+}
+
+function informEditorOfSuccessfulLogin(userData: any) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const port = urlParams.get("port") || 8089;
+
+    const postData = {
+        sessionToken: userData.sessionToken,
+        email: userData.email,
+        userId: userData.objectId,
+    };
+    axios
+        .post(`http://localhost:${port}/bloom/api/common/loginData`, postData)
+        .then(() => {
+            LoggedInUser.current!.informEditorResult =
+                IInformEditorResult.Success;
+        })
+        .catch((err) => {
+            LoggedInUser.current!.informEditorResult =
+                IInformEditorResult.Failure;
+
+            console.error("Unable to inform editor of successful login.");
+            console.error(err);
+        });
 }

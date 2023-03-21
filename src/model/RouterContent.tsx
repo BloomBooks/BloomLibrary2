@@ -20,9 +20,16 @@ export const RouterContent: React.FunctionComponent<{}> = (props) => {
     const showingPlayer = location.pathname.startsWith("/player/");
     const appHostedMode = useIsAppHosted();
     const embeddedMode = useIsEmbedded();
+
+    const showHeaderAndFooter = !(
+        embeddedMode ||
+        appHostedMode ||
+        showingPlayer
+    );
+
     return (
         <React.Fragment>
-            {embeddedMode || appHostedMode || showingPlayer || <Header />}
+            {showHeaderAndFooter && <Header />}
             {/* This div takes up all the space available so that the footer
         is either at the bottom or pushed off screen. If we're showing the player,
         we don't have a header or footer. In most browsers, flex 1 0 auto would
@@ -46,9 +53,7 @@ export const RouterContent: React.FunctionComponent<{}> = (props) => {
             >
                 <Routes />
             </div>
-            {embeddedMode || appHostedMode || showingPlayer || (
-                <FooterCodeSplit />
-            )}
+            {showHeaderAndFooter && <FooterCodeSplit />}
         </React.Fragment>
     );
 };
