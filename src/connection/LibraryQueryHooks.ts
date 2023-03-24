@@ -93,9 +93,13 @@ function useLibraryQueryWithCount<T = any>(
 }
 
 function useGetLanguagesList() {
+    // Get books with usageCount > 0 and usageCount === undefined.
+    // Undefined just means the hourly process hasn't run to update it.
+    // Later, in getCleanedAndOrderedLanguageList, we'll assume undefined usageCount is 1.
     return useLibraryQuery<IParseCommonFields & ILanguage>("language", {
         keys: "name,englishName,usageCount,isoCode",
-        where: '{"usageCount":{"$gt":0}}',
+        where:
+            '{"$or":[{"usageCount":{"$gt":0}},{"usageCount":{"$exists":false}}]}',
         limit: 10000,
         order: "-usageCount",
     });
