@@ -5,6 +5,7 @@
 import firebase from "firebase/compat/app";
 import { connectParseServer } from "../../connection/ParseServerConnection";
 import { getCookie } from "../../Utilities";
+import { isLogoutMode } from "../authentication";
 
 const firebaseConfig = {
     apiKey: "AIzaSyACJ7fi7_Rg_bFgTIacZef6OQckr6QKoTY",
@@ -76,6 +77,12 @@ async function getFirebaseAuthInternal() {
     firebase.initializeApp(firebaseConfig);
 
     firebase.auth().onAuthStateChanged(() => {
+        if (isLogoutMode()) {
+            // We're actually in the process of trying to log out,
+            // so don't try to log in!
+            return;
+        }
+
         const user = firebase.auth().currentUser;
         if (!user || !user.emailVerified || !user.email) {
             return;

@@ -1,6 +1,7 @@
 import axios from "axios";
-import { IInformEditorResult, LoggedInUser, User } from "./LoggedInUser";
+import { LoggedInUser, User } from "./LoggedInUser";
 import * as Sentry from "@sentry/browser";
+import { informEditorOfSuccessfulLogin, isForEditor } from "../editor";
 
 // This file exports a function getConnection(), which returns the headers
 // needed to talk to our Parse Server backend db.
@@ -169,11 +170,7 @@ export async function connectParseServer(
                             connection.headers["X-Parse-Session-Token"] =
                                 usersResult.data.sessionToken;
 
-                            if (
-                                window.location.pathname.includes(
-                                    "login-for-editor"
-                                )
-                            ) {
+                            if (isForEditor()) {
                                 informEditorOfSuccessfulLogin(usersResult.data);
                             }
 
@@ -213,7 +210,7 @@ function failedToLoginInToParseServer() {
 export function logout() {
     const connection = getConnection();
     axios
-        .post(`${connection.url}logout`, {
+        .post(`${connection.url}logout`, null, {
             headers: connection.headers,
         })
         .then((response) => {
@@ -246,28 +243,4 @@ export async function sendConcernEmail(
             headers: connection.headers,
         }
     );
-}
-
-function informEditorOfSuccessfulLogin(userData: any) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const port = urlParams.get("port") || 8089;
-
-    const postData = {
-        sessionToken: userData.sessionToken,
-        email: userData.email,
-        userId: userData.objectId,
-    };
-    axios
-        .post(`http://localhost:${port}/bloom/api/common/loginData`, postData)
-        .then(() => {
-            LoggedInUser.current!.informEditorResult =
-                IInformEditorResult.Success;
-        })
-        .catch((err) => {
-            LoggedInUser.current!.informEditorResult =
-                IInformEditorResult.Failure;
-
-            console.error("Unable to inform editor of successful login.");
-            console.error(err);
-        });
 }
