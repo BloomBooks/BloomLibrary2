@@ -484,6 +484,13 @@ export function useSetBrowserTabTitle(title: string | undefined) {
             // thus the wrong title was being shown.
             if (isAppHosted()) return;
 
+            // When trying to properly set the title of LoginForEditor, I couldn't get it
+            // to work consistently because the call to useSetBrowserTabTitle in ThemeForLocation
+            // was coming behind it and setting the title to "/login-for-editor".
+            // So that's the use case I'm fixing, but it seems we don't ever want to set the title
+            // to "/something".
+            if (title.startsWith("/")) return;
+
             // we support titles coming in from the URL to support book playback
             // (I'm not sure why that's different, but it is).
             const urlParams = new URLSearchParams(location.search);

@@ -13,7 +13,9 @@ import {
 import { useIntl } from "react-intl";
 import { useHistory } from "react-router-dom";
 import { observer } from "mobx-react-lite";
-import { logOut } from "../../authentication/authentication";
+import { useSetBrowserTabTitle } from "../Routes";
+import { isLogoutMode, logOut } from "../../authentication/authentication";
+import { bringEditorToFront } from "../../editor";
 
 export const LoginForEditor: React.FunctionComponent<{}> = observer(() => {
     const history = useHistory();
@@ -22,12 +24,10 @@ export const LoginForEditor: React.FunctionComponent<{}> = observer(() => {
 
     const [isLogout, setIsLogout] = React.useState(false);
     useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const logOutParamValue = urlParams.get("mode") || "";
-
-        if (logOutParamValue === "logout") {
+        if (isLogoutMode()) {
             logOut();
             setIsLogout(true);
+            bringEditorToFront();
             return;
         }
 
@@ -38,6 +38,8 @@ export const LoginForEditor: React.FunctionComponent<{}> = observer(() => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useSetBrowserTabTitle(isLogout ? "Log out" : "Log in");
 
     useEffect(() => {
         if (loggedIn) {
