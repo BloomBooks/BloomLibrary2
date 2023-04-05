@@ -34,5 +34,9 @@ export const ContentfulMultiPartPage: React.FunctionComponent<{
         </div>
     );
 
-    return <ThemeForLocation urlKey={props.urlKey}>{innards}</ThemeForLocation>;
+    return (
+        <ThemeForLocation browserTabTitle={props.urlKey}>
+            {innards}
+        </ThemeForLocation>
+    );
 };
