@@ -74,12 +74,14 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
     // introduce some kind of layout field, but for now, yagni.
     if (props.urlKey === "about") {
         return (
-            <ThemeForLocation urlKey={props.urlKey}>{innards}</ThemeForLocation>
+            <ThemeForLocation browserTabTitle={page.label || props.urlKey}>
+                {innards}
+            </ThemeForLocation>
         );
     } else
         return (
             <Container maxWidth="md">
-                <ThemeForLocation urlKey={props.urlKey}>
+                <ThemeForLocation browserTabTitle={page.label || props.urlKey}>
                     {innards}
                 </ThemeForLocation>
             </Container>

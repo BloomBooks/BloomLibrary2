@@ -45,7 +45,7 @@ export const Routes: React.FunctionComponent<{}> = () => {
 
     return (
         <ErrorBoundary url={location.pathname}>
-            <ThemeForLocation urlKey={location.pathname}>
+            <ThemeForLocation browserTabTitle={location.pathname}>
                 <Switch>
                     <Route
                         path="/test-embedding/:code*"
