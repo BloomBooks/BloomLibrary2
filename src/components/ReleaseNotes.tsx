@@ -29,7 +29,7 @@ export const ReleaseNotes: React.FunctionComponent<{ channel: string }> = (
                 }
             `}
         >
-            <ThemeForLocation urlKey={"create"}>
+            <ThemeForLocation browserTabTitle={"create"}>
                 <h1
                     css={css`
                         font-size: 2rem;

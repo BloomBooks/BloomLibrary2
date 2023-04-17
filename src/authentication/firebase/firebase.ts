@@ -3,8 +3,9 @@
 // Note, currently using the "compat" version of firebase v9, which doesn't support treeshaking. No reason, just a TODO to upgrade to full v9 API.
 // See https://firebase.google.com/docs/web/modular-upgrade
 import firebase from "firebase/compat/app";
-import { connectParseServer } from "../connection/ParseServerConnection";
-import { getCookie } from "../Utilities";
+import { connectParseServer } from "../../connection/ParseServerConnection";
+import { getCookie } from "../../Utilities";
+import { isLogoutMode } from "../authentication";
 
 const firebaseConfig = {
     apiKey: "AIzaSyACJ7fi7_Rg_bFgTIacZef6OQckr6QKoTY",
@@ -32,7 +33,7 @@ export async function initializeFirebase() {
         await getFirebaseAuth();
     }
     // otherwise we deliberately don't initialize firebase until the user logs in,
-    // avoiding fetchng and loading a big chunk of code.
+    // avoiding fetching and loading a big chunk of code.
 }
 
 // When (and if) firebase is started up, register this function as an onAuthStateChanged callback.
@@ -76,6 +77,12 @@ async function getFirebaseAuthInternal() {
     firebase.initializeApp(firebaseConfig);
 
     firebase.auth().onAuthStateChanged(() => {
+        if (isLogoutMode()) {
+            // We're actually in the process of trying to log out,
+            // so don't try to log in!
+            return;
+        }
+
         const user = firebase.auth().currentUser;
         if (!user || !user.emailVerified || !user.email) {
             return;

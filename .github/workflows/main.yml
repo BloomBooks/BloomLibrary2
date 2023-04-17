@@ -13,7 +13,7 @@ jobs:
               with:
                   urls: |
                       https://alpha.bloomlibrary.org
-                      https://alpha.bloomlibrary.org/covid19
+                      https://alpha.bloomlibrary.org/#!/covid19
                   runs: 3
                   budgetPath: ./.github/workflows/lighthouse-budget.json # test performance budgets
                   uploadArtifacts: true # save results as an action artifacts

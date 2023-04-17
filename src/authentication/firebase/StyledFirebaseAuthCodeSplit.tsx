@@ -39,15 +39,12 @@ const StyledFirebaseAuthCodeSplitInner: React.FunctionComponent<{
     );
     const uiConfig = {
         signInFlow: "popup",
-        // signInSuccessUrl: "/",
-        credentialHelper: "none", // don't show some weird "Account Chooser" thing with email login
-        // We will display Google and Facebook as auth providers.
+        // We will display Google and email as auth providers.
         signInOptions: [
             firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-            //        firebase.auth.EmailAuthProvider.PROVIDER_ID
             {
                 provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
-                signInMethod: "password", //getEmailSignInMethod()
+                signInMethod: "password",
             },
         ],
         callbacks: {

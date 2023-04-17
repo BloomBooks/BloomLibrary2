@@ -1,6 +1,7 @@
 import axios from "axios";
 import { LoggedInUser, User } from "./LoggedInUser";
 import * as Sentry from "@sentry/browser";
+import { informEditorOfSuccessfulLogin, isForEditor } from "../editor";
 
 // This file exports a function getConnection(), which returns the headers
 // needed to talk to our Parse Server backend db.
@@ -67,7 +68,7 @@ export function getConnection(): IConnection {
     // The browser will not allow us to provide this key here if we're running on
     // Bloom Reader, which intercepts web requests in order to enable zipping data
     // (and possibly eventually to do extra caching, provide local versions of
-    // some reasources, etc.). However, it does not work with this mechanism
+    // some resources, etc.). However, it does not work with this mechanism
     // to provide the parse application id here. Not only does it not get through
     // to the parse server, even though BR attempts to pass on all headers,
     // but also, some "pre-flight" check fails, the WebView decides the request
@@ -168,6 +169,11 @@ export async function connectParseServer(
                             //Object.assign(CurrentUser, usersResult.data);
                             connection.headers["X-Parse-Session-Token"] =
                                 usersResult.data.sessionToken;
+
+                            if (isForEditor()) {
+                                informEditorOfSuccessfulLogin(usersResult.data);
+                            }
+
                             //console.log("Got ParseServer Session ID");
                             resolve(usersResult.data);
                             //returnParseUser(result.data);
@@ -204,7 +210,7 @@ function failedToLoginInToParseServer() {
 export function logout() {
     const connection = getConnection();
     axios
-        .post(`${connection.url}logout`, {
+        .post(`${connection.url}logout`, null, {
             headers: connection.headers,
         })
         .then((response) => {

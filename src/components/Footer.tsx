@@ -164,7 +164,7 @@ export const Footer: React.FunctionComponent = () => {
                     font-weight: bold;
                 `}
                 className="donate-button"
-                href="https://givedirect.org/sil/bloom/"
+                href="https://give.sil.org/give/470996"
             >
                 {donateText}
             </Button>

@@ -110,6 +110,13 @@ export function getCleanedAndOrderedLanguageList(
     >();
     const codeToLanguageMap = new Map<string, ILanguage>();
     languages.forEach((languageResult: ILanguage) => {
+        // A newly-uploaded language will have usageCount undefined.
+        // We'll assume it has one book until the process runs which
+        // updates the usageCounts.
+        if (languageResult.usageCount === undefined) {
+            languageResult.usageCount = 1;
+        }
+
         const languageCode = languageResult.isoCode;
         if (!distinctCodeToCountMap.has(languageCode)) {
             distinctCodeToCountMap.set(languageCode, languageResult.usageCount);
