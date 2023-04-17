@@ -7216,9 +7216,9 @@ bl@^1.0.0:
     safe-buffer "^5.1.1"
 
 bloom-player@^2.1:
-  version "2.1.24"
-  resolved "https://registry.yarnpkg.com/bloom-player/-/bloom-player-2.1.24.tgz#51ad24a5251accdeb66a5066dcc55f8fa15bec3d"
-  integrity sha512-2liSYqmfCP/7Fmdk9pE8pj5rsvPgT4ilhxXvv6cFyNVKljAYh2gCexuk5isfmc3CsLBadP4M1QdboZXT/JLtCA==
+  version "2.1.26"
+  resolved "https://registry.yarnpkg.com/bloom-player/-/bloom-player-2.1.26.tgz#7d9e4b6e288cf2a8381530cd27e5b8ed19f35720"
+  integrity sha512-1psCS53GnOBtRZ+KxI3JkPrfcD37pVaLRUi5paioEVmN3EmCamQ4bDy7Keewxa83knusaCxgKxt7q4JY2hcoAA==
 
 bluebird@^3.3.5, bluebird@^3.5.5:
   version "3.7.1"
