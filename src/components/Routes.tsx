@@ -28,6 +28,7 @@ import { AppHostedLanguageGroup } from "./appHosted/AppHostedLanguageGroup";
 import { AppHostedDownloadingPage } from "./appHosted/AppHostedDownloadingPage";
 import { appHostedSegment, isAppHosted } from "./appHosted/AppHostedUtils";
 import { LanguageReport } from "./statistics/LanguageReport";
+import { LoginForEditor } from "./User/LoginForEditor";
 
 export let previousPathname = "";
 let currentPathname = "";
@@ -44,7 +45,7 @@ export const Routes: React.FunctionComponent<{}> = () => {
 
     return (
         <ErrorBoundary url={location.pathname}>
-            <ThemeForLocation urlKey={location.pathname}>
+            <ThemeForLocation browserTabTitle={location.pathname}>
                 <Switch>
                     <Route
                         path="/test-embedding/:code*"
@@ -91,6 +92,12 @@ export const Routes: React.FunctionComponent<{}> = () => {
                             return (
                                 <ReadBookPageCodeSplit id={match.params.id} />
                             );
+                        }}
+                    />
+                    <Route
+                        path="/login-for-editor"
+                        render={() => {
+                            return <LoginForEditor />;
                         }}
                     />
                     <Route
@@ -476,6 +483,13 @@ export function useSetBrowserTabTitle(title: string | undefined) {
             // At least in one case, this code was running after Helmet had set the title;
             // thus the wrong title was being shown.
             if (isAppHosted()) return;
+
+            // When trying to properly set the title of LoginForEditor, I couldn't get it
+            // to work consistently because the call to useSetBrowserTabTitle in ThemeForLocation
+            // was coming behind it and setting the title to "/login-for-editor".
+            // So that's the use case I'm fixing, but it seems we don't ever want to set the title
+            // to "/something".
+            if (title.startsWith("/")) return;
 
             // we support titles coming in from the URL to support book playback
             // (I'm not sure why that's different, but it is).

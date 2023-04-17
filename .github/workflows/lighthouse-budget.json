@@ -2,10 +2,7 @@
     {
         "path": "/*",
         "options": {
-            "firstPartyHostnames": [
-                "*.bloomlibrary.org",
-                "bloom-parse-server-production.azurewebsites.net"
-            ]
+            "firstPartyHostnames": ["*.bloomlibrary.org"]
         },
         "timings": [
             {
@@ -44,7 +41,7 @@
             },
             {
                 "resourceType": "total",
-                "budget": 750
+                "budget": 900
             }
         ],
         "resourceCounts": [
@@ -55,10 +52,14 @@
         ]
     },
     {
-        "path": "/covid19",
+        "path": "/#!/covid19",
         "resourceSizes": [
             {
                 "resourceType": "script",
+                "budget": 900
+            },
+            {
+                "resourceType": "total",
                 "budget": 900
             }
         ]

@@ -7,6 +7,7 @@ export class User {
     constructor(userRecord: any) {
         makeObservable(this, {
             moderator: observable,
+            informEditorResult: observable,
         });
 
         this.objectId = userRecord.objectId;
@@ -15,6 +16,7 @@ export class User {
         this.username = userRecord.username;
         this.moderator = userRecord.moderator;
         this.showTroubleshootingStuff = false; // this is a runtime flag set from a menu
+        this.informEditorResult = userRecord.informEditorResult;
     }
     public objectId: string;
     public sessionId: string;
@@ -22,6 +24,7 @@ export class User {
     public username: string;
     public moderator: boolean; // set by ParseServerConnection.checkIfUserIsModerator() after successful login; not a built-in field.
     public showTroubleshootingStuff: boolean;
+    public informEditorResult: IInformEditorResult;
 }
 
 // This just exists to facilitate mobx auto-re-rendering when we login or log out.
@@ -75,4 +78,9 @@ export function useGetShowTroubleshootingStuff(): [
     if (!user) return [false, () => {}];
     if (!user.moderator) return [false, () => {}];
     return [user.showTroubleshootingStuff, setOn];
+}
+
+export enum IInformEditorResult {
+    Success,
+    Failure,
 }
