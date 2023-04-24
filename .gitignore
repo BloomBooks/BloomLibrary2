@@ -34,3 +34,5 @@ debug.log
 
 # we're not using zero-installs yet
 .yarn/*
+
+.yarnrc.yml

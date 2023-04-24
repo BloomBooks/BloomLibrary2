@@ -150,5 +150,9 @@
         "typescript": "4.6.2",
         "webpack-cli": "^3.3.10"
     },
-    "packageManager": "yarn@1.22.19"
+    "packageManager": "yarn@1.22.19",
+    "volta": {
+        "node": "16.13.0",
+        "yarn": "1.22.19"
+    }
 }
