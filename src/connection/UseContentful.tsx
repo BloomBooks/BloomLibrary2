@@ -74,8 +74,11 @@ export function useContentful(
                     include: 10, // depth
                     locale: localeForEntries,
                     ...query,
-                    // The max is 1000, the default is 100.
-                    // (as of 1/2021, we have 95 collections, but that will continue to grow...)
+                    // Even though we will soon have 1000+ collections,
+                    // we are only querying for the top-level collection(s).
+                    // The rest come in through fields.childCollections,
+                    // and apparently those aren't limited.
+                    // In other words, this limit is not a problem.
                     limit: 1000,
                 })
                 .then((entries: EntryCollection<unknown>) => {
