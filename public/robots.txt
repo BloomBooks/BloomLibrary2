@@ -1,6 +1,7 @@
 User-agent: *
-Noindex: /
+Disallow: /
 # the above rules prevent all indexing of the site. They are intended for the non-production
 # versions of our site. Our file copying rules on TeamCity for our production build avoid copying
 # this file to the production directory.
-# NOTE: "Disallow" appears to be the wrong thing to do. We got warnings from google console saying that they indexed it anyways.
+# NOTE: With the "Disallow" above, we still got warnings from google console saying that they indexed it anyways.
+# So we're planning to implement "noindex" in the meta tags, too.

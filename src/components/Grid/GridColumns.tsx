@@ -184,6 +184,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                         "New",
                         "Updated",
                         "Requested",
+                        "InProgress",
                     ]}
                     {...props}
                 />
