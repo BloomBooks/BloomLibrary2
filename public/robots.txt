@@ -3,5 +3,4 @@ Disallow: /
 # the above rules prevent all indexing of the site. They are intended for the non-production
 # versions of our site. Our file copying rules on TeamCity for our production build avoid copying
 # this file to the production directory.
-# NOTE: With the "Disallow" above, we still got warnings from google console saying that they indexed it anyways.
-# So we're planning to implement "noindex" in the meta tags, too.
+# NOTE: With the "Disallow" above, at one point, we still got warnings from google console saying that they indexed it anyways.
