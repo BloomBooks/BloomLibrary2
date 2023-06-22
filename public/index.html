@@ -28,6 +28,14 @@
         />
         <meta name="theme-color" content="#000000" />
 
+        <!-- SEO wants this. -->
+        <!-- If the crawler runs javascript, it will see the descriptions we create on the individual pages.
+             But at least Bing seems not to run javascript. -->
+        <meta
+            name="description"
+            content="Bloom Library provides free books in hundreds of languages. We help language communities flourish in education and literacy. Download the Bloom editor to create and upload books."
+        />
+
         <!-- social media tags -->
         <meta property="og:title" content="BloomLibrary" />
         <meta property="og:type" content="website" />
@@ -60,7 +68,14 @@
     </head>
 
     <body>
-        <noscript>You need to enable JavaScript to run this app.</noscript>
+        <noscript>
+            <h1>
+                Bloom Library provides free books in hundreds of languages. We
+                help language communities flourish in education and literacy.
+                Download the Bloom editor to create and upload books.
+            </h1>
+            You need to enable JavaScript to run this app.
+        </noscript>
         <div id="root" onclick="void(0)">Loading...</div>
         <!--
       This HTML file is a template.
