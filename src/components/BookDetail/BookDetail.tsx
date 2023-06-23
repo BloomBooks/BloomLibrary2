@@ -350,7 +350,7 @@ const BookDetailInternal: React.FunctionComponent<{
                                                 id:
                                                     "book.detail.draftDescription",
                                                 defaultMessage:
-                                                    "Show this book only to reviewers with whom I share the URL of this page.",
+                                                    "Do not show this book to the public yet. I will share its URL with reviewers for feedback.",
                                                 description:
                                                     "Label for a check box which, if checked, marks the book as 'DRAFT' and prevents the book from showing in most views",
                                             })}
