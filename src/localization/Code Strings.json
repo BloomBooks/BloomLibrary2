@@ -238,7 +238,7 @@
         "message": "book thumbnail"
     },
     "book.detail.draftDescription": {
-        "message": "Show this book only to reviewers with whom I share the URL of this page.",
+        "message": "Do not show this book to the public yet. I will share its URL with reviewers for feedback.",
         "description": "Label for a check box which, if checked, marks the book as 'DRAFT' and prevents the book from showing in most views"
     },
     "book.detail.updateBookNotice": {
@@ -464,9 +464,6 @@
     "language.unknown": {
         "description": "Heading in a list of languages for a collection of books that have a particular feature, but we don't know which language(s) actually support the feature",
         "message": "Unknown"
-    },
-    "Release Notes": {
-        "message": "Release Notes"
     },
     "downloadBook": {
         "message": "Download Book"
