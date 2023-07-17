@@ -465,9 +465,6 @@
         "description": "Heading in a list of languages for a collection of books that have a particular feature, but we don't know which language(s) actually support the feature",
         "message": "Unknown"
     },
-    "Release Notes": {
-        "message": "Release Notes"
-    },
     "downloadBook": {
         "message": "Download Book"
     },
