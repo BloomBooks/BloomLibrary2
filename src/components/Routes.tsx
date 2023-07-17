@@ -21,7 +21,6 @@ import { IEmbedSettings } from "../model/ContentInterfaces";
 import { EmbeddingHost, isEmbedded, useSetEmbeddedUrl } from "./EmbeddingHost";
 import { CollectionStatsPageCodeSplit } from "./statistics/CollectionStatsPageCodeSplit";
 import { TestEmbeddingPage } from "./TestEmbedding";
-import { ReleaseNotes } from "./ReleaseNotes";
 import { ThemeForLocation } from "./pages/ThemeForLocation";
 import { CollectionReportSplit } from "./reports/CollectionReportSplit";
 import { AppHostedLanguageGroup } from "./appHosted/AppHostedLanguageGroup";
@@ -112,12 +111,15 @@ export const Routes: React.FunctionComponent<{}> = () => {
                             return <AppHostedDownloadingPage />;
                         }}
                     ></Route>
+                    {/* We no longer use this route, but it's here in case we need to redirect user bookmarks.
+                        Note, the original links were /create/release-notes/{channel} but this handles any suffix. */}
                     <Route
-                        path="*/release-notes/:channel"
-                        render={({ match }) => {
-                            return (
-                                <ReleaseNotes channel={match.params.channel} />
+                        path="*/release-notes"
+                        component={() => {
+                            window.location.replace(
+                                "https://docs.bloomlibrary.org/Release-Notes"
                             );
+                            return null;
                         }}
                     />
                     <Route

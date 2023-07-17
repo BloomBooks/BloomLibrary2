@@ -83,20 +83,14 @@ export const WindowsInstallerDownload: React.FunctionComponent<{
                             values={{ versionNumber, date: info.date }}
                         />
                     </div>
-                    {info.releaseNotes && (
-                        <div>
-                            {/* Note, the info.releaseNotes actually gives us a url, but that's a pain to stuff in a url parameter
-                            and just isn't needed; as long as we know the channel name, we can construct the url. So that is all we pass here */}
-                            <BlorgLink
-                                href={"/create/release-notes/" + props.channel}
-                            >
-                                <FormattedMessage
-                                    id="download.linkToReleaseNotes"
-                                    defaultMessage="What's New"
-                                />
-                            </BlorgLink>
-                        </div>
-                    )}
+                    <div>
+                        <BlorgLink href={getReleaseNotesLink(info)}>
+                            <FormattedMessage
+                                id="download.linkToReleaseNotes"
+                                defaultMessage="What's New"
+                            />
+                        </BlorgLink>
+                    </div>
                     <div>
                         <BlorgLink
                             href={"/page/create/bloom-windows-requirements"}
@@ -112,6 +106,18 @@ export const WindowsInstallerDownload: React.FunctionComponent<{
         </React.Fragment>
     );
 };
+
+function getReleaseNotesLink(info: any) {
+    let releaseNotesLink = "https://docs.bloomlibrary.org/release-notes";
+    if (info?.version) {
+        const versionArray = info.version.split(".");
+        if (versionArray.length >= 2) {
+            versionArray.splice(2); // just major and minor
+            releaseNotesLink += `-${versionArray.join("-")}`;
+        }
+    }
+    return releaseNotesLink;
+}
 
 export function getInstallerInfo(request: IReturns<any>): any {
     return request && request.response ? request.response.data : {};
