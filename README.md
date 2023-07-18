@@ -11,17 +11,8 @@ Language speakers find books in their own language, and book creators find shell
 ### yarn ###
 Install yarn (https://yarnpkg.com/lang/en/docs/install/#windows-stable)
 
-### nvm ###
-You'll need [nodejs](https://nodejs.org/en/) installed.  As time goes on, the required version of nodejs changes. To make this feasible, we use [nvm-windows](https://github.com/coreybutler/nvm-windows) on Windows to install and manage which version of nodejs is active for the build process. To install nvm on Windows, go to  [nvm-windows releases](https://github.com/coreybutler/nvm-windows/releases) and download the latest nvm-setup.zip file. Unzip the downloaded file and run the nvm-setup.exe program to install nvm.
-
-### nodejs ###
-Once nvm has been installed for windows, run these commands in a command window to install the needed version of nodejs. This needs to be done only once.
-
-    nvm install 16.13.0 # or whatever the version should be. Check "engines" field of package.json.
-
-The following command is also helpful to switch between node versions:
-
-    nvm use 16.13.0 # or whatever the version should be. Check "engines" field of package.json.
+### volta ###
+You'll need [nodejs](https://nodejs.org/en/) installed.  As time goes on, the required version of nodejs changes. Currently our team has [volta](https://github.com/volta-cli/volta) installed, and with that, you automatically get the right version of nodejs that this project requires.
 
 ### yarn install ###
 Finally, run yarn in a command line (e.g. in VSCode) to install dependencies.
