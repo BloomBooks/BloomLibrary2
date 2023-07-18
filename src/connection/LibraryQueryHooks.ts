@@ -375,7 +375,7 @@ export const gridBookKeys =
     "title,baseUrl,license,licenseNotes,inCirculation,draft,summary,copyright,harvestState," +
     "harvestLog,harvestStartedAt,tags,pageCount,phashOfFirstContentImage,show,credits,country," +
     "features,internetLimits,librarianNote,uploader,langPointers,importedBookSourceUrl," +
-    "downloadCount,publisher,originalPublisher,keywords,edition,rebrand";
+    "downloadCount,publisher,originalPublisher,keywords,edition,rebrand,leveledReaderLevel";
 
 export const gridBookIncludeFields = "uploader,langPointers";
 
