@@ -155,6 +155,15 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             },
         },
         {
+            name: "leveledReaderLevel",
+            defaultVisible: false,
+            sortingEnabled: true,
+            addToFilter: (filter: IFilter, value: string) => {
+                const num = parseFloat(value);
+                if (Number.isInteger(num)) filter.leveledReaderLevel = num;
+            },
+        },
+        {
             name: "topic",
             defaultVisible: true,
             getCellValue: (b: Book) =>

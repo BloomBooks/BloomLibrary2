@@ -64,4 +64,6 @@ export interface IFilter {
     // BL-10865. Controls whether we include books that are marked as being exact duplicates except for branding.
     // Can be true (only rebrands), false (no rebrands), or "all", which means ignore that property.
     rebrand?: BooleanOptions;
+
+    leveledReaderLevel?: number;
 }
