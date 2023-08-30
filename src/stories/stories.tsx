@@ -8,7 +8,7 @@ import { LocalizationProvider } from "../localization/LocalizationProvider";
 import { BookCard } from "../components/BookCard";
 import { BookGroup } from "../components/BookGroup";
 import { LanguageGroup } from "../components/LanguageGroup";
-import { SearchBox } from "../components/SearchBox";
+import { SearchBox, SearchMode } from "../components/SearchBox";
 import "../index.css";
 import { StandAloneHarvesterArtifactUserControl } from "../components/BookDetail/ArtifactVisibilityPanel/ArtifactVisibilityPanel";
 import { ArtifactAndChoice } from "../components/BookDetail/ArtifactVisibilityPanel/ArtifactAndChoice";
@@ -170,7 +170,9 @@ storiesOf("Components", module)
                     backgroundColor: bloomRed,
                 }}
             >
-                <SearchBox />
+                <SearchBox
+                    setSearchResultMode={(searchResultMode: SearchMode) => {}}
+                />
             </div>
         );
     })

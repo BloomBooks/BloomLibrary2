@@ -16,10 +16,12 @@ import { CollectionInfoWidget } from "./CollectionInfoWidget";
 import { appHostedSegment, useIsAppHosted } from "./appHosted/AppHostedUtils";
 import { getDisplayNamesFromLanguageCode } from "../model/Language";
 import { CachedTablesContext } from "../model/CacheProvider";
+import { SearchMode } from "./SearchBox";
 
-export const Breadcrumbs: React.FunctionComponent<{ className?: string }> = (
-    props
-) => {
+export const Breadcrumbs: React.FunctionComponent<{
+    className?: string;
+    searchResultMode?: SearchMode;
+}> = (props) => {
     const location = useLocation();
     const l10n = useIntl();
     const { languagesByBookCount: languages } = useContext(CachedTablesContext);
@@ -118,7 +120,7 @@ export const Breadcrumbs: React.FunctionComponent<{ className?: string }> = (
     }
     for (const item of filters) {
         let label = item;
-        const labelParts = item.split(":");
+        const labelParts = item.replace(/%3A/g, ":").split(":");
         const prefix = labelParts[0];
         switch (prefix.toLowerCase()) {
             case "level":
@@ -131,13 +133,34 @@ export const Breadcrumbs: React.FunctionComponent<{ className?: string }> = (
                 );
                 break;
             case "search":
-                label = l10n.formatMessage(
-                    {
-                        id: "search.booksMatching",
-                        defaultMessage: 'Books matching "{searchTerms}"',
-                    },
-                    { searchTerms: labelParts.slice(1).join(":") }
-                );
+                if (props.searchResultMode === SearchMode.Shallow) {
+                    label = l10n.formatMessage(
+                        {
+                            id: "search.booksStrongMatching",
+                            // double quotes are already in the string.
+                            defaultMessage:
+                                "Books with a strong match to {searchTerms}",
+                        },
+                        { searchTerms: labelParts[2] }
+                    );
+                } else if (props.searchResultMode === SearchMode.Deeper) {
+                    label = l10n.formatMessage(
+                        {
+                            id: "search.booksLooseMatching",
+                            defaultMessage:
+                                'Books with a loose match to "{searchTerms}"',
+                        },
+                        { searchTerms: labelParts.slice(1).join(":") }
+                    );
+                } else {
+                    label = l10n.formatMessage(
+                        {
+                            id: "search.booksMatching",
+                            defaultMessage: 'Books matching "{searchTerms}"',
+                        },
+                        { searchTerms: labelParts.slice(1).join(":") }
+                    );
+                }
                 break;
             case "language":
                 const languageNames = getDisplayNamesFromLanguageCode(
