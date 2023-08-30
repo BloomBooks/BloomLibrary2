@@ -28,13 +28,16 @@ import { AppHostedDownloadingPage } from "./appHosted/AppHostedDownloadingPage";
 import { appHostedSegment, isAppHosted } from "./appHosted/AppHostedUtils";
 import { LanguageReport } from "./statistics/LanguageReport";
 import { LoginForEditor } from "./User/LoginForEditor";
+import { SearchStyle } from "./SearchBox";
 
 export let previousPathname = "";
 let currentPathname = "";
 
 // The main set of switches that loads different things into the main content area of Blorg
 // based on the current window location.
-export const Routes: React.FunctionComponent<{}> = () => {
+export const Routes: React.FunctionComponent<{
+    searchResultStyle?: SearchStyle;
+}> = (props) => {
     const location = useLocation();
     useSetEmbeddedUrl();
     if (currentPathname !== location.pathname) {
@@ -282,6 +285,9 @@ export const Routes: React.FunctionComponent<{}> = () => {
                                         <DefaultRouteComponent
                                             locationPathname={location.pathname}
                                             segments={match.params.segments}
+                                            searchResultStyle={
+                                                props.searchResultStyle
+                                            }
                                         />
                                     );
                             }
@@ -295,6 +301,7 @@ export const Routes: React.FunctionComponent<{}> = () => {
                             <DefaultRouteComponent
                                 locationPathname={location.pathname}
                                 segments={match.params.segments}
+                                searchResultStyle={props.searchResultStyle}
                             />
                         )}
                     ></Route>
@@ -308,13 +315,19 @@ export const Routes: React.FunctionComponent<{}> = () => {
 export const DefaultRouteComponent: React.FunctionComponent<{
     locationPathname: string;
     segments: string;
+    searchResultStyle?: SearchStyle;
 }> = (props) => {
     if (window.self !== window.top) {
         return (
             <EmbeddingHost urlSegments={props.locationPathname}></EmbeddingHost>
         );
     }
-    return <CollectionWrapper segments={props.segments}></CollectionWrapper>;
+    return (
+        <CollectionWrapper
+            segments={props.segments}
+            searchResultStyle={props.searchResultStyle}
+        ></CollectionWrapper>
+    );
 };
 
 // Given a pathname like /enabling-writers/ew-nigeria/:level:1/:topic:Agriculture/:search:dogs,
@@ -517,6 +530,7 @@ export function setBloomLibraryTitle(title: string): void {
 export const CollectionWrapper: React.FunctionComponent<{
     segments: string;
     embeddedSettings?: IEmbedSettings;
+    searchResultStyle?: SearchStyle;
 }> = (props) => {
     const { collectionName, filters } = splitPathname(props.segments);
 
@@ -535,6 +549,7 @@ export const CollectionWrapper: React.FunctionComponent<{
         <CollectionSubsetPage
             collectionName={collectionName}
             filters={filters}
+            searchResultStyle={props.searchResultStyle}
         />
     );
 };

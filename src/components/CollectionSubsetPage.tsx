@@ -27,6 +27,7 @@ import {
     useAppHostedCollectionLabel,
     useIsAppHosted,
 } from "./appHosted/AppHostedUtils";
+import { SearchStyle } from "./SearchBox";
 
 // Given a collection and a string like level:1/topic:anthropology/search:dogs,
 // creates a corresponding collection by adding appropriate filters.
@@ -109,6 +110,7 @@ export function generateCollectionFromFilters(
 export const CollectionSubsetPage: React.FunctionComponent<{
     collectionName: string; // may have tilde's, after last tilde is a contentful collection urlKey
     filters: string[]; // may result in automatically-created subcollections. Might be multiple ones slash-delimited
+    searchResultStyle?: SearchStyle;
 }> = (props) => {
     const l10n = useIntl();
 
@@ -239,7 +241,7 @@ export const CollectionSubsetPage: React.FunctionComponent<{
                         : "padding: 20px;"}
                 `}
             >
-                <Breadcrumbs />
+                <Breadcrumbs searchResultStyle={props.searchResultStyle} />
                 <BookCount collection={subcollection} noMatches={noMatches} />
             </div>
 

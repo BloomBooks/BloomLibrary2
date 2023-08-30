@@ -13,6 +13,7 @@ import { useLocation, useHistory } from "react-router-dom";
 import { useIntl } from "react-intl";
 import { CachedTablesContext } from "../model/CacheProvider";
 import { trySpecialSearch, noPushCode } from "../model/SpecialSearch";
+import { isFacetedSearchString } from "../connection/LibraryQueryHooks";
 
 //import Typography from "@material-ui/core/Typography";
 //import Tooltip from "@material-ui/core/Tooltip";
@@ -41,24 +42,53 @@ import { trySpecialSearch, noPushCode } from "../model/SpecialSearch";
 //     },
 // }))(Tooltip);
 
+export enum SearchStyle {
+    Empty,
+    Special,
+    Faceted,
+    Shallow,
+    Deeper,
+}
 export const SearchBox: React.FunctionComponent<{
     // Extra CSS props to apply to the root div. (A bit of a kludge; there's no clean way
     // to be able to use Emotion css both in the implementation of the component and
     // where it is invoked.)
     cssExtra?: string;
+    setSearchResultStyle?: (searchResultStyle: SearchStyle) => void;
+    initialSearchStyle?: SearchStyle;
 }> = (props) => {
     const location = useLocation();
     const history = useHistory();
+
     const search = location.pathname
         .split("/")
         .filter((x) => x.startsWith(":search:"))[0];
 
+    const [searchMode, setSearchMode] = useState(SearchStyle.Shallow);
+    if (
+        searchMode === SearchStyle.Shallow &&
+        props.initialSearchStyle === SearchStyle.Deeper
+    ) {
+        setSearchMode(props.initialSearchStyle);
+    }
     const l10n = useIntl();
     let initialSearchString = search
         ? decodeURIComponent(search.substring(":search:".length))
         : "";
     if (initialSearchString.startsWith("phash")) {
         initialSearchString = "";
+    }
+    if (
+        searchMode === SearchStyle.Shallow &&
+        initialSearchString.startsWith("title:")
+    ) {
+        // strip off the leading "title:" and the enclosing quotes.
+        initialSearchString = initialSearchString
+            .substring("title:".length + 1, initialSearchString.length - 1)
+            .replace(/\\"/g, '"');
+    }
+    if (searchMode === SearchStyle.Deeper && initialSearchString.length > 0) {
+        initialSearchString = "deeper:" + initialSearchString;
     }
     const [searchString, setSearchString] = useState(initialSearchString);
     // This is a bit subtle. SearchString needs to be state to get modified
@@ -72,6 +102,13 @@ export const SearchBox: React.FunctionComponent<{
     useEffect(() => setSearchString(initialSearchString), [
         initialSearchString,
     ]);
+
+    const updateSearchResultStyle = (searchResultStyle: SearchStyle) => {
+        setSearchMode(searchResultStyle);
+        if (props.setSearchResultStyle) {
+            props.setSearchResultStyle(searchResultStyle);
+        }
+    };
 
     //const [showTooltip, setShowTooltip] = useState(true);
     // const searchTooltip: JSX.Element = (
@@ -97,13 +134,14 @@ export const SearchBox: React.FunctionComponent<{
     //     </Typography>
     // );
 
-    const { languagesByBookCount } = useContext(CachedTablesContext);
+    const { tags, languagesByBookCount } = useContext(CachedTablesContext);
 
     const handleSearch = () => {
         const trimmedSearchString = searchString.trim();
         if (trimmedSearchString.length === 0) {
             // delete everything and press enter is the same as "cancel"
             cancelSearch();
+            updateSearchResultStyle(SearchStyle.Empty);
             return;
         }
 
@@ -126,6 +164,15 @@ export const SearchBox: React.FunctionComponent<{
                 history.push("/" + specialSearchResults[0]);
             }
             setSearchString("");
+            updateSearchResultStyle(SearchStyle.Special);
+            return;
+        }
+
+        const bookshelf = tryBookShelfSearch(searchStringLower, tags);
+        if (bookshelf) {
+            history.push("/" + bookshelf);
+            setSearchString(bookshelf);
+            updateSearchResultStyle(SearchStyle.Special);
             return;
         }
 
@@ -156,8 +203,28 @@ export const SearchBox: React.FunctionComponent<{
             ["/create", "/grid", "/bulk"].find((x) =>
                 history.location.pathname.startsWith(x)
             ) || "";
-        const newUrl =
-            prefix + "/:search:" + encodeURIComponent(trimmedSearchString);
+        let newUrl: string = "";
+        if (trimmedSearchString.startsWith("deeper:")) {
+            newUrl =
+                prefix +
+                "/:search:" +
+                encodeURIComponent(
+                    trimmedSearchString.substring("deeper:".length)
+                );
+            updateSearchResultStyle(SearchStyle.Deeper);
+        } else if (isFacetedSearchString(trimmedSearchString)) {
+            newUrl =
+                prefix + "/:search:" + encodeURIComponent(trimmedSearchString);
+            updateSearchResultStyle(SearchStyle.Faceted);
+        } else {
+            newUrl =
+                prefix +
+                '/:search:title%3A"' +
+                encodeURIComponent(trimmedSearchString.replace(/"/g, '\\"')) +
+                '"';
+            updateSearchResultStyle(SearchStyle.Shallow);
+        }
+        //console.log(`DEBUG: SearchBox.handleSearch: newUrl=${newUrl}`);
         if (replaceInHistory) {
             history.replace(newUrl);
         } else {
@@ -257,3 +324,21 @@ export const SearchBox: React.FunctionComponent<{
     //searchTextField
     //);
 };
+
+// Search for a tag that starts with "bookshelf:" followed by the given search string.
+// If any such tags are found, return the portion of the first tag after "bookshelf:".
+// Otherwise, return null.
+// This usually translates directly into a URL for a bookshelf, but it's possible that
+// the bookshelf doesn't actually exist if no books are in it.
+function tryBookShelfSearch(searchStringLower: string, tagList: string[]) {
+    const foundTags: string[] = [];
+    tagList.forEach((tag) => {
+        if (tag.toLowerCase().startsWith("bookshelf:" + searchStringLower)) {
+            foundTags.push(tag);
+        }
+    });
+    if (foundTags.length > 0) {
+        return foundTags[0].substring("bookshelf:".length);
+    }
+    return null;
+}

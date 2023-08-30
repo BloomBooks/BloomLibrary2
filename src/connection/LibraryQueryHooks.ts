@@ -918,6 +918,33 @@ function processAxiosStatus(answer: IAxiosAnswer): ISimplifiedAxiosResult {
     };
 }
 
+const facets = [
+    "title:",
+    "uploader:",
+    "copyright:",
+    "harvestState:",
+    "country:",
+    "phash:",
+    "level:",
+    "feature:",
+    "originalPublisher:", // must come before "publisher:", since "originalPublisher:" includes the other as a substring
+    "publisher:",
+    "language:",
+    "brandingProjectName:",
+    "branding:",
+    "rebrand:",
+];
+
+export function isFacetedSearchString(searchString: string): boolean {
+    for (const facet of facets) {
+        if (searchString.toLowerCase().startsWith(facet.toLowerCase()))
+            return true;
+        if (searchString.toLowerCase().includes(" " + facet.toLowerCase()))
+            return true;
+    }
+    return false;
+}
+
 // Given strings such as might be typed into the search box, split them into bits that
 // should be treated as individual keywords to search for, and bits that should be
 // treated as additional search facets,
@@ -963,23 +990,6 @@ export function splitString(
         return { otherSearchTerms: input, specialParts: [] };
     }
     */
-    const facets = [
-        "title",
-        "uploader:",
-        "copyright:",
-        "harvestState:",
-        "country:",
-        "phash:",
-        "level:",
-        "feature:",
-        "originalPublisher:", // must come before "publisher:", since "originalPublisher:" includes the other as a substring
-        "publisher:",
-        "language:",
-        "brandingProjectName:",
-        "branding:",
-        "rebrand:",
-        "bookInstanceId:",
-    ];
 
     const possibleParts = [...facets, ...allTagsInDatabase];
     // Start with the string with extra spaces (doubles and following colon) removed.
@@ -1053,15 +1063,28 @@ function getFacetPartWithOrWithoutQuotes(
     if (searchString[start] === '"') {
         // handle double quote subcase
         start++; // don't include the quotes in our result
-        end = searchString.indexOf('"', start);
-        if (end < 0) {
-            end = len;
-        }
+        let first = start;
+        let quoteCount = 0;
+        do {
+            end = searchString.indexOf('"', first);
+            if (end < 0) {
+                // no closing quote, so just use the rest of the string
+                end = len;
+                break;
+            } else if (end > first && searchString[end - 1] === "\\") {
+                // skip escaped quote
+                first = end + 1;
+                ++quoteCount;
+                continue;
+            } else {
+                break;
+            }
+        } while (true);
         facetPart = searchString.substring(start, end);
-        end = start + facetPart.length;
         if (end < len && searchString[end] === '"') {
             end++;
         }
+        if (quoteCount > 0) facetPart = facetPart.replace(/\\"/g, '"');
     } else {
         end = searchString.indexOf(" ", start);
         if (end < 0) {

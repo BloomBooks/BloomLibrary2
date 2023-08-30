@@ -63,9 +63,21 @@
         "description": "Priority - Low",
         "message": "Bloom Logo"
     },
+    "header.searchDeeper": {
+        "description": "",
+        "message": "Search Deeper"
+    },
     "search.booksMatching": {
         "description": "",
         "message": "Books matching \"{searchTerms}\""
+    },
+    "search.booksStrongMatching": {
+        "description": "",
+        "message": "Books with a strong match to {searchTerms}"
+    },
+    "search.booksLooseMatching": {
+        "description": "",
+        "message": "Books with a loose match to \"{searchTerms}\""
     },
     "search.forBooks": {
         "description": "",
