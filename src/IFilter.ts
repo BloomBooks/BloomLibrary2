@@ -66,4 +66,6 @@ export interface IFilter {
     rebrand?: BooleanOptions;
 
     leveledReaderLevel?: number;
+
+    bookInstanceId?: string;
 }
