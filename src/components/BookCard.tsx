@@ -15,6 +15,7 @@ import { useResponsiveChoice } from "../responsiveUtilities";
 import { ICardSpec, useBaseCardSpec } from "./CardGroup";
 import { SmartTruncateMarkup } from "./SmartTruncateMarkup";
 import { ReactComponent as DraftIcon } from "../assets/DRAFT-Stamp.svg";
+import { ReactComponent as WarningIcon } from "../assets/Warning.svg";
 import { CardSortingTroubleshootingInfo } from "./CardSortingTroubleshootingInfo";
 import { useShowTroubleshootingStuff } from "../Utilities";
 
@@ -73,6 +74,14 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
         : "";
 
     const [showTroubleshootingStuff] = useShowTroubleshootingStuff();
+
+    const overlayIconCss = css`
+        position: absolute;
+        width: ${getResponsiveChoice(80, 122)}px;
+        height: ${getResponsiveChoice(65, 94)}px;
+        left: 9px;
+        top: 4px;
+    `;
 
     const card = (
         <CheapCard
@@ -180,16 +189,9 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                 )}
             </div>
             <LanguageFeatureList basicBookInfo={props.basicBookInfo} />
-            {props.basicBookInfo.draft && (
-                <DraftIcon
-                    css={css`
-                        position: absolute;
-                        width: ${getResponsiveChoice(80, 122)}px;
-                        height: ${getResponsiveChoice(65, 94)}px;
-                        left: 9px;
-                        top: 4px;
-                    `}
-                />
+            {props.basicBookInfo.draft && <DraftIcon css={overlayIconCss} />}
+            {props.basicBookInfo.inCirculation === false && (
+                <WarningIcon css={overlayIconCss} />
             )}
         </CheapCard>
     );

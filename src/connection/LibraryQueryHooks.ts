@@ -681,11 +681,12 @@ export interface IBasicBookInfo {
     phashOfFirstContentImage?: string;
     edition: string;
     draft?: boolean;
+    inCirculation?: boolean;
     score?: number;
 }
 
 const kFieldsOfIBasicBookInfo =
-    "title,baseUrl,objectId,langPointers,tags,features,lastUploaded,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft,rebrand";
+    "title,baseUrl,objectId,langPointers,tags,features,lastUploaded,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft,rebrand,inCirculation";
 
 // uses the human "level:" tag if present, otherwise falls back to computedLevel
 export function getBestLevelStringOrEmpty(basicBookInfo: IBasicBookInfo) {
@@ -746,7 +747,7 @@ export function useSearchBooks(
         count: 1,
         keys:
             // this should be all the fields of IBasicBookInfo
-            "title,baseUrl,objectId,langPointers,tags,features,lastUploaded,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft,rebrand",
+            kFieldsOfIBasicBookInfo,
         ...params,
     };
     const bookResultsStatus: IAxiosAnswer = useBookQueryInternal(
@@ -977,6 +978,7 @@ export function splitString(
         "brandingProjectName:",
         "branding:",
         "rebrand:",
+        "bookInstanceId:",
     ];
 
     const possibleParts = [...facets, ...allTagsInDatabase];
@@ -1187,7 +1189,7 @@ export function constructParseBookQuery(
                     break;
                 case "feature":
                     // Note that if filter actually has a feature field (filter.feature is defined)
-                    // that will win, overiding any feature: in the search field (see below).
+                    // that will win, overriding any feature: in the search field (see below).
                     params.where.features = facetValue;
                     if (facetValue === "activity") {
                         // old data had a separate entry for quiz, now we just consider that
@@ -1248,6 +1250,11 @@ export function constructParseBookQuery(
                             $nin: otherPrimaryLevels,
                         });
                     }
+                    break;
+                case "bookInstanceId":
+                    params.where.bookInstanceId = facetValue;
+                    f.draft = BooleanOptions.All;
+                    f.inCirculation = BooleanOptions.All;
                     break;
                 default:
                     tagsAll.push(part);
