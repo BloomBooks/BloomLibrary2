@@ -207,6 +207,7 @@ export function useGetCollection(
                     const filterOnUserAsUploader: IFilter = {};
                     filterOnUserAsUploader.search = `uploader:${email}`;
                     filterOnUserAsUploader.draft = BooleanOptions.All;
+                    filterOnUserAsUploader.inCirculation = BooleanOptions.All;
                     explicitCollection.filter = filterOnUserAsUploader;
                 }
             }
