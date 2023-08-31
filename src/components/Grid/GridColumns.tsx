@@ -331,6 +331,9 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             title: "Book Instance ID",
             sortingEnabled: true,
             getCellValue: (b: Book) => b.bookInstanceId,
+            addToFilter: (filter: IFilter, value: string) => {
+                filter.bookInstanceId = value;
+            },
             defaultVisible: false,
         },
         {
