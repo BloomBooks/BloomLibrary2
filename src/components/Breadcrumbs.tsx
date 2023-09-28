@@ -5,7 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React from "react";
+import React, { useContext } from "react";
 import { useLocation } from "react-router-dom";
 import { useGetCollection } from "../model/Collections";
 import { splitPathname } from "./Routes";
@@ -14,12 +14,15 @@ import { BlorgLink } from "./BlorgLink";
 import { FormattedMessage, useIntl } from "react-intl";
 import { CollectionInfoWidget } from "./CollectionInfoWidget";
 import { appHostedSegment, useIsAppHosted } from "./appHosted/AppHostedUtils";
+import { getDisplayNamesFromLanguageCode } from "../model/Language";
+import { CachedTablesContext } from "../model/CacheProvider";
 
 export const Breadcrumbs: React.FunctionComponent<{ className?: string }> = (
     props
 ) => {
     const location = useLocation();
     const l10n = useIntl();
+    const { languagesByBookCount: languages } = useContext(CachedTablesContext);
     // TODO: this doesn't look good on a narrow screen (phone) when the breadcrumbs get very long.
     const breadcrumbsStyle = css`
         display: flex;
@@ -135,6 +138,13 @@ export const Breadcrumbs: React.FunctionComponent<{ className?: string }> = (
                     },
                     { searchTerms: labelParts.slice(1).join(":") }
                 );
+                break;
+            case "language":
+                const languageNames = getDisplayNamesFromLanguageCode(
+                    labelParts[1],
+                    languages
+                );
+                label = languageNames?.combined || labelParts[1];
                 break;
             case "skip":
             case "all":

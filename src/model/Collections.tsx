@@ -314,16 +314,20 @@ function getFacetCollection(
             );
 
         // case "keyword":
-        //     collection = makeCollectionForKeyword(collection, value);
+        //     collection = makeVirtualCollectionForKeyword(collection, value);
         //     return { collection, loading: false };
 
         case "search":
             // search collections are generated from a search string the user typed.
-            return makeCollectionForSearch(templateCollection, value, l10n);
+            return makeVirtualCollectionForSearch(
+                templateCollection,
+                value,
+                l10n
+            );
 
         case "phash":
             // search collections are generated from a search string the user typed.
-            return makeCollectionForPHash(templateCollection, value);
+            return makeVirtualCollectionForPHash(templateCollection, value);
 
         default:
             throw Error(`Unknown facet: ${facet}`);
@@ -396,7 +400,7 @@ export function makeTopicCollection(
     };
 }
 
-export function makeCollectionForSearch(
+export function makeVirtualCollectionForSearch(
     templateCollection: ICollection,
     search: string,
     l10n: IntlShape,
@@ -435,7 +439,7 @@ export function makeCollectionForSearch(
     return result;
 }
 
-export function makeCollectionForPHash(
+export function makeVirtualCollectionForPHash(
     templateCollection: ICollection,
     phash: string
 ): ICollection {
@@ -509,7 +513,7 @@ function makeTopicCollectionsForCards(): ICollection[] {
 /* We're thinking (but not certain) that we just want to treat keyword lookups as searches (which will of course
     find books that have this explicit keyword *
 
-    export function makeCollectionForKeyword(
+    export function makeVirtualCollectionForKeyword(
     templateCollection: ICollection,
     keyword: string,
     baseCollection?: ICollection

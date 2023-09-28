@@ -5,10 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React, { useContext, useState } from "react";
-import {
-    LanguageCard,
-    useLanguageCardSpecs as useLanguageCardSpec,
-} from "./LanguageCard";
+import { LanguageCard, useLanguageCardSpec } from "./LanguageCard";
 import Downshift, {
     GetItemPropsOptions,
     GetMenuPropsOptions,
