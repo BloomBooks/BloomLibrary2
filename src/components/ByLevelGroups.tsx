@@ -26,7 +26,7 @@ export const ByLevelGroups: React.FunctionComponent<{
                         },
                         { levelNumber: level }
                     )}
-                    collection={makeCollectionForLevel(
+                    collection={makeVirtualCollectionOfBooksInCollectionThatHaveLevel(
                         props.collection,
                         level,
                         l10n
@@ -45,7 +45,7 @@ export const ByLevelGroups: React.FunctionComponent<{
                         "Used to label books which are missing level information.",
                 })}
                 rows={99}
-                collection={makeCollectionForLevel(
+                collection={makeVirtualCollectionOfBooksInCollectionThatHaveLevel(
                     props.collection,
                     "empty",
                     l10n
@@ -56,7 +56,7 @@ export const ByLevelGroups: React.FunctionComponent<{
     );
 };
 
-export function makeCollectionForLevel(
+export function makeVirtualCollectionOfBooksInCollectionThatHaveLevel(
     baseCollection: ICollection,
     level: string,
     l10n: IntlShape
