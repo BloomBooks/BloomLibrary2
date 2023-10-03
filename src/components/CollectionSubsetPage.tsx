@@ -6,13 +6,19 @@ import { jsx } from "@emotion/core";
 import React, { useEffect } from "react";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { ListOfBookGroups } from "./ListOfBookGroups";
-import { ByLevelGroups, makeCollectionForLevel } from "./ByLevelGroups";
+import {
+    ByLevelGroups,
+    makeVirtualCollectionOfBooksInCollectionThatHaveLevel,
+} from "./ByLevelGroups";
 import { BookCardGroup } from "./BookCardGroup";
 import {
-    makeCollectionForSearch,
+    makeVirtualCollectionForSearch,
     useGetCollection,
 } from "../model/Collections";
-import { makeCollectionForTopic, ByTopicsGroups } from "./ByTopicsGroups";
+import {
+    makeVirtualCollectionOfBooksInCollectionThatHaveTopic,
+    ByTopicsGroups,
+} from "./ByTopicsGroups";
 import { ICollection } from "../model/ContentInterfaces";
 import { getCollectionAnalyticsInfo } from "../analytics/CollectionAnalyticsInfo";
 import { track } from "../analytics/Analytics";
@@ -27,6 +33,7 @@ import {
     useAppHostedCollectionLabel,
     useIsAppHosted,
 } from "./appHosted/AppHostedUtils";
+import { makeVirtualCollectionOfBooksInCollectionThatHaveLanguage } from "./ByLanguageCards";
 
 // Given a collection and a string like level:1/topic:anthropology/search:dogs,
 // creates a corresponding collection by adding appropriate filters.
@@ -53,30 +60,38 @@ export function generateCollectionFromFilters(
             const parts = filter.split(":");
             switch (parts[0]) {
                 case "level":
-                    filteredCollection = makeCollectionForLevel(
+                    filteredCollection = makeVirtualCollectionOfBooksInCollectionThatHaveLevel(
                         filteredCollection,
-                        parts[1],
+                        parts[1], // the level number
                         l10n
                     );
                     break;
                 case "topic":
                     const topicKey = parts[1];
 
-                    filteredCollection = makeCollectionForTopic(
+                    filteredCollection = makeVirtualCollectionOfBooksInCollectionThatHaveTopic(
                         filteredCollection,
                         topicKey
                     );
                     break;
                 case "search":
-                    filteredCollection = makeCollectionForSearch(
+                    filteredCollection = makeVirtualCollectionForSearch(
                         collection,
-                        decodeURIComponent(parts[1]),
+                        decodeURIComponent(parts[1]), // the search term
                         l10n,
                         filteredCollection
                     );
                     break;
+                case "language":
+                    filteredCollection = makeVirtualCollectionOfBooksInCollectionThatHaveLanguage(
+                        filteredCollection,
+                        parts[1], // the language code
+                        true
+                    );
+                    break;
+
                 // case "keyword":
-                //     filteredCollection = makeCollectionForKeyword(
+                //     filteredCollection = makeVirtualCollectionForKeyword(
                 //         collection,
                 //         decodeURIComponent(parts[1]),
                 //         filteredCollection
@@ -192,7 +207,10 @@ export const CollectionSubsetPage: React.FunctionComponent<{
     let subList = <ByLevelGroups collection={subcollection} />;
     let showAll = false;
     let maxRows: number | undefined = subcollection.rows; // can be undefined, in which case it's the default
-    if (props.filters.includes("all:true")) {
+    if (
+        props.filters.includes("all:true") ||
+        subcollection.layout === "all-books"
+    ) {
         showAll = true;
         maxRows = 1000;
     } else if ((props.collectionName + props.filters).indexOf("level:") >= 0) {
