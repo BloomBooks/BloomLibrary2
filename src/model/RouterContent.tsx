@@ -39,10 +39,10 @@ export const RouterContent: React.FunctionComponent<{}> = (props) => {
 
     function HandleDeeperSearch(): void {
         const newPath = location.pathname.replace(
-            /^\/:search:title%3A"(.*)"$/,
-            "/:search:$1"
+            /^\/:search:/,
+            "/:search:deeper:"
         );
-        history.replace(newPath);
+        history.push(newPath);
         setSearchResultMode(SearchMode.Deeper);
     }
 

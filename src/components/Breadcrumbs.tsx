@@ -122,6 +122,11 @@ export const Breadcrumbs: React.FunctionComponent<{
         let label = item;
         const labelParts = item.replace(/%3A/g, ":").split(":");
         const prefix = labelParts[0];
+        // Text to be bolded in the label.  This may be left empty.
+        // Only the first occurrence of the this text is bolded.
+        // The text to be bolded is enclosed in quotes in the label string
+        // to prevent matching against other parts of the label.
+        let boldedText = "";
         switch (prefix.toLowerCase()) {
             case "level":
                 label = l10n.formatMessage(
@@ -134,31 +139,38 @@ export const Breadcrumbs: React.FunctionComponent<{
                 break;
             case "search":
                 if (props.searchResultMode === SearchMode.Shallow) {
+                    boldedText = labelParts[1].replace(/\\"/g, '"');
                     label = l10n.formatMessage(
                         {
                             id: "search.booksStrongMatching",
-                            // double quotes are already in the string.
                             defaultMessage:
-                                "Books with a strong match to {searchTerms}",
+                                'Books with a strong match to "{searchTerms}"',
                         },
-                        { searchTerms: labelParts[2] }
+                        { searchTerms: boldedText }
                     );
                 } else if (props.searchResultMode === SearchMode.Deeper) {
+                    boldedText = labelParts[2].replace(/\\"/g, '"');
                     label = l10n.formatMessage(
                         {
                             id: "search.booksLooseMatching",
                             defaultMessage:
                                 'Books with a loose match to "{searchTerms}"',
                         },
-                        { searchTerms: labelParts.slice(1).join(":") }
+                        { searchTerms: boldedText }
                     );
                 } else {
+                    boldedText = labelParts
+                        .slice(1)
+                        .join(":")
+                        .replace(/\\"/g, '"');
                     label = l10n.formatMessage(
                         {
                             id: "search.booksMatching",
                             defaultMessage: 'Books matching "{searchTerms}"',
                         },
-                        { searchTerms: labelParts.slice(1).join(":") }
+                        {
+                            searchTerms: boldedText,
+                        }
                     );
                 }
                 break;
@@ -173,9 +185,33 @@ export const Breadcrumbs: React.FunctionComponent<{
             case "all":
                 continue;
         }
+        const displayLabel = decodeURIComponent(label);
+        // If we have a boldedText, we need to find it in the label and bold it.
+        let displayWithBold: JSX.Element | null = null;
+        if (boldedText) {
+            const indexBold = label.indexOf('"' + boldedText + '"');
+            if (indexBold) {
+                const prebold = decodeURIComponent(
+                    label.substring(0, indexBold)
+                );
+                const postbold = decodeURIComponent(
+                    label.substring(indexBold + boldedText.length + 2)
+                );
+                const bolded = (
+                    <strong>{decodeURIComponent(boldedText)}</strong>
+                );
+                displayWithBold = (
+                    <span>
+                        {prebold}
+                        {bolded}
+                        {postbold}
+                    </span>
+                );
+            }
+        }
         crumbs.push(
             <li key={item}>
-                {decodeURIComponent(label)}
+                {displayWithBold ? displayWithBold : displayLabel}
                 {/* enhance: reinstate if we come up with a destination for the link.<BlorgLink
                     css={css`
                         text-decoration: none !important;

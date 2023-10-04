@@ -73,7 +73,7 @@
     },
     "search.booksStrongMatching": {
         "description": "",
-        "message": "Books with a strong match to {searchTerms}"
+        "message": "Books with a strong match to \"{searchTerms}\""
     },
     "search.booksLooseMatching": {
         "description": "",

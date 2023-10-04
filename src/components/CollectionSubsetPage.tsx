@@ -78,7 +78,7 @@ export function generateCollectionFromFilters(
                 case "search":
                     filteredCollection = makeVirtualCollectionForSearch(
                         collection,
-                        decodeURIComponent(parts[1]), // the search term
+                        decodeURIComponent(parts.slice(1).join(":")), // the search term
                         l10n,
                         filteredCollection
                     );

@@ -71,9 +71,23 @@ export const SearchBox: React.FunctionComponent<{
     if (initialSearchString.startsWith("phash")) {
         initialSearchString = "";
     }
-    // Reset the search mode if we're not actually searching for anything.
+    if (initialSearchString === "deeper:") {
+        initialSearchString = "";
+    }
+    initialSearchString = initialSearchString.replace(/\\"/g, '"');
+    // Ensure the search mode matches with the initial search string.
     if (!initialSearchString) {
-        props.setSearchResultMode(SearchMode.Empty);
+        if (props.initialSearchMode !== SearchMode.Empty)
+            props.setSearchResultMode(SearchMode.Empty);
+    } else if (initialSearchString.startsWith("deeper:")) {
+        if (props.initialSearchMode !== SearchMode.Deeper)
+            props.setSearchResultMode(SearchMode.Deeper);
+    } else if (isFacetedSearchString(initialSearchString)) {
+        if (props.initialSearchMode !== SearchMode.Faceted)
+            props.setSearchResultMode(SearchMode.Faceted);
+    } else {
+        if (props.initialSearchMode !== SearchMode.Shallow)
+            props.setSearchResultMode(SearchMode.Shallow);
     }
     const [searchString, setSearchString] = useState(initialSearchString);
     // This is a bit subtle. SearchString needs to be state to get modified
@@ -130,6 +144,7 @@ export const SearchBox: React.FunctionComponent<{
                 trimmedSearchString.length - 1
             );
         }
+        trimmedSearchString = trimmedSearchString.replace(/"/g, '\\"');
 
         if (trimmedSearchString.length === 0) {
             // delete everything and press enter is the same as "cancel"
@@ -197,9 +212,7 @@ export const SearchBox: React.FunctionComponent<{
                 newUrl =
                     prefix +
                     "/:search:" +
-                    encodeURIComponent(
-                        trimmedSearchString.substring("deeper:".length)
-                    );
+                    encodeURIComponent(trimmedSearchString);
                 props.setSearchResultMode(SearchMode.Deeper);
             }
         } else if (isFacetedSearchString(trimmedSearchString)) {
@@ -208,10 +221,7 @@ export const SearchBox: React.FunctionComponent<{
             props.setSearchResultMode(SearchMode.Faceted);
         } else {
             newUrl =
-                prefix +
-                '/:search:title%3A"' +
-                encodeURIComponent(trimmedSearchString.replace(/"/g, '\\"')) +
-                '"';
+                prefix + "/:search:" + encodeURIComponent(trimmedSearchString);
             props.setSearchResultMode(SearchMode.Shallow);
         }
         if (replaceInHistory) {
@@ -243,42 +253,6 @@ export const SearchBox: React.FunctionComponent<{
             history.push(newLocationPath);
         }
     };
-
-    // We want to adjust what is shown in the search box to:
-    // a) remove the "title:" prefix if we're in shallow search mode
-    // b) add the "deeper:" prefix if we're in deeper search mode
-    // c) do nothing to the search string if we're in other search modes (empty,
-    //    faceted, or special)
-    if (searchString === initialSearchString) {
-        switch (props.initialSearchMode) {
-            case SearchMode.Shallow:
-                // We don't want to display the "title:" prefix in the search box.
-                // (If the user explicitly types "title:" in the search box, the display
-                // mode will be set to faceted, and the title: will still display.)
-                // We also don't want to display the backslash escapes that are added to quotes.
-                let shallowString = decodeURI(searchString);
-                if (shallowString.startsWith('title:"')) {
-                    shallowString = shallowString
-                        .replace(/^title:"(.*)"$/, "$1")
-                        .replace(/\\"/g, '"');
-                    setSearchString(shallowString);
-                }
-                break;
-            case SearchMode.Deeper:
-                // We want to add a "deeper:" prefix in the search box, but only if
-                // there's actually text to search for.
-                const deeperString = decodeURI(searchString).replace(
-                    /\\"/g,
-                    '"'
-                );
-                if (deeperString && !deeperString.startsWith("deeper:")) {
-                    setSearchString("deeper:" + deeperString);
-                }
-                break;
-            default:
-                break;
-        }
-    }
 
     return (
         <Paper
