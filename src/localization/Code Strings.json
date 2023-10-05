@@ -68,15 +68,15 @@
         "message": "Search Deeper"
     },
     "search.booksMatching": {
-        "description": "",
+        "description": "The \"{searchTerms}\" must be left untranslated in the place where the search terms would be substituted for displaying to the user.",
         "message": "Books matching \"{searchTerms}\""
     },
     "search.booksStrongMatching": {
-        "description": "",
+        "description": "The \"{searchTerms}\" must be left untranslated in the place where the search terms would be substituted for displaying to the user.",
         "message": "Books with a strong match to \"{searchTerms}\""
     },
     "search.booksLooseMatching": {
-        "description": "",
+        "description": "The \"{searchTerms}\" must be left untranslated in the place where the search terms would be substituted for displaying to the user.",
         "message": "Books with a loose match to \"{searchTerms}\""
     },
     "search.forBooks": {

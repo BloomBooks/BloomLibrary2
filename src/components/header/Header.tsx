@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 
 import React from "react";
 import logo from "./header-logo.svg";
-import { SearchBox, SearchMode } from "../SearchBox";
+import { SearchBox } from "../SearchBox";
 import { UserMenuCodeSplit } from "../User/UserMenuCodeSplit";
 import { commonUI } from "../../theme";
 import { useMediaQuery, Tab, Tabs } from "@material-ui/core";
@@ -14,10 +14,7 @@ import { useHistory, useLocation } from "react-router-dom";
 import { useIntl } from "react-intl";
 import { BlorgLink } from "../BlorgLink";
 
-export const Header: React.FunctionComponent<{
-    setSearchResultMode: (searchResultMode: SearchMode) => void;
-    initialSearchMode?: SearchMode;
-}> = (props) => {
+export const Header: React.FunctionComponent<{}> = (props) => {
     const location = useLocation();
     const createTabSelected = location.pathname.indexOf("/create") > -1;
     const routerHistory = useHistory();
@@ -149,10 +146,7 @@ export const Header: React.FunctionComponent<{
                             margin-left: auto;
                         `}
                     >
-                        <SearchBox
-                            setSearchResultMode={props.setSearchResultMode}
-                            initialSearchMode={props.initialSearchMode}
-                        />
+                        <SearchBox />
                     </div>
                 )}
                 {showUserMenu && (
@@ -172,11 +166,7 @@ export const Header: React.FunctionComponent<{
                         margin-top: 8px;
                     `}
                 >
-                    <SearchBox
-                        cssExtra="margin-left: auto; margin-right:10px; width:100%"
-                        setSearchResultMode={props.setSearchResultMode}
-                        initialSearchMode={props.initialSearchMode}
-                    />
+                    <SearchBox cssExtra="margin-left: auto; margin-right:10px; width:100%" />
                 </div>
             )}
         </div>

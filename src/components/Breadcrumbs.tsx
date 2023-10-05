@@ -16,11 +16,10 @@ import { CollectionInfoWidget } from "./CollectionInfoWidget";
 import { appHostedSegment, useIsAppHosted } from "./appHosted/AppHostedUtils";
 import { getDisplayNamesFromLanguageCode } from "../model/Language";
 import { CachedTablesContext } from "../model/CacheProvider";
-import { SearchMode } from "./SearchBox";
+import { isFacetedSearchString } from "../connection/LibraryQueryHooks";
 
 export const Breadcrumbs: React.FunctionComponent<{
     className?: string;
-    searchResultMode?: SearchMode;
 }> = (props) => {
     const location = useLocation();
     const l10n = useIntl();
@@ -138,18 +137,12 @@ export const Breadcrumbs: React.FunctionComponent<{
                 );
                 break;
             case "search":
-                if (props.searchResultMode === SearchMode.Shallow) {
-                    boldedText = labelParts[1].replace(/\\"/g, '"');
-                    label = l10n.formatMessage(
-                        {
-                            id: "search.booksStrongMatching",
-                            defaultMessage:
-                                'Books with a strong match to "{searchTerms}"',
-                        },
-                        { searchTerms: boldedText }
-                    );
-                } else if (props.searchResultMode === SearchMode.Deeper) {
-                    boldedText = labelParts[2].replace(/\\"/g, '"');
+                const searchString = labelParts.slice(1).join(":");
+                if (searchString.startsWith("deeper:")) {
+                    boldedText = labelParts
+                        .slice(2)
+                        .join(":")
+                        .replace(/\\"/g, '"');
                     label = l10n.formatMessage(
                         {
                             id: "search.booksLooseMatching",
@@ -158,11 +151,8 @@ export const Breadcrumbs: React.FunctionComponent<{
                         },
                         { searchTerms: boldedText }
                     );
-                } else {
-                    boldedText = labelParts
-                        .slice(1)
-                        .join(":")
-                        .replace(/\\"/g, '"');
+                } else if (isFacetedSearchString(searchString)) {
+                    boldedText = searchString.replace(/\\"/g, '"');
                     label = l10n.formatMessage(
                         {
                             id: "search.booksMatching",
@@ -171,6 +161,16 @@ export const Breadcrumbs: React.FunctionComponent<{
                         {
                             searchTerms: boldedText,
                         }
+                    );
+                } else {
+                    boldedText = searchString.replace(/\\"/g, '"');
+                    label = l10n.formatMessage(
+                        {
+                            id: "search.booksStrongMatching",
+                            defaultMessage:
+                                'Books with a strong match to "{searchTerms}"',
+                        },
+                        { searchTerms: boldedText }
                     );
                 }
                 break;

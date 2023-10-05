@@ -4,25 +4,19 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useState } from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import React from "react";
+import { useLocation } from "react-router-dom";
 import { Header } from "../components/header/Header";
 import { Routes } from "../components/Routes";
 import { FooterCodeSplit } from "../components/FooterCodeSplit";
 import { useIsEmbedded } from "../components/EmbeddingHost";
 import { kStatsPageGray } from "../components/statistics/StatsInterfaces";
 import { useIsAppHosted } from "../components/appHosted/AppHostedUtils";
-import { SearchMode } from "../components/SearchBox";
-import { Button, SvgIcon } from "@material-ui/core";
-import { ReactComponent as SearchingDeeper } from "../assets/SearchingDeeper.svg";
-import { commonUI } from "../theme";
-import { useIntl } from "react-intl";
 
 // What we want inside the <Router> component. Has to be its own component so that we can have
 // useLocation(), which only works inside the Router.
 export const RouterContent: React.FunctionComponent<{}> = (props) => {
     const location = useLocation();
-    const history = useHistory();
     const showingPlayer = location.pathname.startsWith("/player/");
     const appHostedMode = useIsAppHosted();
     const embeddedMode = useIsEmbedded();
@@ -33,27 +27,9 @@ export const RouterContent: React.FunctionComponent<{}> = (props) => {
         showingPlayer
     );
 
-    // Enhance: use location.pathname to initialize searchResultMode?
-    const [searchResultMode, setSearchResultMode] = useState(SearchMode.Empty);
-    const l10n = useIntl();
-
-    function HandleDeeperSearch(): void {
-        const newPath = location.pathname.replace(
-            /^\/:search:/,
-            "/:search:deeper:"
-        );
-        history.push(newPath);
-        setSearchResultMode(SearchMode.Deeper);
-    }
-
     return (
         <React.Fragment>
-            {showHeaderAndFooter && (
-                <Header
-                    setSearchResultMode={setSearchResultMode}
-                    initialSearchMode={searchResultMode}
-                />
-            )}
+            {showHeaderAndFooter && <Header />}
             {/* This div takes up all the space available so that the footer
         is either at the bottom or pushed off screen. If we're showing the player,
         we don't have a header or footer. In most browsers, flex 1 0 auto would
@@ -75,41 +51,7 @@ export const RouterContent: React.FunctionComponent<{}> = (props) => {
                 `}
                 role="main"
             >
-                <Routes searchResultMode={searchResultMode} />
-                {searchResultMode === SearchMode.Shallow && (
-                    <Button
-                        variant="contained"
-                        css={css`
-                            margin-left: 20px;
-                            margin-bottom: 12px;
-                            color: white;
-                            background-color: ${commonUI.colors.bloomRed};
-                            width: 160px;
-                        `}
-                        onClick={() => HandleDeeperSearch()}
-                    >
-                        <SvgIcon
-                            css={css`
-                                padding-right: 5px;
-                                width: 39px;
-                            `}
-                            component={SearchingDeeper}
-                            viewBox="0 0 39 33"
-                        ></SvgIcon>
-                        <div
-                            css={css`
-                                line-height: 1.2;
-                                padding-top: 5px;
-                                padding-bottom: 5px;
-                            `}
-                        >
-                            {l10n.formatMessage({
-                                id: "header.searchDeeper",
-                                defaultMessage: "Search Deeper",
-                            })}
-                        </div>
-                    </Button>
-                )}
+                <Routes />
             </div>
             {showHeaderAndFooter && <FooterCodeSplit />}
         </React.Fragment>

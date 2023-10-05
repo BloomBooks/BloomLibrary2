@@ -42,20 +42,11 @@ import { isFacetedSearchString } from "../connection/LibraryQueryHooks";
 //     },
 // }))(Tooltip);
 
-export enum SearchMode {
-    Empty,
-    Special,
-    Faceted,
-    Shallow,
-    Deeper,
-}
 export const SearchBox: React.FunctionComponent<{
     // Extra CSS props to apply to the root div. (A bit of a kludge; there's no clean way
     // to be able to use Emotion css both in the implementation of the component and
     // where it is invoked.)
     cssExtra?: string;
-    setSearchResultMode: (searchResultMode: SearchMode) => void;
-    initialSearchMode?: SearchMode;
 }> = (props) => {
     const location = useLocation();
     const history = useHistory();
@@ -75,20 +66,6 @@ export const SearchBox: React.FunctionComponent<{
         initialSearchString = "";
     }
     initialSearchString = initialSearchString.replace(/\\"/g, '"');
-    // Ensure the search mode matches with the initial search string.
-    if (!initialSearchString) {
-        if (props.initialSearchMode !== SearchMode.Empty)
-            props.setSearchResultMode(SearchMode.Empty);
-    } else if (initialSearchString.startsWith("deeper:")) {
-        if (props.initialSearchMode !== SearchMode.Deeper)
-            props.setSearchResultMode(SearchMode.Deeper);
-    } else if (isFacetedSearchString(initialSearchString)) {
-        if (props.initialSearchMode !== SearchMode.Faceted)
-            props.setSearchResultMode(SearchMode.Faceted);
-    } else {
-        if (props.initialSearchMode !== SearchMode.Shallow)
-            props.setSearchResultMode(SearchMode.Shallow);
-    }
     const [searchString, setSearchString] = useState(initialSearchString);
     // This is a bit subtle. SearchString needs to be state to get modified
     // as the user types. But another thing that can happen is that our location
@@ -149,7 +126,6 @@ export const SearchBox: React.FunctionComponent<{
         if (trimmedSearchString.length === 0) {
             // delete everything and press enter is the same as "cancel"
             cancelSearch();
-            props.setSearchResultMode(SearchMode.Empty);
             return;
         }
 
@@ -172,7 +148,6 @@ export const SearchBox: React.FunctionComponent<{
                 history.push("/" + specialSearchResults[0]);
             }
             setSearchString("");
-            props.setSearchResultMode(SearchMode.Special);
             return;
         }
 
@@ -207,22 +182,18 @@ export const SearchBox: React.FunctionComponent<{
         if (trimmedSearchString.startsWith("deeper:")) {
             if (trimmedSearchString === "deeper:") {
                 newUrl = prefix + "/";
-                props.setSearchResultMode(SearchMode.Empty);
             } else {
                 newUrl =
                     prefix +
                     "/:search:" +
                     encodeURIComponent(trimmedSearchString);
-                props.setSearchResultMode(SearchMode.Deeper);
             }
         } else if (isFacetedSearchString(trimmedSearchString)) {
             newUrl =
                 prefix + "/:search:" + encodeURIComponent(trimmedSearchString);
-            props.setSearchResultMode(SearchMode.Faceted);
         } else {
             newUrl =
                 prefix + "/:search:" + encodeURIComponent(trimmedSearchString);
-            props.setSearchResultMode(SearchMode.Shallow);
         }
         if (replaceInHistory) {
             history.replace(newUrl);
