@@ -34,6 +34,7 @@ import {
     useIsAppHosted,
 } from "./appHosted/AppHostedUtils";
 import { makeVirtualCollectionOfBooksInCollectionThatHaveLanguage } from "./ByLanguageCards";
+import { SearchDeeper } from "./SearchDeeper";
 
 // Given a collection and a string like level:1/topic:anthropology/search:dogs,
 // creates a corresponding collection by adding appropriate filters.
@@ -77,7 +78,7 @@ export function generateCollectionFromFilters(
                 case "search":
                     filteredCollection = makeVirtualCollectionForSearch(
                         collection,
-                        decodeURIComponent(parts[1]), // the search term
+                        decodeURIComponent(parts.slice(1).join(":")), // the search term
                         l10n,
                         filteredCollection
                     );
@@ -274,6 +275,7 @@ export const CollectionSubsetPage: React.FunctionComponent<{
             >
                 {subList}
             </ListOfBookGroups>
+            <SearchDeeper />
         </React.Fragment>
     );
 };

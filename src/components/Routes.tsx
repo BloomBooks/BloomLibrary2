@@ -34,7 +34,7 @@ let currentPathname = "";
 
 // The main set of switches that loads different things into the main content area of Blorg
 // based on the current window location.
-export const Routes: React.FunctionComponent<{}> = () => {
+export const Routes: React.FunctionComponent<{}> = (props) => {
     const location = useLocation();
     useSetEmbeddedUrl();
     if (currentPathname !== location.pathname) {

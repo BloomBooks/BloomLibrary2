@@ -12,6 +12,7 @@ import { IntlShape, useIntl } from "react-intl";
 import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 import { appHostedSegment } from "../components/appHosted/AppHostedUtils";
 import { generateCollectionFromFilters } from "../components/CollectionSubsetPage";
+import { isFacetedSearchString } from "../connection/LibraryQueryHooks";
 
 /* From original design: Each collection has
     id
@@ -406,7 +407,12 @@ export function makeVirtualCollectionForSearch(
     l10n: IntlShape,
     baseCollection?: ICollection
 ): ICollection {
-    const filter = { ...baseCollection?.filter, search };
+    const searchContent = search.startsWith("deeper:")
+        ? search.substring("deeper:".length)
+        : isFacetedSearchString(search)
+        ? search
+        : 'title:"' + search + '"';
+    const filter = { ...baseCollection?.filter, search: searchContent };
     let label = l10n.formatMessage(
         {
             id: "search.booksMatching",
