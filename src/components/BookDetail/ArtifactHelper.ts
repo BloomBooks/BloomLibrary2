@@ -14,7 +14,7 @@ export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
             url = getDownloadUrl(book, "bloompub");
             break;
         case ArtifactType.shellbook:
-            url = book.bookOrder;
+            url = getBookOrderUrl(book);
             break;
         case ArtifactType.pdf:
             // We need the raw book name here, because we're going for the PDF
@@ -30,6 +30,23 @@ export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
     }
     if (!url) return "";
     return url;
+}
+
+function getBookOrderUrl(book: Book) {
+    if (!book.baseUrl) return "";
+
+    // This is tested as far back as 4.8, three years before this change to not simply return the bookOrder field.
+    // Note that Blooms before 5.6 expect to have two slashes in the bookOrder and will fail otherwise. BL-12568.
+    const match = /https:\/\/s3\.amazonaws\.com\/(.*?%2f.*?%2f)/.exec(
+        book.baseUrl
+    );
+    if (match) {
+        return `bloom://localhost/order?orderFile=${
+            match[1]
+        }&title=${encodeURIComponent(book.title)}`;
+    }
+
+    return "";
 }
 
 export function getArtifactDownloadAltText(
