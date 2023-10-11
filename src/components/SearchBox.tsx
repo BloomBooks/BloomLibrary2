@@ -13,6 +13,7 @@ import { useLocation, useHistory } from "react-router-dom";
 import { useIntl } from "react-intl";
 import { CachedTablesContext } from "../model/CacheProvider";
 import { trySpecialSearch, noPushCode } from "../model/SpecialSearch";
+import { isFacetedSearchString } from "../connection/LibraryQueryHooks";
 
 //import Typography from "@material-ui/core/Typography";
 //import Tooltip from "@material-ui/core/Tooltip";
@@ -49,6 +50,7 @@ export const SearchBox: React.FunctionComponent<{
 }> = (props) => {
     const location = useLocation();
     const history = useHistory();
+
     const search = location.pathname
         .split("/")
         .filter((x) => x.startsWith(":search:"))[0];
@@ -60,6 +62,10 @@ export const SearchBox: React.FunctionComponent<{
     if (initialSearchString.startsWith("phash")) {
         initialSearchString = "";
     }
+    if (initialSearchString === "deeper:") {
+        initialSearchString = "";
+    }
+    initialSearchString = initialSearchString.replace(/\\"/g, '"');
     const [searchString, setSearchString] = useState(initialSearchString);
     // This is a bit subtle. SearchString needs to be state to get modified
     // as the user types. But another thing that can happen is that our location
@@ -100,7 +106,23 @@ export const SearchBox: React.FunctionComponent<{
     const { languagesByBookCount } = useContext(CachedTablesContext);
 
     const handleSearch = () => {
-        const trimmedSearchString = searchString.trim();
+        let trimmedSearchString = searchString.trim();
+        if (
+            trimmedSearchString.startsWith('"') &&
+            trimmedSearchString.endsWith('"')
+        ) {
+            // If the user merely types a single " in the search box, this code
+            // will not remove it due to the way javascript defines substring.
+            //  But if the user types "foo", then it will remove the quotes.  This
+            // is what we want.  Titles can have quotes in them, so we don't want
+            // to remove them if they look like they're part of the search.
+            trimmedSearchString = trimmedSearchString.substring(
+                1,
+                trimmedSearchString.length - 1
+            );
+        }
+        trimmedSearchString = trimmedSearchString.replace(/"/g, '\\"');
+
         if (trimmedSearchString.length === 0) {
             // delete everything and press enter is the same as "cancel"
             cancelSearch();
@@ -156,8 +178,23 @@ export const SearchBox: React.FunctionComponent<{
             ["/create", "/grid", "/bulk"].find((x) =>
                 history.location.pathname.startsWith(x)
             ) || "";
-        const newUrl =
-            prefix + "/:search:" + encodeURIComponent(trimmedSearchString);
+        let newUrl: string = "";
+        if (trimmedSearchString.startsWith("deeper:")) {
+            if (trimmedSearchString === "deeper:") {
+                newUrl = prefix + "/";
+            } else {
+                newUrl =
+                    prefix +
+                    "/:search:" +
+                    encodeURIComponent(trimmedSearchString);
+            }
+        } else if (isFacetedSearchString(trimmedSearchString)) {
+            newUrl =
+                prefix + "/:search:" + encodeURIComponent(trimmedSearchString);
+        } else {
+            newUrl =
+                prefix + "/:search:" + encodeURIComponent(trimmedSearchString);
+        }
         if (replaceInHistory) {
             history.replace(newUrl);
         } else {
@@ -180,7 +217,7 @@ export const SearchBox: React.FunctionComponent<{
         // ensure we return whence we came.
         const searchIdx = location.pathname.indexOf("/:search:");
         if (searchIdx >= 0) {
-            let newLocationPath = location.pathname.substr(0, searchIdx);
+            let newLocationPath = location.pathname.slice(0, searchIdx);
             if (newLocationPath.length === 0) {
                 newLocationPath = "/";
             }

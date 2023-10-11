@@ -14,7 +14,7 @@ import { useHistory, useLocation } from "react-router-dom";
 import { useIntl } from "react-intl";
 import { BlorgLink } from "../BlorgLink";
 
-export const Header: React.FunctionComponent = () => {
+export const Header: React.FunctionComponent<{}> = (props) => {
     const location = useLocation();
     const createTabSelected = location.pathname.indexOf("/create") > -1;
     const routerHistory = useHistory();
