@@ -14,7 +14,7 @@ export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
             url = getDownloadUrl(book, "bloompub");
             break;
         case ArtifactType.shellbook:
-            url = book.bookOrder;
+            url = getBookOrderUrl(book);
             break;
         case ArtifactType.pdf:
             // We need the raw book name here, because we're going for the PDF
@@ -30,6 +30,35 @@ export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
     }
     if (!url) return "";
     return url;
+}
+
+function getBookOrderUrl(book: Book) {
+    if (!book.baseUrl) return "";
+
+    // Generate a bookOrder URL from the baseUrl. We used to create and store the bookOrder as a field
+    // in parse. It was actually a pointer to a .BloomBookOrder file which has been obsolete for some time.
+    // In Sept 2023, we realized we could simplify things. We weren't using anything from the bookOrder
+    // other than the S3 bucket and the first part of the directory structure (which up to now has always
+    // been the uploader email address and book instance ID). We can just get those from the baseUrl.
+    // Now, when we change the baseUrl, we just generate a new corresponding bookOrder URL.
+    // Currently, a baseUrl looks like
+    //           https://s3.amazonaws.com/ BloomLibraryBooks-Sandbox/andrew_polk%40sil.org%2f7195f6af-caa2-44b1-8aab-df0703ab5c4a%2f calibri%2f
+    // and the bookOrder URL we want to generate looks like
+    //  bloom://localhost/order?orderFile= BloomLibraryBooks-Sandbox/andrew_polk%40sil.org%2f7195f6af-caa2-44b1-8aab-df0703ab5c4a%2f &title=calibri
+    // (spaces added to show the matching part we want to extract)
+
+    // This is tested as far back as 4.8, three years before this change to not simply return the bookOrder field.
+    // Note that Blooms before 5.6 expect to have two slashes (%2f) in the orderFile param and will fail otherwise. BL-12568.
+    const match = /https:\/\/s3\.amazonaws\.com\/(.*?%2f.*?%2f)/.exec(
+        book.baseUrl
+    );
+    if (match) {
+        return `bloom://localhost/order?orderFile=${
+            match[1]
+        }&title=${encodeURIComponent(book.title)}`;
+    }
+
+    return "";
 }
 
 export function getArtifactDownloadAltText(
