@@ -5,7 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React from "react";
+import React, { useContext } from "react";
 import { useLocation } from "react-router-dom";
 import { useGetCollection } from "../model/Collections";
 import { splitPathname } from "./Routes";
@@ -14,12 +14,16 @@ import { BlorgLink } from "./BlorgLink";
 import { FormattedMessage, useIntl } from "react-intl";
 import { CollectionInfoWidget } from "./CollectionInfoWidget";
 import { appHostedSegment, useIsAppHosted } from "./appHosted/AppHostedUtils";
+import { getDisplayNamesFromLanguageCode } from "../model/Language";
+import { CachedTablesContext } from "../model/CacheProvider";
+import { isFacetedSearchString } from "../connection/LibraryQueryHooks";
 
-export const Breadcrumbs: React.FunctionComponent<{ className?: string }> = (
-    props
-) => {
+export const Breadcrumbs: React.FunctionComponent<{
+    className?: string;
+}> = (props) => {
     const location = useLocation();
     const l10n = useIntl();
+    const { languagesByBookCount: languages } = useContext(CachedTablesContext);
     // TODO: this doesn't look good on a narrow screen (phone) when the breadcrumbs get very long.
     const breadcrumbsStyle = css`
         display: flex;
@@ -115,8 +119,13 @@ export const Breadcrumbs: React.FunctionComponent<{ className?: string }> = (
     }
     for (const item of filters) {
         let label = item;
-        const labelParts = item.split(":");
+        const labelParts = item.replace(/%3A/g, ":").split(":");
         const prefix = labelParts[0];
+        // Text to be bolded in the label.  This may be left empty.
+        // Only the first occurrence of the this text is bolded.
+        // The text to be bolded is enclosed in quotes in the label string
+        // to prevent matching against other parts of the label.
+        let boldedText = "";
         switch (prefix.toLowerCase()) {
             case "level":
                 label = l10n.formatMessage(
@@ -128,21 +137,81 @@ export const Breadcrumbs: React.FunctionComponent<{ className?: string }> = (
                 );
                 break;
             case "search":
-                label = l10n.formatMessage(
-                    {
-                        id: "search.booksMatching",
-                        defaultMessage: 'Books matching "{searchTerms}"',
-                    },
-                    { searchTerms: labelParts.slice(1).join(":") }
+                const searchString = labelParts.slice(1).join(":");
+                if (searchString.startsWith("deeper:")) {
+                    boldedText = labelParts
+                        .slice(2)
+                        .join(":")
+                        .replace(/\\"/g, '"');
+                    label = l10n.formatMessage(
+                        {
+                            id: "search.booksLooseMatching",
+                            defaultMessage:
+                                'Books with a loose match to "{searchTerms}"',
+                        },
+                        { searchTerms: boldedText }
+                    );
+                } else if (isFacetedSearchString(searchString)) {
+                    boldedText = searchString.replace(/\\"/g, '"');
+                    label = l10n.formatMessage(
+                        {
+                            id: "search.booksMatching",
+                            defaultMessage: 'Books matching "{searchTerms}"',
+                        },
+                        {
+                            searchTerms: boldedText,
+                        }
+                    );
+                } else {
+                    boldedText = searchString.replace(/\\"/g, '"');
+                    label = l10n.formatMessage(
+                        {
+                            id: "search.booksStrongMatching",
+                            defaultMessage:
+                                'Books with a strong match to "{searchTerms}"',
+                        },
+                        { searchTerms: boldedText }
+                    );
+                }
+                break;
+            case "language":
+                const languageNames = getDisplayNamesFromLanguageCode(
+                    labelParts[1],
+                    languages
                 );
+                label = languageNames?.combined || labelParts[1];
                 break;
             case "skip":
             case "all":
                 continue;
         }
+        const displayLabel = decodeURIComponent(label);
+        // If we have a boldedText, we need to find it in the label and bold it.
+        let displayWithBold: JSX.Element | null = null;
+        if (boldedText) {
+            const indexBold = label.indexOf('"' + boldedText + '"');
+            if (indexBold) {
+                const prebold = decodeURIComponent(
+                    label.substring(0, indexBold)
+                );
+                const postbold = decodeURIComponent(
+                    label.substring(indexBold + boldedText.length + 2)
+                );
+                const bolded = (
+                    <strong>{decodeURIComponent(boldedText)}</strong>
+                );
+                displayWithBold = (
+                    <span>
+                        {prebold}
+                        {bolded}
+                        {postbold}
+                    </span>
+                );
+            }
+        }
         crumbs.push(
             <li key={item}>
-                {decodeURIComponent(label)}
+                {displayWithBold ? displayWithBold : displayLabel}
                 {/* enhance: reinstate if we come up with a destination for the link.<BlorgLink
                     css={css`
                         text-decoration: none !important;

@@ -15,7 +15,7 @@ import { ICardSpec, useBaseCardSpec } from "./CardGroup";
 import { SmartTruncateMarkup } from "./SmartTruncateMarkup";
 import { useIsAppHosted } from "./appHosted/AppHostedUtils";
 
-export function useLanguageCardSpecs(larger?: boolean): ICardSpec {
+export function useLanguageCardSpec(larger?: boolean): ICardSpec {
     const getResponsiveChoice = useResponsiveChoice();
     return {
         cardWidthPx: larger ? 150 : (getResponsiveChoice(100, 150) as number),
@@ -49,7 +49,7 @@ export const LanguageCard: React.FunctionComponent<
 
     const { primary, secondary } = getDisplayNamesForLanguage(props);
     const getResponsiveChoice = useResponsiveChoice();
-    const { cardWidthPx, cardHeightPx } = useLanguageCardSpecs(props.larger);
+    const { cardWidthPx, cardHeightPx } = useLanguageCardSpec(props.larger);
     const urlPrefix = props.targetPrefix ?? "/language:";
     const showCount = !useIsAppHosted();
     const cardSpacing = useBaseCardSpec().cardSpacingPx;

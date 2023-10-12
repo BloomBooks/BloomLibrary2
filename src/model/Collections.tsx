@@ -12,6 +12,7 @@ import { IntlShape, useIntl } from "react-intl";
 import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 import { appHostedSegment } from "../components/appHosted/AppHostedUtils";
 import { generateCollectionFromFilters } from "../components/CollectionSubsetPage";
+import { isFacetedSearchString } from "../connection/LibraryQueryHooks";
 
 /* From original design: Each collection has
     id
@@ -314,16 +315,20 @@ function getFacetCollection(
             );
 
         // case "keyword":
-        //     collection = makeCollectionForKeyword(collection, value);
+        //     collection = makeVirtualCollectionForKeyword(collection, value);
         //     return { collection, loading: false };
 
         case "search":
             // search collections are generated from a search string the user typed.
-            return makeCollectionForSearch(templateCollection, value, l10n);
+            return makeVirtualCollectionForSearch(
+                templateCollection,
+                value,
+                l10n
+            );
 
         case "phash":
             // search collections are generated from a search string the user typed.
-            return makeCollectionForPHash(templateCollection, value);
+            return makeVirtualCollectionForPHash(templateCollection, value);
 
         default:
             throw Error(`Unknown facet: ${facet}`);
@@ -396,13 +401,18 @@ export function makeTopicCollection(
     };
 }
 
-export function makeCollectionForSearch(
+export function makeVirtualCollectionForSearch(
     templateCollection: ICollection,
     search: string,
     l10n: IntlShape,
     baseCollection?: ICollection
 ): ICollection {
-    const filter = { ...baseCollection?.filter, search };
+    const searchContent = search.startsWith("deeper:")
+        ? search.substring("deeper:".length)
+        : isFacetedSearchString(search)
+        ? search
+        : 'title:"' + search + '"';
+    const filter = { ...baseCollection?.filter, search: searchContent };
     let label = l10n.formatMessage(
         {
             id: "search.booksMatching",
@@ -435,7 +445,7 @@ export function makeCollectionForSearch(
     return result;
 }
 
-export function makeCollectionForPHash(
+export function makeVirtualCollectionForPHash(
     templateCollection: ICollection,
     phash: string
 ): ICollection {
@@ -509,7 +519,7 @@ function makeTopicCollectionsForCards(): ICollection[] {
 /* We're thinking (but not certain) that we just want to treat keyword lookups as searches (which will of course
     find books that have this explicit keyword *
 
-    export function makeCollectionForKeyword(
+    export function makeVirtualCollectionForKeyword(
     templateCollection: ICollection,
     keyword: string,
     baseCollection?: ICollection

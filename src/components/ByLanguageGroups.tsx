@@ -44,7 +44,45 @@ export const ByLanguageGroups: React.FunctionComponent<{
     // Sometimes it's nice to drop English, in particular.
     excludeLanguages?: string[];
 }> = (props) => {
-    const filter: IFilter = props.collection.filter!;
+    const {
+        waiting,
+        languagesWithTheseBooks,
+        rows,
+    } = useGetLanguagesWithTheseBooks(
+        props.collection,
+        props.reportBooksAndLanguages,
+        props.excludeLanguages
+    );
+
+    if (waiting) {
+        return <React.Fragment />;
+    }
+    return (
+        <React.Fragment>
+            {languagesWithTheseBooks.map((l) => {
+                const books = rows.get(l.isoCode)!;
+                return (
+                    <BookGroup
+                        key={l.isoCode}
+                        title={`${props.titlePrefix} ${
+                            getDisplayNamesForLanguage(l).combined
+                        }`}
+                        predeterminedBooks={books}
+                        contextLangIso={l.isoCode}
+                        rows={999}
+                    />
+                );
+            })}
+        </React.Fragment>
+    );
+};
+
+export function useGetLanguagesWithTheseBooks(
+    collection: ICollection,
+    reportBooksAndLanguages?: (bookCount: number, langCount: number) => void,
+    excludeLanguages?: string[]
+) {
+    const filter: IFilter = collection.filter!;
     const searchResults = useSearchBooks(
         {
             include: "langPointers",
@@ -53,7 +91,7 @@ export const ByLanguageGroups: React.FunctionComponent<{
         filter
         // NO! We don't want to sort on this top level.
         // We need to wait  until we have divided into language groups since each group will have its own title language.
-        // props.collection.orderingScheme
+        // collection.orderingScheme
     );
     const l10n = useIntl();
     const unknown = l10n.formatMessage({
@@ -64,7 +102,6 @@ export const ByLanguageGroups: React.FunctionComponent<{
     //    const rows = useRef<Map<string, { phash: string; book: IBasicBookInfo }>>(
     const [rows, setRows] = useState(new Map<string, IBasicBookInfo[]>());
     const arbitraryMaxLangsPerBook = 20;
-    const reportBooksAndLanguages = props.reportBooksAndLanguages; // to avoid useEffect depending on props.
     const waiting = searchResults.waiting;
     const needLangCheck =
         filter.feature && featureIsLanguageDependent(filter.feature);
@@ -136,7 +173,7 @@ export const ByLanguageGroups: React.FunctionComponent<{
             });
             sortBooksWithinEachLanguageRow(
                 mapOfLangToBookArray,
-                props.collection.orderingScheme
+                collection.orderingScheme
             );
             setRows(mapOfLangToBookArray);
         }
@@ -161,8 +198,8 @@ export const ByLanguageGroups: React.FunctionComponent<{
     const languages = useMemo(() => {
         const result = languagesByBookCount
             .filter((l) => {
-                if (props.excludeLanguages) {
-                    return !props.excludeLanguages.includes(l.isoCode);
+                if (excludeLanguages) {
+                    return !excludeLanguages.includes(l.isoCode);
                 } else return true;
             })
             .sort((x, y) =>
@@ -177,34 +214,16 @@ export const ByLanguageGroups: React.FunctionComponent<{
             objectId: "",
         });
         return result;
-    }, [languagesByBookCount, props.excludeLanguages, unknown]);
-    const languagesWithTheseBooks = useMemo(
-        () => languages.filter((l) => rows.get(l.isoCode)),
-        [languages, rows]
-    );
-
-    if (waiting) {
-        return <React.Fragment />;
-    }
-    return (
-        <React.Fragment>
-            {languagesWithTheseBooks.map((l) => {
-                const books = rows.get(l.isoCode)!;
-                return (
-                    <BookGroup
-                        key={l.isoCode}
-                        title={`${props.titlePrefix} ${
-                            getDisplayNamesForLanguage(l).combined
-                        }`}
-                        predeterminedBooks={books}
-                        contextLangIso={l.isoCode}
-                        rows={999}
-                    />
-                );
-            })}
-        </React.Fragment>
-    );
-};
+    }, [languagesByBookCount, excludeLanguages, unknown]);
+    return {
+        waiting,
+        languagesWithTheseBooks: useMemo(
+            () => languages.filter((l) => rows.get(l.isoCode)),
+            [languages, rows]
+        ),
+        rows,
+    };
+}
 
 function ComparisonKey(book: IBasicBookInfo): string | undefined {
     const phash = book.phashOfFirstContentImage;

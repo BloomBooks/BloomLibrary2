@@ -24,7 +24,10 @@ export const ByTopicsGroups: React.FunctionComponent<{
             {kTopicList.map((topic) => (
                 <BookCardGroup
                     key={topic}
-                    collection={makeCollectionForTopic(props.collection, topic)}
+                    collection={makeVirtualCollectionOfBooksInCollectionThatHaveTopic(
+                        props.collection,
+                        topic
+                    )}
                     contextLangIso={contextLangIso}
                 />
             ))}
@@ -32,7 +35,7 @@ export const ByTopicsGroups: React.FunctionComponent<{
             {/* Show books that don't have a topic */}
             <BookCardGroup
                 rows={99}
-                collection={makeCollectionForTopic(
+                collection={makeVirtualCollectionOfBooksInCollectionThatHaveTopic(
                     props.collection,
                     kNameOfNoTopicCollection
                 )}
@@ -42,7 +45,7 @@ export const ByTopicsGroups: React.FunctionComponent<{
     );
 };
 
-export function makeCollectionForTopic(
+export function makeVirtualCollectionOfBooksInCollectionThatHaveTopic(
     baseCollection: ICollection,
     topic: string
 ): ICollection {

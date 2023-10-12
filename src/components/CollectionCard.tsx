@@ -24,6 +24,8 @@ import { ICardSpec, useBaseCardSpec } from "./CardGroup";
 import { commonUI } from "../theme";
 import TruncateMarkup from "react-truncate-markup";
 
+// Different ways we can layout a collection card.
+// (with or without the book count, with or without the icon)
 export enum CollectionCardLayout {
     short,
     shortWithBookCount,

@@ -122,7 +122,7 @@ export const CollectionPage: React.FunctionComponent<{
                     // we want an empty string until we have a real languages-and-books count,
                     // so we don't waste a query (and possibly get flicker) trying to compute
                     // the filter-based count.
-                    collection.layout === "by-language"
+                    collection.layout.startsWith("by-language")
                         ? booksAndLanguages
                         : undefined
                 }
