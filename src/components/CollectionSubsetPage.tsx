@@ -214,6 +214,10 @@ export const CollectionSubsetPage: React.FunctionComponent<{
     ) {
         showAll = true;
         maxRows = 1000;
+    } else if (subcollection.layout === "by-topic") {
+        subList = <ByTopicsGroups collection={subcollection} />;
+    } else if (subcollection.layout === "by-level") {
+        subList = <ByLevelGroups collection={subcollection} />;
     } else if ((props.collectionName + props.filters).indexOf("level:") >= 0) {
         subList = <ByTopicsGroups collection={subcollection} />;
         // If we had previously gone down a topic trail, then just show them all.

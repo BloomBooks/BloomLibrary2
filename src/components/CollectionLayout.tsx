@@ -9,6 +9,8 @@ import { ByLanguageCards } from "./ByLanguageCards";
 
 // Different ways we can lay out a collection of books on the page.
 // Examples: by topic, by level, by language
+// See diagram: https://www.figma.com/file/YfoGLPQkGC1chF6rmuyxdokL/BloomLibrary.org?type=design&node-id=4329%3A10&mode=design&t=4dgnP76Uiwhpdhqk-1
+
 export const CollectionLayout: React.FunctionComponent<{
     collection: ICollection;
     setBooksAndLanguagesCallback?: (value: string) => void;
@@ -80,6 +82,8 @@ export const CollectionLayout: React.FunctionComponent<{
             // Show a card for each language in the collection.
             // Each language card will navigate to a virtual subcollection filtered by language.
             case "by-language-cards":
+            case "by-language-cards/by-topic":
+            case "by-language-cards/by-level":
                 booksComponent = (
                     <ByLanguageCards
                         collection={props.collection}
