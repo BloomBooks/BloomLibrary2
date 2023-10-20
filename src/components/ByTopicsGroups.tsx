@@ -28,7 +28,7 @@ export const ByTopicsGroups: React.FunctionComponent<{
                         props.collection,
                         topic
                     )}
-                    contextLangIso={contextLangIso}
+                    contextLangTag={contextLangIso}
                 />
             ))}
 
@@ -39,7 +39,7 @@ export const ByTopicsGroups: React.FunctionComponent<{
                     props.collection,
                     kNameOfNoTopicCollection
                 )}
-                contextLangIso={contextLangIso}
+                contextLangTag={contextLangIso}
             />
         </React.Fragment>
     );

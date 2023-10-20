@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import LazyLoad, {
     forceCheck as forceCheckLazyLoadComponents,
 } from "react-lazyload";
@@ -27,6 +27,9 @@ import { AllCard } from "./AllCard";
 import { CollectionLayout } from "./CollectionLayout";
 import { ListOfBookGroups } from "./ListOfBookGroups";
 import { CollectionInfoWidget } from "./CollectionInfoWidget";
+import { getFilterDuplicateBookFilterFromName } from "../model/DuplicateBookFilter";
+import { InfoIconWithTooltip } from "./InfoIconWithTooltip";
+import { useShowTroubleshootingStuff } from "../Utilities";
 
 interface IProps {
     title?: string;
@@ -37,7 +40,7 @@ interface IProps {
     rows?: number;
     skip?: number; // of items in collection (used for paging through with More)
 
-    contextLangIso?: string;
+    contextLangTag?: string;
 
     useCollectionLayoutSettingForBookCards?: boolean;
 
@@ -87,6 +90,8 @@ export const BookCardGroup: React.FunctionComponent<IProps> = (props) => {
     );
 };
 const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
+    const [showTroubleshootingStuff] = useShowTroubleshootingStuff();
+
     // we have either a horizontally-scrolling list of 20, or several rows
     // of 5 each
     const maxCardsToRetrieve = props.rows ? props.rows * 5 : 20;
@@ -103,7 +108,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
         },
         collectionFilter,
         props.collection.orderingScheme,
-        props.contextLangIso
+        props.contextLangTag
     );
 
     // We make life hard on <Lazy> components by thinking maybe we'll show, for example, a row of Level 1 books at
@@ -133,6 +138,19 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
     if (props.collection.secondaryFilter) {
         books = books.filter((b) => props.collection.secondaryFilter!(b));
     }
+
+    const bookCountAfterSecondaryFilter = books.length;
+    if (props.collection.duplicateBookFilterName) {
+        const fn = getFilterDuplicateBookFilterFromName(
+            props.collection.duplicateBookFilterName
+        );
+        books = fn(
+            books,
+            props.contextLangTag || props.collection.contextLangTag,
+            showTroubleshootingStuff
+        );
+    }
+    const bookCountAfterDuplicateRemoval = books.length;
 
     // As of 11/2021, this skip stuff is not really being used. In theory it would all still work if
     // anything initiated the skipping. But our more cards now just loads the whole (filtered) collection.
@@ -175,7 +193,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
                                 laziness="never"
                                 key={item.baseUrl}
                                 basicBookInfo={item}
-                                contextLangIso={props.contextLangIso}
+                                contextLangIso={props.contextLangTag}
                             />
                         );
                     }
@@ -191,7 +209,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
                 laziness="self"
                 key={b.baseUrl}
                 basicBookInfo={b}
-                contextLangIso={props.contextLangIso}
+                contextLangIso={props.contextLangTag}
                 css={css`
                     margin-bottom: ${verticalSpacing}px;
                 `}
@@ -276,6 +294,9 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
         </div>
     );
 
+    const showCondensedBookCountNotice =
+        props.collection.duplicateBookFilterName &&
+        bookCountAfterDuplicateRemoval < bookCountAfterSecondaryFilter;
     const responsiveHeaderAndCount = (
         <h1
             css={css`
@@ -291,7 +312,14 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
                         margin-left: 1em;
                     `}
                 >
-                    {countToShow}
+                    <Fragment>
+                        {countToShow}{" "}
+                        {showCondensedBookCountNotice && (
+                            <InfoIconWithTooltip>
+                                {`We condensed this list down from from ${search.totalMatchingRecords} books using "${props.collection.duplicateBookFilterName}".`}
+                            </InfoIconWithTooltip>
+                        )}
+                    </Fragment>
                 </span>
             )}
             <CollectionInfoWidget collection={props.collection} />

@@ -5,6 +5,7 @@ import { getContextLangIsoFromLanguageSegment } from "./Routes";
 import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 import { ICollection } from "../model/ContentInterfaces";
 import { BookCardGroup } from "./BookCardGroup";
+import { DuplicateBookFilter } from "../model/DuplicateBookFilter";
 
 // For each level (whether set by a human or just computed), show a row of books for that level.
 export const ByLevelGroups: React.FunctionComponent<{
@@ -29,9 +30,10 @@ export const ByLevelGroups: React.FunctionComponent<{
                     collection={makeVirtualCollectionOfBooksInCollectionThatHaveLevel(
                         props.collection,
                         level,
-                        l10n
+                        l10n,
+                        contextLangIso
                     )}
-                    contextLangIso={contextLangIso}
+                    contextLangTag={contextLangIso}
                 />
             ))}
 
@@ -50,7 +52,7 @@ export const ByLevelGroups: React.FunctionComponent<{
                     "empty",
                     l10n
                 )}
-                contextLangIso={contextLangIso}
+                contextLangTag={contextLangIso}
             />
         </React.Fragment>
     );
@@ -59,7 +61,8 @@ export const ByLevelGroups: React.FunctionComponent<{
 export function makeVirtualCollectionOfBooksInCollectionThatHaveLevel(
     baseCollection: ICollection,
     level: string,
-    l10n: IntlShape
+    l10n: IntlShape,
+    contextLangTag?: string
 ): ICollection {
     let search = "level:" + level;
     if (baseCollection.filter?.search) {
@@ -96,6 +99,9 @@ export function makeVirtualCollectionOfBooksInCollectionThatHaveLevel(
         title: label,
         urlKey,
         layout: "by-topic",
+        contextLangTag,
+        duplicateBookFilterName:
+            DuplicateBookFilter.PreferBooksWhereL1MatchesContextLanguage,
     };
     if (level !== "empty") {
         result.secondaryFilter = (bookInfo) =>

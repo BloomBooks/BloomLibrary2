@@ -14,6 +14,7 @@ import {
 import { useIntl } from "react-intl";
 import { BookOrderingScheme, ICollection } from "../model/ContentInterfaces";
 import { doExpensiveClientSideSortingIfNeeded } from "../connection/sorting";
+import { DefaultBookComparisonKeyIgnoringLanguages } from "../model/DuplicateBookFilter";
 
 /* ----------------------------------------------------------------------------------------------------------------
 *   Future Enhancement
@@ -116,7 +117,7 @@ export function useGetLanguagesWithTheseBooks(
             // eslint-disable-next-line no-loop-func
             searchResults.books.forEach((book) => {
                 let foundOneLanguage = false;
-                const key = ComparisonKey(book);
+                const key = DefaultBookComparisonKeyIgnoringLanguages(book);
                 const addBookToLang = (langCode: string) => {
                     if (!mapOfLangToBookArray.get(langCode)) {
                         mapOfLangToBookArray.set(langCode, []);
@@ -126,7 +127,9 @@ export function useGetLanguagesWithTheseBooks(
                         key === undefined || // if we can't come up with a key, just add this book to the row
                         !booksInLang.find(
                             // do we already have a similar book for this row?
-                            (book) => key === ComparisonKey(book)
+                            (book) =>
+                                key ===
+                                DefaultBookComparisonKeyIgnoringLanguages(book)
                         )
                     ) {
                         // shallow copy this so that it's easier to debug issues related to the sortKey we may add to each version of the book depending on the language of the row (if the selected ordering scheme sorts by title).
@@ -223,31 +226,6 @@ export function useGetLanguagesWithTheseBooks(
         ),
         rows,
     };
-}
-
-function ComparisonKey(book: IBasicBookInfo): string | undefined {
-    const phash = book.phashOfFirstContentImage;
-    if (!phash) {
-        return undefined; // undefined indicates that we can't reliably do a comparison
-    }
-    const featureHash = HashStringArray(book.features.sort());
-    return phash + book.pageCount + featureHash + book.edition;
-}
-
-// based on https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript
-function HashStringArray(arrayOfStrings: string[]): string {
-    let hash = 0;
-    for (const element of arrayOfStrings) {
-        for (let i = 0; i < element.length; i++) {
-            const chr = element.charCodeAt(i);
-            // eslint-disable-next-line no-bitwise
-            hash = (hash << 5) - hash + chr;
-            // eslint-disable-next-line no-bitwise
-            hash |= 0; // Convert to 32bit integer
-        }
-    }
-    // The minimal result will be "0", if the array is empty or only contains empty strings.
-    return hash.toString(10);
 }
 
 function sortBooksWithinEachLanguageRow(

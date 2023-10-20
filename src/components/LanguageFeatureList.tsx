@@ -14,6 +14,7 @@ import { useTheme } from "@material-ui/core";
 import TruncateMarkup from "react-truncate-markup";
 import { getDisplayNamesForLanguage } from "../model/Language";
 import { commonUI } from "../theme";
+import { useShowTroubleshootingStuff } from "../Utilities";
 
 interface IProps {
     basicBookInfo: IBasicBookInfo;
@@ -27,6 +28,7 @@ interface IProps {
 // and showing some indication that there are more (ideally, a count of how many more).
 export const LanguageFeatureList: React.FunctionComponent<IProps> = (props) => {
     const theme = useTheme();
+    const [showTroubleshootingStuff] = useShowTroubleshootingStuff();
 
     // Figure out what to show in the language list area.
     // It's a mix of simple text nodes and possibly feature icons.
@@ -35,11 +37,17 @@ export const LanguageFeatureList: React.FunctionComponent<IProps> = (props) => {
         const languageElements: any[] = [];
         for (const language of uniqueLanguages) {
             const languageDisplayNames = getDisplayNamesForLanguage(language);
-            languageElements.push(
-                showOneNamePerLanguage
-                    ? languageDisplayNames.primary
-                    : languageDisplayNames.combined
-            );
+            const l = showOneNamePerLanguage
+                ? languageDisplayNames.primary
+                : languageDisplayNames.combined;
+            if (
+                showTroubleshootingStuff &&
+                props.basicBookInfo.lang1Tag === language.isoCode
+            ) {
+                languageElements.push(<b>{l}</b>); // for evaluating duplication removal
+            } else {
+                languageElements.push(l);
+            }
 
             // Looking for features that the book has with this language code attached,
             // such as talkingBook:en

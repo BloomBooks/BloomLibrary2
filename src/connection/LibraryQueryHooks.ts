@@ -286,7 +286,10 @@ export function useGetPhashMatchingRelatedBooks(
 
 export const bookDetailFields =
     "title,allTitles,baseUrl,bookOrder,inCirculation,draft,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
-    "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits," +
+    "tags,pageCount,phashOfFirstContentImage," +
+    // show is in here in order to let us figure out L1, which is, sadly, not directly listed in Parse nor determinable from the langPointers
+    "show," +
+    "credits,country,features,internetLimits," +
     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,suitableForMakingShells,lastUploaded," +
     "harvestStartedAt,publisher,originalPublisher,keywords,bookInstanceId,brandingProjectName,edition,rebrand,bloomPUBVersion";
 export function useGetBookDetail(bookId: string): Book | undefined | null {
@@ -359,6 +362,7 @@ export function useGetBasicBookInfos(
             const bookInfo: IBasicBookInfo = { ...rawInfo };
             // Here langPointers is not just the "pointers". It's the actual language objects.
             bookInfo.languages = rawInfo.langPointers;
+            bookInfo.lang1Tag = bookInfo.show!.pdf.langTag;
             return bookInfo;
         });
     }
@@ -683,10 +687,16 @@ export interface IBasicBookInfo {
     draft?: boolean;
     inCirculation?: boolean;
     score?: number;
+    lang1Tag?: string;
+    show?: { pdf: { langTag: string } }; // there is more, but this is what we're using to get at l1 at the moment
+
+    // wouldBeRemoved is used for the troubleshooting view where we display semi-transparent version
+    // of the cards that would be removed, if we weren't in troubleshooting mode.
+    wouldBeRemoved?: boolean;
 }
 
 const kFieldsOfIBasicBookInfo =
-    "title,baseUrl,objectId,langPointers,tags,features,lastUploaded,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft,rebrand,inCirculation";
+    "title,baseUrl,objectId,langPointers,tags,features,lastUploaded,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft,rebrand,inCirculation,show";
 
 // uses the human "level:" tag if present, otherwise falls back to computedLevel
 export function getBestLevelStringOrEmpty(basicBookInfo: IBasicBookInfo) {
@@ -784,6 +794,7 @@ export function useSearchBooks(
         const books = simplifiedResultStatus.books.map((rawFromREST: any) => {
             const b: IBasicBookInfo = { ...rawFromREST };
             b.languages = rawFromREST.langPointers;
+            b.lang1Tag = b.show?.pdf?.langTag;
             Book.sanitizeFeaturesArray(b.features);
             return b;
         });

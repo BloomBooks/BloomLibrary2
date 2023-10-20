@@ -83,6 +83,19 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
         top: 4px;
     `;
 
+    const troubleShootingStyles =
+        showTroubleshootingStuff && props.basicBookInfo.wouldBeRemoved
+            ? `
+                  opacity: 0.3;
+                  &:before {
+                      content: "Duplicate";
+                      position: absolute;
+                      background-color: red;
+                      color: white;
+                  }
+              `
+            : css``;
+
     const card = (
         <CheapCard
             className={props.className}
@@ -90,6 +103,8 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                 height: ${cardSpec.cardHeightPx}px;
                 width: ${cardSpec.cardWidthPx}px;
                 line-height: normal; // counteract css reset
+
+                ${troubleShootingStyles}
             `}
             key={props.basicBookInfo.baseUrl}
             target={`book/${props.basicBookInfo.objectId}${langParam}`}
