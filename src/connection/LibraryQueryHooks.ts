@@ -933,6 +933,7 @@ const facets = [
     "brandingProjectName:",
     "branding:",
     "rebrand:",
+    "bookInstanceId:",
 ];
 
 export function isFacetedSearchString(searchString: string): boolean {
