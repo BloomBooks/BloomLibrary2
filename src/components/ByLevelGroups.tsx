@@ -33,7 +33,6 @@ export const ByLevelGroups: React.FunctionComponent<{
                         l10n,
                         contextLangIso
                     )}
-                    contextLangTag={contextLangIso}
                 />
             ))}
 
@@ -50,9 +49,9 @@ export const ByLevelGroups: React.FunctionComponent<{
                 collection={makeVirtualCollectionOfBooksInCollectionThatHaveLevel(
                     props.collection,
                     "empty",
-                    l10n
+                    l10n,
+                    contextLangIso
                 )}
-                contextLangTag={contextLangIso}
             />
         </React.Fragment>
     );

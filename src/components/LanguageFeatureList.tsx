@@ -18,6 +18,7 @@ import { useShowTroubleshootingStuff } from "../Utilities";
 
 interface IProps {
     basicBookInfo: IBasicBookInfo;
+    contextLangTag?: string;
 }
 // Displays a list of the languages of the book. For each language it shows its autonym,
 // and if that is different from its English name it shows the English name, too.
@@ -33,6 +34,16 @@ export const LanguageFeatureList: React.FunctionComponent<IProps> = (props) => {
     // Figure out what to show in the language list area.
     // It's a mix of simple text nodes and possibly feature icons.
     const uniqueLanguages = getUniqueLanguages(props.basicBookInfo.languages);
+    // if contextLangTag is present, put it first in the list.
+    if (props.contextLangTag) {
+        const contextLang = uniqueLanguages.filter(
+            (l) => l.isoCode === props.contextLangTag
+        )[0];
+        if (contextLang) {
+            uniqueLanguages.splice(uniqueLanguages.indexOf(contextLang), 1);
+            uniqueLanguages.unshift(contextLang);
+        }
+    }
     function getLanguageElements(showOneNamePerLanguage: boolean) {
         const languageElements: any[] = [];
         for (const language of uniqueLanguages) {

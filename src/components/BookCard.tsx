@@ -203,7 +203,10 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                     />
                 )}
             </div>
-            <LanguageFeatureList basicBookInfo={props.basicBookInfo} />
+            <LanguageFeatureList
+                basicBookInfo={props.basicBookInfo}
+                contextLangTag={props.contextLangIso}
+            />
             {props.basicBookInfo.draft && <DraftIcon css={overlayIconCss} />}
             {props.basicBookInfo.inCirculation === false && (
                 <WarningIcon css={overlayIconCss} />

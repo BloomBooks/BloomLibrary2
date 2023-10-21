@@ -40,8 +40,6 @@ interface IProps {
     rows?: number;
     skip?: number; // of items in collection (used for paging through with More)
 
-    contextLangTag?: string;
-
     useCollectionLayoutSettingForBookCards?: boolean;
 
     hideHeaderAndCount?: boolean;
@@ -108,7 +106,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
         },
         collectionFilter,
         props.collection.orderingScheme,
-        props.contextLangTag
+        props.collection.contextLangTag
     );
 
     // We make life hard on <Lazy> components by thinking maybe we'll show, for example, a row of Level 1 books at
@@ -146,11 +144,22 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
         );
         books = fn(
             books,
-            props.contextLangTag || props.collection.contextLangTag,
+            props.collection.contextLangTag,
             showTroubleshootingStuff
         );
     }
     const bookCountAfterDuplicateRemoval = books.length;
+
+    // This is a compromise. The problem is, search.totalMatchingRecords is not accurate,
+    // because it ignores the effect of the secondary filter. So if we always show that, we can get
+    // weird-looking results like a list that says it contains two results and obviously only shows one.
+    // But, we can only apply the secondary filter & duplication filter to the books we actually retrieved.
+    // So, if we retrieved all of them, we correct the number; otherwise, we avoid confusion by showing no
+    // count rather than guessing at what the total might be.
+    let countToShow: number | undefined = undefined;
+    if (search.totalMatchingRecords < maxCardsToRetrieve) {
+        countToShow = books.length;
+    }
 
     // As of 11/2021, this skip stuff is not really being used. In theory it would all still work if
     // anything initiated the skipping. But our more cards now just loads the whole (filtered) collection.
@@ -193,7 +202,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
                                 laziness="never"
                                 key={item.baseUrl}
                                 basicBookInfo={item}
-                                contextLangIso={props.contextLangTag}
+                                contextLangIso={props.collection.contextLangTag}
                             />
                         );
                     }
@@ -209,7 +218,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
                 laziness="self"
                 key={b.baseUrl}
                 basicBookInfo={b}
-                contextLangIso={props.contextLangTag}
+                contextLangIso={props.collection.contextLangTag}
                 css={css`
                     margin-bottom: ${verticalSpacing}px;
                 `}
