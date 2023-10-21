@@ -51,18 +51,24 @@ export function PreferBooksWithL1MatchingFocusLanguage_DuplicateBookFilter(
     const booksToShow: IBasicBookInfo[] = [];
     for (const phash of phashToBooks.keys()) {
         const booksInBin = phashToBooks.get(phash)!;
+        if (booksInBin.length === 1) {
+            booksToShow.push(...booksInBin);
+            continue;
+        }
         const booksWithL1MatchingFocus = booksInBin.filter(
             (book) => book.lang1Tag === languageInFocus
         );
         if (booksWithL1MatchingFocus.length > 0)
             booksToShow.push(...booksWithL1MatchingFocus);
-        else
-            booksToShow.push(
-                // otherwise include them all.
-                ...booksInBin
-            );
+        else {
+            // none of the boos in the bin had L1 matching the focus language, but
+            // showing them all is annoying, (see COVID-19:english) so we'll just show the first one
+            // but mark it to show a stacked effect.
 
-        // Enhance: we could show less books by considering features such as Talking book, activities, etc.
+            // Enhance: instead of picking the 1st one, we could consider features such as Talking book, activities, etc.
+            booksInBin[0].showStacked = true;
+            booksToShow.push(booksInBin[0]);
+        }
 
         // Enhance: we could show more books by considering different paper sizes, with different features, etc.
     }
