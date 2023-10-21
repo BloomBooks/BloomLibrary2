@@ -37,7 +37,7 @@ export const LanguageFeatureList: React.FunctionComponent<IProps> = (props) => {
     // if contextLangTag is present, put it first in the list.
     if (props.contextLangTag) {
         const contextLang = uniqueLanguages.filter(
-            (l) => l.isoCode === props.contextLangTag
+            (language) => language.isoCode === props.contextLangTag
         )[0];
         if (contextLang) {
             uniqueLanguages.splice(uniqueLanguages.indexOf(contextLang), 1);
@@ -48,16 +48,16 @@ export const LanguageFeatureList: React.FunctionComponent<IProps> = (props) => {
         const languageElements: any[] = [];
         for (const language of uniqueLanguages) {
             const languageDisplayNames = getDisplayNamesForLanguage(language);
-            const l = showOneNamePerLanguage
+            const name = showOneNamePerLanguage
                 ? languageDisplayNames.primary
                 : languageDisplayNames.combined;
             if (
                 showTroubleshootingStuff &&
                 props.basicBookInfo.lang1Tag === language.isoCode
             ) {
-                languageElements.push(<b>{l}</b>); // for evaluating duplication removal
+                languageElements.push(<b>{name}</b>); // for evaluating duplication removal
             } else {
-                languageElements.push(l);
+                languageElements.push(name);
             }
 
             // Looking for features that the book has with this language code attached,

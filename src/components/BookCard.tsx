@@ -106,6 +106,7 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
 
                 ${troubleShootingStyles}
             `}
+            stacked={props.basicBookInfo.showStacked}
             key={props.basicBookInfo.baseUrl}
             target={`book/${props.basicBookInfo.objectId}${langParam}`}
             role="listitem"

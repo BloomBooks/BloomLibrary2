@@ -262,17 +262,6 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
             <React.Fragment></React.Fragment>
         );
 
-    // This is a compromise. The problem is, search.totalMatchingRecords is not accurate,
-    // because it ignores the effect of the secondary filter. So if we always show that, we can get
-    // weird-looking results like a list that says it contains two results and obviously only shows one.
-    // But, we can only apply the secondary filter to the books we actually retrieved.
-    // So, if we retrieved all of them, we correct the number; otherwise, the best we can do is to
-    // let it stand.
-    let countToShow = search.totalMatchingRecords;
-    if (countToShow < maxCardsToRetrieve) {
-        countToShow = books.length;
-    }
-
     // props.title, if provided, is already localized
     const label = props.title ?? getLocalizedCollectionLabel(props.collection);
 
@@ -323,9 +312,9 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
                 >
                     <Fragment>
                         {countToShow}{" "}
-                        {showCondensedBookCountNotice && (
+                        {countToShow && showCondensedBookCountNotice && (
                             <InfoIconWithTooltip>
-                                {`We condensed this list down from from ${search.totalMatchingRecords} books using "${props.collection.duplicateBookFilterName}".`}
+                                {`We condensed this list down from from ${bookCountAfterSecondaryFilter} books using "${props.collection.duplicateBookFilterName}".`}
                             </InfoIconWithTooltip>
                         )}
                     </Fragment>

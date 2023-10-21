@@ -693,6 +693,8 @@ export interface IBasicBookInfo {
     // wouldBeRemoved is used for the troubleshooting view where we display semi-transparent version
     // of the cards that would be removed, if we weren't in troubleshooting mode.
     wouldBeRemoved?: boolean;
+    // show the book as a stack of books
+    showStacked?: boolean;
 }
 
 const kFieldsOfIBasicBookInfo =
