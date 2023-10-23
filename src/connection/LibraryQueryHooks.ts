@@ -300,6 +300,11 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
         options: {
             headers: getConnection().headers,
             params: {
+                // Technically, we want to also add this to the where:
+                //   baseUrl: { $exists: true }
+                // But it probably isn't worth the (even minimal) less performant query.
+                // If someone explicitly goes to a page for a book which is still pending,
+                // they just get an error or a useless page.
                 where: { objectId: bookId },
                 keys: bookDetailFields,
                 // fluff up fields that reference other tables
@@ -1542,6 +1547,12 @@ export function constructParseBookQuery(
             params.where.$or.push(pbq.where);
         }
     }
+
+    // With the new (Oct 2023) upload system which use an API, uploading new books is a two-step process.
+    // While the book is first being uploaded, it has a blank baseUrl. Once the upload is complete, step 2
+    // fills in the baseUrl. We don't want to show any books which are in this pending status.
+    params.where.baseUrl = { $exists: true };
+
     return params;
 }
 
