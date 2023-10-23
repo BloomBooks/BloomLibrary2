@@ -13,6 +13,7 @@ import { getFilterForCollectionAndChildren } from "../model/Collections";
 import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 import { useGetLanguagesWithTheseBooks } from "./ByLanguageGroups";
 import { setBloomLibraryTitle } from "./Routes";
+import { DuplicateBookFilter } from "../model/DuplicateBookFilter";
 
 // Lays out a collection by displaying one language card per language in the collection.
 // When a card is clicked, a virtual collection is displayed which is the original collection
@@ -91,5 +92,12 @@ export function makeVirtualCollectionOfBooksInCollectionThatHaveLanguage(
         title: label,
         urlKey: baseCollection.urlKey + "/:language:" + languageCode,
         layout: layoutOfLanguagePage,
+
+        // This could be too harsh for a default. One can think up conditions where a book would get hidden.
+        // At the moment none seem compelling to me (JH) but I could be wrong or not thinking of the right scenario.
+        // In any case, this is designed to be added to contentful at some point instead of being hard coded.
+        duplicateBookFilterName:
+            DuplicateBookFilter.PreferBooksWhereL1MatchesContextLanguage,
+        contextLangTag: languageCode,
     };
 }

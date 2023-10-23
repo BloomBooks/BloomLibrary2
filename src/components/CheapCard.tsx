@@ -17,6 +17,7 @@ interface IProps extends React.HTMLProps<HTMLDivElement> {
     textColorOverride?: string;
     onMouseDown?: () => void;
     onMouseUp?: () => void;
+    stacked?: boolean;
 }
 
 // just a wrapper around the children you provide, made to look like a card and responsive to a click.
@@ -38,8 +39,10 @@ export const CheapCard: React.FunctionComponent<IProps> = (props) => {
                 background-color: white;
                 border-radius: 4px;
 
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12),
-                    0 1px 2px rgba(0, 0, 0, 0.24);
+                box-shadow: ${props.stacked
+                    ? " 0 1px 3px black, 3px 3px white, 5px 5px darkgray;"
+                    : "0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24); "};
+
                 @media (hover) {
                     // On IOS, if a hover effect is animated, it takes two clicks to activate the link.
                     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);

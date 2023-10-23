@@ -26,9 +26,9 @@ export const ByTopicsGroups: React.FunctionComponent<{
                     key={topic}
                     collection={makeVirtualCollectionOfBooksInCollectionThatHaveTopic(
                         props.collection,
-                        topic
+                        topic,
+                        contextLangIso
                     )}
-                    contextLangIso={contextLangIso}
                 />
             ))}
 
@@ -37,9 +37,9 @@ export const ByTopicsGroups: React.FunctionComponent<{
                 rows={99}
                 collection={makeVirtualCollectionOfBooksInCollectionThatHaveTopic(
                     props.collection,
-                    kNameOfNoTopicCollection
+                    kNameOfNoTopicCollection,
+                    contextLangIso
                 )}
-                contextLangIso={contextLangIso}
             />
         </React.Fragment>
     );
@@ -47,7 +47,8 @@ export const ByTopicsGroups: React.FunctionComponent<{
 
 export function makeVirtualCollectionOfBooksInCollectionThatHaveTopic(
     baseCollection: ICollection,
-    topic: string
+    topic: string,
+    contextLangIso?: string
 ): ICollection {
     const filter = { ...baseCollection.filter, topic };
     const label = `${getLocalizedCollectionLabel(
@@ -62,6 +63,7 @@ export function makeVirtualCollectionOfBooksInCollectionThatHaveTopic(
         label,
         title: label,
         urlKey,
+        contextLangIso,
     };
     return result;
 }

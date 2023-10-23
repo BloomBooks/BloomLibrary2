@@ -83,6 +83,19 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
         top: 4px;
     `;
 
+    const troubleShootingStyles =
+        showTroubleshootingStuff && props.basicBookInfo.wouldBeRemoved
+            ? `
+                  opacity: 0.3;
+                  &:before {
+                      content: "Duplicate";
+                      position: absolute;
+                      background-color: red;
+                      color: white;
+                  }
+              `
+            : css``;
+
     const card = (
         <CheapCard
             className={props.className}
@@ -90,7 +103,10 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                 height: ${cardSpec.cardHeightPx}px;
                 width: ${cardSpec.cardWidthPx}px;
                 line-height: normal; // counteract css reset
+
+                ${troubleShootingStyles}
             `}
+            stacked={props.basicBookInfo.showStacked}
             key={props.basicBookInfo.baseUrl}
             target={`book/${props.basicBookInfo.objectId}${langParam}`}
             role="listitem"
@@ -188,7 +204,10 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                     />
                 )}
             </div>
-            <LanguageFeatureList basicBookInfo={props.basicBookInfo} />
+            <LanguageFeatureList
+                basicBookInfo={props.basicBookInfo}
+                contextLangTag={props.contextLangIso}
+            />
             {props.basicBookInfo.draft && <DraftIcon css={overlayIconCss} />}
             {props.basicBookInfo.inCirculation === false && (
                 <WarningIcon css={overlayIconCss} />
