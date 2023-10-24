@@ -21,7 +21,7 @@ import {
     useSetBrowserTabTitle,
     getUrlForTarget,
     previousPathname,
-    getContextLangIsoFromUrlSearchParams,
+    getContextLangTagFromUrlSearchParams,
 } from "./Routes";
 import {
     sendPlayerClosingAnalytics,
@@ -53,7 +53,7 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
         canRotate: true,
         isLandscape: false,
     });
-    const contextLangIso = getContextLangIsoFromUrlSearchParams(
+    const contextLangIso = getContextLangTagFromUrlSearchParams(
         new URLSearchParams(location.search)
     );
     const fullScreenChangeHandler = () => {

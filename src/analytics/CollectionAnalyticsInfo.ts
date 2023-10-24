@@ -1,5 +1,5 @@
 import { ICollection } from "../model/ContentInterfaces";
-import { getContextLangIsoFromLanguageSegment } from "../components/Routes";
+import { getContextLangTagFromLanguageSegment } from "../components/Routes";
 
 interface ICollectionAnalyticsInfo {
     params: object;
@@ -29,7 +29,7 @@ export function getCollectionAnalyticsInfo(
     // enhance: may also want to look for segments starting with feature: if we implement that
 
     if (segments[0].startsWith("language:")) {
-        params.lang = getContextLangIsoFromLanguageSegment(
+        params.lang = getContextLangTagFromLanguageSegment(
             segments[0]
         ) as string;
     }

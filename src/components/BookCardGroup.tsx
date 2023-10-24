@@ -202,7 +202,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
                                 laziness="never"
                                 key={item.baseUrl}
                                 basicBookInfo={item}
-                                contextLangIso={props.collection.contextLangTag}
+                                contextLangTag={props.collection.contextLangTag}
                             />
                         );
                     }
@@ -218,7 +218,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
                 laziness="self"
                 key={b.baseUrl}
                 basicBookInfo={b}
-                contextLangIso={props.collection.contextLangTag}
+                contextLangTag={props.collection.contextLangTag}
                 css={css`
                     margin-bottom: ${verticalSpacing}px;
                 `}

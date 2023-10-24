@@ -22,7 +22,7 @@ export const ReportDialog: React.FunctionComponent<{
     book: Book;
     open: boolean; // dialog is displayed when rendered with this true
     close: () => void; // Should result in being re-rendered with open false
-    contextLangIso?: string; // if we know the user is working with books in a particular language, this tells which one.
+    contextLangTag?: string; // if we know the user is working with books in a particular language, this tells which one.
 }> = (props) => {
     const l10n = useIntl();
     const [reportContent, setReportContent] = useState("");
@@ -54,7 +54,7 @@ export const ReportDialog: React.FunctionComponent<{
                                 color: black;
                             `}
                         >
-                            {props.book.getBestTitle(props.contextLangIso)}
+                            {props.book.getBestTitle(props.contextLangTag)}
                         </h1>
                         {props.book.summary && (
                             <div>

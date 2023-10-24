@@ -13,7 +13,7 @@ import { ReportDialog } from "./ReportDialog";
 
 export const ReportButton: React.FunctionComponent<{
     book: Book;
-    contextLangIso?: string;
+    contextLangTag?: string;
 }> = (props) => {
     const [dialogOpen, setDialogOpen] = useState(false);
     return (
@@ -48,7 +48,7 @@ export const ReportButton: React.FunctionComponent<{
                 close={() => {
                     setDialogOpen(false);
                 }}
-                contextLangIso={props.contextLangIso}
+                contextLangTag={props.contextLangTag}
             />
         </React.Fragment>
     );

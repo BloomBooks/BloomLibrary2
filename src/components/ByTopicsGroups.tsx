@@ -1,7 +1,7 @@
 import React from "react";
 import { ICollection } from "../model/ContentInterfaces";
 import { BookCardGroup } from "./BookCardGroup";
-import { getContextLangIsoFromLanguageSegment } from "./Routes";
+import { getContextLangTagFromLanguageSegment } from "./Routes";
 import { kTopicList } from "../model/ClosedVocabularies";
 import { getTranslation } from "../localization/GetLocalizations";
 import { kNameOfNoTopicCollection } from "../connection/LibraryQueryHooks";
@@ -12,7 +12,7 @@ import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 export const ByTopicsGroups: React.FunctionComponent<{
     collection: ICollection;
 }> = (props) => {
-    const contextLangIso = getContextLangIsoFromLanguageSegment(
+    const contextLangTag = getContextLangTagFromLanguageSegment(
         props.collection.urlKey
     );
 
@@ -27,7 +27,7 @@ export const ByTopicsGroups: React.FunctionComponent<{
                     collection={makeVirtualCollectionOfBooksInCollectionThatHaveTopic(
                         props.collection,
                         topic,
-                        contextLangIso
+                        contextLangTag
                     )}
                 />
             ))}
@@ -38,7 +38,7 @@ export const ByTopicsGroups: React.FunctionComponent<{
                 collection={makeVirtualCollectionOfBooksInCollectionThatHaveTopic(
                     props.collection,
                     kNameOfNoTopicCollection,
-                    contextLangIso
+                    contextLangTag
                 )}
             />
         </React.Fragment>
@@ -48,7 +48,7 @@ export const ByTopicsGroups: React.FunctionComponent<{
 export function makeVirtualCollectionOfBooksInCollectionThatHaveTopic(
     baseCollection: ICollection,
     topic: string,
-    contextLangIso?: string
+    contextLangTag?: string
 ): ICollection {
     const filter = { ...baseCollection.filter, topic };
     const label = `${getLocalizedCollectionLabel(
@@ -63,7 +63,7 @@ export function makeVirtualCollectionOfBooksInCollectionThatHaveTopic(
         label,
         title: label,
         urlKey,
-        contextLangIso,
+        contextLangTag,
     };
     return result;
 }
