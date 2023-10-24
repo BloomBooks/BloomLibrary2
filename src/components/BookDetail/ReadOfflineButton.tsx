@@ -17,7 +17,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 interface IProps {
     book: Book;
     fullWidth?: boolean;
-    contextLangIso?: string;
+    contextLangTag?: string;
 }
 export const ReadOfflineButton: React.FunctionComponent<IProps> = (props) => {
     const l10n = useIntl();
@@ -35,7 +35,7 @@ export const ReadOfflineButton: React.FunctionComponent<IProps> = (props) => {
             onClick={() => {
                 const params = getBookAnalyticsInfo(
                     props.book,
-                    props.contextLangIso,
+                    props.contextLangTag,
                     "bloompub"
                 );
                 track("Download Book", params);

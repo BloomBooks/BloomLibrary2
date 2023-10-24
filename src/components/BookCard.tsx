@@ -38,7 +38,7 @@ interface IProps {
     // I don't think we use it any more.)
     // laziness self: otherwise (typically not in any swiper), handle laziness here by putting the content in a LazyLoad.
     laziness: "never" | "self" | "swiper";
-    contextLangIso?: string;
+    contextLangTag?: string;
 }
 
 export const smallCardWidth = 100;
@@ -59,7 +59,7 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
         getBestBookTitle(
             props.basicBookInfo.title,
             props.basicBookInfo.allTitles,
-            props.contextLangIso
+            props.contextLangTag
         ) || "";
     useEffect(() => {
         // This is just a delay so that Swiper can put a .swiper-lazy-loading class onto
@@ -69,8 +69,8 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
     }, []);
     const titlePadding = 3;
     // optional param
-    const langParam = props.contextLangIso
-        ? "?lang=" + props.contextLangIso
+    const langParam = props.contextLangTag
+        ? "?lang=" + props.contextLangTag
         : "";
 
     const [showTroubleshootingStuff] = useShowTroubleshootingStuff();
@@ -110,12 +110,6 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
             key={props.basicBookInfo.baseUrl}
             target={`book/${props.basicBookInfo.objectId}${langParam}`}
             role="listitem"
-            // onClick={() =>
-            //     router!.pushBook(
-            //         props.basicBookInfo.objectId,
-            //         props.contextLangIso
-            //     )
-            // }
         >
             <img
                 className={"swiper-lazy"}
@@ -206,7 +200,7 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
             </div>
             <LanguageFeatureList
                 basicBookInfo={props.basicBookInfo}
-                contextLangTag={props.contextLangIso}
+                contextLangTag={props.contextLangTag}
             />
             {props.basicBookInfo.draft && <DraftIcon css={overlayIconCss} />}
             {props.basicBookInfo.inCirculation === false && (

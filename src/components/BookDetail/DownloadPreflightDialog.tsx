@@ -19,7 +19,7 @@ interface IDownloadPreflightDialogProps {
     open: boolean; // dialog is displayed when rendered with this true
     close: (doDownload: boolean, dontShowDialogAgain: boolean) => void;
     book: Book;
-    contextLangIso?: string; // if we know the user is working with books in a particular language, this tells which one.
+    contextLangTag?: string; // if we know the user is working with books in a particular language, this tells which one.
 }
 
 export const DownloadPreflightDialog: React.FunctionComponent<IDownloadPreflightDialogProps> = (
@@ -51,7 +51,7 @@ export const DownloadPreflightDialog: React.FunctionComponent<IDownloadPreflight
                     values={{
                         bookTitle: (
                             <em>
-                                {props.book.getBestTitle(props.contextLangIso)}
+                                {props.book.getBestTitle(props.contextLangTag)}
                             </em>
                         ),
                         link: (linkText: string) => (

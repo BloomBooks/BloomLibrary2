@@ -1,7 +1,7 @@
 import React from "react";
 import { IntlShape, useIntl } from "react-intl";
 import { getBestLevelStringOrEmpty } from "../connection/LibraryQueryHooks";
-import { getContextLangIsoFromLanguageSegment } from "./Routes";
+import { getContextLangTagFromLanguageSegment } from "./Routes";
 import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 import { ICollection } from "../model/ContentInterfaces";
 import { BookCardGroup } from "./BookCardGroup";
@@ -12,7 +12,7 @@ export const ByLevelGroups: React.FunctionComponent<{
     collection: ICollection;
 }> = (props) => {
     const l10n = useIntl();
-    const contextLangIso = getContextLangIsoFromLanguageSegment(
+    const contextLangTag = getContextLangTagFromLanguageSegment(
         props.collection.urlKey
     );
     return (
@@ -31,7 +31,7 @@ export const ByLevelGroups: React.FunctionComponent<{
                         props.collection,
                         level,
                         l10n,
-                        contextLangIso
+                        contextLangTag
                     )}
                 />
             ))}
@@ -50,7 +50,7 @@ export const ByLevelGroups: React.FunctionComponent<{
                     props.collection,
                     "empty",
                     l10n,
-                    contextLangIso
+                    contextLangTag
                 )}
             />
         </React.Fragment>

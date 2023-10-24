@@ -69,7 +69,7 @@ export const ByLanguageGroups: React.FunctionComponent<{
                             getDisplayNamesForLanguage(l).combined
                         }`}
                         predeterminedBooks={books}
-                        contextLangIso={l.isoCode}
+                        contextLangTag={l.isoCode}
                         rows={999}
                     />
                 );

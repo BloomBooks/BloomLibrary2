@@ -18,7 +18,7 @@ import { useIsAppHosted } from "../appHosted/AppHostedUtils";
 interface IProps {
     book: Book;
     fullWidth?: boolean;
-    contextLangIso?: string;
+    contextLangTag?: string;
 }
 export const ReadButton: React.FunctionComponent<IProps> = (props) => {
     const l10n = useIntl();
@@ -80,8 +80,8 @@ export const ReadButton: React.FunctionComponent<IProps> = (props) => {
                             history.push(
                                 "/" +
                                     url +
-                                    (props.contextLangIso
-                                        ? "?lang=" + props.contextLangIso
+                                    (props.contextLangTag
+                                        ? "?lang=" + props.contextLangTag
                                         : "")
                             );
                         }
