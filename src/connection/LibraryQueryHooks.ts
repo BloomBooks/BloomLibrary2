@@ -1127,7 +1127,7 @@ function regex(value: string) {
     };
 }
 
-let reportedDerivativeProblem = false;
+let _reportedDerivativeProblem = false;
 
 export const kNameOfNoTopicCollection = "Other";
 
@@ -1529,6 +1529,11 @@ export function constructParseBookQuery(
             break;
     }
 
+    // With the new (Oct 2023) upload system which use an API, uploading new books is a two-step process.
+    // While the book is first being uploaded, it has a blank baseUrl. Once the upload is complete, step 2
+    // fills in the baseUrl. We don't want to show any books which are in this pending status.
+    params.where.baseUrl = { $exists: true };
+
     if (isAppHosted()) {
         params.where.hasBloomPub = true;
     }
@@ -1538,22 +1543,22 @@ export function constructParseBookQuery(
         params.where.$or = [];
         for (const child of f.anyOfThese) {
             const pbq = constructParseBookQuery({}, child, []) as any;
-            if (!child.inCirculation) {
-                delete pbq.where.inCirculation;
-            }
-            if (!child.draft) {
-                delete pbq.where.draft;
-            }
+            simplifyInnerQuery(pbq.where, child);
             params.where.$or.push(pbq.where);
         }
     }
 
-    // With the new (Oct 2023) upload system which use an API, uploading new books is a two-step process.
-    // While the book is first being uploaded, it has a blank baseUrl. Once the upload is complete, step 2
-    // fills in the baseUrl. We don't want to show any books which are in this pending status.
-    params.where.baseUrl = { $exists: true };
-
     return params;
+}
+
+function simplifyInnerQuery(where: any, innerQueryFilter: IFilter) {
+    if (!innerQueryFilter.inCirculation) {
+        delete where.inCirculation;
+    }
+    if (!innerQueryFilter.draft) {
+        delete where.draft;
+    }
+    delete where.baseUrl;
 }
 
 function configureQueryParamsForOrderingScheme(
@@ -1634,8 +1639,8 @@ function processDerivedFrom(
                 $ne: f.derivedFrom.brandingProjectName,
             },
         };
-    } else if (!reportedDerivativeProblem) {
-        reportedDerivativeProblem = true;
+    } else if (!_reportedDerivativeProblem) {
+        _reportedDerivativeProblem = true;
         alert(
             "derivatives collection may include items from original collection"
         );
@@ -1645,6 +1650,7 @@ function processDerivedFrom(
         f.derivedFrom,
         allTagsFromDatabase
     ) as any).where;
+    simplifyInnerQuery(innerWhere, f.derivedFrom);
     const bookLineage = {
         bookLineageArray: {
             $select: {
