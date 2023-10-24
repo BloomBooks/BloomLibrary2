@@ -16,10 +16,10 @@ import { getContextLangTagFromUrlSearchParams } from "../Routes";
 export const SharingButtons: React.FunctionComponent<{ book: Book }> = (
     props
 ) => {
-    const contextLangIso = getContextLangTagFromUrlSearchParams(
+    const contextLangTag = getContextLangTagFromUrlSearchParams(
         new URLSearchParams(useLocation().search)
     );
-    const bestTitle = props.book ? props.book.getBestTitle(contextLangIso) : "";
+    const bestTitle = props.book ? props.book.getBestTitle(contextLangTag) : "";
 
     // The previews will fail if the link is to localhost
     const location = window.location.href.replace(

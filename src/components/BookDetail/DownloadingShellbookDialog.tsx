@@ -87,8 +87,8 @@ export const DownloadingShellbookDialog: React.FunctionComponent<IDownloadingShe
     );
 };
 
-function downloadShellbook(book: Book, contextLangIso?: string) {
-    const params = getBookAnalyticsInfo(book, contextLangIso, "shell");
+function downloadShellbook(book: Book, contextLangTag?: string) {
+    const params = getBookAnalyticsInfo(book, contextLangTag, "shell");
     track("Download Book", params);
     followUrl(getArtifactUrl(book, ArtifactType.shellbook));
 }

@@ -50,10 +50,10 @@ const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     const id = props.id;
     const book = useGetBookDetail(id);
     const location = useLocation();
-    const contextLangIso = getContextLangTagFromUrlSearchParams(
+    const contextLangTag = getContextLangTagFromUrlSearchParams(
         new URLSearchParams(location.search)
     );
-    const bestTitle = book ? book.getBestTitle(contextLangIso) : "";
+    const bestTitle = book ? book.getBestTitle(contextLangTag) : "";
     useSetBrowserTabTitle(
         l10n.formatMessage(
             {
@@ -66,7 +66,7 @@ const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     const { collectionName } = splitPathname(location.pathname);
     useTrack(
         "Book Detail",
-        getBookAnalyticsInfo(book, contextLangIso, undefined, collectionName),
+        getBookAnalyticsInfo(book, contextLangTag, undefined, collectionName),
         !!book
     );
     if (book === undefined) {
@@ -89,7 +89,7 @@ const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
             <React.StrictMode>
                 <BookDetailInternal
                     book={book}
-                    contextLangTag={contextLangIso}
+                    contextLangTag={contextLangTag}
                 ></BookDetailInternal>
             </React.StrictMode>
         );

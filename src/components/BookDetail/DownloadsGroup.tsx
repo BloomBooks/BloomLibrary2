@@ -42,7 +42,7 @@ interface IArtifactUI {
 
 export const DownloadsGroup: React.FunctionComponent<{
     book: Book;
-    contextLangIso?: string;
+    contextLangTag?: string;
 }> = observer((props) => {
     const l10n = useIntl();
     const { bloomReaderAvailable, cantUseBloomD, mobile } = useContext(
@@ -252,7 +252,7 @@ export const DownloadsGroup: React.FunctionComponent<{
                                                                 );
                                                                 const params = getBookAnalyticsInfo(
                                                                     props.book,
-                                                                    props.contextLangIso,
+                                                                    props.contextLangTag,
                                                                     a.analyticsType
                                                                 );
                                                                 track(

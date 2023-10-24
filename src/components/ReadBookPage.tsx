@@ -53,7 +53,7 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
         canRotate: true,
         isLandscape: false,
     });
-    const contextLangIso = getContextLangTagFromUrlSearchParams(
+    const contextLangTag = getContextLangTagFromUrlSearchParams(
         new URLSearchParams(location.search)
     );
     const fullScreenChangeHandler = () => {
@@ -149,8 +149,8 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
                         // we want this arrow to give us a way into the Bloom site.
                         let whereToGo = `/book/${id}`;
                         // wish all this knowledge didn't have to be here
-                        if (contextLangIso) {
-                            whereToGo += `?lang=${contextLangIso}`;
+                        if (contextLangTag) {
+                            whereToGo += `?lang=${contextLangTag}`;
                         }
                         history.push("/" + getUrlForTarget(whereToGo));
                     } else if (r.messageType === "reportBookProperties") {
@@ -175,7 +175,7 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
             autoFullScreen,
             history,
             id,
-            contextLangIso,
+            contextLangTag,
             rotateParams.canRotate,
             rotateParams.isLandscape,
         ]
@@ -189,12 +189,12 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
     }, [handleMessageFromBloomPlayer]);
 
     const book = useGetBookDetail(id);
-    const bestTitle = book ? book.getBestTitle(contextLangIso) : "Play";
+    const bestTitle = book ? book.getBestTitle(contextLangTag) : "Play";
     useSetBrowserTabTitle(bestTitle);
 
     useTrack(
         "Download Book",
-        getBookAnalyticsInfo(book, contextLangIso, "read"),
+        getBookAnalyticsInfo(book, contextLangTag, "read"),
         !!book
     );
     const url = book ? getUrlOfHtmlOfDigitalVersion(book) : "working"; // url=working shows a loading icon
@@ -203,7 +203,7 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
     // TODO: this isn't working with react-router, but I don't know how RR even gets run inside of this iframe
     const bloomPlayerUrl = "/bloom-player/bloomplayer.htm";
 
-    const langParam = contextLangIso ? `&lang=${contextLangIso}` : "";
+    const langParam = contextLangTag ? `&lang=${contextLangTag}` : "";
 
     // This is an attempt to determine whether we came here directly from the detail view (of the same book).
     // If so, the user can easily get back there using the browser back button.
