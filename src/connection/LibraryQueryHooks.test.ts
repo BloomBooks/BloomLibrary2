@@ -122,7 +122,7 @@ beforeAll(async () => {
         // This appears to set the timeout for all tests globally,
         // but I don't see any way to set it for just a particular suite.
         // It's bizarre that we need this. With the previous setting of 20000 (20s!)
-        // 10 tests fail, both locally and on TC. Yet, when I increate the limit
+        // 10 tests fail, both locally and on TC. Yet, when I increase the limit
         // to 30s, not only do they all pass, but the whole suite runs in just over
         // TEN seconds. How can a 20s timeout not be sufficient for a test that
         // completes successfully in 10s??
@@ -146,6 +146,7 @@ beforeAll(async () => {
             ],
             copyright: "Copyright © 2014, Nicole and bookdash.org",
             publisher: "Unlikely Publisher",
+            baseUrl: "non-empty",
         });
         // This is there specifically to NOT be found by tag searches or the copyright search
         // It SHOULD be found by the uploader search, however.
@@ -159,6 +160,7 @@ beforeAll(async () => {
                 objectId: fredId,
             },
             tags: ["bookshelf:Enabling writers workshops"],
+            baseUrl: "non-empty",
         });
         // This one has the unlikely keyword but not the bookshelf tag.
         await createBook({
@@ -171,16 +173,17 @@ beforeAll(async () => {
             },
             publisher: "Unlikely Publisher",
             originalPublisher: "Unlikely Original Publisher",
+            baseUrl: "non-empty",
         });
     } catch (error) {
         console.log(JSON.stringify(error));
         throw error;
     }
-}, 60000); // This function can take a while to run, give it up to 20s
+}, 60000); // This function can take a while to run, give it up to 60s
 
 afterAll(async () => {
     await cleanup();
-}, 60000); // This function can take a while to run, give it up to 20s
+}, 60000); // This function can take a while to run, give it up to 60s
 
 it("retrieves a parse book using full-text search", async () => {
     try {
