@@ -457,14 +457,14 @@ function trimLeft(s: string, char: string) {
 // two different methods in different places. For now, at least I've brought them together in
 // one place and made the names explicit so the caller knows exactly what it's getting.
 
-export function getContextLangIsoFromLanguageSegment(urlKey: string) {
+export function getContextLangTagFromLanguageSegment(urlKey: string) {
     return urlKey.startsWith("language:")
         ? // we don't want anything after a slash as part of the isoCode
           urlKey.substring("language:".length).split("/")[0]
         : undefined;
 }
 
-export function getContextLangIsoFromUrlSearchParams(
+export function getContextLangTagFromUrlSearchParams(
     query: URLSearchParams
 ): string | undefined {
     const lang = query.get("lang");

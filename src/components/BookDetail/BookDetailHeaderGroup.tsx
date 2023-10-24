@@ -30,7 +30,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
     book: Book;
     // sometimes in the UI, we know what language the user is interested in,
     //so where possible we're going to preference that if this is a multilingual book
-    contextLangIso?: string;
+    contextLangTag?: string;
 }> = observer((props) => {
     const isEmbedded = useIsEmbedded();
     const { bloomDesktopAvailable, bloomReaderAvailable } = useContext(
@@ -133,7 +133,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                                 margin-bottom: 12px;
                             `}
                         >
-                            {props.book.getBestTitle(props.contextLangIso)}
+                            {props.book.getBestTitle(props.contextLangTag)}
                             {props.book.edition ? (
                                 <div
                                     css={css`
@@ -242,21 +242,21 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                         `}
                         book={props.book}
                         fullWidth={fullWidthButtons}
-                        contextLangIso={props.contextLangIso}
+                        contextLangTag={props.contextLangTag}
                     />
                 )}
                 {showReadOnLine && (
                     <ReadButton
                         book={props.book}
                         fullWidth={fullWidthButtons}
-                        contextLangIso={props.contextLangIso}
+                        contextLangTag={props.contextLangTag}
                     />
                 )}
                 {showTranslateButton && (
                     <DownloadToBloomButton
                         book={props.book}
                         fullWidth={fullWidthButtons}
-                        contextLangIso={props.contextLangIso}
+                        contextLangTag={props.contextLangTag}
                     />
                 )}
                 {showBloomReaderButton && (
@@ -264,7 +264,7 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                         <ReadOfflineButton
                             book={props.book}
                             fullWidth={fullWidthButtons}
-                            contextLangIso={props.contextLangIso}
+                            contextLangTag={props.contextLangTag}
                         />
                         <GetBloomReaderButton fullWidth={fullWidthButtons} />
                     </>
