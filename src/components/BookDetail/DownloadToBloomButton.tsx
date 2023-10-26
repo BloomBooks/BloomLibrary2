@@ -18,7 +18,7 @@ import { GetTemplateButton } from "./GetTemplateButton";
 
 interface ITranslateButtonProps {
     book: Book;
-    contextLangIso?: string; // if we know the user is working with books in a particular language, this tells which one.
+    contextLangTag?: string; // if we know the user is working with books in a particular language, this tells which one.
     fullWidth?: boolean;
 }
 
@@ -144,7 +144,7 @@ export const DownloadToBloomButton: React.FunctionComponent<ITranslateButtonProp
                         setDownloadingDialogOpen(true);
                     }
                 }}
-                contextLangIso={props.contextLangIso}
+                contextLangTag={props.contextLangTag}
             ></DownloadPreflightDialog>
             <DownloadingShellbookDialog
                 book={props.book}
@@ -152,7 +152,7 @@ export const DownloadToBloomButton: React.FunctionComponent<ITranslateButtonProp
                 close={() => {
                     setDownloadingDialogOpen(false);
                 }}
-                contextLangIso={props.contextLangIso}
+                contextLangTag={props.contextLangTag}
             ></DownloadingShellbookDialog>
         </React.Fragment>
     );

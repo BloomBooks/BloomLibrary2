@@ -11,15 +11,15 @@ import FacebookIcon from "@material-ui/icons/Facebook";
 import { IconButton } from "@material-ui/core";
 import { FormattedMessage } from "react-intl";
 import { useLocation } from "react-router-dom";
-import { getContextLangIsoFromUrlSearchParams } from "../Routes";
+import { getContextLangTagFromUrlSearchParams } from "../Routes";
 
 export const SharingButtons: React.FunctionComponent<{ book: Book }> = (
     props
 ) => {
-    const contextLangIso = getContextLangIsoFromUrlSearchParams(
+    const contextLangTag = getContextLangTagFromUrlSearchParams(
         new URLSearchParams(useLocation().search)
     );
-    const bestTitle = props.book ? props.book.getBestTitle(contextLangIso) : "";
+    const bestTitle = props.book ? props.book.getBestTitle(contextLangTag) : "";
 
     // The previews will fail if the link is to localhost
     const location = window.location.href.replace(

@@ -84,11 +84,14 @@ const theme = createTheme({
                 padding: 0,
             },
         },
-        // MuiTypography: {
-        //     h6: {
-        //         fontSize: "1rem"
-        //     }
-        // }
+        // make tooltip background solid white
+        MuiTooltip: {
+            tooltip: {
+                backgroundColor: "white",
+                color: "black",
+                border: "1px solid black",
+            },
+        },
     },
 });
 

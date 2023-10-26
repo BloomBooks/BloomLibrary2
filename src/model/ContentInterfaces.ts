@@ -65,6 +65,13 @@ export interface ICollection {
     // When the filter cannot be fully defined as simple json in a Contentful collection (interpreted by ParseServer).
     // E.g., we need to run code like getBestLevelStringOrEmpty() to get at the filter
     secondaryFilter?: (basicBookInfo: IBasicBookInfo) => boolean;
+    // Note that duplicateBookFilterName is also a (tertiary?) filter of sorts, but with a specific
+    // purpose.
+    duplicateBookFilterName?: string;
+    // The "context language" helps filters. If we know we're showing French books, then
+    // the duplicateBookFilter can use that to remove duplicates that were uploaded
+    // primarily for some other language.
+    contextLangTag?: string;
     sponsorshipImage?: IMedia;
     country?: string;
 }

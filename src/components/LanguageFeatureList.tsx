@@ -14,9 +14,11 @@ import { useTheme } from "@material-ui/core";
 import TruncateMarkup from "react-truncate-markup";
 import { getDisplayNamesForLanguage } from "../model/Language";
 import { commonUI } from "../theme";
+import { useShowTroubleshootingStuff } from "../Utilities";
 
 interface IProps {
     basicBookInfo: IBasicBookInfo;
+    contextLangTag?: string;
 }
 // Displays a list of the languages of the book. For each language it shows its autonym,
 // and if that is different from its English name it shows the English name, too.
@@ -27,19 +29,36 @@ interface IProps {
 // and showing some indication that there are more (ideally, a count of how many more).
 export const LanguageFeatureList: React.FunctionComponent<IProps> = (props) => {
     const theme = useTheme();
+    const [showTroubleshootingStuff] = useShowTroubleshootingStuff();
 
     // Figure out what to show in the language list area.
     // It's a mix of simple text nodes and possibly feature icons.
     const uniqueLanguages = getUniqueLanguages(props.basicBookInfo.languages);
+    // if contextLangTag is present, put it first in the list.
+    if (props.contextLangTag) {
+        const contextLang = uniqueLanguages.filter(
+            (language) => language.isoCode === props.contextLangTag
+        )[0];
+        if (contextLang) {
+            uniqueLanguages.splice(uniqueLanguages.indexOf(contextLang), 1);
+            uniqueLanguages.unshift(contextLang);
+        }
+    }
     function getLanguageElements(showOneNamePerLanguage: boolean) {
         const languageElements: any[] = [];
         for (const language of uniqueLanguages) {
             const languageDisplayNames = getDisplayNamesForLanguage(language);
-            languageElements.push(
-                showOneNamePerLanguage
-                    ? languageDisplayNames.primary
-                    : languageDisplayNames.combined
-            );
+            const name = showOneNamePerLanguage
+                ? languageDisplayNames.primary
+                : languageDisplayNames.combined;
+            if (
+                showTroubleshootingStuff &&
+                props.basicBookInfo.lang1Tag === language.isoCode
+            ) {
+                languageElements.push(<b>{name}</b>); // for evaluating duplication removal
+            } else {
+                languageElements.push(name);
+            }
 
             // Looking for features that the book has with this language code attached,
             // such as talkingBook:en

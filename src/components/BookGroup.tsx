@@ -1,3 +1,9 @@
+/* -----------------------
+
+This class is deprecated. We should be merging it into BookCardGroup.
+
+----------------------- */
+
 // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
 import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
@@ -28,7 +34,7 @@ interface IProps {
     // working well at least in our stories, but it is not used in the real website as of Sep 2022.
     rows?: number;
 
-    contextLangIso?: string;
+    contextLangTag?: string;
 
     // Either we should have this filter:
     filter?: IFilter; // becomes the "where" clause the query
@@ -114,7 +120,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
         },
         props.filter || { language: "not going to find me" }, /// REVIEW: what happens when this is intentionally undefined
         BookOrderingScheme.NewestCreationsFirst,
-        props.contextLangIso,
+        props.contextLangTag,
         !!props.predeterminedBooks // skip this if we already have books
     );
 
@@ -155,7 +161,7 @@ export const BookGroupInner: React.FunctionComponent<IProps> = (props) => {
             laziness={showInOneRow ? "swiper" : "self"}
             key={b.baseUrl}
             basicBookInfo={b}
-            contextLangIso={props.contextLangIso}
+            contextLangTag={props.contextLangTag}
         />
     ));
 

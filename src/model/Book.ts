@@ -572,13 +572,13 @@ export class Book {
 export function getBestBookTitle(
     defaultTitle: string,
     rawAllTitlesJson: string,
-    contextLangIso?: string
+    contextLangTag?: string
 ): string {
-    if (!contextLangIso) return defaultTitle;
+    if (!contextLangTag) return defaultTitle;
 
     // enhance: could we do this faster with just a regular expression?
     const map = parseAllTitles(rawAllTitlesJson);
-    return map.get(contextLangIso) || defaultTitle;
+    return map.get(contextLangTag) || defaultTitle;
 }
 
 function parseAllTitles(allTitlesString: string): Map<string, string> {

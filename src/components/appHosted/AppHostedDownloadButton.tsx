@@ -22,7 +22,7 @@ import { useCookies } from "react-cookie";
 export const AppHostedDownloadButton: React.FunctionComponent<{
     book: Book;
     fullWidth?: boolean;
-    contextLangIso?: string;
+    contextLangTag?: string;
     className?: string;
 }> = (props) => {
     const l10n = useIntl();
@@ -46,7 +46,7 @@ export const AppHostedDownloadButton: React.FunctionComponent<{
             onClick={() => {
                 const params = getBookAnalyticsInfo(
                     props.book,
-                    props.contextLangIso,
+                    props.contextLangTag,
                     "bloompub"
                 );
                 track("Download Book", params);

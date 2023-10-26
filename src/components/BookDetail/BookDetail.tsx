@@ -23,7 +23,7 @@ import { useTrack } from "../../analytics/Analytics";
 import {
     splitPathname,
     useSetBrowserTabTitle,
-    getContextLangIsoFromUrlSearchParams,
+    getContextLangTagFromUrlSearchParams,
 } from "../Routes";
 import { useLocation } from "react-router-dom";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
@@ -50,10 +50,10 @@ const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     const id = props.id;
     const book = useGetBookDetail(id);
     const location = useLocation();
-    const contextLangIso = getContextLangIsoFromUrlSearchParams(
+    const contextLangTag = getContextLangTagFromUrlSearchParams(
         new URLSearchParams(location.search)
     );
-    const bestTitle = book ? book.getBestTitle(contextLangIso) : "";
+    const bestTitle = book ? book.getBestTitle(contextLangTag) : "";
     useSetBrowserTabTitle(
         l10n.formatMessage(
             {
@@ -66,7 +66,7 @@ const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     const { collectionName } = splitPathname(location.pathname);
     useTrack(
         "Book Detail",
-        getBookAnalyticsInfo(book, contextLangIso, undefined, collectionName),
+        getBookAnalyticsInfo(book, contextLangTag, undefined, collectionName),
         !!book
     );
     if (book === undefined) {
@@ -89,7 +89,7 @@ const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
             <React.StrictMode>
                 <BookDetailInternal
                     book={book}
-                    contextLangIso={contextLangIso}
+                    contextLangTag={contextLangTag}
                 ></BookDetailInternal>
             </React.StrictMode>
         );
@@ -98,7 +98,7 @@ const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
 
 const BookDetailInternal: React.FunctionComponent<{
     book: Book;
-    contextLangIso?: string;
+    contextLangTag?: string;
 }> = observer((props) => {
     // const { bloomDesktopAvailable } = useContext(
     //     OSFeaturesContext
@@ -166,7 +166,7 @@ const BookDetailInternal: React.FunctionComponent<{
             >
                 <BookDetailHeaderGroup
                     book={props.book}
-                    contextLangIso={props.contextLangIso}
+                    contextLangTag={props.contextLangTag}
                 />
                 {props.book.inCirculation || (
                     <div
@@ -255,7 +255,7 @@ const BookDetailInternal: React.FunctionComponent<{
                                     <SharingButtons book={props.book} />
                                     <ReportButton
                                         book={props.book}
-                                        contextLangIso={props.contextLangIso}
+                                        contextLangTag={props.contextLangTag}
                                     />
                                     <DeleteButton book={props.book} />
                                 </div>

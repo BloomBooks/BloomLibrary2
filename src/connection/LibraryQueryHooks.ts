@@ -286,7 +286,10 @@ export function useGetPhashMatchingRelatedBooks(
 
 export const bookDetailFields =
     "title,allTitles,baseUrl,bookOrder,inCirculation,draft,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
-    "tags,pageCount,phashOfFirstContentImage,show,credits,country,features,internetLimits," +
+    "tags,pageCount,phashOfFirstContentImage," +
+    // show is in here in order to let us figure out L1, which is, sadly, not directly listed in Parse nor determinable from the langPointers
+    "show," +
+    "credits,country,features,internetLimits," +
     "librarianNote,uploader,langPointers,importedBookSourceUrl,downloadCount,suitableForMakingShells,lastUploaded," +
     "harvestStartedAt,publisher,originalPublisher,keywords,bookInstanceId,brandingProjectName,edition,rebrand,bloomPUBVersion";
 export function useGetBookDetail(bookId: string): Book | undefined | null {
@@ -297,6 +300,11 @@ export function useGetBookDetail(bookId: string): Book | undefined | null {
         options: {
             headers: getConnection().headers,
             params: {
+                // Technically, we want to also add this to the where:
+                //   baseUrl: { $exists: true }
+                // But it probably isn't worth the (even minimal) less performant query.
+                // If someone explicitly goes to a page for a book which is still pending,
+                // they just get an error or a useless page.
                 where: { objectId: bookId },
                 keys: bookDetailFields,
                 // fluff up fields that reference other tables
@@ -359,6 +367,7 @@ export function useGetBasicBookInfos(
             const bookInfo: IBasicBookInfo = { ...rawInfo };
             // Here langPointers is not just the "pointers". It's the actual language objects.
             bookInfo.languages = rawInfo.langPointers;
+            bookInfo.lang1Tag = bookInfo.show!.pdf.langTag;
             return bookInfo;
         });
     }
@@ -683,10 +692,18 @@ export interface IBasicBookInfo {
     draft?: boolean;
     inCirculation?: boolean;
     score?: number;
+    lang1Tag?: string;
+    show?: { pdf: { langTag: string } }; // there is more, but this is what we're using to get at l1 at the moment
+
+    // wouldBeRemoved is used for the troubleshooting view where we display semi-transparent version
+    // of the cards that would be removed, if we weren't in troubleshooting mode.
+    wouldBeRemoved?: boolean;
+    // show the book as a stack of books
+    showStacked?: boolean;
 }
 
 const kFieldsOfIBasicBookInfo =
-    "title,baseUrl,objectId,langPointers,tags,features,lastUploaded,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft,rebrand,inCirculation";
+    "title,baseUrl,objectId,langPointers,tags,features,lastUploaded,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft,rebrand,inCirculation,show";
 
 // uses the human "level:" tag if present, otherwise falls back to computedLevel
 export function getBestLevelStringOrEmpty(basicBookInfo: IBasicBookInfo) {
@@ -784,6 +801,7 @@ export function useSearchBooks(
         const books = simplifiedResultStatus.books.map((rawFromREST: any) => {
             const b: IBasicBookInfo = { ...rawFromREST };
             b.languages = rawFromREST.langPointers;
+            b.lang1Tag = b.show?.pdf?.langTag;
             Book.sanitizeFeaturesArray(b.features);
             return b;
         });
@@ -1109,7 +1127,7 @@ function regex(value: string) {
     };
 }
 
-let reportedDerivativeProblem = false;
+let _reportedDerivativeProblem = false;
 
 export const kNameOfNoTopicCollection = "Other";
 
@@ -1511,6 +1529,11 @@ export function constructParseBookQuery(
             break;
     }
 
+    // With the new (Oct 2023) upload system which use an API, uploading new books is a two-step process.
+    // While the book is first being uploaded, it has a blank baseUrl. Once the upload is complete, step 2
+    // fills in the baseUrl. We don't want to show any books which are in this pending status.
+    params.where.baseUrl = { $exists: true };
+
     if (isAppHosted()) {
         params.where.hasBloomPub = true;
     }
@@ -1520,16 +1543,22 @@ export function constructParseBookQuery(
         params.where.$or = [];
         for (const child of f.anyOfThese) {
             const pbq = constructParseBookQuery({}, child, []) as any;
-            if (!child.inCirculation) {
-                delete pbq.where.inCirculation;
-            }
-            if (!child.draft) {
-                delete pbq.where.draft;
-            }
+            simplifyInnerQuery(pbq.where, child);
             params.where.$or.push(pbq.where);
         }
     }
+
     return params;
+}
+
+function simplifyInnerQuery(where: any, innerQueryFilter: IFilter) {
+    if (!innerQueryFilter.inCirculation) {
+        delete where.inCirculation;
+    }
+    if (!innerQueryFilter.draft) {
+        delete where.draft;
+    }
+    delete where.baseUrl;
 }
 
 function configureQueryParamsForOrderingScheme(
@@ -1610,8 +1639,8 @@ function processDerivedFrom(
                 $ne: f.derivedFrom.brandingProjectName,
             },
         };
-    } else if (!reportedDerivativeProblem) {
-        reportedDerivativeProblem = true;
+    } else if (!_reportedDerivativeProblem) {
+        _reportedDerivativeProblem = true;
         alert(
             "derivatives collection may include items from original collection"
         );
@@ -1621,6 +1650,7 @@ function processDerivedFrom(
         f.derivedFrom,
         allTagsFromDatabase
     ) as any).where;
+    simplifyInnerQuery(innerWhere, f.derivedFrom);
     const bookLineage = {
         bookLineageArray: {
             $select: {

@@ -72,7 +72,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             title: "Languages",
             defaultVisible: true,
             getCellValue: (b: Book) =>
-                b.languages.map((l) => l.name).join(", "),
+                b.languages?.map((l) => l.name).join(", "),
             addToFilter: (filter: IFilter, value: string) => {
                 filter.language = value;
             },
