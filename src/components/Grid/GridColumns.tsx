@@ -275,6 +275,15 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                 filter.search += ` copyright:${value} `;
             },
         },
+        {
+            name: "brandingProjectName",
+            title: "Branding",
+            getCellValue: (b: Book) => b.brandingProjectName,
+            sortingEnabled: true,
+            addToFilter: (filter: IFilter, value: string) => {
+                filter.search += ` brandingProjectName:${value} `;
+            },
+        },
         { name: "pageCount", sortingEnabled: true },
         { name: "phashOfFirstContentImage", sortingEnabled: true },
         { name: "createdAt", sortingEnabled: true },
@@ -353,17 +362,15 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
     ];
 
     // generate the capitalized column names since the grid doesn't do that.
-    return (
-        definitions
-            //.sort((a, b) => a.name.localeCompare(b.name))
-            .map((c) => {
-                const x = { ...c };
-                if (c.title === undefined) {
-                    x.title = titleCase(c.name);
-                }
-                return x;
-            })
-    );
+    return definitions
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((c) => {
+            const x = { ...c };
+            if (c.title === undefined) {
+                x.title = titleCase(c.name);
+            }
+            return x;
+        });
 }
 
 export const GridSearchLink: React.FunctionComponent<{
