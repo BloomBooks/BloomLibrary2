@@ -101,7 +101,9 @@ export function useGetLanguagesWithTheseBooks(
     });
     // The combination of useRef and useEffect allows us to run the search once
     //    const rows = useRef<Map<string, { phash: string; book: IBasicBookInfo }>>(
-    const [rows, setRows] = useState(new Map<string, IBasicBookInfo[]>());
+    const [langTagToBooks, setLangTagToBooks] = useState(
+        new Map<string, IBasicBookInfo[]>()
+    );
     const arbitraryMaxLangsPerBook = 20;
     const waiting = searchResults.waiting;
     const needLangCheck =
@@ -178,7 +180,7 @@ export function useGetLanguagesWithTheseBooks(
                 mapOfLangToBookArray,
                 collection.orderingScheme
             );
-            setRows(mapOfLangToBookArray);
+            setLangTagToBooks(mapOfLangToBookArray);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
@@ -190,7 +192,7 @@ export function useGetLanguagesWithTheseBooks(
         searchResults.books.length,
         waiting,
     ]);
-    const langCount = rows.size;
+    const langCount = langTagToBooks.size;
     const totalBookCount = searchResults.totalMatchingRecords;
     useEffect(() => {
         if (reportBooksAndLanguages && !waiting) {
@@ -221,10 +223,23 @@ export function useGetLanguagesWithTheseBooks(
     return {
         waiting,
         languagesWithTheseBooks: useMemo(
-            () => languages.filter((l) => rows.get(l.isoCode)),
-            [languages, rows]
+            () =>
+                languages.filter((l) => {
+                    //const books = langTagToBooks.get(l.isoCode);
+                    // if (books && books.length > 0) {
+                    //     console.log(
+                    //         `language ${l.isoCode} has ${books.length} books`
+                    //     );
+                    //     console.log(books.map((b) => b.objectId).join(", "));
+                    // }
+                    return (
+                        langTagToBooks.get(l.isoCode) &&
+                        langTagToBooks.get(l.isoCode)!.length > 0
+                    );
+                }),
+            [languages, langTagToBooks]
         ),
-        rows,
+        rows: langTagToBooks,
     };
 }
 

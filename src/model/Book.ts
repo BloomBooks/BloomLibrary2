@@ -581,6 +581,15 @@ export function getBestBookTitle(
     return map.get(contextLangTag) || defaultTitle;
 }
 
+export function getBookTitleInLanguageOrUndefined(
+    bookInfo: IBasicBookInfo,
+    contextLangTag: string
+): string | undefined {
+    // enhance: could we do this faster with just a regular expression?
+    const map = parseAllTitles(bookInfo.allTitles);
+    return map.get(contextLangTag);
+}
+
 function parseAllTitles(allTitlesString: string): Map<string, string> {
     const map = new Map<string, string>();
     try {

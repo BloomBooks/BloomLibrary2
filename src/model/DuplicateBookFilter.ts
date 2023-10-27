@@ -1,4 +1,5 @@
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
+import { getBookTitleInLanguageOrUndefined } from "./Book";
 
 // eventually we expect there to be more than one of these, and
 // for Contentful to be able to specify which one to use, hence the use of the string.
@@ -35,22 +36,30 @@ export function PreferBooksWithL1MatchingFocusLanguage_DuplicateBookFilter(
     markButDoNotRemove?: boolean
 ): IBasicBookInfo[] {
     // use phash to get candidates for duplicates
-    const phashToBooks = new Map<string, IBasicBookInfo[]>();
+    const hashToBooks = new Map<string, IBasicBookInfo[]>();
     for (const book of books) {
-        if (!book.phashOfFirstContentImage) {
-            phashToBooks.set(book.objectId, [book]); // ah well, this gets its own bin
+        let hash = book.phashOfFirstContentImage;
+        if (languageInFocus) {
+            const titleInContextLang = getBookTitleInLanguageOrUndefined(
+                book,
+                languageInFocus
+            );
+            if (!titleInContextLang) {
+                continue; // just skip it. There are surprisingly many books that have some English but don't have the title in English. E.g. 6jFUJ8jeEv
+            }
+            hash += (titleInContextLang ?? "").toLowerCase();
+        }
+        if (!hash) {
+            hashToBooks.set(book.objectId, [book]); // ah well, this gets its own bin
             continue;
         }
         // add this book to the bin for this phash
-        phashToBooks.set(book.phashOfFirstContentImage, [
-            ...(phashToBooks.get(book.phashOfFirstContentImage) || []),
-            book,
-        ]);
+        hashToBooks.set(hash, [...(hashToBooks.get(hash) || []), book]);
     }
 
     const booksToShow: IBasicBookInfo[] = [];
-    for (const phash of phashToBooks.keys()) {
-        const booksInBin = phashToBooks.get(phash)!;
+    for (const hash of hashToBooks.keys()) {
+        const booksInBin = hashToBooks.get(hash)!;
         if (booksInBin.length === 1) {
             booksToShow.push(...booksInBin);
             continue;
@@ -61,11 +70,39 @@ export function PreferBooksWithL1MatchingFocusLanguage_DuplicateBookFilter(
         if (booksWithL1MatchingFocus.length > 0)
             booksToShow.push(...booksWithL1MatchingFocus);
         else {
-            // none of the boos in the bin had L1 matching the focus language, but
+            // none of the books in the bin had L1 matching the focus language, but
             // showing them all is annoying, (see COVID-19:english) so we'll just show the first one
             // but mark it to show a stacked effect.
+            /*          This is an experiment that seems sound in practice but I didn't find any examples where it made a difference
+            so I've taken it out for now.
 
-            // Enhance: instead of picking the 1st one, we could consider features such as Talking book, activities, etc.
+            // This is a brute force way to do this.
+            // Sort the booksInBin by the length of their features property so that the one with the most features is first
+            const a = booksInBin[0];
+            // for each book in the Bin, add a property that is the number of features for the context language
+            for (const book of booksInBin) {
+                (book as any).numFeaturesInContextLang = book.features.filter(
+                    (feature) => feature.endsWith(":" + languageInFocus)
+                ).length;
+            }
+            booksInBin.sort(
+                (a, b) =>
+                    (b as any).numFeaturesInContextLang -
+                    (a as any).numFeaturesInContextLang
+            );
+            if (
+                a !== booksInBin[0] &&
+                (a as any).numFeaturesInContextLang !==
+                    (booksInBin[0] as any).numFeaturesInContextLang
+            )
+                console.log(
+                    "Chose a different one to show based on features length: " +
+                        getBookTitleInLanguageOrUndefined(
+                            booksInBin[0],
+                            languageInFocus!
+                        )
+                );
+                */
             booksInBin[0].showStacked = true;
             booksToShow.push(booksInBin[0]);
         }
