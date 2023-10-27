@@ -138,7 +138,12 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
     }
 
     const bookCountAfterSecondaryFilter = books.length;
-    if (props.collection.duplicateBookFilterName) {
+    if (
+        props.collection.duplicateBookFilterName &&
+        // conceivably we could get this to work without context languages, but we're running into a million "cat & dog"s with the same hash.
+        // without a language, we'd need a new way to distinguish them.
+        props.collection.contextLangTag
+    ) {
         const fn = getFilterDuplicateBookFilterFromName(
             props.collection.duplicateBookFilterName
         );

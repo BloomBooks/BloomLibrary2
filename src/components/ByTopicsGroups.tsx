@@ -63,7 +63,7 @@ export function makeVirtualCollectionOfBooksInCollectionThatHaveTopic(
         label,
         title: label,
         urlKey,
-        contextLangTag,
+        contextLangTag: contextLangTag || baseCollection.contextLangTag,
     };
     return result;
 }
