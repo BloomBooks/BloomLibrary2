@@ -17,7 +17,8 @@ import { followUrl } from "./DownloadsGroup";
 import { getArtifactUrl } from "./ArtifactHelper";
 import { track } from "../../analytics/Analytics";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
-import { Book, ArtifactType } from "../../model/Book";
+import { Book } from "../../model/Book";
+import { ArtifactType } from "./ArtifactHelper";
 
 interface IDownloadingShellbookDialogProps {
     open: boolean; // dialog is displayed when rendered with this true

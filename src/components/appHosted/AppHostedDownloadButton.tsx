@@ -8,8 +8,8 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import DownloadIcon from "../../assets/download_white_24dp.svg";
 import { commonUI } from "../../theme";
-import { getArtifactUrl } from "../BookDetail/ArtifactHelper";
-import { Book, ArtifactType } from "../../model/Book";
+import { getArtifactUrl, ArtifactType } from "../BookDetail/ArtifactHelper";
+import { Book } from "../../model/Book";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { track } from "../../analytics/Analytics";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -26,13 +26,38 @@ export const AppHostedDownloadButton: React.FunctionComponent<{
     className?: string;
 }> = (props) => {
     const l10n = useIntl();
-    const artifactUrl = getArtifactUrl(props.book, ArtifactType.bloomReader);
+
+    const artifactUrl = useGetArtifactUrl();
     const parts = artifactUrl.split("/");
     const fileName = parts[parts.length - 1];
     const fileSize = useGetArtifactSize(artifactUrl);
     const [cookies, setCookie] = useCookies(["preferredLanguages"]);
     const { search } = useLocation();
     const currentLangCode = new URLSearchParams(search).get("lang");
+
+    function useGetArtifactUrl() {
+        let artifactType: ArtifactType = ArtifactType.bloomReader;
+
+        // If the url specifies the download format, use that instead of the default.
+        // Get the download format from the url (e.g. ?formats=bloomSource).
+        const downloadFormat = new URLSearchParams(useLocation().search).get(
+            "formats"
+        );
+        if (downloadFormat) {
+            // Currently, the only known user is SP App which uses "bloomSource".
+            if (downloadFormat.toLowerCase() === "bloomsource") {
+                artifactType = "bloomSource";
+            } else {
+                const possibleType =
+                    ArtifactType[downloadFormat as keyof typeof ArtifactType];
+                if (possibleType) {
+                    artifactType = possibleType;
+                }
+            }
+        }
+
+        return getArtifactUrl(props.book, artifactType);
+    }
 
     return (
         // A link to download the .bloomd/.bloompub file

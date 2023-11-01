@@ -22,8 +22,11 @@ import readIcon from "../../../assets/Read.svg";
 import translationIcon from "../../../assets/Translation.svg";
 import { commonUI } from "../../../theme";
 import { useGetLoggedInUser } from "../../../connection/LoggedInUser";
-import { ArtifactType } from "../../../model/Book";
-import { getArtifactDownloadAltText } from "../ArtifactHelper";
+import {
+    ArtifactType,
+    ArtifactTypeToOfferUsers,
+    getArtifactDownloadAltText,
+} from "../ArtifactHelper";
 import { useIntl } from "react-intl";
 
 const useStyles = makeStyles(() =>
@@ -64,7 +67,7 @@ const useStyles = makeStyles(() =>
 // and an optional message giving the user more information about why we would
 // hide or show it by default.
 export const ArtifactAndChoice: React.FunctionComponent<{
-    type: ArtifactType;
+    type: ArtifactTypeToOfferUsers;
     // the parent should give us the settings of the uploader if that is who is logged in,
     // or the moderator otherwise (people who are neither never see this component)
     visibilitySettings: ArtifactVisibilitySettings;

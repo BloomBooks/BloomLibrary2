@@ -14,8 +14,10 @@ import { PlayStoreIcon } from "./PlayStoreIcon";
 // See comment in BloomPubIcon about why this is a special case
 import { BloomPubIcon } from "./BloomPubIcon";
 
-import { ArtifactType, Book } from "../../model/Book";
+import { Book } from "../../model/Book";
 import {
+    ArtifactType,
+    ArtifactTypeToOfferUsers,
     getArtifactDownloadAltText,
     getArtifactUrl,
     getArtifactVisibilitySettings,
@@ -32,7 +34,7 @@ import { BlorgLink } from "../BlorgLink";
 interface IArtifactUI {
     icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
     alt: string;
-    type: ArtifactType;
+    type: ArtifactTypeToOfferUsers;
     settings: ArtifactVisibilitySettings | undefined;
     enabled: boolean;
     hidden?: boolean | undefined;

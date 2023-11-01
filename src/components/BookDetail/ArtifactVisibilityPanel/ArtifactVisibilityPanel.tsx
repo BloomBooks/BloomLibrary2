@@ -14,7 +14,8 @@ import {
     getArtifactVisibilitySettings,
     getArtifactTypeFromKey,
 } from "../ArtifactHelper";
-import { Book, ArtifactType } from "../../../model/Book";
+import { Book } from "../../../model/Book";
+import { ArtifactTypeToOfferUsers } from "../ArtifactHelper";
 
 // A set of controls by which the user can hide or show the artifacts for a book
 // which the harvester produced.
@@ -36,7 +37,10 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
             </React.Fragment>
         );
 
-    const handleChange = (artifactType: ArtifactType, newSetting: string) => {
+    const handleChange = (
+        artifactType: ArtifactTypeToOfferUsers,
+        newSetting: string
+    ) => {
         const artifactSettings = getArtifactVisibilitySettings(
             book,
             artifactType
@@ -73,13 +77,15 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
         // but we want the resulting array to have the keys in the same
         // order as they appear in the enum. And we don't want any unexpected
         // keys which don't appear in the enum.
-        return Object.keys(ArtifactType).filter((artifactTypeKey) => {
-            return (
-                book.artifactsToOfferToUsers[
-                    getArtifactTypeFromKey(artifactTypeKey)
-                ] !== undefined
-            );
-        });
+        return Object.keys(ArtifactTypeToOfferUsers).filter(
+            (artifactTypeKey) => {
+                return (
+                    book.artifactsToOfferToUsers[
+                        getArtifactTypeFromKey(artifactTypeKey)
+                    ] !== undefined
+                );
+            }
+        );
     };
 
     const artifactCount = getExistingArtifactTypeKeys().length;
@@ -102,7 +108,7 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
             <Box padding={1} border={1} borderRadius="borderRadius">
                 Use the following to hide any formats that look bad.
                 {getExistingArtifactTypeKeys().map((artifactTypeKey, i) => {
-                    const artifactType: ArtifactType = getArtifactTypeFromKey(
+                    const artifactType: ArtifactTypeToOfferUsers = getArtifactTypeFromKey(
                         artifactTypeKey
                     );
                     return (

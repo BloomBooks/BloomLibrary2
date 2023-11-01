@@ -1,4 +1,4 @@
-import { Book, ArtifactType } from "../../model/Book";
+import { Book } from "../../model/Book";
 import {
     ArtifactVisibilitySettings,
     ArtifactVisibilitySettingsGroup,
@@ -62,7 +62,7 @@ function getBookOrderUrl(book: Book) {
 }
 
 export function getArtifactDownloadAltText(
-    artifactType: ArtifactType,
+    artifactType: ArtifactTypeToOfferUsers,
     l10n: IntlShape
 ): string {
     switch (artifactType) {
@@ -102,7 +102,7 @@ export function getArtifactDownloadAltText(
 // artifact was available.
 export function getArtifactVisibilitySettings(
     book: Book,
-    artifactType: ArtifactType
+    artifactType: ArtifactTypeToOfferUsers
 ): ArtifactVisibilitySettings | undefined {
     if (!book.artifactsToOfferToUsers) {
         book.artifactsToOfferToUsers = new ArtifactVisibilitySettingsGroup();
@@ -110,9 +110,11 @@ export function getArtifactVisibilitySettings(
     return book.artifactsToOfferToUsers[artifactType];
 }
 
-export function getArtifactTypeFromKey(artifactTypeKey: string): ArtifactType {
+export function getArtifactTypeFromKey(
+    artifactTypeKey: string
+): ArtifactTypeToOfferUsers {
     // For some reason, Typescript makes us jump through this awkward hoop.
-    return (ArtifactType as any)[artifactTypeKey];
+    return (ArtifactTypeToOfferUsers as any)[artifactTypeKey];
 }
 
 export function getRawBookNameFromUrl(baseUrl: string): string | undefined {
@@ -167,11 +169,14 @@ function getDownloadUrl(book: Book, fileType: string): string | undefined {
     const bookName = getBookNamePartOfUrl(book.baseUrl);
 
     if (bookName) {
-        if (fileType === "bloompub") {
-            const fileExt =
-                book.bloomPUBVersion && book.bloomPUBVersion >= 1
-                    ? ".bloompub"
-                    : ".bloomd";
+        if (fileType === "bloompub" || fileType === "bloomSource") {
+            let fileExt = `.${fileType}`;
+            if (fileType === "bloompub") {
+                fileExt =
+                    book.bloomPUBVersion && book.bloomPUBVersion >= 1
+                        ? ".bloompub"
+                        : ".bloomd";
+            }
             return harvesterBaseUrl + bookName + fileExt;
         }
         return harvesterBaseUrl + fileType + "/" + bookName + "." + fileType;
@@ -184,3 +189,21 @@ export function getUrlOfHtmlOfDigitalVersion(book: Book) {
     // bloomPlayerUrl = "http://localhost:3000/bloomplayer-for-developing.htm";
     return harvesterBaseUrl + "bloomdigital%2findex.htm";
 }
+
+// This is awkward stuff, but we are basically building two enums, one of which is a subset of the other.
+// And this is how you have to do it in typescript.
+export const ArtifactTypeToOfferUsers = {
+    pdf: "pdf",
+    epub: "epub",
+    bloomReader: "bloomReader",
+    readOnline: "readOnline",
+    shellbook: "shellbook",
+} as const;
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type ArtifactTypeToOfferUsers = typeof ArtifactTypeToOfferUsers[keyof typeof ArtifactTypeToOfferUsers];
+export const ArtifactType = {
+    ...ArtifactTypeToOfferUsers,
+    bloomSource: "bloomSource",
+};
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export type ArtifactType = typeof ArtifactType[keyof typeof ArtifactType];
