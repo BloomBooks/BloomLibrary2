@@ -1,8 +1,5 @@
-import {
-    Book,
-    createBookFromParseServerData,
-    ArtifactType,
-} from "../model/Book";
+import { Book, createBookFromParseServerData } from "../model/Book";
+import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
 import { axios } from "@use-hooks/axios";
 import { getArtifactUrl } from "../components/BookDetail/ArtifactHelper";
 import { getBloomApiUrl } from "../connection/ApiConnection";

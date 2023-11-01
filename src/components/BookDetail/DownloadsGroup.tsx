@@ -14,8 +14,9 @@ import { PlayStoreIcon } from "./PlayStoreIcon";
 // See comment in BloomPubIcon about why this is a special case
 import { BloomPubIcon } from "./BloomPubIcon";
 
-import { ArtifactType, Book } from "../../model/Book";
+import { Book } from "../../model/Book";
 import {
+    ArtifactType,
     getArtifactDownloadAltText,
     getArtifactUrl,
     getArtifactVisibilitySettings,
