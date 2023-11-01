@@ -1,3 +1,5 @@
+import { getTranslation } from "../localization/GetLocalizations";
+
 export interface ILanguage {
     name: string;
     isoCode: string;
@@ -6,6 +8,9 @@ export interface ILanguage {
     bannerImageUrl?: string;
     objectId: string;
 }
+
+export const kTagForNoLanguage = "none";
+const kPsuedoLanguageTags = [kTagForNoLanguage];
 
 export function getDisplayNamesFromLanguageCode(
     languageCode: string,
@@ -17,6 +22,14 @@ export function getDisplayNamesFromLanguageCode(
           combined: string;
       }
     | undefined {
+    if (kPsuedoLanguageTags.includes(languageCode))
+        return getDisplayNamesForLanguage({
+            name: "",
+            isoCode: languageCode,
+            usageCount: 0,
+            objectId: "",
+        });
+
     const language = languages.find((l) => l.isoCode === languageCode);
     if (language) return getDisplayNamesForLanguage(language);
     return undefined;
@@ -49,6 +62,20 @@ export function getDisplayNamesForLanguage(
                   combined: "Chinese (简体中文)",
               };
     }
+
+    // Handle picture books
+    if (language.isoCode === kTagForNoLanguage) {
+        const localizedLabel = getTranslation(
+            "book.detail.pictureBook",
+            "Picture Book (no text)"
+        );
+        return {
+            primary: localizedLabel,
+            secondary: localizedLabel,
+            combined: localizedLabel,
+        };
+    }
+
     // this may not be needed for long. We are working on some fixes in BL-11754
     if (language.isoCode === "ase-ML") {
         return navigator.language.startsWith("fr")
