@@ -7,7 +7,11 @@ import { retrieveBookData, retrieveBookStats } from "./LibraryQueries";
 import { Book, createBookFromParseServerData } from "../model/Book";
 import { useContext, useMemo, useEffect, useState } from "react";
 import { CachedTablesContext } from "../model/CacheProvider";
-import { getCleanedAndOrderedLanguageList, ILanguage } from "../model/Language";
+import {
+    getCleanedAndOrderedLanguageList,
+    ILanguage,
+    kTagForNoLanguage,
+} from "../model/Language";
 import { processRegExp } from "../Utilities";
 import { kTopicList } from "../model/ClosedVocabularies";
 import {
@@ -1335,12 +1339,17 @@ export function constructParseBookQuery(
     // if f.language is set, add the query needed to restrict books to those with that language
     if (f.language != null) {
         delete params.where.language; // remove that, we need to make it more complicated because we need a join.
-        params.where.langPointers = {
-            $inQuery: {
-                where: { isoCode: f.language },
-                className: "language",
-            },
-        };
+
+        if (f.language === kTagForNoLanguage) {
+            params.where.langPointers = { $eq: [] };
+        } else {
+            params.where.langPointers = {
+                $inQuery: {
+                    where: { isoCode: f.language },
+                    className: "language",
+                },
+            };
+        }
     }
     // topic is handled below. This older version is not compatible with the possibility of other topics.
     // Hopefully the old style really is gone. Certainly any update inserts topic:
