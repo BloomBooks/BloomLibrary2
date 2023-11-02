@@ -1,6 +1,6 @@
 [
     {
-        "path": "/*",
+        "path": "/",
         "options": {
             "firstPartyHostnames": ["*.bloomlibrary.org"]
         },
@@ -53,6 +53,39 @@
     },
     {
         "path": "/#!/covid19",
+        "options": {
+            "firstPartyHostnames": ["*.bloomlibrary.org"]
+        },
+        "timings": [
+            {
+                "metric": "first-contentful-paint",
+                "budget": 4500
+            },
+            {
+                "metric": "speed-index",
+                "budget": 9000
+            },
+            {
+                "metric": "largest-contentful-paint",
+                "budget": 5000
+            },
+            {
+                "metric": "interactive",
+                "budget": 8000
+            },
+            {
+                "metric": "total-blocking-time",
+                "budget": 1200
+            },
+            {
+                "metric": "cumulative-layout-shift",
+                "budget": 0.1
+            },
+            {
+                "metric": "first-meaningful-paint",
+                "budget": 6000
+            }
+        ],
         "resourceSizes": [
             {
                 "resourceType": "script",
