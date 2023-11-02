@@ -17,13 +17,15 @@ jobs:
                   budgetPath: ./.github/workflows/lighthouse-budget.json # test performance budgets
                   uploadArtifacts: true # save results as action artifacts
                   temporaryPublicStorage: true # upload lighthouse report to the temporary storage
+            # We have to run this separately with a separate budget file because the redirect causes
+            # lighthouse to think we are running at the root
             - name: Audit /covid19 using Lighthouse
               uses: treosh/lighthouse-ci-action@v10
               with:
                   urls: |
-                      https://alpha.bloomlibrary.org/#!/covid19
+                      https://alpha.bloomlibrary.org/covid19
                   runs: 3
-                  budgetPath: ./.github/workflows/lighthouse-budget.json # test performance budgets
+                  budgetPath: ./.github/workflows/lighthouse-budget-covid19-page.json # test performance budgets
                   uploadArtifacts: true # save results as action artifacts
                   temporaryPublicStorage: true # upload lighthouse report to the temporary storage
     # This static directory test doesn't work (at least) because we don't build the site in the action.
