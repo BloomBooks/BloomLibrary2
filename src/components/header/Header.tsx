@@ -13,10 +13,11 @@ import { useMediaQuery, Tab, Tabs } from "@material-ui/core";
 import { useHistory, useLocation } from "react-router-dom";
 import { useIntl } from "react-intl";
 import { BlorgLink } from "../BlorgLink";
+import { isInCreate } from "../pages/ThemeForLocation";
 
 export const Header: React.FunctionComponent<{}> = (props) => {
     const location = useLocation();
-    const createTabSelected = location.pathname.indexOf("/create") > -1;
+    const createTabSelected = isInCreate(location.pathname);
     const routerHistory = useHistory();
     const showSearchBelow = !useMediaQuery("(min-width:975px)");
     const showReadCreateBelow = !useMediaQuery("(min-width:560px)");
