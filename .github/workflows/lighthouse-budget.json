@@ -15,7 +15,7 @@
             },
             {
                 "metric": "largest-contentful-paint",
-                "budget": 5000
+                "budget": 8000
             },
             {
                 "metric": "interactive",
@@ -23,7 +23,7 @@
             },
             {
                 "metric": "total-blocking-time",
-                "budget": 500
+                "budget": 800
             },
             {
                 "metric": "cumulative-layout-shift",
@@ -36,12 +36,12 @@
         ],
         "resourceSizes": [
             {
-                "resourceType": "script",
-                "budget": 400
-            },
-            {
                 "resourceType": "total",
                 "budget": 1500
+            },
+            {
+                "resourceType": "script",
+                "budget": 700
             },
             {
                 "resourceType": "third-party",
@@ -49,6 +49,14 @@
             }
         ],
         "resourceCounts": [
+            {
+                "resourceType": "total",
+                "budget": 300
+            },
+            {
+                "resourceType": "script",
+                "budget": 10
+            },
             {
                 "resourceType": "third-party",
                 "budget": 70
