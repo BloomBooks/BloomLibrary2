@@ -4,7 +4,7 @@ on:
         branches:
             - master
 jobs:
-    lighthouse:
+    lighthouse-on-live-site:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
@@ -16,5 +16,17 @@ jobs:
                       https://alpha.bloomlibrary.org/#!/covid19
                   runs: 3
                   budgetPath: ./.github/workflows/lighthouse-budget.json # test performance budgets
-                  uploadArtifacts: true # save results as an action artifacts
+                  uploadArtifacts: true # save results as action artifacts
+                  temporaryPublicStorage: true # upload lighthouse report to the temporary storage
+    lighthouse-on-static-directory:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Audit URLs using Lighthouse
+              uses: treosh/lighthouse-ci-action@v10
+              with:
+                  configPath: ./.github/workflows/lighthouserc.json
+                  runs: 3
+                  budgetPath: ./.github/workflows/lighthouse-budget.json # test performance budgets
+                  uploadArtifacts: true # save results as action artifacts
                   temporaryPublicStorage: true # upload lighthouse report to the temporary storage
