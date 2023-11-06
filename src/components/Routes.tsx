@@ -37,6 +37,33 @@ let currentPathname = "";
 export const Routes: React.FunctionComponent<{}> = (props) => {
     const location = useLocation();
     useSetEmbeddedUrl();
+    const { pathname, hash } = useLocation();
+
+    // Hack to allow links from outside Blorg to point to anchors within Blorg.
+    // Adapted from https://stackoverflow.com/questions/40280369/use-anchors-with-react-router.
+    useEffect(() => {
+        if (hash === "") {
+            // if not a hash link, scroll to top
+            // Might sometimes be useful, especially if pathname changes, but I don't think we want it always.
+            //window.scrollTo(0, 0);
+        } else {
+            // scroll to id. We may not yet have rendered the element that has that ID, so we may need to wait a bit.
+            const id = hash.replace("#", "");
+            let maxTry = 20;
+            const tryToScrollToId = () => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.scrollIntoView();
+                } else {
+                    if (maxTry-- > 0) {
+                        setTimeout(tryToScrollToId, 100);
+                    }
+                }
+            };
+            setTimeout(tryToScrollToId, 0);
+        }
+    }, [pathname, hash]); // do this on route change
+
     if (currentPathname !== location.pathname) {
         previousPathname = currentPathname;
         currentPathname = location.pathname;
