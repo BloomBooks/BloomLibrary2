@@ -1,7 +1,10 @@
 import React, { useContext, useEffect, useState, useMemo } from "react";
 import { IFilter } from "../IFilter";
 import { CachedTablesContext } from "../model/CacheProvider";
-import { getDisplayNamesForLanguage } from "../model/Language";
+import {
+    getDisplayNamesForLanguage,
+    kTagForNoLanguage,
+} from "../model/Language";
 import {
     useSearchBooks,
     IBasicBookInfo,
@@ -11,7 +14,6 @@ import {
     bookHasFeatureInLanguage,
     featureIsLanguageDependent,
 } from "./FeatureHelper";
-import { useIntl } from "react-intl";
 import { BookOrderingScheme, ICollection } from "../model/ContentInterfaces";
 import { doExpensiveClientSideSortingIfNeeded } from "../connection/sorting";
 import { DefaultBookComparisonKeyIgnoringLanguages } from "../model/DuplicateBookFilter";
@@ -94,11 +96,6 @@ export function useGetLanguagesWithTheseBooks(
         // We need to wait  until we have divided into language groups since each group will have its own title language.
         // collection.orderingScheme
     );
-    const l10n = useIntl();
-    const unknown = l10n.formatMessage({
-        id: "language.unknown",
-        defaultMessage: "Unknown",
-    });
     // The combination of useRef and useEffect allows us to run the search once
     //    const rows = useRef<Map<string, { phash: string; book: IBasicBookInfo }>>(
     const [langTagToBooks, setLangTagToBooks] = useState(
@@ -118,9 +115,10 @@ export function useGetLanguagesWithTheseBooks(
             // So the first book (in each set with the same comparisonKey) that has a particular language wins.
             // eslint-disable-next-line no-loop-func
             searchResults.books.forEach((book) => {
-                let foundOneLanguage = false;
+                let isBookAdded = false;
                 const key = DefaultBookComparisonKeyIgnoringLanguages(book);
                 const addBookToLang = (langCode: string) => {
+                    isBookAdded = true;
                     if (!mapOfLangToBookArray.get(langCode)) {
                         mapOfLangToBookArray.set(langCode, []);
                     }
@@ -147,33 +145,55 @@ export function useGetLanguagesWithTheseBooks(
                     if (langCode) {
                         // When filtering by feature, a book only gets added to the list for a given language
                         // if it has the feature IN THAT LANGUAGE (BL-9257)
-                        if (
-                            needLangCheck &&
-                            !bookHasFeatureInLanguage(
-                                book.features,
-                                filter.feature!,
-                                langCode
-                            )
-                        ) {
-                            continue; // don't want this book in this language list.
+                        if (needLangCheck) {
+                            if (
+                                !bookHasFeatureInLanguage(
+                                    book.features,
+                                    filter.feature!,
+                                    langCode
+                                )
+                            ) {
+                                continue; // don't want this book in this language list.
+                            }
                         }
-                        foundOneLanguage = true;
                         addBookToLang(langCode);
                     }
                 }
-                if (!foundOneLanguage) {
-                    // book may have been uploaded without user setting the collection language for sign language.
-                    // (Note: Not really the case anymore. Uploading as a sign language book requires the SL language code to be set,
-                    // in both Bloom editor and in BulkUpload. However, still could be possible for the SL feature to be manually added
-                    // after the fact, and if you don't specify the lang code (and the Staff Panel doesn't let you...),
-                    // that'd lead to this case. [JS])
-                    // We still want it to show up somewhere in the sign language collection page.
-                    // Since this key is only used locally in this function, it doesn't matter that it's not a valid
-                    // three-letter code; in fact, that ensures it won't conflict with a real one.
-                    // We don't know how this can happen for any feature other than sign language, but
-                    // there are a few cases where it does, so we decided to allow it for all of them
-                    // so at least every book with the feature gets listed somehow.
-                    addBookToLang("unknown");
+                if (!isBookAdded) {
+                    // This handles two very distinct use cases.
+                    //
+                    // 1. The book has no language at all. This is what we refer to in the UI as a "Picture Book (no text)".
+                    //    In a context where we are listing out the languages (by-language-card/by-language-group),
+                    //    this will get its own "language" card/group. The query logic knows how to count and display these.
+                    if (!book.languages || book.languages.length === 0)
+                        addBookToLang(kTagForNoLanguage);
+                    // 2. The book has one or more languages, but none of those match the language-specific feature
+                    //    we are displaying.
+                    //
+                    //    Book may have been uploaded without user setting the collection language for sign language.
+                    //    (Note: Not really the case anymore. Uploading as a sign language book requires the SL language code to be set,
+                    //    in both Bloom editor and in BulkUpload. However, still could be possible for the SL feature to be manually added
+                    //    after the fact, and if you don't specify the lang code (and the Staff Panel doesn't let you...),
+                    //    that'd lead to this case. [JS])
+                    //    We still want it to show up somewhere in the sign language collection page.
+                    //    We don't know how this can happen for any feature other than sign language, but
+                    //    there are a few cases where it does, so we decided to allow it for all of them
+                    //    so at least every book with the feature gets listed somehow.
+                    //
+                    //    When working on this Oct 2023, I (AP) discovered there are many (43) talking books
+                    //    with a mismatch of language feature tags. Some are simply missing the language tag
+                    //    for some of the languages in the book. For example, a book with English audio/text,
+                    //    Tok Pisin audio/text, and Hakö text was only tagged as having Hakö though the feature
+                    //    array was correctly set as talkingBook, talkingBook:en, talkingBook:tpi.
+                    //
+                    //    Note, this was originally implemented with an "Unknown" language group at the end,
+                    //    but that didn't play well with the by-language-card layout/logic. Specifically, there
+                    //    is no (reasonable) way for the query logic to count or query for this special case directly.
+                    //    So now we just add it to *some* language group.
+                    else
+                        addBookToLang(
+                            book.lang1Tag || book.languages[0].isoCode
+                        );
                 }
             });
             sortBooksWithinEachLanguageRow(
@@ -213,13 +233,13 @@ export function useGetLanguagesWithTheseBooks(
                 )
             );
         result.push({
-            name: unknown,
-            isoCode: "unknown",
+            name: "", // Doesn't matter; it won't show up anywhere. Language.ts has code to get the right label.
+            isoCode: kTagForNoLanguage,
             usageCount: 0,
             objectId: "",
         });
         return result;
-    }, [languagesByBookCount, excludeLanguages, unknown]);
+    }, [languagesByBookCount, excludeLanguages]);
     return {
         waiting,
         languagesWithTheseBooks: useMemo(

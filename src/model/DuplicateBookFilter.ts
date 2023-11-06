@@ -1,5 +1,6 @@
 import { IBasicBookInfo } from "../connection/LibraryQueryHooks";
 import { getBookTitleInLanguageOrUndefined } from "./Book";
+import { kTagForNoLanguage } from "./Language";
 
 // eventually we expect there to be more than one of these, and
 // for Contentful to be able to specify which one to use, hence the use of the string.
@@ -44,7 +45,7 @@ export function PreferBooksWithL1MatchingFocusLanguage_DuplicateBookFilter(
                 book,
                 languageInFocus
             );
-            if (!titleInContextLang) {
+            if (!titleInContextLang && languageInFocus !== kTagForNoLanguage) {
                 continue; // just skip it. There are surprisingly many books that have some English but don't have the title in English. E.g. 6jFUJ8jeEv
             }
             hash += (titleInContextLang ?? "").toLowerCase();
