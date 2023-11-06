@@ -10,6 +10,7 @@ import {
     IBookStat,
     getDefaultBookStat,
 } from "../components/statistics/StatsInterfaces";
+import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
 const stem = require("wink-porter2-stemmer");
 
 export function createBookFromParseServerData(pojo: any): Book {
@@ -43,14 +44,6 @@ export interface IInternetLimits {
     // multiple ones are present with different countries; for example, it
     // may be possible to read it (but not download it) in one country, and
     // vice versa in another.
-}
-
-export enum ArtifactType {
-    pdf = "pdf",
-    epub = "epub",
-    bloomReader = "bloomReader",
-    readOnline = "readOnline",
-    shellbook = "shellbook",
 }
 
 // This is basically the data object we get from Parse Server about a book.

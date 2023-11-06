@@ -162,6 +162,7 @@ export class ArtifactVisibilitySettingsGroup {
     public bloomReader: ArtifactVisibilitySettings | undefined;
     public readOnline: ArtifactVisibilitySettings | undefined;
     public shellbook: ArtifactVisibilitySettings = new ArtifactVisibilitySettings();
+    public bloomSource: ArtifactVisibilitySettings | undefined;
 
     constructor() {
         makeObservable(this, {
@@ -170,6 +171,7 @@ export class ArtifactVisibilitySettingsGroup {
             bloomReader: observable,
             readOnline: observable,
             shellbook: observable,
+            bloomSource: observable,
         });
     }
 
@@ -191,6 +193,9 @@ export class ArtifactVisibilitySettingsGroup {
             );
             result.readOnline = ArtifactVisibilitySettings.createFromParseServerData(
                 pojo.readOnline
+            );
+            result.bloomSource = ArtifactVisibilitySettings.createFromParseServerData(
+                pojo.bloomSource
             );
             // These two are not allowed to be undefined; keep the constructor-created
             // defaults if the parse data doesn't have anything.

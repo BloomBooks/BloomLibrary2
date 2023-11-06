@@ -1,9 +1,19 @@
-import { Book, ArtifactType } from "../../model/Book";
+import { Book } from "../../model/Book";
 import {
     ArtifactVisibilitySettings,
     ArtifactVisibilitySettingsGroup,
 } from "../../model/ArtifactVisibilitySettings";
 import { IntlShape } from "react-intl";
+
+// The order here matters. See ArtifactVisibilityPanel.getExistingArtifactTypeKeys().
+export enum ArtifactType {
+    pdf = "pdf",
+    epub = "epub",
+    bloomReader = "bloomReader",
+    readOnline = "readOnline",
+    shellbook = "shellbook",
+    bloomSource = "bloomSource",
+}
 
 export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
     let url;
@@ -82,13 +92,13 @@ export function getArtifactDownloadAltText(
                 defaultMessage:
                     "Download BloomPUB for Bloom Reader or BloomPub Viewer",
             });
-        case ArtifactType.readOnline:
-            return "";
         case ArtifactType.shellbook:
             return l10n.formatMessage({
                 id: "book.detail.translateButton.download",
                 defaultMessage: "Download into Bloom Editor",
             });
+        default:
+            return "";
     }
 }
 
@@ -167,11 +177,14 @@ function getDownloadUrl(book: Book, fileType: string): string | undefined {
     const bookName = getBookNamePartOfUrl(book.baseUrl);
 
     if (bookName) {
-        if (fileType === "bloompub") {
-            const fileExt =
-                book.bloomPUBVersion && book.bloomPUBVersion >= 1
-                    ? ".bloompub"
-                    : ".bloomd";
+        if (fileType === "bloompub" || fileType === "bloomSource") {
+            let fileExt = `.${fileType}`;
+            if (fileType === "bloompub") {
+                fileExt =
+                    book.bloomPUBVersion && book.bloomPUBVersion >= 1
+                        ? ".bloompub"
+                        : ".bloomd";
+            }
             return harvesterBaseUrl + bookName + fileExt;
         }
         return harvesterBaseUrl + fileType + "/" + bookName + "." + fileType;

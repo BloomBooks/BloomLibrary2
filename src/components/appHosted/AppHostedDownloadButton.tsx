@@ -8,8 +8,12 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import DownloadIcon from "../../assets/download_white_24dp.svg";
 import { commonUI } from "../../theme";
-import { getArtifactUrl } from "../BookDetail/ArtifactHelper";
-import { Book, ArtifactType } from "../../model/Book";
+import {
+    getArtifactUrl,
+    ArtifactType,
+    getArtifactVisibilitySettings,
+} from "../BookDetail/ArtifactHelper";
+import { Book } from "../../model/Book";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { track } from "../../analytics/Analytics";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -17,8 +21,8 @@ import { useLocation } from "react-router-dom";
 import { useGetArtifactSize } from "./AppHostedUtils";
 import { useCookies } from "react-cookie";
 
-// A button designed to be used when BL is embedded in Bloom Reader. It initiates download of the book
-// passed in its props and brings up the AppHostedDownloadingPage.
+// A button designed to be used when BL is embedded in an app.
+// It initiates download of the artifact (usually a bloompub) for the given book.
 export const AppHostedDownloadButton: React.FunctionComponent<{
     book: Book;
     fullWidth?: boolean;
@@ -26,16 +30,54 @@ export const AppHostedDownloadButton: React.FunctionComponent<{
     className?: string;
 }> = (props) => {
     const l10n = useIntl();
-    const artifactUrl = getArtifactUrl(props.book, ArtifactType.bloomReader);
-    const parts = artifactUrl.split("/");
-    const fileName = parts[parts.length - 1];
-    const fileSize = useGetArtifactSize(artifactUrl);
     const [cookies, setCookie] = useCookies(["preferredLanguages"]);
     const { search } = useLocation();
+
+    function useGetArtifactType() {
+        let artifactType: ArtifactType = ArtifactType.bloomReader;
+
+        // If the url specifies the download format, use that instead of the default.
+        // Get the download format from the url (e.g. ?formats=bloomSource).
+        const downloadFormat = new URLSearchParams(useLocation().search).get(
+            "formats"
+        );
+        if (downloadFormat) {
+            // Currently, the only known user is SP App which uses "bloomSource".
+            if (downloadFormat.toLowerCase() === "bloomsource") {
+                artifactType = ArtifactType.bloomSource;
+            } else {
+                const possibleType =
+                    ArtifactType[downloadFormat as keyof typeof ArtifactType];
+                if (possibleType) {
+                    artifactType = possibleType;
+                }
+            }
+        }
+        return artifactType;
+    }
+
+    const artifactType = useGetArtifactType();
+
+    function useGetArtifactUrl() {
+        return artifactType && getArtifactUrl(props.book, artifactType);
+    }
+
+    const artifactUrl = useGetArtifactUrl();
+    const fileSize = useGetArtifactSize(artifactUrl);
+
+    const shouldShow =
+        artifactType &&
+        getArtifactVisibilitySettings(props.book, artifactType)?.decision ===
+            true;
+
+    if (!shouldShow) return <React.Fragment />;
+
+    const parts = artifactUrl.split("/");
+    const fileName = parts[parts.length - 1];
     const currentLangCode = new URLSearchParams(search).get("lang");
 
     return (
-        // A link to download the .bloomd/.bloompub file
+        // A link to download the file
         <a
             href={artifactUrl}
             // This is more than a hint. Without an explicit download attribute,
