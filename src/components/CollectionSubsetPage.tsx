@@ -226,6 +226,10 @@ export const CollectionSubsetPage: React.FunctionComponent<{
             }
         }
     }
+    // Showing books by topic, but not by level, so show by level under the topic.
+    else if ((props.collectionName + props.filters).indexOf("topic:") >= 0) {
+        subList = <ByLevelGroups collection={subcollection} />;
+    }
     // e.g. CollectionLayout is "by-language/by-topic"
     else if (subcollection.layout === "by-topic") {
         subList = <ByTopicsGroups collection={subcollection} />;
