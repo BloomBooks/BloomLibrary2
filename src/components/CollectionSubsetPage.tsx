@@ -110,6 +110,15 @@ export function generateCollectionFromFilters(
     if (all) {
         filteredCollection.layout = "all-books";
     }
+    // Ensure that a Topic subcollection displays by level, not by topic,
+    // regardless of the settings we get from Contentful.  See BL-12842.
+    if (
+        filteredCollection.urlKey.includes(":topic:") &&
+        !filteredCollection.urlKey.includes(":level:") &&
+        filteredCollection.layout === "by-topic"
+    ) {
+        filteredCollection.layout = "by-level";
+    }
     return { filteredCollection, skip };
 }
 
