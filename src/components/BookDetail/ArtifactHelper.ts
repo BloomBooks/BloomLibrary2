@@ -74,7 +74,7 @@ function getBookOrderUrl(book: Book) {
 
         return `bloom://localhost/order?orderFile=${
             match[1]
-        }&title=${encodeURIComponent(book.title)}&minVersion=${minVersion}}`;
+        }&title=${encodeURIComponent(book.title)}&minVersion=${minVersion}`;
     }
 
     return "";
