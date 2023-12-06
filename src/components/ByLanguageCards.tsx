@@ -80,7 +80,7 @@ export function makeVirtualCollectionOfBooksInCollectionThatHaveLanguage(
     if (isForCollectionPage) setBloomLibraryTitle(label);
 
     const layoutOfLanguagePage =
-        baseCollection.layout.split("/")[1] || "all-books";
+        baseCollection.layout.split("/")[1] || "by-level";
     const baseCollectionFilter =
         baseCollection.filter ??
         getFilterForCollectionAndChildren(baseCollection);
