@@ -208,12 +208,23 @@ export const CollectionSubsetPage: React.FunctionComponent<{
     let subList = <ByLevelGroups collection={subcollection} />;
     let showAll = false;
     let maxRows: number | undefined = subcollection.rows; // can be undefined, in which case it's the default
-    if (
-        props.filters.includes("all:true") ||
-        subcollection.layout === "all-books"
-    ) {
+    if (props.filters.includes("all:true")) {
         showAll = true;
         maxRows = 1000;
+    } else if (subcollection.layout === "all-books") {
+        // contentful set this, but do we want to override it?
+        if ((props.collectionName + props.filters).indexOf("level:") < 0) {
+            subList = <ByLevelGroups collection={subcollection} />;
+        } else if (
+            (props.collectionName + props.filters).indexOf("topic:") < 0
+        ) {
+            subList = <ByTopicsGroups collection={subcollection} />;
+        } else {
+            showAll = true;
+            if (!maxRows) {
+                maxRows = 1000; // show all of the books (or 5000 of them anyway)
+            }
+        }
     }
     // if we were already down to the level of levels or topics, just show them all.
     else if ((props.collectionName + props.filters).indexOf("level:") >= 0) {
