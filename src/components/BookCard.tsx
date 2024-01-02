@@ -38,7 +38,7 @@ interface IProps {
     // I don't think we use it any more.)
     // laziness self: otherwise (typically not in any swiper), handle laziness here by putting the content in a LazyLoad.
     laziness: "never" | "self" | "swiper";
-    contextLangIso?: string;
+    contextLangTag?: string;
 }
 
 export const smallCardWidth = 100;
@@ -59,7 +59,7 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
         getBestBookTitle(
             props.basicBookInfo.title,
             props.basicBookInfo.allTitles,
-            props.contextLangIso
+            props.contextLangTag
         ) || "";
     useEffect(() => {
         // This is just a delay so that Swiper can put a .swiper-lazy-loading class onto
@@ -69,8 +69,8 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
     }, []);
     const titlePadding = 3;
     // optional param
-    const langParam = props.contextLangIso
-        ? "?lang=" + props.contextLangIso
+    const langParam = props.contextLangTag
+        ? "?lang=" + props.contextLangTag
         : "";
 
     const [showTroubleshootingStuff] = useShowTroubleshootingStuff();
@@ -83,6 +83,19 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
         top: 4px;
     `;
 
+    const troubleShootingStyles =
+        showTroubleshootingStuff && props.basicBookInfo.wouldBeRemoved
+            ? `
+                  opacity: 0.3;
+                  &:before {
+                      content: "Duplicate";
+                      position: absolute;
+                      background-color: red;
+                      color: white;
+                  }
+              `
+            : css``;
+
     const card = (
         <CheapCard
             className={props.className}
@@ -90,16 +103,13 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                 height: ${cardSpec.cardHeightPx}px;
                 width: ${cardSpec.cardWidthPx}px;
                 line-height: normal; // counteract css reset
+
+                ${troubleShootingStyles}
             `}
+            stacked={props.basicBookInfo.showStacked}
             key={props.basicBookInfo.baseUrl}
             target={`book/${props.basicBookInfo.objectId}${langParam}`}
             role="listitem"
-            // onClick={() =>
-            //     router!.pushBook(
-            //         props.basicBookInfo.objectId,
-            //         props.contextLangIso
-            //     )
-            // }
         >
             <img
                 className={"swiper-lazy"}
@@ -188,7 +198,10 @@ export const BookCard: React.FunctionComponent<IProps> = (props) => {
                     />
                 )}
             </div>
-            <LanguageFeatureList basicBookInfo={props.basicBookInfo} />
+            <LanguageFeatureList
+                basicBookInfo={props.basicBookInfo}
+                contextLangTag={props.contextLangTag}
+            />
             {props.basicBookInfo.draft && <DraftIcon css={overlayIconCss} />}
             {props.basicBookInfo.inCirculation === false && (
                 <WarningIcon css={overlayIconCss} />

@@ -13,6 +13,7 @@ import { getFilterForCollectionAndChildren } from "../model/Collections";
 import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 import { useGetLanguagesWithTheseBooks } from "./ByLanguageGroups";
 import { setBloomLibraryTitle } from "./Routes";
+import { DuplicateBookFilter } from "../model/DuplicateBookFilter";
 
 // Lays out a collection by displaying one language card per language in the collection.
 // When a card is clicked, a virtual collection is displayed which is the original collection
@@ -78,6 +79,8 @@ export function makeVirtualCollectionOfBooksInCollectionThatHaveLanguage(
     // But we will end up coming back through eventually with the language information. So then we set it to "My Collection - English".
     if (isForCollectionPage) setBloomLibraryTitle(label);
 
+    const layoutOfLanguagePage =
+        baseCollection.layout.split("/")[1] || "all-books";
     const baseCollectionFilter =
         baseCollection.filter ??
         getFilterForCollectionAndChildren(baseCollection);
@@ -88,6 +91,13 @@ export function makeVirtualCollectionOfBooksInCollectionThatHaveLanguage(
         label,
         title: label,
         urlKey: baseCollection.urlKey + "/:language:" + languageCode,
-        layout: "all-books",
+        layout: layoutOfLanguagePage,
+
+        // This could be too harsh for a default. One can think up conditions where a book would get hidden.
+        // At the moment none seem compelling to me (JH) but I could be wrong or not thinking of the right scenario.
+        // In any case, this is designed to be added to contentful at some point instead of being hard coded.
+        duplicateBookFilterName:
+            DuplicateBookFilter.PreferBooksWhereL1MatchesContextLanguage,
+        contextLangTag: languageCode,
     };
 }

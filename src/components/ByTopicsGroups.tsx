@@ -1,7 +1,7 @@
 import React from "react";
 import { ICollection } from "../model/ContentInterfaces";
 import { BookCardGroup } from "./BookCardGroup";
-import { getContextLangIsoFromLanguageSegment } from "./Routes";
+import { getContextLangTagFromLanguageSegment } from "./Routes";
 import { kTopicList } from "../model/ClosedVocabularies";
 import { getTranslation } from "../localization/GetLocalizations";
 import { kNameOfNoTopicCollection } from "../connection/LibraryQueryHooks";
@@ -12,7 +12,7 @@ import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 export const ByTopicsGroups: React.FunctionComponent<{
     collection: ICollection;
 }> = (props) => {
-    const contextLangIso = getContextLangIsoFromLanguageSegment(
+    const contextLangTag = getContextLangTagFromLanguageSegment(
         props.collection.urlKey
     );
 
@@ -26,9 +26,9 @@ export const ByTopicsGroups: React.FunctionComponent<{
                     key={topic}
                     collection={makeVirtualCollectionOfBooksInCollectionThatHaveTopic(
                         props.collection,
-                        topic
+                        topic,
+                        contextLangTag
                     )}
-                    contextLangIso={contextLangIso}
                 />
             ))}
 
@@ -37,9 +37,9 @@ export const ByTopicsGroups: React.FunctionComponent<{
                 rows={99}
                 collection={makeVirtualCollectionOfBooksInCollectionThatHaveTopic(
                     props.collection,
-                    kNameOfNoTopicCollection
+                    kNameOfNoTopicCollection,
+                    contextLangTag
                 )}
-                contextLangIso={contextLangIso}
             />
         </React.Fragment>
     );
@@ -47,7 +47,8 @@ export const ByTopicsGroups: React.FunctionComponent<{
 
 export function makeVirtualCollectionOfBooksInCollectionThatHaveTopic(
     baseCollection: ICollection,
-    topic: string
+    topic: string,
+    contextLangTag?: string
 ): ICollection {
     const filter = { ...baseCollection.filter, topic };
     const label = `${getLocalizedCollectionLabel(
@@ -62,6 +63,7 @@ export function makeVirtualCollectionOfBooksInCollectionThatHaveTopic(
         label,
         title: label,
         urlKey,
+        contextLangTag: contextLangTag || baseCollection.contextLangTag,
     };
     return result;
 }

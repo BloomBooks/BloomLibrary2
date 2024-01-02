@@ -13,6 +13,7 @@ import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 import { appHostedSegment } from "../components/appHosted/AppHostedUtils";
 import { generateCollectionFromFilters } from "../components/CollectionSubsetPage";
 import { isFacetedSearchString } from "../connection/LibraryQueryHooks";
+import { getContextLangTagFromLanguageSegment } from "../components/Routes";
 
 /* From original design: Each collection has
     id
@@ -217,6 +218,11 @@ export function useGetCollection(
     }
 
     if (collection) {
+        // e.g. https://bloomlibrary.org/language:zh-CN should have context language zh-CN
+        collection.contextLangTag = getContextLangTagFromLanguageSegment(
+            collection.urlKey
+        );
+
         // Cache the raw collections from Contentful, before any custom filters are applied to it
         // 1) What the cache is doing for is saving us from retrieving collection definitions from contentful.
         //    The custom filters are irrelevant to that stage, so they need not be included in the cache key

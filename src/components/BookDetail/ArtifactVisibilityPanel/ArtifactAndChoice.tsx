@@ -22,8 +22,7 @@ import readIcon from "../../../assets/Read.svg";
 import translationIcon from "../../../assets/Translation.svg";
 import { commonUI } from "../../../theme";
 import { useGetLoggedInUser } from "../../../connection/LoggedInUser";
-import { ArtifactType } from "../../../model/Book";
-import { getArtifactDownloadAltText } from "../ArtifactHelper";
+import { ArtifactType, getArtifactDownloadAltText } from "../ArtifactHelper";
 import { useIntl } from "react-intl";
 
 const useStyles = makeStyles(() =>

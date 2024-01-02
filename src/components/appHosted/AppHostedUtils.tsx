@@ -52,22 +52,28 @@ export function useGetArtifactSize(artifactUrl: string): string {
             xhr.onreadystatechange = function () {
                 if (this.readyState === this.DONE) {
                     const sizeString = xhr.getResponseHeader("Content-Length");
-                    if (sizeString) {
-                        const size = parseInt(sizeString);
-                        if (size > 1000000) {
-                            const mbTimes10 = Math.round(size / 1000000);
-                            setArtifactSize(mbTimes10 / 10 + "MB");
-                        } else {
-                            const kbSize = Math.round(size / 1000);
-                            setArtifactSize(kbSize + "KB");
-                        }
-                    }
+                    if (sizeString)
+                        setArtifactSize(getFileSizeForUI(sizeString));
                 }
             };
             xhr.send();
         }
     }, [artifactUrl]);
     return artifactSize;
+}
+
+// exported for testing
+export function getFileSizeForUI(sizeString: string): string {
+    const size = parseInt(sizeString, 10);
+    if (isNaN(size)) return "";
+
+    if (size >= 1000000) {
+        const mbTimes10 = Math.round(size / 100000);
+        return mbTimes10 / 10 + "MB";
+    } else {
+        const kbSize = Math.round(size / 1000);
+        return kbSize + "KB";
+    }
 }
 
 // Get the label we want to use to describe a collection or collection subset

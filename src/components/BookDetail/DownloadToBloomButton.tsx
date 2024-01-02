@@ -15,10 +15,11 @@ import { useTheme } from "@material-ui/core";
 import { useLocation } from "react-router-dom";
 import { getTranslateIcon, TranslateButton } from "./TranslateButton";
 import { GetTemplateButton } from "./GetTemplateButton";
+import { isInCreateSectionOfSite } from "../pages/ThemeForLocation";
 
 interface ITranslateButtonProps {
     book: Book;
-    contextLangIso?: string; // if we know the user is working with books in a particular language, this tells which one.
+    contextLangTag?: string; // if we know the user is working with books in a particular language, this tells which one.
     fullWidth?: boolean;
 }
 
@@ -45,8 +46,7 @@ export const DownloadToBloomButton: React.FunctionComponent<ITranslateButtonProp
     // Ideally, this would be defined at some higher level and I could just use it here.
     // But since it uses a hook, that greatly limits our ability to extract it.
     // It didn't seem worth adding a whole new context provider.
-    const inCreate =
-        useLocation().pathname.toLowerCase().indexOf("create") > -1;
+    const inCreate = isInCreateSectionOfSite(useLocation().pathname);
 
     // This set of three properties controls how the translate version is different
     // from the template version. If it gets any more complicated, we should create
@@ -144,7 +144,7 @@ export const DownloadToBloomButton: React.FunctionComponent<ITranslateButtonProp
                         setDownloadingDialogOpen(true);
                     }
                 }}
-                contextLangIso={props.contextLangIso}
+                contextLangTag={props.contextLangTag}
             ></DownloadPreflightDialog>
             <DownloadingShellbookDialog
                 book={props.book}
@@ -152,7 +152,7 @@ export const DownloadToBloomButton: React.FunctionComponent<ITranslateButtonProp
                 close={() => {
                     setDownloadingDialogOpen(false);
                 }}
-                contextLangIso={props.contextLangIso}
+                contextLangTag={props.contextLangTag}
             ></DownloadingShellbookDialog>
         </React.Fragment>
     );

@@ -214,7 +214,9 @@ export const CollectionSubsetPage: React.FunctionComponent<{
     ) {
         showAll = true;
         maxRows = 1000;
-    } else if ((props.collectionName + props.filters).indexOf("level:") >= 0) {
+    }
+    // if we were already down to the level of levels or topics, just show them all.
+    else if ((props.collectionName + props.filters).indexOf("level:") >= 0) {
         subList = <ByTopicsGroups collection={subcollection} />;
         // If we had previously gone down a topic trail, then just show them all.
         if ((props.collectionName + props.filters).indexOf("topic:") >= 0) {
@@ -223,6 +225,18 @@ export const CollectionSubsetPage: React.FunctionComponent<{
                 maxRows = 1000; // show all of the books (or 5000 of them anyway)
             }
         }
+    }
+    // Showing books by topic, but not by level, so show by level under the topic.
+    else if ((props.collectionName + props.filters).indexOf("topic:") >= 0) {
+        subList = <ByLevelGroups collection={subcollection} />;
+    }
+    // e.g. CollectionLayout is "by-language/by-topic"
+    else if (subcollection.layout === "by-topic") {
+        subList = <ByTopicsGroups collection={subcollection} />;
+    }
+    // e.g. CollectionLayout is "by-language/by-level"
+    else if (subcollection.layout === "by-level") {
+        subList = <ByLevelGroups collection={subcollection} />;
     }
     if (showAll) {
         subList = (

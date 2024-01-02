@@ -13,8 +13,9 @@ import {
     getArtifactUrl,
     getArtifactVisibilitySettings,
     getArtifactTypeFromKey,
+    ArtifactType,
 } from "../ArtifactHelper";
-import { Book, ArtifactType } from "../../../model/Book";
+import { Book } from "../../../model/Book";
 
 // A set of controls by which the user can hide or show the artifacts for a book
 // which the harvester produced.
@@ -74,6 +75,9 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
         // order as they appear in the enum. And we don't want any unexpected
         // keys which don't appear in the enum.
         return Object.keys(ArtifactType).filter((artifactTypeKey) => {
+            // We don't yet allow staff or users to show/hide bloomSource.
+            if (artifactTypeKey === ArtifactType.bloomSource) return false;
+
             return (
                 book.artifactsToOfferToUsers[
                     getArtifactTypeFromKey(artifactTypeKey)

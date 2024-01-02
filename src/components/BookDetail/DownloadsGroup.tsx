@@ -14,8 +14,9 @@ import { PlayStoreIcon } from "./PlayStoreIcon";
 // See comment in BloomPubIcon about why this is a special case
 import { BloomPubIcon } from "./BloomPubIcon";
 
-import { ArtifactType, Book } from "../../model/Book";
+import { Book } from "../../model/Book";
 import {
+    ArtifactType,
     getArtifactDownloadAltText,
     getArtifactUrl,
     getArtifactVisibilitySettings,
@@ -42,7 +43,7 @@ interface IArtifactUI {
 
 export const DownloadsGroup: React.FunctionComponent<{
     book: Book;
-    contextLangIso?: string;
+    contextLangTag?: string;
 }> = observer((props) => {
     const l10n = useIntl();
     const { bloomReaderAvailable, cantUseBloomD, mobile } = useContext(
@@ -252,7 +253,7 @@ export const DownloadsGroup: React.FunctionComponent<{
                                                                 );
                                                                 const params = getBookAnalyticsInfo(
                                                                     props.book,
-                                                                    props.contextLangIso,
+                                                                    props.contextLangTag,
                                                                     a.analyticsType
                                                                 );
                                                                 track(

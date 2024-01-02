@@ -36,7 +36,11 @@ export const CollectionInfoWidget: React.FunctionComponent<{
                     props.collection.contentfulId
                         ? "Click the icon to edit in Contentful\r\n"
                         : ""
-                }${collectionInfo}\r\n${filterInfoString(filter)}`}
+                }${collectionInfo}\r\n${filterInfoString(
+                    filter
+                )}\r\nDuplicate Removal = ${
+                    props.collection.duplicateBookFilterName
+                }\r\nContext Lang = ${props.collection.contextLangTag}`}
             >
                 <FilterTiltShiftIcon
                     css={css`

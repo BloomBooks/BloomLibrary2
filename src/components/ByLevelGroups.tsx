@@ -1,17 +1,18 @@
 import React from "react";
 import { IntlShape, useIntl } from "react-intl";
 import { getBestLevelStringOrEmpty } from "../connection/LibraryQueryHooks";
-import { getContextLangIsoFromLanguageSegment } from "./Routes";
+import { getContextLangTagFromLanguageSegment } from "./Routes";
 import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 import { ICollection } from "../model/ContentInterfaces";
 import { BookCardGroup } from "./BookCardGroup";
+import { DuplicateBookFilter } from "../model/DuplicateBookFilter";
 
 // For each level (whether set by a human or just computed), show a row of books for that level.
 export const ByLevelGroups: React.FunctionComponent<{
     collection: ICollection;
 }> = (props) => {
     const l10n = useIntl();
-    const contextLangIso = getContextLangIsoFromLanguageSegment(
+    const contextLangTag = getContextLangTagFromLanguageSegment(
         props.collection.urlKey
     );
     return (
@@ -29,9 +30,9 @@ export const ByLevelGroups: React.FunctionComponent<{
                     collection={makeVirtualCollectionOfBooksInCollectionThatHaveLevel(
                         props.collection,
                         level,
-                        l10n
+                        l10n,
+                        contextLangTag
                     )}
-                    contextLangIso={contextLangIso}
                 />
             ))}
 
@@ -48,9 +49,9 @@ export const ByLevelGroups: React.FunctionComponent<{
                 collection={makeVirtualCollectionOfBooksInCollectionThatHaveLevel(
                     props.collection,
                     "empty",
-                    l10n
+                    l10n,
+                    contextLangTag
                 )}
-                contextLangIso={contextLangIso}
             />
         </React.Fragment>
     );
@@ -59,7 +60,8 @@ export const ByLevelGroups: React.FunctionComponent<{
 export function makeVirtualCollectionOfBooksInCollectionThatHaveLevel(
     baseCollection: ICollection,
     level: string,
-    l10n: IntlShape
+    l10n: IntlShape,
+    contextLangTag?: string
 ): ICollection {
     let search = "level:" + level;
     if (baseCollection.filter?.search) {
@@ -96,6 +98,9 @@ export function makeVirtualCollectionOfBooksInCollectionThatHaveLevel(
         title: label,
         urlKey,
         layout: "by-topic",
+        contextLangTag: contextLangTag || baseCollection.contextLangTag,
+        duplicateBookFilterName:
+            DuplicateBookFilter.PreferBooksWhereL1MatchesContextLanguage,
     };
     if (level !== "empty") {
         result.secondaryFilter = (bookInfo) =>

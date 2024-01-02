@@ -9,7 +9,8 @@ import Button from "@material-ui/core/Button";
 import BloomPubIcon from "../../assets/BloomPubWhite.svg";
 import { commonUI } from "../../theme";
 import { getArtifactUrl } from "./ArtifactHelper";
-import { Book, ArtifactType } from "../../model/Book";
+import { Book } from "../../model/Book";
+import { ArtifactType } from "./ArtifactHelper";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { track } from "../../analytics/Analytics";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -17,7 +18,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 interface IProps {
     book: Book;
     fullWidth?: boolean;
-    contextLangIso?: string;
+    contextLangTag?: string;
 }
 export const ReadOfflineButton: React.FunctionComponent<IProps> = (props) => {
     const l10n = useIntl();
@@ -35,7 +36,7 @@ export const ReadOfflineButton: React.FunctionComponent<IProps> = (props) => {
             onClick={() => {
                 const params = getBookAnalyticsInfo(
                     props.book,
-                    props.contextLangIso,
+                    props.contextLangTag,
                     "bloompub"
                 );
                 track("Download Book", params);

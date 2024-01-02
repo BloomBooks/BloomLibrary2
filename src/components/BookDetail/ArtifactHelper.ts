@@ -1,9 +1,19 @@
-import { Book, ArtifactType } from "../../model/Book";
+import { Book } from "../../model/Book";
 import {
     ArtifactVisibilitySettings,
     ArtifactVisibilitySettingsGroup,
 } from "../../model/ArtifactVisibilitySettings";
 import { IntlShape } from "react-intl";
+
+// The order here matters. See ArtifactVisibilityPanel.getExistingArtifactTypeKeys().
+export enum ArtifactType {
+    pdf = "pdf",
+    epub = "epub",
+    bloomReader = "bloomReader",
+    readOnline = "readOnline",
+    shellbook = "shellbook",
+    bloomSource = "bloomSource",
+}
 
 export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
     let url;
@@ -53,9 +63,18 @@ function getBookOrderUrl(book: Book) {
         book.baseUrl
     );
     if (match) {
+        // I wasn't sure what to put for our initial minVersion.
+        // We are introducing checking it in Bloom 5.7, so we could use that.
+        // But clearly versions prior to that still work with the current format.
+        // I thought about 1.0, but I'm sure it doesn't work that far back.
+        // I chose 4.8 because I actually tested that to make sure it ignores the minVersion parameter.
+        // I tested 4.8 because it was published about 3 years prior to this change.
+        // But the choice is pretty arbitrary and basically irrelevant until we bump it higher than 5.7.
+        const minVersion = 4.8;
+
         return `bloom://localhost/order?orderFile=${
             match[1]
-        }&title=${encodeURIComponent(book.title)}`;
+        }&title=${encodeURIComponent(book.title)}&minVersion=${minVersion}`;
     }
 
     return "";
@@ -82,13 +101,13 @@ export function getArtifactDownloadAltText(
                 defaultMessage:
                     "Download BloomPUB for Bloom Reader or BloomPub Viewer",
             });
-        case ArtifactType.readOnline:
-            return "";
         case ArtifactType.shellbook:
             return l10n.formatMessage({
                 id: "book.detail.translateButton.download",
                 defaultMessage: "Download into Bloom Editor",
             });
+        default:
+            return "";
     }
 }
 
@@ -167,11 +186,14 @@ function getDownloadUrl(book: Book, fileType: string): string | undefined {
     const bookName = getBookNamePartOfUrl(book.baseUrl);
 
     if (bookName) {
-        if (fileType === "bloompub") {
-            const fileExt =
-                book.bloomPUBVersion && book.bloomPUBVersion >= 1
-                    ? ".bloompub"
-                    : ".bloomd";
+        if (fileType === "bloompub" || fileType === "bloomSource") {
+            let fileExt = `.${fileType}`;
+            if (fileType === "bloompub") {
+                fileExt =
+                    book.bloomPUBVersion && book.bloomPUBVersion >= 1
+                        ? ".bloompub"
+                        : ".bloomd";
+            }
             return harvesterBaseUrl + bookName + fileExt;
         }
         return harvesterBaseUrl + fileType + "/" + bookName + "." + fileType;
