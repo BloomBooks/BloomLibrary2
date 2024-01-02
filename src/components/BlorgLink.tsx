@@ -82,10 +82,16 @@ export const BlorgLink: React.FunctionComponent<IBlorgLinkProps> = (props) => {
         }
     }
 
-    const query = new URLSearchParams(location.search);
-    const queryComponent = getLinkUrlQueryComponent(query);
+    let to = props.href;
+    if (location.search) {
+        const queryParamsToForward = getQueryParamsToForward(
+            new URLSearchParams(location.search)
+        );
 
-    let to = props.href + queryComponent;
+        const separator = props.href.includes("?") ? "&" : "?";
+        to += separator + queryParamsToForward.toString();
+    }
+
     if (!to.startsWith("/")) {
         /* The initial slash keeps url from just being 'tacked on' to existing url; not what we want here. */
         to = `/${to}`;
@@ -125,32 +131,22 @@ function isExternalOrEmail(url: string): boolean {
     // }
 }
 
-// Returns the query component (the part including/after the question mark) of the URL to pass to MuiLink's "to" parameter
-function getLinkUrlQueryComponent(query: URLSearchParams): string {
-    // Currently the url query contains nothing other than the params we need to forward
-    // from the current page to the new page
-    const queryParams = getQueryParamsToForward(query);
-    if (queryParams) {
-        return "?" + queryParams;
-    } else {
-        return "";
-    }
-}
-
-// Returns (as a string) the query parameters that should be forwarded from the current page to the next page
-// Parameters beginning with "bl-" are defined as those to be forwarded
+// Returns the query parameters that should be forwarded from the current page to the next page
+// Parameters beginning with "bl-" are defined as those to be forwarded.
+// In addition, we keep the "formats" parameter.
+//   This is used by SPApp to indicate it wants to download .bloomsource files.
+//   They set it when initially navigating to the landing page, and we want to keep it.
 function getQueryParamsToForward(
     query: URLSearchParams // the current query parameters
-): string {
-    const params: string[] = [];
+): URLSearchParams {
+    const paramsToForward = new URLSearchParams();
     query.forEach((value, key) => {
-        if (key.startsWith("bl-")) {
-            params.push(`${key}=${value}`);
+        if (key.startsWith("bl-") || key === "formats") {
+            paramsToForward.set(key, value);
         }
     });
 
-    const paramString = params.join("&");
-    return paramString;
+    return paramsToForward;
 }
 
 export function addParamToUrl(url: string, key: string, value: string): string {

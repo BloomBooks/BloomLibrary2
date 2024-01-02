@@ -98,7 +98,7 @@ export function makeVirtualCollectionOfBooksInCollectionThatHaveLevel(
         title: label,
         urlKey,
         layout: "by-topic",
-        contextLangTag,
+        contextLangTag: contextLangTag || baseCollection.contextLangTag,
         duplicateBookFilterName:
             DuplicateBookFilter.PreferBooksWhereL1MatchesContextLanguage,
     };
