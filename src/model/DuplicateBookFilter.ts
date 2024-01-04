@@ -41,12 +41,24 @@ export function PreferBooksWithL1MatchingFocusLanguage_DuplicateBookFilter(
     for (const book of books) {
         let hash = book.phashOfFirstContentImage;
         if (languageInFocus) {
-            const titleInContextLang = getBookTitleInLanguageOrUndefined(
+            let titleInContextLang = getBookTitleInLanguageOrUndefined(
                 book,
                 languageInFocus
             );
-            if (!titleInContextLang && languageInFocus !== kTagForNoLanguage) {
-                continue; // just skip it. There are surprisingly many books that have some English but don't have the title in English. E.g. 6jFUJ8jeEv
+            if (!titleInContextLang) {
+                if (book.features.includes("signLanguage")) {
+                    // Sign language books don't have a title in the sign language.
+                    // Usually they do have an English title.
+                    titleInContextLang = getBookTitleInLanguageOrUndefined(
+                        book,
+                        "en"
+                    );
+                    if (!titleInContextLang) {
+                        titleInContextLang = book.allTitles?.[0] ?? "";
+                    }
+                } else if (languageInFocus !== kTagForNoLanguage) {
+                    continue; // just skip it. There are surprisingly many books that have some English but don't have the title in English. E.g. 6jFUJ8jeEv
+                }
             }
             hash += (titleInContextLang ?? "").toLowerCase();
         }
