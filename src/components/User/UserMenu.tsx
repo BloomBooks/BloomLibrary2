@@ -137,7 +137,7 @@ export const UserMenu: React.FunctionComponent<IUserMenuProps> = (props) => {
     }, []);
 
     const showMenu = (ev: any) => {
-        setAnchorEl(ev.target as Element);
+        setAnchorEl(ev.currentTarget);
     };
     const closeMenu = () => setAnchorEl(null);
     const handleLogin = () => {

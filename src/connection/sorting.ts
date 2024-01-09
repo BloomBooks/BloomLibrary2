@@ -76,6 +76,8 @@ export function doExpensiveClientSideSortingIfNeeded(
                 b.sortKey = getBookSortKey(t, orderingScheme);
             });
 
+            if (languageForSorting === "none") languageForSorting = undefined;
+
             const comparator = new Intl.Collator(
                 languageForSorting /* it's ok if this is missing */,
                 { numeric: true } // will strip off leading 0's.
