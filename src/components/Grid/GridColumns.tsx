@@ -235,6 +235,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
         },
         {
             name: "draft",
+            moderatorOnly: true, // only moderators can see draft books (BL-12973)
             defaultVisible: false,
             sortingEnabled: false, // parse server doesn't seem to be able to sort on booleans?
             getCellValue: (b: Book) => (b.draft ? "Yes" : "No"),
