@@ -53,7 +53,7 @@ import { getBookGridColumnsDefinitions, IGridColumn } from "./GridColumns";
 import { useStorageState } from "react-storage-hooks";
 import { Book } from "../../model/Book";
 import StaffPanel from "../Admin/StaffPanel";
-import { useGetLoggedInUser } from "../../connection/LoggedInUser";
+import { useGetLoggedInUser, User } from "../../connection/LoggedInUser";
 import { observer } from "mobx-react-lite";
 import { IGridControlProps } from "./GridControl";
 import { CachedTablesContext } from "../../model/CacheProvider";
@@ -144,7 +144,8 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
             bookGridColumnDefinitions,
             gridFilters,
             props.contextFilter || {},
-            languages
+            languages,
+            user
         );
 
         if (props.setCurrentFilter) {
@@ -347,7 +348,8 @@ function CombineGridAndSearchBoxFilter(
     bookGridColumns: IGridColumn[],
     gridFilters: GridFilter[],
     routerFilter: IFilter,
-    languages: ILanguage[]
+    languages: ILanguage[],
+    user: User | undefined
 ): IFilter {
     // The result of the search box is encoded. We need it decoded in order to search correctly
     // (e.g.) on things like "topic:math", where the colon would be encoded otherwise.
@@ -414,6 +416,19 @@ function CombineGridAndSearchBoxFilter(
             }
         }
     });
+    // only moderators or uploaders can see draft books (BL-12973)
+    if (!user) {
+        // if we don't know who the user is, we assume they are not a moderator
+        f.draft = BooleanOptions.No;
+    } else if (!user.moderator) {
+        // if the user is not a moderator, allow draft books only if they
+        // are the uploader
+        f.anyOfThese = f.anyOfThese || [];
+        f.anyOfThese.push({ draft: BooleanOptions.No });
+        f.anyOfThese.push({
+            search: `uploader:${user.email}`,
+        });
+    }
     return f;
 }
 
