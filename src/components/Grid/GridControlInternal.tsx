@@ -190,8 +190,12 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
         useEffect(() => {
             setColumns(
                 bookGridColumnDefinitions.filter(
-                    // some columns we only include if we are logged in with the right permissions
-                    (col) => !col.moderatorOnly || user?.moderator
+                    // some columns we include only if we are logged in, or
+                    // logged in with the right permissions
+                    (col) =>
+                        user?.moderator ||
+                        (!col.moderatorOnly && !col.loggedInOnly) ||
+                        (!col.moderatorOnly && col.loggedInOnly && user)
                 )
             );
             //setColumnNamesInDisplayOrder(bookGridColumns.map(c => c.name));
@@ -416,17 +420,24 @@ function CombineGridAndSearchBoxFilter(
             }
         }
     });
-    // only moderators or uploaders can see draft books (BL-12973)
+    // only moderators or uploaders can see draft (or out-of-circulation)
+    // books (BL-12973)
     if (!user) {
         // if we don't know who the user is, we assume they are not a moderator
         f.draft = BooleanOptions.No;
+        f.inCirculation = BooleanOptions.Yes;
     } else if (!user.moderator) {
-        // if the user is not a moderator, allow draft books only if they
-        // are the uploader
+        // if the user is not a moderator, allow draft (or out-of-circulation)
+        // books only if they are the uploader
         f.anyOfThese = f.anyOfThese || [];
-        f.anyOfThese.push({ draft: BooleanOptions.No });
+        f.anyOfThese.push({
+            draft: BooleanOptions.No,
+            inCirculation: BooleanOptions.Yes,
+        });
         f.anyOfThese.push({
             search: `uploader:${user.email}`,
+            draft: BooleanOptions.All,
+            inCirculation: BooleanOptions.All,
         });
     }
     return f;
