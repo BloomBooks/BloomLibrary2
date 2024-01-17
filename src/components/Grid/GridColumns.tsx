@@ -20,6 +20,7 @@ import { BlorgLink } from "../BlorgLink";
 
 export interface IGridColumn extends DevExpressColumn {
     moderatorOnly?: boolean;
+    loggedInOnly?: boolean;
     defaultVisible?: boolean;
     // A column definition specifies this if it needs a custom filter control
     getCustomFilterComponent?: FunctionComponent<TableFilterRow.CellProps>;
@@ -222,6 +223,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
         },
         {
             name: "inCirculation",
+            loggedInOnly: true,
             sortingEnabled: false, // parse server doesn't seem to be able to sort on booleans?
             getCellValue: (b: Book) => (b.inCirculation ? "Yes" : "No"),
             getCustomFilterComponent: (props: TableFilterRow.CellProps) => (
@@ -235,6 +237,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
         },
         {
             name: "draft",
+            loggedInOnly: true,
             defaultVisible: false,
             sortingEnabled: false, // parse server doesn't seem to be able to sort on booleans?
             getCellValue: (b: Book) => (b.draft ? "Yes" : "No"),
