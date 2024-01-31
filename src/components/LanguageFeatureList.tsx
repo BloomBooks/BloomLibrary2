@@ -12,7 +12,7 @@ import {
 import { getUniqueLanguages } from "./LanguageLink";
 import { useTheme } from "@material-ui/core";
 import TruncateMarkup from "react-truncate-markup";
-import { getDisplayNamesForLanguage } from "../model/Language";
+import { ILanguage, getDisplayNamesForLanguage } from "../model/Language";
 import { commonUI } from "../theme";
 import { useShowTroubleshootingStuff } from "../Utilities";
 
@@ -34,16 +34,24 @@ export const LanguageFeatureList: React.FunctionComponent<IProps> = (props) => {
     // Figure out what to show in the language list area.
     // It's a mix of simple text nodes and possibly feature icons.
     const uniqueLanguages = getUniqueLanguages(props.basicBookInfo.languages);
-    // if contextLangTag is present, put it first in the list.
-    if (props.contextLangTag) {
-        const contextLang = uniqueLanguages.filter(
-            (language) => language.isoCode === props.contextLangTag
-        )[0];
-        if (contextLang) {
-            uniqueLanguages.splice(uniqueLanguages.indexOf(contextLang), 1);
-            uniqueLanguages.unshift(contextLang);
+
+    function moveLanguageToFront(langList: ILanguage[], frontLangTag?: string) {
+        if (frontLangTag) {
+            const frontLang = langList.filter(
+                (language) => language.isoCode === frontLangTag
+            )[0];
+            if (frontLang) {
+                langList.splice(langList.indexOf(frontLang), 1);
+                langList.unshift(frontLang);
+            }
         }
     }
+    // First, put L1 at the front of the list
+    moveLanguageToFront(uniqueLanguages, props.basicBookInfo.lang1Tag);
+
+    // If contextLangTag is present, put it first in the list, even before L1
+    moveLanguageToFront(uniqueLanguages, props.contextLangTag);
+
     function getLanguageElements(showOneNamePerLanguage: boolean) {
         const languageElements: any[] = [];
         for (const language of uniqueLanguages) {
