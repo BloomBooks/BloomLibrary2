@@ -4,11 +4,11 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React from "react";
+import React, { useRef, useState } from "react";
 import { useGetBookDetail } from "../../connection/LibraryQueryHooks";
 import { Book } from "../../model/Book";
 
-import { Checkbox, Divider, FormControlLabel } from "@material-ui/core";
+import { Button, Checkbox, Divider, FormControlLabel } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 
 import { observer } from "mobx-react-lite";
@@ -44,6 +44,8 @@ import {
     useIsAppHosted,
 } from "../appHosted/AppHostedUtils";
 import { Helmet } from "react-helmet";
+import { DownloadingShellbookDialog } from "./DownloadingShellbookDialog";
+import { DownloadToBloomDialogs } from "./DownloadToBloomButton";
 
 const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     const l10n = useIntl();
@@ -114,13 +116,13 @@ const BookDetailInternal: React.FunctionComponent<{
             `}
         />
     );
-
     const embeddedMode = useIsEmbedded();
     const appHostedMode = useIsAppHosted();
     const user = LoggedInUser.current;
     const userIsUploader = user?.username === props.book.uploader?.username;
     const l10n = useIntl();
     const getResponsiveChoice = useResponsiveChoice();
+    const showDownloadDialog = useRef<() => void | undefined>();
     return (
         <div
             // had width:800px, but that destroys responsiveness
@@ -371,22 +373,93 @@ const BookDetailInternal: React.FunctionComponent<{
                             />
                         )}
                         {userIsUploader && (
-                            <Alert
-                                severity="info"
+                            <div
                                 css={css`
-                                    margin-top: 20px;
+                                    display: flex;
+                                    flex-direction: column;
                                 `}
                             >
-                                <FormattedMessage
-                                    id={"book.detail.updateBookNotice"}
-                                    defaultMessage={
-                                        "If you want to update this book with any changes, just upload it again from Bloom, using the same account. Your new version will replace this one."
+                                <h2
+                                    css={css`
+                                        margin-bottom: 0;
+                                        color: ${commonUI.colors.bloomBlue};
+                                    `}
+                                    id="book.detail.editing"
+                                >
+                                    Editing
+                                </h2>
+                                <Alert severity="info">
+                                    <div>
+                                        <FormattedMessage
+                                            id={"book.detail.updateBookNotice"}
+                                            defaultMessage={
+                                                "If you want to update this book with any changes, just upload it again from Bloom, using the same account. Your new version will replace this one."
+                                            }
+                                        />
+                                    </div>
+                                    <div
+                                        css={css`
+                                            margin-top: 10px;
+                                        `}
+                                    >
+                                        <FormattedMessage
+                                            id={
+                                                "book.detail.getForEditBookNotice"
+                                            }
+                                            defaultMessage={
+                                                "If necessary, we can give you the book to edit in Bloom. You must first have Bloom 5.7 or greater installed ({downloadLink})"
+                                            }
+                                            values={{
+                                                downloadLink: (
+                                                    <BlorgLink
+                                                        href="page/create/downloads"
+                                                        css={css`
+                                                            color: ${commonUI
+                                                                .colors
+                                                                .bloomBlue};
+                                                        `}
+                                                    >
+                                                        <FormattedMessage
+                                                            id={
+                                                                "book.detail.downloadBloom"
+                                                            }
+                                                            defaultMessage={
+                                                                "Download Bloom"
+                                                            }
+                                                        />
+                                                    </BlorgLink>
+                                                ),
+                                            }}
+                                        />
+                                    </div>
+                                </Alert>
+                                <Button
+                                    onClick={() =>
+                                        showDownloadDialog.current?.()
                                     }
-                                />
-                            </Alert>
+                                    color="secondary"
+                                    variant="outlined"
+                                    css={css`
+                                        align-self: flex-end;
+                                        margin-top: 5px;
+                                    `}
+                                >
+                                    <FormattedMessage
+                                        id={"book.detail.editDownload"}
+                                        defaultMessage={
+                                            "Download into Bloom for editing"
+                                        }
+                                    />
+                                </Button>
+                            </div>
                         )}
-
-                        <BookExtraPanels book={props.book} />
+                        <DownloadToBloomDialogs
+                            book={props.book}
+                            getShowFunction={(download) =>
+                                (showDownloadDialog.current = download)
+                            }
+                            forEdit={true}
+                        />
                     </React.Fragment>
                 )}
             </div>
