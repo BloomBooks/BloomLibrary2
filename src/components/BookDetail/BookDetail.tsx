@@ -97,6 +97,13 @@ const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     }
 };
 
+// This constant lets us keep active some code we don't want to take effect
+// until Bloom 5.7 is shipping. I don't want to comment it out because I want
+// it to continue to keep up to date. Also, a single line here can just be changed here to enable it.
+// The true/false tricks lint into not complaining about unreachable code.
+let bloom57IsShipping = true;
+bloom57IsShipping = false;
+
 const BookDetailInternal: React.FunctionComponent<{
     book: Book;
     contextLangTag?: string;
@@ -396,60 +403,64 @@ const BookDetailInternal: React.FunctionComponent<{
                                             }
                                         />
                                     </div>
-                                    <div
+                                    {bloom57IsShipping && (
+                                        <div
+                                            css={css`
+                                                margin-top: 10px;
+                                            `}
+                                        >
+                                            <FormattedMessage
+                                                id={
+                                                    "book.detail.getForEditBookNotice"
+                                                }
+                                                defaultMessage={
+                                                    "If necessary, we can give you the book to edit in Bloom. You must first have Bloom 5.7 or greater installed ({downloadLink})"
+                                                }
+                                                values={{
+                                                    downloadLink: (
+                                                        <BlorgLink
+                                                            href="page/create/downloads"
+                                                            css={css`
+                                                                color: ${commonUI
+                                                                    .colors
+                                                                    .bloomBlue};
+                                                            `}
+                                                        >
+                                                            <FormattedMessage
+                                                                id={
+                                                                    "book.detail.downloadBloom"
+                                                                }
+                                                                defaultMessage={
+                                                                    "Download Bloom"
+                                                                }
+                                                            />
+                                                        </BlorgLink>
+                                                    ),
+                                                }}
+                                            />
+                                        </div>
+                                    )}
+                                </Alert>
+                                {bloom57IsShipping && (
+                                    <Button
+                                        onClick={() =>
+                                            showDownloadDialog.current?.()
+                                        }
+                                        color="secondary"
+                                        variant="outlined"
                                         css={css`
-                                            margin-top: 10px;
+                                            align-self: flex-end;
+                                            margin-top: 5px;
                                         `}
                                     >
                                         <FormattedMessage
-                                            id={
-                                                "book.detail.getForEditBookNotice"
-                                            }
+                                            id={"book.detail.editDownload"}
                                             defaultMessage={
-                                                "If necessary, we can give you the book to edit in Bloom. You must first have Bloom 5.7 or greater installed ({downloadLink})"
+                                                "Download into Bloom for editing"
                                             }
-                                            values={{
-                                                downloadLink: (
-                                                    <BlorgLink
-                                                        href="page/create/downloads"
-                                                        css={css`
-                                                            color: ${commonUI
-                                                                .colors
-                                                                .bloomBlue};
-                                                        `}
-                                                    >
-                                                        <FormattedMessage
-                                                            id={
-                                                                "book.detail.downloadBloom"
-                                                            }
-                                                            defaultMessage={
-                                                                "Download Bloom"
-                                                            }
-                                                        />
-                                                    </BlorgLink>
-                                                ),
-                                            }}
                                         />
-                                    </div>
-                                </Alert>
-                                <Button
-                                    onClick={() =>
-                                        showDownloadDialog.current?.()
-                                    }
-                                    color="secondary"
-                                    variant="outlined"
-                                    css={css`
-                                        align-self: flex-end;
-                                        margin-top: 5px;
-                                    `}
-                                >
-                                    <FormattedMessage
-                                        id={"book.detail.editDownload"}
-                                        defaultMessage={
-                                            "Download into Bloom for editing"
-                                        }
-                                    />
-                                </Button>
+                                    </Button>
+                                )}
                             </div>
                         )}
                         <BookExtraPanels book={props.book} />

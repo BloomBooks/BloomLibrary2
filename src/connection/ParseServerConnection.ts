@@ -42,6 +42,7 @@ const local: IConnection = {
 };
 
 export function getConnection(): IConnection {
+    return dev; // TODO: revert this!
     const result = prod;
     // Some previous code which we don't need now...only one case returns anything but prod...
     // but I think it's worth keeping to document the possibilities that we explicitly
