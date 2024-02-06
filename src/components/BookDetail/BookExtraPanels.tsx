@@ -15,6 +15,7 @@ import {
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { HarvesterArtifactUserControl } from "./ArtifactVisibilityPanel/ArtifactVisibilityPanel";
 import { LoggedInUser } from "../../connection/LoggedInUser";
+import { commonUI } from "../../theme";
 export const BookExtraPanels: React.FunctionComponent<{
     book: Book;
 }> = observer((props) => {
@@ -38,22 +39,33 @@ export const BookExtraPanels: React.FunctionComponent<{
     return (
         <div
             css={css`
-                margin-top: 32px;
+                margin-top: 10px;
             `}
         >
             {(user?.moderator || userIsUploader) && (
-                <ExpansionPanel>
-                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                        Which Format Buttons to Show for this Book
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails>
-                        <HarvesterArtifactUserControl
-                            book={props.book}
-                            currentUserIsUploader={userIsUploader}
-                            currentUserIsModerator={user?.moderator}
-                        />
-                    </ExpansionPanelDetails>
-                </ExpansionPanel>
+                <>
+                    <h2
+                        css={css`
+                            margin-bottom: 0;
+                            color: ${commonUI.colors.bloomBlue};
+                        `}
+                        id="book.detail.formats"
+                    >
+                        Formats
+                    </h2>
+                    <ExpansionPanel>
+                        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                            Which Format Buttons to Show for this Book
+                        </ExpansionPanelSummary>
+                        <ExpansionPanelDetails>
+                            <HarvesterArtifactUserControl
+                                book={props.book}
+                                currentUserIsUploader={userIsUploader}
+                                currentUserIsModerator={user?.moderator}
+                            />
+                        </ExpansionPanelDetails>
+                    </ExpansionPanel>
+                </>
             )}
 
             {user?.moderator && (

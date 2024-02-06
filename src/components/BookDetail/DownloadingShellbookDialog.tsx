@@ -25,6 +25,7 @@ interface IDownloadingShellbookDialogProps {
     close: () => void;
     book: Book;
     contextLangTag?: string; // if we know the user is working with books in a particular language, this tells which one.
+    forEdit: boolean;
 }
 
 export const DownloadingShellbookDialog: React.FunctionComponent<IDownloadingShellbookDialogProps> = (
@@ -35,9 +36,13 @@ export const DownloadingShellbookDialog: React.FunctionComponent<IDownloadingShe
     };
     useEffect(() => {
         if (props.open) {
-            downloadShellbook(props.book, props.contextLangTag);
+            if (props.forEdit) {
+                downloadBookToEdit(props.book, props.contextLangTag);
+            } else {
+                downloadShellbook(props.book, props.contextLangTag);
+            }
         }
-    }, [props.book, props.contextLangTag, props.open]);
+    }, [props.book, props.contextLangTag, props.forEdit, props.open]);
     return (
         <Dialog open={props.open} onClose={handleClose}>
             <DialogTitle>
@@ -91,5 +96,11 @@ export const DownloadingShellbookDialog: React.FunctionComponent<IDownloadingShe
 function downloadShellbook(book: Book, contextLangTag?: string) {
     const params = getBookAnalyticsInfo(book, contextLangTag, "shell");
     track("Download Book", params);
-    followUrl(getArtifactUrl(book, ArtifactType.shellbook));
+    followUrl(getArtifactUrl(book, ArtifactType.shellbook, false));
+}
+
+function downloadBookToEdit(book: Book, contextLangTag?: string) {
+    const params = getBookAnalyticsInfo(book, contextLangTag, "shell");
+    track("Download Book To Edit", params);
+    followUrl(getArtifactUrl(book, ArtifactType.shellbook, true));
 }

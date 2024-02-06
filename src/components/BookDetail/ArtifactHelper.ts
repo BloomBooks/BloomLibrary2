@@ -15,7 +15,14 @@ export enum ArtifactType {
     bloomSource = "bloomSource",
 }
 
-export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
+export function getArtifactUrl(
+    book: Book,
+    artifactType: ArtifactType,
+    // only used for shellbook, true if we want to download for editing.
+    // In some ways I would prefer to have a separate artifact type for this, but
+    // we don't want a new entry for that in ArtifactVisibilitySettings.
+    forEdit?: boolean
+): string {
     let url;
     switch (artifactType) {
         case ArtifactType.readOnline:
@@ -24,7 +31,7 @@ export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
             url = getDownloadUrl(book, "bloompub");
             break;
         case ArtifactType.shellbook:
-            url = getBookOrderUrl(book);
+            url = getBookOrderUrl(book, !!forEdit);
             break;
         case ArtifactType.pdf:
             // We need the raw book name here, because we're going for the PDF
@@ -42,7 +49,7 @@ export function getArtifactUrl(book: Book, artifactType: ArtifactType): string {
     return url;
 }
 
-function getBookOrderUrl(book: Book) {
+function getBookOrderUrl(book: Book, forEdit: boolean) {
     if (!book.baseUrl) return "";
 
     // Generate a bookOrder URL from the baseUrl. We used to create and store the bookOrder as a field
@@ -74,7 +81,9 @@ function getBookOrderUrl(book: Book) {
 
         return `bloom://localhost/order?orderFile=${
             match[1]
-        }&title=${encodeURIComponent(book.title)}&minVersion=${minVersion}`;
+        }&title=${encodeURIComponent(book.title)}&minVersion=${minVersion}${
+            forEdit ? "&forEdit=true" : ""
+        }`;
     }
 
     return "";
