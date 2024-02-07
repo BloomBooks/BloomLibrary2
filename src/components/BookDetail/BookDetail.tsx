@@ -412,7 +412,7 @@ const BookDetailInternal: React.FunctionComponent<{
                                                     "book.detail.getForEditBookNotice"
                                                 }
                                                 defaultMessage={
-                                                    "If necessary, we can give you the book to edit in Bloom. You must first have Bloom 5.7 or greater installed ({downloadLink})"
+                                                    "If necessary, we can give you the book to edit in Bloom. You must first have Bloom 5.7 or greater installed ({downloadLink})."
                                                 }
                                                 values={{
                                                     downloadLink: (
