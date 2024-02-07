@@ -97,12 +97,10 @@ const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     }
 };
 
-// This constant lets us keep active some code we don't want to take effect
-// until Bloom 5.7 is shipping. I don't want to comment it out because I want
-// it to continue to keep up to date. Also, a single line here can just be changed here to enable it.
-// The true/false tricks lint into not complaining about unreachable code.
-let bloom57IsShipping = true;
-bloom57IsShipping = false;
+// This should become true or just be removed once 5.7 is shipping.
+// The controls it hides require 5.7, so we don't want ordinary users to see them until then.
+// We do want to be able to test this on our dev site, though.
+const bloom57IsShipping = window.location.hostname.startsWith("dev");
 
 const BookDetailInternal: React.FunctionComponent<{
     book: Book;
