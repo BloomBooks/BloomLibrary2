@@ -217,6 +217,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
         },
         {
             name: "notes",
+            moderatorOnly: true,
             getCellValue: (b: Book) => b.librarianNote,
             defaultVisible: false,
             sortingEnabled: true,
