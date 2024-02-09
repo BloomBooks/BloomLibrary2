@@ -5,7 +5,7 @@ import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
 import React, { useState, useEffect } from "react";
-import { Button, Menu, MenuItem, useTheme } from "@material-ui/core";
+import { Button, Menu, MenuItem } from "@material-ui/core";
 import loginIcon from "../../assets/NoUser.svg";
 // Note, currently using the "compat" version of firebase v9, which doesn't support treeshaking. No reason, just a TODO to upgrade to full v9 API.
 // See https://firebase.google.com/docs/web/modular-upgrade
@@ -24,6 +24,7 @@ import { useCookies } from "react-cookie";
 import { useShowTroubleshootingStuff } from "../../Utilities";
 import { IUserMenuProps } from "./UserMenuCodeSplit";
 import { logOut } from "../../authentication/authentication";
+import { AvatarCircle } from "./AvatarCircle";
 
 // This React component displays a button for functions related to the user who may
 // be logged in. If no user is logged in, it displays a generic icon with pull-down
@@ -51,8 +52,6 @@ export const UserMenu: React.FunctionComponent<IUserMenuProps> = (props) => {
     const user = LoggedInUser.current;
 
     const history = useHistory(); // used to jump to My Books
-
-    const avatarColor = useTheme().palette.secondary.main;
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [unused, setCookie] = useCookies(["loggedIn"]);
@@ -164,9 +163,6 @@ export const UserMenu: React.FunctionComponent<IUserMenuProps> = (props) => {
     };
     // split out buttonHeight else react complains because it doesn't apply to <div>s
     const { buttonHeight, ...otherProps } = props;
-    const Avatar = React.lazy(
-        () => import(/* webpackChunkName: "avatar" */ "react-avatar")
-    );
     return (
         // <FirebaseAuthConsumer>
         //     {(authState: AuthEmission) => (
@@ -233,38 +229,10 @@ export const UserMenu: React.FunctionComponent<IUserMenuProps> = (props) => {
                         //     border: isAuthorized ? "" : "2px solid red"
                         // }}
                     >
-                        <div
-                            id="avatarCircle"
-                            css={css`
-                                border-radius: 50%;
-                                overflow: hidden;
-                                width: ${props.buttonHeight};
-                                height: ${props.buttonHeight};
-                            `}
-                        >
-                            {loggedInUser.photoURL && (
-                                <img
-                                    src={loggedInUser.photoURL}
-                                    alt={l10n.formatMessage({
-                                        id: "usermenu.avatar",
-                                        defaultMessage: "user",
-                                    })}
-                                    css={css`
-                                        width: ${props.buttonHeight};
-                                    `}
-                                />
-                            )}
-                            {!loggedInUser.photoURL && (
-                                <React.Suspense fallback={<div></div>}>
-                                    <Avatar
-                                        email={loggedInUser.email ?? ""}
-                                        name={loggedInUser.displayName ?? ""}
-                                        size={props.buttonHeight}
-                                        color={avatarColor}
-                                    />
-                                </React.Suspense>
-                            )}
-                        </div>
+                        <AvatarCircle
+                            buttonHeight={props.buttonHeight}
+                            loggedInUser={loggedInUser}
+                        />
                     </Button>
                     <Menu
                         id="logout-menu"

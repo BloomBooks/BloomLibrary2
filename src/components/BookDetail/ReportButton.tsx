@@ -27,6 +27,7 @@ export const ReportButton: React.FunctionComponent<{
                     display: flex;
                     align-items: center;
                     margin-top: 10px !important;
+                    margin-bottom: 10px;
                 `}
                 onClick={() => setDialogOpen(true)}
             >
