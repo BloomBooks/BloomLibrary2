@@ -33,7 +33,10 @@ import { useIsEmbedded } from "../EmbeddingHost";
 import { commonUI } from "../../theme";
 import { IBookDetailProps } from "./BookDetailCodeSplit";
 import { HarvesterProgressNotice } from "./HarvestProgressNotice";
-import { LoggedInUser } from "../../connection/LoggedInUser";
+import {
+    LoggedInUser,
+    useGetUserIsModerator,
+} from "../../connection/LoggedInUser";
 import { ReactComponent as DraftIcon } from "../../assets/DRAFT-Stamp.svg";
 import { useResponsiveChoice } from "../../responsiveUtilities";
 import { HarvesterProblemNotice } from "./HarvesterProblemNotice";
@@ -124,6 +127,7 @@ const BookDetailInternal: React.FunctionComponent<{
     const appHostedMode = useIsAppHosted();
     const user = LoggedInUser.current;
     const userIsUploader = user?.username === props.book.uploader?.username;
+    const userIsModerator = useGetUserIsModerator();
     const l10n = useIntl();
     const getResponsiveChoice = useResponsiveChoice();
     const showDownloadDialog = useRef<() => void | undefined>();
@@ -376,7 +380,7 @@ const BookDetailInternal: React.FunctionComponent<{
                                 `}
                             />
                         )}
-                        {userIsUploader && (
+                        {(userIsUploader || userIsModerator) && (
                             <div
                                 css={css`
                                     display: flex;
