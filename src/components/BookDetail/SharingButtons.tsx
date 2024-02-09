@@ -45,6 +45,7 @@ export const SharingButtons: React.FunctionComponent<{ book: Book }> = (
                 display: flex;
                 align-items: center;
                 margin-top: 10px !important;
+                margin-bottom: 10px;
             `}
             onClick={() => {
                 window.open(
