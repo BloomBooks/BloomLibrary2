@@ -54,8 +54,14 @@ export const DownloadingShellbookDialog: React.FunctionComponent<IDownloadingShe
             </DialogTitle>
             <DialogContent>
                 <FormattedMessage
-                    id="downloadShellbook.downloading.message"
-                    defaultMessage="Bloom should run, download the book, and allow you to add it to your collection."
+                    id={`downloadShellbook.downloading.${
+                        props.forEdit ? "forEdit" : ""
+                    }message`}
+                    defaultMessage={
+                        props.forEdit
+                            ? "Bloom should run, download the book, and open a new collection where you can edit it."
+                            : "Bloom should run, download the book, and allow you to add it to your collection."
+                    }
                 />
             </DialogContent>
             <DialogActions>
