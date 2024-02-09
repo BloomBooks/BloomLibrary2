@@ -37,7 +37,6 @@ let currentPathname = "";
 export const Routes: React.FunctionComponent<{}> = (props) => {
     const location = useLocation();
     useSetEmbeddedUrl();
-    const { pathname, hash } = useLocation();
 
     // Hack to allow links from outside Blorg to point to anchors within Blorg.
     // Adapted from https://stackoverflow.com/questions/40280369/use-anchors-with-react-router.
@@ -45,6 +44,7 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
     // happens on bloomlibrary.org is causing the hash to be lost. Keeping the code in case
     // we want to try more variations. (It also works if the previous URL was on bloomlibrary.org.)
     // See discussion in BL-11768. We don't currently need this to work for links from BloomDesktop (after 5.4)
+    //const { pathname, hash } = useLocation();
     // useEffect(() => {
     //     if (hash === "") {
     //         // if not a hash link, scroll to top
