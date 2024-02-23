@@ -79,11 +79,14 @@ function getBookOrderUrl(book: Book, forEdit: boolean) {
         // But the choice is pretty arbitrary and basically irrelevant until we bump it higher than 5.7.
         const minVersion = 4.8;
 
+        const forEditPart = forEdit
+            ? `&forEdit=true&database-id=${book.id}`
+            : "";
         return `bloom://localhost/order?orderFile=${
             match[1]
-        }&title=${encodeURIComponent(book.title)}&minVersion=${minVersion}${
-            forEdit ? "&forEdit=true" : ""
-        }`;
+        }&title=${encodeURIComponent(
+            book.title
+        )}&minVersion=${minVersion}${forEditPart}`;
     }
 
     return "";
