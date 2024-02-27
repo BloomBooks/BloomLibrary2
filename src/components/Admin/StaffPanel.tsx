@@ -30,6 +30,48 @@ interface IProps {
 }
 const borderColor = "#b0e1e8"; // or perhaps border color ${theme.palette.secondary.light}? The value here came from note in BL-8046
 
+// TODO should all this go back in StaffMultiChoosers?
+const staffTagStyles = [
+    {
+        match: /^topic:/,
+        style: { backgroundColor: "rgb(151,101,143)" },
+    },
+    {
+        match: /Incoming/,
+        style: { backgroundColor: "orange" },
+    },
+    {
+        match: /^region:/,
+        style: { backgroundColor: "rgb(31,147,164)", color: "white" },
+    },
+    {
+        match: /problem/,
+        style: { backgroundColor: "rgb(235,66,45)", color: "white" },
+    },
+    {
+        match: /todo/,
+        style: { backgroundColor: "rgb(254,191,0)", color: "black" },
+    },
+    {
+        match: /computedLevel/,
+        style: { display: "none" }, // we show this elsewhere, and it's dangerous to let the human change/delete it.
+    },
+    { match: /./, style: { backgroundColor: "#575757", color: "white" } },
+];
+
+function getStaffTagStyle(t: string) {
+    const defaultStyle = {
+        backgroundColor: "#575757",
+        color: "white",
+    };
+    for (const tagStyle of staffTagStyles) {
+        if (tagStyle.match.test(t)) {
+            return { ...defaultStyle, ...tagStyle.style };
+        }
+    }
+    return defaultStyle;
+}
+
 // A function that can be added as a listener to window.beforeunload when we need to prompt
 // the user before navigating. It MUST be defined OUTSIDE the StaffPanel function, otherwise,
 // each render creates a different instance of the function and removeEventListener does
@@ -345,6 +387,8 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                 <TagsChooser
                     setModified={setModified}
                     book={props.book}
+                    label="Tags"
+                    getStylingForValue={getStaffTagStyle}
                 ></TagsChooser>
 
                 <FeaturesChooser

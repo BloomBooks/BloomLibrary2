@@ -53,46 +53,28 @@ export const BookLanguagesChooser: React.FunctionComponent<{
         />
     );
 };
+
+// TODO replace as part of BL-13034
+function SaveBookTags(book: Book) {
+    alert("not implemented yet");
+}
+
 export const TagsChooser: React.FunctionComponent<{
     book: Book;
+    label?: string;
     setModified: (modified: boolean) => void;
+    saveImmediately?: boolean;
+    getStylingForValue?: (tag: string) => React.CSSProperties;
 }> = (props) => {
     const { tags: tagChoices } = useContext(CachedTablesContext);
-    const tagStyles = [
-        {
-            match: /^topic:/,
-            style: { backgroundColor: "rgb(151,101,143)" },
-        },
-        {
-            match: /Incoming/,
-            style: { backgroundColor: "orange" },
-        },
-        {
-            match: /^region:/,
-            style: { backgroundColor: "rgb(31,147,164)", color: "white" },
-        },
-        {
-            match: /problem/,
-            style: { backgroundColor: "rgb(235,66,45)", color: "white" },
-        },
-        {
-            match: /todo/,
-            style: { backgroundColor: "rgb(254,191,0)", color: "black" },
-        },
-        {
-            match: /computedLevel/,
-            style: { display: "none" }, // we show this elsewhere, and it's dangerous to let the human change/delete it.
-        },
-        { match: /./, style: { backgroundColor: "#575757", color: "white" } },
-    ];
 
     return (
         <CreatableMultiChooser
-            label="Tags"
             availableValues={tagChoices}
             getSelectedValues={() =>
                 props.book.tags
                     .slice()
+                    // TODO see if we need to change this as part of BL-13034:
                     // TODO: this is only safe if something (e.g. Book.saveAdminDataToParse) is going to put it back
                     // Try not filtering, and instead try hiding
                     //.filter((t) => !tagIsShownElsewhereInUI(t))
@@ -117,18 +99,9 @@ export const TagsChooser: React.FunctionComponent<{
                     return result;
                 });
                 props.book.tags = xitems;
-            }}
-            getStylingForValue={(t: string) => {
-                const defaultStyle = {
-                    backgroundColor: "#575757",
-                    color: "white",
-                };
-                for (const tagStyle of tagStyles) {
-                    if (tagStyle.match.test(t)) {
-                        return { ...defaultStyle, ...tagStyle.style };
-                    }
+                if (props.saveImmediately) {
+                    SaveBookTags(props.book);
                 }
-                return defaultStyle;
             }}
             {...props}
         />

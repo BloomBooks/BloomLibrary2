@@ -20,7 +20,7 @@ interface IOption {
 // createOptionForNewLabel callback, but quite possibly YAGNI.
 export const CreatableMultiChooser: React.FunctionComponent<{
     book: Book;
-    label: string;
+    label?: string;
     setModified: (modified: boolean) => void;
     availableValues: string[];
     setSelectedValues: (items: string[]) => void;
@@ -53,7 +53,9 @@ export const CreatableMultiChooser: React.FunctionComponent<{
 
     return (
         <FormControl fullWidth variant={"outlined"} color={"primary"}>
-            <FormLabel component="legend">{props.label}</FormLabel>
+            {props.label && (
+                <FormLabel component="legend">{props.label}</FormLabel>
+            )}
             <CreatableSelect
                 styles={{
                     // Fixes the zindex being too low so that you "see through it"

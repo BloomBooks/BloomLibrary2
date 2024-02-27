@@ -20,11 +20,17 @@ import { AvatarCircle, LoggedInFirebaseUser } from "../User/AvatarCircle";
 import { User, useGetUserIsModerator } from "../../connection/LoggedInUser";
 import { getCurrentUser } from "../../authentication/firebase/firebase";
 import firebase from "firebase/compat/app";
+import { TagsChooser } from "../Admin/StaffMultiChoosers";
 
 // This should become true or just be removed once 5.7 is shipping.
 // The controls it hides require 5.7, so we don't want ordinary users to see them until then.
 // We do want to be able to test this on our dev site, though.
 const bloom57IsShipping = window.location.hostname.startsWith("dev");
+
+// TODO replace
+const getAvailableBookshelves = async () => {
+    return ["testBookshelf1", "testBookshelf2"];
+};
 
 export const BookOwnerControlsBox: React.FunctionComponent<{
     book: Book;
@@ -42,6 +48,14 @@ export const BookOwnerControlsBox: React.FunctionComponent<{
             }
         });
     }, [props.user]);
+    const [availableBookshelves, setAvailableBookshelves] = useState<string[]>(
+        []
+    );
+    useEffect(() => {
+        getAvailableBookshelves().then((bookshelves: string[]) => {
+            setAvailableBookshelves(bookshelves);
+        });
+    }, [availableBookshelves]);
     const userIsUploader =
         props.user.username === props.book.uploader?.username;
     const userIsModerator = useGetUserIsModerator();
@@ -213,6 +227,25 @@ export const BookOwnerControlsBox: React.FunctionComponent<{
                     </div>
                 </div>
                 <BookExtraPanels book={props.book} />
+                <h2
+                    css={css`
+                        margin-top: 20px;
+                        margin-bottom: 0;
+                        color: ${commonUI.colors.bloomBlue};
+                    `}
+                    id="book.detail.bookshelves"
+                >
+                    Bookshelves
+                </h2>
+                {/* TODO prefixes? */}
+                <TagsChooser
+                    book={props.book}
+                    setModified={() => {}}
+                    saveImmediately={true}
+                    getStylingForValue={(tag) => {
+                        return { backgroundColor: "purple" }; // TODO
+                    }}
+                />
                 <div
                     css={css`
                         margin-top: 30px;
