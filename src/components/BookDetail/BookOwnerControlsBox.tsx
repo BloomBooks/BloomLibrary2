@@ -20,17 +20,22 @@ import { AvatarCircle, LoggedInFirebaseUser } from "../User/AvatarCircle";
 import { User, useGetUserIsModerator } from "../../connection/LoggedInUser";
 import { getCurrentUser } from "../../authentication/firebase/firebase";
 import firebase from "firebase/compat/app";
-import { TagsChooser } from "../Admin/StaffMultiChoosers";
+import { CreatableMultiChooser } from "../Admin/CreatableMultiChooser"; // TODO maybe move this since it's no longer only for admin use?
 
 // This should become true or just be removed once 5.7 is shipping.
 // The controls it hides require 5.7, so we don't want ordinary users to see them until then.
 // We do want to be able to test this on our dev site, though.
 const bloom57IsShipping = window.location.hostname.startsWith("dev");
 
-// TODO replace
+// TODO replace as part of BL-13034
 const getAvailableBookshelves = async () => {
     return ["testBookshelf1", "testBookshelf2"];
 };
+
+// TODO replace as part of BL-13034
+function SaveBookTags(book: Book) {
+    alert("not implemented yet");
+}
 
 export const BookOwnerControlsBox: React.FunctionComponent<{
     book: Book;
@@ -56,6 +61,7 @@ export const BookOwnerControlsBox: React.FunctionComponent<{
             setAvailableBookshelves(bookshelves);
         });
     }, [availableBookshelves]);
+
     const userIsUploader =
         props.user.username === props.book.uploader?.username;
     const userIsModerator = useGetUserIsModerator();
@@ -238,13 +244,23 @@ export const BookOwnerControlsBox: React.FunctionComponent<{
                     Bookshelves
                 </h2>
                 {/* TODO prefixes? */}
-                <TagsChooser
-                    book={props.book}
-                    setModified={() => {}}
-                    saveImmediately={true}
-                    getStylingForValue={(tag) => {
-                        return { backgroundColor: "purple" }; // TODO
+                <CreatableMultiChooser
+                    getStylingForValue={
+                        (val: string) => {
+                            return { backgroundColor: "purple" };
+                        } // TODO
+                    }
+                    availableValues={availableBookshelves}
+                    getSelectedValues={
+                        () => []
+                        // TODO
+                    }
+                    setSelectedValues={(items: any[]) => {
+                        // TODO
+                        SaveBookTags(props.book);
                     }}
+                    setModified={(modified: boolean) => {}} // TODO
+                    {...props}
                 />
                 <div
                     css={css`
