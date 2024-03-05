@@ -15,7 +15,7 @@ it("builds proper parse query for simplest filter", () => {
     );
     const resultString = JSON.stringify(result);
     expect(resultString).toBe(
-        '{"count":1,"limit":0,"where":{"inCirculation":{"$in":[true,null]},"draft":{"$in":[false,null]},"baseUrl":{"$exists":true}},"order":"-createdAt"}'
+        '{"count":1,"limit":0,"where":{"inCirculation":true,"draft":false,"baseUrl":{"$exists":true}},"order":"-createdAt"}'
     );
 });
 

@@ -1452,10 +1452,12 @@ export function constructParseBookQuery(
         }
     }
     delete params.where.inCirculation;
+    // As of March 2024, we have a defaultValue of true on the _Schema table for inCirculation, so we can assume a value is set.
+    // This helps the queries run more efficiently because we can use equality instead of inequality ($ne) or range ($nin).
     switch (f.inCirculation) {
         case undefined:
         case BooleanOptions.Yes:
-            params.where.inCirculation = { $in: [true, null] };
+            params.where.inCirculation = true;
             break;
         case BooleanOptions.No:
             params.where.inCirculation = false;
@@ -1466,13 +1468,15 @@ export function constructParseBookQuery(
     }
     // Unless the filter explicitly allows draft books, don't include them.
     delete params.where.draft;
+    // As of March 2024, we have a defaultValue of false on the _Schema table for draft, so we can assume a value is set.
+    // This helps the queries run more efficiently because we can use equality instead of inequality ($ne) or range ($nin).
     switch (f.draft) {
         case BooleanOptions.Yes:
             params.where.draft = true;
             break;
         case undefined:
         case BooleanOptions.No:
-            params.where.draft = { $in: [false, null] };
+            params.where.draft = false;
             break;
         case BooleanOptions.All:
             // just don't include it in the query
@@ -1525,13 +1529,14 @@ export function constructParseBookQuery(
     }
 
     delete params.where.rebrand;
+    // As of March 2024, we have a defaultValue of false on the _Schema table for rebrand, so we can assume a value is set.
+    // This helps the queries run more efficiently because we can use equality instead of inequality ($ne) or range ($nin).
     switch (f.rebrand) {
         case BooleanOptions.Yes:
             params.where.rebrand = true;
             break;
         case BooleanOptions.No:
-            // can't use false because old records have undefined. Undefined and false both mean NOT branded. So we query for "not true".
-            params.where.rebrand = { $ne: true };
+            params.where.rebrand = false;
             break;
         case BooleanOptions.All:
             // don't mention it

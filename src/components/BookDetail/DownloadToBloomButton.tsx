@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Button from "@material-ui/core/Button";
 import { commonUI } from "../../theme";
 import { DownloadPreflightDialog } from "./DownloadPreflightDialog";
@@ -32,16 +32,7 @@ export const DownloadToBloomButton: React.FunctionComponent<ITranslateButtonProp
     props
 ) => {
     const theme = useTheme();
-    const [preflightDialogOpen, setPreflightDialogOpen] = useState(false);
-    const [downloadingDialogOpen, setDownloadingDialogOpen] = useState(false);
-    const [
-        dontShowPreflightAgain,
-        setDontShowPreflightAgain,
-    ] = useStorageState<boolean>(
-        localStorage,
-        "dont-show-download-preflight-dialog",
-        false
-    );
+    const showDownloadDialog = useRef<() => void | undefined>();
 
     // Ideally, this would be defined at some higher level and I could just use it here.
     // But since it uses a hook, that greatly limits our ability to extract it.
@@ -116,17 +107,62 @@ export const DownloadToBloomButton: React.FunctionComponent<ITranslateButtonProp
                                     `Sorry, the uploader of this book has restricted shellbook download to ${otherCountryRequired}`
                                 );
                             } else {
-                                if (dontShowPreflightAgain) {
-                                    setDownloadingDialogOpen(true);
-                                } else {
-                                    setPreflightDialogOpen(true);
-                                }
+                                showDownloadDialog.current?.();
                             }
                         });
                 }}
             >
                 {content}
             </Button>
+            <DownloadToBloomDialogs
+                book={props.book}
+                getShowFunction={(download) =>
+                    (showDownloadDialog.current = download)
+                }
+                contextLangTag={props.contextLangTag}
+                forEdit={false}
+            ></DownloadToBloomDialogs>
+        </React.Fragment>
+    );
+};
+
+// This is a wrapper around the two dialogs that can be shown when the user clicks a button
+// to download a book to Bloom. It is a separate component so that the dialogs and the logic for
+// whether to show the preflight dialog can be shared between the TranslateButton and the
+// download-for-editing button.
+export const DownloadToBloomDialogs: React.FunctionComponent<{
+    book: Book;
+    // This function is called when this component is rendered (and if it is re-rendered with a new function).
+    // This component is invisible until the client calls the function that is passed to this callback.
+    // When it is called, one or both dialogs will be shown, and if the user does not cancel and all goes well, the
+    // download will begin. (See above for a typical way to save the function in a ref and use it.)
+    getShowFunction: (show: () => void) => void;
+    contextLangTag?: string;
+    forEdit: boolean;
+}> = (props) => {
+    const getShowFunction = props.getShowFunction;
+    const [preflightDialogOpen, setPreflightDialogOpen] = useState(false);
+    const [downloadingDialogOpen, setDownloadingDialogOpen] = useState(false);
+    const [
+        dontShowPreflightAgain,
+        setDontShowPreflightAgain,
+    ] = useStorageState<boolean>(
+        localStorage,
+        "dont-show-download-preflight-dialog",
+        false
+    );
+    useEffect(() => {
+        const doDownload = () => {
+            if (dontShowPreflightAgain) {
+                setDownloadingDialogOpen(true);
+            } else {
+                setPreflightDialogOpen(true);
+            }
+        };
+        getShowFunction(doDownload);
+    }, [dontShowPreflightAgain, getShowFunction]);
+    return (
+        <>
             <DownloadPreflightDialog
                 book={props.book}
                 open={preflightDialogOpen}
@@ -153,7 +189,8 @@ export const DownloadToBloomButton: React.FunctionComponent<ITranslateButtonProp
                     setDownloadingDialogOpen(false);
                 }}
                 contextLangTag={props.contextLangTag}
+                forEdit={props.forEdit}
             ></DownloadingShellbookDialog>
-        </React.Fragment>
+        </>
     );
 };
