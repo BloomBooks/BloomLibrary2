@@ -4,19 +4,15 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React from "react";
+import React, { useRef } from "react";
 import { useGetBookDetail } from "../../connection/LibraryQueryHooks";
 import { Book } from "../../model/Book";
 
-import { Checkbox, Divider, FormControlLabel } from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
-
+import { Divider } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
-import { BookExtraPanels } from "./BookExtraPanels";
 import { LeftMetadata, RightMetadata } from "./MetadataGroup";
 import { DownloadsGroup } from "./DownloadsGroup";
 import { BookDetailHeaderGroup } from "./BookDetailHeaderGroup";
-import { DeleteButton } from "./DeleteButton";
 import { ReportButton } from "./ReportButton";
 import { Breadcrumbs } from "../Breadcrumbs";
 import { useTrack } from "../../analytics/Analytics";
@@ -44,6 +40,8 @@ import {
     useIsAppHosted,
 } from "../appHosted/AppHostedUtils";
 import { Helmet } from "react-helmet";
+import { DownloadToBloomDialogs } from "./DownloadToBloomButton";
+import { BookOwnerControlsBox } from "./BookOwnerControlsBox";
 
 const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     const l10n = useIntl();
@@ -114,13 +112,12 @@ const BookDetailInternal: React.FunctionComponent<{
             `}
         />
     );
-
     const embeddedMode = useIsEmbedded();
     const appHostedMode = useIsAppHosted();
     const user = LoggedInUser.current;
-    const userIsUploader = user?.username === props.book.uploader?.username;
     const l10n = useIntl();
     const getResponsiveChoice = useResponsiveChoice();
+    const showDownloadDialog = useRef<() => void | undefined>();
     return (
         <div
             // had width:800px, but that destroys responsiveness
@@ -257,7 +254,6 @@ const BookDetailInternal: React.FunctionComponent<{
                                         book={props.book}
                                         contextLangTag={props.contextLangTag}
                                     />
-                                    <DeleteButton book={props.book} />
                                 </div>
 
                                 {/* Enhance, maybe, add this and wire to some message <HowToPrintButton />*/}
@@ -310,55 +306,6 @@ const BookDetailInternal: React.FunctionComponent<{
                         )} */}
                             </div>
                         </div>
-                        {(user?.moderator || userIsUploader) && (
-                            <FormControlLabel
-                                css={css`
-                                    margin-top: 15px;
-                                    // By default, the checkbox has some padding used for animations on hover etc.
-                                    // And then, apparently a corresponding negative margin on this control makes it look
-                                    // aligned left. I think the amount of both is 8px. So a margin of -5px actually INCREASES
-                                    // the indent, aligning it with the 3px that something indents the Report button icon.
-                                    margin-left: -5px;
-                                `}
-                                control={
-                                    <Checkbox
-                                        css={css`
-                                            padding-top: 0;
-                                            margin-right: -5px;
-                                            padding-right: 1px;
-                                        `}
-                                        checked={props.book.draft}
-                                        onChange={(e) => {
-                                            props.book.draft = e.target.checked;
-                                            props.book.saveAdminDataToParse();
-                                        }}
-                                    />
-                                }
-                                label={
-                                    <div
-                                        css={css`
-                                            display: flex;
-                                        `}
-                                    >
-                                        <DraftIcon
-                                            css={css`
-                                                width: 54px;
-                                            `}
-                                        />
-                                        <div>
-                                            {l10n.formatMessage({
-                                                id:
-                                                    "book.detail.draftDescription",
-                                                defaultMessage:
-                                                    "Do not show this book to the public yet. I will share its URL with reviewers for feedback.",
-                                                description:
-                                                    "Label for a check box which, if checked, marks the book as 'DRAFT' and prevents the book from showing in most views",
-                                            })}
-                                        </div>
-                                    </div>
-                                }
-                            />
-                        )}
                         {props.book.draft && (
                             <DraftIcon
                                 css={css`
@@ -370,23 +317,20 @@ const BookDetailInternal: React.FunctionComponent<{
                                 `}
                             />
                         )}
-                        {userIsUploader && (
-                            <Alert
-                                severity="info"
-                                css={css`
-                                    margin-top: 20px;
-                                `}
-                            >
-                                <FormattedMessage
-                                    id={"book.detail.updateBookNotice"}
-                                    defaultMessage={
-                                        "If you want to update this book with any changes, just upload it again from Bloom, using the same account. Your new version will replace this one."
-                                    }
-                                />
-                            </Alert>
+                        {user && (
+                            <BookOwnerControlsBox
+                                book={props.book}
+                                user={user}
+                                showDownloadDialog={showDownloadDialog}
+                            />
                         )}
-
-                        <BookExtraPanels book={props.book} />
+                        <DownloadToBloomDialogs
+                            book={props.book}
+                            getShowFunction={(download) =>
+                                (showDownloadDialog.current = download)
+                            }
+                            forEdit={true}
+                        />
                     </React.Fragment>
                 )}
             </div>

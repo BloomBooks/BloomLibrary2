@@ -76,7 +76,6 @@ export const DeleteButton: React.FunctionComponent<{
                         margin-right: 20px !important;
                         display: flex;
                         align-items: center;
-                        margin-top: 10px !important;
                     `}
                     onClick={handleDelete}
                 >

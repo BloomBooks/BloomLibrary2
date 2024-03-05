@@ -185,6 +185,18 @@
         "description": "This string is the heading of a page designed for a phone screen. It should fit across the width of such a screen. It labels a box where the user can type a partial language name and a page of matching language cards.",
         "message": "Language?"
     },
+    "book.detail.draft": {
+        "description": "",
+        "message": "Draft"
+    },
+    "book.detail.editing": {
+        "description": "",
+        "message": "Editing"
+    },
+    "book.detail.formats": {
+        "description": "",
+        "message": "Formats"
+    },
     "book.detail.tabLabel": {
         "description": "",
         "message": "About - {title}"
@@ -255,6 +267,22 @@
     },
     "book.detail.updateBookNotice": {
         "message": "If you want to update this book with any changes, just upload it again from Bloom, using the same account. Your new version will replace this one.",
+        "description": ""
+    },
+    "book.detail.getForEditBookNotice": {
+        "message": "If necessary, we can give you the book to edit in Bloom. You must first have Bloom 5.7 or greater installed ({downloadLink}).",
+        "description": "{downloadLink} is a link to the Bloom download page. Leave it exactly as it is except for putting it in the right place; don't translate it here."
+    },
+    "book.detail.downloadLink": {
+        "message": "Download Bloom",
+        "description": "This gets embedded in getForEditBookNotice as the text of the link. It will replace {downloadLink} in the message."
+    },
+    "book.detail.editDownload": {
+        "message": "Download into Bloom for editing",
+        "description": ""
+    },
+    "book.detail.youHavePermission": {
+        "message": "You have permission to modify this book",
         "description": ""
     },
     "book.metadata.level": {
@@ -494,6 +522,9 @@
     },
     "downloadShellbook.downloading.message": {
         "message": "Bloom should run, download the book, and allow you to add it to your collection."
+    },
+    "downloadShellbook.downloading.forEditMessage": {
+        "message": "Bloom should run, download the book, and open a new collection where you can edit it."
     },
     "downloadShellbook.tryAgain": {
         "message": "Try downloading it again",
