@@ -2,7 +2,11 @@ import useAxios, { IReturns, axios, IParams } from "@use-hooks/axios";
 import { AxiosResponse } from "axios";
 import { IFilter, BooleanOptions, parseBooleanOptions } from "../IFilter";
 import { getConnection } from "./ParseServerConnection";
-import { getBloomApiUrl } from "./ApiConnection";
+import {
+    getBloomApiBooksUrl,
+    getBloomApiUrl,
+    getBloomApiHeaders,
+} from "./ApiConnection";
 import { retrieveBookData, retrieveBookStats } from "./LibraryQueries";
 import { Book, createBookFromParseServerData } from "../model/Book";
 import { useContext, useMemo, useEffect, useState } from "react";
@@ -1690,9 +1694,33 @@ export function getCountString(queryResult: any): string {
     return response["data"]["count"].toString();
 }
 
-export async function deleteBook(id: string) {
-    return axios.delete(`${getConnection().url}classes/books/${id}`, {
-        headers: getConnection().headers,
+export interface IUserBookPermissions {
+    reupload: boolean;
+    becomeUploader: boolean;
+    delete: boolean;
+    editSurfaceMetadata: boolean;
+    editAllMetadata: boolean;
+}
+export function useGetPermissions(
+    isUserLoggedIn: boolean,
+    bookDatabaseId: string
+): IUserBookPermissions {
+    const axiosParams = {
+        url: getBloomApiBooksUrl(bookDatabaseId, "permissions"),
+        method: "GET" as const,
+        trigger: isUserLoggedIn ? "true" : "",
+        options: { headers: getBloomApiHeaders() },
+    };
+    const { response, loading, error } = useAxios(axiosParams);
+    if (!isUserLoggedIn || loading || !response || !response["data"] || error) {
+        return {} as IUserBookPermissions;
+    }
+    return response["data"] as IUserBookPermissions;
+}
+
+export async function deleteBook(bookDatabaseId: string) {
+    return axios.delete(getBloomApiBooksUrl(bookDatabaseId), {
+        headers: getBloomApiHeaders(),
     });
 }
 

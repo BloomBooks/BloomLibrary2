@@ -2,6 +2,7 @@ import axios from "axios";
 import { LoggedInUser, User } from "./LoggedInUser";
 import * as Sentry from "@sentry/browser";
 import { informEditorOfSuccessfulLogin, isForEditor } from "../editor";
+import { DataSource, getDataSource } from "./DataSource";
 
 // This file exports a function getConnection(), which returns the headers
 // needed to talk to our Parse Server backend db.
@@ -42,28 +43,19 @@ const local: IConnection = {
 };
 
 export function getConnection(): IConnection {
-    const result = prod;
-    // Some previous code which we don't need now...only one case returns anything but prod...
-    // but I think it's worth keeping to document the possibilities that we explicitly
-    // decided should be prod.
-    // if (
-    //     window.location.hostname === "bloomlibrary.org" ||
-    //     window.location.hostname === "next.bloomlibrary.org" ||
-    //     window.location.hostname === "embed.bloomlibrary.org" ||
-    //     window.location.hostname === "alpha.bloomlibrary.org"
-    // ) {
-    //     return prod;
-    // }
-
-    if (window.location.hostname.startsWith("dev")) {
-        return dev;
+    let result: IConnection;
+    switch (getDataSource()) {
+        default:
+        case DataSource.Prod:
+            result = prod;
+            break;
+        case DataSource.Dev:
+            result = dev;
+            break;
+        case DataSource.Local:
+            result = local;
+            break;
     }
-
-    // if (window.location.hostname === "localhost") {
-    //     return prod;
-    //     //return dev;
-    //     // return local;
-    // }
 
     // The browser will not allow us to provide this key here if we're running on
     // Bloom Reader, which intercepts web requests in order to enable zipping data
