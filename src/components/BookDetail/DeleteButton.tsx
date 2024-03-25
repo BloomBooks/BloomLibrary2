@@ -11,7 +11,6 @@ import { observer } from "mobx-react-lite";
 import * as Sentry from "@sentry/browser";
 
 import { Book } from "../../model/Book";
-import { LoggedInUser } from "../../connection/LoggedInUser";
 import { deleteBook } from "../../connection/LibraryQueryHooks";
 import { useHistory } from "react-router-dom";
 import { splitPathname } from "../Routes";
@@ -22,9 +21,6 @@ import { FormattedMessage, useIntl } from "react-intl";
 export const DeleteButton: React.FunctionComponent<{
     book: Book;
 }> = observer((props) => {
-    const user = LoggedInUser.current;
-    const userIsUploader = user?.username === props.book.uploader?.username;
-
     const l10n = useIntl();
     const history = useHistory();
 
@@ -38,7 +34,7 @@ export const DeleteButton: React.FunctionComponent<{
         if (confirm) {
             deleteBook(props.book.id)
                 .then((response) => {
-                    if (response.status === 200) {
+                    if (response.status >= 200 && response.status < 300) {
                         const { breadcrumbs } = splitPathname(
                             history.location.pathname
                         );
@@ -65,49 +61,47 @@ export const DeleteButton: React.FunctionComponent<{
         }
     }
 
-    if (user?.moderator || userIsUploader)
-        return (
-            <Fragment>
-                <IconButton
-                    color="secondary"
-                    size="small"
+    return (
+        <Fragment>
+            <IconButton
+                color="secondary"
+                size="small"
+                css={css`
+                    flex-shrink: 1;
+                    margin-right: 20px !important;
+                    display: flex;
+                    align-items: center;
+                `}
+                onClick={handleDelete}
+            >
+                <DeleteIcon
                     css={css`
-                        flex-shrink: 1;
-                        margin-right: 20px !important;
-                        display: flex;
-                        align-items: center;
+                        margin-right: 3px;
                     `}
-                    onClick={handleDelete}
-                >
-                    <DeleteIcon
-                        css={css`
-                            margin-right: 3px;
-                        `}
-                    />
-                    <FormattedMessage id="delete" defaultMessage="Delete" />
-                </IconButton>
-                <ConfirmationDialog
-                    title={l10n.formatMessage({
-                        id: "delete.book.confirm.title",
-                        defaultMessage: "Delete this book?",
-                    })}
-                    confirmButtonText={l10n.formatMessage({
-                        id: "delete.book.confirm.button",
-                        defaultMessage: "Permanently delete this book",
-                    })}
-                    open={confirmationDialogOpen}
-                    onClose={handleCloseConfirmationDialog}
-                >
-                    <FormattedMessage
-                        id="delete.book.confirm.message"
-                        defaultMessage="If you continue, this version of the book <em>{title}</em> will be removed from BloomLibrary.org. There is no way to undo this except by uploading it again."
-                        values={{
-                            em: (chunks: string) => <em>{chunks}</em>,
-                            title: props.book.title,
-                        }}
-                    />
-                </ConfirmationDialog>
-            </Fragment>
-        );
-    return <Fragment />;
+                />
+                <FormattedMessage id="delete" defaultMessage="Delete" />
+            </IconButton>
+            <ConfirmationDialog
+                title={l10n.formatMessage({
+                    id: "delete.book.confirm.title",
+                    defaultMessage: "Delete this book?",
+                })}
+                confirmButtonText={l10n.formatMessage({
+                    id: "delete.book.confirm.button",
+                    defaultMessage: "Permanently delete this book",
+                })}
+                open={confirmationDialogOpen}
+                onClose={handleCloseConfirmationDialog}
+            >
+                <FormattedMessage
+                    id="delete.book.confirm.message"
+                    defaultMessage="If you continue, this version of the book <em>{title}</em> will be removed from BloomLibrary.org. There is no way to undo this except by uploading it again."
+                    values={{
+                        em: (chunks: string) => <em>{chunks}</em>,
+                        title: props.book.title,
+                    }}
+                />
+            </ConfirmationDialog>
+        </Fragment>
+    );
 });
