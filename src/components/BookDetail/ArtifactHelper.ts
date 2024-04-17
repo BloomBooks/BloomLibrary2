@@ -77,7 +77,9 @@ function getBookOrderUrl(book: Book, forEdit: boolean) {
         // I chose 4.8 because I actually tested that to make sure it ignores the minVersion parameter.
         // I tested 4.8 because it was published about 3 years prior to this change.
         // But the choice is pretty arbitrary and basically irrelevant until we bump it higher than 5.7.
-        const minVersion = 4.8;
+        // We do need 5.7 to handle the forEdit parameter, so we will pass that and retrofit at least
+        // 5.5 and 5.6 to do the check.
+        const minVersion = forEdit ? 5.7 : 4.8;
 
         const forEditPart = forEdit
             ? `&forEdit=true&database-id=${book.id}`
