@@ -76,9 +76,16 @@ export const DownloadingShellbookDialog: React.FunctionComponent<IDownloadingShe
                             }
                         }
                     `}
-                    onClick={() =>
-                        downloadShellbook(props.book, props.contextLangTag)
-                    }
+                    onClick={() => {
+                        if (props.forEdit) {
+                            downloadBookToEdit(
+                                props.book,
+                                props.contextLangTag
+                            );
+                        } else {
+                            downloadShellbook(props.book, props.contextLangTag);
+                        }
+                    }}
                 >
                     <FormattedMessage
                         id="downloadShellbook.tryAgain"

@@ -71,13 +71,17 @@ function getBookOrderUrl(book: Book, forEdit: boolean) {
     );
     if (match) {
         // I wasn't sure what to put for our initial minVersion.
-        // We are introducing checking it in Bloom 5.7, so we could use that.
+        // We are introducing checking it in Bloom 5.5, so we could use that.
         // But clearly versions prior to that still work with the current format.
         // I thought about 1.0, but I'm sure it doesn't work that far back.
         // I chose 4.8 because I actually tested that to make sure it ignores the minVersion parameter.
         // I tested 4.8 because it was published about 3 years prior to this change.
-        // But the choice is pretty arbitrary and basically irrelevant until we bump it higher than 5.7.
-        const minVersion = 4.8;
+        // The earliest version that we plan to check this for is 5.5, so it doesn't really
+        // matter what version we put earlier than that for normal downloads, which are handled
+        // by all the versions that do this check.
+        // We do need 5.7 to handle the forEdit parameter, so we will pass that and retrofit at least
+        // 5.5 and 5.6 to do the check.
+        const minVersion = forEdit ? 5.7 : 4.8;
 
         const forEditPart = forEdit
             ? `&forEdit=true&database-id=${book.id}`
