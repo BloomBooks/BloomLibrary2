@@ -270,7 +270,7 @@
         "description": ""
     },
     "book.detail.getForEditBookNotice": {
-        "message": "If necessary, we can give you the book to edit in Bloom. You must first have Bloom 5.7 or greater installed ({downloadLink}).",
+        "message": "If necessary, we can give you the book to edit in Bloom. You must first have Bloom 6.0 or greater installed ({downloadLink}).",
         "description": "{downloadLink} is a link to the Bloom download page. Leave it exactly as it is except for putting it in the right place; don't translate it here."
     },
     "book.detail.downloadLink": {
