@@ -79,9 +79,9 @@ function getBookOrderUrl(book: Book, forEdit: boolean) {
         // The earliest version that we plan to check this for is 5.5, so it doesn't really
         // matter what version we put earlier than that for normal downloads, which are handled
         // by all the versions that do this check.
-        // We do need 5.7 to handle the forEdit parameter, so we will pass that and retrofit at least
+        // We do need 6.0 to handle the forEdit parameter, so we will pass that and retrofit at least
         // 5.5 and 5.6 to do the check.
-        const minVersion = forEdit ? 5.7 : 4.8;
+        const minVersion = forEdit ? 6.0 : 4.8;
 
         const forEditPart = forEdit
             ? `&forEdit=true&database-id=${book.id}`
