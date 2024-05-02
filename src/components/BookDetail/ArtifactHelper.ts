@@ -81,7 +81,7 @@ function getBookOrderUrl(book: Book, forEdit: boolean) {
         // by all the versions that do this check.
         // We do need 6.0 to handle the forEdit parameter, so we will pass that and retrofit at least
         // 5.5 and 5.6 to do the check.
-        const minVersion = forEdit ? 6.0 : 4.8;
+        const minVersion = forEdit ? "6.0" : "4.8"; // string to ensure it's passed with a decimal point value
 
         const forEditPart = forEdit
             ? `&forEdit=true&database-id=${book.id}`
