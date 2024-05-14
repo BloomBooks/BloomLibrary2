@@ -25,8 +25,8 @@ import {
     useGetPermissions,
 } from "../../connection/LibraryQueryHooks";
 
-// This should become true or just be removed once 5.7 is shipping.
-// The controls it hides require 5.7, so we don't want ordinary users to see them until then.
+// This should become true or just be removed once 6.0 is shipping.
+// The controls it hides require 6.0, so we don't want ordinary users to see them until then.
 // We do want to be able to test this on our dev and alpha sites, though.
 const allowDownloadForEditing =
     window.location.hostname.startsWith("alpha") ||
@@ -203,7 +203,7 @@ export const BookOwnerControlsBox: React.FunctionComponent<{
                                 <FormattedMessage
                                     id={"book.detail.getForEditBookNotice"}
                                     defaultMessage={
-                                        "If necessary, we can give you the book to edit in Bloom. You must first have Bloom 5.7 or greater installed ({downloadLink})."
+                                        "If necessary, we can give you the book to edit in Bloom. You must first have Bloom 6.0 or greater installed ({downloadLink})."
                                     }
                                     values={{
                                         downloadLink: (
