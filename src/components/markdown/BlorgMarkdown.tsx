@@ -15,6 +15,7 @@ import { Columns, Column } from "./Columns";
 import { Button } from "./Button";
 import { AllBloomInstallers } from "./AllBloomInstallers";
 import { ContentfulImage, StoryImage } from "./ContentfulImage";
+import { BloomPUBViewerDownloadLink } from "../BloomPUBViewerDownloadLink";
 
 export enum TwoColumn {
     leftColumn,
@@ -33,6 +34,7 @@ export const BlorgMarkdown: React.FunctionComponent<{
             WindowsInstallerDownload,
             WindowsInstallerLink,
             BloomReaderVersionNumber,
+            BloomPUBViewerDownloadLink,
             FeatureMatrix: { component: FeatureMatrixCodeSplit },
             Feature: { component: FeatureCodeSplit },
             FeatureGroup: { component: FeatureGroupCodeSplit },
