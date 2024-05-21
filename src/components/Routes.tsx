@@ -256,6 +256,12 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                     >
                         <Redirect to="/page/create/downloads" />
                     </Route>
+                    <Route exact path={["/bloom-reader"]}>
+                        <Redirect to="/page/create/page/bloom-reader" />
+                    </Route>
+                    <Route exact path={["/bloompub-viewer"]}>
+                        <Redirect to="/page/create/page/bloompub-viewer" />
+                    </Route>
                     {/* Alias from legacy blorg */}
                     <Redirect from={"/browse/detail/:id"} to="/book/:id" />
                     {/* Alias from legacy blorg */}
