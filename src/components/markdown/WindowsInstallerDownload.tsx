@@ -1,15 +1,7 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
-
 import React from "react";
-import Button from "@material-ui/core/Button";
 import useAxios, { IReturns } from "@use-hooks/axios";
-import { commonUI } from "../../theme";
-import { BlorgLink } from "../BlorgLink";
 import { FormattedMessage } from "react-intl";
+import { InstallerDownload } from "./InstallerDownload";
 export const WindowsInstallerDownload: React.FunctionComponent<{
     channel: string;
 }> = (props) => {
@@ -21,89 +13,36 @@ export const WindowsInstallerDownload: React.FunctionComponent<{
 
     const info = getInstallerInfo(versionRequest);
     const versionNumber = info.version ?? "0.0.0";
-    return (
-        <React.Fragment>
-            <div
-                css={css`
-                    display: flex;
-                    flex-direction: row;
-                    margin-top: 14px;
-                    align-items: start;
-                `}
-            >
-                {props.channel === "Release" ? (
-                    <Button
-                        href={info.url}
-                        variant={"contained"}
-                        css={css`
-                            padding: 16px !important;
-                            background-color: ${commonUI.colors
-                                .creationArea} !important;
-                            /* .MuiButton-label { ENHANCE: how to get this working with the Creation Theme?*/
-                            span {
-                                color: white;
-                                font-size: 24px;
-                            }
-                        `}
-                    >
-                        <FormattedMessage
-                            // Unfortunate id, but it already existed, and we don't want a new one.
-                            id="book.metadata.download"
-                            defaultMessage="Download"
-                        />
-                    </Button>
-                ) : (
-                    <Button
-                        href={info.url}
-                        variant="text"
-                        color="primary"
-                        css={css`
-                            padding: 0 !important;
-                            span {
-                                font-weight: bold;
-                                font-size: 14px;
-                            }
-                        `}
-                    >
-                        <FormattedMessage
-                            id="download.beta"
-                            defaultMessage="Download Beta"
-                        />
-                    </Button>
-                )}
-                <div
-                    css={css`
-                        margin-left: 30px;
-                    `}
-                >
-                    <div>
-                        <FormattedMessage
-                            id="download.versionInfo"
-                            defaultMessage="Version {versionNumber} {date}"
-                            values={{ versionNumber, date: info.date }}
-                        />
-                    </div>
-                    <div>
-                        <BlorgLink href={getReleaseNotesLink(info)}>
-                            <FormattedMessage
-                                id="download.linkToReleaseNotes"
-                                defaultMessage="What's New"
-                            />
-                        </BlorgLink>
-                    </div>
-                    <div>
-                        <BlorgLink
-                            href={"/page/create/bloom-windows-requirements"}
-                        >
-                            <FormattedMessage
-                                id="download.linkToRequirements"
-                                defaultMessage="Requirements"
-                            />
-                        </BlorgLink>
-                    </div>
-                </div>
-            </div>
-        </React.Fragment>
+    return props.channel === "Release" ? (
+        <InstallerDownload
+            buttonStyle="large"
+            label={
+                <FormattedMessage
+                    // Unfortunate id, but it already existed, and we don't want a new one.
+                    id="book.metadata.download"
+                    defaultMessage="Download"
+                />
+            }
+            url={info.url}
+            versionNumber={versionNumber}
+            date={info.date}
+            releaseNotesUrl={getReleaseNotesLink(info)}
+            requirementsUrl={"/page/create/bloom-windows-requirements"}
+        />
+    ) : (
+        <InstallerDownload
+            label={
+                <FormattedMessage
+                    id="download.beta"
+                    defaultMessage="Download Beta"
+                />
+            }
+            url={info.url}
+            versionNumber={versionNumber}
+            date={info.date}
+            releaseNotesUrl={getReleaseNotesLink(info)}
+            requirementsUrl={"/page/create/bloom-windows-requirements"}
+        />
     );
 };
 
