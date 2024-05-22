@@ -20,12 +20,18 @@ export const HarvesterProgressNotice: React.FunctionComponent<{
         return null;
 
     if (!props.book.lastUploadedDate) {
-        return (
-            <BookProblemNotice>
-                Error: lastUploadedDate should not be missing.
-            </BookProblemNotice>
-        );
+        // Actually, there are over 5k books with no lastUploadedDate.
+        // And if we reharvest one, we get this message until harvester finishes.
+        // We could just use created date, but that would lead to the problem message below
+        // which would be incorrect.
+        // return (
+        // <BookProblemNotice>
+        //     Error: lastUploadedDate should not be missing.
+        // </BookProblemNotice>
+        // );
+        return null;
     }
+
     // How many hours has this thing been sitting at "New"?
     const now = new Date();
     const msDifference = now.valueOf() - props.book.lastUploadedDate!.valueOf();
