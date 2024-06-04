@@ -127,7 +127,7 @@ it("build proper parse query for no topic and tag field ending with *", () => {
     );
     const resultString = JSON.stringify(result);
     expect(resultString).toContain(
-        '"$and":[{"tags":{"$nin":["topic:Agriculture","topic:Animal Stories","topic:Business","topic:Community Living","topic:Culture","topic:Dictionary","topic:Environment","topic:Fiction","topic:Health","topic:How To","topic:Math","topic:Non Fiction","topic:Personal Development","topic:Primer","topic:Science","topic:Spiritual","topic:Story Book","topic:Traditional Story"]}},{"tags":{"$regex":"^bookshelf:Resources for the Blind"}}],'
+        '"$and":[{"tags":{"$nin":["topic:Agriculture","topic:Animal Stories","topic:Bible","topic:Business","topic:Community Living","topic:Culture","topic:Dictionary","topic:Environment","topic:Fiction","topic:Health","topic:How To","topic:Math","topic:Non Fiction","topic:Personal Development","topic:Primer","topic:Science","topic:Story Book","topic:Traditional Story"]}},{"tags":{"$regex":"^bookshelf:Resources for the Blind"}}],'
     );
 });
 

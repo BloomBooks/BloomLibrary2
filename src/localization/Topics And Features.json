@@ -5,6 +5,9 @@
     "topic.Animal Stories": {
         "message": "Animal Stories"
     },
+    "topic.Bible": {
+        "message": "Bible"
+    },
     "topic.Business": {
         "message": "Business"
     },
@@ -37,9 +40,6 @@
     },
     "topic.Personal Development": {
         "message": "Personal Development"
-    },
-    "topic.Spiritual": {
-        "message": "Spiritual"
     },
     "topic.Community Living": {
         "message": "Community Living"
