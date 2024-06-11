@@ -1,6 +1,7 @@
 export const kTopicList = [
     "Agriculture",
     "Animal Stories",
+    "Bible",
     "Business",
     "Community Living",
     "Culture",
@@ -14,7 +15,6 @@ export const kTopicList = [
     "Personal Development",
     "Primer",
     "Science",
-    "Spiritual",
     "Story Book",
     "Traditional Story",
 ];
@@ -25,6 +25,7 @@ interface IStringMap {
 export const kNameToL10NKey: IStringMap = {
     "topic:Agriculture": "topic.Agriculture",
     "topic:Animal Stories": "topic.Animal Stories",
+    "topic:Bible": "topic.Bible",
     "topic:Business": "topic.Business",
     "topic:Community Living": "topic.Community Living",
     "topic:Culture": "topic.Culture",
@@ -38,7 +39,6 @@ export const kNameToL10NKey: IStringMap = {
     "topic:Personal Development": "topic.Personal Development",
     "topic:Primer": "topic.Primer",
     "topic:Science": "topic.Science",
-    "topic:Spiritual": "topic.Spiritual",
     "topic:Story Book": "topic.Story Book",
     "topic:Traditional Story": "topic.Traditional Story",
 };

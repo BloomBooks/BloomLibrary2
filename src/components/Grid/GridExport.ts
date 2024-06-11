@@ -92,6 +92,8 @@ function getStringForItem(book: Book, key: string): string {
             return `=HYPERLINK("${window.location.origin}/book/${book.id}")`;
         case "languages":
             return book.languages.map((lang) => lang.name).join(", ");
+        case "languagecodes":
+            return book.languages.map((lang) => lang.isoCode).join(", ");
         case "uploader":
             return book.uploader?.username ?? "";
         case "topic":
