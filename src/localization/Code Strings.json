@@ -544,10 +544,6 @@
         "message": "Version {versionNumber} {date}",
         "description": "Describes the version of the Bloom software to be downloaded. \"versionNumber\" is the version number of Bloom, e.g. 4.8.3. \"date\" is the date that version was created, e.g. 2020-11-24."
     },
-    "download.version": {
-        "message": "Download version {versionNumber}.",
-        "description": "{versionNumber} will be replaced by the version number of the software. For example, 'Download version 1.1.0.'"
-    },
     "sponsorshipHeading": {
         "message": "This project was supported by",
         "description": "Example, see the bottom of https://bloomlibrary.org/kyrgyzstan-OkuuKeremet"
