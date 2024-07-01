@@ -84,8 +84,8 @@
         "message": "search for books"
     },
     "search.noSearchResults": {
-        "description": "",
-        "message": "No books in the library match the search {searchString}"
+        "description": "The \"{searchTerms}\" must be left untranslated in the place where the search terms would be substituted for displaying to the user.  The \"{buttonLabel}\" must be left untranslated in the place where the label for the \"Search Deeper\" button would be substituted for displaying to the user.",
+        "message": "We didn't find an exact match in a title for {searchTerms}. Click {buttonLabel} to search in other fields and with looser matching."
     },
     "search": {
         "description": "Priority - Low",
