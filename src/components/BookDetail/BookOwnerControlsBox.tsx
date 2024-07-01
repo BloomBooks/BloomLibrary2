@@ -25,14 +25,6 @@ import {
     useGetPermissions,
 } from "../../connection/LibraryQueryHooks";
 
-// This should become true or just be removed once 6.0 is shipping.
-// The controls it hides require 6.0, so we don't want ordinary users to see them until then.
-// We do want to be able to test this on our dev and alpha sites, though.
-const allowDownloadForEditing =
-    window.location.hostname.startsWith("alpha") ||
-    window.location.hostname.startsWith("dev") ||
-    window.location.hostname.startsWith("localhost");
-
 export const BookOwnerControlsBox: React.FunctionComponent<{
     book: Book;
     user: User;
@@ -77,8 +69,8 @@ export const BookOwnerControlsBox: React.FunctionComponent<{
         // So for now, we must only show these controls when they will work (moderator or uploader).
         userIsUploader;
     //permissions.editSurfaceMetadata === true;
-    const showDownloadForEditButton =
-        allowDownloadForEditing && permissions.reupload === true;
+
+    const showDownloadForEditButton = permissions.reupload === true;
     const showDeleteButton = userIsModerator || permissions.delete === true;
 
     return (
