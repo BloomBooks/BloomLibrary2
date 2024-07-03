@@ -65,10 +65,10 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
         ArtifactType.shellbook
     );
     const showTranslateButton =
-        !isEmbedded && // BL-8698, a this point, people embed BL to publish books, not encourage translation.
+        !isEmbedded && // BL-8698, at this point, people embed BL to publish books, not encourage translation.
         shellBookSettings &&
         shellBookSettings.decision && // it's OK to download and translate the book
-        !appHostedMode && // bloomDesktopAVailable would block this normally, but when simulating on a desktop this makes sure.
+        !appHostedMode && // bloomDesktopAvailable would block this normally, but when simulating on a desktop this makes sure.
         bloomDesktopAvailable; // and this platform can run the software for doing it
 
     const bloomReaderSettings = getArtifactVisibilitySettings(
