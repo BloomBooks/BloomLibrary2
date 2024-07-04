@@ -42,6 +42,7 @@ import {
 import { Helmet } from "react-helmet";
 import { DownloadToBloomDialogs } from "./DownloadToBloomButton";
 import { BookOwnerControlsBox } from "./BookOwnerControlsBox";
+import { StaffControlsBox } from "./StaffControlsBox";
 
 const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     const l10n = useIntl();
@@ -324,6 +325,7 @@ const BookDetailInternal: React.FunctionComponent<{
                                 showDownloadDialog={showDownloadDialog}
                             />
                         )}
+                        <StaffControlsBox book={props.book} />
                         <DownloadToBloomDialogs
                             book={props.book}
                             getShowFunction={(download) =>
@@ -369,6 +371,26 @@ const Detail2ColumnRow: React.FunctionComponent<
             >
                 {React.Children.toArray(props.children)[1]}
             </div>
+        </div>
+    );
+};
+
+// This is just a reusable box with a border around it.
+export const ControlsBox: React.FunctionComponent<
+    React.HTMLProps<HTMLDivElement>
+> = (props) => {
+    return (
+        <div
+            css={css`
+                box-sizing: border-box;
+                padding: 1em;
+                margin-top: 20px;
+                margin-bottom: 20px;
+                border: 4px solid ${commonUI.colors.bloomBlue};
+                border-radius: 5px;
+            `}
+        >
+            {props.children}
         </div>
     );
 };
