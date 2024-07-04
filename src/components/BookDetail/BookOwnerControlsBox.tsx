@@ -24,6 +24,7 @@ import {
     IUserBookPermissions,
     useGetPermissions,
 } from "../../connection/LibraryQueryHooks";
+import { ControlsBox } from "./ControlsBox";
 
 export const BookOwnerControlsBox: React.FunctionComponent<{
     book: Book;
@@ -74,16 +75,7 @@ export const BookOwnerControlsBox: React.FunctionComponent<{
     const showDeleteButton = userIsModerator || permissions.delete === true;
 
     return (
-        <div
-            css={css`
-                box-sizing: border-box;
-                padding: 1em;
-                margin-top: 20px;
-                margin-bottom: 20px;
-                border: 4px solid ${commonUI.colors.bloomBlue};
-                border-radius: 5px;
-            `}
-        >
+        <ControlsBox>
             <div>
                 <div
                     css={css`
@@ -253,6 +245,6 @@ export const BookOwnerControlsBox: React.FunctionComponent<{
                     <DeleteButton book={props.book} />
                 </div>
             )}
-        </div>
+        </ControlsBox>
     );
 });
