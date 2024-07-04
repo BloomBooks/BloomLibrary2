@@ -51,9 +51,13 @@
         "description": "",
         "message": "Read"
     },
-    "header.create": {
+    "header.resources": {
         "description": "",
-        "message": "Create"
+        "message": "Resources"
+    },
+    "header.about": {
+        "description": "Top-level tab which navigates to a page with information about Bloom",
+        "message": "About"
     },
     "header.home": {
         "description": "",
