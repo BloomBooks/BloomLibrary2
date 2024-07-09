@@ -30,3 +30,9 @@ export function isInCreateSectionOfSite(urlPathname: string): boolean {
 
     return urlPathname.includes("/create/");
 }
+
+export function isOnAboutPage(urlPathname: string): boolean {
+    if (!urlPathname) return false;
+
+    return urlPathname.endsWith("/about");
+}

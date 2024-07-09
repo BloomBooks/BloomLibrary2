@@ -4,7 +4,7 @@ import css from "@emotion/css/macro";
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
 
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import { Book } from "../../model/Book";
 import { observer } from "mobx-react-lite";
 
@@ -24,6 +24,8 @@ import {
     IUserBookPermissions,
     useGetPermissions,
 } from "../../connection/LibraryQueryHooks";
+import { OSFeaturesContext } from "../OSFeaturesContext";
+import { ControlsBox } from "./ControlsBox";
 
 export const BookOwnerControlsBox: React.FunctionComponent<{
     book: Book;
@@ -31,6 +33,8 @@ export const BookOwnerControlsBox: React.FunctionComponent<{
     showDownloadDialog: any; // pass down the ref
 }> = observer((props) => {
     const l10n = useIntl();
+    const { bloomDesktopAvailable } = useContext(OSFeaturesContext);
+
     const [firebaseUser, setFirebaseUserUrl] = useState<firebase.User | null>(
         null
     );
@@ -74,16 +78,7 @@ export const BookOwnerControlsBox: React.FunctionComponent<{
     const showDeleteButton = userIsModerator || permissions.delete === true;
 
     return (
-        <div
-            css={css`
-                box-sizing: border-box;
-                padding: 1em;
-                margin-top: 20px;
-                margin-bottom: 20px;
-                border: 4px solid ${commonUI.colors.bloomBlue};
-                border-radius: 5px;
-            `}
-        >
+        <ControlsBox>
             <div>
                 <div
                     css={css`
@@ -230,6 +225,7 @@ export const BookOwnerControlsBox: React.FunctionComponent<{
                                 align-self: flex-end;
                                 margin-top: 5px;
                             `}
+                            disabled={!bloomDesktopAvailable}
                         >
                             <FormattedMessage
                                 id={"book.detail.editDownload"}
@@ -253,6 +249,6 @@ export const BookOwnerControlsBox: React.FunctionComponent<{
                     <DeleteButton book={props.book} />
                 </div>
             )}
-        </div>
+        </ControlsBox>
     );
 });
