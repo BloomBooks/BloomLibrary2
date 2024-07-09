@@ -42,6 +42,7 @@ import {
 import { Helmet } from "react-helmet";
 import { DownloadToBloomDialogs } from "./DownloadToBloomButton";
 import { BookOwnerControlsBox } from "./BookOwnerControlsBox";
+import { StaffControlsBox } from "./StaffControlsBox";
 
 const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     const l10n = useIntl();
@@ -324,6 +325,7 @@ const BookDetailInternal: React.FunctionComponent<{
                                 showDownloadDialog={showDownloadDialog}
                             />
                         )}
+                        <StaffControlsBox book={props.book} />
                         <DownloadToBloomDialogs
                             book={props.book}
                             getShowFunction={(download) =>
