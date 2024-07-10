@@ -70,3 +70,18 @@ export async function retrieveCurrentBookData(bookId: string) {
 
     return result.data;
 }
+
+// Get the basic information about books and users for the language-grid, country-grid,
+// and uploader-grid pages.
+export async function retrieveBookAndUserData() {
+    return axios.get(`${getConnection().url}classes/books`, {
+        headers: getConnection().headers,
+        params: {
+            limit: 100000, // all of them
+            keys: "uploader,createdAt,show,tags",
+            // fluff up fields that reference other tables
+            include: "uploader",
+            where: { inCirculation: true, draft: false },
+        },
+    });
+}

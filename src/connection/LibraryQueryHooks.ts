@@ -7,7 +7,11 @@ import {
     getBloomApiUrl,
     getBloomApiHeaders,
 } from "./ApiConnection";
-import { retrieveBookData, retrieveBookStats } from "./LibraryQueries";
+import {
+    retrieveBookData,
+    retrieveBookStats,
+    retrieveBookAndUserData,
+} from "./LibraryQueries";
 import { Book, createBookFromParseServerData } from "../model/Book";
 import { useContext, useMemo, useEffect, useState } from "react";
 import { CachedTablesContext } from "../model/CacheProvider";
@@ -30,6 +34,7 @@ import {
 import { doExpensiveClientSideSortingIfNeeded } from "./sorting";
 import { BookOrderingScheme } from "../model/ContentInterfaces";
 import { isAppHosted } from "../components/appHosted/AppHostedUtils";
+import { IMinimalBookInfo } from "../components/NonBookGrid/NonBookGridPage";
 
 /**
  * @summary The minimum fields returned by Parse
@@ -1723,6 +1728,42 @@ export async function deleteBook(bookDatabaseId: string) {
     return axios.delete(getBloomApiBooksUrl(bookDatabaseId), {
         headers: getBloomApiHeaders(),
     });
+}
+
+// Retrieve an array of minimal information for all accessible books and
+// their uploaders.
+export function useGetDataForNonBookGrid(): IMinimalBookInfo[] {
+    const [result, setResult] = useState<IMinimalBookInfo[]>([]);
+    const { response, loading, error } = useAsync(
+        () => retrieveBookAndUserData(),
+        "trigger",
+        false
+    );
+    useEffect(() => {
+        if (
+            loading ||
+            error ||
+            !response ||
+            !response["data"] ||
+            !response["data"]["results"]
+        ) {
+            if (error)
+                console.error(
+                    `Error in useGetDataForNonBookGrid: ${JSON.stringify(
+                        error
+                    )}`
+                );
+            setResult([]);
+        } else {
+            const result1 = response["data"]["results"] as IMinimalBookInfo[];
+            result1.forEach((item: IMinimalBookInfo) => {
+                item.lang1Tag = item.show?.pdf?.langTag;
+            });
+            setResult(result1);
+        }
+    }, [response, loading, error]);
+
+    return result;
 }
 
 // Some axios calls should be shared between hook and non-hook uses.  useAxios is

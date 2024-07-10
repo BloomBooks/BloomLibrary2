@@ -28,6 +28,7 @@ import { AppHostedDownloadingPage } from "./appHosted/AppHostedDownloadingPage";
 import { appHostedSegment, isAppHosted } from "./appHosted/AppHostedUtils";
 import { LanguageReport } from "./statistics/LanguageReport";
 import { LoginForEditor } from "./User/LoginForEditor";
+import { NonBookGridPage } from "./NonBookGrid/NonBookGridPage";
 
 export let previousPathname = "";
 let currentPathname = "";
@@ -163,6 +164,24 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                         path="/grid/:filter*"
                         render={({ match }) => {
                             return <GridPage filters={match.params.filter} />;
+                        }}
+                    />
+                    <Route
+                        path="/language-grid/:filter*"
+                        render={({ match }) => {
+                            return <NonBookGridPage type="language" />;
+                        }}
+                    />
+                    <Route
+                        path="/country-grid/"
+                        render={({ match }) => {
+                            return <NonBookGridPage type="country" />;
+                        }}
+                    />
+                    <Route
+                        path="/uploader-grid/"
+                        render={({ match }) => {
+                            return <NonBookGridPage type="uploader" />;
                         }}
                     />
                     <Route
