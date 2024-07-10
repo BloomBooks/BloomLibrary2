@@ -144,6 +144,10 @@ a:hover {
 
 /* Bloom Reader page rules */
 .contentful-page.bloom-reader img {
+    width: 176px;
+}
+.contentful-page.bloom-reader img[src*="en_badge_web_generic.png"] {
+    /* for some reason, the English version has a left/right margin but the others don't */
     width: 200px;
     margin: -12px;
 }
