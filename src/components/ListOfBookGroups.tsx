@@ -28,7 +28,6 @@ export const ListOfBookGroups: React.FunctionComponent<{
     <ul
         css={css`
             padding-left: 20px;
-            min-height: 200px;
             flex-shrink: 0;
             list-style: none;
         `}
