@@ -55,11 +55,11 @@ export const TranslateButton: React.FunctionComponent = (props) => {
     );
 };
 
-export function getTranslateIcon(theme: Theme, inCreate: boolean) {
+export function getTranslateIcon(theme: Theme, inResources: boolean) {
     return (
         <TranslationIcon
             fill={
-                inCreate
+                inResources
                     ? theme.palette.primary.main
                     : commonUI.colors.bloomBlue
             }

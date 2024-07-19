@@ -21,7 +21,7 @@ export const FeatureGroup: React.FunctionComponent<IFeatureGroupProps> = (
                     scope="row"
                     css={css`
                         color: white !important;
-                        background-color: ${commonUI.colors.creationArea};
+                        background-color: ${commonUI.colors.resourcesArea};
                     `}
                 >
                     <span

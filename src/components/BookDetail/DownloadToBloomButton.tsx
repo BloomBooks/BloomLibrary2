@@ -15,7 +15,7 @@ import { useTheme } from "@material-ui/core";
 import { useLocation } from "react-router-dom";
 import { getTranslateIcon, TranslateButton } from "./TranslateButton";
 import { GetTemplateButton } from "./GetTemplateButton";
-import { isInCreateSectionOfSite } from "../pages/ThemeForLocation";
+import { isInResourcesSectionOfSite } from "../pages/ThemeForLocation";
 
 interface ITranslateButtonProps {
     book: Book;
@@ -37,7 +37,7 @@ export const DownloadToBloomButton: React.FunctionComponent<ITranslateButtonProp
     // Ideally, this would be defined at some higher level and I could just use it here.
     // But since it uses a hook, that greatly limits our ability to extract it.
     // It didn't seem worth adding a whole new context provider.
-    const inCreate = isInCreateSectionOfSite(useLocation().pathname);
+    const inResources = isInResourcesSectionOfSite(useLocation().pathname);
 
     // This set of three properties controls how the translate version is different
     // from the template version. If it gets any more complicated, we should create
@@ -59,11 +59,11 @@ export const DownloadToBloomButton: React.FunctionComponent<ITranslateButtonProp
     // with a layout that isn't broken.
     const startButton = isTemplate
         ? undefined
-        : getTranslateIcon(theme, inCreate);
+        : getTranslateIcon(theme, inResources);
 
     // Main content of the two versions of the button.
     const content = isTemplate ? (
-        <GetTemplateButton inCreate={inCreate} />
+        <GetTemplateButton inResources={inResources} />
     ) : (
         <TranslateButton />
     );

@@ -14,13 +14,15 @@ import { useHistory, useLocation } from "react-router-dom";
 import { useIntl } from "react-intl";
 import { BlorgLink } from "../BlorgLink";
 import {
-    isInCreateSectionOfSite,
+    isInResourcesSectionOfSite,
     isOnAboutPage,
 } from "../pages/ThemeForLocation";
 
 export const Header: React.FunctionComponent<{}> = (props) => {
     const location = useLocation();
-    const isCreateTabSelected = isInCreateSectionOfSite(location.pathname);
+    const isResourcesTabSelected = isInResourcesSectionOfSite(
+        location.pathname
+    );
     const isAboutTabSelected = isOnAboutPage(location.pathname);
     const routerHistory = useHistory();
     const showSearchBelow = !useMediaQuery("(min-width:1200px)");
@@ -39,8 +41,8 @@ export const Header: React.FunctionComponent<{}> = (props) => {
 
     const minTabWidth = showTabsNarrower ? "min-width:110px" : "";
 
-    const backgroundColor = isCreateTabSelected
-        ? commonUI.colors.creationArea
+    const backgroundColor = isResourcesTabSelected
+        ? commonUI.colors.resourcesArea
         : commonUI.colors.bloomRed;
     // 14pt bold is the minimum size for white text on bloom-red to be considered accessible
     const tabStyle = css`
@@ -52,7 +54,7 @@ export const Header: React.FunctionComponent<{}> = (props) => {
     `;
     const topLevelTabs = (
         <Tabs
-            value={isAboutTabSelected ? 2 : isCreateTabSelected ? 1 : 0}
+            value={isAboutTabSelected ? 2 : isResourcesTabSelected ? 1 : 0}
             onChange={(_, value) => {
                 switch (value) {
                     case 0:
