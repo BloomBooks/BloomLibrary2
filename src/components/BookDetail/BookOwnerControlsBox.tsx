@@ -195,7 +195,7 @@ export const BookOwnerControlsBox: React.FunctionComponent<{
                                     values={{
                                         downloadLink: (
                                             <BlorgLink
-                                                href="page/create/downloads"
+                                                href="/downloads"
                                                 css={css`
                                                     color: ${commonUI.colors
                                                         .bloomBlue};

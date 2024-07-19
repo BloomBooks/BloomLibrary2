@@ -21,16 +21,15 @@ export const ThemeForLocation: React.FunctionComponent<{
 // Example urls:
 // - /resources
 // - /resources/book/abc123/resources
-// - /page/resources/page/about
 // - /page/resources/creators-Chetana
 // We don't want to match something like
 // - /resources-for-the-blind
 export function isInResourcesSectionOfSite(urlPathname: string): boolean {
     if (!urlPathname) return false;
 
-    if (urlPathname === "/create") return true;
+    if (urlPathname === "/resources") return true;
 
-    return urlPathname.includes("/create/");
+    return urlPathname.includes("/resources/");
 }
 
 export function isOnAboutPage(urlPathname: string): boolean {

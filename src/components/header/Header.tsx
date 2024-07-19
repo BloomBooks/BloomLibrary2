@@ -62,7 +62,7 @@ export const Header: React.FunctionComponent<{}> = (props) => {
                         routerHistory.push("/read");
                         break;
                     case 1:
-                        routerHistory.push("/create");
+                        routerHistory.push("/resources");
                         break;
                     case 2:
                         routerHistory.push("/about");
