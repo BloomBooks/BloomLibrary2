@@ -178,14 +178,14 @@ export const Footer: React.FunctionComponent = () => {
                     }
                 `}
             >
-                <BlorgLink href="/page/support">
+                <BlorgLink href="/support">
                     <FormattedMessage
                         id="footer.support"
                         defaultMessage="Support"
                     />
                 </BlorgLink>
                 {separator}
-                <BlorgLink href="/page/create/downloads">
+                <BlorgLink href="/downloads">
                     <FormattedMessage
                         id="downloads"
                         defaultMessage="Downloads"

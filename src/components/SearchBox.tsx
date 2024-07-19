@@ -173,9 +173,9 @@ export const SearchBox: React.FunctionComponent<{
         // pathParts.push(":search:" + encodeURIComponent(enteredSearch));
         // const newUrl = "/" + pathParts.join("/");
 
-        // special case that when in resources or grid mode, we don't want to leave it.
+        // special case that when in resources or grid or bulk mode, we want to stay in it.
         const prefix =
-            ["/create", "/grid", "/bulk"].find((x) =>
+            ["/resources", "/grid", "/bulk"].find((x) =>
                 history.location.pathname.startsWith(x)
             ) || "";
         let newUrl: string = "";

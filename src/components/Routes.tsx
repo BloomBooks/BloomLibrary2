@@ -77,6 +77,8 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
         <ErrorBoundary url={location.pathname}>
             <ThemeForLocation browserTabTitle={location.pathname}>
                 <Switch>
+                    <Redirect from={"/about"} to="/page/resources/about" />
+
                     <Route
                         path="/test-embedding/:code*"
                         render={({ match }) => {
@@ -143,7 +145,8 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                         }}
                     ></Route>
                     {/* We no longer use this route, but it's here in case we need to redirect user bookmarks.
-                        Note, the original links were /create/release-notes/{channel} but this handles any suffix. */}
+                        Note, the original links were /create/release-notes/{channel} but this handles any suffix.
+                        ("create" later became "resources") */}
                     <Route
                         path="*/release-notes"
                         component={() => {
@@ -254,13 +257,13 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                             "/installers", // Alias from legacy blorg
                         ]}
                     >
-                        <Redirect to="/page/create/downloads" />
+                        <Redirect to="/page/resources/downloads" />
                     </Route>
                     <Route exact path={["/bloom-reader"]}>
-                        <Redirect to="/page/create/page/bloom-reader" />
+                        <Redirect to="/page/resources/bloom-reader" />
                     </Route>
                     <Route exact path={["/bloompub-viewer"]}>
-                        <Redirect to="/page/create/page/bloompub-viewer" />
+                        <Redirect to="/page/resources/bloompub-viewer" />
                     </Route>
                     {/* Alias from legacy blorg */}
                     <Redirect from={"/browse/detail/:id"} to="/book/:id" />
@@ -268,22 +271,20 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                     <Redirect from={"/readBook/:id"} to="/player/:id" />
                     {/* We have published this artofreading link in various places (like the WeSay page) */}
                     <Route path={["/artofreading"]}>
-                        <Redirect to="/page/create/page/art-of-reading" />
+                        <Redirect to="/page/resources/art-of-reading" />
                     </Route>
-                    {/* Alias from legacy blorg */}
-                    <Redirect from={"/about"} to="/page/create/about" />
                     {/* Alias from legacy blorg */}
                     <Redirect
                         from={"/bloom-reader-privacy-policy"}
-                        to="/page/create/bloom-reader-privacy-policy"
+                        to="/page/resources/bloom-reader-privacy-policy"
                     />
                     {/* Alias from legacy blorg */}
                     <Route path="/sponsorship">
-                        <ContentfulPage urlKey="sponsorship" />
+                        <Redirect to="/page/resources/sponsorship" />
                     </Route>
 
                     {/* Aliases from BloomDesktop */}
-                    <Redirect from="/support" to="/page/support" />
+                    <Redirect from="/support" to="/page/resources/support" />
                     <Redirect from="/terms" to="/page/termsOfUse" />
                     {/* Note, because of the special handling required here for hashes
                     (the router doesn't match paths based on hash),
@@ -312,7 +313,7 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                                     );
                                 case "#/artofreading":
                                     return (
-                                        <Redirect to="/page/create/page/art-of-reading" />
+                                        <Redirect to="/page/resources/art-of-reading" />
                                     );
                                 default:
                                     return (

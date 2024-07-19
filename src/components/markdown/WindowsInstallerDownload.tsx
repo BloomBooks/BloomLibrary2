@@ -27,7 +27,7 @@ export const WindowsInstallerDownload: React.FunctionComponent<{
             versionNumber={versionNumber}
             date={info.date}
             releaseNotesUrl={getReleaseNotesLink(info)}
-            requirementsUrl={"/page/create/bloom-windows-requirements"}
+            requirementsUrl={"/page/resources/bloom-windows-requirements"}
         />
     ) : (
         <InstallerDownload
@@ -41,7 +41,7 @@ export const WindowsInstallerDownload: React.FunctionComponent<{
             versionNumber={versionNumber}
             date={info.date}
             releaseNotesUrl={getReleaseNotesLink(info)}
-            requirementsUrl={"/page/create/bloom-windows-requirements"}
+            requirementsUrl={"/page/resources/bloom-windows-requirements"}
         />
     );
 };

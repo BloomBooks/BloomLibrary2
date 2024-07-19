@@ -60,7 +60,7 @@ export const StandardBannerLayout: React.FunctionComponent<{
                     overflow: hidden;
                 `}
             >
-                {["root.read", "create"].includes(
+                {["root.read", "resources"].includes(
                     props.collection?.urlKey!
                 ) || <Breadcrumbs />}
 
@@ -97,7 +97,7 @@ export const StandardBannerLayout: React.FunctionComponent<{
                 </div>
 
                 {props.collection?.urlKey !== "new-arrivals" &&
-                    props.collection?.urlKey !== "create" &&
+                    props.collection?.urlKey !== "resources" &&
                     (props.bookCount || (
                         <BookCount collection={props.collection} />
                     ))}
