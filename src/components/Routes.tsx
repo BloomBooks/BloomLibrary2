@@ -77,6 +77,19 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
         <ErrorBoundary url={location.pathname}>
             <ThemeForLocation browserTabTitle={location.pathname}>
                 <Switch>
+                    {/* The "resources" section used to be "create", and all the urls were different.
+                        These first four routes ensure that old links will go to the right place. */}
+                    <Redirect
+                        from={"/:before/create/:after"}
+                        to="/:before/resources/:after"
+                    />
+                    <Redirect exact from={"/create"} to="/resources" />
+                    <Redirect from={"/create/:after"} to="/resources/:after" />
+                    <Redirect
+                        from={"/:before/create"}
+                        to="/:before/resources"
+                    />
+
                     <Redirect from={"/about"} to="/page/resources/about" />
 
                     <Route
