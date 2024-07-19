@@ -11,8 +11,8 @@ export const commonUI = {
         bloomBlue: "#1a818f",
         bloomBlueTransparent: "#1a818f38",
         dialogTopBottomGray: "#F1F3F4",
-        creationArea: "#509E2F", // this is the SIL Intl green
-        createAreaTextOnWhite: "#226B04", // a bit darker for contrast
+        resourcesArea: "#509E2F", // this is the SIL Intl green
+        resourcesAreaTextOnWhite: "#226B04", // a bit darker for contrast
         minContrastGray: "#767676", // lightest grey that is accessible on white background"
         disabledIconGray: "#DDD",
     },
@@ -97,16 +97,16 @@ const theme = createTheme({
 
 export default theme;
 
-const creationPalette = {
-    primary: { main: commonUI.colors.creationArea, light: "white" },
+const resourcesPalette = {
+    primary: { main: commonUI.colors.resourcesArea, light: "white" },
     // currently we're using the same color for "secondary" as for "primary", so that glow on cards is green.
     // eventually when materialui supports more names for the pallette, we can sort this out so that we just define the glow color
-    secondary: { main: commonUI.colors.creationArea },
+    secondary: { main: commonUI.colors.resourcesArea },
 };
-const creationTheme = createTheme({ ...theme, palette: creationPalette });
-export function CreationThemeProvider(props: any) {
+const resourcesTheme = createTheme({ ...theme, palette: resourcesPalette });
+export function ResourcesThemeProvider(props: any) {
     return (
-        <MuiThemeProvider theme={creationTheme}>
+        <MuiThemeProvider theme={resourcesTheme}>
             {props.children}
         </MuiThemeProvider>
     );

@@ -364,7 +364,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
     );
 
     let group;
-    // this is used in the "Create" screen
+    // this is used on the "Resources" screen
     if (
         props.collection.layout ===
         "layout: description-followed-by-row-of-books"

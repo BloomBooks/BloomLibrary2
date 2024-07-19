@@ -12,10 +12,10 @@ import { commonUI } from "../../theme";
 
 // This the parts of DownloadToBloomButton that are unique to templates (as opposed to books to translate).
 export const GetTemplateButton: React.FunctionComponent<{
-    inCreate: boolean;
+    inResources: boolean;
 }> = (props) => {
     const theme = useTheme();
-    const iconColor = props.inCreate
+    const iconColor = props.inResources
         ? theme.palette.primary.main
         : commonUI.colors.bloomBlue;
     return (
