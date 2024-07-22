@@ -55,13 +55,17 @@ import { ICountryGridControlProps } from "./CountryGridControl";
 import { CachedTablesContext } from "../../model/CacheProvider";
 import {
     CachedBookDataContext,
-    ICountryIdData,
-    ILangTagData,
     fixLanguageRegionDataAndGetMap,
-} from "../NonBookGrid/NonBookGridPage";
+    getCountryIdMapFromLangTagData,
+} from "../AggregateGrid/AggregateGridPage";
+import {
+    // ICountryIdData,
+    ILangTagData,
+} from "../AggregateGrid/AggregateGridInterfaces";
 
-const rawLangData: ILangTagData[] = require("../NonBookGrid/reduced-langtags.json");
-const countryIdData: ICountryIdData[] = require("../statistics/country_ids.json");
+const rawLangData: ILangTagData[] = require("../AggregateGrid/reduced-langtags.json");
+// if we go back to using the langtags regions field, we may need this data.
+//const countryIdData: ICountryIdData[] = require("../statistics/country_ids.json");
 
 // we need the observer in order to get the logged in user, which may not be immediately available
 const CountryGridControlInternal: React.FunctionComponent<ICountryGridControlProps> = observer(
@@ -85,9 +89,13 @@ const CountryGridControlInternal: React.FunctionComponent<ICountryGridControlPro
         const fullLangDataMap = useMemo(() => {
             return fixLanguageRegionDataAndGetMap(rawLangData);
         }, []);
+        const countryIdMap = useMemo(() => {
+            return getCountryIdMapFromLangTagData(rawLangData);
+        }, []);
 
         // Create countryDataRows from languages and bookData.
-        // countryIdData is used to create the initial set of rows and fill in some data.
+        // countryIdMap (which is derived from langtags) is used to create the initial set
+        // of rows and fill in some data.
         // fullLangDataMap is used to fill in some data.
         // Some gridFilters are applied to the bookData before creating the rows.
         useEffect(() => {
@@ -99,17 +107,17 @@ const CountryGridControlInternal: React.FunctionComponent<ICountryGridControlPro
             ) {
                 const countryMap = new Map<string, ICountryGridRowData>();
 
-                countryIdData.forEach((country: ICountryIdData) => {
+                countryIdMap.forEach((name, code) => {
                     const rowData: ICountryGridRowData = {
-                        name: country.n,
-                        code: country.a2,
+                        name: name,
+                        code: code,
                         knownLanguageCount: 0,
                         knownLanguageTags: [],
                         blorgLanguageCount: 0,
                         blorgLanguageTags: [],
                         bookCount: 0,
                     };
-                    countryMap.set(country.a2, rowData);
+                    countryMap.set(code, rowData);
                 });
                 const unknownRegions: string[] = [];
                 // Add languages to each country row.
@@ -126,32 +134,33 @@ const CountryGridControlInternal: React.FunctionComponent<ICountryGridControlPro
                                 rowData.knownLanguageCount =
                                     rowData.knownLanguageTags.length;
                             }
-                            // REVIEW: Should the other regions be included in the counts?
-                            // If so, the US has 715 known languages.  If not, then English
-                            // (en) is not counted as a known language for the UK.
-                            if (lang.regions) {
-                                lang.regions.forEach((r) => {
-                                    if (r === lang.region) return; // I don't think this should happen.
-                                    const rowData2 = countryMap.get(r);
-                                    if (rowData2) {
-                                        if (
-                                            !rowData2.knownLanguageTags.includes(
-                                                lang.tag
-                                            )
-                                        ) {
-                                            rowData2.knownLanguageTags.push(
-                                                lang.tag
-                                            );
-                                            rowData2.knownLanguageCount =
-                                                rowData2.knownLanguageTags.length;
-                                        }
-                                    } else {
-                                        if (!unknownRegions.includes(r)) {
-                                            unknownRegions.push(r);
-                                        }
-                                    }
-                                });
-                            }
+                            // For the moment, we're not including the regions field from langtags.
+                            // // REVIEW: Should the other regions be included in the counts?
+                            // // If so, the US has 715 known languages.  If not, then English
+                            // // (en) is not counted as a known language for the UK.
+                            // if (lang.regions) {
+                            //     lang.regions.forEach((r) => {
+                            //         if (r === lang.region) return; // I don't think this should happen.
+                            //         const rowData2 = countryMap.get(r);
+                            //         if (rowData2) {
+                            //             if (
+                            //                 !rowData2.knownLanguageTags.includes(
+                            //                     lang.tag
+                            //                 )
+                            //             ) {
+                            //                 rowData2.knownLanguageTags.push(
+                            //                     lang.tag
+                            //                 );
+                            //                 rowData2.knownLanguageCount =
+                            //                     rowData2.knownLanguageTags.length;
+                            //             }
+                            //         } else {
+                            //             if (!unknownRegions.includes(r)) {
+                            //                 unknownRegions.push(r);
+                            //             }
+                            //         }
+                            //     });
+                            // }
                         }
                     }
                 });
@@ -183,30 +192,31 @@ const CountryGridControlInternal: React.FunctionComponent<ICountryGridControlPro
                                     rowData.blorgLanguageCount =
                                         rowData.blorgLanguageTags.length;
                                 }
-                                // REVIEW: Should the other regions be included in the counts?
-                                // If so, the US has 90+ languages represented in bloomlibrary.
-                                // If not, then English (en) is not counted as a language for
-                                // the UK, Canada, Australia, etc.  And the US has only 4 languages.
-                                if (lang.regions) {
-                                    lang.regions.forEach((r) => {
-                                        if (r === lang.region) return; // I don't think this should happen.
-                                        const rowData2 = countryMap.get(r);
-                                        if (rowData2) {
-                                            ++rowData2.bookCount;
-                                            if (
-                                                !rowData2.blorgLanguageTags.includes(
-                                                    lang.tag
-                                                )
-                                            ) {
-                                                rowData2.blorgLanguageTags.push(
-                                                    lang.tag
-                                                );
-                                                rowData2.blorgLanguageCount =
-                                                    rowData2.blorgLanguageTags.length;
-                                            }
-                                        }
-                                    });
-                                }
+                                // For the moment, we're not including the regions field from langtags.
+                                // // REVIEW: Should the other regions be included in the counts?
+                                // // If so, the US has 90+ languages represented in bloomlibrary.
+                                // // If not, then English (en) is not counted as a language for
+                                // // the UK, Canada, Australia, etc.  And the US has only 4 languages.
+                                // if (lang.regions) {
+                                //     lang.regions.forEach((r) => {
+                                //         if (r === lang.region) return; // I don't think this should happen.
+                                //         const rowData2 = countryMap.get(r);
+                                //         if (rowData2) {
+                                //             ++rowData2.bookCount;
+                                //             if (
+                                //                 !rowData2.blorgLanguageTags.includes(
+                                //                     lang.tag
+                                //                 )
+                                //             ) {
+                                //                 rowData2.blorgLanguageTags.push(
+                                //                     lang.tag
+                                //                 );
+                                //                 rowData2.blorgLanguageCount =
+                                //                     rowData2.blorgLanguageTags.length;
+                                //             }
+                                //         }
+                                //     });
+                                // }
                             }
                         }
                     }
@@ -227,6 +237,7 @@ const CountryGridControlInternal: React.FunctionComponent<ICountryGridControlPro
             countryDataRows.length,
             fullLangDataMap,
             gridFilters,
+            countryIdMap,
         ]);
 
         const kRowsPerGridPage = 20;

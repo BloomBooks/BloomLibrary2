@@ -41,22 +41,32 @@ function exportData(): string[][] {
 
 function getStringForItem(lang: ILanguageGridRowData, key: string): string {
     switch (key) {
-        case "name":
-            return lang.name;
+        case "exonym":
+            return lang.exonym;
+        case "endonym":
+            return lang.endonym;
         case "otherNames":
-            return lang.otherNames.join("; ");
+            return lang.otherNames.join(", ");
         case "langTag":
             return lang.langTag;
         case "firstSeen":
             return lang.firstSeen.substring(0, 10);
         case "bookCount":
             return lang.bookCount.toString();
+        case "level1Count":
+            return lang.level1Count.toString();
+        case "level2Count":
+            return lang.level2Count.toString();
+        case "level3Count":
+            return lang.level3Count.toString();
+        case "level4Count":
+            return lang.level4Count.toString();
         case "uploaderCount":
             return lang.uploaderCount.toString();
         case "uploaderEmails":
-            return lang.uploaderEmails.join("; ");
-        case "countryNames":
-            return lang.countryNames.join("; ");
+            return lang.uploaderEmails.join(", ");
+        case "countryName":
+            return lang.countryName;
         default:
             return "";
     }

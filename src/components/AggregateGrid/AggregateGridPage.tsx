@@ -28,35 +28,9 @@ import {
     exportUploaderGridDataCsv,
 } from "../UploaderGrid/UploaderGridExport";
 import { useGetDataForNonBookGrid } from "../../connection/LibraryQueryHooks";
-
-export interface ILangTagData {
-    tag: string;
-    name: string;
-    names?: string[];
-    region: string;
-    regionname: string;
-    regions?: string[];
-}
-export interface ICountryIdData {
-    a2: string; // 2-letter code (names match what is in the json data file)
-    a3: string; // 3-letter code
-    n: string; // name
-}
-
-// Basic user information used by the uploader-grid page and language-grid page.
-export interface IBasicUserInfo {
-    objectId: string; // needed only to ensure uniqueness in a list of users
-    createdAt: string; // when the user was created/registered.
-    username: string; // the user's email address, real or not.
-}
-export interface IMinimalBookInfo {
-    objectId: string;
-    createdAt: string;
-    tags: string[];
-    lang1Tag?: string;
-    show?: { pdf: { langTag: string } }; // there is more, but this is what we're using to get at l1 at the moment
-    uploader: IBasicUserInfo;
-}
+import { IMinimalBookInfo, ILangTagData } from "./AggregateGridInterfaces";
+import { observer } from "mobx-react-lite";
+import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 
 interface ICachedBookData {
     minimalBookInfo: IMinimalBookInfo[];
@@ -72,9 +46,11 @@ export const CachedBookDataContext = React.createContext<ICachedBookData>({
     minimalBookInfo: [],
 });
 
-export const NonBookGridPage: React.FunctionComponent<{ type: string }> = (
-    props
-) => {
+// we need the observer in order to get the logged in user, which may not be immediately available
+// we require the user to be logged in to see any of these grids.
+export const AggregateGridPage: React.FunctionComponent<{
+    type: "language" | "country" | "uploader";
+}> = observer((props) => {
     let title = "Language Grid";
     let exportCsvFunction = exportLanguageGridDataCsv;
     if (props.type === "country") {
@@ -95,7 +71,10 @@ export const NonBookGridPage: React.FunctionComponent<{ type: string }> = (
               minimalBookInfo: CachedBookData.minimalBookInfo,
           }
         : loadingResult;
-
+    const user = useGetLoggedInUser();
+    if (!user) {
+        return <div>You must log in to see this page.</div>;
+    }
     return (
         <CachedBookDataContext.Provider value={resultData}>
             <div>
@@ -135,7 +114,7 @@ export const NonBookGridPage: React.FunctionComponent<{ type: string }> = (
             </div>
         </CachedBookDataContext.Provider>
     );
-};
+});
 
 // return an array with two elements: the operator and the value to match
 // These are decoded from the filter string, with the operator being one of
@@ -253,6 +232,18 @@ export function filterDateStringWithOperator(
     }
     return true; // shouldn't get here, but pass the value through if we do
 }
+
+export function getCountryIdMapFromLangTagData(
+    langData: ILangTagData[]
+): Map<string, string> {
+    const countryIdMap = new Map<string, string>();
+    langData.forEach((lng) => {
+        if (lng.region && lng.regionname) {
+            countryIdMap.set(lng.region, lng.regionname);
+        }
+    });
+    return countryIdMap;
+}
 export function fixLanguageRegionDataAndGetMap(
     rawLangData: ILangTagData[]
 ): Map<string, ILangTagData> {
@@ -260,65 +251,65 @@ export function fixLanguageRegionDataAndGetMap(
     rawLangData.forEach((lng) => {
         map.set(lng.tag, lng);
     });
-    // Add regions to the original language entries from the -Dupl and -Brai scripts.
-    // I'm not sure what Dupl is, but Brai is Braille.  It makes sense that the Braille
-    // script shouldn't be considered a separate language, and that it would used only
-    // where the language is actually spoken.
-    // This ensures that Spanish is known to be spoken in Mexico and the US, for example.
-    // Also, that English is spoken in the UK, Australia, and Canada.
-    // Other languages such as German and French also get additional regions added by this
-    // processing.
-    rawLangData.forEach((lng) => {
-        if (lng.tag.endsWith("-Dupl") || lng.tag.endsWith("-Brai")) {
-            if (lng.regions && lng.regions.length > 0) {
-                const tag = lng.tag.substring(0, lng.tag.length - 5);
-                const origLang = map.get(tag);
-                if (!origLang) {
-                    console.warn("No original lang for ", tag);
-                    return;
-                }
-                if (!origLang.regions) {
-                    origLang.regions = [];
-                }
-                if (!origLang.regions.includes(lng.region)) {
-                    console.log(`Adding region ${lng.region} to ${tag}`);
-                    origLang.regions.push(lng.region);
-                }
-                lng.regions.forEach((r) => {
-                    if (!origLang.regions) {
-                        origLang.regions = [];
-                    }
-                    if (!origLang.regions.includes(r)) {
-                        console.log(`Adding region ${r} to ${tag}`);
-                        origLang.regions.push(r);
-                    }
-                });
-            }
-        }
-    });
-    // Restrict the regions for some major languages to the most common ones.
-    // REVIEW: are these copilot suggestions good enough?
-    const english = map.get("en");
-    if (english)
-        english.regions = ["US", "GB", "CA", "AU", "NZ", "IE", "ZA", "IN"];
-    const spanish = map.get("es");
-    if (spanish) spanish.regions = ["MX", "US", "ES", "AR", "CO", "PE"];
-    const french = map.get("fr");
-    if (french) french.regions = ["FR", "CA", "BE", "CH"];
-    const german = map.get("de");
-    if (german) german.regions = ["DE", "AT", "CH"];
-    const portuguese = map.get("pt");
-    if (portuguese) portuguese.regions = ["PT", "BR"];
-    const chinese = map.get("zh");
-    if (chinese) chinese.regions = ["CN", "TW", "HK", "SG"];
-    const arabic = map.get("ar");
-    if (arabic) arabic.regions = ["EG", "SA", "DZ", "MA", "SD", "IQ"];
-    const russian = map.get("ru");
-    if (russian) russian.regions = ["RU", "UA", "KZ", "BY"];
-    const japanese = map.get("ja");
-    if (japanese) japanese.regions = ["JP"];
-    const korean = map.get("ko");
-    if (korean) korean.regions = ["KR"];
+    // // // Add regions to the original language entries from the -Dupl and -Brai scripts.
+    // // // I'm not sure what Dupl is, but Brai is Braille.  It makes sense that the Braille
+    // // // script shouldn't be considered a separate language, and that it would used only
+    // // // where the language is actually spoken.
+    // // // This ensures that Spanish is known to be spoken in Mexico and the US, for example.
+    // // // Also, that English is spoken in the UK, Australia, and Canada.
+    // // // Other languages such as German and French also get additional regions added by this
+    // // // processing.
+    // // rawLangData.forEach((lng) => {
+    // //     if (lng.tag.endsWith("-Dupl") || lng.tag.endsWith("-Brai")) {
+    // //         if (lng.regions && lng.regions.length > 0) {
+    // //             const tag = lng.tag.substring(0, lng.tag.length - 5);
+    // //             const origLang = map.get(tag);
+    // //             if (!origLang) {
+    // //                 console.warn("No original lang for ", tag);
+    // //                 return;
+    // //             }
+    // //             if (!origLang.regions) {
+    // //                 origLang.regions = [];
+    // //             }
+    // //             if (!origLang.regions.includes(lng.region)) {
+    // //                 console.log(`Adding region ${lng.region} to ${tag}`);
+    // //                 origLang.regions.push(lng.region);
+    // //             }
+    // //             lng.regions.forEach((r) => {
+    // //                 if (!origLang.regions) {
+    // //                     origLang.regions = [];
+    // //                 }
+    // //                 if (!origLang.regions.includes(r)) {
+    // //                     console.log(`Adding region ${r} to ${tag}`);
+    // //                     origLang.regions.push(r);
+    // //                 }
+    // //             });
+    // //         }
+    // //     }
+    // // });
+    // // Restrict the regions for some major languages to the most common ones.
+    // // REVIEW: are these copilot suggestions good enough?
+    // const english = map.get("en");
+    // if (english)
+    //     english.regions = ["US", "GB", "CA", "AU", "NZ", "IE", "ZA", "IN"];
+    // const spanish = map.get("es");
+    // if (spanish) spanish.regions = ["MX", "US", "ES", "AR", "CO", "PE"];
+    // const french = map.get("fr");
+    // if (french) french.regions = ["FR", "CA", "BE", "CH"];
+    // const german = map.get("de");
+    // if (german) german.regions = ["DE", "AT", "CH"];
+    // const portuguese = map.get("pt");
+    // if (portuguese) portuguese.regions = ["PT", "BR"];
+    // const chinese = map.get("zh");
+    // if (chinese) chinese.regions = ["CN", "TW", "HK", "SG"];
+    // const arabic = map.get("ar");
+    // if (arabic) arabic.regions = ["EG", "SA", "DZ", "MA", "SD", "IQ"];
+    // const russian = map.get("ru");
+    // if (russian) russian.regions = ["RU", "UA", "KZ", "BY"];
+    // const japanese = map.get("ja");
+    // if (japanese) japanese.regions = ["JP"];
+    // const korean = map.get("ko");
+    // if (korean) korean.regions = ["KR"];
 
     return map;
 }

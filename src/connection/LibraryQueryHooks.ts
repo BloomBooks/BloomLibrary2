@@ -7,11 +7,7 @@ import {
     getBloomApiUrl,
     getBloomApiHeaders,
 } from "./ApiConnection";
-import {
-    retrieveBookData,
-    retrieveBookStats,
-    retrieveBookAndUserData,
-} from "./LibraryQueries";
+import { retrieveBookData, retrieveBookStats } from "./LibraryQueries";
 import { Book, createBookFromParseServerData } from "../model/Book";
 import { useContext, useMemo, useEffect, useState } from "react";
 import { CachedTablesContext } from "../model/CacheProvider";
@@ -1730,6 +1726,21 @@ export async function deleteBook(bookDatabaseId: string) {
     });
 }
 
+// Get the basic information about books and users for the language-grid, country-grid,
+// and uploader-grid pages.
+async function retrieveBookAndUserData() {
+    return axios.get(`${getConnection().url}classes/books`, {
+        headers: getConnection().headers,
+        params: {
+            limit: 1000000, // all of them
+            keys: "uploader,createdAt,show,tags",
+            // fluff up fields that reference other tables
+            include: "uploader",
+            where: { inCirculation: true, draft: false },
+        },
+    });
+}
+
 // Retrieve an array of minimal information for all accessible books and
 // their uploaders.
 export function useGetDataForNonBookGrid(): IMinimalBookInfo[] {
@@ -1755,11 +1766,11 @@ export function useGetDataForNonBookGrid(): IMinimalBookInfo[] {
                 );
             setResult([]);
         } else {
-            const result1 = response["data"]["results"] as IMinimalBookInfo[];
-            result1.forEach((item: IMinimalBookInfo) => {
-                item.lang1Tag = item.show?.pdf?.langTag;
+            const bookInfos = response["data"]["results"] as IMinimalBookInfo[];
+            bookInfos.forEach((bookInfo: IMinimalBookInfo) => {
+                bookInfo.lang1Tag = bookInfo.show?.pdf?.langTag;
             });
-            setResult(result1);
+            setResult(bookInfos);
         }
     }, [response, loading, error]);
 
