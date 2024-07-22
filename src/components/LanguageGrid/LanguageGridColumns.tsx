@@ -13,19 +13,19 @@ import {
     filterNumberWithOperator,
     filterSimpleString,
     filterStringWithNegation,
-    IMinimalBookInfo,
-} from "../NonBookGrid/NonBookGridPage";
+} from "../AggregateGrid/AggregateGridPage";
+import { IMinimalBookInfo } from "../AggregateGrid/AggregateGridInterfaces";
 
 export interface ILanguageGridRowData {
     langTag: string; // ISO code
-    name: string; // language name
+    exonym: string; // language name
     endonym: string; // language name in the language itself
     otherNames: string[];
     firstSeen: string; // ISO date
     bookCount: number;
     uploaderCount: number;
     uploaderEmails: string[]; // Staff only
-    countryNames: string[];
+    countryName: string;
     level1Count: number;
     level2Count: number;
     level3Count: number;
@@ -36,14 +36,25 @@ export interface ILanguageGridRowData {
 export function getLanguageGridColumnsDefinitions(): IGridColumn[] {
     const definitions: IGridColumn[] = [
         {
-            name: "name",
-            title: "Name",
+            name: "exonym", // outsider name
+            title: "Exonym",
             defaultVisible: true,
             sortingEnabled: true,
-            getCellValue: (lang: ILanguageGridRowData) => lang.name,
+            getCellValue: (lang: ILanguageGridRowData) => {
+                const hrefValue = `https://bloomlibrary.org/language:${lang.langTag}`;
+                return (
+                    <a
+                        href={hrefValue}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        {lang.exonym}
+                    </a>
+                );
+            },
             getCustomFilterComponent: (props: TableFilterRow.CellProps) => {
                 const fixedFilter: Filter = {
-                    columnName: "name",
+                    columnName: "exonym",
                     operation: "contains",
                 };
                 const updatedProps: TableFilterRow.CellProps = {
@@ -54,9 +65,9 @@ export function getLanguageGridColumnsDefinitions(): IGridColumn[] {
             },
         },
         {
-            name: "endonym",
+            name: "endonym", // insider name
             title: "Endonym",
-            defaultVisible: true,
+            defaultVisible: false,
             sortingEnabled: true,
             getCellValue: (lang: ILanguageGridRowData) => lang.endonym,
             getCustomFilterComponent: (props: TableFilterRow.CellProps) => {
@@ -73,8 +84,8 @@ export function getLanguageGridColumnsDefinitions(): IGridColumn[] {
         },
         {
             name: "otherNames",
-            title: "Other Names?",
-            defaultVisible: true,
+            title: "Other Name",
+            defaultVisible: false,
             sortingEnabled: true,
             getCellValue: (lang: ILanguageGridRowData) =>
                 lang.otherNames.join(", "),
@@ -93,7 +104,7 @@ export function getLanguageGridColumnsDefinitions(): IGridColumn[] {
         {
             name: "langTag",
             title: "Lang Tag",
-            defaultVisible: true,
+            defaultVisible: false,
             sortingEnabled: true,
             getCellValue: (lang: ILanguageGridRowData) => lang.langTag,
             getCustomFilterComponent: (props: TableFilterRow.CellProps) => {
@@ -111,7 +122,7 @@ export function getLanguageGridColumnsDefinitions(): IGridColumn[] {
         {
             name: "firstSeen",
             title: "First Seen",
-            defaultVisible: true,
+            defaultVisible: false,
             sortingEnabled: true,
             getCellValue: (lang: ILanguageGridRowData) =>
                 lang.firstSeen.substring(0, 10),
@@ -148,7 +159,7 @@ export function getLanguageGridColumnsDefinitions(): IGridColumn[] {
         {
             name: "level1Count",
             title: "Level 1 Count",
-            defaultVisible: true,
+            defaultVisible: false,
             sortingEnabled: true,
             getCellValue: (lang: ILanguageGridRowData) => lang.level1Count,
             getCustomFilterComponent: (props: TableFilterRow.CellProps) => {
@@ -166,7 +177,7 @@ export function getLanguageGridColumnsDefinitions(): IGridColumn[] {
         {
             name: "level2Count",
             title: "Level 2 Count",
-            defaultVisible: true,
+            defaultVisible: false,
             sortingEnabled: true,
             getCellValue: (lang: ILanguageGridRowData) => lang.level2Count,
             getCustomFilterComponent: (props: TableFilterRow.CellProps) => {
@@ -184,7 +195,7 @@ export function getLanguageGridColumnsDefinitions(): IGridColumn[] {
         {
             name: "level3Count",
             title: "Level 3 Count",
-            defaultVisible: true,
+            defaultVisible: false,
             sortingEnabled: true,
             getCellValue: (lang: ILanguageGridRowData) => lang.level3Count,
             getCustomFilterComponent: (props: TableFilterRow.CellProps) => {
@@ -202,7 +213,7 @@ export function getLanguageGridColumnsDefinitions(): IGridColumn[] {
         {
             name: "level4Count",
             title: "Level 4 Count",
-            defaultVisible: true,
+            defaultVisible: false,
             sortingEnabled: true,
             getCellValue: (lang: ILanguageGridRowData) => lang.level4Count,
             getCustomFilterComponent: (props: TableFilterRow.CellProps) => {
@@ -241,8 +252,28 @@ export function getLanguageGridColumnsDefinitions(): IGridColumn[] {
             moderatorOnly: true,
             defaultVisible: false, // Staff only
             sortingEnabled: true,
-            getCellValue: (lang: ILanguageGridRowData) =>
-                lang.uploaderEmails.join(", "),
+            getCellValue: (lang: ILanguageGridRowData) => {
+                const links = lang.uploaderEmails.map((email, index) => {
+                    const hrefValue = `https://bloomlibrary.org/:search:uploader:${email}`;
+                    let separator = "";
+                    if (index < lang.uploaderEmails.length - 1) {
+                        separator = ", ";
+                    }
+                    return (
+                        <span>
+                            <a
+                                href={hrefValue}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                {email}
+                            </a>
+                            {separator}
+                        </span>
+                    );
+                });
+                return <div>{links}</div>;
+            },
             /* Must be able to filter by, e.g. "sil.org" */
             getCustomFilterComponent: (props: TableFilterRow.CellProps) => {
                 const fixedFilter: Filter = {
@@ -257,15 +288,14 @@ export function getLanguageGridColumnsDefinitions(): IGridColumn[] {
             },
         },
         {
-            name: "countryNames",
-            title: "Country Names",
-            defaultVisible: true,
+            name: "countryName",
+            title: "Country",
+            defaultVisible: false,
             sortingEnabled: true,
-            getCellValue: (lang: ILanguageGridRowData) =>
-                lang.countryNames.join(", "),
+            getCellValue: (lang: ILanguageGridRowData) => lang.countryName,
             getCustomFilterComponent: (props: TableFilterRow.CellProps) => {
                 const fixedFilter: Filter = {
-                    columnName: "countryNames",
+                    columnName: "countryName",
                     operation: "contains",
                 };
                 const updatedProps: TableFilterRow.CellProps = {
@@ -323,14 +353,14 @@ export function compareLanguageGridRows(
                     return s.direction === "asc" ? 1 : -1;
                 }
                 break;
-            case "name":
-                if (a.name < b.name) {
+            case "exonym":
+                if (a.exonym < b.exonym) {
                     return s.direction === "asc" ? -1 : 1;
-                } else if (a.name > b.name) {
+                } else if (a.exonym > b.exonym) {
                     return s.direction === "asc" ? 1 : -1;
                 }
                 break;
-            case "endoynm":
+            case "endonym":
                 if (a.endonym < b.endonym) {
                     return s.direction === "asc" ? -1 : 1;
                 } else if (a.endonym > b.endonym) {
@@ -404,12 +434,10 @@ export function compareLanguageGridRows(
                     return s.direction === "asc" ? 1 : -1;
                 }
                 break;
-            case "countryNames":
-                const aCountryNames = a.countryNames.sort().join(", ");
-                const bCountryNames = b.countryNames.sort().join(", ");
-                if (aCountryNames < bCountryNames) {
+            case "countryName":
+                if (a.countryName < b.countryName) {
                     return s.direction === "asc" ? -1 : 1;
-                } else if (aCountryNames > bCountryNames) {
+                } else if (a.countryName > b.countryName) {
                     return s.direction === "asc" ? 1 : -1;
                 }
                 break;
@@ -440,8 +468,8 @@ function applyGridFilterToRow(
     switch (filter.columnName) {
         case "langTag":
             return filterSimpleString(filter.value, row.langTag);
-        case "name":
-            return filterSimpleString(filter.value, row.name);
+        case "exonym":
+            return filterSimpleString(filter.value, row.exonym);
         case "endonym":
             return filterSimpleString(filter.value, row.endonym);
         case "otherNames":
@@ -468,12 +496,8 @@ function applyGridFilterToRow(
         case "uploaderEmails":
             // handled in the filterBooksBeforeCreatingRows function
             break;
-        case "countryNames":
-            return (
-                row.countryNames.filter((country) =>
-                    filterSimpleString(filter.value || "", country)
-                ).length > 0
-            );
+        case "countryName":
+            return filterStringWithNegation(filter.value, row.countryName);
     }
     return true;
 }
@@ -484,33 +508,38 @@ export function adjustListDisplaysForFiltering(
     columnDefinitions: IGridColumn[],
     filters: Filter[]
 ) {
-    const colDef1 = columnDefinitions.find((c) => c.name === "countryNames");
-    if (colDef1) {
-        const filterDef = filters.find((f) => f.columnName === "countryNames");
-        if (filterDef && filterDef.value) {
-            colDef1.getCellValue = (lang: ILanguageGridRowData) =>
-                lang.countryNames
-                    .filter((x) => {
-                        return filterSimpleString(filterDef.value || "", x);
-                    })
-                    .join(", ");
-        } else {
-            colDef1.getCellValue = (lang: ILanguageGridRowData) =>
-                lang.countryNames.join(", ");
-        }
-    }
-    const colDef2 = columnDefinitions.find((c) => c.name === "otherNames");
-    if (colDef2) {
+    // may need if we go back to allowing multiple countries per language
+    // const countryNamesColDef = columnDefinitions.find(
+    //     (c) => c.name === "countryNames"
+    // );
+    // if (countryNamesColDef) {
+    //     const filterDef = filters.find((f) => f.columnName === "countryNames");
+    //     if (filterDef && filterDef.value) {
+    //         countryNamesColDef.getCellValue = (lang: ILanguageGridRowData) =>
+    //             lang.countryNames
+    //                 .filter((x) => {
+    //                     return filterSimpleString(filterDef.value || "", x);
+    //                 })
+    //                 .join(", ");
+    //     } else {
+    //         countryNamesColDef.getCellValue = (lang: ILanguageGridRowData) =>
+    //             lang.countryNames.join(", ");
+    //     }
+    // }
+    const otherNamesColDef = columnDefinitions.find(
+        (c) => c.name === "otherNames"
+    );
+    if (otherNamesColDef) {
         const filterDef = filters.find((f) => f.columnName === "otherNames");
         if (filterDef && filterDef.value) {
-            colDef2.getCellValue = (lang: ILanguageGridRowData) =>
+            otherNamesColDef.getCellValue = (lang: ILanguageGridRowData) =>
                 lang.otherNames
                     .filter((x) => {
                         return filterSimpleString(filterDef.value || "", x);
                     })
                     .join(", ");
         } else {
-            colDef2.getCellValue = (lang: ILanguageGridRowData) =>
+            otherNamesColDef.getCellValue = (lang: ILanguageGridRowData) =>
                 lang.otherNames.join(", ");
         }
     }

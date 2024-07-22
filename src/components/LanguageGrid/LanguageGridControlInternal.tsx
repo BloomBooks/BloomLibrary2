@@ -56,11 +56,11 @@ import { ILanguageGridControlProps } from "./LanguageGridControl";
 import { CachedTablesContext } from "../../model/CacheProvider";
 import {
     CachedBookDataContext,
-    ILangTagData,
     fixLanguageRegionDataAndGetMap,
-} from "../NonBookGrid/NonBookGridPage";
+} from "../AggregateGrid/AggregateGridPage";
+import { ILangTagData } from "../AggregateGrid/AggregateGridInterfaces";
 
-const rawLangData: ILangTagData[] = require("../NonBookGrid/reduced-langtags.json");
+const rawLangData: ILangTagData[] = require("../AggregateGrid/reduced-langtags.json");
 
 // we need the observer in order to get the logged in user, which may not be immediately available
 const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlProps> = observer(
@@ -115,14 +115,14 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
                 languages.forEach((lang) => {
                     const baseValue: ILanguageGridRowData = {
                         langTag: lang.isoCode,
-                        name: lang.name,
+                        exonym: lang.name,
                         endonym: lang.name,
                         bookCount: 0,
                         firstSeen: "",
                         otherNames: [],
                         uploaderCount: 0,
                         uploaderEmails: [],
-                        countryNames: [],
+                        countryName: "",
                         level1Count: 0,
                         level2Count: 0,
                         level3Count: 0,
@@ -130,35 +130,40 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
                     };
                     const langData = fullLangDataMap.get(lang.isoCode);
                     if (langData) {
-                        baseValue.name = langData.name;
+                        baseValue.exonym = langData.name;
                         if (langData.names) {
                             langData.names.forEach((name) => {
                                 if (
-                                    name !== baseValue.name &&
+                                    name !== baseValue.exonym &&
                                     !baseValue.otherNames.includes(name)
                                 )
                                     baseValue.otherNames.push(name);
                             });
                         }
-                        if (langData.region) {
+                        if (lang.isoCode === "en") {
+                            baseValue.countryName = "United Kingdom"; // better than default of United States
+                        } else if (lang.isoCode === "pt") {
+                            baseValue.countryName = "Portugal"; // better than default of Brazil
+                        } else if (langData.region) {
                             const regionName = countriesMap.get(
                                 langData.region
                             );
                             if (regionName) {
-                                baseValue.countryNames.push(regionName);
+                                baseValue.countryName = regionName;
                             }
                         }
-                        if (langData.regions) {
-                            langData.regions.forEach((region) => {
-                                const regionName = countriesMap.get(region);
-                                if (
-                                    regionName &&
-                                    !baseValue.countryNames.includes(regionName)
-                                ) {
-                                    baseValue.countryNames.push(regionName);
-                                }
-                            });
-                        }
+                        // if we go back to allowing multiple regions per language, this code will be useful
+                        // if (langData.regions) {
+                        //     langData.regions.forEach((region) => {
+                        //         const regionName = countriesMap.get(region);
+                        //         if (
+                        //             regionName &&
+                        //             !baseValue.countryNames.includes(regionName)
+                        //         ) {
+                        //             baseValue.countryNames.push(regionName);
+                        //         }
+                        //     });
+                        // }
                     }
                     map1.set(lang.isoCode, baseValue);
                 });
