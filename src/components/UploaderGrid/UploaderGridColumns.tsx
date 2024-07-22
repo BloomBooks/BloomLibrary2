@@ -12,8 +12,8 @@ import {
     filterDateStringWithOperator,
     filterNumberWithOperator,
     filterSimpleString,
-    IMinimalBookInfo,
-} from "../NonBookGrid/NonBookGridPage";
+} from "../AggregateGrid/AggregateGridPage";
+import { IMinimalBookInfo } from "../AggregateGrid/AggregateGridInterfaces";
 
 export interface IUploaderGridData {
     email: string; // uploader email
