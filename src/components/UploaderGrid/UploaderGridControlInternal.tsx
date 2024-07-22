@@ -1,5 +1,5 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
+// // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+// import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
@@ -10,12 +10,6 @@ import React, {
     // ReactText,
     useContext,
 } from "react";
-
-import {
-    Plugin,
-    Template,
-    TemplatePlaceholder,
-} from "@devexpress/dx-react-core";
 
 import {
     Grid,
@@ -56,14 +50,17 @@ import { IUploaderGridControlProps } from "./UploaderGridControl";
 import { CachedTablesContext } from "../../model/CacheProvider";
 
 import {
+    CachedBookDataContext,
+    fixLanguageRegionDataAndGetMap,
+    ModeratorStatusToolbarPlugin,
+} from "../AggregateGrid/AggregateGridPage";
+import {
     ILangTagData,
     IBasicUserInfo,
     IMinimalBookInfo,
-    CachedBookDataContext,
-    fixLanguageRegionDataAndGetMap,
-} from "../NonBookGrid/NonBookGridPage";
+} from "../AggregateGrid/AggregateGridInterfaces";
 
-const rawLangData: ILangTagData[] = require("../NonBookGrid/reduced-langtags.json");
+const rawLangData: ILangTagData[] = require("../AggregateGrid/reduced-langtags.json");
 
 // we need the observer in order to get the logged in user, which may not be immediately available
 const UploaderGridControlInternal: React.FunctionComponent<IUploaderGridControlProps> = observer(
@@ -129,15 +126,15 @@ const UploaderGridControlInternal: React.FunctionComponent<IUploaderGridControlP
                 countriesMap
             ) {
                 const userMap = new Map<string, IUploaderGridData>();
-                console.log(
-                    `UploaderGridControlInternal: Language data for ${languages.length} languages`
-                );
-                console.log(
-                    `UploaderGridControlInternal: Book data for ${bookData.length} books`
-                );
-                console.log(
-                    `UploaderGridControlInternal: User data for ${userData.length} users`
-                );
+                // console.log(
+                //     `UploaderGridControlInternal: Language data for ${languages.length} languages`
+                // );
+                // console.log(
+                //     `UploaderGridControlInternal: Book data for ${bookData.length} books`
+                // );
+                // console.log(
+                //     `UploaderGridControlInternal: User data for ${userData.length} users`
+                // );
                 userData.forEach((user) => {
                     const baseValue: IUploaderGridData = {
                         email: user.username,
@@ -166,22 +163,29 @@ const UploaderGridControlInternal: React.FunctionComponent<IUploaderGridControlP
                                     const langData = fullLangDataMap.get(
                                         book.lang1Tag
                                     );
-                                    if (langData && langData.region) {
-                                        const countryName = countriesMap.get(
-                                            langData.region
-                                        );
-                                        if (
-                                            countryName &&
-                                            !user.countryNames.includes(
-                                                countryName
-                                            )
-                                        ) {
-                                            user.countryNames.push(countryName);
+                                    if (langData) {
+                                        let region = langData.region;
+                                        if (book.lang1Tag === "en")
+                                            // English came from Great Britain
+                                            region = "GB";
+                                        else if (book.lang1Tag === "pt")
+                                            // Portugeuse came from Portugal
+                                            region = "PT";
+                                        if (region) {
+                                            const countryName = countriesMap.get(
+                                                region
+                                            );
+                                            if (
+                                                countryName &&
+                                                !user.countryNames.includes(
+                                                    countryName
+                                                )
+                                            ) {
+                                                user.countryNames.push(
+                                                    countryName
+                                                );
+                                            }
                                         }
-                                        // REVIEW: Should we add all 174 countries for English?
-                                        // ie, populate from langData.regions, not just langData.region?
-                                        // We do this in the Language Grid (and the inverse operation in
-                                        // the Country Grid), but not here.
                                     }
                                 }
                             }
@@ -290,7 +294,7 @@ const UploaderGridControlInternal: React.FunctionComponent<IUploaderGridControlP
             string[]
         >(
             localStorage,
-            "language-grid-column-hidden",
+            "uploader-grid-column-hidden",
             uploaderGridColumnDefinitions
                 .filter((c) => !c.defaultVisible)
                 .map((c) => c.name)
@@ -324,7 +328,7 @@ const UploaderGridControlInternal: React.FunctionComponent<IUploaderGridControlP
                     // some columns we include only if we are logged in, or
                     // logged in with the right permissions
                     (col) =>
-                        user?.moderator ||
+                        thisIsAModerator ||
                         (!col.moderatorOnly && !col.loggedInOnly) ||
                         (!col.moderatorOnly && col.loggedInOnly && user)
                 )
@@ -349,23 +353,6 @@ const UploaderGridControlInternal: React.FunctionComponent<IUploaderGridControlP
                 return <TableCell />;
             },
             [uploaderGridColumnDefinitions]
-        );
-
-        const StatusToolbarPlugin = () => (
-            <Plugin name="ShowModeratorStatus">
-                <Template name="toolbarContent">
-                    <span
-                        css={css`
-                            margin-left: 20px;
-                            margin-right: 5px;
-                            color: ${theme.palette.primary.main};
-                        `}
-                    >
-                        {user && `${user.moderator ? "Moderator" : ""}`}
-                    </span>
-                    <TemplatePlaceholder />
-                </Template>
-            </Plugin>
         );
 
         return (
@@ -419,7 +406,7 @@ const UploaderGridControlInternal: React.FunctionComponent<IUploaderGridControlP
                         cellComponent={FilteringComponentForOneColumn}
                     />
                     <Toolbar />
-                    <StatusToolbarPlugin />
+                    {ModeratorStatusToolbarPlugin(theme, user)}
                     <ColumnChooser />
                     <PagingPanel />
                 </Grid>

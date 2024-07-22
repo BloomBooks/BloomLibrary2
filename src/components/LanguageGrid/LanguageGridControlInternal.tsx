@@ -1,5 +1,5 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
+// // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
+// import css from "@emotion/css/macro";
 // these two lines make the css prop work on react elements
 import { jsx } from "@emotion/core";
 /** @jsx jsx */
@@ -10,12 +10,6 @@ import React, {
     // ReactText,
     useContext,
 } from "react";
-
-import {
-    Plugin,
-    Template,
-    TemplatePlaceholder,
-} from "@devexpress/dx-react-core";
 
 import {
     Grid,
@@ -56,11 +50,12 @@ import { ILanguageGridControlProps } from "./LanguageGridControl";
 import { CachedTablesContext } from "../../model/CacheProvider";
 import {
     CachedBookDataContext,
-    ILangTagData,
     fixLanguageRegionDataAndGetMap,
-} from "../NonBookGrid/NonBookGridPage";
+    ModeratorStatusToolbarPlugin,
+} from "../AggregateGrid/AggregateGridPage";
+import { ILangTagData } from "../AggregateGrid/AggregateGridInterfaces";
 
-const rawLangData: ILangTagData[] = require("../NonBookGrid/reduced-langtags.json");
+const rawLangData: ILangTagData[] = require("../AggregateGrid/reduced-langtags.json");
 
 // we need the observer in order to get the logged in user, which may not be immediately available
 const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlProps> = observer(
@@ -105,91 +100,99 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
                 countriesMap &&
                 gridFilters
             ) {
-                const map1 = new Map<string, ILanguageGridRowData>();
-                console.log(
-                    `LanguageGridControlInternal: Language data for ${languages.length} languages`
-                );
-                console.log(
-                    `LanguageGridControlInternal: Book data for ${bookData.length} books`
-                );
+                const languageRowMap = new Map<string, ILanguageGridRowData>();
+                // console.log(
+                //     `LanguageGridControlInternal: Language data for ${languages.length} languages`
+                // );
+                // console.log(
+                //     `LanguageGridControlInternal: Book data for ${bookData.length} books`
+                // );
                 languages.forEach((lang) => {
                     const baseValue: ILanguageGridRowData = {
                         langTag: lang.isoCode,
-                        name: lang.name,
+                        exonym: lang.name,
                         endonym: lang.name,
                         bookCount: 0,
                         firstSeen: "",
                         otherNames: [],
                         uploaderCount: 0,
                         uploaderEmails: [],
-                        countryNames: [],
+                        countryName: "",
                         level1Count: 0,
                         level2Count: 0,
                         level3Count: 0,
                         level4Count: 0,
                     };
                     const langData = fullLangDataMap.get(lang.isoCode);
+                    // if (!langData) {
+                    //     console.log(`DEBUG: No langData for ${lang.isoCode}`);
+                    // }
                     if (langData) {
-                        baseValue.name = langData.name;
+                        baseValue.exonym = langData.name;
                         if (langData.names) {
                             langData.names.forEach((name) => {
                                 if (
-                                    name !== baseValue.name &&
+                                    name !== baseValue.exonym &&
                                     !baseValue.otherNames.includes(name)
                                 )
                                     baseValue.otherNames.push(name);
                             });
                         }
-                        if (langData.region) {
+                        if (lang.isoCode === "en") {
+                            baseValue.countryName = "United Kingdom"; // better than default of United States
+                        } else if (lang.isoCode === "pt") {
+                            baseValue.countryName = "Portugal"; // better than default of Brazil
+                        } else if (langData.region) {
                             const regionName = countriesMap.get(
                                 langData.region
                             );
                             if (regionName) {
-                                baseValue.countryNames.push(regionName);
+                                baseValue.countryName = regionName;
                             }
                         }
-                        if (langData.regions) {
-                            langData.regions.forEach((region) => {
-                                const regionName = countriesMap.get(region);
-                                if (
-                                    regionName &&
-                                    !baseValue.countryNames.includes(regionName)
-                                ) {
-                                    baseValue.countryNames.push(regionName);
-                                }
-                            });
-                        }
+                        // if we go back to allowing multiple regions per language, this code will be useful
+                        // if (langData.regions) {
+                        //     langData.regions.forEach((region) => {
+                        //         const regionName = countriesMap.get(region);
+                        //         if (
+                        //             regionName &&
+                        //             !baseValue.countryNames.includes(regionName)
+                        //         ) {
+                        //             baseValue.countryNames.push(regionName);
+                        //         }
+                        //     });
+                        // }
                     }
-                    map1.set(lang.isoCode, baseValue);
+                    languageRowMap.set(lang.isoCode, baseValue);
                 });
-                let unknownLangCount = 0;
+                // let unknownLangCount = 0;
                 bookData.forEach((book) => {
                     if (!book.lang1Tag) {
-                        ++unknownLangCount;
+                        // ++unknownLangCount;
                         return;
                     }
-                    let lang = map1.get(book.lang1Tag);
+                    let lang = languageRowMap.get(book.lang1Tag);
                     if (!lang) {
                         // we've tried to standardize on "th" for Thai, but there are still some "th-TH" books
                         if (book.lang1Tag === "th-TH") {
-                            lang = map1.get("th");
+                            lang = languageRowMap.get("th");
                             // we've tried to standardize on "zh-CN" for Chinese, but there is at least one "cmn" book
                         } else if (book.lang1Tag === "cmn") {
-                            lang = map1.get("zh-CN");
+                            lang = languageRowMap.get("zh-CN");
+                        } else if (book.lang1Tag === "xkg") {
                             // I'm not sure what happened here, but we have several books with a tag of "xkg" that
                             // display the language as "kcg-x-Gworog" in the bloom library UI.  I assume that's correct.
-                        } else if (book.lang1Tag === "xkg") {
-                            lang = map1.get("kcg-x-Gworog");
-                            // Three books claim the Arabic script, but are obviously Latin (the default) script.
+                            lang = languageRowMap.get("kcg-x-Gworog");
                         } else if (book.lang1Tag === "fuv-Arab") {
-                            lang = map1.get("fuv");
+                            // Three books claim the Arabic script, but are obviously Latin (the default) script.
+                            lang = languageRowMap.get("fuv");
                             // I have no idea what this user was thinking, but the book is obviously English.
                         } else if (book.lang1Tag === "en-Dupl") {
-                            lang = map1.get("en");
+                            lang = languageRowMap.get("en");
+                        } /* else if (book.lang1Tag === "kvt") {
                             // Two books seem to have been mislabeled as a different language in Myanmar.
-                        } else if (book.lang1Tag === "kvt") {
                             lang = map1.get("aeu");
-                        }
+                        }*/
                     }
                     if (lang) {
                         if (
@@ -262,18 +265,18 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
                             }
                         }
                     } else if (book.lang1Tag) {
-                        console.warn(
-                            `LanguageGridControlInternal: Book ${book.objectId} data for unknown language ${book.lang1Tag}`
-                        );
+                        // console.warn(
+                        //     `LanguageGridControlInternal: Book ${book.objectId} data for unknown language ${book.lang1Tag}`
+                        // );
                     } else {
-                        ++unknownLangCount;
+                        // ++unknownLangCount;
                     }
                 });
-                console.warn(
-                    `LanguageGridControlInternal: ${unknownLangCount} books with undetermined primary language`
-                );
+                // console.warn(
+                //     `LanguageGridControlInternal: ${unknownLangCount} books with undetermined primary language`
+                // );
                 const allRows: ILanguageGridRowData[] = Array.from(
-                    map1.values()
+                    languageRowMap.values()
                 )
                     .filter((x) => x.bookCount > 0)
                     .sort((a, b) => b.bookCount - a.bookCount); // sort by book count descending
@@ -410,7 +413,7 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
                     // some columns we include only if we are logged in, or
                     // logged in with the right permissions
                     (col) =>
-                        user?.moderator ||
+                        thisIsAModerator ||
                         (!col.moderatorOnly && !col.loggedInOnly) ||
                         (!col.moderatorOnly && col.loggedInOnly && user)
                 )
@@ -435,23 +438,6 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
                 return <TableCell />;
             },
             [languageGridColumnDefinitions]
-        );
-
-        const StatusToolbarPlugin = () => (
-            <Plugin name="ShowModeratorStatus">
-                <Template name="toolbarContent">
-                    <span
-                        css={css`
-                            margin-left: 20px;
-                            margin-right: 5px;
-                            color: ${theme.palette.primary.main};
-                        `}
-                    >
-                        {user && `${user.moderator ? "Moderator" : ""}`}
-                    </span>
-                    <TemplatePlaceholder />
-                </Template>
-            </Plugin>
         );
 
         return (
@@ -505,7 +491,7 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
                         cellComponent={FilteringComponentForOneColumn}
                     />
                     <Toolbar />
-                    <StatusToolbarPlugin />
+                    {ModeratorStatusToolbarPlugin(theme, user)}
                     <ColumnChooser />
                     <PagingPanel />
                 </Grid>
