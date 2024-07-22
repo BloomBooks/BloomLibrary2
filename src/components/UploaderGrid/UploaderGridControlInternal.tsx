@@ -56,14 +56,16 @@ import { IUploaderGridControlProps } from "./UploaderGridControl";
 import { CachedTablesContext } from "../../model/CacheProvider";
 
 import {
+    CachedBookDataContext,
+    fixLanguageRegionDataAndGetMap,
+} from "../AggregateGrid/AggregateGridPage";
+import {
     ILangTagData,
     IBasicUserInfo,
     IMinimalBookInfo,
-    CachedBookDataContext,
-    fixLanguageRegionDataAndGetMap,
-} from "../NonBookGrid/NonBookGridPage";
+} from "../AggregateGrid/AggregateGridInterfaces";
 
-const rawLangData: ILangTagData[] = require("../NonBookGrid/reduced-langtags.json");
+const rawLangData: ILangTagData[] = require("../AggregateGrid/reduced-langtags.json");
 
 // we need the observer in order to get the logged in user, which may not be immediately available
 const UploaderGridControlInternal: React.FunctionComponent<IUploaderGridControlProps> = observer(

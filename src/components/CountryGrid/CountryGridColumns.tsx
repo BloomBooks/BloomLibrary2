@@ -12,8 +12,8 @@ import {
     filterNumberWithOperator,
     filterSimpleString,
     filterStringWithNegation,
-    IMinimalBookInfo,
-} from "../NonBookGrid/NonBookGridPage";
+} from "../AggregateGrid/AggregateGridPage";
+import { IMinimalBookInfo } from "../AggregateGrid/AggregateGridInterfaces";
 
 export interface ICountryGridRowData {
     name: string; // country name
@@ -30,7 +30,7 @@ export function getCountryGridColumnsDefinitions(): IGridColumn[] {
     const definitions: IGridColumn[] = [
         {
             name: "name",
-            title: "Name",
+            title: "Country",
             defaultVisible: true,
             sortingEnabled: true,
             getCellValue: (row: ICountryGridRowData) => row.name,
@@ -50,7 +50,7 @@ export function getCountryGridColumnsDefinitions(): IGridColumn[] {
         {
             name: "code",
             title: "Code",
-            defaultVisible: true,
+            defaultVisible: false,
             sortingEnabled: true,
             getCellValue: (row: ICountryGridRowData) => row.code,
             getCustomFilterComponent: (props: TableFilterRow.CellProps) => {
@@ -67,7 +67,7 @@ export function getCountryGridColumnsDefinitions(): IGridColumn[] {
         },
         {
             name: "knownLanguageCount",
-            title: "Known Language Count",
+            title: "Language Count",
             defaultVisible: true,
             sortingEnabled: true,
             getCellValue: (row: ICountryGridRowData) => row.knownLanguageCount,
@@ -104,7 +104,6 @@ export function getCountryGridColumnsDefinitions(): IGridColumn[] {
         {
             name: "blorgLanguageTags",
             title: "BloomLibrary Language Tags",
-            moderatorOnly: true,
             defaultVisible: false, // Staff only
             sortingEnabled: true,
             getCellValue: (row: ICountryGridRowData) =>

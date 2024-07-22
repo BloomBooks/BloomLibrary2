@@ -20,147 +20,158 @@ import { AddFeaturePanel } from "./AddFeaturePanel";
 import { Select } from "@material-ui/core";
 import { RebrandPanel } from "./RebrandPanel";
 import { AssignNotesPanel } from "./AssignNotesPanel";
+import { observer } from "mobx-react-lite";
+import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 
 // The Bulk Edit page is for moderators; it has a series of panels for making changes, followed by a grid
 // for selecting what books will be changed.
-const BulkEditPage: React.FunctionComponent<IBulkEditPageProps> = (props) => {
-    const [refreshIndex, setRefreshIndex] = useState(0);
-    useSetBrowserTabTitle("Bulk Edit");
-    let contextFilter: IFilter = {};
-    if (props.filters && props.filters.startsWith(":search:")) {
-        const search = props.filters.split("/")[0].substring(":search:".length);
-        contextFilter = { search };
-    }
-    const [selectedOperation, setSelectedOperation] = useState(0);
-    const operations = [
-        {
-            name: "Publisher",
-            control: (
-                <AssignPublisherPanel
-                    backgroundColor="#daffb6"
-                    filterHolder={staticCurrentFilter}
-                    refresh={() => setRefreshIndex(refreshIndex + 1)}
-                />
-            ),
-        },
-        {
-            name: "Original Publisher",
-            control: (
-                <AssignOriginalPublisherPanel
-                    backgroundColor="#b7b6ff"
-                    filterHolder={staticCurrentFilter}
-                    refresh={() => setRefreshIndex(refreshIndex + 1)}
-                />
-            ),
-        },
-        {
-            name: "Tags",
-            control: (
-                <AddTagPanel
-                    backgroundColor="lightblue"
-                    filterHolder={staticCurrentFilter}
-                    refresh={() => setRefreshIndex(refreshIndex + 1)}
-                />
-            ),
-        },
-        {
-            name: "Notes",
-            control: (
-                <AssignNotesPanel
-                    backgroundColor="#ffc668"
-                    filterHolder={staticCurrentFilter}
-                    refresh={() => setRefreshIndex(refreshIndex + 1)}
-                />
-            ),
-        },
-        {
-            name: "Features",
-            control: (
-                <AddFeaturePanel
-                    backgroundColor="aquamarine"
-                    filterHolder={staticCurrentFilter}
-                    refresh={() => setRefreshIndex(refreshIndex + 1)}
-                />
-            ),
-        },
-        {
-            name: "Request Harvest",
-            control: (
-                <RequestHarvestPanel
-                    backgroundColor="#F8DCC2"
-                    filterHolder={staticCurrentFilter}
-                    refresh={() => setRefreshIndex(refreshIndex + 1)}
-                />
-            ),
-        },
-        {
-            name: "Hide Books",
-            control: (
-                <HideBooksPanel
-                    backgroundColor="rgb(194, 213, 248)"
-                    filterHolder={staticCurrentFilter}
-                    refresh={() => setRefreshIndex(refreshIndex + 1)}
-                />
-            ),
-        },
-        {
-            name: "Rebrand",
-            control: (
-                <RebrandPanel
-                    backgroundColor="lightyellow"
-                    filterHolder={staticCurrentFilter}
-                    refresh={() => setRefreshIndex(refreshIndex + 1)}
-                />
-            ),
-        },
-    ];
-    return (
-        <div
-            css={css`
-                margin-left: 10px;
-                margin-top: 10px;
-            `}
-        >
+const BulkEditPage: React.FunctionComponent<IBulkEditPageProps> = observer(
+    (props) => {
+        const [refreshIndex, setRefreshIndex] = useState(0);
+        useSetBrowserTabTitle("Bulk Edit");
+        let contextFilter: IFilter = {};
+        if (props.filters && props.filters.startsWith(":search:")) {
+            const search = props.filters
+                .split("/")[0]
+                .substring(":search:".length);
+            contextFilter = { search };
+        }
+        const [selectedOperation, setSelectedOperation] = useState(0);
+        const operations = [
+            {
+                name: "Publisher",
+                control: (
+                    <AssignPublisherPanel
+                        backgroundColor="#daffb6"
+                        filterHolder={staticCurrentFilter}
+                        refresh={() => setRefreshIndex(refreshIndex + 1)}
+                    />
+                ),
+            },
+            {
+                name: "Original Publisher",
+                control: (
+                    <AssignOriginalPublisherPanel
+                        backgroundColor="#b7b6ff"
+                        filterHolder={staticCurrentFilter}
+                        refresh={() => setRefreshIndex(refreshIndex + 1)}
+                    />
+                ),
+            },
+            {
+                name: "Tags",
+                control: (
+                    <AddTagPanel
+                        backgroundColor="lightblue"
+                        filterHolder={staticCurrentFilter}
+                        refresh={() => setRefreshIndex(refreshIndex + 1)}
+                    />
+                ),
+            },
+            {
+                name: "Notes",
+                control: (
+                    <AssignNotesPanel
+                        backgroundColor="#ffc668"
+                        filterHolder={staticCurrentFilter}
+                        refresh={() => setRefreshIndex(refreshIndex + 1)}
+                    />
+                ),
+            },
+            {
+                name: "Features",
+                control: (
+                    <AddFeaturePanel
+                        backgroundColor="aquamarine"
+                        filterHolder={staticCurrentFilter}
+                        refresh={() => setRefreshIndex(refreshIndex + 1)}
+                    />
+                ),
+            },
+            {
+                name: "Request Harvest",
+                control: (
+                    <RequestHarvestPanel
+                        backgroundColor="#F8DCC2"
+                        filterHolder={staticCurrentFilter}
+                        refresh={() => setRefreshIndex(refreshIndex + 1)}
+                    />
+                ),
+            },
+            {
+                name: "Hide Books",
+                control: (
+                    <HideBooksPanel
+                        backgroundColor="rgb(194, 213, 248)"
+                        filterHolder={staticCurrentFilter}
+                        refresh={() => setRefreshIndex(refreshIndex + 1)}
+                    />
+                ),
+            },
+            {
+                name: "Rebrand",
+                control: (
+                    <RebrandPanel
+                        backgroundColor="lightyellow"
+                        filterHolder={staticCurrentFilter}
+                        refresh={() => setRefreshIndex(refreshIndex + 1)}
+                    />
+                ),
+            },
+        ];
+        const user = useGetLoggedInUser();
+        if (!user) {
+            return <div>You must log in to see this page.</div>;
+        }
+        return (
             <div
                 css={css`
-                    display: flex;
-                    margin-bottom: 10px;
+                    margin-left: 10px;
+                    margin-top: 10px;
                 `}
             >
-                <h1>Bulk Edit Operation:</h1>
-                <Select
-                    native={true}
-                    variant="outlined"
-                    value={selectedOperation}
-                    onChange={(e) => {
-                        setSelectedOperation(e.target.value as number);
-                    }}
+                <div
+                    css={css`
+                        display: flex;
+                        margin-bottom: 10px;
+                    `}
                 >
-                    {operations.map((panel, index) => (
-                        <option key={index} value={index}>
-                            {panel.name}
-                        </option>
-                    ))}
-                </Select>
-            </div>
-            {selectedOperation > -1 && operations[selectedOperation].control}
+                    <h1>Bulk Edit Operation:</h1>
+                    <Select
+                        native={true}
+                        variant="outlined"
+                        value={selectedOperation}
+                        onChange={(e) => {
+                            setSelectedOperation(e.target.value as number);
+                        }}
+                    >
+                        {operations.map((panel, index) => (
+                            <option key={index} value={index}>
+                                {panel.name}
+                            </option>
+                        ))}
+                    </Select>
+                </div>
+                {selectedOperation > -1 &&
+                    operations[selectedOperation].control}
 
-            <GridControl
-                showFilterSpec={true}
-                // the need to preserve the grid's filter state this way this is related to the problem described on the comment above class FilterHolder
-                initialGridFilters={staticCurrentFilter.gridColumnFilters}
-                contextFilter={contextFilter}
-                setCurrentFilter={(
-                    f: IFilter,
-                    gridColumnFilters: GridFilter[]
-                ) => {
-                    staticCurrentFilter.completeFilter = f;
-                    staticCurrentFilter.gridColumnFilters = gridColumnFilters;
-                }}
-            />
-        </div>
-    );
-};
+                <GridControl
+                    showFilterSpec={true}
+                    // the need to preserve the grid's filter state this way this is related to the problem described on the comment above class FilterHolder
+                    initialGridFilters={staticCurrentFilter.gridColumnFilters}
+                    contextFilter={contextFilter}
+                    setCurrentFilter={(
+                        f: IFilter,
+                        gridColumnFilters: GridFilter[]
+                    ) => {
+                        staticCurrentFilter.completeFilter = f;
+                        staticCurrentFilter.gridColumnFilters = gridColumnFilters;
+                    }}
+                />
+            </div>
+        );
+    }
+);
 
 // This is a kludge but something in GridControlInternal is apparently causing it to completely reset if
 // any state changes in its parent (BulkEditPage). So for example you can't type in a filter header field.
