@@ -30,6 +30,7 @@ import {
 import { doExpensiveClientSideSortingIfNeeded } from "./sorting";
 import { BookOrderingScheme } from "../model/ContentInterfaces";
 import { isAppHosted } from "../components/appHosted/AppHostedUtils";
+import { IMinimalBookInfo } from "../components/AggregateGrid/AggregateGridInterfaces";
 
 /**
  * @summary The minimum fields returned by Parse
@@ -1723,6 +1724,57 @@ export async function deleteBook(bookDatabaseId: string) {
     return axios.delete(getBloomApiBooksUrl(bookDatabaseId), {
         headers: getBloomApiHeaders(),
     });
+}
+
+// Get the basic information about books and users for the language-grid, country-grid,
+// and uploader-grid pages.
+async function retrieveBookAndUserData() {
+    return axios.get(`${getConnection().url}classes/books`, {
+        headers: getConnection().headers,
+        params: {
+            limit: 1000000, // all of them
+            keys: "uploader,createdAt,show,tags",
+            // fluff up fields that reference other tables
+            include: "uploader",
+            where: { inCirculation: true, draft: false },
+        },
+    });
+}
+
+// Retrieve an array of minimal information for all accessible books and
+// their uploaders.
+export function useGetDataForAggregateGrid(): IMinimalBookInfo[] {
+    const [result, setResult] = useState<IMinimalBookInfo[]>([]);
+    const { response, loading, error } = useAsync(
+        () => retrieveBookAndUserData(),
+        "trigger",
+        false
+    );
+    useEffect(() => {
+        if (
+            loading ||
+            error ||
+            !response ||
+            !response["data"] ||
+            !response["data"]["results"]
+        ) {
+            if (error)
+                console.error(
+                    `Error in useGetDataForAggregateGrid: ${JSON.stringify(
+                        error
+                    )}`
+                );
+            setResult([]);
+        } else {
+            const bookInfos = response["data"]["results"] as IMinimalBookInfo[];
+            bookInfos.forEach((bookInfo: IMinimalBookInfo) => {
+                bookInfo.lang1Tag = bookInfo.show?.pdf?.langTag;
+            });
+            setResult(bookInfos);
+        }
+    }, [response, loading, error]);
+
+    return result;
 }
 
 // Some axios calls should be shared between hook and non-hook uses.  useAxios is

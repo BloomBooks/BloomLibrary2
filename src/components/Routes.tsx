@@ -28,6 +28,7 @@ import { AppHostedDownloadingPage } from "./appHosted/AppHostedDownloadingPage";
 import { appHostedSegment, isAppHosted } from "./appHosted/AppHostedUtils";
 import { LanguageReport } from "./statistics/LanguageReport";
 import { LoginForEditor } from "./User/LoginForEditor";
+import { AggregateGridPage } from "./AggregateGrid/AggregateGridPage";
 
 export let previousPathname = "";
 let currentPathname = "";
@@ -162,7 +163,26 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                     <Route
                         path="/grid/:filter*"
                         render={({ match }) => {
-                            return <GridPage filters={match.params.filter} />;
+                            const url = match.url || "";
+                            if (
+                                url.startsWith("/grid/books/") ||
+                                url === "/grid/books"
+                            ) {
+                                let filter = match.params.filter.substring(5);
+                                if (filter.startsWith("/"))
+                                    filter = filter.substring(1);
+                                return <GridPage filters={filter} />;
+                            } else if (match.params.filter === "languages") {
+                                return <AggregateGridPage type="language" />;
+                            } else if (match.params.filter === "countries") {
+                                return <AggregateGridPage type="country" />;
+                            } else if (match.params.filter === "uploaders") {
+                                return <AggregateGridPage type="uploader" />;
+                            } else {
+                                return (
+                                    <GridPage filters={match.params.filter} />
+                                );
+                            }
                         }}
                     />
                     <Route
