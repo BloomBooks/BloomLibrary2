@@ -51,6 +51,7 @@ export interface ICollection {
     description: string;
     urlForBloomPubBundle: string; // used where someone (i.e. Education for Life) is providing a link to a bloomBundle of all the books in the collection.
     urlForBloomSourceBundle: string; // used for collections of shells where it is common for people to want to translate the whole set
+    urlForAlphaTiles: string;
     filter?: IFilter; // contentful does give us undefined if this field is empty
     statisticsQuerySpec?: IStatisticsQuerySpec;
     iconForCardAndDefaultBanner?: IMedia;
