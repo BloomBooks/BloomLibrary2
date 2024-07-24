@@ -4,7 +4,8 @@ export interface ILangTagData {
     names?: string[];
     region: string;
     regionname: string;
-    regions?: string[];
+    //regions?: string[];
+    //iso639_3?: string;
 }
 
 // If we go back to using the country id data, we'll need this interface.

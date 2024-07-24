@@ -1,0 +1,11 @@
+{
+    "name": "reduce-langtags",
+    "version": "1.0.0",
+    "type": "module",
+    "main": "reduce-langtags.js",
+    "dependencies": {
+        "fs": "^0.0.1-security",
+        "path": "0.12.7",
+        "url": "0.11.0"
+    }
+}
