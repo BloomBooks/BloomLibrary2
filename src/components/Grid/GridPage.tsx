@@ -20,11 +20,15 @@ import {
 import { observer } from "mobx-react-lite";
 import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 
+export function isValidFilterForGrid(filter: string): boolean {
+    return !filter || filter.startsWith(":search:");
+}
+
 // we need the observer in order to get the logged in user, which may not be immediately available
 // we require the user to be logged in to see this grid.
 export const GridPage: React.FunctionComponent<{ filters: string }> = observer(
     (props) => {
-        useSetBrowserTabTitle("Grid");
+        useSetBrowserTabTitle("Book Grid");
         let contextFilter: IFilter = {};
         if (props.filters && props.filters.startsWith(":search:")) {
             const search = props.filters

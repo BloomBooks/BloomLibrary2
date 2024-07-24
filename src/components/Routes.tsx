@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 
 import React, { useEffect } from "react";
 import { Switch, Route, Redirect, useLocation } from "react-router-dom";
-import { GridPage } from "./Grid/GridPage"; // internally lazy
+import { GridPage, isValidFilterForGrid } from "./Grid/GridPage"; // internally lazy
 import { BulkEditPageCodeSplit } from "./BulkEdit/BulkEditPageCodeSplit";
 import { BookDetailCodeSplit } from "./BookDetail/BookDetailCodeSplit";
 import { ReadBookPageCodeSplit } from "./ReadBookPageCodeSplit";
@@ -178,9 +178,16 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                                 return <AggregateGridPage type="country" />;
                             } else if (match.params.filter === "uploaders") {
                                 return <AggregateGridPage type="uploader" />;
-                            } else {
+                            } else if (
+                                isValidFilterForGrid(match.params.filter)
+                            ) {
                                 return (
                                     <GridPage filters={match.params.filter} />
+                                );
+                            } else {
+                                throw new Error(
+                                    "Invalid grid specification: " +
+                                        match.params.filter
                                 );
                             }
                         }}
