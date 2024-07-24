@@ -50,7 +50,8 @@ import { ILanguageGridControlProps } from "./LanguageGridControl";
 import { CachedTablesContext } from "../../model/CacheProvider";
 import {
     CachedBookDataContext,
-    fixLanguageRegionDataAndGetMap,
+    fixLangTagRegionDataAndGetMap,
+    getLangTagDataForIrregularLangCode,
     ModeratorStatusToolbarPlugin,
 } from "../AggregateGrid/AggregateGridPage";
 import { ILangTagData } from "../AggregateGrid/AggregateGridInterfaces";
@@ -77,7 +78,7 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
             ILanguageGridRowData[]
         >([]);
         const fullLangDataMap = useMemo(() => {
-            return fixLanguageRegionDataAndGetMap(rawLangData);
+            return fixLangTagRegionDataAndGetMap(rawLangData);
         }, []);
         const countriesMap = useMemo(() => {
             const map = new Map<string, string>();
@@ -123,10 +124,14 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
                         level3Count: 0,
                         level4Count: 0,
                     };
-                    const langData = fullLangDataMap.get(lang.isoCode);
-                    // if (!langData) {
-                    //     console.log(`DEBUG: No langData for ${lang.isoCode}`);
-                    // }
+                    let langData = fullLangDataMap.get(lang.isoCode);
+                    if (!langData) {
+                        langData = getLangTagDataForIrregularLangCode(
+                            lang.isoCode,
+                            fullLangDataMap,
+                            countriesMap
+                        );
+                    }
                     if (langData) {
                         baseValue.exonym = langData.name;
                         if (langData.names) {
@@ -144,6 +149,8 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
                             );
                             if (regionName) {
                                 baseValue.countryName = regionName;
+                            } else {
+                                baseValue.countryName = `[${langData.region}]`;
                             }
                         }
                         // if we go back to allowing multiple regions per language, this code will be useful

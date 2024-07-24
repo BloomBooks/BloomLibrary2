@@ -51,7 +51,8 @@ import { CachedTablesContext } from "../../model/CacheProvider";
 
 import {
     CachedBookDataContext,
-    fixLanguageRegionDataAndGetMap,
+    fixLangTagRegionDataAndGetMap,
+    getLangTagDataForIrregularLangCode,
     ModeratorStatusToolbarPlugin,
 } from "../AggregateGrid/AggregateGridPage";
 import {
@@ -85,7 +86,7 @@ const UploaderGridControlInternal: React.FunctionComponent<IUploaderGridControlP
             IUploaderGridData[]
         >([]);
         const fullLangDataMap = useMemo(() => {
-            return fixLanguageRegionDataAndGetMap(rawLangData);
+            return fixLangTagRegionDataAndGetMap(rawLangData);
         }, []);
 
         // extract a country name map from the language data
@@ -160,9 +161,16 @@ const UploaderGridControlInternal: React.FunctionComponent<IUploaderGridControlP
                             if (book.lang1Tag) {
                                 if (!user.languages.includes(book.lang1Tag)) {
                                     user.languages.push(book.lang1Tag);
-                                    const langData = fullLangDataMap.get(
+                                    let langData = fullLangDataMap.get(
                                         book.lang1Tag
                                     );
+                                    if (!langData) {
+                                        langData = getLangTagDataForIrregularLangCode(
+                                            book.lang1Tag,
+                                            fullLangDataMap,
+                                            countriesMap
+                                        );
+                                    }
                                     if (langData && langData.region) {
                                         const countryName = countriesMap.get(
                                             langData.region
