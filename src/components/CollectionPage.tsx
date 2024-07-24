@@ -28,6 +28,7 @@ import {
     useAppHostedCollectionLabel,
     useIsAppHosted,
 } from "./appHosted/AppHostedUtils";
+import { AlphaTilesButton } from "./AlphaTilesButton";
 
 const kLeftMarginOnCollectionPages = "20px";
 
@@ -183,6 +184,23 @@ export const CollectionPage: React.FunctionComponent<{
                         </DownloadBundleButton>
                     </span>
                 )}
+
+                {collection.urlForAlphaTiles && (
+                    <div
+                        css={css`
+                            margin-top: 10px;
+                            margin-left: ${kLeftMarginOnCollectionPages};
+                            display: block;
+                        `}
+                    >
+                        <AlphaTilesButton
+                            languageName={collection.label}
+                            url={collection.urlForAlphaTiles}
+                        />
+                    </div>
+                )}
+                {/* This is the main content of the collection page */}
+
                 <ListOfBookGroups
                     // tighten things up a bit in a view designed for a phone.
                     css={css`
