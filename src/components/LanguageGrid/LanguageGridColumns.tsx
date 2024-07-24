@@ -41,13 +41,12 @@ export function getLanguageGridColumnsDefinitions(): IGridColumn[] {
             defaultVisible: true,
             sortingEnabled: true,
             getCellValue: (lang: ILanguageGridRowData) => {
-                const hrefValue = `https://bloomlibrary.org/language:${lang.langTag}`;
+                const hrefValue = `/language:${lang.langTag}`;
                 return (
-                    <a
-                        href={hrefValue}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
+                    // we don't need rel="noreferrer" because the destination is on the same website,
+                    // and we want to preserve the login status for the new tab
+                    // eslint-disable-next-line react/jsx-no-target-blank
+                    <a href={hrefValue} target="_blank">
                         {lang.exonym}
                     </a>
                 );
@@ -254,18 +253,17 @@ export function getLanguageGridColumnsDefinitions(): IGridColumn[] {
             sortingEnabled: true,
             getCellValue: (lang: ILanguageGridRowData) => {
                 const links = lang.uploaderEmails.map((email, index) => {
-                    const hrefValue = `https://bloomlibrary.org/:search:uploader:${email}`;
+                    const hrefValue = `/:search:uploader:${email}`;
                     let separator = "";
                     if (index < lang.uploaderEmails.length - 1) {
                         separator = ", ";
                     }
                     return (
                         <span>
-                            <a
-                                href={hrefValue}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
+                            {/* we don't need rel="noreferrer" because the destination is on the same website,
+                                and we want to preserve the login status for the new tab */}
+                            {/*eslint-disable-next-line react/jsx-no-target-blank*/}
+                            <a href={hrefValue} target="_blank">
                                 {email}
                             </a>
                             {separator}
