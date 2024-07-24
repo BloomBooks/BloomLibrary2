@@ -28,6 +28,7 @@ import {
     useAppHostedCollectionLabel,
     useIsAppHosted,
 } from "./appHosted/AppHostedUtils";
+import { Button } from "@material-ui/core";
 
 const kLeftMarginOnCollectionPages = "20px";
 
@@ -183,6 +184,30 @@ export const CollectionPage: React.FunctionComponent<{
                         </DownloadBundleButton>
                     </span>
                 )}
+
+                {collection.urlForAlphaTiles && (
+                    <span
+                        css={css`
+                            margin-left: ${kLeftMarginOnCollectionPages};
+                            margin-top: 1em;
+                            display: block;
+                        `}
+                    >
+                        <Button
+                            variant="outlined"
+                            color="primary"
+                            href={collection.urlForAlphaTiles}
+                        >
+                            {" "}
+                            {l10n.formatMessage({
+                                id: "banner.downloadAlphaTiles",
+                                defaultMessage: `Get the ${collection.label} Alpha Tiles Android App`,
+                            })}
+                        </Button>
+                    </span>
+                )}
+                {/* This is the main content of the collection page */}
+
                 <ListOfBookGroups
                     // tighten things up a bit in a view designed for a phone.
                     css={css`
