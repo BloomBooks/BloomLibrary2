@@ -240,21 +240,21 @@ export function filterDateStringWithOperator(
 }
 
 export function getCountryIdMapFromLangTagData(
-    langData: ILangTagData[]
+    langTagData: ILangTagData[]
 ): Map<string, string> {
     const countryIdMap = new Map<string, string>();
-    langData.forEach((lng) => {
+    langTagData.forEach((lng) => {
         if (lng.region && lng.regionname) {
             countryIdMap.set(lng.region, lng.regionname);
         }
     });
     return countryIdMap;
 }
-export function fixLanguageRegionDataAndGetMap(
-    rawLangData: ILangTagData[]
+export function fixLangTagRegionDataAndGetMap(
+    rawLangTagData: ILangTagData[]
 ): Map<string, ILangTagData> {
     const map = new Map<string, ILangTagData>();
-    rawLangData.forEach((lng) => {
+    rawLangTagData.forEach((lng) => {
         map.set(lng.tag, lng);
         // Override some primary region settings that seem misguided.
         if (lng.tag === "en") {
@@ -263,42 +263,6 @@ export function fixLanguageRegionDataAndGetMap(
             lng.region = "PT"; // Portuguese originated in Portugal, not Brazil.
         }
     });
-    // // // Add regions to the original language entries from the -Dupl and -Brai scripts.
-    // // // I'm not sure what Dupl is, but Brai is Braille.  It makes sense that the Braille
-    // // // script shouldn't be considered a separate language, and that it would used only
-    // // // where the language is actually spoken.
-    // // // This ensures that Spanish is known to be spoken in Mexico and the US, for example.
-    // // // Also, that English is spoken in the UK, Australia, and Canada.
-    // // // Other languages such as German and French also get additional regions added by this
-    // // // processing.
-    // // rawLangData.forEach((lng) => {
-    // //     if (lng.tag.endsWith("-Dupl") || lng.tag.endsWith("-Brai")) {
-    // //         if (lng.regions && lng.regions.length > 0) {
-    // //             const tag = lng.tag.substring(0, lng.tag.length - 5);
-    // //             const origLang = map.get(tag);
-    // //             if (!origLang) {
-    // //                 console.warn("No original lang for ", tag);
-    // //                 return;
-    // //             }
-    // //             if (!origLang.regions) {
-    // //                 origLang.regions = [];
-    // //             }
-    // //             if (!origLang.regions.includes(lng.region)) {
-    // //                 console.log(`Adding region ${lng.region} to ${tag}`);
-    // //                 origLang.regions.push(lng.region);
-    // //             }
-    // //             lng.regions.forEach((r) => {
-    // //                 if (!origLang.regions) {
-    // //                     origLang.regions = [];
-    // //                 }
-    // //                 if (!origLang.regions.includes(r)) {
-    // //                     console.log(`Adding region ${r} to ${tag}`);
-    // //                     origLang.regions.push(r);
-    // //                 }
-    // //             });
-    // //         }
-    // //     }
-    // // });
     // // Restrict the regions for some major languages to the most common ones.
     // // REVIEW: are these copilot suggestions good enough?
     // const english = map.get("en");
@@ -324,6 +288,64 @@ export function fixLanguageRegionDataAndGetMap(
     // if (korean) korean.regions = ["KR"];
 
     return map;
+}
+
+export function getLangTagDataForIrregularLangCode(
+    code: string,
+    langDataMap: Map<string, ILangTagData>,
+    countryIdMap: Map<string, string>
+): ILangTagData | undefined {
+    const langTagData = {} as ILangTagData;
+    const codeSections = code.split("-x-");
+    const tagPieces = codeSections[0].split("-");
+    langTagData.tag = code;
+    if (tagPieces.length > 1) {
+        const reg = tagPieces.find((piece) => {
+            return /[A-Z]{2}/.test(piece);
+        });
+        if (reg) {
+            langTagData.region = reg;
+            langTagData.regionname = countryIdMap.get(reg) || reg;
+        }
+    }
+    if (codeSections.length > 1) {
+        langTagData.name = codeSections[1];
+    }
+    // replace obsolete codes with current ones.
+    // or possibly specific with generic due to general confusion
+    let newCode = tagPieces[0];
+    switch (newCode) {
+        case "swh":
+            newCode = "sw";
+            break;
+        case "kmr":
+            newCode = "ku";
+            break;
+        case "bcc":
+            newCode = "bal";
+            break;
+        case "bxk":
+            newCode = "luy";
+            break;
+        case "quz":
+            newCode = "qu";
+            break;
+        case "dhd":
+            newCode = "mwr";
+            break;
+        case "ydd":
+            newCode = "yi";
+            break;
+    }
+    const tagData = langDataMap.get(newCode);
+    if (tagData) {
+        if (!langTagData.name) langTagData.name = tagData.name;
+        if (!langTagData.region) {
+            langTagData.region = tagData.region;
+            langTagData.regionname = tagData.regionname;
+        }
+    }
+    return langTagData;
 }
 
 export const ModeratorStatusToolbarPlugin = (

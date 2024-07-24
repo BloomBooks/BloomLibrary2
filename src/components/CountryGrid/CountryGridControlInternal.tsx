@@ -49,8 +49,9 @@ import { ICountryGridControlProps } from "./CountryGridControl";
 import { CachedTablesContext } from "../../model/CacheProvider";
 import {
     CachedBookDataContext,
-    fixLanguageRegionDataAndGetMap,
+    fixLangTagRegionDataAndGetMap,
     getCountryIdMapFromLangTagData,
+    getLangTagDataForIrregularLangCode,
     ModeratorStatusToolbarPlugin,
 } from "../AggregateGrid/AggregateGridPage";
 import {
@@ -82,7 +83,7 @@ const CountryGridControlInternal: React.FunctionComponent<ICountryGridControlPro
             ICountryGridRowData[]
         >([]);
         const fullLangDataMap = useMemo(() => {
-            return fixLanguageRegionDataAndGetMap(rawLangData);
+            return fixLangTagRegionDataAndGetMap(rawLangData);
         }, []);
         const countryIdMap = useMemo(() => {
             return getCountryIdMapFromLangTagData(rawLangData);
@@ -173,7 +174,14 @@ const CountryGridControlInternal: React.FunctionComponent<ICountryGridControlPro
                         ) {
                             return;
                         }
-                        const lang = fullLangDataMap.get(book.lang1Tag);
+                        let lang = fullLangDataMap.get(book.lang1Tag);
+                        if (!lang) {
+                            lang = getLangTagDataForIrregularLangCode(
+                                book.lang1Tag,
+                                fullLangDataMap,
+                                countryIdMap
+                            );
+                        }
                         if (lang && lang.region) {
                             const rowData = countryMap.get(lang.region);
                             if (rowData) {
