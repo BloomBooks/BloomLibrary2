@@ -1726,6 +1726,76 @@ export async function deleteBook(bookDatabaseId: string) {
     });
 }
 
+// // Since info.lang1Tag doesn't appear in the list of actualLangs, we need to try to find
+// // the language tag in actualLangs that seems to be the best match for the book.
+// function findBetterLangTagIfPossible(
+//     info: IMinimalBookInfo,
+//     actualLangs: string[],
+//     allTitles: string
+// ): string | undefined {
+//     const lang1Tag = info.lang1Tag;
+//     if (!lang1Tag) {
+//         return lang1Tag;
+//     }
+//     const titleLangs = Array.from(
+//         Object.keys(JSON.parse(allTitles.replace(/\n/g, "\\n")))
+//     );
+//     if (actualLangs.length === 1) {
+//         // If there's only one language assigned to the book, we can be sure that's the one we want.
+//         return actualLangs[0];
+//     }
+//     if (actualLangs.filter((x) => x.startsWith(lang1Tag + "-")).length === 1) {
+//         // This is a special case where we have a book in a language that is a variant of another language.
+//         // We want to use the variant language code, not the generic one.
+//         // For instance, the book started with qaa, but has since been assigned qaa-x-Fooness.
+//         const newLang = actualLangs.filter((x) =>
+//             x.startsWith(lang1Tag + "-")
+//         )[0];
+//         return newLang;
+//     }
+//     if (actualLangs.filter((x) => x === lang1Tag.split("-")[0]).length === 1) {
+//         // This is a special where a variant language code is not appropriate, but should be
+//         // replaced with the generic language code.
+//         // For instance, the book started with fuv-Arab, but has since been assigned fuv because
+//         // it isnt' actually in the Arabic script.
+//         const newLang = actualLangs.filter(
+//             (x) => x === lang1Tag.split("-")[0]
+//         )[0];
+//         return newLang;
+//     }
+//     if (
+//         lang1Tag !== "en" &&
+//         actualLangs.filter((x) => x !== "en").length === 1
+//     ) {
+//         // When lang1Tag is not English, we'll assume the single non-English language
+//         // assigned to the book is the correct choice.
+//         const newLang = actualLangs.filter((x) => x !== "en")[0];
+//         return newLang;
+//     }
+//     const actualLangsNotInTitles = actualLangs.filter(
+//         (x) => !titleLangs.includes(x)
+//     );
+//     if (actualLangsNotInTitles.length === 1) {
+//         // We'll assume the single language not in the title list is correct.
+//         // This is not a perfect solution, but it's the best we can do with the information we have.
+//         return actualLangsNotInTitles[0];
+//     }
+//     if (
+//         lang1Tag !== "en" &&
+//         actualLangsNotInTitles.filter((x) => x !== "en").length === 1
+//     ) {
+//         // We'll assume the single non-English language not in the title list is correct.
+//         // This is not a perfect solution, but it's the best we can do with the information we have.
+//         return actualLangsNotInTitles.filter((x) => x !== "en")[0];
+//     }
+//     if (lang1Tag === "xkg" && actualLangs.includes("kcg-x-Gworog")) {
+//         // This is truly a special case, but is justified by the state of our data.  :-)
+//         return "kcg-x-Gworog";
+//     }
+//     // If we can't figure it out, we'll just use the original language code.
+//     return lang1Tag;
+// }
+
 // Get the basic information about books and users for the language-grid, country-grid,
 // and uploader-grid pages.
 async function retrieveBookAndUserData() {
@@ -1733,14 +1803,24 @@ async function retrieveBookAndUserData() {
         headers: getConnection().headers,
         params: {
             limit: 1000000, // all of them
-            keys: "uploader,createdAt,show,tags",
+            // show and allTitles were used as keys for determining lang1Tag, but we're not using it now
+            keys: "uploader,langPointers,createdAt,tags",
             // fluff up fields that reference other tables
-            include: "uploader",
+            include: "uploader,langPointers",
             where: { inCirculation: true, draft: false },
         },
     });
 }
 
+interface IBasicLangInfo {
+    objectId: string;
+    isoCode: string;
+}
+interface IMinimalBookInfoPlus extends IMinimalBookInfo {
+    //show?: { pdf: { langTag: string } }; // there is more, but this is what we're using to get at l1 at the moment
+    langPointers: IBasicLangInfo[];
+    //allTitles: string;
+}
 // Retrieve an array of minimal information for all accessible books and
 // their uploaders.
 export function useGetDataForAggregateGrid(): IMinimalBookInfo[] {
@@ -1766,11 +1846,53 @@ export function useGetDataForAggregateGrid(): IMinimalBookInfo[] {
                 );
             setResult([]);
         } else {
-            const bookInfos = response["data"]["results"] as IMinimalBookInfo[];
-            bookInfos.forEach((bookInfo: IMinimalBookInfo) => {
-                bookInfo.lang1Tag = bookInfo.show?.pdf?.langTag;
+            const bookInfos = response["data"][
+                "results"
+            ] as IMinimalBookInfoPlus[];
+            const infos: IMinimalBookInfo[] = bookInfos.map((bookInfo) => {
+                const info: IMinimalBookInfo = {
+                    objectId: bookInfo.objectId,
+                    createdAt: bookInfo.createdAt,
+                    // we need only the level and computedLevel tags
+                    tags: bookInfo.tags.filter((tag) =>
+                        tag.toLowerCase().includes("level:")
+                    ),
+                    uploader: bookInfo.uploader,
+                    //lang1Tag: bookInfo.show?.pdf?.langTag,
+                    languages: bookInfo.langPointers.map((lp) => lp.isoCode),
+                };
+                // if (info.lang1Tag) {
+                //     if (
+                //         bookInfo.langPointers &&
+                //         bookInfo.langPointers.length > 0
+                //     ) {
+                //         if (!info.languages.includes(info.lang1Tag)) {
+                //             // We have a book whose presumed primary language is not in the list
+                //             // of actual languages assigned to the book. This is a problem but
+                //             // we may be able to figure things out with the information we do have.
+                //             const newLangTag = findBetterLangTagIfPossible(
+                //                 info,
+                //                 info.languages,
+                //                 bookInfo.allTitles
+                //             );
+                //             // A number of books have only English assigned, but the title is in a
+                //             // different language, and there is no text in English.
+                //             if (
+                //                 newLangTag !== info.lang1Tag &&
+                //                 (newLangTag !== "en" ||
+                //                     info.lang1Tag.startsWith("en"))
+                //             ) {
+                //                 // console.warn(
+                //                 //     `DEBUG: replacing ${info.lang1Tag} with ${newLangTag} for ${info.objectId}`
+                //                 // );
+                //                 info.lang1Tag = newLangTag;
+                //             }
+                //         }
+                //     }
+                // }
+                return info;
             });
-            setResult(bookInfos);
+            setResult(infos);
         }
     }, [response, loading, error]);
 

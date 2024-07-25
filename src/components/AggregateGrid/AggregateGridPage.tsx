@@ -345,6 +345,11 @@ export function getLangTagDataForIrregularLangCode(
         case "ydd":
             newCode = "yi";
             break;
+        // obsolete code for Malay
+        // zsm / Malay shares the macrolanguage code ms with bjn, btj, bve, bvu, coa, dup, hji, id (!), jak, jax, and many more
+        case "zsm":
+            newCode = "ms";
+            break;
     }
     const tagData = langDataMap.get(newCode);
     if (tagData) {
