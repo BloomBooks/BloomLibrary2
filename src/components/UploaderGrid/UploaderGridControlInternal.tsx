@@ -158,15 +158,13 @@ const UploaderGridControlInternal: React.FunctionComponent<IUploaderGridControlP
                             )
                                 return;
                             user.bookCount++;
-                            if (book.lang1Tag) {
-                                if (!user.languages.includes(book.lang1Tag)) {
-                                    user.languages.push(book.lang1Tag);
-                                    let langData = fullLangDataMap.get(
-                                        book.lang1Tag
-                                    );
+                            book.languages.forEach((langTag) => {
+                                if (!user.languages.includes(langTag)) {
+                                    user.languages.push(langTag);
+                                    let langData = fullLangDataMap.get(langTag);
                                     if (!langData) {
                                         langData = getLangTagDataForIrregularLangCode(
-                                            book.lang1Tag,
+                                            langTag,
                                             fullLangDataMap,
                                             countriesMap
                                         );
@@ -185,7 +183,7 @@ const UploaderGridControlInternal: React.FunctionComponent<IUploaderGridControlP
                                         }
                                     }
                                 }
-                            }
+                            });
                         }
                     }
                 });

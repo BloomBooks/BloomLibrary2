@@ -26,7 +26,7 @@ export interface IMinimalBookInfo {
     objectId: string;
     createdAt: string;
     tags: string[];
-    lang1Tag?: string;
-    show?: { pdf: { langTag: string } }; // there is more, but this is what we're using to get at l1 at the moment
+    //lang1Tag?: string;
     uploader: IBasicUserInfo;
+    languages: string[]; // language tags from the langPointers object array
 }

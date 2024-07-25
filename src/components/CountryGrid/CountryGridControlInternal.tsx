@@ -165,27 +165,36 @@ const CountryGridControlInternal: React.FunctionComponent<ICountryGridControlPro
                 //     unknownRegions.sort()
                 // );
                 bookData.forEach((book) => {
-                    if (book.lang1Tag) {
-                        if (
-                            !filterBooksBeforeCreatingCountryGridRows(
-                                book,
-                                gridFilters
-                            )
-                        ) {
-                            return;
-                        }
-                        let lang = fullLangDataMap.get(book.lang1Tag);
+                    if (
+                        !filterBooksBeforeCreatingCountryGridRows(
+                            book,
+                            gridFilters
+                        )
+                    ) {
+                        return;
+                    }
+
+                    // Keep track of the regions represented by the
+                    // languages in this book so that we can count
+                    // the books for each region accurately even with
+                    // multiple languages from the same region.
+                    const bookRegions: string[] = [];
+
+                    book.languages.forEach((langTag) => {
+                        let lang = fullLangDataMap.get(langTag);
                         if (!lang) {
                             lang = getLangTagDataForIrregularLangCode(
-                                book.lang1Tag,
+                                langTag,
                                 fullLangDataMap,
                                 countryIdMap
                             );
                         }
                         if (lang && lang.region) {
+                            if (!bookRegions.includes(lang.region)) {
+                                bookRegions.push(lang.region);
+                            }
                             const rowData = countryMap.get(lang.region);
                             if (rowData) {
-                                ++rowData.bookCount;
                                 if (
                                     !rowData.blorgLanguageTags.includes(
                                         lang.tag
@@ -222,8 +231,15 @@ const CountryGridControlInternal: React.FunctionComponent<ICountryGridControlPro
                                 // }
                             }
                         }
-                    }
+                    });
+                    bookRegions.forEach((region) => {
+                        const rowData = countryMap.get(region);
+                        if (rowData) {
+                            ++rowData.bookCount;
+                        }
+                    });
                 });
+
                 const allRows: ICountryGridRowData[] = Array.from(
                     countryMap.values()
                 )

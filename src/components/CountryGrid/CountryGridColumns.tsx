@@ -11,7 +11,6 @@ import { Filter, Sorting } from "@devexpress/dx-react-grid";
 import {
     filterNumberWithOperator,
     filterSimpleString,
-    filterStringWithNegation,
 } from "../AggregateGrid/AggregateGridPage";
 import { IMinimalBookInfo } from "../AggregateGrid/AggregateGridInterfaces";
 
@@ -146,16 +145,15 @@ export function filterBooksBeforeCreatingCountryGridRows(
     book: IMinimalBookInfo,
     gridFilters: Filter[]
 ): boolean {
-    if (!book.lang1Tag) return false;
+    if (book.languages.length === 0) return false;
     const filter = gridFilters.find(
         (f) => f.columnName === "blorgLanguageTags"
     );
     if (filter && filter.value) {
         const filterValue = filter.value.trim();
         if (!filterValue) return true;
-        if (!filterStringWithNegation(filterValue, book.lang1Tag)) {
-            return false;
-        }
+        const matched = book.languages.join(", ").includes(filterValue);
+        return matched;
     }
     return true;
 }
@@ -262,7 +260,13 @@ export function filterCountryGridRow(
                     return false;
                 break;
             case "blorgLanguageTags":
-                // handled in the filterBooksBeforeCreatingCountryGridRows function
+                if (filter.value && filter.value.trim()) {
+                    const filterValue = filter.value.trim();
+                    const matched = row.blorgLanguageTags
+                        .join(", ")
+                        .includes(filterValue);
+                    return matched;
+                }
                 break;
         }
     }
