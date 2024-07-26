@@ -11,9 +11,7 @@ import { Filter, Sorting } from "@devexpress/dx-react-grid";
 import {
     filterNumberWithOperator,
     filterSimpleString,
-    filterStringWithNegation,
 } from "../AggregateGrid/AggregateGridPage";
-import { IMinimalBookInfo } from "../AggregateGrid/AggregateGridInterfaces";
 
 export interface ICountryGridRowData {
     name: string; // country name
@@ -142,24 +140,6 @@ export function getCountryGridColumnsDefinitions(): IGridColumn[] {
     return definitions;
 }
 
-export function filterBooksBeforeCreatingCountryGridRows(
-    book: IMinimalBookInfo,
-    gridFilters: Filter[]
-): boolean {
-    if (!book.lang1Tag) return false;
-    const filter = gridFilters.find(
-        (f) => f.columnName === "blorgLanguageTags"
-    );
-    if (filter && filter.value) {
-        const filterValue = filter.value.trim();
-        if (!filterValue) return true;
-        if (!filterStringWithNegation(filterValue, book.lang1Tag)) {
-            return false;
-        }
-    }
-    return true;
-}
-
 export function compareCountryGridRows(
     a: ICountryGridRowData,
     b: ICountryGridRowData,
@@ -262,9 +242,45 @@ export function filterCountryGridRow(
                     return false;
                 break;
             case "blorgLanguageTags":
-                // handled in the filterBooksBeforeCreatingCountryGridRows function
+                if (filter.value && filter.value.trim()) {
+                    const filterValue = filter.value.trim();
+                    // This allows matching partial tags, e.g. "en" matches "en" or "en-GB",
+                    // and "e" matches "en" or "es" or "de".
+                    // "-" will match any language with a subtag, e.g. "en-GB" or "en-US".
+                    return (
+                        row.blorgLanguageTags.filter((x) => {
+                            return filterSimpleString(filterValue, x);
+                        }).length > 0
+                    );
+                }
                 break;
         }
     }
     return true;
+}
+
+export function adjustListDisplaysForFiltering(
+    columnDefinitions: IGridColumn[],
+    filters: Filter[]
+) {
+    const blorgLanguageTagsColDef = columnDefinitions.find(
+        (c) => c.name === "blorgLanguageTags"
+    );
+    if (blorgLanguageTagsColDef) {
+        const filterDef = filters.find(
+            (f) => f.columnName === "blorgLanguageTags"
+        );
+        if (filterDef && filterDef.value) {
+            const filterValue = filterDef.value.trim();
+            blorgLanguageTagsColDef.getCellValue = (row: ICountryGridRowData) =>
+                row.blorgLanguageTags
+                    .filter((x) => {
+                        return filterSimpleString(filterValue, x);
+                    })
+                    .join(", ");
+        } else {
+            blorgLanguageTagsColDef.getCellValue = (row: ICountryGridRowData) =>
+                row.blorgLanguageTags.join(", ");
+        }
+    }
 }

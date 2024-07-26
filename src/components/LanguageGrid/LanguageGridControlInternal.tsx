@@ -152,6 +152,12 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
                             } else {
                                 baseValue.countryName = `[${langData.region}]`;
                             }
+                        } else {
+                            // console.log(
+                            //     `No region for ${
+                            //         lang.isoCode
+                            //     }: ${JSON.stringify(langData)}`
+                            // );
                         }
                         // if we go back to allowing multiple regions per language, this code will be useful
                         // if (langData.regions) {
@@ -168,116 +174,92 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
                     }
                     languageRowMap.set(lang.isoCode, baseValue);
                 });
-                // let unknownLangCount = 0;
                 bookData.forEach((book) => {
-                    if (!book.lang1Tag) {
-                        // ++unknownLangCount;
-                        return;
-                    }
-                    let lang = languageRowMap.get(book.lang1Tag);
-                    if (!lang) {
-                        // we've tried to standardize on "th" for Thai, but there are still some "th-TH" books
-                        if (book.lang1Tag === "th-TH") {
-                            lang = languageRowMap.get("th");
-                            // we've tried to standardize on "zh-CN" for Chinese, but there is at least one "cmn" book
-                        } else if (book.lang1Tag === "cmn") {
-                            lang = languageRowMap.get("zh-CN");
-                        } else if (book.lang1Tag === "xkg") {
-                            // I'm not sure what happened here, but we have several books with a tag of "xkg" that
-                            // display the language as "kcg-x-Gworog" in the bloom library UI.  I assume that's correct.
-                            lang = languageRowMap.get("kcg-x-Gworog");
-                        } else if (book.lang1Tag === "fuv-Arab") {
-                            // Three books claim the Arabic script, but are obviously Latin (the default) script.
-                            lang = languageRowMap.get("fuv");
-                            // I have no idea what this user was thinking, but the book is obviously English.
-                        } else if (book.lang1Tag === "en-Dupl") {
-                            lang = languageRowMap.get("en");
-                        } /* else if (book.lang1Tag === "kvt") {
-                            // Two books seem to have been mislabeled as a different language in Myanmar.
-                            lang = map1.get("aeu");
-                        }*/
-                    }
-                    if (lang) {
-                        if (
-                            !filterBooksBeforeCreatingLanguageGridRows(
-                                book,
-                                gridFilters
-                            )
-                        ) {
-                            return;
+                    // Use the book's languages (derived from the langPointers array) to update
+                    // the language row data.
+                    book.languages.forEach((langTag) => {
+                        const lang = languageRowMap.get(langTag);
+                        if (!lang) {
+                            return; // shouldn't happen since book.languages should be a subset of languages
                         }
-                        lang.bookCount++;
-                        if (lang.bookCount === 1)
-                            lang.firstSeen = book.createdAt;
-                        else if (book.createdAt < lang.firstSeen)
-                            lang.firstSeen = book.createdAt;
-                        if (book.uploader?.username) {
+                        if (lang) {
                             if (
-                                !lang.uploaderEmails.includes(
-                                    book.uploader.username
+                                !filterBooksBeforeCreatingLanguageGridRows(
+                                    book,
+                                    gridFilters
                                 )
                             ) {
-                                lang.uploaderCount++;
-                                lang.uploaderEmails.push(
-                                    book.uploader.username
-                                );
+                                return;
                             }
-                        }
-                        if (book.tags) {
-                            // Level tags are the most reliable way to determine the level of a book.
-                            // If a book has a level tag, it is the level of the book.  Otherwise, we look for
-                            // a computedLevel tag, which is calculated automatically by some algorithm.
-                            const levelTag = book.tags.find((x) =>
-                                x.startsWith("level:")
-                            );
-                            if (levelTag) {
-                                switch (levelTag) {
-                                    case "level:1":
-                                        lang.level1Count++;
-                                        break;
-                                    case "level:2":
-                                        lang.level2Count++;
-                                        break;
-                                    case "level:3":
-                                        lang.level3Count++;
-                                        break;
-                                    case "level:4":
-                                        lang.level4Count++;
-                                        break;
+                            lang.bookCount++;
+                            if (lang.bookCount === 1)
+                                lang.firstSeen = book.createdAt;
+                            else if (
+                                // This may not be accurate if the book is uploaded later with an
+                                // additional language, but it's the best we can do.
+                                book.createdAt < lang.firstSeen
+                            ) {
+                                lang.firstSeen = book.createdAt;
+                            }
+                            if (book.uploader?.username) {
+                                if (
+                                    !lang.uploaderEmails.includes(
+                                        book.uploader.username
+                                    )
+                                ) {
+                                    lang.uploaderCount++;
+                                    lang.uploaderEmails.push(
+                                        book.uploader.username
+                                    );
                                 }
-                            } else {
-                                const computedTag = book.tags.find((x) =>
-                                    x.startsWith("computedLevel:")
+                            }
+                            if (book.tags) {
+                                // Level tags are the most reliable way to determine the level of a book.
+                                // If a book has a level tag, it is the level of the book.  Otherwise, we look for
+                                // a computedLevel tag, which is calculated automatically by some algorithm.
+                                const levelTag = book.tags.find((x) =>
+                                    x.startsWith("level:")
                                 );
-                                if (computedTag) {
-                                    switch (computedTag) {
-                                        case "computedLevel:1":
+                                if (levelTag) {
+                                    switch (levelTag) {
+                                        case "level:1":
                                             lang.level1Count++;
                                             break;
-                                        case "computedLevel:2":
+                                        case "level:2":
                                             lang.level2Count++;
                                             break;
-                                        case "computedLevel:3":
+                                        case "level:3":
                                             lang.level3Count++;
                                             break;
-                                        case "computedLevel:4":
+                                        case "level:4":
                                             lang.level4Count++;
                                             break;
+                                    }
+                                } else {
+                                    const computedTag = book.tags.find((x) =>
+                                        x.startsWith("computedLevel:")
+                                    );
+                                    if (computedTag) {
+                                        switch (computedTag) {
+                                            case "computedLevel:1":
+                                                lang.level1Count++;
+                                                break;
+                                            case "computedLevel:2":
+                                                lang.level2Count++;
+                                                break;
+                                            case "computedLevel:3":
+                                                lang.level3Count++;
+                                                break;
+                                            case "computedLevel:4":
+                                                lang.level4Count++;
+                                                break;
+                                        }
                                     }
                                 }
                             }
                         }
-                    } else if (book.lang1Tag) {
-                        // console.warn(
-                        //     `LanguageGridControlInternal: Book ${book.objectId} data for unknown language ${book.lang1Tag}`
-                        // );
-                    } else {
-                        // ++unknownLangCount;
-                    }
+                    });
                 });
-                // console.warn(
-                //     `LanguageGridControlInternal: ${unknownLangCount} books with undetermined primary language`
-                // );
                 const allRows: ILanguageGridRowData[] = Array.from(
                     languageRowMap.values()
                 )
