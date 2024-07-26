@@ -247,7 +247,7 @@ export function getLanguageGridColumnsDefinitions(): IGridColumn[] {
         },
         {
             name: "uploaderEmails",
-            title: "Uploader Emails",
+            title: "Uploaders",
             moderatorOnly: true,
             defaultVisible: false, // Staff only
             sortingEnabled: true,
