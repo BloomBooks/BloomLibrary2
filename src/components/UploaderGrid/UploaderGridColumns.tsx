@@ -35,7 +35,19 @@ export function getUploaderGridColumnsDefinitions(): IGridColumn[] {
             moderatorOnly: true,
             defaultVisible: true,
             sortingEnabled: true,
-            getCellValue: (row: IUploaderGridData) => row.email,
+            getCellValue: (row: IUploaderGridData) => {
+                const hrefValue = `/:search:uploader:${row.email}`;
+                return (
+                    <div>
+                        {/* we don't need rel="noreferrer" because the destination is on the same website,
+                            and we want to preserve the login status for the new tab */}
+                        {/*eslint-disable-next-line react/jsx-no-target-blank*/}
+                        <a href={hrefValue} target="_blank">
+                            {row.email}
+                        </a>
+                    </div>
+                );
+            },
             getCustomFilterComponent: (props: TableFilterRow.CellProps) => {
                 const fixedFilter: Filter = {
                     columnName: "email",
@@ -299,12 +311,13 @@ export function filterUploaderGridRow(
     for (let i = 0; i < gridFilters.length; i++) {
         const filter = gridFilters[i];
         if (!filter.value || !filter.value.trim()) continue;
+        const filterValue = filter.value.trim();
         switch (filter.columnName) {
             case "email":
-                if (!filterSimpleString(filter.value, row.email)) return false;
+                if (!filterSimpleString(filterValue, row.email)) return false;
                 break;
             case "bookCount":
-                if (!filterNumberWithOperator(filter.value, row.bookCount))
+                if (!filterNumberWithOperator(filterValue, row.bookCount))
                     return false;
                 break;
             case "languages":
@@ -325,10 +338,7 @@ export function filterUploaderGridRow(
                 break;
             case "creationDate":
                 if (
-                    !filterDateStringWithOperator(
-                        filter.value,
-                        row.creationDate
-                    )
+                    !filterDateStringWithOperator(filterValue, row.creationDate)
                 )
                     return false;
                 break;
@@ -349,35 +359,37 @@ export function adjustListDisplaysForFiltering(
     columnDefinitions: IGridColumn[],
     gridFilters: Filter[]
 ) {
-    const colDef1 = columnDefinitions.find((c) => c.name === "countryNames");
-    if (colDef1) {
+    const countryNamesColumnDef = columnDefinitions.find(
+        (c) => c.name === "countryNames"
+    );
+    if (countryNamesColumnDef) {
         const filterDef = gridFilters.find(
             (f) => f.columnName === "countryNames"
         );
-        if (filterDef && filterDef.value) {
-            colDef1.getCellValue = (row: IUploaderGridData) =>
+        if (filterDef && filterDef.value && filterDef.value.trim()) {
+            const filterValue = filterDef.value.trim();
+            countryNamesColumnDef.getCellValue = (row: IUploaderGridData) =>
                 row.countryNames
-                    .filter((x) => {
-                        return !filterDef.value || x.includes(filterDef.value);
-                    })
+                    .filter((x) => filterSimpleString(filterValue, x))
                     .join(", ");
         } else {
-            colDef1.getCellValue = (row: IUploaderGridData) =>
+            countryNamesColumnDef.getCellValue = (row: IUploaderGridData) =>
                 row.countryNames.join(", ");
         }
     }
-    const colDef2 = columnDefinitions.find((c) => c.name === "languages");
-    if (colDef2) {
+    const languagesColumnDef = columnDefinitions.find(
+        (c) => c.name === "languages"
+    );
+    if (languagesColumnDef) {
         const filterDef = gridFilters.find((f) => f.columnName === "languages");
-        if (filterDef && filterDef.value) {
-            colDef2.getCellValue = (row: IUploaderGridData) =>
+        if (filterDef && filterDef.value && filterDef.value.trim()) {
+            const filterValue = filterDef.value.trim();
+            languagesColumnDef.getCellValue = (row: IUploaderGridData) =>
                 row.languages
-                    .filter((x) => {
-                        return !filterDef.value || x.includes(filterDef.value);
-                    })
+                    .filter((x) => filterSimpleString(filterValue, x))
                     .join(", ");
         } else {
-            colDef2.getCellValue = (row: IUploaderGridData) =>
+            languagesColumnDef.getCellValue = (row: IUploaderGridData) =>
                 row.languages.join(", ");
         }
     }

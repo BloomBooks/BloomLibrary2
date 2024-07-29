@@ -155,56 +155,60 @@ export function filterNumberWithOperator(
     filterValue: string,
     cellValue: number
 ): boolean {
-    const [operator2, value2] = getOperatorAndMatchValue(filterValue);
-    if (!value2 || !value2.trim()) return true; // no value to filter on
-    const numValue2 = parseInt(value2, 10);
-    if (isNaN(numValue2)) return true; // invalid value to filter on
-    switch (operator2) {
+    const [operator, filterString] = getOperatorAndMatchValue(filterValue);
+    if (!filterString || !filterString.trim()) return true; // no value to filter on
+    const filterNumber = parseInt(filterString, 10);
+    if (isNaN(filterNumber)) return true; // invalid value to filter on
+    if (cellValue === undefined) return false; // no value to match
+    switch (operator) {
         case "<=":
-            return cellValue <= numValue2;
+            return cellValue <= filterNumber;
         case ">=":
-            return cellValue >= numValue2;
+            return cellValue >= filterNumber;
         case "<":
-            return cellValue < numValue2;
+            return cellValue < filterNumber;
         case ">":
-            return cellValue > numValue2;
+            return cellValue > filterNumber;
         case "=":
-            return cellValue === numValue2;
+            return cellValue === filterNumber;
     }
     return true; // shouldn't get here, but pass the value through if we do
 }
 
-// use a leading ! to negate the match.  This character is unlikely to be
-// used in names or tags, so it should be safe to use for this purpose.
-export function filterStringWithNegation(
-    filterValue: string,
-    cellValue: string
-): boolean {
-    if (!filterValue || !filterValue.trim()) return true; // no value to filter on
-    const filterLower = filterValue.trim().toLowerCase();
-    const cellLower = cellValue.toLowerCase();
-    // Enhance: allow filterValue to be a semicolon-separated list of values?
-    if (filterLower.startsWith("!")) {
-        // negate the match if the filter value starts with an exclamation point
-        const negativeFilterValue = filterLower.substring(1).trim();
-        if (
-            negativeFilterValue &&
-            cellLower &&
-            cellLower.includes(negativeFilterValue)
-        ) {
-            return false;
-        }
-    } else if (!cellLower || !cellLower.includes(filterLower)) {
-        return false;
-    }
-    return true;
-}
+// This may be useful, but perhaps not needed for this project.
+// // use a leading ! to negate the match.  This character is unlikely to be
+// // used in names or tags, so it should be safe to use for this purpose.
+// export function filterStringWithNegation(
+//     filterValue: string,
+//     cellValue: string
+// ): boolean {
+//     if (!filterValue || !filterValue.trim()) return true; // no value to filter on
+//     if (!cellValue || !cellValue.trim()) return false; // no value to match
+//     const filterLower = filterValue.trim().toLowerCase();
+//     const cellLower = cellValue.toLowerCase();
+//     // Enhance: allow filterValue to be a semicolon-separated list of values?
+//     if (filterLower.startsWith("!")) {
+//         // negate the match if the filter value starts with an exclamation point
+//         const negativeFilterValue = filterLower.substring(1).trim();
+//         if (
+//             negativeFilterValue &&
+//             cellLower &&
+//             cellLower.includes(negativeFilterValue)
+//         ) {
+//             return false;
+//         }
+//     } else if (!cellLower || !cellLower.includes(filterLower)) {
+//         return false;
+//     }
+//     return true;
+// }
 
 export function filterSimpleString(
     filterValue: string,
     cellValue: string
 ): boolean {
     if (!filterValue || !filterValue.trim()) return true; // no value to filter on
+    if (!cellValue || !cellValue.trim()) return false; // no value to match
     const filterLower = filterValue.trim().toLowerCase();
     const cellLower = cellValue.toLowerCase();
     if (!cellLower || !cellLower.includes(filterLower)) {
@@ -219,6 +223,7 @@ export function filterDateStringWithOperator(
 ): boolean {
     const [operator, filter] = getOperatorAndMatchValue(filterValue);
     if (!filter || !filter.trim()) return true; // no value to filter on
+    if (!cellValue || !cellValue.trim()) return false; // no value to match
     // To get expected behavior, we have to trim the cell content to
     // the length of the filter.  Thus, if the user types in just the
     // year, we compare only the year part of the date.  If the user

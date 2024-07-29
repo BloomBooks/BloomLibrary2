@@ -212,48 +212,45 @@ export function filterCountryGridRow(
         if (!filter.value || !filter.value.trim()) {
             continue;
         }
+        const filterValue = filter.value.trim();
         switch (filter.columnName) {
             case "name":
-                if (!filterSimpleString(filter.value, row.name)) return false;
+                if (!filterSimpleString(filterValue, row.name)) return false;
                 break;
             case "code":
-                if (!filterSimpleString(filter.value, row.code)) return false;
+                if (!filterSimpleString(filterValue, row.code)) return false;
                 break;
             case "knownLanguageCount":
                 if (
                     !filterNumberWithOperator(
-                        filter.value,
+                        filterValue,
                         row.knownLanguageCount
                     )
                 )
                     return false;
                 break;
             case "bookCount":
-                if (!filterNumberWithOperator(filter.value, row.bookCount))
+                if (!filterNumberWithOperator(filterValue, row.bookCount))
                     return false;
                 break;
             case "blorgLanguageCount":
                 if (
                     !filterNumberWithOperator(
-                        filter.value,
+                        filterValue,
                         row.blorgLanguageCount
                     )
                 )
                     return false;
                 break;
             case "blorgLanguageTags":
-                if (filter.value && filter.value.trim()) {
-                    const filterValue = filter.value.trim();
-                    // This allows matching partial tags, e.g. "en" matches "en" or "en-GB",
-                    // and "e" matches "en" or "es" or "de".
-                    // "-" will match any language with a subtag, e.g. "en-GB" or "en-US".
-                    return (
-                        row.blorgLanguageTags.filter((x) => {
-                            return filterSimpleString(filterValue, x);
-                        }).length > 0
-                    );
-                }
-                break;
+                // This allows matching partial tags, e.g. "en" matches "en" or "en-GB",
+                // and "e" matches "en" or "es" or "de".
+                // "-" will match any language with a subtag, e.g. "en-GB" or "en-US".
+                return (
+                    row.blorgLanguageTags.filter((x) =>
+                        filterSimpleString(filterValue, x)
+                    ).length > 0
+                );
         }
     }
     return true;
@@ -270,13 +267,11 @@ export function adjustListDisplaysForFiltering(
         const filterDef = filters.find(
             (f) => f.columnName === "blorgLanguageTags"
         );
-        if (filterDef && filterDef.value) {
+        if (filterDef && filterDef.value && filterDef.value.trim()) {
             const filterValue = filterDef.value.trim();
             blorgLanguageTagsColDef.getCellValue = (row: ICountryGridRowData) =>
                 row.blorgLanguageTags
-                    .filter((x) => {
-                        return filterSimpleString(filterValue, x);
-                    })
+                    .filter((x) => filterSimpleString(filterValue, x))
                     .join(", ");
         } else {
             blorgLanguageTagsColDef.getCellValue = (row: ICountryGridRowData) =>
