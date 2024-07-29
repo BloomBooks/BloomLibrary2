@@ -12,7 +12,6 @@ import {
     filterDateStringWithOperator,
     filterNumberWithOperator,
     filterSimpleString,
-    filterStringWithNegation,
 } from "../AggregateGrid/AggregateGridPage";
 import { IMinimalBookInfo } from "../AggregateGrid/AggregateGridInterfaces";
 
@@ -316,7 +315,7 @@ export function filterBooksBeforeCreatingLanguageGridRows(
         if (!gf.value || !gf.value.trim()) return;
         if (gf.columnName === "uploaderEmails") {
             if (
-                !filterStringWithNegation(
+                !filterSimpleString(
                     gf.value.trim(),
                     book.uploader?.username || ""
                 )
@@ -463,13 +462,14 @@ function applyGridFilterToRow(
     filter: Filter
 ): boolean {
     if (!filter?.value || !filter.value.trim()) return true;
+    const filterValue = filter.value.trim();
     switch (filter.columnName) {
         case "langTag":
-            return filterSimpleString(filter.value, row.langTag);
+            return filterSimpleString(filterValue, row.langTag);
         case "exonym":
-            return filterSimpleString(filter.value, row.exonym);
+            return filterSimpleString(filterValue, row.exonym);
         case "endonym":
-            return filterSimpleString(filter.value, row.endonym);
+            return filterSimpleString(filterValue, row.endonym);
         case "otherNames":
             return (
                 row.otherNames.filter((name) =>
@@ -480,22 +480,22 @@ function applyGridFilterToRow(
             // handled in the filterBooksBeforeCreatingRows function
             break;
         case "bookCount":
-            return filterNumberWithOperator(filter.value, row.bookCount);
+            return filterNumberWithOperator(filterValue, row.bookCount);
         case "level1Count":
-            return filterNumberWithOperator(filter.value, row.level1Count);
+            return filterNumberWithOperator(filterValue, row.level1Count);
         case "level2Count":
-            return filterNumberWithOperator(filter.value, row.level2Count);
+            return filterNumberWithOperator(filterValue, row.level2Count);
         case "level3Count":
-            return filterNumberWithOperator(filter.value, row.level3Count);
+            return filterNumberWithOperator(filterValue, row.level3Count);
         case "level4Count":
-            return filterNumberWithOperator(filter.value, row.level4Count);
+            return filterNumberWithOperator(filterValue, row.level4Count);
         case "uploaderCount":
-            return filterNumberWithOperator(filter.value, row.uploaderCount);
+            return filterNumberWithOperator(filterValue, row.uploaderCount);
         case "uploaderEmails":
             // handled in the filterBooksBeforeCreatingRows function
             break;
         case "countryName":
-            return filterStringWithNegation(filter.value, row.countryName);
+            return filterSimpleString(filterValue, row.countryName);
     }
     return true;
 }
@@ -512,12 +512,11 @@ export function adjustListDisplaysForFiltering(
     // );
     // if (countryNamesColDef) {
     //     const filterDef = filters.find((f) => f.columnName === "countryNames");
-    //     if (filterDef && filterDef.value) {
+    //     if (filterDef && filterDef.value && filterDef.value.trim()) {
+    //         const filterValue = filterDef.value.trim();
     //         countryNamesColDef.getCellValue = (lang: ILanguageGridRowData) =>
     //             lang.countryNames
-    //                 .filter((x) => {
-    //                     return filterSimpleString(filterDef.value || "", x);
-    //                 })
+    //                 .filter((x) => filterSimpleString(filterValue, x))
     //                 .join(", ");
     //     } else {
     //         countryNamesColDef.getCellValue = (lang: ILanguageGridRowData) =>
@@ -529,13 +528,13 @@ export function adjustListDisplaysForFiltering(
     );
     if (otherNamesColDef) {
         const filterDef = filters.find((f) => f.columnName === "otherNames");
-        if (filterDef && filterDef.value) {
-            otherNamesColDef.getCellValue = (lang: ILanguageGridRowData) =>
-                lang.otherNames
-                    .filter((x) => {
-                        return filterSimpleString(filterDef.value || "", x);
-                    })
+        if (filterDef && filterDef.value && filterDef.value.trim()) {
+            const filterValue = filterDef.value.trim();
+            otherNamesColDef.getCellValue = (lang: ILanguageGridRowData) => {
+                return lang.otherNames
+                    .filter((x) => filterSimpleString(filterValue, x))
                     .join(", ");
+            };
         } else {
             otherNamesColDef.getCellValue = (lang: ILanguageGridRowData) =>
                 lang.otherNames.join(", ");
