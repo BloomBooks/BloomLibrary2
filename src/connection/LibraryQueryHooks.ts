@@ -1807,7 +1807,7 @@ async function retrieveBookAndUserData() {
             keys: "uploader,langPointers,createdAt,tags",
             // fluff up fields that reference other tables
             include: "uploader,langPointers",
-            where: { inCirculation: true, draft: false },
+            where: { inCirculation: true, draft: false, rebrand: false },
         },
     });
 }
