@@ -270,27 +270,61 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
     // props.title, if provided, is already localized
     const label = props.title ?? getLocalizedCollectionLabel(props.collection);
 
-    const descriptionBlockWidth = 200;
+    const descriptionBlockLargeWidth = 200;
     const descriptionBlockLargeRightMargin = 20;
+
+    // On a small screen, the description is above the books, so it should be full width.
+    //  (It won't get too long because then it is a large screen...)
+    // On a large screen, the description is to the left of the books, so it should be a fixed width.
+    const descriptionBlockWidth = getResponsiveChoice(
+        "unset",
+        `${descriptionBlockLargeWidth}px`
+    );
 
     const descriptionBlock = (
         <div
             css={css`
                 // I don't know why width was being ignored, so here it's more locked down
-                width: ${descriptionBlockWidth}px;
-                min-width: ${descriptionBlockWidth}px;
-                max-width: ${descriptionBlockWidth}px;
+                width: ${descriptionBlockWidth};
+                min-width: ${descriptionBlockWidth};
+                max-width: ${descriptionBlockWidth};
+
                 margin-right: ${getResponsiveChoice(
                     10,
                     descriptionBlockLargeRightMargin
                 )}px;
                 margin-bottom: 10px; // for mobile where this is on top
+
                 // See below: we use absolute positioning when arranged in a row to work around a Swiper bug.
                 position: ${getResponsiveChoice("relative", "absolute")};
+
+                // These rules (max-height, overflow-y, flex) are to make the description text (but not header) scrollable.
+                max-height: ${getResponsiveChoice(
+                    "unset",
+                    "100%"
+                )}; // Constrain description height to row height when on left.
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
             `}
         >
-            <h1>{label}</h1>
-            <Typography variant="body2" color="textSecondary" component="p">
+            <h1
+                css={css`
+                    ${getResponsiveChoice("", "margin-top: 0")}
+                `}
+            >
+                {label}
+            </h1>
+            <Typography
+                variant="body2"
+                color="textSecondary"
+                component="p"
+                // We want the description text to scroll but not the header. (Applies to large screen only.)
+                css={css`
+                    flex-grow: 1;
+                    overflow-y: auto;
+                `}
+            >
                 <BlorgMarkdown markdown={props.collection.description} />
             </Typography>
             <CollectionInfoWidget collection={props.collection} />
@@ -359,7 +393,7 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
                             {descriptionBlock}
                             <div
                                 css={css`
-                                    padding-left: ${descriptionBlockWidth +
+                                    padding-left: ${descriptionBlockLargeWidth +
                                     descriptionBlockLargeRightMargin}px;
                                 `}
                             >
