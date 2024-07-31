@@ -59,6 +59,7 @@ export function convertContentfulCollectionToICollection(
         description: item.fields.description,
         urlForBloomPubBundle: item.fields.urlForBloomPubBundle,
         urlForBloomSourceBundle: item.fields.urlForBloomSourceBundle,
+        urlForAlphaTiles: item.fields.urlForAlphaTiles,
         filter: item.fields.filter,
         statisticsQuerySpec: item.fields.statisticsQuerySpec,
         iconForCardAndDefaultBanner: icon,

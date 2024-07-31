@@ -27,6 +27,7 @@ export const TranslateButton: React.FunctionComponent = (props) => {
                         font-weight: normal;
                         font-size: 14pt;
                         line-height: 1.2;
+                        text-wrap: balance;
                     `}
                 >
                     <FormattedMessage
@@ -43,6 +44,7 @@ export const TranslateButton: React.FunctionComponent = (props) => {
                         line-height: 1.1;
                         text-transform: initial;
                         margin-top: 5px;
+                        text-wrap: balance;
                     `}
                 >
                     <FormattedMessage

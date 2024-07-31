@@ -198,7 +198,9 @@ export const Breadcrumbs: React.FunctionComponent<{
                     label.substring(indexBold + boldedText.length + 2)
                 );
                 const bolded = (
-                    <strong>{decodeURIComponent(boldedText)}</strong>
+                    <em>
+                        <strong>{decodeURIComponent(boldedText)}</strong>
+                    </em>
                 );
                 displayWithBold = (
                     <span>

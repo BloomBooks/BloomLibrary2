@@ -150,9 +150,8 @@ function chooseLanguageWeAreGoingToAskFor(
     preferredLanguageTag: string
     // we have others, but these are ones that we know we have and that dialects need to map to
 ): string {
-    // NB: in order to support a dialect e.g. pt-BR (Brazilian Portuguese), we
-    // would *have* to list it here. Otherwise they'll get raw "pt".
-    const languagesWeKnowWeHave = ["en", "es-ES", "pt", "zh-CN", "fr"];
+    // These must match what we have in Crowdin
+    const languagesWeKnowWeHave = ["en", "fr", "es-ES", "pt-PT", "zh-CN"];
 
     if (languagesWeKnowWeHave.includes(preferredLanguageTag)) {
         return preferredLanguageTag;
