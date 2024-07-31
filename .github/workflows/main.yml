@@ -7,9 +7,9 @@ jobs:
     lighthouse-on-live-site:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - name: Audit root using Lighthouse
-              uses: treosh/lighthouse-ci-action@v10
+              uses: treosh/lighthouse-ci-action@v12
               with:
                   urls: |
                       https://alpha.bloomlibrary.org
@@ -20,7 +20,7 @@ jobs:
             # We have to run this separately with a separate budget file because the redirect causes
             # lighthouse to think we are running at the root
             - name: Audit /covid19 using Lighthouse
-              uses: treosh/lighthouse-ci-action@v10
+              uses: treosh/lighthouse-ci-action@v12
               with:
                   urls: |
                       https://alpha.bloomlibrary.org/covid19

@@ -6,7 +6,7 @@ import { jsx } from "@emotion/core";
 
 import React, { useEffect } from "react";
 import { Switch, Route, Redirect, useLocation } from "react-router-dom";
-import { GridPage } from "./Grid/GridPage"; // internally lazy
+import { GridPage, isValidFilterForGrid } from "./Grid/GridPage"; // internally lazy
 import { BulkEditPageCodeSplit } from "./BulkEdit/BulkEditPageCodeSplit";
 import { BookDetailCodeSplit } from "./BookDetail/BookDetailCodeSplit";
 import { ReadBookPageCodeSplit } from "./ReadBookPageCodeSplit";
@@ -26,8 +26,8 @@ import { CollectionReportSplit } from "./reports/CollectionReportSplit";
 import { AppHostedLanguageGroup } from "./appHosted/AppHostedLanguageGroup";
 import { AppHostedDownloadingPage } from "./appHosted/AppHostedDownloadingPage";
 import { appHostedSegment, isAppHosted } from "./appHosted/AppHostedUtils";
-import { LanguageReport } from "./statistics/LanguageReport";
 import { LoginForEditor } from "./User/LoginForEditor";
+import { AggregateGridPage } from "./AggregateGrid/AggregateGridPage";
 
 export let previousPathname = "";
 let currentPathname = "";
@@ -154,15 +154,35 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                         }}
                     />
                     <Route
-                        path="/language-report"
-                        render={({ match }) => {
-                            return <LanguageReport />;
-                        }}
-                    />
-                    <Route
                         path="/grid/:filter*"
                         render={({ match }) => {
-                            return <GridPage filters={match.params.filter} />;
+                            const url = match.url || "";
+                            if (
+                                url.startsWith("/grid/books/") ||
+                                url === "/grid/books"
+                            ) {
+                                let filter = match.params.filter.substring(5);
+                                if (filter.startsWith("/"))
+                                    filter = filter.substring(1);
+                                return <GridPage filters={filter} />;
+                            } else if (match.params.filter === "languages") {
+                                return <AggregateGridPage type="language" />;
+                            } else if (match.params.filter === "countries") {
+                                return <AggregateGridPage type="country" />;
+                            } else if (match.params.filter === "uploaders") {
+                                return <AggregateGridPage type="uploader" />;
+                            } else if (
+                                isValidFilterForGrid(match.params.filter)
+                            ) {
+                                return (
+                                    <GridPage filters={match.params.filter} />
+                                );
+                            } else {
+                                throw new Error(
+                                    "Invalid grid specification: " +
+                                        match.params.filter
+                                );
+                            }
                         }}
                     />
                     <Route
