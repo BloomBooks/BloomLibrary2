@@ -192,6 +192,11 @@ export const Footer: React.FunctionComponent = () => {
                     />
                 </BlorgLink>
                 {separator}
+                <BlorgLink href="/page/grids">
+                    <FormattedMessage id="grids" defaultMessage="Grids" />
+                </BlorgLink>
+                {separator}
+
                 <BlorgLink href="/page/termsOfUse">
                     <FormattedMessage
                         id="footer.terms"

@@ -26,7 +26,6 @@ import { CollectionReportSplit } from "./reports/CollectionReportSplit";
 import { AppHostedLanguageGroup } from "./appHosted/AppHostedLanguageGroup";
 import { AppHostedDownloadingPage } from "./appHosted/AppHostedDownloadingPage";
 import { appHostedSegment, isAppHosted } from "./appHosted/AppHostedUtils";
-import { LanguageReport } from "./statistics/LanguageReport";
 import { LoginForEditor } from "./User/LoginForEditor";
 import { AggregateGridPage } from "./AggregateGrid/AggregateGridPage";
 
@@ -152,12 +151,6 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                                 "https://docs.bloomlibrary.org/Release-Notes"
                             );
                             return null;
-                        }}
-                    />
-                    <Route
-                        path="/language-report"
-                        render={({ match }) => {
-                            return <LanguageReport />;
                         }}
                     />
                     <Route
