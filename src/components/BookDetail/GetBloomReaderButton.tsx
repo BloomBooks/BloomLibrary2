@@ -22,7 +22,7 @@ export const GetBloomReaderButton: React.FunctionComponent<IProps> = (
             variant="outlined"
             color="secondary"
             startIcon={<PlayStoreIcon />}
-            href="https://bloomlibrary.org/page/create/bloom-reader"
+            href="/bloom-reader"
             size="large"
             css={css`
                 width: ${props.fullWidth
