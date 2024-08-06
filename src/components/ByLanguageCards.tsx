@@ -79,8 +79,15 @@ export function makeVirtualCollectionOfBooksInCollectionThatHaveLanguage(
     // But we will end up coming back through eventually with the language information. So then we set it to "My Collection - English".
     if (isForCollectionPage) setBloomLibraryTitle(label);
 
-    const layoutOfLanguagePage =
+    let layoutOfLanguagePage =
         baseCollection.layout.split("/")[1] || "all-books";
+    if (
+        baseCollection.filter &&
+        baseCollection.filter.topic &&
+        !baseCollection.filter.leveledReaderLevel
+    ) {
+        layoutOfLanguagePage = "by-level";
+    }
     const baseCollectionFilter =
         baseCollection.filter ??
         getFilterForCollectionAndChildren(baseCollection);
