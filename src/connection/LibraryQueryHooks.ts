@@ -949,6 +949,7 @@ const facets = [
     "title:",
     "uploader:",
     "copyright:",
+    "license:",
     "harvestState:",
     "country:",
     "phash:",
@@ -1218,6 +1219,7 @@ export function constructParseBookQuery(
             switch (facetLabel) {
                 case "title":
                 case "copyright":
+                case "license":
                 case "country":
                 case "publisher":
                 case "originalPublisher":
