@@ -72,7 +72,7 @@ export const Footer: React.FunctionComponent = () => {
                     margin-left: 10px;
                 `}
             >
-                {`© ${new Date().getFullYear()} SIL International`}
+                {`© ${new Date().getFullYear()} SIL Global`}
             </div>
         </a>
     );
