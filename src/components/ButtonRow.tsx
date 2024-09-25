@@ -55,7 +55,7 @@ export const ButtonRow: React.FunctionComponent<{
                     span {
                         font-weight: 600;
                         color: ${commonUI.colors
-                            .createAreaTextOnWhite} !important;
+                            .resourcesAreaTextOnWhite} !important;
                     }
                 `}
                 key={key}

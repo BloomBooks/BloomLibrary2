@@ -69,7 +69,7 @@ export const SearchBox: React.FunctionComponent<{
     const [searchString, setSearchString] = useState(initialSearchString);
     // This is a bit subtle. SearchString needs to be state to get modified
     // as the user types. But another thing that can happen is that our location
-    // changes as we follow links or switch from read to create. If something
+    // changes as we follow links or switch from read to resources. If something
     // brings in a new URL that has a different search specification, we
     // want the search box to update to match. Except when the user is actually
     // editing in the box, the box and the URL should be the same.
@@ -173,9 +173,9 @@ export const SearchBox: React.FunctionComponent<{
         // pathParts.push(":search:" + encodeURIComponent(enteredSearch));
         // const newUrl = "/" + pathParts.join("/");
 
-        // special case that when in create or grid mode, we don't want to leave it.
+        // special case that when in resources or grid or bulk mode, we want to stay in it.
         const prefix =
-            ["/create", "/grid", "/bulk"].find((x) =>
+            ["/resources", "/grid", "/bulk"].find((x) =>
                 history.location.pathname.startsWith(x)
             ) || "";
         let newUrl: string = "";

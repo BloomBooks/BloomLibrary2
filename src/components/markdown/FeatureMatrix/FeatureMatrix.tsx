@@ -17,7 +17,7 @@ import { useResponsiveChoice } from "../../../responsiveUtilities";
 import { IFeatureMatrixProps } from "./FeatureMatrixCodeSplit";
 
 const backgroundColor = "white";
-const headerColor = commonUI.colors.createAreaTextOnWhite;
+const headerColor = commonUI.colors.resourcesAreaTextOnWhite;
 
 export const FeatureMatrix: React.FunctionComponent<IFeatureMatrixProps> = (
     props

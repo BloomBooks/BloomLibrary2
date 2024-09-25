@@ -949,6 +949,7 @@ const facets = [
     "title:",
     "uploader:",
     "copyright:",
+    "license:",
     "harvestState:",
     "country:",
     "phash:",
@@ -1226,7 +1227,15 @@ export function constructParseBookQuery(
                 case "branding":
                     if (facetLabel === "branding")
                         facetLabel = "brandingProjectName";
+                    // partial match
                     params.where[facetLabel] = regex(facetValue);
+                    break;
+                case "license":
+                    // exact match
+                    params.where.license = {
+                        $regex: `^${facetValue}$`,
+                        ...caseInsensitive,
+                    };
                     break;
                 case "uploader":
                     params.where.uploader = {

@@ -5,9 +5,8 @@ import { jsx } from "@emotion/core";
 
 import React, { useEffect, useState } from "react";
 import { useLocation, useHistory } from "react-router-dom";
-import { Button, SvgIcon } from "@material-ui/core";
+import { Button, SvgIcon, useTheme } from "@material-ui/core";
 import { ReactComponent as SearchingDeeper } from "../assets/SearchingDeeper.svg";
-import { commonUI } from "../theme";
 import { useIntl } from "react-intl";
 import { isFacetedSearchString } from "../connection/LibraryQueryHooks";
 
@@ -20,6 +19,8 @@ export const SearchDeeper: React.FunctionComponent<{}> = (props) => {
     const location = useLocation();
     const history = useHistory();
     const l10n = useIntl();
+    const theme = useTheme();
+    const buttonColor = theme.palette.primary.main;
 
     const [shallowSearchResults, setShallowSearchResults] = useState(false);
     useEffect(() => {
@@ -38,8 +39,8 @@ export const SearchDeeper: React.FunctionComponent<{}> = (props) => {
 
     function HandleDeeperSearch(): void {
         const newPath = location.pathname.replace(
-            /^\/:search:/,
-            "/:search:deeper:"
+            /^(\/resources)??\/:search:/,
+            "$1/:search:deeper:"
         );
         history.push(newPath);
     }
@@ -52,7 +53,7 @@ export const SearchDeeper: React.FunctionComponent<{}> = (props) => {
                     margin-left: 20px;
                     margin-bottom: 12px;
                     color: white;
-                    background-color: ${commonUI.colors.bloomRed};
+                    background-color: ${buttonColor};
                     width: 160px;
                 `}
                 onClick={() => HandleDeeperSearch()}

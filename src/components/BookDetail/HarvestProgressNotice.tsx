@@ -57,7 +57,7 @@ export const HarvesterProgressNotice: React.FunctionComponent<{
             <BookNotice
                 css={css`
                     background-color: ${commonUI.colors
-                        .creationArea} !important;
+                        .resourcesArea} !important;
                     * {
                         color: white !important;
                     }

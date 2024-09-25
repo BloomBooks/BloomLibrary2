@@ -283,7 +283,7 @@ export const DownloadsGroup: React.FunctionComponent<{
                 </ul>
                 {showBloomPUBButton && enableBloomPub && (
                     <BlorgLink
-                        href="https://bloomlibrary.org/page/create/bloom-reader"
+                        href="/bloom-reader"
                         color="secondary" // bloomBlue
                         css={css`
                             display: flex;

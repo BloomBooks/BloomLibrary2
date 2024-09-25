@@ -50,7 +50,7 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
             css={css`
                 ${page.css}
                 img {
-                    // Before changing this see the image at https://bloomlibrary.org/page/create/creators-Chetana in a phone-size screen.
+                    // Before changing this see the image at https://bloomlibrary.org/page/resources/creators-Chetana in a phone-size screen.
                     max-width: 100%;
                 }
             `}

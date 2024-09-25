@@ -46,6 +46,13 @@ export function getArtifactUrl(
             break;
     }
     if (!url) return "";
+
+    // Whatever writes the `baseUrl` to our books database encodes space as `+` (at least up through now, August 2024).
+    // This messes up the file name when you download, as you get "Hello+World.pdf".
+    // So here we just re-encode the `+` as `%20` and when downloaded the file is "Hello World.pdf".
+    // Since those URLs encode `+` as `%2b`, "one + one = two.pdf" will also to come out correctly.
+    url = url.replace(/\+/g, "%20");
+
     return url;
 }
 
