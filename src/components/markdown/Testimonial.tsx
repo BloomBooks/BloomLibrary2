@@ -19,7 +19,7 @@ export const Testimonial: React.FunctionComponent<{
         <div
             css={css`
                 border-left-style: solid;
-                border-left-color: ${commonUI.colors.creationArea};
+                border-left-color: ${commonUI.colors.resourcesArea};
                 border-left-width: 3px;
                 padding-left: 20px;
                 margin-top: 1em;
@@ -39,7 +39,7 @@ export const Testimonial: React.FunctionComponent<{
             >
                 <ContentfulImage
                     css={css`
-                        border: solid 2px ${commonUI.colors.creationArea};
+                        border: solid 2px ${commonUI.colors.resourcesArea};
                         border-radius: 50%;
                         height: 50px;
                         width: 50px;

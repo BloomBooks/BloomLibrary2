@@ -280,7 +280,13 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             },
         },
 
-        { name: "license", sortingEnabled: true },
+        {
+            name: "license",
+            sortingEnabled: true,
+            addToFilter: (filter: IFilter, value: string) => {
+                filter.search += ` license:${value} `;
+            },
+        },
         {
             name: "copyright",
             sortingEnabled: true,

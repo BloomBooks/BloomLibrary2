@@ -99,5 +99,5 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 
 # License
 
-Bloom is open source, using the [MIT License](http://sil.mit-license.org). It is Copyright SIL International.
-"Bloom" is a registered trademark of SIL International.
+Bloom is open source, using the [MIT License](http://sil.mit-license.org). It is Copyright SIL Global.
+"Bloom" is a registered trademark of SIL Global.

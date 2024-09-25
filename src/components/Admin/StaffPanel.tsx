@@ -141,7 +141,7 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
     // very susceptible to breaking. The same control that has classes
     // MuiFormControl-root and MuiInputBase-root when you go to the detail
     // url directly has MuiFormControl-root-436 and MuiInputBase-root-464
-    // when you inject "create/" into the url. Since this css only applies
+    // when you inject "resources/" into the url. Since this css only applies
     // to this React local TextField component, just use the tag names.
     // Also since the inner 'css' in the emotion 'css={css`style string`}'
     // is just a function, I was able to pull out the common styles into a string

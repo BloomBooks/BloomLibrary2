@@ -72,7 +72,7 @@ export const Footer: React.FunctionComponent = () => {
                     margin-left: 10px;
                 `}
             >
-                {`© ${new Date().getFullYear()} SIL International`}
+                {`© ${new Date().getFullYear()} SIL Global`}
             </div>
         </a>
     );
@@ -178,14 +178,14 @@ export const Footer: React.FunctionComponent = () => {
                     }
                 `}
             >
-                <BlorgLink href="/page/support">
+                <BlorgLink href="/support">
                     <FormattedMessage
                         id="footer.support"
                         defaultMessage="Support"
                     />
                 </BlorgLink>
                 {separator}
-                <BlorgLink href="/page/create/downloads">
+                <BlorgLink href="/downloads">
                     <FormattedMessage
                         id="downloads"
                         defaultMessage="Downloads"

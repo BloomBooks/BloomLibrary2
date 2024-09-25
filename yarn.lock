@@ -7215,10 +7215,10 @@ bl@^1.0.0:
     readable-stream "^2.3.5"
     safe-buffer "^5.1.1"
 
-bloom-player@~2.2:
-  version "2.2.45"
-  resolved "https://registry.yarnpkg.com/bloom-player/-/bloom-player-2.2.45.tgz#a5569e23999f58d546248c614e945b5115437870"
-  integrity sha512-GTPeHMvSJGREfRCIQ65heR3hKPDysDoE8Ka5Iiov8VYyR35QNRNhgIYy1THfS7CyHn+vhTmpCGwiQA/WRCMfCQ==
+bloom-player@^2.3.0:
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/bloom-player/-/bloom-player-2.4.3.tgz#2ba9a0fb14b3ba17850bf384591dccada3596901"
+  integrity sha512-ZzwO+1+W8fwsaskhmdf++zf1/c9L3Arm9DlX9ca3GzILBc7Xcye9a+N+TAS9TobbM/Er5BpOr96vIDLKGXTe2w==
 
 bluebird@^3.3.5, bluebird@^3.5.5:
   version "3.7.1"

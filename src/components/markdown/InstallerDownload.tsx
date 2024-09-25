@@ -35,8 +35,8 @@ export const InstallerDownload: React.FunctionComponent<{
                         css={css`
                             padding: 16px !important;
                             background-color: ${commonUI.colors
-                                .creationArea} !important;
-                            /* .MuiButton-label { ENHANCE: how to get this working with the Creation Theme?*/
+                                .resourcesArea} !important;
+                            /* .MuiButton-label { ENHANCE: how to get this working with the Resources Theme?*/
                             span {
                                 color: white;
                                 font-size: 24px;
