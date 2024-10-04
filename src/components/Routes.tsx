@@ -78,7 +78,13 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
             <ThemeForLocation browserTabTitle={location.pathname}>
                 <Switch>
                     {/* The "resources" section used to be "create", and all the urls were different.
-                        These first four routes ensure that old links will go to the right place. */}
+                        These first few routes ensure that old links will go to the right place.
+                        In hindsight, maybe we should have done this with some kind of rule in Cloudflare.
+                        But I think that would have come with its own headaches. */}
+                    <Redirect // e.g. /page/create/page/bloompub-viewer
+                        from={"/:before/create/:after/:after2"}
+                        to="/:before/resources/:after/:after2"
+                    />
                     <Redirect
                         from={"/:before/create/:after"}
                         to="/:before/resources/:after"
