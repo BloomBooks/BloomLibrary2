@@ -153,7 +153,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
         {
             name: "level",
             defaultVisible: true,
-            getCellValue: (b: Book) => b.level,
+            getCellValue: (b: Book) => b.getBestLevel(),
             getCustomFilterComponent: (props: TableFilterRow.CellProps) => (
                 <ChoicesFilterCell
                     choices={["", "1", "2", "3", "4"]}
