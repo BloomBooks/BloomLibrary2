@@ -7,7 +7,7 @@ import {
     getBloomApiUrl,
     getBloomApiHeaders,
 } from "./ApiConnection";
-import { retrieveBookData, retrieveBookStats } from "./LibraryQueries";
+import { retrieveBookData } from "./LibraryQueries";
 import { Book, createBookFromParseServerData } from "../model/Book";
 import { useContext, useMemo, useEffect, useState } from "react";
 import { CachedTablesContext } from "../model/CacheProvider";
@@ -393,7 +393,8 @@ export const gridBookKeys =
     "title,baseUrl,license,licenseNotes,inCirculation,draft,summary,copyright,harvestState," +
     "harvestLog,harvestStartedAt,tags,pageCount,phashOfFirstContentImage,show,credits,country," +
     "features,internetLimits,librarianNote,uploader,langPointers,importedBookSourceUrl," +
-    "downloadCount,publisher,originalPublisher,brandingProjectName,keywords,edition,rebrand,leveledReaderLevel";
+    "downloadCount,publisher,originalPublisher,brandingProjectName,keywords,edition,rebrand,leveledReaderLevel," +
+    "analytics_finishedCount,analytics_shellDownloads";
 
 export const gridBookIncludeFields = "uploader,langPointers";
 
@@ -430,11 +431,6 @@ export function useGetBooksForGrid(
         trigger,
         doNotActuallyRunQuery
     );
-    const stats = useAsync(
-        () => retrieveBookStats(query, order, skip, limit),
-        trigger,
-        doNotActuallyRunQuery
-    );
 
     // Before we had this useEffect, we would get a new instance of each book, each time the grid re-rendered.
     // Besides being inefficient, it led to a very difficult bug in the embedded staff panel where we would
@@ -466,26 +462,8 @@ export function useGetBooksForGrid(
                 onePageOfMatchingBooks: onePageOfBooks,
                 totalMatchingBooksCount: response["data"]["count"],
             });
-            if (
-                !stats.loading &&
-                !stats.error &&
-                stats.response &&
-                stats.response["data"] &&
-                stats.response["data"]["stats"] &&
-                stats.response["data"]["stats"].length > 0
-            ) {
-                joinBooksAndStats(onePageOfBooks, stats.response["data"]);
-            }
         }
-    }, [
-        loading,
-        error,
-        response,
-        stats.loading,
-        stats.error,
-        stats.response,
-        doNotActuallyRunQuery,
-    ]);
+    }, [loading, error, response, doNotActuallyRunQuery]);
     return result;
 }
 
