@@ -366,16 +366,16 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             defaultVisible: false,
         },
         {
-            // cannot be used for sorting or filtering until we have only one database source
-            name: "reads",
-            sortingEnabled: false,
+            name: "analytics_finishedCount",
+            title: "Reads",
+            sortingEnabled: true,
             getCellValue: (b: Book) => b.stats.finishedCount,
             defaultVisible: false,
         },
         {
-            // cannot be used for sorting or filtering until we have only one database source
-            name: "downloadsForTranslation",
-            sortingEnabled: false,
+            name: "analytics_shellDownloads",
+            title: "Downloads for Translation",
+            sortingEnabled: true,
             getCellValue: (b: Book) => b.stats.shellDownloads,
             defaultVisible: false,
         },
