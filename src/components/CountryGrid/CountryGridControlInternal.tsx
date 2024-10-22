@@ -52,12 +52,12 @@ import {
     getLangTagDataForIrregularLangCode,
     ModeratorStatusToolbarPlugin,
 } from "../AggregateGrid/AggregateGridPage";
-import {
-    // ICountryIdData,
-    ILangTagData,
-} from "../AggregateGrid/AggregateGridInterfaces";
+// import {
+//     // ICountryIdData,
+//     ILangTagData,
+// } from "../AggregateGrid/AggregateGridInterfaces";
 
-const rawLangData: ILangTagData[] = require("../AggregateGrid/reduced-langtags.json");
+import rawLangData from "../AggregateGrid/reduced-langtags.json";
 // if we go back to using the langtags regions field, we may need this data.
 //const countryIdData: ICountryIdData[] = require("../statistics/country_ids.json");
 

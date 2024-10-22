@@ -33,7 +33,7 @@ import { StatsCredits } from "./StatsCredits";
 import { StatsLocationScreen } from "./StatsLocationScreen";
 import { useHistory } from "react-router-dom";
 import { useDateRangeQueryParam } from "./useDateRangeQueryParam";
-const SvgSaver = require("svgsaver"); // note: domtoimage has svg export also, but there are problems with what it produces (figma can't load)
+import SvgSaver from "svgsaver"; // note: domtoimage has svg export also, but there are problems with what it produces (figma can't load)
 
 export const Pretend: React.FunctionComponent<IStatsPageProps> = (props) => {
     return <h1>Pretend</h1>;

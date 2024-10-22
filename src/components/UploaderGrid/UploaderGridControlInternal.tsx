@@ -54,12 +54,11 @@ import {
     ModeratorStatusToolbarPlugin,
 } from "../AggregateGrid/AggregateGridPage";
 import {
-    ILangTagData,
     IBasicUserInfo,
     IMinimalBookInfo,
 } from "../AggregateGrid/AggregateGridInterfaces";
 
-const rawLangData: ILangTagData[] = require("../AggregateGrid/reduced-langtags.json");
+import rawLangData from "../AggregateGrid/reduced-langtags.json";
 
 // we need the observer in order to get the logged in user, which may not be immediately available
 const UploaderGridControlInternal: React.FunctionComponent<IUploaderGridControlProps> = observer(

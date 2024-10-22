@@ -29,8 +29,8 @@ import { StatsGridWrapper } from "./StatsGridWrapper";
 import { getPublishableDateRangeString, IDateRange } from "./DateRangePicker";
 import { useIntl } from "react-intl";
 
-const countryShapes = require("./world_countries.json");
-const countryIds = require("./country_ids.json");
+import countryShapes from "./world_countries.json";
+import countryIds from "./country_ids.json";
 
 export const StatsLocationScreen: React.FunctionComponent<
     IStatsPageProps & { view: "country-map" | "country-table" | "city-table" }

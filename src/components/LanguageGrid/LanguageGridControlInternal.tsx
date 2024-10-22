@@ -52,9 +52,9 @@ import {
     getLangTagDataForIrregularLangCode,
     ModeratorStatusToolbarPlugin,
 } from "../AggregateGrid/AggregateGridPage";
-import { ILangTagData } from "../AggregateGrid/AggregateGridInterfaces";
+//import { ILangTagData } from "../AggregateGrid/AggregateGridInterfaces";
 
-const rawLangData: ILangTagData[] = require("../AggregateGrid/reduced-langtags.json");
+import rawLangData from "../AggregateGrid/reduced-langtags.json";
 
 // we need the observer in order to get the logged in user, which may not be immediately available
 const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlProps> = observer(
