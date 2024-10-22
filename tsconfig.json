@@ -3,8 +3,10 @@
         "target": "ES2017",
         "module": "esnext",
         "sourceMap": true,
-        "jsx": "react",
+        "jsx": "react-jsx",
+        "jsxImportSource": "@emotion/react",
         "lib": ["dom", "es5", "scripthost", "es2017.object"],
+        "types": ["@emotion/react/types/css-prop"],
         "allowSyntheticDefaultImports": true,
         "forceConsistentCasingInFileNames": true,
         "experimentalDecorators": true,
@@ -22,7 +24,7 @@
         "noEmit": true,
         "plugins": [
             {
-                "name": "typescript-styled-plugin",
+                "name": "typescript-styled-plugin", // adds intellisense for css / emotion
                 "lint": {
                     "validProperties": ["label"]
                 }

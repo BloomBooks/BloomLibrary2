@@ -1,8 +1,5 @@
-import css from "@emotion/css/macro";
+import { css } from "@emotion/react";
 import React, { useState } from "react"; // see https://github.com/emotion-js/emotion/issues/1156
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
 
 import { useGetBookCountRaw } from "../connection/LibraryQueryHooks";
 import { IFilter } from "../IFilter";

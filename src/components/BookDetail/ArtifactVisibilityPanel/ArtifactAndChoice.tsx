@@ -1,8 +1,6 @@
 // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
+
 import React from "react";
 import { createStyles, makeStyles } from "@material-ui/styles";
 import {
@@ -15,7 +13,7 @@ import {
 } from "@material-ui/core";
 import { ArtifactVisibilitySettings } from "../../../model/ArtifactVisibilitySettings";
 
-import pdfIcon from "../../../assets/Pdf.svg";
+import pdfIcon from "../../../Pdf.svg";
 import epubIcon from "../../../assets/EPub.svg";
 import bloomReaderIcon from "../../../assets/BloomPub.svg";
 import readIcon from "../../../assets/Read.svg";

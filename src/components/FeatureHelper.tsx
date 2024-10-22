@@ -1,10 +1,10 @@
 import React from "react";
-import { ReactComponent as ActivityIcon } from "../assets/Activity.svg";
-import { ReactComponent as ComicIcon } from "../assets/Comic.svg";
-import { ReactComponent as MotionIcon } from "../assets/Motion.svg";
-import { ReactComponent as SignLanguageIcon } from "../assets/Sign Language.svg";
-import { ReactComponent as TalkingBookIcon } from "../assets/Talking Book.svg";
-import { ReactComponent as VisuallyImpairedIcon } from "../assets/Visually Impaired.svg";
+import ActivityIcon from "../assets/Activity.svg";
+import ComicIcon from "../assets/Comic.svg";
+import MotionIcon from "../assets/Motion.svg";
+import SignLanguageIcon from "../assets/Sign Language.svg";
+import TalkingBookIcon from "../assets/Talking Book.svg";
+import VisuallyImpairedIcon from "../assets/Visually Impaired.svg";
 import { IFilter } from "../IFilter";
 import { getTranslation } from "../localization/GetLocalizations";
 

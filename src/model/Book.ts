@@ -11,7 +11,7 @@ import {
     getDefaultBookStat,
 } from "../components/statistics/StatsInterfaces";
 import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
-const stem = require("wink-porter2-stemmer");
+import stem from "wink-porter2-stemmer";
 
 export function createBookFromParseServerData(pojo: any): Book {
     const b = Object.assign(new Book(), pojo);

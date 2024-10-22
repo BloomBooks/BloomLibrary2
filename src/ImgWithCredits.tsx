@@ -1,14 +1,11 @@
 // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
 
 import React from "react";
-import Img, { ImgProps } from "react-image";
+//import Img, { ImgProps } from "react-image";
 import { Tooltip } from "@material-ui/core";
 
-interface IProps extends ImgProps {
+interface IProps {
     credits?: string;
 }
 
@@ -38,7 +35,7 @@ export const ImgWithCredits: React.FunctionComponent<IProps> = (props) => {
                 {/* I'd rather not have this div wrapper, but the tooltip won't work with
                 the Img as a direct child. Apparently the direct child of a Tooltip must be
                 something that "can hold a ref". */}
-                <Img {...props} />
+                <img {...props} />
             </div>
         </Tooltip>
     );
