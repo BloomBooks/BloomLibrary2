@@ -5,8 +5,8 @@ import React, { useContext, useEffect } from "react";
 import { IconButton, Tooltip } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 
-import { ReactComponent as PdfIcon } from "../../assets/Pdf.svg";
-import { ReactComponent as EPUBIcon } from "../../assets/EPub.svg";
+import PdfIcon from "../../assets/Pdf.svg?react";
+import EPUBIcon from "../../assets/EPub.svg?react";
 import { PlayStoreIcon } from "./PlayStoreIcon";
 // See comment in BloomPubIcon about why this is a special case
 import { BloomPubIcon } from "./BloomPubIcon";

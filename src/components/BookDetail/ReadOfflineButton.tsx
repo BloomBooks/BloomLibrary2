@@ -3,7 +3,7 @@ import { css } from "@emotion/react";
 
 import React from "react";
 import Button from "@material-ui/core/Button";
-import BloomPubIcon from "../../assets/BloomPubWhite.svg";
+import BloomPubIcon from "../../assets/BloomPubWhite.svg?react";
 import { commonUI } from "../../theme";
 import { getArtifactUrl } from "./ArtifactHelper";
 import { Book } from "../../model/Book";

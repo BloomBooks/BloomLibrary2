@@ -9,7 +9,7 @@ import { DeleteButton } from "./DeleteButton";
 import { FormattedMessage, useIntl } from "react-intl";
 import { commonUI } from "../../theme";
 import { Button, Checkbox, FormControlLabel } from "@material-ui/core";
-import { ReactComponent as DraftIcon } from "../../assets/DRAFT-Stamp.svg";
+import DraftIcon from "../../assets/DRAFT-Stamp.svg?react";
 import { Alert } from "@material-ui/lab";
 import { BlorgLink } from "../BlorgLink";
 import { BookExtraPanels } from "./BookExtraPanels";

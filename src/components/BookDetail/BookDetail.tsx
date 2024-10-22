@@ -27,7 +27,7 @@ import { commonUI } from "../../theme";
 import { IBookDetailProps } from "./BookDetailCodeSplit";
 import { HarvesterProgressNotice } from "./HarvestProgressNotice";
 import { LoggedInUser } from "../../connection/LoggedInUser";
-import { ReactComponent as DraftIcon } from "../../assets/DRAFT-Stamp.svg";
+import DraftIcon from "../../assets/DRAFT-Stamp.svg?react";
 import { useResponsiveChoice } from "../../responsiveUtilities";
 import { HarvesterProblemNotice } from "./HarvesterProblemNotice";
 import { SharingButtons } from "./SharingButtons";

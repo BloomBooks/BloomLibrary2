@@ -2,7 +2,7 @@
 import { css } from "@emotion/react";
 
 import React from "react";
-import logo from "./header-logo.svg";
+import logo from "./header-logo.svg?react";
 import { SearchBox } from "../SearchBox";
 import { UserMenuCodeSplit } from "../User/UserMenuCodeSplit";
 import { commonUI } from "../../theme";

@@ -10,9 +10,9 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { BookCount } from "../BookCount";
 
 // If we need more control over the icon in the future, use:
-//import { ReactComponent as PeopleReachedIcon } from "../assets/Girl.svg";
+//import { ReactComponent as PeopleReachedIcon } from "../assets/Girl.svg?react";
 // This lets us a do a simple <img src={icon} />:
-import peopleReachedIcon from "../../assets/Girl.svg";
+import peopleReachedIcon from "../../assets/Girl.svg?react";
 
 export const kDarkGrey = "#5d5d5d";
 

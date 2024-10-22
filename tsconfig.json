@@ -6,7 +6,10 @@
         "jsx": "react-jsx",
         "jsxImportSource": "@emotion/react",
         "lib": ["dom", "es5", "scripthost", "es2017.object"],
-        "types": ["@emotion/react/types/css-prop"],
+        "types": [
+            "vite/client", // asset import, vite-injected env variables, etc.
+            "@emotion/react/types/css-prop"
+        ],
         "allowSyntheticDefaultImports": true,
         "forceConsistentCasingInFileNames": true,
         "experimentalDecorators": true,
@@ -33,5 +36,9 @@
         "noFallthroughCasesInSwitch": true
     },
     "exclude": ["node_modules", "typings"],
-    "include": ["src", "src/components/statistics/dom-to-image-more.d.ts"]
+    "include": [
+        "src",
+        "src/components/statistics/dom-to-image-more.d.ts",
+        "svg.d.ts"
+    ]
 }

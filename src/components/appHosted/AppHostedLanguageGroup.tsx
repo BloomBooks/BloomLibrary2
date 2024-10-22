@@ -3,7 +3,7 @@ import { css } from "@emotion/react";
 
 import React, { useContext, useState, useMemo, useEffect } from "react";
 import { LanguageCard } from "../LanguageCard";
-import logo from "../../assets/BloomLibrary Logo.svg";
+import logo from "../../assets/BloomLibrary Logo.svg?react";
 import Downshift, {
     GetItemPropsOptions,
     GetMenuPropsOptions,

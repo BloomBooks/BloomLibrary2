@@ -2,7 +2,7 @@
 import { css } from "@emotion/react";
 
 import React from "react";
-import { ReactComponent as PlayStoreImg } from "../../assets/PlayStore.svg";
+import PlayStoreImg from "../../assets/PlayStore.svg?react";
 import { useIntl } from "react-intl";
 
 export const PlayStoreIcon: React.FunctionComponent = () => {

@@ -3,8 +3,8 @@ import { css } from "@emotion/react";
 
 import React from "react";
 import Button from "@material-ui/core/Button";
-import ReadIcon from "../../assets/Read.svg";
-import ReadOnlineIcon from "../../assets/ReadOnline.svg";
+import ReadIcon from "../../assets/Read.svg?react";
+import ReadOnlineIcon from "../../assets/ReadOnline.svg?react";
 import { commonUI } from "../../theme";
 import { Book } from "../../model/Book";
 import { useHistory } from "react-router-dom";

@@ -3,7 +3,7 @@ import { css } from "@emotion/react";
 import React, { useEffect, useState } from "react";
 import { useLocation, useHistory } from "react-router-dom";
 import { Button, SvgIcon } from "@material-ui/core";
-import SearchingDeeper from "../assets/SearchingDeeper.svg";
+import SearchingDeeper from "../assets/SearchingDeeper.svg?react";
 import { commonUI } from "../theme";
 import { useIntl } from "react-intl";
 import { isFacetedSearchString } from "../connection/LibraryQueryHooks";

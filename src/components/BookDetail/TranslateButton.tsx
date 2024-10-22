@@ -3,7 +3,7 @@ import { css } from "@emotion/react";
 
 import React from "react";
 import { FormattedMessage } from "react-intl";
-import { ReactComponent as TranslationIcon } from "../../assets/Translation.svg";
+import TranslationIcon from "../../assets/Translation.svg?react";
 import { Theme } from "@material-ui/core";
 import { commonUI } from "../../theme";
 

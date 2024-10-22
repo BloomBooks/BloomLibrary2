@@ -12,8 +12,8 @@ import { useIntl } from "react-intl";
 import { useResponsiveChoice } from "../responsiveUtilities";
 import { ICardSpec, useBaseCardSpec } from "./CardGroup";
 import { SmartTruncateMarkup } from "./SmartTruncateMarkup";
-import DraftIcon from "../assets/DRAFT-Stamp.svg";
-import WarningIcon from "../assets/Warning.svg";
+import DraftIcon from "../assets/DRAFT-Stamp.svg?react";
+import WarningIcon from "../assets/Warning.svg?react";
 import { CardSortingTroubleshootingInfo } from "./CardSortingTroubleshootingInfo";
 import { useShowTroubleshootingStuff } from "../Utilities";
 

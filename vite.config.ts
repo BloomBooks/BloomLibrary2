@@ -12,7 +12,14 @@ export default defineConfig(() => {
         },
 
         plugins: [
-            //lingui(),
+            svgr({
+                include: "**/*.svg?react",
+                // svgrOptions: {
+                //     titleProp: true,
+                //     typescript: true,
+                // },
+            }),
+
             react({
                 // TODO: linguijs V4 will allow us to get rid of babel and use swc, using
                 //plugins: [["@lingui/swc-plugin", {}]],
@@ -30,7 +37,6 @@ export default defineConfig(() => {
                     plugins: ['@emotion/babel-plugin'],
                     },*/
             }),
-            svgr(),
         ],
     };
 });

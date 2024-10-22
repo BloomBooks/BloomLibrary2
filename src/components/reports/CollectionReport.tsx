@@ -16,7 +16,7 @@ import {
 import { ICollectionReportProps } from "./CollectionReportSplit";
 import { IGridColumn } from "../Grid/GridColumns";
 import Button from "@material-ui/core/Button";
-import DownloadCsvIcon from "../../export/download-csv.svg";
+import DownloadCsvIcon from "../../export/download-csv.svg?react";
 import { useIntl } from "react-intl";
 import { useGetCollection } from "../../model/Collections";
 import { PageNotFound } from "../PageNotFound";
