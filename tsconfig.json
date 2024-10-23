@@ -8,7 +8,7 @@
         "lib": ["dom", "es5", "scripthost", "es2017.object"],
         "types": [
             "vite/client", // asset import, vite-injected env variables, etc.
-            "@emotion/react/types/css-prop"
+            "@emotion/react/types/css-prop",
             "vite-plugin-svgr/client"
         ],
         "allowSyntheticDefaultImports": true,
