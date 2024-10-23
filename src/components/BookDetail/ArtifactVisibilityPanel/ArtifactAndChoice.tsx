@@ -13,11 +13,11 @@ import {
 } from "@material-ui/core";
 import { ArtifactVisibilitySettings } from "../../../model/ArtifactVisibilitySettings";
 
-import pdfIcon from "../../../assets/Pdf.svg?react";
-import epubIcon from "../../../assets/EPub.svg?react";
-import bloomReaderIcon from "../../../assets/BloomPub.svg?react";
-import readIcon from "../../../assets/Read.svg?react";
-import translationIcon from "../../../assets/Translation.svg?react";
+import pdfIcon from "../../../assets/Pdf.svg";
+import epubIcon from "../../../assets/EPub.svg";
+import bloomReaderIcon from "../../../assets/BloomPub.svg";
+import readIcon from "../../../assets/Read.svg";
+import translationIcon from "../../../assets/Translation.svg";
 import { commonUI } from "../../../theme";
 import { useGetLoggedInUser } from "../../../connection/LoggedInUser";
 import { ArtifactType, getArtifactDownloadAltText } from "../ArtifactHelper";

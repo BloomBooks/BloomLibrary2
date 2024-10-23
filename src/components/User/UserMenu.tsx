@@ -3,7 +3,7 @@ import { css } from "@emotion/react";
 
 import React, { useState, useEffect } from "react";
 import { Button, Menu, MenuItem } from "@material-ui/core";
-import loginIcon from "../../assets/NoUser.svg?react";
+import loginIcon from "../../assets/NoUser.svg";
 // Note, currently using the "compat" version of firebase v9, which doesn't support treeshaking. No reason, just a TODO to upgrade to full v9 API.
 // See https://firebase.google.com/docs/web/modular-upgrade
 import firebase from "firebase/compat/app";

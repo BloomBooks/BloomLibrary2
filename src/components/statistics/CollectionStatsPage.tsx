@@ -15,9 +15,9 @@ import { DateRangePicker } from "./DateRangePicker";
 import domtoimage from "dom-to-image-more";
 import Button from "@material-ui/core/Button";
 import { saveAs } from "file-saver";
-import DownloadPngIcon from "./download-png.svg?react";
-import DownloadCsvIcon from "../../export/download-csv.svg?react";
-import DownloadSvgIcon from "./download-svg.svg?react";
+import DownloadPngIcon from "./download-png.svg";
+import DownloadCsvIcon from "../../export/download-csv.svg";
+import DownloadSvgIcon from "./download-svg.svg";
 import { IStatsPageProps, IScreen, kStatsPageGray } from "./StatsInterfaces";
 
 import { exportCsv, ExportDataFn } from "../../export/exportData";

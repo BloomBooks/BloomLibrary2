@@ -9,6 +9,7 @@
         "types": [
             "vite/client", // asset import, vite-injected env variables, etc.
             "@emotion/react/types/css-prop"
+            "vite-plugin-svgr/client"
         ],
         "allowSyntheticDefaultImports": true,
         "forceConsistentCasingInFileNames": true,
@@ -25,6 +26,7 @@
         "moduleResolution": "node",
         "isolatedModules": true,
         "noEmit": true,
+        "useDefineForClassFields": true, // for mobx makeObservable()
         "plugins": [
             {
                 "name": "typescript-styled-plugin", // adds intellisense for css / emotion
@@ -39,6 +41,6 @@
     "include": [
         "src",
         "src/components/statistics/dom-to-image-more.d.ts",
-        "svg.d.ts"
+        "src/custom.d.ts"
     ]
 }
