@@ -6,6 +6,16 @@ export default defineConfig(() => {
     return {
         server: {
             open: true,
+
+            proxy: {
+                // get past the CORS issue. getBloomApiUrl() detects we are running locally and uses "/api" so that we come here.
+                "/api": {
+                    target: "https://api.bloomlibrary.org",
+                    changeOrigin: true,
+                    secure: true,
+                    rewrite: (path) => path.replace(/^\/api/, ""),
+                },
+            },
         },
         build: {
             outDir: "build",
