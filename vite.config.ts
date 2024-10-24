@@ -1,6 +1,7 @@
-import { defineConfig } from "vite";
+import { defineConfig, PluginOption } from "vite";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
+import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig(() => {
     return {
@@ -19,7 +20,6 @@ export default defineConfig(() => {
                     target: "https://s3.amazonaws.com",
                     changeOrigin: true,
                     rewrite: (path) => {
-                        console.log("rewriting path", path);
                         return path.replace(/^\/s3/, "");
                     },
                 },
@@ -27,6 +27,15 @@ export default defineConfig(() => {
         },
         build: {
             outDir: "build",
+            // rollupOptions: {
+            //     output: {
+            //         manualChunks: (id) => {
+            //             if (id.includes("CollectionStatsPageCodeSplit.tsx"))
+            //                 return "stats";
+            //             return "index";
+            //         },
+            //     },
+            // },
         },
 
         plugins: [
@@ -55,6 +64,10 @@ export default defineConfig(() => {
                     plugins: ['@emotion/babel-plugin'],
                     },*/
             }),
+            visualizer({
+                filename: "buildstats.html",
+                open: true,
+            } as any) as PluginOption, // SHOULD BE LAST
         ],
     };
 });
