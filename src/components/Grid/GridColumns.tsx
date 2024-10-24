@@ -366,14 +366,21 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             defaultVisible: false,
         },
         {
-            name: "analytics_finishedCount",
-            title: "Reads",
+            name: "readsStarted",
+            title: "Reads Started",
+            sortingEnabled: true,
+            getCellValue: (b: Book) => b.stats.startedCount,
+            defaultVisible: false,
+        },
+        {
+            name: "reads", // historical name; keep for backward compatibility
+            title: "Reads Finished",
             sortingEnabled: true,
             getCellValue: (b: Book) => b.stats.finishedCount,
             defaultVisible: false,
         },
         {
-            name: "analytics_shellDownloads",
+            name: "downloadsForTranslation",
             title: "Downloads for Translation",
             sortingEnabled: true,
             getCellValue: (b: Book) => b.stats.shellDownloads,
@@ -381,20 +388,19 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
         },
     ];
 
-    // generate the capitalized column names since the grid doesn't do that.
     return definitions
-        .sort((a, b) => {
-            // start off with title first. You can still customize by dragging
-            if (a.name === "title") return -1;
-            if (b.name === "title") return 1;
-            return a.name.localeCompare(b.name);
-        })
         .map((c) => {
             const x = { ...c };
             if (c.title === undefined) {
                 x.title = titleCase(c.name);
             }
             return x;
+        })
+        .sort((a, b) => {
+            // start off with title first. You can still customize by dragging
+            if (a.name === "title") return -1;
+            if (b.name === "title") return 1;
+            return a.title!.localeCompare(b.title!);
         });
 }
 
