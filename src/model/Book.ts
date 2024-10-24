@@ -543,9 +543,17 @@ export class Book {
         //  (a) changing BloomLibraryBooks{-Sandbox} to bloomharvest{-sandbox}
         //  (b) strip off everything after the next-to-final slash
         let folderWithoutLastSlash = baseUrl;
+
         if (baseUrl.endsWith("%2f")) {
             folderWithoutLastSlash = baseUrl.substring(0, baseUrl.length - 3);
         }
+        if (window.location.hostname === "localhost") {
+            folderWithoutLastSlash = folderWithoutLastSlash.replace(
+                "https://s3.amazonaws.com",
+                "/s3" // vite proxy server can use this to overcome CORS
+            );
+        }
+
         const index = folderWithoutLastSlash.lastIndexOf("%2f");
         const pathWithoutBookName = folderWithoutLastSlash.substring(0, index);
         return (

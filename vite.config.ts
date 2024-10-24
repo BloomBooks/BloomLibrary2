@@ -15,6 +15,14 @@ export default defineConfig(() => {
                     secure: true,
                     rewrite: (path) => path.replace(/^\/api/, ""),
                 },
+                "/s3": {
+                    target: "https://s3.amazonaws.com",
+                    changeOrigin: true,
+                    rewrite: (path) => {
+                        console.log("rewriting path", path);
+                        return path.replace(/^\/s3/, "");
+                    },
+                },
             },
         },
         build: {
