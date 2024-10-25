@@ -366,21 +366,21 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             defaultVisible: false,
         },
         {
-            name: "readsStarted",
+            name: "analytics_startedCount",
             title: "Reads Started",
             sortingEnabled: true,
             getCellValue: (b: Book) => b.stats.startedCount,
             defaultVisible: false,
         },
         {
-            name: "reads", // historical name; keep for backward compatibility
+            name: "analytics_finishedCount",
             title: "Reads Finished",
             sortingEnabled: true,
             getCellValue: (b: Book) => b.stats.finishedCount,
             defaultVisible: false,
         },
         {
-            name: "downloadsForTranslation",
+            name: "analytics_shellDownloads",
             title: "Downloads for Translation",
             sortingEnabled: true,
             getCellValue: (b: Book) => b.stats.shellDownloads,
