@@ -1,10 +1,10 @@
 import React from "react";
-import { ReactComponent as ActivityIcon } from "../assets/Activity.svg";
-import { ReactComponent as ComicIcon } from "../assets/Comic.svg";
-import { ReactComponent as MotionIcon } from "../assets/Motion.svg";
-import { ReactComponent as SignLanguageIcon } from "../assets/Sign Language.svg";
-import { ReactComponent as TalkingBookIcon } from "../assets/Talking Book.svg";
-import { ReactComponent as VisuallyImpairedIcon } from "../assets/Visually Impaired.svg";
+import ActivityIcon from "../assets/Activity.svg?react";
+import ComicIcon from "../assets/Comic.svg?react";
+import MotionIcon from "../assets/Motion.svg?react";
+import SignLanguageIcon from "../assets/Sign Language.svg?react";
+import TalkingBookIcon from "../assets/Talking Book.svg?react";
+import VisuallyImpairedIcon from "../assets/Visually Impaired.svg?react";
 import { IFilter } from "../IFilter";
 import { getTranslation } from "../localization/GetLocalizations";
 
@@ -36,7 +36,7 @@ export const featureIconHeight = 12;
 // (appears next to the language in the languages list) or not (appears on the left of the
 // feature bar). In addition, the icon is given as a function that takes some props and
 // returns a react component.
-// It would be simpler to, e.g., import comicIcon from "../assets/Comic.svg"
+// It would be simpler to, e.g., import comicIcon from "../assets/Comic.svg?react"
 // (which yields a url), then let the icon: simply be that string, and let the code
 // that wants the icon make an <img> with src={feature.icon}. But then we can't use
 // fill: to control the color.

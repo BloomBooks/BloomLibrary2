@@ -1,8 +1,5 @@
 // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
 
 import React, { useMemo } from "react";
 import { IStatsPageProps } from "./StatsInterfaces";
@@ -32,8 +29,8 @@ import { StatsGridWrapper } from "./StatsGridWrapper";
 import { getPublishableDateRangeString, IDateRange } from "./DateRangePicker";
 import { useIntl } from "react-intl";
 
-const countryShapes = require("./world_countries.json");
-const countryIds = require("./country_ids.json");
+import countryShapes from "./world_countries.json";
+import countryIds from "./country_ids.json";
 
 export const StatsLocationScreen: React.FunctionComponent<
     IStatsPageProps & { view: "country-map" | "country-table" | "city-table" }

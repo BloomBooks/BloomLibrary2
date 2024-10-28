@@ -1,8 +1,6 @@
 // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
+
 import SILLogo from "../assets/SIL.png";
 import GitHubLogo from "../assets/GitHub-Mark-Light-32px.png";
 import React, { useEffect, useState } from "react";
@@ -109,7 +107,7 @@ export const Footer: React.FunctionComponent = () => {
             `}
         >
             <img
-                src="https://images.ctfassets.net/fo9twyrwpveg/7Htleo27dKYua8gio8UEUy/0797152a2d2f8e41db49ecbf1ccffdaa/PoweredByContentful_DarkBackground_MonochromeLogo.svg"
+                src="https://images.ctfassets.net/fo9twyrwpveg/7Htleo27dKYua8gio8UEUy/0797152a2d2f8e41db49ecbf1ccffdaa/PoweredByContentful_DarkBackground_MonochromeLogo.svg?react"
                 alt={l10n.formatMessage({
                     id: "footer.contentful",
                     defaultMessage: "Powered by Contentful",

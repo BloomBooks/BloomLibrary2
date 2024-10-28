@@ -1,8 +1,6 @@
 // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
+
 import React, { useState, useEffect } from "react";
 import { CheapCard } from "./CheapCard";
 import LazyLoad from "react-lazyload";
@@ -14,8 +12,8 @@ import { useIntl } from "react-intl";
 import { useResponsiveChoice } from "../responsiveUtilities";
 import { ICardSpec, useBaseCardSpec } from "./CardGroup";
 import { SmartTruncateMarkup } from "./SmartTruncateMarkup";
-import { ReactComponent as DraftIcon } from "../assets/DRAFT-Stamp.svg";
-import { ReactComponent as WarningIcon } from "../assets/Warning.svg";
+import DraftIcon from "../assets/DRAFT-Stamp.svg?react";
+import WarningIcon from "../assets/Warning.svg?react";
 import { CardSortingTroubleshootingInfo } from "./CardSortingTroubleshootingInfo";
 import { useShowTroubleshootingStuff } from "../Utilities";
 

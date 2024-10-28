@@ -1,12 +1,10 @@
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
 
 import React, { useEffect, useState } from "react";
 import { useLocation, useHistory } from "react-router-dom";
 import { Button, SvgIcon, useTheme } from "@material-ui/core";
-import { ReactComponent as SearchingDeeper } from "../assets/SearchingDeeper.svg";
+import SearchingDeeper from "../assets/SearchingDeeper.svg?react";
+import { commonUI } from "../theme";
 import { useIntl } from "react-intl";
 import { isFacetedSearchString } from "../connection/LibraryQueryHooks";
 

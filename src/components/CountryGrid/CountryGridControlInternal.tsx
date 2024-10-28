@@ -1,8 +1,6 @@
 // // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-// import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+// import { css } from "@emotion/react";
+
 import React, {
     useState,
     useEffect,
@@ -54,12 +52,12 @@ import {
     getLangTagDataForIrregularLangCode,
     ModeratorStatusToolbarPlugin,
 } from "../AggregateGrid/AggregateGridPage";
-import {
-    // ICountryIdData,
-    ILangTagData,
-} from "../AggregateGrid/AggregateGridInterfaces";
+// import {
+//     // ICountryIdData,
+//     ILangTagData,
+// } from "../AggregateGrid/AggregateGridInterfaces";
 
-const rawLangData: ILangTagData[] = require("../AggregateGrid/reduced-langtags.json");
+import rawLangData from "../AggregateGrid/reduced-langtags.json";
 // if we go back to using the langtags regions field, we may need this data.
 //const countryIdData: ICountryIdData[] = require("../statistics/country_ids.json");
 

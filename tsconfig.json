@@ -3,8 +3,14 @@
         "target": "ES2017",
         "module": "esnext",
         "sourceMap": true,
-        "jsx": "react",
+        "jsx": "react-jsx",
+        "jsxImportSource": "@emotion/react",
         "lib": ["dom", "es5", "scripthost", "es2017.object"],
+        "types": [
+            "vite/client", // asset import, vite-injected env variables, etc.
+            "@emotion/react/types/css-prop",
+            "vite-plugin-svgr/client"
+        ],
         "allowSyntheticDefaultImports": true,
         "forceConsistentCasingInFileNames": true,
         "experimentalDecorators": true,
@@ -20,9 +26,10 @@
         "moduleResolution": "node",
         "isolatedModules": true,
         "noEmit": true,
+        "useDefineForClassFields": true, // for mobx makeObservable()
         "plugins": [
             {
-                "name": "typescript-styled-plugin",
+                "name": "typescript-styled-plugin", // adds intellisense for css / emotion
                 "lint": {
                     "validProperties": ["label"]
                 }
@@ -31,5 +38,9 @@
         "noFallthroughCasesInSwitch": true
     },
     "exclude": ["node_modules", "typings"],
-    "include": ["src", "src/components/statistics/dom-to-image-more.d.ts"]
+    "include": [
+        "src",
+        "src/components/statistics/dom-to-image-more.d.ts",
+        "src/custom.d.ts"
+    ]
 }

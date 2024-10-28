@@ -1,8 +1,5 @@
 // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
 
 import React, { useEffect } from "react";
 import { Switch, Route, Redirect, useLocation } from "react-router-dom";
@@ -18,7 +15,11 @@ import { ContentfulPage } from "./pages/ContentfulPage";
 import { getDummyCollectionForPreview } from "../model/Collections";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { IEmbedSettings } from "../model/ContentInterfaces";
-import { EmbeddingHost, isEmbedded, useSetEmbeddedUrl } from "./EmbeddingHost";
+import {
+    EmbeddingHost,
+    isEmbedded,
+    useSetEmbeddedUrl,
+} from "./Embedding/EmbeddingHost";
 import { CollectionStatsPageCodeSplit } from "./statistics/CollectionStatsPageCodeSplit";
 import { TestEmbeddingPage } from "./TestEmbedding";
 import { ThemeForLocation } from "./pages/ThemeForLocation";

@@ -1,22 +1,24 @@
-module.exports = {
-    root: true,
-    parser: "@typescript-eslint/parser",
-    plugins: ["@typescript-eslint"],
-    extends: [
-        "react-app",
-        // "eslint:recommended",
-        // "plugin:@typescript-eslint/recommended",
-    ],
-    rules: {
-        "no-var": "warn",
-        "prefer-const": "warn",
-        "no-bitwise": "warn",
-        "no-warning-comments": [
-            1,
-            { terms: ["nocommit"], location: "anywhere" },
+export default [
+    {
+        plugins: ["@typescript-eslint"],
+        extends: [
+            // "eslint:recommended",
+            // "plugin:@typescript-eslint/recommended",
         ],
+        rules: {
+            "no-var": "warn",
+            "prefer-const": "warn",
+            "no-bitwise": "warn",
+            "no-warning-comments": [
+                1,
+                { terms: ["nocommit"], location: "anywhere" },
+            ],
+        },
+        ignore: {
+            files: ["node_modules", "public"],
+        },
     },
-};
+];
 
 /* This was our tslint
 {

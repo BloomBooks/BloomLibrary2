@@ -1,8 +1,5 @@
 // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
 
 import React, { useRef } from "react";
 import { useGetBookDetail } from "../../connection/LibraryQueryHooks";
@@ -25,12 +22,12 @@ import { useLocation } from "react-router-dom";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { FormattedMessage, useIntl } from "react-intl";
 import { FeaturesGroup } from "./FeaturesGroup";
-import { useIsEmbedded } from "../EmbeddingHost";
+import { useIsEmbedded } from "../Embedding/EmbeddingHost";
 import { commonUI } from "../../theme";
 import { IBookDetailProps } from "./BookDetailCodeSplit";
 import { HarvesterProgressNotice } from "./HarvestProgressNotice";
 import { LoggedInUser } from "../../connection/LoggedInUser";
-import { ReactComponent as DraftIcon } from "../../assets/DRAFT-Stamp.svg";
+import DraftIcon from "../../assets/DRAFT-Stamp.svg?react";
 import { useResponsiveChoice } from "../../responsiveUtilities";
 import { HarvesterProblemNotice } from "./HarvesterProblemNotice";
 import { SharingButtons } from "./SharingButtons";
