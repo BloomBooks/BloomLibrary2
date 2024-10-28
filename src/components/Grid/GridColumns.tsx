@@ -153,7 +153,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
         {
             name: "level",
             defaultVisible: true,
-            getCellValue: (b: Book) => b.level,
+            getCellValue: (b: Book) => b.getBestLevel(),
             getCustomFilterComponent: (props: TableFilterRow.CellProps) => (
                 <ChoicesFilterCell
                     choices={["", "1", "2", "3", "4"]}
@@ -366,35 +366,41 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             defaultVisible: false,
         },
         {
-            // cannot be used for sorting or filtering until we have only one database source
-            name: "reads",
-            sortingEnabled: false,
+            name: "analytics_startedCount",
+            title: "Reads Started",
+            sortingEnabled: true,
+            getCellValue: (b: Book) => b.stats.startedCount,
+            defaultVisible: false,
+        },
+        {
+            name: "analytics_finishedCount",
+            title: "Reads Finished",
+            sortingEnabled: true,
             getCellValue: (b: Book) => b.stats.finishedCount,
             defaultVisible: false,
         },
         {
-            // cannot be used for sorting or filtering until we have only one database source
-            name: "downloadsForTranslation",
-            sortingEnabled: false,
+            name: "analytics_shellDownloads",
+            title: "Downloads for Translation",
+            sortingEnabled: true,
             getCellValue: (b: Book) => b.stats.shellDownloads,
             defaultVisible: false,
         },
     ];
 
-    // generate the capitalized column names since the grid doesn't do that.
     return definitions
-        .sort((a, b) => {
-            // start off with title first. You can still customize by dragging
-            if (a.name === "title") return -1;
-            if (b.name === "title") return 1;
-            return a.name.localeCompare(b.name);
-        })
         .map((c) => {
             const x = { ...c };
             if (c.title === undefined) {
                 x.title = titleCase(c.name);
             }
             return x;
+        })
+        .sort((a, b) => {
+            // start off with title first. You can still customize by dragging
+            if (a.name === "title") return -1;
+            if (b.name === "title") return 1;
+            return a.title!.localeCompare(b.title!);
         });
 }
 

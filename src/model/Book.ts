@@ -24,6 +24,9 @@ export function createBookFromParseServerData(pojo: any): Book {
     b.allTitles = parseAllTitles(pojo.allTitles);
     b.originalTitle = pojo.originalTitle;
     b.languages = pojo.langPointers;
+    b.stats.startedCount = parseInt(pojo.analytics_startedCount, 10) || 0;
+    b.stats.finishedCount = parseInt(pojo.analytics_finishedCount, 10) || 0;
+    b.stats.shellDownloads = parseInt(pojo.analytics_shellDownloads, 10) || 0;
     b.finishCreationFromParseServerData(pojo.objectId);
 
     return b;
