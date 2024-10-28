@@ -1,8 +1,6 @@
 // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
+
 import React from "react";
 import { IStatsPageProps, kStatsPageGray } from "./StatsInterfaces";
 import { StatsCard } from "./StatsCard";
@@ -12,7 +10,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { BookCount } from "../BookCount";
 
 // If we need more control over the icon in the future, use:
-//import { ReactComponent as PeopleReachedIcon } from "../assets/Girl.svg";
+//import { ReactComponent as PeopleReachedIcon } from "../assets/Girl.svg?react";
 // This lets us a do a simple <img src={icon} />:
 import peopleReachedIcon from "../../assets/Girl.svg";
 

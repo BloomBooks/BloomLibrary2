@@ -1,8 +1,6 @@
 // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
+
 import React from "react";
 
 import { LanguageGridControl } from "../LanguageGrid/LanguageGridControl";
@@ -11,7 +9,7 @@ import { UploaderGridControl } from "../UploaderGrid/UploaderGridControl";
 import { useSetBrowserTabTitle } from "../Routes";
 import Button from "@material-ui/core/Button";
 import { useIntl } from "react-intl";
-import DownloadCsvIcon from "../../export/download-csv.svg";
+import DownloadCsvIcon from "../../export/download-csv.svg?react";
 import {
     setLanguageGridExportColumnInfo,
     setLanguageUsageExportData,

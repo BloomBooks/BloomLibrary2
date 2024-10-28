@@ -1348,12 +1348,43 @@ export function constructParseBookQuery(
         if (f.language === kTagForNoLanguage) {
             params.where.langPointers = { $eq: [] };
         } else {
-            params.where.langPointers = {
-                $inQuery: {
-                    where: { isoCode: f.language },
-                    className: "language",
-                },
-            };
+            const languages = f.language.split("&");
+            if (languages.length === 1)
+                params.where.langPointers = {
+                    $inQuery: {
+                        where: { isoCode: f.language },
+                        className: "language",
+                    },
+                };
+            else {
+                // params.where.languages = {
+                //     $inQuery: {
+                //         where: {
+                //             $or: languages.map((l) => ({
+                //                 isoCode: f.language,
+                //             })),
+                //             className: "language",
+                //         },
+                //     },
+                // };
+                params.where.languages = {
+                    // $all: languages.map((lang) => ({
+                    //     $inQuery: {
+                    //         where: { isoCode: lang },
+                    //         className: "language",
+                    //     },
+                    // })),
+                    $all: languages.map((lang) => ({
+                        $select: {
+                            query: {
+                                className: "language",
+                                where: { isoCode: lang },
+                            },
+                            key: "objectId",
+                        },
+                    })),
+                };
+            }
         }
     }
     // topic is handled below. This older version is not compatible with the possibility of other topics.

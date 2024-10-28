@@ -119,15 +119,6 @@ const title3 = "Another book with anunlikelykeyword";
 beforeAll(async () => {
     // In case of anything left over from a previous failed run
     try {
-        // This appears to set the timeout for all tests globally,
-        // but I don't see any way to set it for just a particular suite.
-        // It's bizarre that we need this. With the previous setting of 20000 (20s!)
-        // 10 tests fail, both locally and on TC. Yet, when I increase the limit
-        // to 30s, not only do they all pass, but the whole suite runs in just over
-        // TEN seconds. How can a 20s timeout not be sufficient for a test that
-        // completes successfully in 10s??
-        jest.setTimeout(30000);
-
         await cleanup();
         const fredData = await getFred();
         const [fredId] = fredData!;
