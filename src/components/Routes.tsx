@@ -1,4 +1,3 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
 import { css } from "@emotion/react";
 
 import React, { useEffect } from "react";
@@ -21,7 +20,7 @@ import {
     useSetEmbeddedUrl,
 } from "./Embedding/EmbeddingHost";
 import { CollectionStatsPageCodeSplit } from "./statistics/CollectionStatsPageCodeSplit";
-import { TestEmbeddingPage } from "./TestEmbedding";
+import { TestEmbeddingPage } from "./Embedding/TestEmbedding";
 import { ThemeForLocation } from "./pages/ThemeForLocation";
 import { CollectionReportSplit } from "./reports/CollectionReportSplit";
 import { AppHostedLanguageGroup } from "./appHosted/AppHostedLanguageGroup";

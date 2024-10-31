@@ -1,7 +1,6 @@
 // Display a block with a colored background.
 // Optional background image is allowed. (This feature is very rudimentary and untested at present.)
 
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
 import { css } from "@emotion/react";
 
 import * as React from "react";

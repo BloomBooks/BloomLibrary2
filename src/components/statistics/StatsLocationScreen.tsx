@@ -1,4 +1,3 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
 import { css } from "@emotion/react";
 
 import React, { useMemo } from "react";
@@ -180,7 +179,7 @@ const StatsLocationMap: React.FunctionComponent<{
                 borderWidth={0.5}
                 borderColor="#343d34"
                 isInteractive={true}
-                tooltip={(props) => (
+                tooltip={(tooltipProps) => (
                     <div
                         css={css`
                             background-color: white;
@@ -189,10 +188,10 @@ const StatsLocationMap: React.FunctionComponent<{
                         `}
                     >
                         {`  ${
-                            props.feature.label ||
-                            (props.feature as any).properties.name
+                            tooltipProps.feature.label ||
+                            (tooltipProps.feature as any).properties.name
                         }: ${(
-                            props.feature.data?.allReads || 0
+                            tooltipProps.feature.data?.allReads || 0
                         ).toLocaleString()} `}
                     </div>
                 )}
