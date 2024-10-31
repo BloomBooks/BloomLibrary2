@@ -376,14 +376,12 @@ export class Book {
                 }
             // deliberate fall-through, downloadShell is restricted by the other two also.
             // @ts-ignore: noFallthroughCasesInSwitch
-            // eslint-disable-next-line no-fallthrough
             case "downloadAnything":
                 if (limits.downloadAnything) {
                     requiredCountry = limits.downloadAnything.countryCode;
                     break;
                 }
             // deliberate fall-through, download is restricted by viewContentsInAnyway, too.
-            // eslint-disable-next-line no-fallthrough
             case "viewContentsInAnyWay":
                 if (limits.viewContentsInAnyWay) {
                     requiredCountry = limits.viewContentsInAnyWay.countryCode;

@@ -1,9 +1,4 @@
-// // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-// import { css } from "@emotion/react";
-//
-
 import React from "react";
-
 import { IGridColumn } from "../Grid/GridColumns";
 import { TableFilterRow } from "@devexpress/dx-react-grid-material-ui";
 import { Filter, Sorting } from "@devexpress/dx-react-grid";

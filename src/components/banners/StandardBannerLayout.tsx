@@ -58,7 +58,7 @@ export const StandardBannerLayout: React.FunctionComponent<{
                 `}
             >
                 {["root.read", "resources"].includes(
-                    props.collection?.urlKey!
+                    props.collection?.urlKey
                 ) || <Breadcrumbs />}
 
                 <div
