@@ -12,6 +12,7 @@ import {
     retrieveBookData,
     retrieveBookStats,
 } from "../../connection/LibraryQueries";
+import { getBookGridColumnsDefinitions, IGridColumn } from "./GridColumns";
 
 let static_books: Book[] = [];
 let static_columnsInOrder: string[] = [];
@@ -21,6 +22,11 @@ let static_sortingArray: Array<{
     descending: boolean;
 }> = [];
 let static_completeFilter: IFilter;
+
+const static_keyToColumnDefinition: Map<string, IGridColumn> = new Map();
+getBookGridColumnsDefinitions().forEach((columnDefinition) => {
+    static_keyToColumnDefinition.set(columnDefinition.name, columnDefinition);
+});
 
 export function setGridExportFilter(
     completeFilter: IFilter, //includes the search box
@@ -75,10 +81,13 @@ function exportData(): string[][] {
     const iTitle = headerRow.indexOf("title");
     headerRow.splice(iTitle + 1, 0, "url");
 
-    all.push(headerRow);
+    all.push(
+        headerRow.map(
+            (key) => static_keyToColumnDefinition.get(key)?.title ?? key
+        )
+    );
 
     static_books.forEach((book) => {
-        //const valueRow = Object.values(row).map((v) => v ? v.toString() : "") as string[];
         const valueRow = headerRow.map((key) => getStringForItem(book, key));
         all.push(valueRow);
     });
@@ -86,37 +95,28 @@ function exportData(): string[][] {
 }
 
 function getStringForItem(book: Book, key: string): string {
-    switch (key) {
-        case "url":
-            // Excel and Google Sheets will interpret =HYPERLINK to make it a link, even in a csv. Supposedly Libre Office will, too.
-            return `=HYPERLINK("${window.location.origin}/book/${book.id}")`;
-        case "languages":
-            return book.languages.map((lang) => lang.name).join(", ");
-        case "languagecodes":
-            return book.languages.map((lang) => lang.isoCode).join(", ");
-        case "uploader":
-            return book.uploader?.username ?? "";
-        case "topic":
-            return book.tags
-                .filter((tag) => tag.startsWith("topic:"))
-                .map((topic) => topic.replace("topic:", ""))
-                .join(", ");
-        case "incoming":
-            return book.tags.filter((tag) => tag === "system:Incoming").length
-                ? "true"
-                : "false";
-        case "tags":
-            return book.tags
-                .filter(
-                    (tag) =>
-                        !tag.startsWith("topic:") && tag !== "system:Incoming"
-                )
-                .join(", ");
-        case "reads":
-            return book.stats.finishedCount.toString();
-        case "downloadsForTranslation":
-            return book.stats.shellDownloads.toString();
+    // url is a special case since it only exists in the export, not in the grid.
+    if (key === "url") {
+        // Excel and Google Sheets will interpret =HYPERLINK to make it a link, even in a csv. Supposedly Libre Office will, too.
+        return `=HYPERLINK("${window.location.origin}/book/${book.id}")`;
     }
+
+    // Try getStringValue first. If defined, that's what we want; just the string representation.
+    const columnDefinition = static_keyToColumnDefinition.get(key);
+    if (columnDefinition?.getStringValue)
+        return columnDefinition.getStringValue(book);
+
+    // Otherwise, we might just want the same value as the grid shows.
+    // But not if the result is an object (React component).
+    if (columnDefinition?.getCellValue) {
+        const valAsAny = columnDefinition.getCellValue(book, key);
+        if (valAsAny !== undefined && typeof valAsAny !== "object") {
+            return valAsAny.toString();
+        }
+    }
+
+    // If there's no getStringValue or getCellValue (or getCellValue returns a component),
+    // just get the raw value from the book object based on the key.
     const item = book[key as keyof Book];
     return item ? item.toString() : "";
 }
