@@ -134,7 +134,6 @@ function useGetContentfulLocales(): string[] | undefined {
     // I'm keeping the code in case we ever want to go back to it, since it was a bit tricky to get right.
 
     // see https://github.com/facebook/react/issues/14981
-    // eslint-disable-next-line no-unreachable
     const [
         ,
         /*unused*/ dummyToThrowStuffToErrorBoundaryInsideAHook,

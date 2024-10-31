@@ -1,9 +1,8 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
 import { css } from "@emotion/react";
 
 import React, { useContext, useState, useMemo, useEffect } from "react";
 import { LanguageCard } from "../LanguageCard";
-import logo from "../../assets/BloomLibrary Logo.svg?react";
+import logo from "../../assets/BloomLibrary Logo.svg";
 import Downshift, {
     GetItemPropsOptions,
     GetMenuPropsOptions,

@@ -1,4 +1,3 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
 import { css } from "@emotion/react";
 
 import React from "react";
@@ -9,7 +8,7 @@ import { IFilter } from "../../IFilter";
 import { useSetBrowserTabTitle } from "../Routes";
 import Button from "@material-ui/core/Button";
 import { useIntl } from "react-intl";
-import DownloadCsvIcon from "../../export/download-csv.svg?react";
+import DownloadCsvIcon from "../../export/download-csv.svg";
 import {
     setGridExportFilter,
     setGridExportColumnInfo,

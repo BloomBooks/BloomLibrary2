@@ -1,9 +1,8 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
 import { css } from "@emotion/react";
 
 import React from "react";
 import Button from "@material-ui/core/Button";
-import BloomPubIcon from "../../assets/BloomPubWhite.svg?react";
+import BloomPubIcon from "../../assets/BloomPubWhite.svg";
 import { commonUI } from "../../theme";
 import { getArtifactUrl } from "./ArtifactHelper";
 import { Book } from "../../model/Book";

@@ -4,7 +4,6 @@ This class is deprecated. We should be merging it into BookCardGroup.
 
 ----------------------- */
 
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
 import { css } from "@emotion/react";
 
 import React, { useEffect, useState } from "react";
