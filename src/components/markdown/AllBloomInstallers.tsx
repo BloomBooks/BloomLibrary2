@@ -1,4 +1,3 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
 import { css } from "@emotion/react";
 
 import * as React from "react";
@@ -39,7 +38,7 @@ export const AllBloomInstallers: React.FunctionComponent<{}> = (props) => {
             {installers.map((installer: any) => {
                 if (installer.Key.indexOf("installers/Bloom") === 0) {
                     return (
-                        <tr>
+                        <tr key={installer.Key}>
                             <td>
                                 <BlorgLink
                                     href={`https://www.bloomlibrary.org/${installer.Key}`}

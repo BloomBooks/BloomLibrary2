@@ -1,4 +1,3 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
 import { css } from "@emotion/react";
 
 import React, {
@@ -227,19 +226,23 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
             <Plugin name="ShowMatchingBookCount">
                 <Template name="toolbarContent">
                     <span>{`${totalMatchingBooksCount} Matching Books`}</span>
-                    {props.showFilterSpec && (
-                        <span
-                            css={css`
-                                margin-left: 20px;
-                                margin-right: 5px;
-                                color: #007aff;
-                            `}
-                        >
-                            {`Filter: ${JSON.stringify(
-                                filterMadeFromPageSearchPlusColumnFilters
-                            )}`}
-                        </span>
-                    )}
+                    {
+                        // As far as I can tell, this lint error is just wrong.
+                        // eslint-disable-next-line react/prop-types
+                        props.showFilterSpec && (
+                            <span
+                                css={css`
+                                    margin-left: 20px;
+                                    margin-right: 5px;
+                                    color: #007aff;
+                                `}
+                            >
+                                {`Filter: ${JSON.stringify(
+                                    filterMadeFromPageSearchPlusColumnFilters
+                                )}`}
+                            </span>
+                        )
+                    }
                     <span
                         css={css`
                             margin-left: 20px;

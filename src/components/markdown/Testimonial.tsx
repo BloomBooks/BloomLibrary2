@@ -1,6 +1,5 @@
 // Display a testimonial with a left border highlighting the text and attribution.
 
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
 import { css } from "@emotion/react";
 
 import * as React from "react";
