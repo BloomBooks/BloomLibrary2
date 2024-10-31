@@ -12,6 +12,7 @@ import {
     retrieveBookData,
     retrieveBookStats,
 } from "../../connection/LibraryQueries";
+import { getBookGridColumnsDefinitions, IGridColumn } from "./GridColumns";
 
 let static_books: Book[] = [];
 let static_columnsInOrder: string[] = [];
@@ -21,6 +22,17 @@ let static_sortingArray: Array<{
     descending: boolean;
 }> = [];
 let static_completeFilter: IFilter;
+
+const static_keyToColumnDefinition: Map<
+    string,
+    IGridColumn
+> = getBookGridColumnsDefinitions().reduce(
+    (mapAccumulator, columnDefinition) => {
+        mapAccumulator.set(columnDefinition.name, columnDefinition);
+        return mapAccumulator;
+    },
+    new Map<string, IGridColumn>()
+);
 
 export function setGridExportFilter(
     completeFilter: IFilter, //includes the search box
@@ -75,10 +87,13 @@ function exportData(): string[][] {
     const iTitle = headerRow.indexOf("title");
     headerRow.splice(iTitle + 1, 0, "url");
 
-    all.push(headerRow);
+    all.push(
+        headerRow.map(
+            (key) => static_keyToColumnDefinition.get(key)?.title ?? key
+        )
+    );
 
     static_books.forEach((book) => {
-        //const valueRow = Object.values(row).map((v) => v ? v.toString() : "") as string[];
         const valueRow = headerRow.map((key) => getStringForItem(book, key));
         all.push(valueRow);
     });
@@ -86,14 +101,24 @@ function exportData(): string[][] {
 }
 
 function getStringForItem(book: Book, key: string): string {
+    // getCellValue is used to get the value of a cell in the grid.
+    // If it exists, and the result is not an object (React component),
+    // use its result so we can share the code.
+    // Otherwise, we have to handle the differences below.
+    const columnDefinition = static_keyToColumnDefinition.get(key);
+    if (columnDefinition?.getCellValue) {
+        const valAsAny = columnDefinition.getCellValue(book, key);
+        if (valAsAny !== undefined && typeof valAsAny !== "object") {
+            return valAsAny.toString();
+        }
+    }
     switch (key) {
+        // url is specific to the export, not a column in the grid
         case "url":
             // Excel and Google Sheets will interpret =HYPERLINK to make it a link, even in a csv. Supposedly Libre Office will, too.
             return `=HYPERLINK("${window.location.origin}/book/${book.id}")`;
-        case "languages":
-            return book.languages.map((lang) => lang.name).join(", ");
-        case "languagecodes":
-            return book.languages.map((lang) => lang.isoCode).join(", ");
+
+        // The rest of these are react components in the grid, so we have to have special handling for them here.
         case "uploader":
             return book.uploader?.username ?? "";
         case "topic":
@@ -105,18 +130,13 @@ function getStringForItem(book: Book, key: string): string {
             return book.tags.filter((tag) => tag === "system:Incoming").length
                 ? "true"
                 : "false";
-        case "tags":
-            return book.tags
-                .filter(
-                    (tag) =>
-                        !tag.startsWith("topic:") && tag !== "system:Incoming"
-                )
-                .join(", ");
-        case "reads":
-            return book.stats.finishedCount.toString();
-        case "downloadsForTranslation":
-            return book.stats.shellDownloads.toString();
+        case "Is Rebrand":
+            return book.rebrand ? "true" : "false";
     }
+
+    // The grid didn't provide a getCellValue function for this column (or the result was an object)
+    // and we didn't have a special case for it above.
+    // Just get the raw value from the book object based on the key.
     const item = book[key as keyof Book];
     return item ? item.toString() : "";
 }

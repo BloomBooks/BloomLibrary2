@@ -40,7 +40,6 @@ const kTagsToFilterOutOfTagsList = [
 ];
 
 export function getBookGridColumnsDefinitions(): IGridColumn[] {
-    // Note, the order here is also the default order in the table
     const definitions: IGridColumn[] = [
         {
             name: "title",
