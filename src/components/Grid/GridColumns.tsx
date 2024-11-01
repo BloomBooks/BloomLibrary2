@@ -29,6 +29,11 @@ export interface IGridColumn extends DevExpressColumn {
     addToFilter?: (filter: IFilter, value: string) => void;
     sortingEnabled?: boolean;
     l10nId?: string; // the id to use for localization if it's a common one that we don't want to just fabricate for this context
+    // Returns a simple string representation of the value in the cell.
+    // If not provided, the only current caller (csv export) will fall back
+    // to using getCellValue if that doesn't return an object (component).
+    // Else it will fallback to b[key].toString().
+    getStringValue?: (b: Book) => string;
 }
 
 // For some tags, we want to give them their own column. So we don't want to show them in the tags column.
@@ -40,7 +45,6 @@ const kTagsToFilterOutOfTagsList = [
 ];
 
 export function getBookGridColumnsDefinitions(): IGridColumn[] {
-    // Note, the order here is also the default order in the table
     const definitions: IGridColumn[] = [
         {
             name: "title",
@@ -144,6 +148,10 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             getCellValue: (b: Book) => (
                 <TagCheckbox book={b} tag={"system:Incoming"} />
             ),
+            getStringValue: (b: Book) =>
+                b.tags.filter((tag) => tag === "system:Incoming").length
+                    ? "true"
+                    : "false",
             getCustomFilterComponent: (props: TableFilterRow.CellProps) => (
                 <TagExistsFilterCell {...props} />
             ),
@@ -185,6 +193,11 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                             {t.replace(/topic:/, "")}
                         </GridSearchLink>
                     )),
+            getStringValue: (b: Book) =>
+                b.tags
+                    .filter((tag) => tag.startsWith("topic:"))
+                    .map((topic) => topic.replace("topic:", ""))
+                    .join(", "),
             addToFilter: (filter: IFilter, value: string) => {
                 filter.topic = titleCase(value);
             },
@@ -265,6 +278,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
         {
             name: "Is Rebrand",
             getCellValue: (b: Book) => <RebrandCheckbox book={b} />,
+            getStringValue: (b: Book) => (b.rebrand ? "true" : "false"),
             getCustomFilterComponent: (props: TableFilterRow.CellProps) => (
                 <ChoicesFilterCell
                     choices={["All", "Only Rebranded", "Hide Rebranded"]}
@@ -343,6 +357,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                     {b.uploader?.username}
                 </GridSearchLink>
             ),
+            getStringValue: (b: Book) => b.uploader?.username ?? "",
             addToFilter: (filter: IFilter, value: string) => {
                 filter.search += ` uploader:${value} `;
             },
