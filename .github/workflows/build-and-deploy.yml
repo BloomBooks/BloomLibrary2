@@ -24,9 +24,13 @@ jobs:
             #   if: github.ref == 'refs/heads/release'
             #   # Push any new code-based strings to Crowdin
             #   run: crowdin-dangerous-upload
+            #   env:
+            #     bloomCrowdinApiToken: ${{ secrets.BLOOM_CROWDIN_TOKEN }}
 
             - name: Download translations from Crowdin
               run: yarn crowdin-download
+              env:
+                  bloomCrowdinApiToken: ${{ secrets.BLOOM_CROWDIN_TOKEN }}
 
             - name: Build
               run: |
