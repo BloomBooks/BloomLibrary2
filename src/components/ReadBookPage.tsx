@@ -315,6 +315,7 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
                         border: none;
                         width: 100%;
                         height: 100%;
+                        display: block; // Prevent a 4px white bar at the bottom of the iframe. See BL-14065.
                     `}
                     src={iframeSrc}
                     //src={"https://google.com"}
