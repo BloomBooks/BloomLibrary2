@@ -352,7 +352,8 @@ export class Book {
 
     public getBestTitle(langISO?: string): string {
         const t = langISO ? this.allTitles.get(langISO) : this.title;
-        return t || this.title; // if we couldn't get this lang out of allTitles, use the official title
+        // if we couldn't get this lang out of allTitles, use the official title
+        return (t || this.title).replace(/[\r\n\v]+/g, " ");
     }
 
     // Passed a restrictionType that is one of the field names in IInternetLimits
@@ -570,11 +571,12 @@ export function getBestBookTitle(
     rawAllTitlesJson: string,
     contextLangTag?: string
 ): string {
-    if (!contextLangTag) return defaultTitle;
+    if (!contextLangTag) return defaultTitle.replace(/[\r\n\v]+/g, " ");
 
     // enhance: could we do this faster with just a regular expression?
     const map = parseAllTitles(rawAllTitlesJson);
-    return map.get(contextLangTag) || defaultTitle;
+    const contextTitle = map.get(contextLangTag);
+    return (contextTitle || defaultTitle).replace(/[\r\n\v]+/g, " ");
 }
 
 export function getBookTitleInLanguageOrUndefined(
@@ -583,7 +585,8 @@ export function getBookTitleInLanguageOrUndefined(
 ): string | undefined {
     // enhance: could we do this faster with just a regular expression?
     const map = parseAllTitles(bookInfo.allTitles);
-    return map.get(contextLangTag);
+    const contextTitle = map.get(contextLangTag);
+    return contextTitle?.replace(/[\r\n\v]+/g, " ");
 }
 
 function parseAllTitles(allTitlesString: string): Map<string, string> {
