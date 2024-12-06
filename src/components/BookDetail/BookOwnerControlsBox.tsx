@@ -1,8 +1,4 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
 
 import React, { Fragment, useContext, useEffect, useState } from "react";
 import { Book } from "../../model/Book";
@@ -12,7 +8,7 @@ import { DeleteButton } from "./DeleteButton";
 import { FormattedMessage, useIntl } from "react-intl";
 import { commonUI } from "../../theme";
 import { Button, Checkbox, FormControlLabel } from "@material-ui/core";
-import { ReactComponent as DraftIcon } from "../../assets/DRAFT-Stamp.svg";
+import DraftIcon from "../../assets/DRAFT-Stamp.svg?react";
 import { Alert } from "@material-ui/lab";
 import { BlorgLink } from "../BlorgLink";
 import { BookExtraPanels } from "./BookExtraPanels";

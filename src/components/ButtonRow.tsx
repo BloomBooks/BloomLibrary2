@@ -1,8 +1,4 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
 
 import React from "react";
 import { ICollection } from "../model/ContentInterfaces";
@@ -40,7 +36,6 @@ export const ButtonRow: React.FunctionComponent<{
                 // does not compile here in June 2020
                 component={(linkProps) =>
                     externalLink ? (
-                        // eslint-disable-next-line jsx-a11y/anchor-has-content
                         <a href={href} {...linkProps} />
                     ) : (
                         <Link to={href} {...linkProps} />

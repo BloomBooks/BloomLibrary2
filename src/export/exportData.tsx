@@ -38,7 +38,6 @@ export function useProvideDataForExport(
     }, [
         // eslint-disable-next-line react-hooks/exhaustive-deps
         !!rows /*regenerate when we get stats*/,
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         rows?.length,
         // eslint-disable-next-line react-hooks/exhaustive-deps
         JSON.stringify(

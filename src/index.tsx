@@ -5,7 +5,7 @@ import * as Sentry from "@sentry/browser";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { createBrowserHistory } from "history";
-import { isEmbedded } from "./components/EmbeddingHost";
+import { isEmbedded } from "./components/Embedding/EmbeddingHost";
 import { initializeFirebase } from "./authentication/firebase/firebase";
 import { isAppHosted } from "./components/appHosted/AppHostedUtils";
 

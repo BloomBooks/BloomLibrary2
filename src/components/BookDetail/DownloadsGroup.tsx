@@ -1,15 +1,11 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
 
 import React, { useContext, useEffect } from "react";
 import { IconButton, Tooltip } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 
-import { ReactComponent as PdfIcon } from "../../assets/Pdf.svg";
-import { ReactComponent as EPUBIcon } from "../../assets/EPub.svg";
+import PdfIcon from "../../assets/Pdf.svg?react";
+import EPUBIcon from "../../assets/EPub.svg?react";
 import { PlayStoreIcon } from "./PlayStoreIcon";
 // See comment in BloomPubIcon about why this is a special case
 import { BloomPubIcon } from "./BloomPubIcon";

@@ -1,14 +1,10 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
 
 import * as React from "react";
 import UseAxios from "axios-hooks";
 import { toYyyyMmDd } from "../../Utilities";
 import { BlorgLink } from "../BlorgLink";
-const parser = require("xml2json-light");
+import parser from "xml2json-light";
 
 export const AllBloomInstallers: React.FunctionComponent<{}> = (props) => {
     const [{ response, loading, error }] = UseAxios({
@@ -42,7 +38,7 @@ export const AllBloomInstallers: React.FunctionComponent<{}> = (props) => {
             {installers.map((installer: any) => {
                 if (installer.Key.indexOf("installers/Bloom") === 0) {
                     return (
-                        <tr>
+                        <tr key={installer.Key}>
                             <td>
                                 <BlorgLink
                                     href={`https://www.bloomlibrary.org/${installer.Key}`}

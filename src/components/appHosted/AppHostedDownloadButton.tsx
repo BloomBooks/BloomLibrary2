@@ -1,12 +1,8 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
 
 import React from "react";
 import Button from "@material-ui/core/Button";
-import DownloadIcon from "../../assets/download_white_24dp.svg";
+import DownloadIcon from "../../assets/download_white_24dp.svg?react";
 import { commonUI } from "../../theme";
 import {
     getArtifactUrl,
