@@ -43,10 +43,86 @@ jobs:
             - name: Run tests
               run: yarn test:ci
 
-            # Not yet
-            # - name: Deploy to S3
-            #   run: |
-            #     aws s3 cp path/to/build/artifacts s3://your-bucket-name --recursive
-            #   env:
-            #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            - name: Deploy to S3 - alpha.bloomlibrary.org
+              if: github.ref == 'refs/heads/master'
+              run: |
+                  aws s3 rm s3://alpha.bloomlibrary.org --recursive
+
+                  # Copy everything that should be cached for a long time: contents of static directory and bloom-player directory, except bloom-player.htm itself.
+                  # These things are safe to cache because the build inserts a hash into their names. Any update will cause a different file to be referenced.
+                  aws s3 cp build s3://alpha.bloomlibrary.org --recursive --cache-control max-age=31536000 --exclude "*" --include "static/*" --include "bloom-player/*" --exclude "*.htm"
+
+                  # Copy everything else, which should not be cached: the root directory files, including index.html, and any htm files, especially bloom-player's
+                  aws s3 cp build s3://alpha.bloomlibrary.org --recursive --cache-control no-cache --exclude "static/*" --exclude "bloom-player/*" --include "*.htm"
+
+                  # make this version of the script that helps with managing history on embedded sites
+                  # note that we do not have the cache-defeating hash on this
+                  aws s3 cp public/embed-bloomlibrary.js s3://share.bloomlibrary.org/alpha-assets/embed-bloomlibrary.js  --cache-control no-cache
+              env:
+                  AWS_ACCESS_KEY_ID: ${{ secrets.SIL_LEAD_BLOOM_LIBRARY_DEPLOY_AWS_ACCESS_KEY_ID }}
+                  AWS_SECRET_ACCESS_KEY: ${{ secrets.SIL_LEAD_BLOOM_LIBRARY_DEPLOY_AWS_SECRET_ACCESS_KEY }}
+
+            - name: Deploy to S3 - dev-alpha.bloomlibrary.org
+              if: github.ref == 'refs/heads/master'
+              run: |
+                  aws s3 rm s3://dev-alpha.bloomlibrary.org --recursive
+
+                  # Copy everything that should be cached for a long time: contents of static directory and bloom-player directory, except bloom-player.htm itself.
+                  # These things are safe to cache because the build inserts a hash into their names. Any update will cause a different file to be referenced.
+                  aws s3 cp build s3://dev-alpha.bloomlibrary.org --recursive --cache-control max-age=31536000 --exclude "*" --include "static/*" --include "bloom-player/*" --exclude "*.htm"
+
+                  # Copy everything else, which should not be cached: the root directory files, including index.html, and any htm files, especially bloom-player's
+                  aws s3 cp build s3://dev-alpha.bloomlibrary.org --recursive --cache-control no-cache --exclude "static/*" --exclude "bloom-player/*" --include "*.htm"
+              env:
+                  AWS_ACCESS_KEY_ID: ${{ secrets.SIL_LEAD_BLOOM_LIBRARY_DEPLOY_AWS_ACCESS_KEY_ID }}
+                  AWS_SECRET_ACCESS_KEY: ${{ secrets.SIL_LEAD_BLOOM_LIBRARY_DEPLOY_AWS_SECRET_ACCESS_KEY }}
+
+            - name: Deploy to S3 - bloomlibrary.org
+              if: github.ref == 'refs/heads/release'
+              run: |
+                  # aws s3 rm s3://bloomlibrary.org --exclude "*/*" --include "bloom-player/*" --include "static/*" --include "translations/*" --recursive
+
+                  # Copy everything that should be cached for a long time: contents of static directory and bloom-player directory, except bloom-player.htm itself.
+                  # These things are safe to cache because the build inserts a hash into their names. Any update will cause a different file to be referenced.
+                  # Please keep the --exclude robots.txt at the end of both commands! If published, it will prevent search engines from indexing us.
+                  # aws s3 cp build s3://bloomlibrary.org --recursive --cache-control max-age=31536000 --exclude "*" --include "static/*" --include "bloom-player/*" --exclude "*.htm" --exclude "robots.txt"
+
+                  # Copy everything else, which should not be cached: the root directory files, including index.html, and any htm files, especially bloom-player's
+                  # aws s3 cp build s3://bloomlibrary.org --recursive --cache-control no-cache --exclude "static/*" --exclude "bloom-player/*" --include "*.htm"  --exclude "robots.txt"
+              env:
+                  AWS_ACCESS_KEY_ID: ${{ secrets.SIL_BLOOM_UPLOADER_AWS_ACCESS_KEY_ID }}
+                  AWS_SECRET_ACCESS_KEY: ${{ secrets.SIL_BLOOM_UPLOADER_AWS_SECRET_ACCESS_KEY }}
+
+            - name: Deploy to S3 - dev.bloomlibrary.org
+              if: github.ref == 'refs/heads/release'
+              run: |
+                  aws s3 rm s3://dev.bloomlibrary.org --exclude "*/*" --include "bloom-player/*" --include "static/*" --include "translations/*" --recursive
+
+                  # Copy everything that should be cached for a long time: contents of static directory and bloom-player directory, except bloom-player.htm itself.
+                  # These things are safe to cache because the build inserts a hash into their names. Any update will cause a different file to be referenced.
+                  aws s3 cp build s3://dev.bloomlibrary.org --recursive --cache-control max-age=31536000 --exclude "*" --include "static/*" --include "bloom-player/*" --exclude "*.htm"
+
+                  # Copy everything else, which should not be cached: the root directory files, including index.html, and any htm files, especially bloom-player's
+                  aws s3 cp build s3://dev.bloomlibrary.org --recursive --cache-control no-cache --exclude "static/*" --exclude "bloom-player/*" --include "*.htm"
+              env:
+                  AWS_ACCESS_KEY_ID: ${{ secrets.SIL_LEAD_BLOOM_LIBRARY_DEPLOY_AWS_ACCESS_KEY_ID }}
+                  AWS_SECRET_ACCESS_KEY: ${{ secrets.SIL_LEAD_BLOOM_LIBRARY_DEPLOY_AWS_SECRET_ACCESS_KEY }}
+
+            - name: Deploy to S3 - embed.bloomlibrary.org
+              if: github.ref == 'refs/heads/embed'
+              run: |
+                  aws s3 rm s3://embed.bloomlibrary.org --recursive
+
+                  # Copy everything that should be cached for a long time: contents of static directory and bloom-player directory, except bloom-player.htm itself.
+                  # These things are safe to cache because the build inserts a hash into their names. Any update will cause a different file to be referenced.
+                  aws s3 cp build s3://embed.bloomlibrary.org --recursive --cache-control max-age=31536000 --exclude "*" --include "static/*" --include "bloom-player/*" --exclude "*.htm"
+
+                  # Copy everything else, which should not be cached: the root directory files, including index.html, and any htm files, especially bloom-player's
+                  aws s3 cp build s3://embed.bloomlibrary.org --recursive --cache-control no-cache --exclude "static/*" --exclude "bloom-player/*" --include "*.htm"
+
+                  # make this version of the script that helps with managing history on embedded sites
+                  # note that we do not have the cache-defeating hash on this
+                  aws s3 cp public/embed-bloomlibrary.js s3://share.bloomlibrary.org/assets/embed-bloomlibrary.js  --cache-control no-cache
+              env:
+                  AWS_ACCESS_KEY_ID: ${{ secrets.SIL_LEAD_BLOOM_LIBRARY_DEPLOY_AWS_ACCESS_KEY_ID }}
+                  AWS_SECRET_ACCESS_KEY: ${{ secrets.SIL_LEAD_BLOOM_LIBRARY_DEPLOY_AWS_SECRET_ACCESS_KEY }}
