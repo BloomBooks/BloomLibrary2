@@ -1,10 +1,4 @@
-// // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-// import css from "@emotion/css/macro";
-// // these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
 import React from "react";
-
 import { IGridColumn } from "../Grid/GridColumns";
 import { TableFilterRow } from "@devexpress/dx-react-grid-material-ui";
 import { Filter, Sorting } from "@devexpress/dx-react-grid";
@@ -258,7 +252,7 @@ export function getLanguageGridColumnsDefinitions(): IGridColumn[] {
                         separator = ", ";
                     }
                     return (
-                        <span>
+                        <span key={email}>
                             {/* we don't need rel="noreferrer" because the destination is on the same website,
                                 and we want to preserve the login status for the new tab */}
                             {/*eslint-disable-next-line react/jsx-no-target-blank*/}

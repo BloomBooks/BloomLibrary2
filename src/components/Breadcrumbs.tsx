@@ -1,10 +1,5 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
 
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useContext } from "react";
 import { useLocation } from "react-router-dom";
 import { useGetCollection } from "../model/Collections";

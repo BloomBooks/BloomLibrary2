@@ -4,7 +4,6 @@ import { CachedTablesContext } from "./CacheProvider";
 import { ICollection, IRawCollection } from "./ContentInterfaces";
 import { convertContentfulCollectionToICollection } from "./Contentful";
 import { kTopicList } from "./ClosedVocabularies";
-import { strict as assert } from "assert";
 import { useContentful } from "../connection/UseContentful";
 import { useGetLoggedInUser } from "../connection/LoggedInUser";
 import { BooleanOptions, IFilter } from "../IFilter";
@@ -179,7 +178,7 @@ export function useGetCollection(
     });
     // console.log(`nameparts = ${JSON.stringify(nameParts)}`);
     // console.log(`collections=${JSON.stringify(collections)}`);
-    assert(
+    console.assert(
         templateFacetCollection || nameParts.length === 1,
         `If it's a facetted collection, we should have a template for it. nameparts = ${JSON.stringify(
             nameParts

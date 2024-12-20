@@ -54,7 +54,6 @@ export function useGetLocalizations(
     let justUseEnglish = userInterfaceLanguageTag === "en";
 
     for (const filename of files) {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
         // NOTE that we're using a different "UseAxios" here; this one has this `manual` option we need
         // in order to skip trying to download English without violating the rule of hooks.
         const [{ response: jsonResponse, error, loading }] = UseAxios(

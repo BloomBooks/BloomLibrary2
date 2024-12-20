@@ -9,7 +9,7 @@ import decompress from "decompress";
 import * as Path from "path";
 import * as fs from "fs-extra";
 
-const Retry = require("async-retry");
+import Retry from "async-retry";
 
 const kTargetDirectory = "./public/translations";
 
