@@ -2,7 +2,7 @@ import { getTranslation } from "../localization/GetLocalizations";
 
 export interface ILanguage {
     name: string;
-    isoCode: string;
+    isoCode: string; // usually just an iso 639 code, but occasionally a full tag, e.g. jmx-x-coi
     usageCount: number;
     englishName?: string;
     bannerImageUrl?: string;
