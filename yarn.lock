@@ -8118,7 +8118,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@15.7.2, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.7.2:
+prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -8389,12 +8389,10 @@ react-helmet@^6.1.0:
     react-fast-compare "^3.1.1"
     react-side-effect "^2.1.0"
 
-react-image@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/react-image/-/react-image-2.3.0.tgz#160abd648a39f1c5869c75e8c1c29115e27ef1f2"
-  integrity sha512-Ia+aj32iheGuK2jy5xGahCD5/xUSrO9V3Ca1UdmpreNYpHx1KO0H/hPoerzR6iaJ+qTlv+lxDpEQceJduUY6zg==
-  dependencies:
-    prop-types "15.7.2"
+react-image@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.npmjs.org/react-image/-/react-image-4.1.0.tgz#92f2d4a809a178b3bf69acd7bad7da7aa5e7364c"
+  integrity sha512-qwPNlelQe9Zy14K2pGWSwoL+vHsAwmJKS6gkotekDgRpcnRuzXNap00GfibD3eEPYu3WCPlyIUUNzcyHOrLHjw==
 
 react-input-autosize@^3.0.0:
   version "3.0.0"
