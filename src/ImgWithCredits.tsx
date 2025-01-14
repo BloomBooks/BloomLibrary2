@@ -1,11 +1,16 @@
 import { css } from "@emotion/react";
 
 import React from "react";
-//import Img, { ImgProps } from "react-image";
+import { Img } from "react-image";
 import { Tooltip } from "@material-ui/core";
 
 interface IProps {
     credits?: string;
+    // the following should come from react-image ImgProps but there's some problem with their typings
+    src: string;
+    alt?: string;
+    loader?: JSX.Element | null;
+    unloader?: JSX.Element | null;
 }
 
 // This is just like an Img, but with the additional credits property.
@@ -34,7 +39,7 @@ export const ImgWithCredits: React.FunctionComponent<IProps> = (props) => {
                 {/* I'd rather not have this div wrapper, but the tooltip won't work with
                 the Img as a direct child. Apparently the direct child of a Tooltip must be
                 something that "can hold a ref". */}
-                <img {...props} />
+                <Img {...props} />
             </div>
         </Tooltip>
     );
