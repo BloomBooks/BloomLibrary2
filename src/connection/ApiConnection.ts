@@ -6,10 +6,7 @@ export function getBloomApiUrl(): string {
     const local = "/api/v1";
     const prod = "https://api.bloomlibrary.org/v1";
 
-    // Change this to return whichever one you want your requests to go to.
-    if (window.location.hostname === "localhost") {
-        return local;
-    }
+    // Developer, if you want to test a local backend, temporarily change this to local.
     return prod;
 }
 
