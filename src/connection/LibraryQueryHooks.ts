@@ -498,7 +498,7 @@ export function extractBookStatFromRawData(statRow: any): IBookStat {
     const stats: IBookStat = {
         title: statRow.booktitle,
         branding: statRow.bookbranding,
-        language: statRow.language,
+        language: statRow.language, // this is the language tag, not the name
         // The parseInt and parseFloat methods are important.
         // Without them, js will treat the values like strings even though typescript knows they are numbers.
         // Then the + operator will concatenate instead of add.
