@@ -36,3 +36,8 @@ debug.log
 .yarn/*
 
 .yarnrc.yml
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

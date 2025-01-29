@@ -270,6 +270,7 @@ export const SearchBox: React.FunctionComponent<{
                     setSearchString(event.target.value)
                 }
                 onKeyPress={handleEnter}
+                data-testId={"searchForBooksInput"}
             />
             <Grow in={!!searchString.trim()}>
                 <IconButton
