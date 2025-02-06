@@ -33,7 +33,7 @@ export const BookStatsReport: React.FunctionComponent<IStatsPageProps> = (
                 languages
             )?.combined;
             if (languageDisplayName) {
-                stat.language = languageDisplayName;
+                stat.languageName = languageDisplayName;
             }
         }
     }
@@ -41,7 +41,8 @@ export const BookStatsReport: React.FunctionComponent<IStatsPageProps> = (
     const columns: IGridColumn[] = [
         { name: "title", title: "Book Title", l10nId: "bookTitle" },
         { name: "branding", title: "Branding", l10nId: "branding" },
-        { name: "language", title: "Language", l10nId: "language" },
+        { name: "languageName", title: "Language", l10nId: "language" },
+        { name: "language", title: "Language Tag", l10nId: "languageTag" },
         //{ name: "extra", title: "Extra" },
         {
             name: "finishedCount",
@@ -92,6 +93,7 @@ export const BookStatsReport: React.FunctionComponent<IStatsPageProps> = (
     const [tableColumnExtensions] = useState([
         { columnName: "title", width: "auto" },
         { columnName: "branding", width: "auto" },
+        { columnName: "languageName", width: "auto" },
         { columnName: "language", width: "auto" },
         //{ columnName: "extra", width: "auto" },
 

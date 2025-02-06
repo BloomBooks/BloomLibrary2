@@ -64,7 +64,8 @@ export interface IBookStat {
     meanCorrect: number;
     medianCorrect: number;
 
-    language: string;
+    language: string; // IETF BCP47 language tag
+    languageName?: string;
     /* to add
     features: string;
     */

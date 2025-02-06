@@ -61,6 +61,8 @@ export function exportCsv(name: string, exportDataFn: ExportDataFn) {
 }
 
 function csvEncode(value: string): string {
+    if (!value) return "";
+
     let needsQuotes = false;
     needsQuotes = value.indexOf(",") > -1 || value.startsWith("=HYPERLINK(");
 

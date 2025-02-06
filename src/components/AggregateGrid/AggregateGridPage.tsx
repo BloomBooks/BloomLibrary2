@@ -360,6 +360,14 @@ export function getLangTagDataForIrregularLangCode(
             langTagData.region = tagData.region;
             langTagData.regionname = tagData.regionname;
         }
+    } else if (code === "qaa") {
+        // Note that tags like qaa-x-Chalchiteko have already had their names set above.
+        langTagData.name = "Unlisted Language (qaa)";
+    } else if (!langTagData.name) {
+        console.error(
+            `We could not determine a name for language code ${code}`
+        );
+        langTagData.name = `Unknown Language (${code})`;
     }
     return langTagData;
 }

@@ -278,6 +278,8 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                             //         )
                             //     );
                             // }
+
+                            setGridPage(0);
                             setGridFilters(x);
                         }}
                     />
