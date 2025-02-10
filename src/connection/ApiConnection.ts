@@ -26,9 +26,9 @@ export function getBloomApiBooksUrl(
 }
 
 function addEnvironmentParam(urlStr: string): string {
-    const url = new URL(urlStr);
-    if (getDataSource() === DataSource.Dev) url.searchParams.set("env", "dev");
-    return url.toString();
+    return getDataSource() === DataSource.Dev
+        ? `${urlStr}${urlStr.includes("?") ? "&" : "?"}env=dev`
+        : urlStr;
 }
 
 export function getBloomApiHeaders() {
