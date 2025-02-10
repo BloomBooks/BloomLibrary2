@@ -214,7 +214,7 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                         label="Title"
                         variant="outlined"
                         multiline
-                        rows={2}
+                        minRows={2}
                         value={props.book.title || ""}
                         onChange={handleTitleChange}
                     ></TextField>
@@ -225,7 +225,7 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                         label="Summary"
                         variant="outlined"
                         multiline
-                        rows={2}
+                        minRows={2}
                         value={props.book.summary || ""}
                         onChange={handleSummaryChange}
                     ></TextField>
@@ -246,7 +246,7 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                         label="Notes"
                         variant="outlined"
                         multiline
-                        rows={4} // may be redundant with height forced in css above
+                        minRows={4} // may be redundant with height forced in css above
                         value={props.book.librarianNote}
                         onChange={handleNotesChange}
                     ></TextField>
