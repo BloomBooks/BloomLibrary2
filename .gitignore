@@ -36,3 +36,9 @@ debug.log
 .yarn/*
 
 .yarnrc.yml
+
+src/localization/BloomLibrary.org/Contentful*
+
+src/localization/??/*
+src/localization/???/*
+

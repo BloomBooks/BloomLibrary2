@@ -11,7 +11,6 @@
         "description": "",
         "message": "Topics"
     },
-
     "bloomReader": {
         "message": "Bloom Reader",
         "description": "The name of an Android app (probably does not need to be translated)"
@@ -20,7 +19,6 @@
         "message": "BloomPUB Viewer",
         "description": "The name of a software application (probably does not need to be translated)"
     },
-
     "downloads": {
         "description": "",
         "message": "Downloads"
@@ -29,7 +27,6 @@
         "description": "",
         "message": "For Translation"
     },
-
     "language": {
         "description": "",
         "message": "Language"
@@ -46,7 +43,6 @@
         "description": "",
         "message": "Branding"
     },
-
     "header.read": {
         "description": "",
         "message": "Read"
@@ -103,7 +99,6 @@
         "message": "Missing level",
         "description": "Used to label books in a particular collection which are missing level information. For example, \"COVID-19 - Missing level\" as opposed to \"COVID-19 - Level 1\"."
     },
-
     "level.prefix": {
         "message": "Content level:",
         "description": "This is shown before either 'first words' or 'first sentences', 'longer paragraphs', etc. We avoid calling it a 'Reading level' because that term suggest more than we're doing here. This is a really simple measure just based on counting words, sentences, and paragraphs."
@@ -365,7 +360,6 @@
         "description": "",
         "message": "Our server encountered a problem while processing this book. The developers have been notified."
     },
-
     "book.report": {
         "description": "",
         "message": "Report"
@@ -574,8 +568,5 @@
     "appHosted.detailsOnBlorg": {
         "message": "Details on BloomLibrary.org",
         "description": "Takes you to a page with more detailed information about a book"
-    },
-    "grids": {
-        "message": "Grids"
     }
 }
