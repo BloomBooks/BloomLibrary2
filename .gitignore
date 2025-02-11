@@ -37,7 +37,8 @@ debug.log
 # Translations handling:
 # First ignore everything in translations
 public/translations/*
-# Then un-ignore crowdin.yml and the BloomLibrary.org directory
+# Then un-ignore a few things we do want
+!public/translations/README.md
 !public/translations/crowdin.yml
 !public/translations/BloomLibrary.org
 # Then ignore Contentful files within BloomLibrary.org
