@@ -11,9 +11,6 @@
 # production
 /build
 
-# These come from yarn sync-crowdin
-public/translations/
-
 # misc
 .DS_Store
 .env.local
@@ -37,8 +34,11 @@ debug.log
 
 .yarnrc.yml
 
-src/localization/BloomLibrary.org/Contentful*
-
-src/localization/??/*
-src/localization/???/*
-
+# Translations handling:
+# First ignore everything in translations
+public/translations/*
+# Then un-ignore crowdin.yml and the BloomLibrary.org directory
+!public/translations/crowdin.yml
+!public/translations/BloomLibrary.org
+# Then ignore Contentful files within BloomLibrary.org
+public/translations/BloomLibrary.org/Contentful*

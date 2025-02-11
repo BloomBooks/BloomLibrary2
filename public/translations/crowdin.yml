@@ -1,0 +1,17 @@
+project_id: "261564"
+api_token_env: BLOOM_CROWDIN_TOKEN
+preserve_hierarchy: true
+files: [
+        {
+            # Apparently, this source must match the pattern in the Crowdin project, from the root, exactly.
+            "source": "BloomLibrary.org/*.json",
+            # We could not get this to work any other way than to have the language codes at the root.
+            "translation": "%two_letters_code%/BloomLibrary.org/%original_file_name%",
+        },
+        {
+            # Apparently, this source must match the pattern in the Crowdin project, from the root, exactly.
+            "source": "BloomLibrary.org/*.json",
+            # We could not get this to work any other way than to have the language codes at the root.
+            "translation": "%locale%/BloomLibrary.org/%original_file_name%",
+        },
+    ]
