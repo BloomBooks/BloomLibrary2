@@ -24,7 +24,9 @@ To run the unit tests, do `yarn test`
 ### Pointing to Prod, Dev, or Local
 BloomLibrary talks to a [Parse](https://parseplatform.org/) server to get the list of books. This can be the Production Parse server, or the Development Parse server, or a locally hosted Parse server. You can manually change which server it talks to if needed. See `ParseServerConnection.ts`.
 
+## Localization
 
+See details in `src/translations/README.md`.
 
 ## bloom-player
 BloomLibrary depends upon on the [bloom-player](https://github.com/BloomBooks/bloom-player) library to provide the book reading experience.

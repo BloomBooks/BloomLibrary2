@@ -28,11 +28,13 @@ export default defineConfig(() => {
         },
         build: {
             outDir: "build",
+            // Before we used vite, assets went into "static", so we're keeping it that way to minimize CD changes.
             assetsDir: "static",
         },
 
         plugins: [
-            removeNonpublishableFilesPlugin(),
+            serveTranslationsPlugin(),
+            copyTranslationsPlugin(),
             // if you import an svg file with this ?react at the end, it will be converted to a React component
             svgr({
                 include: "**/*.svg?react",
@@ -42,29 +44,77 @@ export default defineConfig(() => {
     };
 });
 
-// vite doesn't offer a way to exclude files in the public directory from being copied to the build directory.
-// So we work around it by removing them after they are copied.
-// See public/translations/README.md for why they must be in the public directory.
-// I tried hard to make crowdin not download qaa-x-test but to no avail. I tried using the config file
-// and even directly putting --exclude-language on the command line call.
-function removeNonpublishableFilesPlugin(): Plugin {
+// Copies translation files from src to build
+function copyTranslationsPlugin(): Plugin {
+    // BloomLibrary.org is where the source (English) files are. We don't need them in the build.
+    // I tried hard to make crowdin not download qaa-x-test but to no avail. I tried using the config file
+    // and even directly putting --exclude-language on the command line call.
+    const excludedDirectories = ["BloomLibrary.org", "qaa-x-test"];
+
     return {
-        name: "remove-nonpublishable-files-plugin",
+        name: "copy-translations-plugin",
         writeBundle({ dir }) {
             const buildDir = dir || path.join(__dirname, "build");
-            const pathsToRemove = [
-                "translations/crowdin.yml",
-                "translations/README.md",
-                "translations/BloomLibrary.org",
-                "translations/qaa-x-test",
-            ];
+            const srcTranslationsDir = path.join(__dirname, "src/translations");
+            const buildTranslationsDir = path.join(buildDir, "translations");
 
-            for (const relativePath of pathsToRemove) {
-                const fullPath = path.join(buildDir, relativePath);
-                if (fs.existsSync(fullPath)) {
-                    fs.rmSync(fullPath, { recursive: true, force: true });
+            fs.mkdirSync(buildTranslationsDir, { recursive: true });
+
+            fs.readdirSync(srcTranslationsDir, { withFileTypes: true })
+                .filter(
+                    (entry) =>
+                        // We don't want the files (README.md, etc.), only the language directories.
+                        entry.isDirectory() &&
+                        !excludedDirectories.includes(entry.name)
+                )
+                .forEach((language) => {
+                    fs.cpSync(
+                        path.join(srcTranslationsDir, language.name),
+                        path.join(buildTranslationsDir, language.name),
+                        { recursive: true }
+                    );
+                });
+        },
+    };
+}
+
+// Used to serve translation files when running `yarn dev`
+function serveTranslationsPlugin(): Plugin {
+    return {
+        name: "serve-translations",
+        configureServer(server) {
+            server.middlewares.use("/translations", (req, res, next) => {
+                if (!req.url) {
+                    next();
+                    return;
                 }
-            }
+
+                // URL format: /translations/lang/BloomLibrary.org/file.json
+                const parts = req.url.split("/");
+                if (parts.length >= 4) {
+                    const lang = parts[1];
+                    const filename = parts[parts.length - 1];
+                    const filePath = path.join(
+                        __dirname,
+                        "src/translations",
+                        lang,
+                        "BloomLibrary.org",
+                        decodeURIComponent(filename)
+                    );
+
+                    if (fs.existsSync(filePath)) {
+                        const content = fs.readFileSync(filePath, "utf8");
+                        res.setHeader("Content-Type", "application/json");
+                        res.end(content);
+                        return;
+                    } else {
+                        console.error(
+                            `Attempted to serve nonexistent translation file ${filePath}`
+                        );
+                    }
+                }
+                next();
+            });
         },
     };
 }

@@ -3,9 +3,9 @@ import { useMemo, useState } from "react";
 import { setUserInterfaceTag } from "../model/Language";
 import files from "./crowdin-file-names.json";
 import * as Sentry from "@sentry/browser";
-import englishCodeStrings from "../../public/translations/BloomLibrary.org/Code Strings.json";
-import englishStatsStrings from "../../public/translations/BloomLibrary.org/Stats Strings.json";
-import englishTopicsAndFeaturesStrings from "../../public/translations/BloomLibrary.org/Topics And Features.json";
+import englishCodeStrings from "../translations/BloomLibrary.org/Code Strings.json";
+import englishStatsStrings from "../translations/BloomLibrary.org/Stats Strings.json";
+import englishTopicsAndFeaturesStrings from "../translations/BloomLibrary.org/Topics And Features.json";
 
 export interface IStringMap {
     [id: string]: string;

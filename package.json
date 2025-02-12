@@ -12,8 +12,8 @@
         "test": "vitest",
         "test:ci": "set CI=true&& yarn test",
         "storybook": "storybook dev",
-        "crowdin-dangerous-upload": "crowdin upload --config public/translations/crowdin.yml",
-        "crowdin-download": "crowdin download sources --config public/translations/crowdin.yml && crowdin download --config public/translations/crowdin.yml",
+        "crowdin-dangerous-upload": "crowdin upload --config src/translations/crowdin.yml",
+        "crowdin-download": "crowdin download sources --config src/translations/crowdin.yml && crowdin download --config src/translations/crowdin.yml",
         "lint": "yarn eslint \"src/**/!(*.d).ts{,x}\"",
         "prepare": "husky install",
         "postinstall": "patch-package && husky install && shx rm -rf .git/hooks && shx ln -s ../.husky .git/hooks"

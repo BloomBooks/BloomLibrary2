@@ -36,10 +36,10 @@ debug.log
 
 # Translations handling:
 # First ignore everything in translations
-public/translations/*
+src/translations/*
 # Then un-ignore a few things we do want
-!public/translations/README.md
-!public/translations/crowdin.yml
-!public/translations/BloomLibrary.org
+!src/translations/README.md
+!src/translations/crowdin.yml
+!src/translations/BloomLibrary.org
 # Then ignore Contentful files within BloomLibrary.org
-public/translations/BloomLibrary.org/Contentful*
+src/translations/BloomLibrary.org/Contentful*
