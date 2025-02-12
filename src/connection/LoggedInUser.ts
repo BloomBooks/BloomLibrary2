@@ -29,7 +29,7 @@ export class User {
 
 // This just exists to facilitate mobx auto-re-rendering when we login or log out.
 class UserHolder {
-    public current?: User;
+    public current?: User = undefined;
 
     constructor() {
         makeObservable(this, {

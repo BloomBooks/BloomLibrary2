@@ -1,8 +1,4 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
 
 import { FormControlLabel, Checkbox } from "@material-ui/core";
 import { Book } from "../../model/Book";
@@ -10,7 +6,7 @@ import React, { useState } from "react";
 export const HideBookControl: React.FunctionComponent<{
     book: Book;
     setModified: (modified: boolean) => void;
-}> = props => {
+}> = (props) => {
     const [checked, setChecked] = useState(!props.book.inCirculation);
     return (
         <FormControlLabel
@@ -23,7 +19,7 @@ export const HideBookControl: React.FunctionComponent<{
             control={
                 <Checkbox
                     checked={checked}
-                    onChange={e => {
+                    onChange={(e) => {
                         props.book.inCirculation = !e.target.checked;
                         setChecked(e.target.checked);
                         props.setModified(true);

@@ -1,6 +1,4 @@
-import css from "@emotion/css/macro";
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
 
 import React from "react";
 import ReportProblemOutlinedIcon from "@material-ui/icons/ReportProblemOutlined";

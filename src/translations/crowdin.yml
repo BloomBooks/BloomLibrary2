@@ -1,0 +1,23 @@
+project_id: "261564"
+api_token_env: BLOOM_CROWDIN_TOKEN
+preserve_hierarchy: true
+files: [
+        # For more information about how we landed where we did for Crowdin upload/download, see ./README.md.
+        {
+            # Apparently, this source must match the pattern in the Crowdin project, from the root, exactly.
+            "source": "BloomLibrary.org/*.json",
+            "translation": "%two_letters_code%/BloomLibrary.org/%original_file_name%",
+            "skip_untranslated_strings": true,
+            # This is flaky; maybe has something to do with if the project has to be rebuilt?:
+            "export_only_approved": true,
+        },
+        # This is insane, but we have to duplicate the whole thing above, swapping out
+        # %locale% for %two_letters_code%, because the one above only gets codes without a dash
+        # and the one below only gets codes with a dash.
+        {
+            "source": "BloomLibrary.org/*.json",
+            "translation": "%locale%/BloomLibrary.org/%original_file_name%",
+            "skip_untranslated_strings": true,
+            "export_only_approved": true,
+        },
+    ]

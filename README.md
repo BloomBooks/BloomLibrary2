@@ -4,65 +4,40 @@ Language speakers find books in their own language, and book creators find shell
 
 ---
 
-# Development Process
-
-## Prerequisites ##
-
-### yarn ###
-Install yarn (https://yarnpkg.com/lang/en/docs/install/#windows-stable)
-
-### volta ###
-You'll need [nodejs](https://nodejs.org/en/) installed.  As time goes on, the required version of nodejs changes. Currently our team has [volta](https://github.com/volta-cli/volta) installed, and with that, you automatically get the right version of nodejs that this project requires.
-
-### yarn install ###
-Finally, run yarn in a command line (e.g. in VSCode) to install dependencies.
-
-    yarn
-
----
-
-## Running locally ##
-To run the code locally, do:
-
-    yarn start
-
-This runs the app in the development mode and should open a web browser page at [http://localhost:3000](http://localhost:3000).
-
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+# Development
 
 
-## Unit Tests ##
-To run the unit tests, do
+## Get dependencies
+You'll need nodejs and yarn.  Please install [volta](https://github.com/volta-cli/volta) so that you automatically use the correct version of nodejs and yarn that this project requires, as specified in `package.json`.
+Finally, run `yarn` in a command line (e.g. in VSCode) to install the library dependencies.
 
-    yarn test
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Run locally
+To run the site locally, do `yarn dev`
 
----
+## Storybook
+To see various components/scenarios, do `yarn storybook`
+
+## Unit Tests
+To run the unit tests, do `yarn test`
+
 
 ### Pointing to Prod, Dev, or Local
-This project talks to a Parse server to get the list of books. This can be the Production Parse server, or the Development Parse server, or a locally hosted Parse server. You can manually change which server it talks to if needed.
+BloomLibrary talks to a [Parse](https://parseplatform.org/) server to get the list of books. This can be the Production Parse server, or the Development Parse server, or a locally hosted Parse server. You can manually change which server it talks to if needed. See `ParseServerConnection.ts`.
 
-Go to the file ```ParseServerConnection.ts``` and modify it to point to the desired server.
+## Localization
 
----
+See details in `src/translations/README.md`.
 
 ## bloom-player
-This project depends upon the companion [bloom-player](https://github.com/BloomBooks/bloom-player) repository to provide the book reading experience.
+BloomLibrary depends upon on the [bloom-player](https://github.com/BloomBooks/bloom-player) library to provide the book reading experience.
 This is installed as a normal dependency. However, sometimes during the development process you may wish to run your own local build of bloom-player.
 
 If you need to do that, there are a couple options:
 ### A) yarn link
-One option is to ```yarn link``` to the local bloom-player source code on the same computer.<br />
-Official documentation: https://classic.yarnpkg.com/lang/en/docs/cli/link/
+One option is to ```yarn link``` ([docs](https://classic.yarnpkg.com/lang/en/docs/cli/link/)) to the local bloom-player source code on the same computer.
 
 ### B) manual copy
-Another option is to manually copy the bloom-player build to BloomLibrary.
-In the bloom-player repository, build it there:<br />
-```yarn build-dev``` (or ```yarn build```)
-
-bloom-player will build it in its ```dist``` folder. Overwrite this project's ```node_modules/bloom-player/dist``` folder with the newly-built ```dist``` folder from bloom-player.  (Remember to restore the original ```dist``` folder when you're done)
-
+Another option is to manually copy the bloom-player's `/dist` folder build to BloomLibrary's `node_modules/bloom-player/dist`.
 
 ---
 
@@ -70,32 +45,9 @@ bloom-player will build it in its ```dist``` folder. Overwrite this project's ``
 
 We use [YouTrack](https://silbloom.myjetbrains.com) Kanban boards.
 
-## Continuous Build System
+## Continuous Build
 
 Each time code is checked in, an automatic build begins on our [TeamCity build server](https://build.palaso.org/project/Bloom), running all the unit tests.
-
-
----
-
-# Learn More about Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
----
-### Ejecting from Create React App ###
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-
 
 # License
 

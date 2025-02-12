@@ -24,7 +24,7 @@ const prod: IConnection = {
     },
     url: "https://server.bloomlibrary.org/parse/",
 };
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 const dev: IConnection = {
     headers: {
         "Content-Type": "text/json",
@@ -33,7 +33,6 @@ const dev: IConnection = {
     url: "https://dev-server.bloomlibrary.org/parse/",
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const local: IConnection = {
     headers: {
         "Content-Type": "text/json",

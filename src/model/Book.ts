@@ -11,7 +11,7 @@ import {
     getDefaultBookStat,
 } from "../components/statistics/StatsInterfaces";
 import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
-const stem = require("wink-porter2-stemmer");
+import stem from "wink-porter2-stemmer";
 
 export function createBookFromParseServerData(pojo: any): Book {
     const b = Object.assign(new Book(), pojo);
@@ -377,14 +377,12 @@ export class Book {
                 }
             // deliberate fall-through, downloadShell is restricted by the other two also.
             // @ts-ignore: noFallthroughCasesInSwitch
-            // eslint-disable-next-line no-fallthrough
             case "downloadAnything":
                 if (limits.downloadAnything) {
                     requiredCountry = limits.downloadAnything.countryCode;
                     break;
                 }
             // deliberate fall-through, download is restricted by viewContentsInAnyway, too.
-            // eslint-disable-next-line no-fallthrough
             case "viewContentsInAnyWay":
                 if (limits.viewContentsInAnyWay) {
                     requiredCountry = limits.viewContentsInAnyWay.countryCode;
@@ -547,9 +545,17 @@ export class Book {
         //  (a) changing BloomLibraryBooks{-Sandbox} to bloomharvest{-sandbox}
         //  (b) strip off everything after the next-to-final slash
         let folderWithoutLastSlash = baseUrl;
+
         if (baseUrl.endsWith("%2f")) {
             folderWithoutLastSlash = baseUrl.substring(0, baseUrl.length - 3);
         }
+        if (window.location.hostname === "localhost") {
+            folderWithoutLastSlash = folderWithoutLastSlash.replace(
+                "https://s3.amazonaws.com",
+                "/s3" // vite proxy server can use this to overcome CORS
+            );
+        }
+
         const index = folderWithoutLastSlash.lastIndexOf("%2f");
         const pathWithoutBookName = folderWithoutLastSlash.substring(0, index);
         return (

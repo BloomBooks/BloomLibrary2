@@ -3,9 +3,9 @@ import { useMemo, useState } from "react";
 import { setUserInterfaceTag } from "../model/Language";
 import files from "./crowdin-file-names.json";
 import * as Sentry from "@sentry/browser";
-import englishCodeStrings from "./Code Strings.json";
-import englishStatsStrings from "./Stats Strings.json";
-import englishTopicsAndFeaturesStrings from "./Topics And Features.json";
+import englishCodeStrings from "../translations/BloomLibrary.org/Code Strings.json";
+import englishStatsStrings from "../translations/BloomLibrary.org/Stats Strings.json";
+import englishTopicsAndFeaturesStrings from "../translations/BloomLibrary.org/Topics And Features.json";
 
 export interface IStringMap {
     [id: string]: string;
@@ -54,7 +54,6 @@ export function useGetLocalizations(
     let justUseEnglish = userInterfaceLanguageTag === "en";
 
     for (const filename of files) {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
         // NOTE that we're using a different "UseAxios" here; this one has this `manual` option we need
         // in order to skip trying to download English without violating the rule of hooks.
         const [{ response: jsonResponse, error, loading }] = UseAxios(
