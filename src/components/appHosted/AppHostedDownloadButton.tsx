@@ -2,7 +2,7 @@ import { css } from "@emotion/react";
 
 import React from "react";
 import Button from "@material-ui/core/Button";
-import DownloadIcon from "../../assets/download_white_24dp.svg?react";
+import DownloadIcon from "../../assets/download_white_24dp.svg";
 import { commonUI } from "../../theme";
 import {
     getArtifactUrl,
