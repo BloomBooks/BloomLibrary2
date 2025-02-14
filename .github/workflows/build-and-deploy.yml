@@ -19,13 +19,12 @@ jobs:
             - name: Install dependencies
               run: yarn install --frozen-lockfile --network-timeout 1000000000
 
-            # Not yet
-            # - name: Upload translations to Crowdin
-            #   if: github.ref == 'refs/heads/release'
-            #   # Push any new code-based strings to Crowdin
-            #   run: crowdin-dangerous-upload
-            #   env:
-            #     BLOOM_CROWDIN_TOKEN: ${{ secrets.BLOOM_CROWDIN_TOKEN }}
+            - name: Upload translations to Crowdin
+              if: github.ref == 'refs/heads/release'
+              # Push any new code-based strings to Crowdin
+              run: yarn crowdin-dangerous-upload
+              env:
+                  BLOOM_CROWDIN_TOKEN: ${{ secrets.BLOOM_CROWDIN_TOKEN }}
 
             - name: Download translations from Crowdin
               run: yarn crowdin-download
