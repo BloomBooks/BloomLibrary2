@@ -1,7 +1,7 @@
 import UseAxios from "axios-hooks";
 import { useMemo, useState } from "react";
 import { setUserInterfaceTag } from "../model/Language";
-import files from "./crowdin-file-names.json";
+import l10nStringsFileNames from "./crowdin-file-names.json";
 import * as Sentry from "@sentry/browser";
 import englishCodeStrings from "../translations/BloomLibrary.org/Code Strings.json";
 import englishStatsStrings from "../translations/BloomLibrary.org/Stats Strings.json";
@@ -53,7 +53,7 @@ export function useGetLocalizations(
 
     let justUseEnglish = userInterfaceLanguageTag === "en";
 
-    for (const filename of files) {
+    for (const filename of l10nStringsFileNames) {
         // NOTE that we're using a different "UseAxios" here; this one has this `manual` option we need
         // in order to skip trying to download English without violating the rule of hooks.
         const [{ response: jsonResponse, error, loading }] = UseAxios(
@@ -122,7 +122,7 @@ export function useGetLocalizations(
     }
     let translations: IStringMap = {};
 
-    for (const filename of files) {
+    for (const filename of l10nStringsFileNames) {
         translations = { ...translations, ...translationFiles[filename] };
     }
 
@@ -147,36 +147,12 @@ function getJsonLocalizations(json: any): IStringMap {
 
 function chooseLanguageWeAreGoingToAskFor(
     preferredLanguageTag: string
-    // we have others, but these are ones that we know we have and that dialects need to map to
 ): string {
-    // These must match what we have in Crowdin
-    const languagesWeKnowWeHave = ["en", "fr", "es-ES", "pt-PT", "zh-CN"];
+    // Previously, when Crowdin was sometimes providing region codes as part of the
+    // language tags, this logic was much more complex. Now that we are asking the CLI
+    // to give us only the language subtag, we can simplify to this:
 
-    if (languagesWeKnowWeHave.includes(preferredLanguageTag)) {
-        return preferredLanguageTag;
-    }
-    // strip off the region part of the tag, and see if we have a match for the primary part
-    const primary = preferredLanguageTag.split("-")[0];
-
-    // FIRST: exact match
-    if (languagesWeKnowWeHave.includes(primary)) {
-        return primary;
-    }
-
-    // SECOND: match language but no dialect (Primary part of the BCP47 code).
-    // If someone wants Portuguese from Brazil, and we just have pt-PT, we
-    // should give them that. Note, this heuristic could be wrong. It could be
-    // that we shouldn't try and be smart, we should just trust that the user
-    // would explicitly tell his browser that, for example, he'd like pt-BR but
-    // if that's not available, he wants pt-PT.
-    const firstLanguageMatchingPrimaryPart = languagesWeKnowWeHave.find(
-        (l) => l.split("-")[0] === primary
-    );
-    if (firstLanguageMatchingPrimaryPart) {
-        return firstLanguageMatchingPrimaryPart;
-    }
-
-    return preferredLanguageTag;
+    return preferredLanguageTag.split("-")[0];
 }
 
 // // this is BCP 47

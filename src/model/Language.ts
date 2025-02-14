@@ -36,7 +36,7 @@ export function getDisplayNamesFromLanguageCode(
 }
 
 //  it's tempting to use navigator.language, but we also want to support other ways of choosing the current UI language
-// This is essentially a global (accessed via a setter function) because it's not worth it to me to do a tone of plumbing.
+// This is essentially a global (accessed via a setter function) because it's not worth it to me to do a ton of plumbing.
 let userInterfaceTagWeAreUsing: string = "en";
 export function setUserInterfaceTag(tag: string) {
     userInterfaceTagWeAreUsing = tag;
