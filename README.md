@@ -47,7 +47,7 @@ We use [YouTrack](https://silbloom.myjetbrains.com) Kanban boards.
 
 ## Continuous Build
 
-Each time code is checked in, an automatic build begins on our [TeamCity build server](https://build.palaso.org/project/Bloom), running all the unit tests.
+Each time code is checked in, an automatic build begins in Github Actions, running all the unit tests.
 
 # License
 
