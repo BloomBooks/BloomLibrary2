@@ -102,6 +102,23 @@ function loadAnalytics() {
 window.addEventListener("DOMContentLoaded", loadAnalytics);
 
 export function track(event: string, params: object) {
+    // Previously, we sent more events but decided in April 2025 that we weren't
+    // getting enough value to make it worth the increase in cost at Segment.com.
+    // By whitelisting only these events, we believe we can cut the number of
+    // unique users in about half. See BL-14518.
+    const eventWhiteList: string[] = [
+        "Download Book",
+        "Download Book To Edit",
+        // The following can come from bloom-player as far as I can tell.
+        "BookOrShelf opened",
+        "Pages Read",
+        "drag-activity",
+        "simple-dom-choice",
+        "comprehension",
+    ];
+    if (!eventWhiteList.includes(event)) {
+        return;
+    }
     // Note that once the script created in the load() function above is loaded,
     // window.analytics is an object defined in that script, not the object
     // we created in the immediately-invoked function above. So don't be tempted
