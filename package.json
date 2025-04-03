@@ -3,7 +3,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "vite",
+        "dev": "yarn copyInBloomPlayer && vite",
         "serve": "vite preview",
         "build": "yarn copyInBloomPlayer && vite build",
         "build:ci": "set CI=true&& yarn build",
