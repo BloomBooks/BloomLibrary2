@@ -102,6 +102,20 @@ function loadAnalytics() {
 window.addEventListener("DOMContentLoaded", loadAnalytics);
 
 export function track(event: string, params: object) {
+    // We only want to send a few types of events to segment.  See BL-14518.
+    const eventWhiteList: string[] = [
+        "Download Book",
+        "Download Book To Edit",
+        // The following can come from bloom-player as far as I can tell.
+        "BookOrShelf opened",
+        "Pages Read",
+        "drag-activity",
+        "simple-dom-choice",
+        "comprehension",
+    ];
+    if (eventWhiteList.indexOf(event) === -1) {
+        return;
+    }
     // Note that once the script created in the load() function above is loaded,
     // window.analytics is an object defined in that script, not the object
     // we created in the immediately-invoked function above. So don't be tempted
