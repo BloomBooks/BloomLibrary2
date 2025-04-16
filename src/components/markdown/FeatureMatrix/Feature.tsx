@@ -18,7 +18,7 @@ const columOneWidth = "auto";
 export const Feature: React.FunctionComponent<IFeatureProps> = (props) => {
     const [open, setOpen] = React.useState(false);
     const getResponsiveChoice = useResponsiveChoice();
-    const all = !(props.community || props.enterprise);
+    const all = !(props.pro || props.community || props.enterprise);
     const hasChildren = React.Children.count(props.children) > 0;
     return (
         <React.Fragment>
@@ -97,13 +97,27 @@ export const Feature: React.FunctionComponent<IFeatureProps> = (props) => {
                     </div>
                 </TableCell>
                 <TableCell className="checkMarkHolder" align="center">
-                    {all && <Check />}
+                    {(props.freeText && <span>{props.freeText}</span>) ||
+                        (all && <Check />)}
                 </TableCell>
                 <TableCell className="checkMarkHolder" align="center">
-                    {(all || props.community) && <Check />}
+                    {(props.proText && <span>{props.proText}</span>) ||
+                        ((all || props.pro) && <Check />)}
                 </TableCell>
                 <TableCell className="checkMarkHolder" align="center">
-                    {(all || props.community || props.enterprise) && <Check />}
+                    {(props.communityTag && (
+                        <span>{props.communityTag}</span>
+                    )) ||
+                        ((all || props.pro || props.community) && <Check />)}
+                </TableCell>
+                <TableCell className="checkMarkHolder" align="center">
+                    {(props.enterpriseText && (
+                        <span>{props.enterpriseText}</span>
+                    )) ||
+                        ((all ||
+                            props.pro ||
+                            props.community ||
+                            props.enterprise) && <Check />)}
                 </TableCell>
             </TableRow>
             <TableRow

@@ -3,6 +3,7 @@ import React from "react";
 export interface IFeatureMatrixProps {
     // These are passed in as props so they can be localized in Contentful.
     freeLabel?: string;
+    proLabel?: string;
     communityLabel?: string;
     enterpriseLabel?: string;
 }
