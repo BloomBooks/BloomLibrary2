@@ -2,6 +2,11 @@ import React from "react";
 
 export interface IFeatureProps {
     name: string;
+    freeText?: string;
+    proText?: string;
+    communityText?: string;
+    enterpriseText?: string;
+    pro: boolean;
     community: boolean;
     enterprise: boolean;
 }
