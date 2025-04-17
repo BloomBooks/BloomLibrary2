@@ -62,13 +62,16 @@ export const FeatureMatrix: React.FunctionComponent<IFeatureMatrixProps> = (
                     >
                         <TableCell></TableCell>
                         <TableCell className="levelName" align="center">
-                            {props.freeLabel || "Free"}
+                            {props.freeLabel || "Bloom Basic (Free)"}
+                        </TableCell>
+                        <TableCell className="levelName" align="center">
+                            {props.proLabel || "Bloom Pro"}
                         </TableCell>
                         <TableCell className="levelName" align="center">
                             {props.communityLabel || "Local Community"}
                         </TableCell>
                         <TableCell className="levelName" align="center">
-                            {props.enterpriseLabel || "Enterprise"}
+                            {props.enterpriseLabel || "Bloom Enterprise"}
                         </TableCell>
                     </TableRow>
                 </TableHead>
