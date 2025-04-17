@@ -126,7 +126,7 @@ export const Feature: React.FunctionComponent<IFeatureProps> = (props) => {
                 `}
             >
                 <TableCell
-                    colSpan={4}
+                    colSpan={5}
                     css={css`
                         padding-bottom: 0;
                         padding-top: 0;
