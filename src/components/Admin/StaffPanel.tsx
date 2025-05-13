@@ -1,8 +1,5 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
+
 import { Book } from "../../model/Book";
 
 import React, { useState } from "react";
@@ -217,7 +214,7 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                         label="Title"
                         variant="outlined"
                         multiline
-                        rows={2}
+                        minRows={2}
                         value={props.book.title || ""}
                         onChange={handleTitleChange}
                     ></TextField>
@@ -228,7 +225,7 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                         label="Summary"
                         variant="outlined"
                         multiline
-                        rows={2}
+                        minRows={2}
                         value={props.book.summary || ""}
                         onChange={handleSummaryChange}
                     ></TextField>
@@ -249,7 +246,7 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
                         label="Notes"
                         variant="outlined"
                         multiline
-                        rows={4} // may be redundant with height forced in css above
+                        minRows={4} // may be redundant with height forced in css above
                         value={props.book.librarianNote}
                         onChange={handleNotesChange}
                     ></TextField>

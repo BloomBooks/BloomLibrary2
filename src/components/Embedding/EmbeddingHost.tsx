@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
-import { useContentful } from "../connection/UseContentful";
-import { convertContentfulEmbeddingSettingsToIEmbedSettings } from "../model/Contentful";
-import { splitPathname, CollectionWrapper } from "./Routes";
+import { useContentful } from "../../connection/UseContentful";
+import { convertContentfulEmbeddingSettingsToIEmbedSettings } from "../../model/Contentful";
+import { splitPathname, CollectionWrapper } from "../Routes";
 import { useLocation } from "react-router-dom";
 
 // Note, there is a Storybook story for testing this in an iframe.

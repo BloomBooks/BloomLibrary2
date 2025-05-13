@@ -1,8 +1,4 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
 
 import React, { useEffect, useRef, useState } from "react";
 import SwiperCore, { Navigation, A11y } from "swiper";
@@ -14,6 +10,9 @@ import { useResponsiveChoice } from "../responsiveUtilities";
 import { commonUI } from "../theme";
 import { ICardSwiperProps } from "./CardSwiperCodeSplit";
 
+// Note, I don't know why we have to disable this here.
+// When we made changes to eslint when moving to vite, suddenly it complained about this.
+// eslint-disable-next-line react-hooks/rules-of-hooks
 SwiperCore.use([Navigation, A11y]);
 
 const swiperConfig: Swiper = {

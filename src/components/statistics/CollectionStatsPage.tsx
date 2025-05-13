@@ -1,8 +1,5 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
+
 import React, { useState, useMemo, useEffect, ReactNode } from "react";
 import ReactDOM from "react-dom";
 import { useGetCollection } from "../../model/Collections";
@@ -35,7 +32,7 @@ import { StatsCredits } from "./StatsCredits";
 import { StatsLocationScreen } from "./StatsLocationScreen";
 import { useHistory } from "react-router-dom";
 import { useDateRangeQueryParam } from "./useDateRangeQueryParam";
-const SvgSaver = require("svgsaver"); // note: domtoimage has svg export also, but there are problems with what it produces (figma can't load)
+import SvgSaver from "svgsaver"; // note: domtoimage has svg export also, but there are problems with what it produces (figma can't load)
 
 export const Pretend: React.FunctionComponent<IStatsPageProps> = (props) => {
     return <h1>Pretend</h1>;

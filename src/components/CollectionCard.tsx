@@ -1,13 +1,8 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
 
 import React from "react";
 import { CheapCard } from "./CheapCard";
 import { BookCount } from "./BookCount";
-//import teamIcon from "../assets/team.svg";
 import booksIcon from "../assets/books.svg";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { Document } from "@contentful/rich-text-types";

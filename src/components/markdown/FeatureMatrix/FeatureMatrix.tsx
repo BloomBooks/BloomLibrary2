@@ -1,8 +1,4 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
 
 import React from "react";
 import Table from "@material-ui/core/Table";
@@ -66,13 +62,16 @@ export const FeatureMatrix: React.FunctionComponent<IFeatureMatrixProps> = (
                     >
                         <TableCell></TableCell>
                         <TableCell className="levelName" align="center">
-                            {props.freeLabel || "Free"}
+                            {props.freeLabel || "Bloom Basic (Free)"}
+                        </TableCell>
+                        <TableCell className="levelName" align="center">
+                            {props.proLabel || "Bloom Pro"}
                         </TableCell>
                         <TableCell className="levelName" align="center">
                             {props.communityLabel || "Local Community"}
                         </TableCell>
                         <TableCell className="levelName" align="center">
-                            {props.enterpriseLabel || "Enterprise"}
+                            {props.enterpriseLabel || "Bloom Enterprise"}
                         </TableCell>
                     </TableRow>
                 </TableHead>

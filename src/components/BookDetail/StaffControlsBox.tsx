@@ -1,15 +1,11 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
 
 import React, { Fragment } from "react";
 import { observer } from "mobx-react-lite";
 import {
-    ExpansionPanel,
-    ExpansionPanelSummary,
-    ExpansionPanelDetails,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
 } from "@material-ui/core";
 
 import { Book } from "../../model/Book";
@@ -45,11 +41,11 @@ export const StaffControlsBox: React.FunctionComponent<{
             >
                 You have staff permission on this book
             </h1>
-            <ExpansionPanel defaultExpanded={true}>
-                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+            <Accordion defaultExpanded={true}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                     Staff Controls
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>
+                </AccordionSummary>
+                <AccordionDetails>
                     <React.Suspense
                         fallback={
                             <div>Loading chunk for showing staff panel...</div>
@@ -57,13 +53,13 @@ export const StaffControlsBox: React.FunctionComponent<{
                     >
                         <StaffPanel book={props.book!}></StaffPanel>
                     </React.Suspense>
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
-            <ExpansionPanel>
-                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                </AccordionDetails>
+            </Accordion>
+            <Accordion>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                     Raw Book Data
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>
+                </AccordionSummary>
+                <AccordionDetails>
                     <div
                         // raw book data typically has some very long strings without spaces,
                         // which the browser is reluctant to break. The overflow-wrap allows
@@ -93,8 +89,8 @@ export const StaffControlsBox: React.FunctionComponent<{
                             <ReactJsonView src={props.book} theme="monokai" />
                         </React.Suspense>
                     </div>
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
+                </AccordionDetails>
+            </Accordion>
         </ControlsBox>
     );
 });

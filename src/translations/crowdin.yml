@@ -1,0 +1,20 @@
+project_id: "261564"
+api_token_env: BLOOM_CROWDIN_TOKEN
+preserve_hierarchy: true
+files: [
+        # For more information about how we landed where we did for Crowdin upload/download, see ./README.md.
+        {
+            # Apparently, this source must match the pattern in the Crowdin project, from the root, exactly.
+            "source": "BloomLibrary.org/*.json",
+            # For our purposes, we really only want the language subtag, even if there is a region subtag
+            # in the Crowdin setup. That's what %two_letters_code% gives us.
+            # If we ever decide we want to handle regions, we'll have to revisit this.
+            # But note that as of Feb 2025, the CLI seems to be flaky regarding which tags you get
+            # when using %locale%, sometimes including the region, sometimes not. It seems to
+            # depend on who requested a Crowdin build and/or with what parameters.
+            "translation": "%two_letters_code%/BloomLibrary.org/%original_file_name%",
+            "skip_untranslated_strings": true,
+            # This is flaky; maybe has something to do with if the project has to be rebuilt?:
+            "export_only_approved": true,
+        },
+    ]

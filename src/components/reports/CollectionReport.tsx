@@ -1,8 +1,5 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
+
 import React, { useMemo } from "react";
 import { useGetBooksForGrid } from "../../connection/LibraryQueryHooks";
 import {
@@ -18,7 +15,7 @@ import {
 import { ICollectionReportProps } from "./CollectionReportSplit";
 import { IGridColumn } from "../Grid/GridColumns";
 import Button from "@material-ui/core/Button";
-import DownloadCsvIcon from "../../export/download-csv.svg";
+import DownloadCsvIcon from "../../export/download-csv.svg?react";
 import { useIntl } from "react-intl";
 import { useGetCollection } from "../../model/Collections";
 import { PageNotFound } from "../PageNotFound";
