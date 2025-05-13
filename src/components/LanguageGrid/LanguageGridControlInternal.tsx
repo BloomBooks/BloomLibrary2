@@ -1,8 +1,3 @@
-// // this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-// import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
 import React, {
     useState,
     useEffect,
@@ -54,9 +49,9 @@ import {
     getLangTagDataForIrregularLangCode,
     ModeratorStatusToolbarPlugin,
 } from "../AggregateGrid/AggregateGridPage";
-import { ILangTagData } from "../AggregateGrid/AggregateGridInterfaces";
+//import { ILangTagData } from "../AggregateGrid/AggregateGridInterfaces";
 
-const rawLangData: ILangTagData[] = require("../AggregateGrid/reduced-langtags.json");
+import rawLangData from "../AggregateGrid/reduced-langtags.json";
 
 // we need the observer in order to get the logged in user, which may not be immediately available
 const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlProps> = observer(

@@ -54,31 +54,6 @@
                 "CI": "true"
             },
             "disableOptimisticBPs": true
-        },
-        {
-            // Note 1: you'll have to set tsconfig.json module:commonjs temporarily
-            // Note 2: you'll have to change the code to run without a paramter, or
-            // figure out how to add that parameter here somewhere.
-            "name": "Debug crowdin-sync",
-            "type": "node",
-            "request": "launch",
-            "runtimeExecutable": "node",
-            "args": ["./src/localization/crowdin-sync.ts", "--transpile-only"],
-            "runtimeArgs": [
-                "--nolazy",
-                "-r",
-                "ts-node/register/transpile-only"
-            ],
-            "resolveSourceMapLocations": [
-                "${workspaceFolder}/**",
-                "!**/node_modules/**"
-            ],
-            "env": {
-                "TS_NODE_PROJECT": "${workspaceFolder}/tsconfig.json"
-            },
-            "cwd": "${workspaceRoot}",
-            "internalConsoleOptions": "openOnSessionStart",
-            "skipFiles": ["<node_internals>/**", "node_modules/**"]
         }
     ]
 }

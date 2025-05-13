@@ -1,15 +1,16 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
 
 import React from "react";
-import Img, { ImgProps } from "react-image";
+import { Img } from "react-image";
 import { Tooltip } from "@material-ui/core";
 
-interface IProps extends ImgProps {
+interface IProps {
     credits?: string;
+    // the following should come from react-image ImgProps but there's some problem with their typings
+    src: string;
+    alt?: string;
+    loader?: JSX.Element | null;
+    unloader?: JSX.Element | null;
 }
 
 // This is just like an Img, but with the additional credits property.

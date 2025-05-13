@@ -1,16 +1,12 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
 
 import React from "react";
 import { Book } from "../../model/Book";
 import { observer } from "mobx-react-lite";
 import {
-    ExpansionPanel,
-    ExpansionPanelSummary,
-    ExpansionPanelDetails,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { HarvesterArtifactUserControl } from "./ArtifactVisibilityPanel/ArtifactVisibilityPanel";
@@ -42,18 +38,18 @@ export const BookExtraPanels: React.FunctionComponent<{
                     >
                         Formats
                     </h2>
-                    <ExpansionPanel>
-                        <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                    <Accordion>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                             Which Format Buttons to Show for this Book
-                        </ExpansionPanelSummary>
-                        <ExpansionPanelDetails>
+                        </AccordionSummary>
+                        <AccordionDetails>
                             <HarvesterArtifactUserControl
                                 book={props.book}
                                 currentUserIsUploader={userIsUploader}
                                 currentUserIsModerator={user?.moderator}
                             />
-                        </ExpansionPanelDetails>
-                    </ExpansionPanel>
+                        </AccordionDetails>
+                    </Accordion>
                 </>
             )}
         </div>

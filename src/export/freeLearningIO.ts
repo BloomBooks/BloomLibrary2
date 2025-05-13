@@ -3,7 +3,7 @@ import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
 import { axios } from "@use-hooks/axios";
 import { getArtifactUrl } from "../components/BookDetail/ArtifactHelper";
 import { getBloomApiUrl } from "../connection/ApiConnection";
-const FileSaver = require("file-saver");
+import FileSaver from "file-saver";
 
 export async function giveFreeLearningCsv() {
     const rawBookRecords = await getFreeLearningBooks(); // Harvested, In Circulation, tag:FreeLearningIO

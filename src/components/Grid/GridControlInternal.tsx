@@ -1,8 +1,5 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
+
 import React, {
     useState,
     useEffect,
@@ -229,19 +226,23 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
             <Plugin name="ShowMatchingBookCount">
                 <Template name="toolbarContent">
                     <span>{`${totalMatchingBooksCount} Matching Books`}</span>
-                    {props.showFilterSpec && (
-                        <span
-                            css={css`
-                                margin-left: 20px;
-                                margin-right: 5px;
-                                color: #007aff;
-                            `}
-                        >
-                            {`Filter: ${JSON.stringify(
-                                filterMadeFromPageSearchPlusColumnFilters
-                            )}`}
-                        </span>
-                    )}
+                    {
+                        // As far as I can tell, this lint error is just wrong.
+                        // eslint-disable-next-line react/prop-types
+                        props.showFilterSpec && (
+                            <span
+                                css={css`
+                                    margin-left: 20px;
+                                    margin-right: 5px;
+                                    color: #007aff;
+                                `}
+                            >
+                                {`Filter: ${JSON.stringify(
+                                    filterMadeFromPageSearchPlusColumnFilters
+                                )}`}
+                            </span>
+                        )
+                    }
                     <span
                         css={css`
                             margin-left: 20px;

@@ -1,8 +1,4 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
 
 import React from "react";
 import TableCell from "@material-ui/core/TableCell";
@@ -22,7 +18,7 @@ const columOneWidth = "auto";
 export const Feature: React.FunctionComponent<IFeatureProps> = (props) => {
     const [open, setOpen] = React.useState(false);
     const getResponsiveChoice = useResponsiveChoice();
-    const all = !(props.community || props.enterprise);
+    const all = !(props.pro || props.community || props.enterprise);
     const hasChildren = React.Children.count(props.children) > 0;
     return (
         <React.Fragment>
@@ -101,13 +97,27 @@ export const Feature: React.FunctionComponent<IFeatureProps> = (props) => {
                     </div>
                 </TableCell>
                 <TableCell className="checkMarkHolder" align="center">
-                    {all && <Check />}
+                    {(props.freeText && <span>{props.freeText}</span>) ||
+                        (all && <Check />)}
                 </TableCell>
                 <TableCell className="checkMarkHolder" align="center">
-                    {(all || props.community) && <Check />}
+                    {(props.proText && <span>{props.proText}</span>) ||
+                        ((all || props.pro) && <Check />)}
                 </TableCell>
                 <TableCell className="checkMarkHolder" align="center">
-                    {(all || props.community || props.enterprise) && <Check />}
+                    {(props.communityText && (
+                        <span>{props.communityText}</span>
+                    )) ||
+                        ((all || props.pro || props.community) && <Check />)}
+                </TableCell>
+                <TableCell className="checkMarkHolder" align="center">
+                    {(props.enterpriseText && (
+                        <span>{props.enterpriseText}</span>
+                    )) ||
+                        ((all ||
+                            props.pro ||
+                            props.community ||
+                            props.enterprise) && <Check />)}
                 </TableCell>
             </TableRow>
             <TableRow
@@ -116,7 +126,7 @@ export const Feature: React.FunctionComponent<IFeatureProps> = (props) => {
                 `}
             >
                 <TableCell
-                    colSpan={4}
+                    colSpan={5}
                     css={css`
                         padding-bottom: 0;
                         padding-top: 0;

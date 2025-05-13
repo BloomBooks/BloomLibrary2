@@ -1,11 +1,7 @@
-// this engages a babel macro that does cool emotion stuff (like source maps). See https://emotion.sh/docs/babel-macros
-import css from "@emotion/css/macro";
-// these two lines make the css prop work on react elements
-import { jsx } from "@emotion/core";
-/** @jsx jsx */
+import { css } from "@emotion/react";
 
 import React from "react";
-import { ReactComponent as PlayStoreImg } from "../../assets/PlayStore.svg";
+import PlayStoreImg from "../../assets/PlayStore.svg?react";
 import { useIntl } from "react-intl";
 
 export const PlayStoreIcon: React.FunctionComponent = () => {

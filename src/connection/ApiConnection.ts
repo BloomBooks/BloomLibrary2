@@ -2,12 +2,16 @@ import { DataSource, getDataSource } from "./DataSource";
 import { getConnection } from "./ParseServerConnection";
 
 export function getBloomApiUrl(): string {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const local = "http://localhost:7071/v1";
-    const prod = "https://api.bloomlibrary.org/v1";
+    // Developer, if you want to test a local backend, temporarily uncomment this.
+    //return "http://localhost:7071/v1";
 
-    // Change this to return whichever one you want your requests to go to.
-    return prod;
+    // NB: at the moment, this seems to work even without going through the proxy. I don't know why.
+    if (window.location.hostname === "localhost") {
+        // When running blorg locally, we need to use a vite proxy to handle CORS issues. (See vite.config.ts)
+        return "/api/v1";
+    }
+
+    return "https://api.bloomlibrary.org/v1";
 }
 
 export function getBloomApiBooksUrl(
@@ -22,9 +26,9 @@ export function getBloomApiBooksUrl(
 }
 
 function addEnvironmentParam(urlStr: string): string {
-    const url = new URL(urlStr);
-    if (getDataSource() === DataSource.Dev) url.searchParams.set("env", "dev");
-    return url.toString();
+    return getDataSource() === DataSource.Dev
+        ? `${urlStr}${urlStr.includes("?") ? "&" : "?"}env=dev`
+        : urlStr;
 }
 
 export function getBloomApiHeaders() {
