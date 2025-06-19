@@ -3675,9 +3675,9 @@ bl@^1.0.0:
     safe-buffer "^5.1.1"
 
 bloom-player@^2.9.10:
-  version "2.11.0"
-  resolved "https://registry.yarnpkg.com/bloom-player/-/bloom-player-2.11.0.tgz#9526d2b23834fde0ad4b36bfca30b0d849b83f15"
-  integrity sha512-z7ORwGv9xnogOoTBgxK4kQkkbCV/vf5hiTykEfcf9piY0oOuprXG8tLRy5ME53GPfAusbq1DWiWNOx2UTILh8Q==
+  version "2.11.6"
+  resolved "https://registry.yarnpkg.com/bloom-player/-/bloom-player-2.11.6.tgz#ad4562eba1d58361a15e218a5d16c112ff6765f7"
+  integrity sha512-12qpy+3cl4oC7o4jPXdQlZVB3C5guoLFk34S0pbGUPcRB3W6uKghIvXYUfVHMXc/SsTHoW5TSk+y6nvvgxQt+w==
 
 body-parser@1.20.3:
   version "1.20.3"
