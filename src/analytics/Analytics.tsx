@@ -112,7 +112,7 @@ export function track(event: string, params: object) {
         // The following can come from bloom-player as far as I can tell.
         "BookOrShelf opened",
         "Pages Read",
-        "drag-activity",
+        "drag-game",
         "simple-dom-choice",
         "comprehension",
     ];
