@@ -115,6 +115,7 @@ export function track(event: string, params: object) {
         "drag-activity",
         "simple-dom-choice",
         "comprehension",
+        "drag-game",
     ];
     if (!eventWhiteList.includes(event)) {
         return;
