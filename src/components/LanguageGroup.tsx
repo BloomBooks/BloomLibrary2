@@ -32,9 +32,46 @@ export const LanguageGroup: React.FunctionComponent = () => {
         searchTerm: string | null
     ): ILanguage[] => {
         // MatchSorter is an npm module that does smart autocomplete over a list of values.
-        return matchSorter(languages, searchTerm || "", {
+        const searchFor = searchTerm || "";
+        const result = matchSorter(languages, searchFor || "", {
             keys: ["englishName", "name", "isoCode"],
         });
+        // Matchsorter has no tolerance for the sort string containing letters that are not in the target.
+        // So putting, say, "tog" when looking for "Tok Pisin" will not find it.
+        // If we don't get a lot of results, try leaving out one letter at a time and add the most
+        // relevant results from those searches.
+        // This is not infallible; it won't actually make "tog" match "Tok Pisin", because there
+        // are too many languages that are already a match for "tog". But "tog pi" will now work.
+        // We could also try other fuzzy match libraries; AI suggested Fuse.js, Fuzzysort, uFuzzy,
+        // and fuzzball.
+        const maxResults = 10;
+        if (result.length < maxResults && searchFor.length > 1) {
+            const extras: ILanguage[][] = [];
+            for (let i = 0; i < searchFor.length; i++) {
+                // try leaving out one letter at a time
+                const searchForWithoutOneLetter =
+                    searchFor.slice(0, i) + searchFor.slice(i + 1);
+                extras.push(
+                    matchSorter(languages, searchForWithoutOneLetter, {
+                        keys: ["englishName", "name", "isoCode"],
+                    }).filter((l) => result.indexOf(l) < 0)
+                );
+            }
+            // We have a list of lists of extra results. Each of them is somewhat prioritized.
+            // We'll take the top ones from each list until we have at least 10 or run out.
+            const maxIndex = Math.max(...extras.map((e) => e.length));
+            for (let i = 0; i < maxIndex && result.length < maxResults; i++) {
+                for (const extra of extras) {
+                    if (i < extra.length) {
+                        const l = extra[i];
+                        if (result.indexOf(l) < 0) {
+                            result.push(l);
+                        }
+                    }
+                }
+            }
+        }
+        return result;
     };
     const getRelevantLanguageCardsOrNoMatchMessage = (
         searchTerm: string | null,
