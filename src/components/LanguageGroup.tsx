@@ -7,7 +7,7 @@ import Downshift, {
     GetMenuPropsOptions,
     GetRootPropsOptions,
 } from "downshift";
-import matchSorter from "match-sorter";
+import { LanguageSearcher } from "@ethnolib/find-language";
 import searchIcon from "../search.png";
 import { CachedTablesContext } from "../model/CacheProvider";
 import { ILanguage } from "../model/Language";
@@ -31,10 +31,19 @@ export const LanguageGroup: React.FunctionComponent = () => {
     const getLanguagesMatchingSearchTerm = (
         searchTerm: string | null
     ): ILanguage[] => {
-        // MatchSorter is an npm module that does smart autocomplete over a list of values.
-        return matchSorter(languages, searchTerm || "", {
-            keys: ["englishName", "name", "isoCode"],
-        });
+        // we want all results on an empty search
+        if (!searchTerm) {
+            return languages;
+        }
+        const languageSearcher = new LanguageSearcher(
+            languages,
+            (l) => l.isoCode,
+            ["name", "englishName", "isoCode"],
+            ["name", "englishName", "isoCode"]
+        );
+        return languageSearcher.searchDataForLanguage(
+            searchTerm || ""
+        ) as unknown as ILanguage[];
     };
     const getRelevantLanguageCardsOrNoMatchMessage = (
         searchTerm: string | null,
