@@ -28,6 +28,16 @@ export const AlphaTilesButton: React.FunctionComponent<{
     } else if (language.startsWith("fr")) {
         googlePlayLogo = GooglePlayLogo_FR;
     }
+    let url = props.url;
+    if (url.indexOf("external=true") < 0) {
+        // if the URL doesn't already have external=true, add it.
+        // This tells the browser in BloomReader not to try to open the link itself,
+        // but to give it to the system. The Android system recognizes Play Store links
+        // and (at least by default) opens them in the Play Store app.
+        // Review: we could try to detect that we're on Android and only do this if so,
+        // but it's pretty harmless to just do it, and reliably detecting Android is hard.
+        url += (url.indexOf("?") < 0 ? "?" : "&") + "external=true";
+    }
 
     return (
         <CheapCard
@@ -37,7 +47,7 @@ export const AlphaTilesButton: React.FunctionComponent<{
                 padding: 10px;
                 margin-left: auto;
             `}
-            url={props.url}
+            url={url}
         >
             <div
                 css={css`
