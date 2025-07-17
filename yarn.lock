@@ -1055,6 +1055,15 @@
   dependencies:
     levn "^0.4.1"
 
+"@ethnolib/find-language@^0.1.8":
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@ethnolib/find-language/-/find-language-0.1.8.tgz#bd17b9bc8131407f5be6a3e56d7e38b551bf0039"
+  integrity sha512-W5Z/tPl+Okj7mpaPAIgf3nbGIipOglj6QASE/LRJEPkJJ5d4lU13T0X3T2RPiQILclHPDTRfCy2d4LhRnDWFxg==
+  dependencies:
+    fuse.js "^7.0.0"
+    iso-15924 "^3.2.0"
+    iso-3166 "^4.3.0"
+
 "@firebase/analytics-compat@0.2.4":
   version "0.2.4"
   resolved "https://registry.yarnpkg.com/@firebase/analytics-compat/-/analytics-compat-0.2.4.tgz#3887676286ead7b30f9880581e0144f43bc71f16"
@@ -5829,6 +5838,11 @@ functions-have-names@^1.2.3:
   resolved "https://registry.npmjs.org/functions-have-names/-/functions-have-names-1.2.3.tgz#0404fe4ee2ba2f607f0e0ec3c80bae994133b834"
   integrity sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==
 
+fuse.js@^7.0.0:
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/fuse.js/-/fuse.js-7.1.0.tgz#306228b4befeee11e05b027087c2744158527d09"
+  integrity sha512-trLf4SzuuUxfusZADLINj+dE8clK1frKdmqiJNb1Es75fmI5oY6X2mxLVUciLLjxqw/xr72Dhy+lER6dGd02FQ==
+
 gensync@^1.0.0-beta.2:
   version "1.0.0-beta.2"
   resolved "https://registry.yarnpkg.com/gensync/-/gensync-1.0.0-beta.2.tgz#32a6ee76c3d7f52d46b2b1ae5d93fea8580a25e0"
@@ -6781,6 +6795,16 @@ isexe@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=
+
+iso-15924@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/iso-15924/-/iso-15924-3.2.0.tgz#f520e89c2ec2b3b26b5390f0267e2b8e71be1eb5"
+  integrity sha512-MHjWc+yIdAqx5w5d0+KdHzOaA+jJUGhP7BSKvIkSarRQzDURbmHSjO6B2Ea2TWdFZwb845d5OG2kotApIHkJtQ==
+
+iso-3166@^4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/iso-3166/-/iso-3166-4.3.0.tgz#3eb4cbf26f6baaddc1e1bd34a0bc27079d61b94a"
+  integrity sha512-H4kM/sVbxTjSl9xnQCYOrNWdpN0R8Uz26j1BuXI9E6U+kw5wmd3HyPgr/v4+NCuvV/NcvwTfZxd5XZ4lPKvBNA==
 
 isomorphic-fetch@^2.1.1:
   version "2.2.1"
