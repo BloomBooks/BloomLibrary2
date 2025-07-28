@@ -335,6 +335,10 @@ function getFacetCollection(
             // search collections are generated from a search string the user typed.
             return makeVirtualCollectionForPHash(templateCollection, value);
 
+        case "bookHash":
+            // search collections are generated from a search string the user typed.
+            return makeVirtualCollectionForBookHash(templateCollection, value);
+
         default:
             throw Error(`Unknown facet: ${facet}`);
     }
@@ -460,6 +464,26 @@ export function makeVirtualCollectionForPHash(
     // a phash: into the search box would be missed.
     const filter = { search: "phash:" + phash };
     const urlKey = "phash:" + phash;
+    const result: ICollection = {
+        ...templateCollection,
+        filter,
+        urlKey,
+        urlKeyToUseForLabelL10n: templateCollection.urlKey,
+        childCollections: [],
+    };
+    return result;
+}
+
+export function makeVirtualCollectionForBookHash(
+    templateCollection: ICollection,
+    bookHash: string
+): ICollection {
+    // review: would it be cleaner to make bookHash a top-level field in filter?
+    // Would require changes to the LibraryQueryHooks function for interpreting
+    // filter. It's also remotely possible that losing the ability to type
+    // a bookHash: into the search box would be missed.
+    const filter = { search: "bookHash:" + bookHash };
+    const urlKey = "bookHash:" + bookHash;
     const result: ICollection = {
         ...templateCollection,
         filter,

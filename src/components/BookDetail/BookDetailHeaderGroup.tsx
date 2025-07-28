@@ -44,11 +44,28 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
         phash && phash.trim() && phash.trim() !== "null"
             ? phash.trim()
             : "Not A Valid Phash";
-    const answer = useGetBookCountRaw({
-        search: "phash:" + sanitizedPhashOfFirstContentImage,
-    });
+    const bookHash = props.book.bookHashFromImages;
+    const sanitizedBookHashFromImages =
+        bookHash && bookHash.trim() && bookHash.trim() !== "null"
+            ? bookHash.trim()
+            : null;
+    const searchCriteria = sanitizedBookHashFromImages
+        ? { search: "bookHash:" + sanitizedBookHashFromImages }
+        : { search: "phash:" + sanitizedPhashOfFirstContentImage };
+    // const searchCriteria = {
+    //     search: "phash:" + sanitizedPhashOfFirstContentImage,
+    // };
+    console.log(
+        `DEBUG BookDetailHeaderGroup: searchCriteria=${JSON.stringify(
+            searchCriteria
+        )}`
+    );
+    const answer = useGetBookCountRaw(searchCriteria);
     const countOfBooksWithMatchingPhash =
         getResultsOrMessageElement(answer).count - 1;
+    console.log(
+        `DEBUG BookDetailHeaderGroup: countOfBooksWithMatchingPhash=${countOfBooksWithMatchingPhash}`
+    );
 
     // Show this button if the harvester made an artifact we can read online,
     // and no one decided it was not fit to use.
@@ -189,7 +206,11 @@ export const BookDetailHeaderGroup: React.FunctionComponent<{
                                                     `}
                                                     newTabIfEmbedded={true}
                                                     color="secondary"
-                                                    href={`/phash:${sanitizedPhashOfFirstContentImage}`}
+                                                    href={
+                                                        sanitizedBookHashFromImages
+                                                            ? `/bookHash:${sanitizedBookHashFromImages}`
+                                                            : `/phash:${sanitizedPhashOfFirstContentImage}`
+                                                    }
                                                 >
                                                     <FormattedMessage
                                                         id="book.detail.translations"

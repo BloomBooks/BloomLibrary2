@@ -69,6 +69,7 @@ export class Book {
     public harvestLog: string[] = [];
     public harvestState: string = "";
     public phashOfFirstContentImage: string = "";
+    public bookHashFromImages: string = "";
     public bookInstanceId: string = "";
     public internetLimits: IInternetLimits = {};
     public brandingProjectName = "";
@@ -195,6 +196,12 @@ export class Book {
             this.phashOfFirstContentImage.indexOf("null") > -1
         )
             this.phashOfFirstContentImage = "";
+
+        if (
+            !this.bookHashFromImages ||
+            this.bookHashFromImages.indexOf("null") > -1
+        )
+            this.bookHashFromImages = "";
 
         // todo: parse out the dates, in this YYYY-MM-DD format (e.g. with )
         this.uploadDate = new Date(Date.parse(this.createdAt));
