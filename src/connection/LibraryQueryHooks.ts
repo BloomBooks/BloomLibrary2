@@ -295,7 +295,7 @@ export function useGetPhashMatchingRelatedBooks(
 
 export const bookDetailFields =
     "title,allTitles,baseUrl,bookOrder,inCirculation,draft,license,licenseNotes,summary,copyright,harvestState,harvestLog," +
-    "tags,pageCount,phashOfFirstContentImage," +
+    "tags,pageCount,phashOfFirstContentImage,bookHashFromImages," +
     // show is in here in order to let us figure out L1, which is, sadly, not directly listed in Parse nor determinable from the langPointers
     "show," +
     "credits,country,features,internetLimits," +
@@ -391,7 +391,7 @@ interface IGridResult {
 export const gridBookKeys =
     "objectId,bookInstanceId," +
     "title,baseUrl,license,licenseNotes,inCirculation,draft,summary,copyright,harvestState," +
-    "harvestLog,harvestStartedAt,tags,pageCount,phashOfFirstContentImage,show,credits,country," +
+    "harvestLog,harvestStartedAt,tags,pageCount,phashOfFirstContentImage,bookHashFromImages,show,credits,country," +
     "features,internetLimits,librarianNote,uploader,langPointers,importedBookSourceUrl," +
     "downloadCount,publisher,originalPublisher,brandingProjectName,keywords,edition,rebrand,leveledReaderLevel," +
     "analytics_finishedCount,analytics_startedCount,analytics_shellDownloads";
@@ -675,6 +675,7 @@ export interface IBasicBookInfo {
     createdAt: string;
     country?: string;
     phashOfFirstContentImage?: string;
+    bookHashFromImages?: string;
     edition: string;
     draft?: boolean;
     inCirculation?: boolean;
@@ -690,7 +691,7 @@ export interface IBasicBookInfo {
 }
 
 const kFieldsOfIBasicBookInfo =
-    "title,baseUrl,objectId,langPointers,tags,features,lastUploaded,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,allTitles,edition,draft,rebrand,inCirculation,show";
+    "title,baseUrl,objectId,langPointers,tags,features,lastUploaded,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,bookHashFromImages,allTitles,edition,draft,rebrand,inCirculation,show";
 
 // uses the human "level:" tag if present, otherwise falls back to computedLevel
 export function getBestLevelStringOrEmpty(basicBookInfo: IBasicBookInfo) {
@@ -931,6 +932,7 @@ const facets = [
     "harvestState:",
     "country:",
     "phash:",
+    "bookHash:",
     "level:",
     "feature:",
     "originalPublisher:", // must come before "publisher:", since "originalPublisher:" includes the other as a substring
@@ -1244,6 +1246,9 @@ export function constructParseBookQuery(
                         facetValue
                     );
                     break;
+                case "bookHash":
+                    params.where.bookHashFromImages = facetValue;
+                    break;
                 case "harvestState":
                     params.where.harvestState = facetValue;
                     break;
@@ -1553,7 +1558,11 @@ export function constructParseBookQuery(
             params.where.$or.push(pbq.where);
         }
     }
-
+    // console.log(
+    //     `DEBUG constructParseBookQuery: params.where = ${JSON.stringify(
+    //         params.where
+    //     )}`
+    // );
     return params;
 }
 

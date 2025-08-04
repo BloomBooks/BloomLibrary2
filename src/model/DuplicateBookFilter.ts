@@ -36,10 +36,13 @@ export function PreferBooksWithL1MatchingFocusLanguage_DuplicateBookFilter(
     languageInFocus?: string,
     markButDoNotRemove?: boolean
 ): IBasicBookInfo[] {
-    // use phash to get candidates for duplicates
+    // use bookHashFromImages (or phash if not available) to get candidates for duplicates
     const hashToBooks = new Map<string, IBasicBookInfo[]>();
     for (const book of books) {
         let hash = book.phashOfFirstContentImage;
+        if (book.bookHashFromImages) {
+            hash = book.bookHashFromImages;
+        }
         if (languageInFocus) {
             let titleInContextLang = getBookTitleInLanguageOrUndefined(
                 book,
@@ -138,12 +141,16 @@ export function PreferBooksWithL1MatchingFocusLanguage_DuplicateBookFilter(
 export function DefaultBookComparisonKeyIgnoringLanguages(
     book: IBasicBookInfo
 ): string | undefined {
-    const phash = book.phashOfFirstContentImage;
-    if (!phash) {
+    let hash = book.bookHashFromImages;
+    if (!hash) {
+        hash = book.phashOfFirstContentImage;
+    }
+    // if we don't have a hash, we can't reliably compare the book to others
+    if (!hash) {
         return undefined; // undefined indicates that we can't reliably do a comparison
     }
     const featureHash = HashStringArray(book.features.sort());
-    return phash + book.pageCount + featureHash + book.edition;
+    return hash + book.pageCount + featureHash + book.edition;
 }
 
 // based on https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript

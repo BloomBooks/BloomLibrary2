@@ -316,6 +316,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
         },
         { name: "pageCount", sortingEnabled: true },
         { name: "phashOfFirstContentImage", sortingEnabled: true },
+        { name: "bookHashFromImages", sortingEnabled: true },
         { name: "createdAt", sortingEnabled: true },
         { name: "updatedAt", sortingEnabled: true },
         {
