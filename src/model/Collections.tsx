@@ -332,8 +332,12 @@ function getFacetCollection(
             );
 
         case "phash":
-            // search collections are generated from a search string the user typed.
-            return makeVirtualCollectionForPHash(templateCollection, value);
+        case "bookHash":
+            return makeVirtualCollectionForHash(
+                templateCollection,
+                facet,
+                value
+            );
 
         default:
             throw Error(`Unknown facet: ${facet}`);
@@ -450,16 +454,17 @@ export function makeVirtualCollectionForSearch(
     return result;
 }
 
-export function makeVirtualCollectionForPHash(
+export function makeVirtualCollectionForHash(
     templateCollection: ICollection,
-    phash: string
+    facet: string,
+    value: string
 ): ICollection {
-    // review: would it be cleaner to make phash a top-level field in filter?
+    // review: would it be cleaner to make phash or bookHash a top-level field in filter?
     // Would require changes to the LibraryQueryHooks function for interpreting
     // filter. It's also remotely possible that losing the ability to type
-    // a phash: into the search box would be missed.
-    const filter = { search: "phash:" + phash };
-    const urlKey = "phash:" + phash;
+    // a phash: or bookHash: into the search box would be missed.
+    const filter = { search: `${facet}:${value}` };
+    const urlKey = `${facet}:${value}`;
     const result: ICollection = {
         ...templateCollection,
         filter,
