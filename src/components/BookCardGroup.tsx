@@ -161,6 +161,13 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
     if (search.totalMatchingRecords < maxCardsToRetrieve) {
         countToShow = books.length;
     }
+    // If we don't have either kind of secondary filter, we can just show the number that the query results indicate.
+    if (
+        !props.collection.secondaryFilter &&
+        !props.collection.duplicateBookFilterName
+    ) {
+        countToShow = search.totalMatchingRecords;
+    }
 
     // As of 11/2021, this skip stuff is not really being used. In theory it would all still work if
     // anything initiated the skipping. But our more cards now just loads the whole (filtered) collection.
