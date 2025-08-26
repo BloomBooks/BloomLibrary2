@@ -3683,10 +3683,10 @@ bl@^1.0.0:
     readable-stream "^2.3.5"
     safe-buffer "^5.1.1"
 
-bloom-player@^2.11.0-alpha.0:
-  version "2.13.2"
-  resolved "https://registry.yarnpkg.com/bloom-player/-/bloom-player-2.13.2.tgz#259e3ea582ff98c4d42a258feca395fe08e22b1c"
-  integrity sha512-jp/Ug850Bw9ChKyfCoh3OFzwzFMhitX8lffVNl7hGsLcVGca39rgUtVc+cS8Xie7wkD60DKWbVcsAG5/7gOCWg==
+bloom-player@^2.15.0-alpha.1:
+  version "2.15.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/bloom-player/-/bloom-player-2.15.0-alpha.1.tgz#89d6aea49b9a52a1d513437567f687321fc2958b"
+  integrity sha512-8dc0Pfz1GWieb6P1oG3sJMoNNipt2DvYQOPERjZNUrb3BdklSm8AVDrWs34JPdCyW2fXjLIDMp501XVzDMTyyQ==
 
 body-parser@1.20.3:
   version "1.20.3"
