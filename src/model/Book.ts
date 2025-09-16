@@ -149,9 +149,10 @@ export class Book {
     }
 
     public getMissingFontNames(): string[] {
+        const fixedMarker = "MissingFont - ";
         return this.harvestLog
-            .filter((entry) => entry.indexOf("MissingFont") >= 0)
-            .map((entry) => entry.split("-")[1].trim());
+            .filter((entry) => entry.indexOf(fixedMarker) >= 0)
+            .map((entry) => entry.split(fixedMarker)[1].trim());
     }
 
     public getBestLevel(): string | undefined {
