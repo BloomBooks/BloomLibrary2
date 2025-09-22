@@ -155,6 +155,13 @@ export class Book {
             .map((entry) => entry.split(fixedMarker)[1].trim());
     }
 
+    public getInvalidFontNames(): string[] {
+        const fixedMarker = "InvalidFont - ";
+        return this.harvestLog
+            .filter((entry) => entry.indexOf(fixedMarker) >= 0)
+            .map((entry) => entry.split(fixedMarker)[1].trim());
+    }
+
     public getBestLevel(): string | undefined {
         if (this.level) return this.level;
         return this.getTagValue("computedLevel");
