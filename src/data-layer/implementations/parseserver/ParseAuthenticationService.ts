@@ -6,96 +6,90 @@ import { UserModel } from "../../models/UserModel";
 import { ParseConnection } from "./ParseConnection";
 import { LoggedInUser, User } from "../../../connection/LoggedInUser";
 import { informEditorOfSuccessfulLogin, isForEditor } from "../../../editor";
+import { ParseUserRepository } from "./ParseUserRepository";
 
 export class ParseAuthenticationService implements IAuthenticationService {
     private authStateListeners: ((user: UserModel | undefined) => void)[] = [];
+    private userRepository = new ParseUserRepository();
 
     async connectUser(jwtToken: string, userId: string): Promise<UserModel> {
-        return new Promise<UserModel>((resolve, reject) => {
-            const connection = ParseConnection.getConnection();
+        const connection = ParseConnection.getConnection();
 
-            // Run a cloud code function (bloomLink) which,
-            // if this is a new Firebase user with the email of a known parse server user, will link them.
-            axios
-                .post(
-                    `${connection.url}functions/bloomLink`,
-                    {
-                        token: jwtToken,
-                        id: userId,
+        try {
+            await axios.post(
+                `${connection.url}functions/bloomLink`,
+                {
+                    token: jwtToken,
+                    id: userId,
+                },
+                {
+                    headers: connection.headers,
+                }
+            );
+        } catch (error) {
+            console.log(
+                "The `Bloom Link` call failed:" + JSON.stringify(error)
+            );
+            this.failedToLoginInToParseServer();
+            throw error instanceof Error
+                ? error
+                : new Error("Bloom Link call failed");
+        }
+
+        let usersResult;
+        try {
+            usersResult = await axios.post(
+                `${connection.url}users`,
+                {
+                    authData: {
+                        bloom: { token: jwtToken, id: userId },
                     },
-                    {
-                        headers: connection.headers,
-                    }
-                )
-                .then(() => {
-                    // Now we can log in (or create a new parse server user if needed)
-                    axios
-                        .post(
-                            `${connection.url}users`,
-                            {
-                                authData: {
-                                    bloom: { token: jwtToken, id: userId },
-                                },
-                                username: userId,
-                                email: userId, // needed in case we are creating a new user
-                            },
-                            {
-                                headers: connection.headers,
-                            }
-                        )
-                        .then((usersResult) => {
-                            if (usersResult.data.sessionToken) {
-                                LoggedInUser.current = new User(
-                                    usersResult.data
-                                );
-                                ParseConnection.setSessionToken(
-                                    usersResult.data.sessionToken
-                                );
+                    username: userId,
+                    email: userId, // needed in case we are creating a new user
+                },
+                {
+                    headers: connection.headers,
+                }
+            );
+        } catch (error) {
+            this.failedToLoginInToParseServer();
+            throw error instanceof Error
+                ? error
+                : new Error("Parse user login failed");
+        }
 
-                                if (isForEditor()) {
-                                    informEditorOfSuccessfulLogin(
-                                        usersResult.data
-                                    );
-                                }
+        if (!usersResult.data.sessionToken) {
+            this.failedToLoginInToParseServer();
+            throw new Error("No session token received");
+        }
 
-                                // Check if user is moderator
-                                this.checkIfUserIsModerator();
+        LoggedInUser.current = new User(usersResult.data);
+        ParseConnection.setSessionToken(usersResult.data.sessionToken);
 
-                                // Convert to UserModel
-                                const userModel = new UserModel({
-                                    objectId: usersResult.data.objectId,
-                                    username:
-                                        usersResult.data.username || userId,
-                                    email: usersResult.data.email || userId,
-                                    sessionId: usersResult.data.sessionToken,
-                                    createdAt:
-                                        usersResult.data.createdAt ||
-                                        new Date().toISOString(),
-                                    updatedAt:
-                                        usersResult.data.updatedAt ||
-                                        new Date().toISOString(),
-                                });
+        if (isForEditor()) {
+            informEditorOfSuccessfulLogin(usersResult.data);
+        }
 
-                                this.notifyAuthStateListeners(userModel);
-                                resolve(userModel);
-                            } else {
-                                this.failedToLoginInToParseServer();
-                                reject(new Error("No session token received"));
-                            }
-                        })
-                        .catch((err) => {
-                            this.failedToLoginInToParseServer();
-                            reject(err);
-                        });
-                })
-                .catch((err) => {
-                    console.log(
-                        "The `Bloom Link` call failed:" + JSON.stringify(err)
-                    );
-                    this.failedToLoginInToParseServer();
-                    reject(err);
-                });
+        const isModerator = await this.userRepository.checkUserIsModerator(
+            usersResult.data.objectId
+        );
+
+        if (LoggedInUser.current) {
+            LoggedInUser.current.moderator = isModerator;
+        }
+
+        const userModel = new UserModel({
+            objectId: usersResult.data.objectId,
+            username: usersResult.data.username || userId,
+            email: usersResult.data.email || userId,
+            sessionId: usersResult.data.sessionToken,
+            createdAt: usersResult.data.createdAt || new Date().toISOString(),
+            updatedAt: usersResult.data.updatedAt || new Date().toISOString(),
+            moderator: isModerator,
         });
+
+        this.notifyAuthStateListeners(userModel);
+        return userModel;
     }
 
     async logout(): Promise<void> {
@@ -135,14 +129,26 @@ export class ParseAuthenticationService implements IAuthenticationService {
 
     setCurrentUser(user: UserModel | undefined): void {
         if (user) {
-            // This would need to update the LoggedInUser.current as well
-            // For now, just notify listeners
+            LoggedInUser.current = new User({
+                objectId: user.objectId,
+                sessionId: user.sessionId ?? "",
+                email: user.email,
+                username: user.username,
+                moderator: user.moderator,
+                informEditorResult: user.informEditorResult,
+            });
+            if (LoggedInUser.current) {
+                LoggedInUser.current.showTroubleshootingStuff =
+                    user.showTroubleshootingStuff ?? false;
+            }
+            ParseConnection.setSessionToken(user.sessionId);
             this.notifyAuthStateListeners(user);
-        } else {
-            LoggedInUser.current = undefined;
-            ParseConnection.clearSessionToken();
-            this.notifyAuthStateListeners(undefined);
+            return;
         }
+
+        LoggedInUser.current = undefined;
+        ParseConnection.clearSessionToken();
+        this.notifyAuthStateListeners(undefined);
     }
 
     onAuthStateChanged(
@@ -192,29 +198,6 @@ export class ParseAuthenticationService implements IAuthenticationService {
                 headers: connection.headers,
             }
         );
-    }
-
-    private async checkIfUserIsModerator(): Promise<void> {
-        if (!LoggedInUser.current) {
-            return;
-        }
-
-        const connection = ParseConnection.getConnection();
-
-        try {
-            const result = await axios.get(
-                `${connection.url}classes/moderators?where={"user": {"__type":"Pointer","className":"_User","objectId":"${LoggedInUser.current.objectId}"}}`,
-                {
-                    headers: connection.headers,
-                }
-            );
-
-            if (result.data.results.length > 0) {
-                LoggedInUser.current.moderator = true;
-            }
-        } catch (error) {
-            console.error("Error checking moderator status:", error);
-        }
     }
 
     private failedToLoginInToParseServer(): void {

@@ -3,9 +3,10 @@
 // Note, currently using the "compat" version of firebase v9, which doesn't support treeshaking. No reason, just a TODO to upgrade to full v9 API.
 // See https://firebase.google.com/docs/web/modular-upgrade
 import firebase from "firebase/compat/app";
-import { connectParseServer } from "../../connection/ParseServerConnection";
 import { getCookie } from "../../Utilities";
 import { isLogoutMode } from "../authentication";
+import { getAuthenticationService } from "../../data-layer";
+const authenticationService = getAuthenticationService();
 
 const firebaseConfig = {
     apiKey: "AIzaSyACJ7fi7_Rg_bFgTIacZef6OQckr6QKoTY",
@@ -88,7 +89,8 @@ async function getFirebaseAuthInternal() {
             return;
         }
         user.getIdToken().then((idToken: string) => {
-            connectParseServer(idToken, user.email!)
+            authenticationService
+                .connectUser(idToken, user.email!)
                 // .then(result =>
                 //     console.log("ConnectParseServer resolved with " + result)
                 // )
