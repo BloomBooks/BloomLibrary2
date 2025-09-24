@@ -360,24 +360,24 @@ export class DataLayerFactory {
 - [x] Implement tag search and filtering operations
 - [x] Add validation and processing utilities for book workflows
 
-### Step 13: Update Application Layer to Use Repositories
-- [ ] Update `LibraryQueryHooks.ts` to use repository factory
-- [ ] Replace direct ParseServer calls in hooks with repository methods
-- [ ] Update components that directly import connection utilities
-- [ ] Update authentication hooks to use authentication service
-- [ ] Update error handling to work with repository pattern
 
-### Step 14: Create Tests for Repository Implementations
+### Step 13: Create Tests for Repository Implementations
 - [x] Create interface-based tests for `ParseUserRepository`
 - [x] Create interface-based tests for `ParseLanguageRepository`
 - [x] Create interface-based tests for `ParseTagRepository`
 - [x] Create interface-based tests for `ParseAuthenticationService`
-- [ ] Create interface-based tests for `ParseBookRepository`
+- [x] Create interface-based tests for `ParseBookRepository`
 - [ ] Write tests that validate against dev ParseServer for read operations
 - [ ] Test all query variations and edge cases
 - [ ] Test authentication flows
 - [ ] Test error handling scenarios
 
+### Step 14: Update Application Layer to Use Repositories
+- [ ] Update `LibraryQueryHooks.ts` to use repository factory
+- [ ] Replace direct ParseServer calls in hooks with repository methods
+- [ ] Update components that directly import connection utilities
+- [ ] Update authentication hooks to use authentication service
+- [ ] Update error handling to work with repository pattern
 
 ### Step 16: Update Existing Unit Tests
 - [ ] Audit existing test files for direct ParseServer usage
