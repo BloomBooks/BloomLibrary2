@@ -378,6 +378,13 @@ export class DataLayerFactory {
 - [ ] Update authentication hooks to use authentication service
 - [ ] Update error handling to work with repository pattern
 
+#### Status Update – 2025-09-24
+
+- **Focus:** Extracting Parse book-query helpers from `LibraryQueryHooks.ts` into the shared `BookQueryBuilder.ts` module so the hooks can consume repository abstractions without circular dependencies.
+- **Working well:** `BookQueryBuilder.ts` now hosts `constructParseBookQuery`, `constructParseSortOrder`, `splitString`, `bookDetailFields`, and related constants. The hooks file imports these helpers successfully, and duplicated facet/tag parsing logic has been removed without breaking existing hook behavior.
+- **Current snag:** Recent cleanup of the old helper definitions in `LibraryQueryHooks.ts` is incomplete. Local exports (`kNameOfNoTopicCollection`, `constructParseSortOrder`, `constructParseBookQuery`) still exist alongside the new imports, causing duplicate-export TypeScript errors. Finishing the removal of those legacy definitions (and any dependent utilities such as `processDerivedFrom` and `simplifyInnerQuery`) is the next step before wiring the hooks to the repository factory.
+- **Next steps:** Delete the remaining redundant helper exports from `LibraryQueryHooks.ts`, run the hook/unit test suite to confirm parity, and then continue the Step 14 checklist by swapping the hook implementations over to repository calls.
+
 ### Step 16: Update Existing Unit Tests
 - [ ] Audit existing test files for direct ParseServer usage
 - [ ] Update tests to use mock repositories instead of ParseServer
