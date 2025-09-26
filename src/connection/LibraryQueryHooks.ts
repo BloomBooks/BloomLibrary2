@@ -1046,9 +1046,18 @@ export function useGetBookCount(filter: IFilter): number {
         const fetchCount = async () => {
             try {
                 const repository = getBookRepository();
-                const bookCount = await repository.getBookCount(
-                    convertIFilterToBookFilter(stableFilter)
+                const convertedFilter = convertIFilterToBookFilter(
+                    stableFilter
                 );
+                console.log("DEBUG: useGetBookCount filter:", stableFilter);
+                console.log(
+                    "DEBUG: useGetBookCount convertedFilter:",
+                    convertedFilter
+                );
+                const bookCount = await repository.getBookCount(
+                    convertedFilter
+                );
+                console.log("DEBUG: useGetBookCount result:", bookCount);
                 setCount(bookCount);
             } catch (error) {
                 console.error("Error getting book count:", error);

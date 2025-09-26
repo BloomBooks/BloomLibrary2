@@ -167,11 +167,23 @@ export class ParseBookRepository implements IBookRepository {
 
         try {
             const parseFilter = this.convertBookFilterToParseFilter(filter);
+            console.log(
+                "DEBUG: ParseBookRepository.getBookCount filter:",
+                filter
+            );
+            console.log(
+                "DEBUG: ParseBookRepository.getBookCount parseFilter:",
+                parseFilter
+            );
             const queryParams = constructParseBookQuery(
                 { limit: 0, count: 1 },
                 parseFilter,
                 [], // tags - would need to be passed in
                 BookOrderingScheme.None
+            );
+            console.log(
+                "DEBUG: ParseBookRepository.getBookCount queryParams:",
+                queryParams
             );
 
             const response = await axios.post(
@@ -183,7 +195,12 @@ export class ParseBookRepository implements IBookRepository {
                 { headers: connection.headers }
             );
 
-            return parseInt(response.data.count, 10) || 0;
+            const count = parseInt(response.data.count, 10) || 0;
+            console.log(
+                "DEBUG: ParseBookRepository.getBookCount response count:",
+                count
+            );
+            return count;
         } catch (error) {
             console.error("Error getting book count:", error);
             return 0;
@@ -294,6 +311,11 @@ export class ParseBookRepository implements IBookRepository {
             leveledReaderLevel: filter.leveledReaderLevel,
             bookShelfCategory: filter.bookShelfCategory,
             originalCredits: filter.originalCredits,
+            anyOfThese: filter.anyOfThese
+                ? filter.anyOfThese.map((childFilter) =>
+                      this.convertBookFilterToParseFilter(childFilter)
+                  )
+                : undefined,
         };
     }
 

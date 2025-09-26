@@ -42,97 +42,48 @@ const BookCountInternal: React.FunctionComponent<IProps> = (props) => {
     // Note though that the home page has filter is empty, and in that case, we want shouldSkipQuery to return false.
     const shouldSkipQuery = filter === undefined;
     const bookCountResult = useGetBookCountRaw(filter || {}, shouldSkipQuery);
+
     const { noResultsElement, count } = getResultsOrMessageElement(
         bookCountResult
     );
     // note, we don't want the "compact" version of the string here, we want the exact count
     const formattedCount = count === undefined ? "" : count.toLocaleString();
-    const [state, setState] = useState({
-        filterString: "", // what we're filtering for
-        waitingForLoading: false, // do we need to wait for a return result with loading true before we believe results?
-        // have we done any one-time side effects of getting a valid count for this filter?
-        // The initial value doesn't matter except possibly if the initial search string is empty,
-        // when it might help to prevent a spurious display of noMatches
-        reportedCount: true,
-    });
-    const filterString = filter ? JSON.stringify(filter) : "";
 
-    // Use useEffect instead of setState during render to prevent infinite loops
-    React.useEffect(() => {
-        if (filterString !== state.filterString) {
-            // new filter string different from old filter string:
-            // - this is the first call with an initial or changed filter.
-            // - Typically bookCountResult.loading is (wrongly) false.
-            // - It's common for this method to be called at least twice
-            // after a filter change and to see loading false and a stale result each time.
-            // - We want to ignore results until called with bookCountResult.loading true,
-            // and in the meantime return the result we should have gotten since
-            // bookCountResult.loading should be true.
-            setState({
-                filterString,
-                waitingForLoading: true,
-                reportedCount: false,
-            });
-        }
-    }, [filterString, state.filterString]);
-
-    React.useEffect(() => {
-        if (state.waitingForLoading && bookCountResult.loading) {
-            // OK, we started loading the data for the new filter.
-            // now we can trust the results
-            setState({
-                filterString,
-                waitingForLoading: false,
-                reportedCount: false,
-            });
-        }
-    }, [state.waitingForLoading, bookCountResult.loading, filterString]);
-
-    // Return early if we're waiting for loading
-    if (state.waitingForLoading && !bookCountResult.loading) {
+    // Simplified logic: just check if we're loading or have an error
+    if (bookCountResult.loading) {
         return getNoResultsElement();
     }
 
-    if (filterString !== state.filterString) {
-        return getNoResultsElement(); // NOT props.noMatches, we don't know yet whether count is zero.
-    }
-
-    // If we get this far, we've seen bookCountResult.loading true for the current
-    // filter. So we can trust bookCountResult: if it says loading, we just
-    // continue to return noResultsElement; if not, we should have a good count.
-    if (bookCountResult.loading) {
+    // If there's an error, show it
+    if (noResultsElement) {
         return noResultsElement;
     }
 
-    // OK, we have a real result for the current filter. If the count is zero
+    // OK, we have a real result. If the count is zero
     // and we have a noMatches, use it.
-    if (count === 0 && !noResultsElement && props.noMatches) {
-        // we got a result of zero, so show the special element for that case
+    if (count === 0 && props.noMatches) {
         return props.noMatches;
     }
 
-    // while we're waiting, this will be blank (from noResultsElement).
-    // if there is an error, we'll see that (from noResultsElement)
+    // Display the count
     return (
-        noResultsElement || (
-            <span // Don't change this to something like h2.  Book count is used in different contexts
-                css={css`
-                    /* don't put a font size here. Book count is used in different contexts */
-                    margin: 0 !important;
-                    margin-top: auto;
-                `}
-            >
-                {props.message ? (
-                    props.message.replace("{0}", formattedCount)
-                ) : (
-                    <FormattedMessage
-                        id="bookCount"
-                        defaultMessage="{count} books"
-                        values={{ count: formattedCount }}
-                    />
-                )}
-                <CollectionInfoWidget collection={props.collection} />
-            </span>
-        )
+        <span // Don't change this to something like h2.  Book count is used in different contexts
+            css={css`
+                /* don't put a font size here. Book count is used in different contexts */
+                margin: 0 !important;
+                margin-top: auto;
+            `}
+        >
+            {props.message ? (
+                props.message.replace("{0}", formattedCount)
+            ) : (
+                <FormattedMessage
+                    id="bookCount"
+                    defaultMessage="{count} books"
+                    values={{ count: formattedCount }}
+                />
+            )}
+            <CollectionInfoWidget collection={props.collection} />
+        </span>
     );
 };
