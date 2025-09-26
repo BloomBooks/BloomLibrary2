@@ -121,24 +121,20 @@ export class ParseLanguageRepository implements ILanguageRepository {
         const connection = ParseConnection.getConnection();
 
         try {
-            const response = await axios.get(
-                `${connection.url}classes/language`,
-                {
-                    headers: connection.headers,
-                    params: {
-                        keys: "name,englishName,usageCount,isoCode,objectId",
-                        where: JSON.stringify({
-                            $or: [
-                                { usageCount: { $gt: 0 } },
-                                { usageCount: { $exists: false } },
-                            ],
-                        }),
-                        limit: 10000,
-                        order: "-usageCount",
-                        count: 1,
-                    },
-                }
+            const whereClause = encodeURIComponent(
+                JSON.stringify({
+                    $or: [
+                        { usageCount: { $gt: 0 } },
+                        { usageCount: { $exists: false } },
+                    ],
+                })
             );
+
+            const url = `${connection.url}classes/language?keys=name,englishName,usageCount,isoCode&where=${whereClause}&limit=10000&order=-usageCount`;
+
+            const response = await axios.get(url, {
+                headers: connection.headers,
+            });
 
             const languages = (
                 response.data?.results ?? []
@@ -152,7 +148,11 @@ export class ParseLanguageRepository implements ILanguageRepository {
                 )
             );
 
-            return cleaned.map((language) => new LanguageModel(language));
+            const finalLanguages = cleaned.map(
+                (language) => new LanguageModel(language)
+            );
+
+            return finalLanguages;
         } catch (error) {
             // During testing or when ParseServer is unavailable, fail silently
             // to avoid console errors that break tests

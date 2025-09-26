@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState, useEffect } from "react";
+import React, { useContext, useMemo, useState, useEffect, useRef } from "react";
 import useAxios, { IReturns, axios, IParams } from "@use-hooks/axios";
 import { AxiosResponse } from "axios";
 import { IFilter, BooleanOptions, parseBooleanOptions } from "../IFilter";
@@ -18,6 +18,7 @@ import { kTopicList } from "../model/ClosedVocabularies";
 import { kTagForNoLanguage } from "../model/Language";
 import { isAppHosted } from "../components/appHosted/AppHostedUtils";
 import { toYyyyMmDd } from "../Utilities";
+import { BookSearchQuery } from "../data-layer/types/QueryTypes";
 import { getFilterForCollectionAndChildren } from "../model/Collections";
 import { doExpensiveClientSideSortingIfNeeded } from "./sorting";
 import { ILanguage } from "../model/Language";
@@ -293,91 +294,118 @@ export function useSearchBooks(
     languageForSorting?: string,
     doNotActuallyRunQuery?: boolean
 ): ISearchBooksResult {
-    const { tags } = useContext(CachedTablesContext);
-    const [waiting, setWaiting] = useState(true);
-    const [books, setBooks] = useState<IBasicBookInfo[]>([]);
+    // Initialize state
     const [totalMatchingRecords, setTotalMatchingRecords] = useState(0);
     const [errorString, setErrorString] = useState<string | null>(null);
+    const [books, setBooks] = useState<IBasicBookInfo[]>([]);
+    const [waiting, setWaiting] = useState(true);
 
-    // Process derivative filter same as before
+    // Create stable references for parameters to prevent infinite re-renders
+    const stableParams = useMemo(() => JSON.stringify(params), [params]);
+    const stableFilter = useMemo(() => JSON.stringify(filter), [filter]);
+    const stableOrderingScheme = useMemo(() => orderingScheme, [
+        orderingScheme,
+    ]);
+    const stableLanguageForSorting = useMemo(() => languageForSorting, [
+        languageForSorting,
+    ]);
+    const stableDoNotActuallyRunQuery = useMemo(() => doNotActuallyRunQuery, [
+        doNotActuallyRunQuery,
+    ]);
+
+    // Use a ref to track if we should actually make requests
+    const shouldRunQueryRef = useRef(false);
+
+    // Process derivative filter (but don't depend on the result for the query)
     const collectionReady = useProcessDerivativeFilter(filter);
 
     useEffect(() => {
-        if (doNotActuallyRunQuery || !collectionReady || !tags) {
+        // Skip if told not to run the query
+        if (stableDoNotActuallyRunQuery) {
             setWaiting(false);
+            setBooks([]);
+            setTotalMatchingRecords(0);
+            setErrorString(null);
             return;
         }
 
-        const fetchBooks = async () => {
+        // Skip if collection not ready
+        if (!collectionReady) {
+            return;
+        }
+
+        // Use a flag to prevent double execution
+        if (!shouldRunQueryRef.current) {
+            shouldRunQueryRef.current = true;
+        } else {
+            return; // Already running or completed
+        }
+
+        let isCancelled = false;
+
+        const runQuery = async () => {
             try {
                 setWaiting(true);
                 setErrorString(null);
 
+                // Parse back the stable parameters
+                const parsedParams = JSON.parse(stableParams);
+                const parsedFilter = JSON.parse(stableFilter);
+
                 const repository = getBookRepository();
 
-                // Convert IFilter to BookSearchQuery format
-                const searchQuery = {
-                    filter: convertIFilterToBookFilter(filter),
-                    orderingScheme: orderingScheme,
-                    languageForSorting: languageForSorting,
+                // Convert params and filter to the proper BookSearchQuery format
+                const searchQuery: BookSearchQuery = {
                     pagination: {
-                        limit: (params as any).limit || 50,
-                        skip: (params as any).skip || 0,
+                        limit: parsedParams.limit || 50,
+                        skip: parsedParams.skip || 0,
                     },
-                    fieldSelection: kFieldsOfIBasicBookInfo.split(","),
+                    fieldSelection: parsedParams.include
+                        ? [parsedParams.include]
+                        : undefined,
+                    filter: convertIFilterToBookFilter(parsedFilter),
+                    orderingScheme: stableOrderingScheme,
+                    languageForSorting: stableLanguageForSorting,
                 };
 
                 const result = await repository.searchBooks(searchQuery);
 
-                // Convert repository result to IBasicBookInfo format
-                const convertedBooks = result.books.map((rawFromRepo: any) => {
-                    const b: IBasicBookInfo = { ...rawFromRepo };
-                    b.languages = rawFromRepo.langPointers;
-                    b.lang1Tag = b.show?.pdf?.langTag;
-                    Book.sanitizeFeaturesArray(b.features);
-                    return b;
-                });
-
-                // Apply client-side sorting if needed
-                const sortedBooks = doExpensiveClientSideSortingIfNeeded(
-                    convertedBooks,
-                    orderingScheme,
-                    languageForSorting
-                ) as IBasicBookInfo[];
-
-                setBooks(sortedBooks);
-                setTotalMatchingRecords(result.totalMatchingRecords);
-                setWaiting(false);
+                if (!isCancelled) {
+                    setBooks(result.books);
+                    setTotalMatchingRecords(result.totalMatchingRecords);
+                    setWaiting(false);
+                }
             } catch (error) {
-                console.error("Error in useSearchBooks:", error);
-                setErrorString(
-                    error instanceof Error ? error.message : "Unknown error"
-                );
-                setBooks([]);
-                setTotalMatchingRecords(0);
-                setWaiting(false);
+                if (!isCancelled) {
+                    console.error("Error in useSearchBooks:", error);
+                    setErrorString(
+                        error instanceof Error ? error.message : "Unknown error"
+                    );
+                    setWaiting(false);
+                }
             }
         };
 
-        fetchBooks();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
-        params,
-        filter,
-        orderingScheme,
-        languageForSorting,
-        doNotActuallyRunQuery,
-        collectionReady,
-        tags,
-    ]);
+        runQuery();
 
-    // Use the same memoization strategy as before to prevent endless loops
-    const memoizedBooks = useMemo(() => books, [books]);
+        // Cleanup function
+        return () => {
+            isCancelled = true;
+            shouldRunQueryRef.current = false;
+        };
+    }, [
+        stableParams,
+        stableFilter,
+        stableOrderingScheme,
+        stableLanguageForSorting,
+        stableDoNotActuallyRunQuery,
+        collectionReady,
+    ]);
 
     return {
         totalMatchingRecords,
         errorString,
-        books: memoizedBooks,
+        books,
         waiting,
     };
 }
@@ -714,8 +742,11 @@ export function useGetDataForAggregateGrid(): IMinimalBookInfo[] {
     const [result, setResult] = useState<IMinimalBookInfo[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
+    const hasStarted = useRef(false);
 
     useEffect(() => {
+        if (hasStarted.current) return;
+        hasStarted.current = true;
         const fetchData = async () => {
             try {
                 setLoading(true);
@@ -775,6 +806,8 @@ export function useGetDataForAggregateGrid(): IMinimalBookInfo[] {
                 setError(error);
                 setResult([]);
                 setLoading(false);
+            } finally {
+                hasStarted.current = false;
             }
         };
 
@@ -870,19 +903,25 @@ export function useGetCleanedAndOrderedLanguageList(): ILanguage[] {
     const [languages, setLanguages] = useState<ILanguage[]>([]);
 
     useEffect(() => {
+        let isMounted = true;
+
         const fetchLanguages = async () => {
             try {
                 const languageRepository = getLanguageRepository();
                 const languageList = await languageRepository.getCleanedAndOrderedLanguageList();
-                // Convert LanguageModel[] to ILanguage[] format expected by the cache
-                const convertedLanguages = languageList.map((lang) => ({
-                    isoCode: lang.isoCode,
-                    name: lang.name,
-                    englishName: lang.englishName,
-                    objectId: lang.objectId,
-                    usageCount: lang.usageCount || 0,
-                }));
-                setLanguages(convertedLanguages);
+
+                // Only update state if component is still mounted
+                if (isMounted) {
+                    // Convert LanguageModel[] to ILanguage[] format expected by the cache
+                    const convertedLanguages = languageList.map((lang) => ({
+                        isoCode: lang.isoCode,
+                        name: lang.name,
+                        englishName: lang.englishName,
+                        objectId: lang.objectId,
+                        usageCount: lang.usageCount || 0,
+                    }));
+                    setLanguages(convertedLanguages);
+                }
             } catch (error) {
                 // During testing or when ParseServer is unavailable, fail silently
                 // to avoid console errors that break tests
@@ -896,11 +935,19 @@ export function useGetCleanedAndOrderedLanguageList(): ILanguage[] {
                         error
                     );
                 }
-                setLanguages([]);
+                // Only update state if component is still mounted
+                if (isMounted) {
+                    setLanguages([]);
+                }
             }
         };
 
         fetchLanguages();
+
+        // Cleanup function to prevent state updates after unmount
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     return languages;
@@ -982,9 +1029,9 @@ export function useGetBookDetail(
 
 export function useGetBookCount(filter: IFilter): number {
     const [count, setCount] = useState(0);
-    const [isLoading, setIsLoading] = useState(false);
+    const hasStarted = useRef(false);
 
-    // Create a stable copy of the filter to avoid mutations affecting our comparison
+    // Create stable references to avoid infinite loops
     const filterString = JSON.stringify(filter);
     const stableFilter = useMemo(() => JSON.parse(filterString), [
         filterString,
@@ -993,11 +1040,11 @@ export function useGetBookCount(filter: IFilter): number {
     const collectionReady = useProcessDerivativeFilter(stableFilter);
 
     useEffect(() => {
-        if (!collectionReady || isLoading) return;
+        if (!collectionReady || hasStarted.current) return;
+        hasStarted.current = true;
 
         const fetchCount = async () => {
             try {
-                setIsLoading(true);
                 const repository = getBookRepository();
                 const bookCount = await repository.getBookCount(
                     convertIFilterToBookFilter(stableFilter)
@@ -1007,12 +1054,12 @@ export function useGetBookCount(filter: IFilter): number {
                 console.error("Error getting book count:", error);
                 setCount(0);
             } finally {
-                setIsLoading(false);
+                hasStarted.current = false;
             }
         };
 
         fetchCount();
-    }, [stableFilter, collectionReady, isLoading]);
+    }, [stableFilter, collectionReady]);
 
     return count;
 }
@@ -1076,11 +1123,24 @@ export function useGetBooksForGrid(
     const [totalCount, setTotalCount] = useState(0);
     const [waiting, setWaiting] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const hasStarted = useRef(false);
 
-    const collectionReady = useProcessDerivativeFilter(filter);
+    // Create stable references to avoid infinite loops
+    const filterString = JSON.stringify(filter);
+    const sortingString = JSON.stringify(sortingArray);
+
+    const stableFilter = useMemo(() => JSON.parse(filterString), [
+        filterString,
+    ]);
+    const stableSorting = useMemo(() => JSON.parse(sortingString), [
+        sortingString,
+    ]);
+
+    const collectionReady = useProcessDerivativeFilter(stableFilter);
 
     useEffect(() => {
-        if (!collectionReady) return;
+        if (!collectionReady || hasStarted.current) return;
+        hasStarted.current = true;
 
         const fetchBooks = async () => {
             try {
@@ -1089,9 +1149,9 @@ export function useGetBooksForGrid(
 
                 const repository = getBookRepository();
                 const gridQuery = {
-                    filter: convertIFilterToBookFilter(filter),
+                    filter: convertIFilterToBookFilter(stableFilter),
                     pagination: { limit, skip },
-                    sorting: sortingArray,
+                    sorting: stableSorting,
                 };
 
                 const result = await repository.getBooksForGrid(gridQuery);
@@ -1130,11 +1190,13 @@ export function useGetBooksForGrid(
                 setBooks([]);
                 setTotalCount(0);
                 setWaiting(false);
+            } finally {
+                hasStarted.current = false;
             }
         };
 
         fetchBooks();
-    }, [filter, sortingArray, skip, limit, collectionReady]);
+    }, [stableFilter, stableSorting, skip, limit, collectionReady]);
 
     return {
         onePageOfMatchingBooks: books,

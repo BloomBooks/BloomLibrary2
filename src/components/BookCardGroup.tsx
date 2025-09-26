@@ -1,6 +1,6 @@
 import { css } from "@emotion/react";
 
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState, useMemo } from "react";
 import LazyLoad, {
     forceCheck as forceCheckLazyLoadComponents,
 } from "react-lazyload";
@@ -89,17 +89,29 @@ const BookCardGroupInner: React.FunctionComponent<IProps> = (props) => {
     // we have either a horizontally-scrolling list of 20, or several rows
     // of 5 each
     const maxCardsToRetrieve = props.rows ? props.rows * 5 : 20;
-    const collectionFilter = props.collection.filter ?? {};
+
+    // Memoize the collection filter to prevent infinite re-renders
+    const collectionFilter = useMemo(() => props.collection.filter ?? {}, [
+        props.collection.filter,
+    ]);
+
     const getResponsiveChoice = useResponsiveChoice();
     const cardSpec = useBookCardSpec();
     const isSmall = useSmallScreen();
-    const search = useSearchBooks(
-        {
+
+    // Memoize the params object to prevent infinite re-renders
+    const searchParams = useMemo(
+        () => ({
             include: "langPointers",
             // the following is arbitrary. I don't even yet no what the ux is that we want.
             limit: maxCardsToRetrieve, // note that if the selected BookOrderingScheme requires client-side sorting, this will be ignored
             skip: props.skip,
-        },
+        }),
+        [maxCardsToRetrieve, props.skip]
+    );
+
+    const search = useSearchBooks(
+        searchParams,
         collectionFilter,
         props.collection.orderingScheme,
         props.collection.contextLangTag
