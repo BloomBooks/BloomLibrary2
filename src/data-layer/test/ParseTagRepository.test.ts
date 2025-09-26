@@ -47,7 +47,7 @@ describe("ParseTagRepository", () => {
             expect.stringContaining("classes/tag"),
             expect.objectContaining({
                 params: expect.objectContaining({
-                    where: { objectId: "tag-1" },
+                    where: JSON.stringify({ objectId: "tag-1" }),
                     limit: 1,
                 }),
             })
@@ -88,7 +88,7 @@ describe("ParseTagRepository", () => {
                 params: expect.objectContaining({
                     limit: 2,
                     skip: 0,
-                    where: { category: "topic" },
+                    where: JSON.stringify({ category: "topic" }),
                     order: "name",
                 }),
             })

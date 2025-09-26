@@ -9,6 +9,14 @@ export function getDataSource(): DataSource {
     //return DataSource.Dev;
     //return DataSource.Local;
 
+    // For localhost development and testing, use dev server
+    if (
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1"
+    ) {
+        return DataSource.Dev;
+    }
+
     if (window.location.hostname.startsWith("dev")) {
         return DataSource.Dev;
     }

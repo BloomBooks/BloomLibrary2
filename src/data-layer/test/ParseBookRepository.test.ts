@@ -14,7 +14,7 @@ vi.mock("axios");
 const constructParseBookQueryMock = vi.hoisted(() => vi.fn());
 const createBookFromParseServerDataMock = vi.hoisted(() => vi.fn());
 
-vi.mock("../../connection/LibraryQueryHooks", () => ({
+vi.mock("../../connection/BookQueryBuilder", () => ({
     constructParseBookQuery: constructParseBookQueryMock,
 }));
 
@@ -88,7 +88,7 @@ describe("ParseBookRepository", () => {
             expect.stringContaining("classes/books"),
             expect.objectContaining({
                 params: expect.objectContaining({
-                    where: { objectId: "book-1" },
+                    where: JSON.stringify({ objectId: "book-1" }),
                     include: "uploader,langPointers",
                 }),
             })

@@ -14,7 +14,7 @@ export interface IParseConnection {
 // Connection configurations for different environments
 const prod: IParseConnection = {
     headers: {
-        "Content-Type": "text/json",
+        "Content-Type": "application/json",
         "X-Parse-Application-Id": "R6qNTeumQXjJCMutAJYAwPtip1qBulkFyLefkCE5",
     },
     url: "https://server.bloomlibrary.org/parse/",
@@ -22,7 +22,7 @@ const prod: IParseConnection = {
 
 const dev: IParseConnection = {
     headers: {
-        "Content-Type": "text/json",
+        "Content-Type": "application/json",
         "X-Parse-Application-Id": "yrXftBF6mbAuVu3fO6LnhCJiHxZPIdE7gl1DUVGR",
     },
     url: "https://dev-server.bloomlibrary.org/parse/",
@@ -30,7 +30,7 @@ const dev: IParseConnection = {
 
 const local: IParseConnection = {
     headers: {
-        "Content-Type": "text/json",
+        "Content-Type": "application/json",
         "X-Parse-Application-Id": "myAppId",
     },
     url: "http://localhost:1337/parse/",

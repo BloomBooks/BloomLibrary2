@@ -13,7 +13,7 @@ import { BooleanOptions, BookOrderingScheme } from "../../types/CommonTypes";
 import { ParseConnection } from "./ParseConnection";
 import { Book, createBookFromParseServerData } from "../../../model/Book";
 import { IFilter } from "../../../IFilter";
-import { constructParseBookQuery } from "../../../connection/LibraryQueryHooks";
+import { constructParseBookQuery } from "../../../connection/BookQueryBuilder";
 
 export class ParseBookRepository implements IBookRepository {
     // Basic CRUD operations
@@ -24,7 +24,7 @@ export class ParseBookRepository implements IBookRepository {
             const response = await axios.get(`${connection.url}classes/books`, {
                 headers: connection.headers,
                 params: {
-                    where: { objectId: id },
+                    where: JSON.stringify({ objectId: id }),
                     keys: this.getBookDetailFields(),
                     include: "uploader,langPointers",
                 },
@@ -49,7 +49,7 @@ export class ParseBookRepository implements IBookRepository {
             const response = await axios.get(`${connection.url}classes/books`, {
                 headers: connection.headers,
                 params: {
-                    where: { objectId: { $in: ids } },
+                    where: JSON.stringify({ objectId: { $in: ids } }),
                     keys: this.getGridBookKeys(),
                     include: "uploader,langPointers",
                 },
@@ -246,7 +246,7 @@ export class ParseBookRepository implements IBookRepository {
             const response = await axios.get(`${connection.url}classes/books`, {
                 headers: connection.headers,
                 params: {
-                    where: { objectId: { $in: ids } },
+                    where: JSON.stringify({ objectId: { $in: ids } }),
                     keys:
                         "title,baseUrl,objectId,langPointers,tags,features,lastUploaded,harvestState,harvestStartedAt,pageCount,phashOfFirstContentImage,bookHashFromImages,allTitles,edition,draft,rebrand,inCirculation,show",
                     include: "langPointers",

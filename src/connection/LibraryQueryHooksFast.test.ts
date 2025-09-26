@@ -2,7 +2,7 @@ import { IFilter } from "../IFilter";
 import {
     constructParseBookQuery,
     kNameOfNoTopicCollection,
-} from "./LibraryQueryHooks";
+} from "./BookQueryBuilder";
 
 // Test code in LibraryQueryHooks.ts that doesn't need to use axios (ie, hit the internet)
 

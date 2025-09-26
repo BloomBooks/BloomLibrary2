@@ -21,7 +21,7 @@ export class ParseTagRepository implements ITagRepository {
             const response = await axios.get(`${connection.url}classes/tag`, {
                 headers: connection.headers,
                 params: {
-                    where: { objectId: id },
+                    where: JSON.stringify({ objectId: id }),
                     limit: 1,
                 },
             });
@@ -46,7 +46,7 @@ export class ParseTagRepository implements ITagRepository {
             const response = await axios.get(`${connection.url}classes/tag`, {
                 headers: connection.headers,
                 params: {
-                    where: { name },
+                    where: JSON.stringify({ name }),
                     limit: 1,
                 },
             });
@@ -198,7 +198,7 @@ export class ParseTagRepository implements ITagRepository {
 
         const where = this.buildTagFilter(query.filter);
         if (Object.keys(where).length > 0) {
-            params.where = where;
+            params.where = JSON.stringify(where);
         }
 
         if (query.orderBy) {

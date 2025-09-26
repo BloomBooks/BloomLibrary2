@@ -1,11 +1,18 @@
 import { axios } from "@use-hooks/axios";
 import { getConnection } from "./ParseServerConnection";
-import {
-    bookDetailFields,
-    gridBookKeys,
-    gridBookIncludeFields,
-} from "./LibraryQueryHooks";
+import { bookDetailFields } from "./BookQueryBuilder";
 import { getBloomApiUrl } from "./ApiConnection";
+
+// Constants moved from LibraryQueryHooks (now in ParseBookRepository as private methods)
+const gridBookKeys =
+    "objectId,bookInstanceId," +
+    "title,baseUrl,license,licenseNotes,inCirculation,draft,summary,copyright,harvestState," +
+    "harvestLog,harvestStartedAt,tags,pageCount,phashOfFirstContentImage,bookHashFromImages,show,credits,country," +
+    "features,internetLimits,librarianNote,uploader,langPointers,importedBookSourceUrl," +
+    "downloadCount,publisher,originalPublisher,brandingProjectName,keywords,edition,rebrand,leveledReaderLevel," +
+    "analytics_finishedCount,analytics_startedCount,analytics_shellDownloads";
+
+const gridBookIncludeFields = "uploader,langPointers";
 
 // Get basic information about a number of books for the grid page
 export async function retrieveBookData(

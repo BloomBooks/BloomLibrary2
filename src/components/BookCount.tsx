@@ -57,24 +57,27 @@ const BookCountInternal: React.FunctionComponent<IProps> = (props) => {
     });
     const filterString = filter ? JSON.stringify(filter) : "";
 
-    if (filterString !== state.filterString) {
-        // new filter string different from old filter string:
-        // - this is the first call with an initial or changed filter.
-        // - Typically bookCountResult.loading is (wrongly) false.
-        // - It's common for this method to be called at least twice
-        // after a filter change and to see loading false and a stale result each time.
-        // - We want to ignore results until called with bookCountResult.loading true,
-        // and in the meantime return the result we should have gotten since
-        // bookCountResult.loading should be true.
-        setState({
-            filterString,
-            waitingForLoading: true,
-            reportedCount: false,
-        });
-        return getNoResultsElement(); // NOT props.noMatches, we don't know yet whether count is zero.
-    }
-    if (state.waitingForLoading) {
-        if (bookCountResult.loading) {
+    // Use useEffect instead of setState during render to prevent infinite loops
+    React.useEffect(() => {
+        if (filterString !== state.filterString) {
+            // new filter string different from old filter string:
+            // - this is the first call with an initial or changed filter.
+            // - Typically bookCountResult.loading is (wrongly) false.
+            // - It's common for this method to be called at least twice
+            // after a filter change and to see loading false and a stale result each time.
+            // - We want to ignore results until called with bookCountResult.loading true,
+            // and in the meantime return the result we should have gotten since
+            // bookCountResult.loading should be true.
+            setState({
+                filterString,
+                waitingForLoading: true,
+                reportedCount: false,
+            });
+        }
+    }, [filterString, state.filterString]);
+
+    React.useEffect(() => {
+        if (state.waitingForLoading && bookCountResult.loading) {
             // OK, we started loading the data for the new filter.
             // now we can trust the results
             setState({
@@ -82,13 +85,18 @@ const BookCountInternal: React.FunctionComponent<IProps> = (props) => {
                 waitingForLoading: false,
                 reportedCount: false,
             });
-            // and we can fall through to show whatever result we have, since loading is properly true.
-        } else {
-            // Another spurious result before we even sent the request to the server,
-            // or if the filter is empty
-            return getNoResultsElement();
         }
+    }, [state.waitingForLoading, bookCountResult.loading, filterString]);
+
+    // Return early if we're waiting for loading
+    if (state.waitingForLoading && !bookCountResult.loading) {
+        return getNoResultsElement();
     }
+
+    if (filterString !== state.filterString) {
+        return getNoResultsElement(); // NOT props.noMatches, we don't know yet whether count is zero.
+    }
+
     // If we get this far, we've seen bookCountResult.loading true for the current
     // filter. So we can trust bookCountResult: if it says loading, we just
     // continue to return noResultsElement; if not, we should have a good count.

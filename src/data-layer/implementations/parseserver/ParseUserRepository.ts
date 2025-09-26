@@ -36,7 +36,7 @@ export class ParseUserRepository implements IUserRepository {
             const response = await axios.get(`${connection.url}classes/_User`, {
                 headers: connection.headers,
                 params: {
-                    where: { objectId: id },
+                    where: JSON.stringify({ objectId: id }),
                     limit: 1,
                 },
             });
@@ -63,7 +63,7 @@ export class ParseUserRepository implements IUserRepository {
             const response = await axios.get(`${connection.url}classes/_User`, {
                 headers: connection.headers,
                 params: {
-                    where: { email },
+                    where: JSON.stringify({ email }),
                     limit: 1,
                 },
             });
@@ -282,7 +282,7 @@ export class ParseUserRepository implements IUserRepository {
 
         const where = this.buildUserFilter(query.filter);
         if (Object.keys(where).length > 0) {
-            params.where = where;
+            params.where = JSON.stringify(where);
         }
 
         return params;

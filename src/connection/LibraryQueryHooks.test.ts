@@ -1,6 +1,6 @@
 import { IFilter } from "../IFilter";
 import axios from "axios";
-import { constructParseBookQuery } from "./LibraryQueryHooks";
+import { constructParseBookQuery } from "./BookQueryBuilder";
 
 // for unit test database.
 const headers = {
