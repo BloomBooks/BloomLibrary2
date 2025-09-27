@@ -320,43 +320,71 @@ export class ParseBookRepository implements IBookRepository {
     }
 
     private convertParseDataToBookModel(data: any): BookModel {
-        // Create a Book object first using existing logic
-        const book = createBookFromParseServerData(data);
+        try {
+            // Create a Book object first using existing logic
+            const book = createBookFromParseServerData(data);
 
-        // Convert to BookModel
-        const bookModel = new BookModel();
-        bookModel.objectId = book.id;
-        bookModel.createdAt = data.createdAt || new Date().toISOString();
-        bookModel.updatedAt = data.updatedAt || new Date().toISOString();
-        bookModel.title = book.title;
-        bookModel.allTitles = data.allTitles ? JSON.parse(data.allTitles) : {};
-        bookModel.baseUrl = book.baseUrl;
-        bookModel.license = book.license;
-        bookModel.copyright = book.copyright;
-        bookModel.tags =
-            typeof book.tags === "string"
-                ? (book.tags as string).split(",")
-                : book.tags || [];
-        bookModel.summary = book.summary;
-        bookModel.pageCount = (parseInt(book.pageCount) || 0).toString();
-        bookModel.languages = data.langPointers || [];
-        bookModel.features = book.features || [];
-        bookModel.inCirculation = book.inCirculation;
-        bookModel.draft = book.draft;
-        bookModel.harvestState = book.harvestState;
-        bookModel.uploader = data.uploader;
-        bookModel.downloadCount = book.downloadCount || 0;
-        bookModel.country = book.country;
-        bookModel.publisher = book.publisher;
-        bookModel.originalPublisher = book.originalPublisher;
-        bookModel.bookInstanceId = book.bookInstanceId;
-        bookModel.brandingProjectName = book.brandingProjectName;
-        bookModel.edition = book.edition;
-        bookModel.rebrand = book.rebrand;
-        bookModel.phashOfFirstContentImage = book.phashOfFirstContentImage;
-        bookModel.bookHashFromImages = book.bookHashFromImages;
+            // Convert to BookModel
+            const bookModel = new BookModel();
+            bookModel.objectId = book.id;
+            bookModel.createdAt = data.createdAt || new Date().toISOString();
+            bookModel.updatedAt = data.updatedAt || new Date().toISOString();
+            bookModel.title = book.title;
+            // Parse allTitles and convert to Map
+            let allTitlesObj = {};
+            if (typeof data.allTitles === "string") {
+                allTitlesObj = JSON.parse(data.allTitles);
+            } else if (data.allTitles && typeof data.allTitles === "object") {
+                allTitlesObj = data.allTitles;
+            }
+            bookModel.allTitles = new Map(Object.entries(allTitlesObj));
+            bookModel.baseUrl = book.baseUrl;
+            bookModel.license = book.license;
+            bookModel.copyright = book.copyright;
+            // Handle tags - convert from object with numeric keys to array if needed
+            if (Array.isArray(book.tags)) {
+                bookModel.tags = book.tags;
+            } else if (typeof book.tags === "string") {
+                bookModel.tags = (book.tags as string).split(",");
+            } else if (book.tags && typeof book.tags === "object") {
+                // Convert object with numeric keys to array
+                bookModel.tags = Object.values(book.tags as any);
+            } else {
+                bookModel.tags = [];
+            }
+            bookModel.summary = book.summary;
+            bookModel.pageCount = (parseInt(book.pageCount) || 0).toString();
+            bookModel.languages = data.langPointers || [];
+            // Handle features - convert from object with numeric keys to array if needed
+            if (Array.isArray(book.features)) {
+                bookModel.features = book.features;
+            } else if (book.features && typeof book.features === "object") {
+                // Convert object with numeric keys to array
+                bookModel.features = Object.values(book.features as any);
+            } else {
+                bookModel.features = [];
+            }
+            bookModel.inCirculation = book.inCirculation;
+            bookModel.draft = book.draft;
+            bookModel.harvestState = book.harvestState;
+            bookModel.uploader = data.uploader;
+            bookModel.downloadCount = book.downloadCount || 0;
+            bookModel.country = book.country;
+            bookModel.publisher = book.publisher;
+            bookModel.originalPublisher = book.originalPublisher;
+            bookModel.bookInstanceId = book.bookInstanceId;
+            bookModel.brandingProjectName = book.brandingProjectName;
+            bookModel.edition = book.edition;
+            bookModel.rebrand = book.rebrand;
+            bookModel.phashOfFirstContentImage = book.phashOfFirstContentImage;
+            bookModel.bookHashFromImages = book.bookHashFromImages;
 
-        return bookModel;
+            return bookModel;
+        } catch (error) {
+            console.error("Error in convertParseDataToBookModel:", error);
+            console.error("Input data was:", data);
+            throw error;
+        }
     }
 
     private convertBookModelToParseData(book: Partial<BookModel>): any {

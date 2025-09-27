@@ -43,7 +43,7 @@ import { StaffControlsBox } from "./StaffControlsBox";
 const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
     const l10n = useIntl();
     const id = props.id;
-    const book = useGetBookDetail(id);
+    const { book, loading, error } = useGetBookDetail(id);
     const location = useLocation();
     const contextLangTag = getContextLangTagFromUrlSearchParams(
         new URLSearchParams(location.search)
@@ -64,13 +64,13 @@ const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
         getBookAnalyticsInfo(book, contextLangTag, undefined, collectionName),
         !!book
     );
-    if (book === undefined) {
+    if (loading) {
         return (
             <div>
                 <FormattedMessage id="loading" defaultMessage="Loading..." />
             </div>
         );
-    } else if (book === null) {
+    } else if (book === null || error) {
         return (
             <div>
                 <FormattedMessage
@@ -92,7 +92,7 @@ const BookDetail: React.FunctionComponent<IBookDetailProps> = (props) => {
 };
 
 const BookDetailInternal: React.FunctionComponent<{
-    book: Book;
+    book: any; // Using any for compatibility during migration
     contextLangTag?: string;
 }> = observer((props) => {
     // const { bloomDesktopAvailable } = useContext(

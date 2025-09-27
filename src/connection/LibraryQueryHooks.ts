@@ -957,11 +957,11 @@ export function useGetCleanedAndOrderedLanguageList(): ILanguage[] {
 export function useGetBookDetail(
     bookId: string
 ): {
-    book: IBasicBookInfo | null;
+    book: any | null; // Using any for compatibility during migration
     loading: boolean;
     error: string | null;
 } {
-    const [book, setBook] = useState<IBasicBookInfo | null>(null);
+    const [book, setBook] = useState<any | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -980,13 +980,17 @@ export function useGetBookDetail(
                 const bookModel = await repository.getBook(bookId);
 
                 if (bookModel) {
-                    // Convert BookModel to IBasicBookInfo format
-                    const model = bookModel as any; // Temporary workaround for property access
-                    const basicBookInfo: IBasicBookInfo = {
+                    // Return the BookModel directly but add compatibility properties
+                    const model = bookModel as any;
+
+                    // Add compatibility properties and methods that existing components expect
+                    const compatibleBook = {
+                        ...model,
+                        // Map BookModel properties to Book properties for compatibility
                         objectId: model.objectId || model.id,
-                        baseUrl: model.baseUrl || "",
-                        title: model.title || "",
-                        allTitles:
+                        id: model.objectId || model.id,
+                        allTitles: model.allTitles || new Map(),
+                        allTitlesRaw:
                             model.allTitlesRaw ||
                             JSON.stringify(
                                 Object.fromEntries(model.allTitles || new Map())
@@ -995,6 +999,7 @@ export function useGetBookDetail(
                         features: model.features || [],
                         tags: model.tags || [],
                         license: model.license || "",
+                        licenseNotes: model.licenseNotes || "",
                         copyright: model.copyright || "",
                         pageCount: model.pageCount || "0",
                         createdAt: model.createdAt || "",
@@ -1007,8 +1012,54 @@ export function useGetBookDetail(
                             model.phashOfFirstContentImage || "",
                         bookHashFromImages: model.bookHashFromImages || "",
                         updatedAt: model.updatedAt || "",
+                        baseUrl: model.baseUrl || "",
+                        title: model.title || "",
+                        summary: model.summary || "",
+                        credits: model.credits || "",
+                        publisher: model.publisher || "",
+                        originalPublisher: model.originalPublisher || "",
+                        bookOrder: model.bookOrder || "",
+                        harvestLog: model.harvestLog || [],
+                        bookInstanceId: model.bookInstanceId || "",
+                        uploader: model.uploader,
+
+                        // Add missing methods from the old Book class
+                        getBestTitle: (langISO?: string) => {
+                            if (model.getBestTitle) {
+                                return model.getBestTitle(langISO);
+                            }
+                            // Fallback implementation
+                            const t = langISO
+                                ? model.allTitles?.get(langISO)
+                                : model.title;
+                            return (t || model.title || "").replace(
+                                /[\r\n\v]+/g,
+                                " "
+                            );
+                        },
+
+                        getMissingFontNames: () => {
+                            // Return empty array as placeholder - this would need to be implemented properly
+                            return [];
+                        },
+
+                        // Add date properties that might be missing
+                        uploadDate:
+                            model.uploadDate || model.createdAt
+                                ? new Date(model.createdAt)
+                                : new Date(),
+                        updateDate:
+                            model.updateDate || model.updatedAt
+                                ? new Date(model.updatedAt)
+                                : new Date(),
+                        lastUploadedDate: model.lastUploaded
+                            ? new Date(
+                                  model.lastUploaded.iso || model.lastUploaded
+                              )
+                            : new Date(),
                     };
-                    setBook(basicBookInfo);
+
+                    setBook(compatibleBook);
                 } else {
                     setBook(null);
                 }
