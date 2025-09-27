@@ -204,8 +204,8 @@ export interface IBasicBookInfo {
     baseUrl: string;
     harvestState?: string;
     //note, here in a "BasicBookInfo", this is just JSON, intentionally not parsed yet,
-    // in case we don't need it.
-    allTitles: string;
+    // in case we don't need it. During migration, this can be either a string or Map.
+    allTitles: string | Map<string, string>;
     // conceptually a date, but uploaded from parse server this is what it has.
     harvestStartedAt?: { iso: string } | undefined;
     title: string;
@@ -990,11 +990,24 @@ export function useGetBookDetail(
                         objectId: model.objectId || model.id,
                         id: model.objectId || model.id,
                         allTitles: model.allTitles || new Map(),
+                        // Legacy components might expect allTitles as a string for conversion
+                        allTitlesString:
+                            model.allTitles instanceof Map
+                                ? JSON.stringify(
+                                      Object.fromEntries(model.allTitles)
+                                  )
+                                : typeof model.allTitles === "string"
+                                ? model.allTitles
+                                : JSON.stringify(model.allTitles || {}),
                         allTitlesRaw:
                             model.allTitlesRaw ||
-                            JSON.stringify(
-                                Object.fromEntries(model.allTitles || new Map())
-                            ),
+                            (model.allTitles instanceof Map
+                                ? JSON.stringify(
+                                      Object.fromEntries(model.allTitles)
+                                  )
+                                : typeof model.allTitles === "string"
+                                ? model.allTitles
+                                : JSON.stringify(model.allTitles || {})),
                         languages: model.languages || [],
                         features: model.features || [],
                         tags: model.tags || [],
@@ -1039,9 +1052,35 @@ export function useGetBookDetail(
                         },
 
                         getMissingFontNames: () => {
-                            // Return empty array as placeholder - this would need to be implemented properly
-                            return [];
+                            return model.getMissingFontNames();
                         },
+
+                        getTagValue: (tag: string) => {
+                            return model.getTagValue(tag);
+                        },
+
+                        getKeywordsText: () => {
+                            return model.getKeywordsText();
+                        },
+
+                        getBestLevel: () => {
+                            return model.getBestLevel();
+                        },
+
+                        getHarvestLog: () => {
+                            return model.getHarvestLog();
+                        },
+
+                        setBooleanTag: (name: string, value: boolean) => {
+                            return model.setBooleanTag(name, value);
+                        },
+
+                        // Add keywordsText property for compatibility
+                        keywordsText: model.getKeywordsText(),
+
+                        // Add keywords and keywordStems arrays for compatibility
+                        keywords: model.keywords || [],
+                        keywordStems: model.keywordStems || [],
 
                         // Add date properties that might be missing
                         uploadDate:
@@ -1057,6 +1096,11 @@ export function useGetBookDetail(
                                   model.lastUploaded.iso || model.lastUploaded
                               )
                             : new Date(),
+
+                        // Add missing methods from BookModel
+                        checkCountryPermissions: model.checkCountryPermissions
+                            ? model.checkCountryPermissions.bind(model)
+                            : undefined,
                     };
 
                     setBook(compatibleBook);
@@ -1222,7 +1266,12 @@ export function useGetBooksForGrid(
                         objectId: book.objectId,
                         baseUrl: book.baseUrl || "",
                         title: book.title,
-                        allTitles: JSON.stringify(book.allTitles || {}),
+                        allTitles:
+                            book.allTitles instanceof Map
+                                ? JSON.stringify(
+                                      Object.fromEntries(book.allTitles)
+                                  )
+                                : JSON.stringify(book.allTitles || {}),
                         languages: book.languages || [],
                         features: book.features || [],
                         tags: book.tags || [],

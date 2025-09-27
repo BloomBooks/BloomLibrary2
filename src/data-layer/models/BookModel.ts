@@ -7,6 +7,8 @@ import {
 } from "../types/CommonTypes";
 import { LanguageModel } from "./LanguageModel";
 import { BookStatsModel } from "../interfaces/IAnalyticsService";
+import axios from "axios";
+import { IInternetLimits, ICountrySpec } from "../../model/Book";
 // Note: These imports will be properly resolved when integrating with the existing codebase
 // import { removePunctuation } from "../../Utilities";
 // import stem from "wink-porter2-stemmer";
@@ -14,6 +16,9 @@ import { BookStatsModel } from "../interfaces/IAnalyticsService";
 // Temporary placeholders for testing
 const removePunctuation = (text: string) => text.replace(/[^\w\s]/gi, "");
 const stem = (text: string) => text.toLowerCase();
+
+// Import the real ArtifactVisibilitySettingsGroup from the existing model
+import { ArtifactVisibilitySettingsGroup as RealArtifactVisibilitySettingsGroup } from "../../model/ArtifactVisibilitySettings";
 
 export interface ArtifactVisibilitySettingsGroup {
     // Will be properly typed when we migrate this interface
@@ -65,7 +70,7 @@ export class BookModel implements CommonEntityFields {
     public librarianNote: string = "";
     public brandingProjectName = "";
     public country: string = "";
-    public internetLimits: InternetLimits = {};
+    public internetLimits: IInternetLimits = {};
     public downloadCount: number = -1;
     public phashOfFirstContentImage: string = "";
     public bookHashFromImages: string = "";
@@ -74,7 +79,7 @@ export class BookModel implements CommonEntityFields {
     public bloomPUBVersion: number | undefined;
 
     // Artifact settings
-    public artifactsToOfferToUsers: ArtifactVisibilitySettingsGroup = {};
+    public artifactsToOfferToUsers: RealArtifactVisibilitySettingsGroup = new RealArtifactVisibilitySettingsGroup();
 
     // Keywords
     public keywordsText: string = "";
@@ -248,5 +253,67 @@ export class BookModel implements CommonEntityFields {
     ): string | undefined {
         // Implementation would be extracted from current Book class
         return undefined; // Placeholder
+    }
+
+    // Passed a restrictionType that is one of the field names in IInternetLimits
+    // If the book may not be so used, returns a string that may be used to describe what it is
+    // restricted to, currently a country name, e.g., "Papua New Guinea".
+    // This string is intended to be inserted into messages like
+    // "Sorry, the uploader of this book has restricted shellbook download to <return value from this method>"
+    public async checkCountryPermissions(
+        restrictionType: string
+    ): Promise<string> {
+        const limits = this.internetLimits;
+        let requiredCountry = "";
+        switch (restrictionType) {
+            // @ts-ignore: noFallthroughCasesInSwitch
+            case "downloadShell":
+                if (limits.downloadShell) {
+                    requiredCountry = limits.downloadShell.countryCode;
+                    break;
+                }
+            // deliberate fall-through, downloadShell is restricted by the other two also.
+            // @ts-ignore: noFallthroughCasesInSwitch
+            case "downloadAnything":
+                if (limits.downloadAnything) {
+                    requiredCountry = limits.downloadAnything.countryCode;
+                    break;
+                }
+            // deliberate fall-through, download is restricted by viewContentsInAnyway, too.
+            case "viewContentsInAnyWay":
+                if (limits.viewContentsInAnyWay) {
+                    requiredCountry = limits.viewContentsInAnyWay.countryCode;
+                    break;
+                }
+                // there's no relevant restriction, we can can immediately permit the action.
+                return Promise.resolve("");
+        }
+        return axios
+            .get(
+                // AWS API Gateway which is a passthrough to ipinfo.io
+                "https://58nig3vzci.execute-api.us-east-2.amazonaws.com/Production"
+            )
+            .then(
+                (data) => {
+                    const geoInfo = data.data;
+                    if (geoInfo && geoInfo.country) {
+                        if (geoInfo.country === requiredCountry) {
+                            return "";
+                        }
+                    }
+                    // Unless we know we're in that country, we can't use the book in this way.
+                    // Get a nice name for the country.
+                    return axios
+                        .get(
+                            `https://restcountries.eu/rest/v2/alpha/${requiredCountry}?fields=name`
+                        )
+                        .then((response) => response.data.name);
+                },
+                (error) => {
+                    console.error(error);
+                    // If something went wrong with figuring out where we are, just allow the access.
+                    return "";
+                }
+            );
     }
 }

@@ -14,6 +14,7 @@ import { ParseConnection } from "./ParseConnection";
 import { Book, createBookFromParseServerData } from "../../../model/Book";
 import { IFilter } from "../../../IFilter";
 import { constructParseBookQuery } from "../../../connection/BookQueryBuilder";
+import { ArtifactVisibilitySettingsGroup } from "../../../model/ArtifactVisibilitySettings";
 
 export class ParseBookRepository implements IBookRepository {
     // Basic CRUD operations
@@ -378,6 +379,12 @@ export class ParseBookRepository implements IBookRepository {
             bookModel.rebrand = book.rebrand;
             bookModel.phashOfFirstContentImage = book.phashOfFirstContentImage;
             bookModel.bookHashFromImages = book.bookHashFromImages;
+            bookModel.internetLimits = book.internetLimits || {};
+
+            // Convert show field to artifactsToOfferToUsers (critical for button visibility)
+            bookModel.artifactsToOfferToUsers = ArtifactVisibilitySettingsGroup.createFromParseServerData(
+                data.show
+            );
 
             return bookModel;
         } catch (error) {

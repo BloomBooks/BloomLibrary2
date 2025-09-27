@@ -603,9 +603,18 @@ export function getBookTitleInLanguageOrUndefined(
     return contextTitle?.replace(/[\r\n\v]+/g, " ");
 }
 
-function parseAllTitles(allTitlesString: string): Map<string, string> {
+function parseAllTitles(
+    allTitlesStringOrMap: string | Map<string, string>
+): Map<string, string> {
     const map = new Map<string, string>();
     try {
+        // Handle case where allTitles is already a Map (from BookModel)
+        if (allTitlesStringOrMap instanceof Map) {
+            return new Map(allTitlesStringOrMap);
+        }
+
+        // Handle case where allTitles is a JSON string (from IBasicBookInfo)
+        const allTitlesString = allTitlesStringOrMap as string;
         const allTitles =
             (allTitlesString &&
                 JSON.parse(
@@ -622,7 +631,7 @@ function parseAllTitles(allTitlesString: string): Map<string, string> {
         });
     } catch (error) {
         console.error(error);
-        console.error(`While parsing allTitles ${allTitlesString}`);
+        console.error(`While parsing allTitles ${allTitlesStringOrMap}`);
     }
     return map;
 }

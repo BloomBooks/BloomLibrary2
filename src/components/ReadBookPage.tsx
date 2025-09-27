@@ -184,7 +184,7 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
         };
     }, [handleMessageFromBloomPlayer]);
 
-    const book = useGetBookDetail(id);
+    const { book, loading, error } = useGetBookDetail(id);
     const bestTitle = book ? book.getBestTitle(contextLangTag) : "Play";
     useSetBrowserTabTitle(bestTitle);
 
