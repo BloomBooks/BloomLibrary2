@@ -88,7 +88,7 @@ describe("ParseBookRepository", () => {
             expect.stringContaining("classes/books"),
             expect.objectContaining({
                 params: expect.objectContaining({
-                    where: JSON.stringify({ objectId: "book-1" }),
+                    where: { objectId: "book-1" },
                     include: "uploader,langPointers",
                 }),
             })

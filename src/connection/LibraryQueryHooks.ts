@@ -1124,6 +1124,7 @@ export function useGetBookDetail(
 
 export function useGetBookCount(filter: IFilter): number {
     const [count, setCount] = useState(0);
+    const [hasError, setHasError] = useState(false);
     const hasStarted = useRef(false);
 
     // Create stable references to avoid infinite loops
@@ -1154,9 +1155,11 @@ export function useGetBookCount(filter: IFilter): number {
                 );
                 console.log("DEBUG: useGetBookCount result:", bookCount);
                 setCount(bookCount);
+                setHasError(false);
             } catch (error) {
                 console.error("Error getting book count:", error);
                 setCount(0);
+                setHasError(true);
             } finally {
                 hasStarted.current = false;
             }
@@ -1168,12 +1171,64 @@ export function useGetBookCount(filter: IFilter): number {
     return count;
 }
 
+// Enhanced version that also returns error state
+export function useGetBookCountWithError(
+    filter: IFilter
+): { count: number; hasError: boolean } {
+    const [count, setCount] = useState(0);
+    const [hasError, setHasError] = useState(false);
+    const hasStarted = useRef(false);
+
+    // Create stable references to avoid infinite loops
+    const filterString = JSON.stringify(filter);
+    const stableFilter = useMemo(() => JSON.parse(filterString), [
+        filterString,
+    ]);
+
+    const collectionReady = useProcessDerivativeFilter(stableFilter);
+
+    useEffect(() => {
+        if (!collectionReady || hasStarted.current) return;
+        hasStarted.current = true;
+
+        const fetchCount = async () => {
+            try {
+                const repository = getBookRepository();
+                const convertedFilter = convertIFilterToBookFilter(
+                    stableFilter
+                );
+                console.log("DEBUG: useGetBookCount filter:", stableFilter);
+                console.log(
+                    "DEBUG: useGetBookCount convertedFilter:",
+                    convertedFilter
+                );
+                const bookCount = await repository.getBookCount(
+                    convertedFilter
+                );
+                console.log("DEBUG: useGetBookCount result:", bookCount);
+                setCount(bookCount);
+                setHasError(false);
+            } catch (error) {
+                console.error("Error getting book count:", error);
+                setCount(0);
+                setHasError(true);
+            } finally {
+                hasStarted.current = false;
+            }
+        };
+
+        fetchCount();
+    }, [stableFilter, collectionReady]);
+
+    return { count, hasError };
+}
+
 export function useGetBookCountRaw(
     filter: IFilter,
     shouldSkipQuery?: boolean
 ): IAxiosAnswer {
     // This is a legacy hook that returns axios-style results for backward compatibility
-    const count = useGetBookCount(filter);
+    const { count, hasError } = useGetBookCountWithError(filter);
     const [result, setResult] = useState<any>({
         loading: true,
         error: null,
@@ -1198,16 +1253,27 @@ export function useGetBookCountRaw(
             return;
         }
 
-        setResult({
-            loading: false,
-            error: null,
-            response: {
-                data: { count: count },
-            },
-            query: filterString,
-            reFetch: () => {},
-        });
-    }, [count, shouldSkipQuery, filterString]);
+        if (hasError) {
+            // Return error state when API failed
+            setResult({
+                loading: false,
+                error: new Error("Failed to fetch book count"),
+                response: null,
+                query: filterString,
+                reFetch: () => {},
+            });
+        } else {
+            setResult({
+                loading: false,
+                error: null,
+                response: {
+                    data: { count: count },
+                },
+                query: filterString,
+                reFetch: () => {},
+            });
+        }
+    }, [count, hasError, shouldSkipQuery, filterString]);
 
     return result;
 }

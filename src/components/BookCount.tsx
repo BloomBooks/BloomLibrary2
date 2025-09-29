@@ -43,21 +43,23 @@ const BookCountInternal: React.FunctionComponent<IProps> = (props) => {
     const shouldSkipQuery = filter === undefined;
     const bookCountResult = useGetBookCountRaw(filter || {}, shouldSkipQuery);
 
-    const { noResultsElement, count } = getResultsOrMessageElement(
-        bookCountResult
-    );
-    // note, we don't want the "compact" version of the string here, we want the exact count
-    const formattedCount = count === undefined ? "" : count.toLocaleString();
+    // Check for error state first - if there's an API error, show empty space
+    if (bookCountResult.error) {
+        return getNoResultsElement();
+    }
 
-    // Simplified logic: just check if we're loading or have an error
+    // Check for loading state
     if (bookCountResult.loading) {
         return getNoResultsElement();
     }
 
-    // If there's an error, show it
-    if (noResultsElement) {
-        return noResultsElement;
+    // Check if we have a valid response
+    if (!bookCountResult.response || !bookCountResult.response.data) {
+        return getNoResultsElement();
     }
+
+    const count = bookCountResult.response.data.count;
+    const formattedCount = count === undefined ? "" : count.toLocaleString();
 
     // OK, we have a real result. If the count is zero
     // and we have a noMatches, use it.

@@ -209,7 +209,7 @@ export class ParseBookRepository implements IBookRepository {
             return count;
         } catch (error) {
             console.error("Error getting book count:", error);
-            return 0;
+            throw error;
         }
     }
 

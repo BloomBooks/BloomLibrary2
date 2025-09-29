@@ -95,7 +95,7 @@ export const CollectionCard: React.FunctionComponent<{
         props.layout === CollectionCardLayout.shortWithBookCount
             ? "" // just sit under the top padding
             : `bottom: ${getResponsiveChoice(23, 30)}px`;
-    //console.log(props.collection.label + "  " + props.collection.type);
+    // console.log(props.collection.label + "  " + props.collection.type);
     const label = useGetLocalizedCollectionLabel(props.collection);
     const titleElement = (
         <div
@@ -274,10 +274,12 @@ export const CollectionCard: React.FunctionComponent<{
                 `}
             >
                 <div className="book-count">
-                    {(props.collection.filter ||
-                        props.collection.childCollections) && (
-                        <BookCount collection={props.collection} />
-                    )}
+                    {props.collection.type !== "link" &&
+                        props.collection.type !== "page" &&
+                        (props.collection.filter ||
+                            props.collection.childCollections) && (
+                            <BookCount collection={props.collection} />
+                        )}
                 </div>
                 <div>{countryName}</div>
             </div>
