@@ -185,14 +185,14 @@ export class ParseUserRepository implements IUserRepository {
             const response = await axios.get(`${connection.url}roles`, {
                 headers: connection.headers,
                 params: {
-                    where: {
+                    where: JSON.stringify({
                         name: "moderator",
                         users: {
                             __type: "Pointer",
                             className: "_User",
                             objectId: userId,
                         },
-                    },
+                    }),
                     limit: 1,
                 },
             });
@@ -305,9 +305,9 @@ export class ParseUserRepository implements IUserRepository {
             const response = await axios.get(`${connection.url}roles`, {
                 headers: connection.headers,
                 params: {
-                    where: {
+                    where: JSON.stringify({
                         name: "moderator",
-                    },
+                    }),
                     keys: "users",
                     limit: 1,
                     include: "users",

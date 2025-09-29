@@ -79,14 +79,12 @@ export const CollectionReport: React.FunctionComponent<ICollectionReportProps> =
         totalMatchingBooksCount,
     } = useGetBooksForGrid(
         collection?.filter ?? {},
-        kBooksPerPage,
-        0,
         sortings.map((s) => ({
             columnName: s.columnName,
             descending: s.direction === "desc",
         })),
-        reportBookKeys,
-        doNotRunQuery
+        0,
+        kBooksPerPage
     );
 
     const haveBooks: boolean = !!(matchingBooks && matchingBooks.length);

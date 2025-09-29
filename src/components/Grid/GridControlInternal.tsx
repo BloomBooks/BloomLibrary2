@@ -176,12 +176,12 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
             totalMatchingBooksCount,
         } = useGetBooksForGrid(
             filterMadeFromPageSearchPlusColumnFilters,
-            kBooksPerGridPage,
-            gridPage * kBooksPerGridPage,
             sortings.map((s) => ({
                 columnName: s.columnName,
                 descending: s.direction === "desc",
-            }))
+            })),
+            gridPage * kBooksPerGridPage,
+            kBooksPerGridPage
         );
         const thisIsAModerator = user?.moderator;
         useEffect(() => {

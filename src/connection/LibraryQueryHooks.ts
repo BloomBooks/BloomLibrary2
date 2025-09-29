@@ -1218,12 +1218,12 @@ export function useGetBooksForGrid(
     skip: number,
     limit: number
 ): {
-    onePageOfMatchingBooks: IBasicBookInfo[];
+    onePageOfMatchingBooks: Book[];
     totalMatchingBooksCount: number;
     waiting: boolean;
     error: string | null;
 } {
-    const [books, setBooks] = useState<IBasicBookInfo[]>([]);
+    const [books, setBooks] = useState<Book[]>([]);
     const [totalCount, setTotalCount] = useState(0);
     const [waiting, setWaiting] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -1260,37 +1260,9 @@ export function useGetBooksForGrid(
 
                 const result = await repository.getBooksForGrid(gridQuery);
 
-                // Convert to IBasicBookInfo format
-                const convertedBooks = result.onePageOfMatchingBooks.map(
-                    (book: any) => ({
-                        objectId: book.objectId,
-                        baseUrl: book.baseUrl || "",
-                        title: book.title,
-                        allTitles:
-                            book.allTitles instanceof Map
-                                ? JSON.stringify(
-                                      Object.fromEntries(book.allTitles)
-                                  )
-                                : JSON.stringify(book.allTitles || {}),
-                        languages: book.languages || [],
-                        features: book.features || [],
-                        tags: book.tags || [],
-                        license: book.license || "",
-                        copyright: book.copyright || "",
-                        pageCount: book.pageCount || "0",
-                        createdAt: book.createdAt,
-                        harvestState: book.harvestState,
-                        draft: book.draft,
-                        inCirculation: book.inCirculation,
-                        edition: book.edition || "",
-                        country: book.country,
-                        phashOfFirstContentImage: book.phashOfFirstContentImage,
-                        bookHashFromImages: book.bookHashFromImages,
-                        updatedAt: book.updatedAt,
-                    })
-                );
-
-                setBooks(convertedBooks);
+                // Use the Book instances directly instead of converting to plain objects
+                // The grid columns expect Book instances with methods like getBestLevel()
+                setBooks(result.onePageOfMatchingBooks);
                 setTotalCount(result.totalMatchingBooksCount);
                 setWaiting(false);
             } catch (err) {
