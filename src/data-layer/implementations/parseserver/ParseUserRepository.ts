@@ -22,12 +22,6 @@ interface ParseUserRecord {
     informEditorResult?: unknown;
 }
 
-interface ParseModeratorRecord {
-    user?: {
-        objectId: string;
-    };
-}
-
 export class ParseUserRepository implements IUserRepository {
     async getUser(id: string): Promise<UserModel | null> {
         const connection = ParseConnection.getConnection();
@@ -188,22 +182,20 @@ export class ParseUserRepository implements IUserRepository {
         const connection = ParseConnection.getConnection();
 
         try {
-            const response = await axios.get(
-                `${connection.url}classes/moderators`,
-                {
-                    headers: connection.headers,
-                    params: {
-                        where: {
-                            user: {
-                                __type: "Pointer",
-                                className: "_User",
-                                objectId: userId,
-                            },
+            const response = await axios.get(`${connection.url}roles`, {
+                headers: connection.headers,
+                params: {
+                    where: {
+                        name: "moderator",
+                        users: {
+                            __type: "Pointer",
+                            className: "_User",
+                            objectId: userId,
                         },
-                        limit: 1,
                     },
-                }
-            );
+                    limit: 1,
+                },
+            });
 
             return (response.data?.results?.length ?? 0) > 0;
         } catch (error) {
@@ -310,22 +302,26 @@ export class ParseUserRepository implements IUserRepository {
         const connection = ParseConnection.getConnection();
 
         try {
-            const response = await axios.get(
-                `${connection.url}classes/moderators`,
-                {
-                    headers: connection.headers,
-                    params: {
-                        keys: "user",
-                        limit: 1000,
-                        include: "user",
+            const response = await axios.get(`${connection.url}roles`, {
+                headers: connection.headers,
+                params: {
+                    where: {
+                        name: "moderator",
                     },
-                }
-            );
+                    keys: "users",
+                    limit: 1,
+                    include: "users",
+                },
+            });
 
-            const moderatorIds = (response.data?.results ?? [])
-                .map((record: ParseModeratorRecord) =>
-                    record.user?.objectId ? record.user.objectId : undefined
-                )
+            // Parse roles response structure: roles[0].users is array of user objects
+            const role = response.data?.results?.[0];
+            if (!role?.users) {
+                return new Set<string>();
+            }
+
+            const moderatorIds = role.users
+                .map((user: any) => user.objectId)
                 .filter((id: string | undefined): id is string => !!id);
 
             return new Set<string>(moderatorIds);
