@@ -42,6 +42,7 @@ export const StaffControlsBox: React.FunctionComponent<{
             decision: a.decision,
             hasHarvesterDecided: a.hasHarvesterDecided(),
             isHarvesterHide: a.isHarvesterHide(),
+            harvesterReasonToHideId: a.harvesterReasonToHideId,
             hasLibrarianDecided: a.hasLibrarianDecided(),
             isLibrarianHide: a.isLibrarianHide(),
             getDecisionSansUser: a.getDecisionSansUser(),
