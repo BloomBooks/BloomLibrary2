@@ -284,6 +284,10 @@
         "message": "You have permission to modify this book",
         "description": ""
     },
+    "book.invalidFontsNotice": {
+        "message": "We cannot fully present this book because it uses one or more fonts that are not known to be free and open-licensed.  Therefore, the PDF and source files are all we are allowed to distribute.  Please try to replace these fonts with ones that have open licenses:",
+        "description": ""
+    },
     "book.metadata.level": {
         "description": "",
         "message": "Level {levelNumber}"
