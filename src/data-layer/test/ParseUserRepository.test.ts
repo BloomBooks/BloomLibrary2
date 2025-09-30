@@ -134,7 +134,11 @@ describe("ParseUserRepository", () => {
             })
             .mockResolvedValueOnce({
                 data: {
-                    results: [{ user: { objectId: "mod1" } }],
+                    results: [
+                        {
+                            users: [{ objectId: "mod1" }],
+                        },
+                    ],
                 },
             });
 

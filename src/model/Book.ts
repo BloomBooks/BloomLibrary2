@@ -1,6 +1,5 @@
 import { observable, makeObservable } from "mobx";
-import { updateBook } from "../connection/LibraryUpdates";
-import { retrieveCurrentBookData } from "../connection/LibraryQueries";
+import { DataLayerFactory } from "../data-layer/factory/DataLayerFactory";
 import { ArtifactVisibilitySettingsGroup } from "./ArtifactVisibilitySettings";
 import { ILanguage } from "./Language";
 import { removePunctuation } from "../Utilities";
@@ -259,27 +258,20 @@ export class Book {
         }
     }
 
-    public saveAdminDataToParse() {
+    public async saveAdminData() {
         // In finishCreationFromParseServerData(), we stripped level out of tags
-        // now we want to put it back in the version we send to Parse if it exists
+        // now we want to put it back in the version we send if it exists
         const tags = [...this.tags];
         if (this.level) {
             tags.push("level:" + this.level);
         }
 
-        const reconstructedLanguagePointers = this.languages.map((l) => {
-            return {
-                __type: "Pointer",
-                className: "language",
-                objectId: l.objectId,
-            };
-        });
-
         [this.keywords, this.keywordStems] = Book.getKeywordsAndStems(
             this.keywordsText
         );
 
-        updateBook(this.id, {
+        const bookRepository = DataLayerFactory.getInstance().createBookRepository();
+        await bookRepository.updateBook(this.id, {
             tags,
             inCirculation: this.inCirculation,
             draft: this.draft,
@@ -287,7 +279,7 @@ export class Book {
             librarianNote: this.librarianNote,
             publisher: this.publisher,
             originalPublisher: this.originalPublisher,
-            langPointers: reconstructedLanguagePointers,
+            languages: this.languages, // Let repository handle language conversion
             features: this.features,
             title: this.title?.trim(),
             keywords: this.keywords,
@@ -295,7 +287,7 @@ export class Book {
             edition: this.edition,
             harvestState: this.harvestState,
             rebrand: this.rebrand,
-        });
+        } as any);
     }
 
     private static readonly keywordDelimiter: string = " ";
@@ -327,8 +319,12 @@ export class Book {
         return stem(removePunctuation(keyword.toLowerCase()));
     }
 
-    public saveArtifactVisibilityToParseServer() {
-        updateBook(this.id, { show: this.artifactsToOfferToUsers });
+    public async saveArtifactVisibility() {
+        const bookRepository = DataLayerFactory.getInstance().createBookRepository();
+        await bookRepository.saveArtifactVisibility(
+            this.id,
+            this.artifactsToOfferToUsers
+        );
     }
 
     // e.g. system:Incoming
@@ -351,11 +347,12 @@ export class Book {
     // To avoid this, when making such an update we fetch the most current book data
     // before changing anything.
     public async setBooleanTagAndSave(name: string, value: boolean) {
-        const currentData = await retrieveCurrentBookData(this.id);
+        const bookRepository = DataLayerFactory.getInstance().createBookRepository();
+        const currentData = await bookRepository.getCurrentBookData(this.id);
         Object.assign(this, currentData);
         this.finishCreationFromParseServerData(this.id);
         this.setBooleanTag(name, value);
-        this.saveAdminDataToParse();
+        await this.saveAdminData();
     }
 
     public getBestTitle(langISO?: string): string {

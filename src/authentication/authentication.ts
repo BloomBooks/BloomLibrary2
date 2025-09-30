@@ -1,5 +1,5 @@
-import { logout as logoutFromParseServer } from "../connection/ParseServerConnection";
 import { getFirebaseAuth } from "./firebase/firebase";
+import { DataLayerFactory } from "../data-layer/factory/DataLayerFactory";
 
 export function isLogoutMode() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -10,5 +10,8 @@ export function isLogoutMode() {
 export function logOut() {
     getFirebaseAuth()
         .then((auth) => auth().signOut())
-        .then(() => logoutFromParseServer());
+        .then(() => {
+            const authService = DataLayerFactory.getInstance().createAuthenticationService();
+            return authService.logout();
+        });
 }

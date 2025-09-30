@@ -1,14 +1,9 @@
 import { IFilter } from "../../IFilter";
-import { getConnection } from "../../connection/ParseServerConnection";
-import { axios } from "@use-hooks/axios";
-import { AxiosResponse } from "axios";
-import {
-    assertAllParseRecordsReturned,
-    constructParseBookQuery,
-    IParseResponseDataWithCount,
-    IParseCommonFields,
-} from "../../connection/LibraryQueryHooks";
-import { CachedTables } from "../../model/CacheProvider";
+import { DataLayerFactory } from "../../data-layer/factory/DataLayerFactory";
+import { BookModel } from "../../data-layer/models/BookModel";
+import { BookGridQuery } from "../../data-layer/types/QueryTypes";
+import { Sorting } from "../../data-layer/types/CommonTypes";
+import { convertIFilterToBookFilter } from "../../connection/LibraryQueryHooks";
 
 export async function ChangeColumnValueForAllBooksInFilter(
     filter: IFilter,
@@ -16,43 +11,51 @@ export async function ChangeColumnValueForAllBooksInFilter(
     newValue: string | boolean,
     refresh: () => void
 ) {
-    const finalParams = constructParseBookQuery({}, filter, CachedTables.tags);
-    const headers = getConnection().headers;
-    const books = await axios.get(`${getConnection().url}classes/books`, {
-        headers,
+    try {
+        const factory = DataLayerFactory.getInstance();
+        const bookRepository = factory.createBookRepository();
 
-        params: {
-            limit: Number.MAX_SAFE_INTEGER,
-            count: 1,
-            keys: "objectId,title",
-            ...finalParams,
-        },
-    });
+        // Convert IFilter to BookFilter format
+        const bookFilter = convertIFilterToBookFilter(filter);
 
-    assertAllParseRecordsReturned(books);
+        // Create query to get all matching books
+        const query: BookGridQuery = {
+            filter: bookFilter,
+            sorting: [],
+            pagination: {
+                limit: Number.MAX_SAFE_INTEGER, // Get all matching books
+                skip: 0,
+            },
+            fieldSelection: ["id", "title"], // Only need minimal fields for bulk update
+        };
 
-    const putData: any = {};
-    putData.updateSource = "bloom-library-bulk-edit";
-    putData[columnName] = newValue;
+        // Get matching books
+        const result = await bookRepository.getBooksForGrid(query);
 
-    const promises: Array<Promise<unknown>> = [];
-    for (const book of books.data.results) {
-        console.log(book.title);
-        promises.push(
-            axios.put(
-                `${getConnection().url}classes/books/${book.objectId}`,
-                {
-                    ...putData,
-                },
-                { headers }
-            )
-        );
+        if (!result.totalMatchingBooksCount) {
+            refresh();
+            return;
+        }
+
+        // Prepare update data
+        const updateData: any = {
+            updateSource: "bloom-library-bulk-edit",
+            [columnName]: newValue,
+        };
+
+        // Update all books
+        const promises: Array<Promise<void>> = [];
+        for (const book of result.onePageOfMatchingBooks) {
+            console.log(book.title);
+            promises.push(bookRepository.updateBook(book.id, updateData));
+        }
+
+        await Promise.all(promises);
+        refresh();
+    } catch (error) {
+        console.error("Error in bulk column value change:", error);
+        alert(`Error: ${error}`);
     }
-    Promise.all(promises)
-        .then(() => refresh())
-        .catch((error) => {
-            alert(error);
-        });
 }
 
 export async function AddTagAllBooksInFilter(
@@ -60,65 +63,75 @@ export async function AddTagAllBooksInFilter(
     newTag: string,
     refresh: () => void
 ) {
-    if (!newTag.includes(":")) {
-        // Provide a default prefix if none is provided.  Otherwise a "topic" prefix is
-        // chosen for us.  See https://issues.bloomlibrary.org/youtrack/issue/BL-8990.
-        if (newTag.startsWith("-")) {
-            newTag = "-tag:" + newTag.substr(1);
-        } else {
-            newTag = "tag:" + newTag;
+    try {
+        if (!newTag.includes(":")) {
+            // Provide a default prefix if none is provided.  Otherwise a "topic" prefix is
+            // chosen for us.  See https://issues.bloomlibrary.org/youtrack/issue/BL-8990.
+            if (newTag.startsWith("-")) {
+                newTag = "-tag:" + newTag.substr(1);
+            } else {
+                newTag = "tag:" + newTag;
+            }
         }
+
+        const factory = DataLayerFactory.getInstance();
+        const bookRepository = factory.createBookRepository();
+
+        // Convert IFilter to BookFilter format
+        const bookFilter = convertIFilterToBookFilter(filter);
+
+        // Create query to get all matching books with tags
+        const query: BookGridQuery = {
+            filter: bookFilter,
+            sorting: [],
+            pagination: {
+                limit: Number.MAX_SAFE_INTEGER, // Get all matching books
+                skip: 0,
+            },
+            fieldSelection: ["id", "title", "tags"], // Need tags field for manipulation
+        };
+
+        // Get matching books
+        const result = await bookRepository.getBooksForGrid(query);
+
+        if (!result.totalMatchingBooksCount) {
+            refresh();
+            return;
+        }
+
+        const promises: Array<Promise<void>> = [];
+        let changeCount = 0;
+
+        for (const book of result.onePageOfMatchingBooks) {
+            const currentTags = (book as any).tags || [];
+            let newTags = [...currentTags];
+
+            // a tag that starts with "-" means that we want to remove it
+            if (newTag[0] === "-") {
+                const tagToRemove = newTag.substr(1, newTag.length - 1);
+                newTags = newTags.filter((t: string) => t !== tagToRemove);
+            } else if (newTags.indexOf(newTag) < 0) {
+                newTags.push(newTag);
+            }
+
+            if (newTags.length !== currentTags.length) {
+                ++changeCount;
+                promises.push(
+                    bookRepository.updateBook(book.id, {
+                        updateSource: "bloom-library-bulk-edit",
+                        tags: newTags,
+                    } as any)
+                );
+            }
+        }
+
+        console.log(`Changing tags on ${changeCount} books...`);
+        await Promise.all(promises);
+        refresh();
+    } catch (error) {
+        console.error("Error in bulk tag change:", error);
+        alert(`Error: ${error}`);
     }
-    const finalParams = constructParseBookQuery({}, filter, CachedTables.tags);
-    const headers = getConnection().headers;
-    const books = await axios.get(`${getConnection().url}classes/books`, {
-        headers,
-
-        params: {
-            limit: Number.MAX_SAFE_INTEGER,
-            count: 1,
-            keys: "objectId,title,tags",
-            ...finalParams,
-        },
-    });
-
-    assertAllParseRecordsReturned(books);
-
-    const putData: any = {};
-    putData.updateSource = "bloom-library-bulk-edit";
-
-    const promises: Array<Promise<unknown>> = [];
-    let changeCount = 0;
-    for (const book of books.data.results) {
-        putData.tags = [...book.tags];
-        // a tag that starts with "-" means that we want to remove it
-        if (newTag[0] === "-") {
-            const tagToRemove = newTag.substr(1, newTag.length - 1);
-            putData.tags = putData.tags.filter(
-                (t: string) => t !== tagToRemove
-            );
-        } else if (putData.tags.indexOf(newTag) < 0) {
-            putData.tags.push(newTag);
-        }
-        if (putData.tags.length !== book.tags.length) {
-            ++changeCount;
-            promises.push(
-                axios.put(
-                    `${getConnection().url}classes/books/${book.objectId}`,
-                    {
-                        ...putData,
-                    },
-                    { headers }
-                )
-            );
-        }
-    }
-    console.log(`Changing tags on ${changeCount} books...`);
-    Promise.all(promises)
-        .then(() => refresh())
-        .catch((error) => {
-            alert(error);
-        });
 }
 
 export async function AddFeatureToAllBooksInFilter(
@@ -126,68 +139,72 @@ export async function AddFeatureToAllBooksInFilter(
     newFeature: string,
     refresh: () => void
 ) {
-    const finalParams = constructParseBookQuery({}, filter, CachedTables.tags);
-    const headers = getConnection().headers;
-    const books = (await axios.get(`${getConnection().url}classes/books`, {
-        headers,
+    try {
+        const factory = DataLayerFactory.getInstance();
+        const bookRepository = factory.createBookRepository();
 
-        params: {
-            limit: Number.MAX_SAFE_INTEGER,
-            count: 1,
-            keys: "objectId,title,features",
-            ...finalParams,
-        },
-    })) as AxiosResponse<
-        IParseResponseDataWithCount<
-            IParseCommonFields & {
-                features: string[];
+        // Convert IFilter to BookFilter format
+        const bookFilter = convertIFilterToBookFilter(filter);
+
+        // Create query to get all matching books with features
+        const query: BookGridQuery = {
+            filter: bookFilter,
+            sorting: [],
+            pagination: {
+                limit: Number.MAX_SAFE_INTEGER, // Get all matching books
+                skip: 0,
+            },
+            fieldSelection: ["id", "title", "features"], // Need features field for manipulation
+        };
+
+        // Get matching books
+        const result = await bookRepository.getBooksForGrid(query);
+
+        if (!result.totalMatchingBooksCount) {
+            refresh();
+            return;
+        }
+
+        const promises: Array<Promise<void>> = [];
+        let changeCount = 0;
+
+        for (const book of result.onePageOfMatchingBooks) {
+            const currentFeatures = (book as any).features || [];
+            let newFeatures = [...currentFeatures];
+
+            // a feature that starts with "-" means that we want to remove it
+            if (newFeature[0] === "-") {
+                const featureToRemove = newFeature.substr(
+                    1,
+                    newFeature.length - 1
+                );
+                newFeatures = newFeatures.filter(
+                    (f: string) => f !== featureToRemove
+                );
+            } else if (newFeatures.indexOf(newFeature) < 0) {
+                newFeatures.push(newFeature);
             }
-        >
-    >;
 
-    assertAllParseRecordsReturned(books);
-
-    const putData: {
-        updateSource: string;
-        features?: string[];
-    } = {
-        updateSource: "bloom-library-bulk-edit",
-    };
-
-    const promises: Array<Promise<unknown>> = [];
-    let changeCount = 0;
-    for (const book of books.data.results) {
-        putData.features = [...book.features];
-        // a feature that starts with "-" means that we want to remove it
-        if (newFeature[0] === "-") {
-            const featureToRemove = newFeature.substr(1, newFeature.length - 1);
-            putData.features = putData.features.filter(
-                (f: string) => f !== featureToRemove
-            );
-        } else if (putData.features.indexOf(newFeature) < 0) {
-            putData.features.push(newFeature);
+            if (newFeatures.length !== currentFeatures.length) {
+                ++changeCount;
+                promises.push(
+                    bookRepository.updateBook(book.id, {
+                        updateSource: "bloom-library-bulk-edit",
+                        features: newFeatures,
+                    } as any)
+                );
+            }
         }
-        if (putData.features.length !== book.features.length) {
-            ++changeCount;
-            promises.push(
-                axios.put(
-                    `${getConnection().url}classes/books/${book.objectId}`,
-                    {
-                        ...putData,
-                    },
-                    { headers }
-                )
-            );
-        }
+
+        console.log(`Changing features on ${changeCount} books...`);
+
+        // ENHANCE: Or we could await Promise.all.
+        // The caller (bulkEditPanel) could await this promise and then call props.refresh()
+        // Instead of passing callbacks down the stack many layers.
+        await Promise.all(promises);
+        refresh();
+    } catch (error) {
+        console.error("Error in bulk feature change:", error);
+        alert(`Error: ${error}`);
     }
-    console.log(`Changing features on ${changeCount} books...`);
-
-    // ENHANCE: Or we could await Promise.all.
-    // The caller (bulkEditPanel) could await this promise and then call props.refresh()
-    // Instead of passing callbacks down the stack many layers.
-    Promise.all(promises)
-        .then(() => refresh())
-        .catch((error) => {
-            alert(error);
-        });
 }

@@ -195,7 +195,12 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                     .map((topic) => topic.replace("topic:", ""))
                     .join(", "),
             addToFilter: (filter: IFilter, value: string) => {
-                filter.topic = titleCase(value);
+                console.log("Topic filter input value:", value);
+                console.log("titleCase function:", titleCase);
+                const titleCasedValue = titleCase(value);
+                console.log("titleCase result:", titleCasedValue);
+                filter.topic = titleCasedValue;
+                console.log("Filter object after setting topic:", filter);
             },
         },
         {
@@ -463,7 +468,7 @@ const RebrandCheckbox: React.FunctionComponent<{
             checked={checked}
             onChange={(e) => {
                 props.book.rebrand = e.target.checked;
-                props.book.saveAdminDataToParse();
+                props.book.saveAdminData();
                 setChecked(e.target.checked);
             }}
         />

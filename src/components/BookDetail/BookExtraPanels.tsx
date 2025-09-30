@@ -10,7 +10,7 @@ import {
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { HarvesterArtifactUserControl } from "./ArtifactVisibilityPanel/ArtifactVisibilityPanel";
-import { LoggedInUser } from "../../connection/LoggedInUser";
+import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 import { commonUI } from "../../theme";
 
 // This used to have three panels, but two got moved to StaffControlsBox.tsx.
@@ -19,7 +19,7 @@ import { commonUI } from "../../theme";
 export const BookExtraPanels: React.FunctionComponent<{
     book: Book;
 }> = observer((props) => {
-    const user = LoggedInUser.current;
+    const user = useGetLoggedInUser();
     const userIsUploader = user?.username === props.book.uploader?.username;
     return (
         <div

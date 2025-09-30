@@ -52,7 +52,7 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
             artifactSettings.librarian = decision;
         }
 
-        book.saveArtifactVisibilityToParseServer();
+        book.saveArtifactVisibility();
         if (props.onChange) props.onChange();
     };
 

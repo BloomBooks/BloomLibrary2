@@ -8,7 +8,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import { Book } from "../../model/Book";
 import { FormattedMessage, useIntl } from "react-intl";
-import { LoggedInUser } from "../../connection/LoggedInUser";
+import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 import { ShowLoginDialog } from "../User/LoginDialog";
 import { getAuthenticationService } from "../../data-layer";
 import { BookThumbnail } from "./BookThumbnail";
@@ -24,7 +24,7 @@ export const ReportDialog: React.FunctionComponent<{
 }> = (props) => {
     const l10n = useIntl();
     const [reportContent, setReportContent] = useState("");
-    const user = LoggedInUser.current;
+    const user = useGetLoggedInUser();
     const loggedIn = !!user;
     const pleaseSignInFrame = l10n.formatMessage({
         id: "toUseThisSignIn",

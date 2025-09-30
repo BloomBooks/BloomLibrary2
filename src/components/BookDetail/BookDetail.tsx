@@ -25,7 +25,7 @@ import { useIsEmbedded } from "../Embedding/EmbeddingHost";
 import { commonUI } from "../../theme";
 import { IBookDetailProps } from "./BookDetailCodeSplit";
 import { HarvesterProgressNotice } from "./HarvestProgressNotice";
-import { LoggedInUser } from "../../connection/LoggedInUser";
+import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 import DraftIcon from "../../assets/DRAFT-Stamp.svg?react";
 import { useResponsiveChoice } from "../../responsiveUtilities";
 import { HarvesterProblemNotice } from "./HarvesterProblemNotice";
@@ -111,7 +111,7 @@ const BookDetailInternal: React.FunctionComponent<{
     );
     const embeddedMode = useIsEmbedded();
     const appHostedMode = useIsAppHosted();
-    const user = LoggedInUser.current;
+    const user = useGetLoggedInUser();
     const l10n = useIntl();
     const getResponsiveChoice = useResponsiveChoice();
     const showDownloadDialog = useRef<() => void | undefined>();
@@ -124,7 +124,6 @@ const BookDetailInternal: React.FunctionComponent<{
                 // the left/right auto margins are great but when the screen is small and we go to zero, we still want a little margin,
                 // so we add this padding. And the top padding looks good anyhow. The "1em" is arbitrary, though.
                 padding: 1em;
-                label: BookDetail;
                 max-width: 800px;
                 box-sizing: border-box;
                 ${appHostedMode ? "height: 100%;" : ""}

@@ -62,7 +62,14 @@ export const GridPage: React.FunctionComponent<{ filters: string }> = observer(
                         display: flex;
                     `}
                 >
-                    <Button onClick={() => getAllGridDataAndExportCsv()}>
+                    <Button
+                        onClick={() => {
+                            getAllGridDataAndExportCsv().catch((error) => {
+                                console.error("Failed to export CSV:", error);
+                                // TODO: Show user-friendly error notification
+                            });
+                        }}
+                    >
                         <img
                             alt={l10n.formatMessage({
                                 id: "stats.download.csvIcon",

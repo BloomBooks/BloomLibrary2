@@ -124,7 +124,7 @@ export const BookOwnerControlsBox: React.FunctionComponent<{
                                     checked={props.book.draft}
                                     onChange={(e) => {
                                         props.book.draft = e.target.checked;
-                                        props.book.saveAdminDataToParse();
+                                        props.book.saveAdminData();
                                     }}
                                 />
                             }

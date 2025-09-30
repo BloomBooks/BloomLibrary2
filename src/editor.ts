@@ -1,5 +1,6 @@
 import { axios } from "@use-hooks/axios";
-import { IInformEditorResult, LoggedInUser } from "./connection/LoggedInUser";
+import { IInformEditorResult } from "./connection/LoggedInUser";
+import { DataLayerFactory } from "./data-layer/factory/DataLayerFactory";
 
 function getPort() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -23,12 +24,20 @@ export function informEditorOfSuccessfulLogin(userData: any) {
     axios
         .post(`${getEditorApiUrl()}login`, postData)
         .then(() => {
-            LoggedInUser.current!.informEditorResult =
-                IInformEditorResult.Success;
+            const authService = DataLayerFactory.getInstance().createAuthenticationService();
+            const currentUser = authService.getCurrentUser();
+            if (currentUser) {
+                (currentUser as any).informEditorResult =
+                    IInformEditorResult.Success;
+            }
         })
         .catch((err) => {
-            LoggedInUser.current!.informEditorResult =
-                IInformEditorResult.Failure;
+            const authService = DataLayerFactory.getInstance().createAuthenticationService();
+            const currentUser = authService.getCurrentUser();
+            if (currentUser) {
+                (currentUser as any).informEditorResult =
+                    IInformEditorResult.Failure;
+            }
 
             console.error("Unable to inform editor of successful login.");
             console.error(err);

@@ -15,7 +15,7 @@ import {
     firebaseAuthStateChanged,
     getCurrentUser,
 } from "../../authentication/firebase/firebase";
-import { LoggedInUser } from "../../connection/LoggedInUser";
+import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 import { useCookies } from "react-cookie";
 import { useShowTroubleshootingStuff } from "../../Utilities";
 import { IUserMenuProps } from "./UserMenuCodeSplit";
@@ -45,7 +45,7 @@ export const UserMenu: React.FunctionComponent<IUserMenuProps> = (props) => {
     const [loggedInUser, setLoggedInUser] = useState<firebase.User | null>(
         null
     );
-    const user = LoggedInUser.current;
+    const user = useGetLoggedInUser();
 
     const history = useHistory(); // used to jump to My Books
 

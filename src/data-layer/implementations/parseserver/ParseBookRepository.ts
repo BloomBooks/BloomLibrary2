@@ -384,6 +384,22 @@ export class ParseBookRepository implements IBookRepository {
         if (book.bookHashFromImages !== undefined)
             data.bookHashFromImages = book.bookHashFromImages;
 
+        // Handle language pointers - convert from domain model to Parse format
+        if (book.languages !== undefined) {
+            data.langPointers = book.languages.map((lang: any) => ({
+                __type: "Pointer",
+                className: "language",
+                objectId: lang.objectId,
+            }));
+        }
+
+        // Handle keywords arrays
+        if (book.keywords !== undefined) data.keywords = book.keywords;
+        if (book.keywordStems !== undefined)
+            data.keywordStems = book.keywordStems;
+        if (book.librarianNote !== undefined)
+            data.librarianNote = book.librarianNote;
+
         return data;
     }
 

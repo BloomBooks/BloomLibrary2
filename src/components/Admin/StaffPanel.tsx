@@ -72,7 +72,7 @@ const StaffPanel: React.FunctionComponent<IProps> = observer((props) => {
     // };
 
     const saveBook = () => {
-        props.book.saveAdminDataToParse();
+        props.book.saveAdminData();
     };
 
     const handleLevelChange = (event: React.ChangeEvent<HTMLInputElement>) => {
