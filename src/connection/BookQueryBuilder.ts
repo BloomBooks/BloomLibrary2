@@ -320,7 +320,11 @@ export function constructParseBookQuery(
                 ...caseInsensitive,
             });
         } else {
-            tagsAll.push("topic:" + f.topic);
+            const topicRegex = `^topic:${processRegExp(f.topic)}$`;
+            tagParts.push({
+                $regex: topicRegex,
+                ...caseInsensitive,
+            });
         }
     }
     if (tagsAll.length === 1 && tagParts.length === 0) {

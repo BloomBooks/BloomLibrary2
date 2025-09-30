@@ -195,12 +195,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                     .map((topic) => topic.replace("topic:", ""))
                     .join(", "),
             addToFilter: (filter: IFilter, value: string) => {
-                console.log("Topic filter input value:", value);
-                console.log("titleCase function:", titleCase);
-                const titleCasedValue = titleCase(value);
-                console.log("titleCase result:", titleCasedValue);
-                filter.topic = titleCasedValue;
-                console.log("Filter object after setting topic:", filter);
+                filter.topic = titleCase(value);
             },
         },
         {

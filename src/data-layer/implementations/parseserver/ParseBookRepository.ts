@@ -315,15 +315,6 @@ export class ParseBookRepository implements IBookRepository {
             // The UI components expect Book instances with methods like getBestLevel()
             const book = createBookFromParseServerData(data);
 
-            console.log(
-                "DEBUG: convertParseDataToBookModel created book:",
-                book
-            );
-            console.log(
-                "DEBUG: book has getBestLevel?",
-                typeof book.getBestLevel === "function"
-            );
-
             return book;
         } catch (error) {
             console.error("Error in convertParseDataToBookModel:", error);
