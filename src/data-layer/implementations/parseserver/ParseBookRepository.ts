@@ -171,23 +171,11 @@ export class ParseBookRepository implements IBookRepository {
 
         try {
             const parseFilter = this.convertBookFilterToParseFilter(filter);
-            console.log(
-                "DEBUG: ParseBookRepository.getBookCount filter:",
-                filter
-            );
-            console.log(
-                "DEBUG: ParseBookRepository.getBookCount parseFilter:",
-                parseFilter
-            );
             const queryParams = constructParseBookQuery(
                 { limit: 0, count: 1 },
                 parseFilter,
                 [], // tags - would need to be passed in
                 BookOrderingScheme.None
-            );
-            console.log(
-                "DEBUG: ParseBookRepository.getBookCount queryParams:",
-                queryParams
             );
 
             // Convert where clause to JSON string for GET request
@@ -202,10 +190,6 @@ export class ParseBookRepository implements IBookRepository {
             });
 
             const count = parseInt(response.data.count, 10) || 0;
-            console.log(
-                "DEBUG: ParseBookRepository.getBookCount response count:",
-                count
-            );
             return count;
         } catch (error) {
             console.error("Error getting book count:", error);

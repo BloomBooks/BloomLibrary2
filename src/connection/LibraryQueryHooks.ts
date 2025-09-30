@@ -55,7 +55,7 @@ export {
 } from "./BookQueryBuilder";
 
 // Helper function to convert IFilter to BookFilter format
-function convertIFilterToBookFilter(filter: IFilter): any {
+export function convertIFilterToBookFilter(filter: IFilter): any {
     // For now, just pass through the IFilter directly
     // The repository will handle the conversion internally
     // TODO: In the future, properly convert to BookFilter format
@@ -1145,15 +1145,9 @@ export function useGetBookCount(filter: IFilter): number {
                 const convertedFilter = convertIFilterToBookFilter(
                     stableFilter
                 );
-                console.log("DEBUG: useGetBookCount filter:", stableFilter);
-                console.log(
-                    "DEBUG: useGetBookCount convertedFilter:",
-                    convertedFilter
-                );
                 const bookCount = await repository.getBookCount(
                     convertedFilter
                 );
-                console.log("DEBUG: useGetBookCount result:", bookCount);
                 setCount(bookCount);
                 setHasError(false);
             } catch (error) {
@@ -1197,15 +1191,9 @@ export function useGetBookCountWithError(
                 const convertedFilter = convertIFilterToBookFilter(
                     stableFilter
                 );
-                console.log("DEBUG: useGetBookCount filter:", stableFilter);
-                console.log(
-                    "DEBUG: useGetBookCount convertedFilter:",
-                    convertedFilter
-                );
                 const bookCount = await repository.getBookCount(
                     convertedFilter
                 );
-                console.log("DEBUG: useGetBookCount result:", bookCount);
                 setCount(bookCount);
                 setHasError(false);
             } catch (error) {
