@@ -78,15 +78,29 @@ export function doExpensiveClientSideSortingIfNeeded(
 
             if (languageForSorting === "none") languageForSorting = undefined;
 
-            const comparator = new Intl.Collator(
-                languageForSorting /* it's ok if this is missing */,
-                { numeric: true } // will strip off leading 0's.
-            );
-            const r = books.sort(
-                (a: IBookInfoForSorting, b: IBookInfoForSorting) =>
-                    comparator.compare(a.sortKey!, b.sortKey!)
-            );
-            return r;
+            try {
+                const comparator = new Intl.Collator(
+                    languageForSorting /* it's ok if this is missing */,
+                    { numeric: true } // will strip off leading 0's.
+                );
+                const r = books.sort(
+                    (a: IBookInfoForSorting, b: IBookInfoForSorting) =>
+                        comparator.compare(a.sortKey!, b.sortKey!)
+                );
+                return r;
+            } catch (e) {
+                console.error(`Error occurred during sorting: ${e}`);
+                console.error(`languageForSorting = "${languageForSorting}"`);
+                const comparator = new Intl.Collator(
+                    undefined /* it's ok if this is missing */,
+                    { numeric: true } // will strip off leading 0's.
+                );
+                const r = books.sort(
+                    (a: IBookInfoForSorting, b: IBookInfoForSorting) =>
+                        comparator.compare(a.sortKey!, b.sortKey!)
+                );
+                return r;
+            }
         default:
             return books; // we already ordered them on the server
     }

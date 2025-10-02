@@ -1,7 +1,6 @@
 import { css } from "@emotion/react";
 
 import React, { Fragment } from "react";
-import { observer } from "mobx-react-lite";
 import {
     Accordion,
     AccordionSummary,
@@ -9,6 +8,8 @@ import {
 } from "@material-ui/core";
 
 import { Book } from "../../model/Book";
+import { ArtifactVisibilitySettings } from "../../model/ArtifactVisibilitySettings";
+import { useIntl } from "react-intl";
 import { useGetUserIsModerator } from "../../connection/LoggedInUser";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { commonUI } from "../../theme";
@@ -16,8 +17,9 @@ import { ControlsBox } from "./ControlsBox";
 
 export const StaffControlsBox: React.FunctionComponent<{
     book: Book;
-}> = observer((props) => {
+}> = (props: { book: Book }) => {
     const userIsModerator = useGetUserIsModerator();
+    const l10n = useIntl(); // we don't really care about localizing, but it's needed for some of the calls below
     const showControlsBox = userIsModerator;
 
     if (!showControlsBox) return <Fragment />;
@@ -30,6 +32,42 @@ export const StaffControlsBox: React.FunctionComponent<{
         () =>
             import(/* webpackChunkName: "react-json-view" */ "react-json-view")
     );
+
+    const prepareArtifactInfo = (a?: ArtifactVisibilitySettings) =>
+        a && {
+            harvester: a.harvester,
+            librarian: a.librarian,
+            user: a.user,
+            exists: a.exists,
+            decision: a.decision,
+            hasHarvesterDecided: a.hasHarvesterDecided(),
+            isHarvesterHide: a.isHarvesterHide(),
+            hasLibrarianDecided: a.hasLibrarianDecided(),
+            isLibrarianHide: a.isLibrarianHide(),
+            getDecisionSansUser: a.getDecisionSansUser(),
+            hasUserDecided: a.hasUserDecided(),
+            reasonForHiding: a.reasonForHiding(props.book, l10n, false),
+        };
+
+    const bookForDisplay: any = {
+        ...props.book,
+        artifactsToOfferToUsers: {
+            pdf: prepareArtifactInfo(props.book.artifactsToOfferToUsers.pdf),
+            epub: prepareArtifactInfo(props.book.artifactsToOfferToUsers.epub),
+            bloomReader: prepareArtifactInfo(
+                props.book.artifactsToOfferToUsers.bloomReader
+            ),
+            readOnline: prepareArtifactInfo(
+                props.book.artifactsToOfferToUsers.readOnline
+            ),
+            shellbook: prepareArtifactInfo(
+                props.book.artifactsToOfferToUsers.shellbook
+            ),
+            bloomSource: prepareArtifactInfo(
+                props.book.artifactsToOfferToUsers.bloomSource
+            ),
+        },
+    };
 
     return (
         <ControlsBox>
@@ -86,11 +124,14 @@ export const StaffControlsBox: React.FunctionComponent<{
                                 <div>Loading chunk for showing json...</div>
                             }
                         >
-                            <ReactJsonView src={props.book} theme="monokai" />
+                            <ReactJsonView
+                                src={bookForDisplay}
+                                theme="monokai"
+                            />
                         </React.Suspense>
                     </div>
                 </AccordionDetails>
             </Accordion>
         </ControlsBox>
     );
-});
+};
