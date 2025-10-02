@@ -1,7 +1,6 @@
 import { css } from "@emotion/react";
 
 import React, { Fragment } from "react";
-import { observer } from "mobx-react-lite";
 import {
     Accordion,
     AccordionSummary,
@@ -18,7 +17,7 @@ import { ControlsBox } from "./ControlsBox";
 
 export const StaffControlsBox: React.FunctionComponent<{
     book: Book;
-}> = observer((props: { book: Book }) => {
+}> = (props: { book: Book }) => {
     const userIsModerator = useGetUserIsModerator();
     const l10n = useIntl(); // we don't really care about localizing, but it's needed for some of the calls below
     const showControlsBox = userIsModerator;
@@ -135,4 +134,4 @@ export const StaffControlsBox: React.FunctionComponent<{
             </Accordion>
         </ControlsBox>
     );
-});
+};
