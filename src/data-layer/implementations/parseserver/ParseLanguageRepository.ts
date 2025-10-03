@@ -2,7 +2,7 @@ import axios from "axios";
 import { ILanguageRepository } from "../../interfaces/ILanguageRepository";
 import { LanguageModel } from "../../models/LanguageModel";
 import { LanguageQuery, QueryResult } from "../../types/QueryTypes";
-import { LanguageFilter } from "../../types/FilterTypes";
+import { LanguageFilter } from "FilterTypes";
 import { ParseConnection } from "./ParseConnection";
 import {
     getCleanedAndOrderedLanguageList as legacyCleanLanguageList,

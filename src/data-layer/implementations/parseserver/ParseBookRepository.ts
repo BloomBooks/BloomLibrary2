@@ -2,7 +2,7 @@
 import axios from "axios";
 import { IBookRepository } from "../../interfaces/IBookRepository";
 import { BookModel } from "../../models/BookModel";
-import { BookFilter } from "../../types/FilterTypes";
+import { IFilter } from "FilterTypes";
 import {
     BookSearchQuery,
     BookGridQuery,
@@ -12,7 +12,6 @@ import {
 import { BooleanOptions, BookOrderingScheme } from "../../types/CommonTypes";
 import { ParseConnection } from "./ParseConnection";
 import { Book, createBookFromParseServerData } from "../../../model/Book";
-import { IFilter } from "../../../IFilter";
 import { constructParseBookQuery } from "../../../connection/BookQueryBuilder";
 import { ArtifactVisibilitySettingsGroup } from "../../../model/ArtifactVisibilitySettings";
 
@@ -77,7 +76,7 @@ export class ParseBookRepository implements IBookRepository {
                     skip: query.pagination?.skip || 0,
                     count: 1, // Request total count from Parse Server
                 },
-                this.convertBookFilterToParseFilter(query.filter),
+                query.filter,
                 [], // tags - would need to be passed in
                 query.orderingScheme || BookOrderingScheme.Default
             );
@@ -166,14 +165,13 @@ export class ParseBookRepository implements IBookRepository {
         };
     }
 
-    async getBookCount(filter: BookFilter): Promise<number> {
+    async getBookCount(filter: IFilter): Promise<number> {
         const connection = ParseConnection.getConnection();
 
         try {
-            const parseFilter = this.convertBookFilterToParseFilter(filter);
             const queryParams = constructParseBookQuery(
                 { limit: 0, count: 1 },
-                parseFilter,
+                filter,
                 [], // tags - would need to be passed in
                 BookOrderingScheme.None
             );
@@ -278,37 +276,6 @@ export class ParseBookRepository implements IBookRepository {
     }
 
     // Helper methods for data conversion
-    private convertBookFilterToParseFilter(filter: BookFilter): IFilter {
-        return {
-            search: filter.search,
-            language: filter.language,
-            topic: filter.topic,
-            feature: filter.feature,
-            inCirculation: filter.inCirculation,
-            draft: filter.draft,
-            publisher: filter.publisher,
-            originalPublisher: filter.originalPublisher,
-            bookshelf: filter.bookshelf,
-            otherTags: filter.otherTags,
-            derivedFrom: filter.derivedFrom
-                ? this.convertBookFilterToParseFilter(filter.derivedFrom)
-                : undefined,
-            keywordsText: filter.keywordsText,
-            brandingProjectName: filter.brandingProjectName,
-            edition: filter.edition,
-            bookInstanceId: filter.bookInstanceId,
-            rebrand: filter.rebrand,
-            leveledReaderLevel: filter.leveledReaderLevel,
-            bookShelfCategory: filter.bookShelfCategory,
-            originalCredits: filter.originalCredits,
-            anyOfThese: filter.anyOfThese
-                ? filter.anyOfThese.map((childFilter) =>
-                      this.convertBookFilterToParseFilter(childFilter)
-                  )
-                : undefined,
-        };
-    }
-
     private convertParseDataToBookModel(data: any): any {
         try {
             // Create a Book object using existing logic

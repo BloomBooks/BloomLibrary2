@@ -1,7 +1,7 @@
 import React, { useContext, useMemo, useState, useEffect, useRef } from "react";
 import useAxios, { IReturns, axios, IParams } from "@use-hooks/axios";
 import { AxiosResponse } from "axios";
-import { IFilter, BooleanOptions, parseBooleanOptions } from "../IFilter";
+import { BooleanOptions, IFilter, parseBooleanOptions } from "FilterTypes";
 import { getConnection } from "./ParseServerConnection";
 import {
     getBloomApiBooksUrl,
@@ -53,14 +53,6 @@ export {
     splitString,
     simplifyInnerQuery,
 } from "./BookQueryBuilder";
-
-// Helper function to convert IFilter to BookFilter format
-export function convertIFilterToBookFilter(filter: IFilter): any {
-    // For now, just pass through the IFilter directly
-    // The repository will handle the conversion internally
-    // TODO: In the future, properly convert to BookFilter format
-    return filter as any;
-}
 
 // we just want a better name
 export interface IAxiosAnswer extends IReturns<any> {}
@@ -350,7 +342,7 @@ export function useSearchBooks(
 
                 // Parse back the stable parameters
                 const parsedParams = JSON.parse(stableParams);
-                const parsedFilter = JSON.parse(stableFilter);
+                const parsedFilter = JSON.parse(stableFilter) as IFilter;
 
                 const repository = getBookRepository();
 
@@ -363,7 +355,7 @@ export function useSearchBooks(
                     fieldSelection: parsedParams.include
                         ? [parsedParams.include]
                         : undefined,
-                    filter: convertIFilterToBookFilter(parsedFilter),
+                    filter: parsedFilter,
                     orderingScheme: stableOrderingScheme,
                     languageForSorting: stableLanguageForSorting,
                 };
@@ -1129,7 +1121,7 @@ export function useGetBookCount(filter: IFilter): number {
 
     // Create stable references to avoid infinite loops
     const filterString = JSON.stringify(filter);
-    const stableFilter = useMemo(() => JSON.parse(filterString), [
+    const stableFilter = useMemo<IFilter>(() => JSON.parse(filterString), [
         filterString,
     ]);
 
@@ -1142,12 +1134,7 @@ export function useGetBookCount(filter: IFilter): number {
         const fetchCount = async () => {
             try {
                 const repository = getBookRepository();
-                const convertedFilter = convertIFilterToBookFilter(
-                    stableFilter
-                );
-                const bookCount = await repository.getBookCount(
-                    convertedFilter
-                );
+                const bookCount = await repository.getBookCount(stableFilter);
                 setCount(bookCount);
                 setHasError(false);
             } catch (error) {
@@ -1175,7 +1162,7 @@ export function useGetBookCountWithError(
 
     // Create stable references to avoid infinite loops
     const filterString = JSON.stringify(filter);
-    const stableFilter = useMemo(() => JSON.parse(filterString), [
+    const stableFilter = useMemo<IFilter>(() => JSON.parse(filterString), [
         filterString,
     ]);
 
@@ -1188,12 +1175,7 @@ export function useGetBookCountWithError(
         const fetchCount = async () => {
             try {
                 const repository = getBookRepository();
-                const convertedFilter = convertIFilterToBookFilter(
-                    stableFilter
-                );
-                const bookCount = await repository.getBookCount(
-                    convertedFilter
-                );
+                const bookCount = await repository.getBookCount(stableFilter);
                 setCount(bookCount);
                 setHasError(false);
             } catch (error) {
@@ -1287,7 +1269,7 @@ export function useGetBooksForGrid(
     const filterString = JSON.stringify(filter);
     const sortingString = JSON.stringify(sortingArray);
 
-    const stableFilter = useMemo(() => JSON.parse(filterString), [
+    const stableFilter = useMemo<IFilter>(() => JSON.parse(filterString), [
         filterString,
     ]);
     const stableSorting = useMemo(() => JSON.parse(sortingString), [
@@ -1307,7 +1289,7 @@ export function useGetBooksForGrid(
 
                 const repository = getBookRepository();
                 const gridQuery = {
-                    filter: convertIFilterToBookFilter(stableFilter),
+                    filter: stableFilter,
                     pagination: { limit, skip },
                     sorting: stableSorting,
                 };

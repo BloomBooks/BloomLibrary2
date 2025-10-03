@@ -25,6 +25,10 @@
         "skipLibCheck": true,
         "esModuleInterop": true,
         "moduleResolution": "node",
+        "baseUrl": ".",
+        "paths": {
+            "FilterTypes": ["src/data-layer/types/FilterTypes"]
+        },
         "isolatedModules": true,
         "noEmit": true,
         "useDefineForClassFields": true, // for mobx makeObservable()

@@ -5,7 +5,7 @@ import MotionIcon from "../assets/Motion.svg?react";
 import SignLanguageIcon from "../assets/Sign Language.svg?react";
 import TalkingBookIcon from "../assets/Talking Book.svg?react";
 import VisuallyImpairedIcon from "../assets/Visually Impaired.svg?react";
-import { IFilter } from "../IFilter";
+import { IFilter } from "FilterTypes";
 import { getTranslation } from "../localization/GetLocalizations";
 
 // Information about features (like talking book, motion) that supports the display of

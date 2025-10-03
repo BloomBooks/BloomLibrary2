@@ -1,6 +1,6 @@
 // Repository interface for user-related operations
 import { UserQuery } from "../types/QueryTypes";
-import { UserFilter } from "../types/FilterTypes";
+import { UserFilter } from "FilterTypes";
 
 // Forward declaration - will be implemented in models
 export interface UserModel {

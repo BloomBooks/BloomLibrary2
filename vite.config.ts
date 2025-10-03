@@ -6,6 +6,14 @@ import path from "path";
 
 export default defineConfig(() => {
     return {
+        resolve: {
+            alias: {
+                FilterTypes: path.resolve(
+                    __dirname,
+                    "src/data-layer/types/FilterTypes"
+                ),
+            },
+        },
         server: {
             open: true,
 

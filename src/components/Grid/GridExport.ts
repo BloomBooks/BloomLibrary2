@@ -1,17 +1,12 @@
 import { exportCsv } from "../../export/exportData";
 import { Book } from "../../model/Book";
-import { IFilter } from "../../IFilter";
+import { IFilter } from "FilterTypes";
 import { Filter as GridFilter } from "@devexpress/dx-react-grid";
 import { getBookGridColumnsDefinitions, IGridColumn } from "./GridColumns";
 import { DataLayerFactory } from "../../data-layer/factory/DataLayerFactory";
 import { BookModel } from "../../data-layer/models/BookModel";
 import { BookGridQuery } from "../../data-layer/types/QueryTypes";
-import {
-    BookOrderingScheme,
-    Sorting,
-} from "../../data-layer/types/CommonTypes";
-import { BookFilter } from "../../data-layer/types/FilterTypes";
-import { convertIFilterToBookFilter } from "../../connection/LibraryQueryHooks";
+import { Sorting } from "../../data-layer/types/CommonTypes";
 
 let static_books: Book[] = [];
 let static_columnsInOrder: string[] = [];
@@ -50,9 +45,6 @@ export async function getAllGridDataAndExportCsv(): Promise<void> {
         const factory = DataLayerFactory.getInstance();
         const bookRepository = factory.createBookRepository();
 
-        // Convert IFilter to BookFilter format
-        const bookFilter = convertIFilterToBookFilter(static_completeFilter);
-
         // Convert sorting array to repository format
         const sorting: Sorting[] = static_sortingArray.map((sort) => ({
             columnName: sort.columnName,
@@ -61,7 +53,7 @@ export async function getAllGridDataAndExportCsv(): Promise<void> {
 
         // Create the query
         const query: BookGridQuery = {
-            filter: bookFilter,
+            filter: static_completeFilter,
             sorting: sorting,
             pagination: {
                 limit: 10000000, // Large limit to get all matching results

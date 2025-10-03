@@ -1,11 +1,6 @@
 // Query-related types for database operations
 import { BookOrderingScheme, Pagination, Sorting } from "./CommonTypes";
-import {
-    BookFilter,
-    LanguageFilter,
-    UserFilter,
-    TagFilter,
-} from "./FilterTypes";
+import { IFilter, LanguageFilter, TagFilter, UserFilter } from "FilterTypes";
 
 // Base query interface
 export interface BaseQuery {
@@ -15,13 +10,13 @@ export interface BaseQuery {
 
 // Book query types
 export interface BookSearchQuery extends BaseQuery {
-    filter: BookFilter;
+    filter: IFilter;
     orderingScheme?: BookOrderingScheme;
     languageForSorting?: string;
 }
 
 export interface BookGridQuery extends BaseQuery {
-    filter: BookFilter;
+    filter: IFilter;
     sorting: Sorting[];
 }
 

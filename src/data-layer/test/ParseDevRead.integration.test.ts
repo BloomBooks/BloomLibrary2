@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll, beforeEach, vi } from "vitest";
 import type { IBookRepository } from "../interfaces/IBookRepository";
 import type { ILanguageRepository } from "../interfaces/ILanguageRepository";
 import type { ITagRepository } from "../interfaces/ITagRepository";
-import type { BookFilter } from "../types/FilterTypes";
+import type { IFilter } from "FilterTypes";
 import type { BookSearchQuery } from "../types/QueryTypes";
 
 const shouldRunDevTests = process.env.RUN_DEV_PARSE_TESTS === "true";
@@ -56,7 +56,7 @@ if (shouldRunDevTests) {
 
         it("searches for books on the dev server", async () => {
             const query: BookSearchQuery = {
-                filter: {} as BookFilter,
+                filter: {} as IFilter,
                 pagination: { limit: 5, skip: 0 },
             };
 

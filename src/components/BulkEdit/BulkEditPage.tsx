@@ -2,7 +2,7 @@ import { css } from "@emotion/react";
 
 import React, { useState } from "react";
 import { GridControl } from "../Grid/GridControl";
-import { IFilter } from "../../IFilter";
+import { IFilter } from "FilterTypes";
 import { observable, makeObservable } from "mobx";
 import { AssignPublisherPanel } from "./AssignPublisherPanel";
 import { Filter as GridFilter } from "@devexpress/dx-react-grid";

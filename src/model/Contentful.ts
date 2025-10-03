@@ -1,4 +1,4 @@
-import { parseBooleanOptions } from "../IFilter";
+import { parseBooleanOptions } from "FilterTypes";
 import {
     IBanner,
     IMedia,

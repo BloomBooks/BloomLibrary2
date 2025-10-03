@@ -2,7 +2,7 @@ import { css } from "@emotion/react";
 import React, { useState } from "react"; // see https://github.com/emotion-js/emotion/issues/1156
 
 import { useGetBookCountRaw } from "../connection/LibraryQueryHooks";
-import { IFilter } from "../IFilter";
+import { IFilter } from "FilterTypes";
 import {
     getResultsOrMessageElement,
     getNoResultsElement,

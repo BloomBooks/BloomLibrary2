@@ -1,5 +1,5 @@
 import React from "react";
-import { IFilter } from "../../IFilter";
+import { IFilter } from "FilterTypes";
 import { observer } from "mobx-react-lite";
 import { FilterHolder } from "./BulkEditPage";
 import { BulkEditPanel } from "./BulkEditPanel";
@@ -9,7 +9,7 @@ export const RequestHarvestPanel: React.FunctionComponent<{
     filterHolder: FilterHolder;
     refresh: () => void;
     backgroundColor: string;
-}> = observer(props => {
+}> = observer((props) => {
     return (
         <BulkEditPanel
             panelLabel="Request Harvest"

@@ -1,6 +1,15 @@
 import { defineConfig } from "vitest/config";
+import path from "path";
 
 export default defineConfig({
+    resolve: {
+        alias: {
+            FilterTypes: path.resolve(
+                __dirname,
+                "src/data-layer/types/FilterTypes"
+            ),
+        },
+    },
     test: {
         environment: "jsdom",
         globals: true, // don't have to define expect() and friends

@@ -4,7 +4,7 @@ import React from "react";
 
 import { Breadcrumbs } from "../Breadcrumbs";
 import { GridControl } from "./GridControl";
-import { IFilter } from "../../IFilter";
+import { IFilter } from "FilterTypes";
 import { useSetBrowserTabTitle } from "../Routes";
 import Button from "@material-ui/core/Button";
 import { useIntl } from "react-intl";

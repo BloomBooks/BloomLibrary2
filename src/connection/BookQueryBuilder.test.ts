@@ -3,7 +3,7 @@ import {
     constructParseBookQuery,
     kNameOfNoTopicCollection,
 } from "./BookQueryBuilder";
-import { IFilter } from "../IFilter";
+import { IFilter } from "FilterTypes";
 import { kTopicList } from "../model/ClosedVocabularies";
 
 vi.mock("../components/appHosted/AppHostedUtils", () => ({

@@ -5,7 +5,7 @@ import {
     BookSearchResult,
     BookGridResult,
 } from "../types/QueryTypes";
-import { BookFilter } from "../types/FilterTypes";
+import { IFilter } from "FilterTypes";
 
 // Forward declaration - will be implemented in models
 export interface BookModel {
@@ -31,7 +31,7 @@ export interface IBookRepository {
 
     // Complex queries
     getBooksForGrid(query: BookGridQuery): Promise<BookGridResult>;
-    getBookCount(filter: BookFilter): Promise<number>;
+    getBookCount(filter: IFilter): Promise<number>;
     getRelatedBooks(bookId: string): Promise<BookModel[]>;
 
     // Specialized operations

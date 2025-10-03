@@ -2,7 +2,7 @@ import axios from "axios";
 import { ITagRepository } from "../../interfaces/ITagRepository";
 import { TagModel } from "../../models/TagModel";
 import { TagQuery, QueryResult } from "../../types/QueryTypes";
-import { TagFilter } from "../../types/FilterTypes";
+import { TagFilter } from "FilterTypes";
 import { ParseConnection } from "./ParseConnection";
 
 interface ParseTagRecord {

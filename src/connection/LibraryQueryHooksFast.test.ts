@@ -1,4 +1,4 @@
-import { IFilter } from "../IFilter";
+import { IFilter } from "FilterTypes";
 import {
     constructParseBookQuery,
     kNameOfNoTopicCollection,

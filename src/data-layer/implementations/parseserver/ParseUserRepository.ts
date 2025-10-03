@@ -5,7 +5,7 @@ import {
 } from "../../interfaces/IUserRepository";
 import { InformEditorResult, UserModel } from "../../models/UserModel";
 import { UserQuery } from "../../types/QueryTypes";
-import { UserFilter } from "../../types/FilterTypes";
+import { UserFilter } from "FilterTypes";
 import { ParseConnection } from "./ParseConnection";
 import {
     getBloomApiBooksUrl,

@@ -6,7 +6,7 @@ import { convertContentfulCollectionToICollection } from "./Contentful";
 import { kTopicList } from "./ClosedVocabularies";
 import { useContentful } from "../connection/UseContentful";
 import { useGetLoggedInUser } from "../connection/LoggedInUser";
-import { BooleanOptions, IFilter } from "../IFilter";
+import { BooleanOptions, IFilter } from "FilterTypes";
 import { IntlShape, useIntl } from "react-intl";
 import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 import { appHostedSegment } from "../components/appHosted/AppHostedUtils";

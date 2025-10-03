@@ -10,7 +10,7 @@ import { Checkbox, TableCell, Select, MenuItem } from "@material-ui/core";
 import { Book } from "../../model/Book";
 import QueryString from "qs";
 import titleCase from "title-case";
-import { IFilter, BooleanOptions } from "../../IFilter";
+import { BooleanOptions, IFilter } from "FilterTypes";
 import { CachedTables } from "../../model/CacheProvider";
 import { BlorgLink } from "../BlorgLink";
 

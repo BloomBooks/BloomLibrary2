@@ -1,6 +1,6 @@
 // Repository interface for tag-related operations
 import { TagQuery, QueryResult } from "../types/QueryTypes";
-import { TagFilter } from "../types/FilterTypes";
+import { TagFilter } from "FilterTypes";
 
 // Forward declaration - will be implemented in models
 export interface TagModel {

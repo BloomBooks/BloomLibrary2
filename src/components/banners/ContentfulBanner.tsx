@@ -1,6 +1,6 @@
 import React, { useState } from "react"; // see https://github.com/emotion-js/emotion/issues/1156
 import { useContentful } from "../../connection/UseContentful";
-import { IFilter } from "../../IFilter";
+import { IFilter } from "FilterTypes";
 import { ICollection } from "../../model/ContentInterfaces";
 import { convertContentfulBannerToIBanner } from "../../model/Contentful";
 import { Banner } from "./Banner";
