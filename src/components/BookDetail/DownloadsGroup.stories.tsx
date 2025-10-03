@@ -38,6 +38,7 @@ export const Default = (args: {
     );
     testBook.artifactsToOfferToUsers.epub = new ArtifactVisibilitySettings(
         true,
+        undefined,
         true,
         true,
         true
