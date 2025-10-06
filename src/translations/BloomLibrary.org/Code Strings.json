@@ -388,6 +388,14 @@
         "description": "",
         "message": "Our system was not confident about scaling the book to this format."
     },
+    "harvest-reason-copyright-license-restriction": {
+        "description": "",
+        "message": "The book's copyright license restricts distribution."
+    },
+    "harvest-reason-epub-deemed-unsuitable": {
+        "description": "",
+        "message": "The EPUB format was deemed unsuitable due to the complexity of some page layouts."
+    },
     "book.artifacts.doesnotexist": {
         "description": "",
         "message": "BloomLibrary does not have the book in this format."

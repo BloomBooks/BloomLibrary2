@@ -5,18 +5,21 @@ import { IntlShape } from "react-intl";
 // This is related to the "show" column on book in ParseServer
 export class ArtifactVisibilitySettings {
     public harvester: boolean | undefined;
+    public harvesterReasonToHideId: string | undefined;
     public librarian: boolean | undefined;
     public user: boolean | undefined;
     public exists: boolean | undefined;
 
     constructor(
         harvester?: boolean | undefined,
+        harvesterReasonToHideId?: string | undefined,
         librarian?: boolean | undefined,
         user?: boolean | undefined,
         exists?: boolean | undefined
     ) {
         makeObservable(this, {
             harvester: observable,
+            harvesterReasonToHideId: observable,
             librarian: observable,
             user: observable,
             exists: observable,
@@ -24,6 +27,7 @@ export class ArtifactVisibilitySettings {
         });
 
         this.harvester = harvester;
+        this.harvesterReasonToHideId = harvesterReasonToHideId;
         this.librarian = librarian;
         this.user = user;
         this.exists = exists;
@@ -41,9 +45,9 @@ export class ArtifactVisibilitySettings {
         return this.harvester !== undefined;
     };
 
-    public isHarvesterHide = (): boolean => {
+    public isHarvesterHide(): boolean {
         return this.harvester === false;
-    };
+    }
 
     public hasLibrarianDecided = (): boolean => {
         return this.librarian !== undefined;
@@ -102,9 +106,12 @@ export class ArtifactVisibilitySettings {
                         })) ||
                     (this.isHarvesterHide() &&
                         l10n.formatMessage({
-                            id: "book.artifacts.visibility.scaling",
-                            defaultMessage:
-                                "Our system was not confident about scaling the book to this format.",
+                            id: this.harvesterReasonToHideId
+                                ? this.harvesterReasonToHideId
+                                : "book.artifacts.visibility.scaling",
+                            defaultMessage: this.harvesterReasonToHideId
+                                ? this.harvesterReasonToHideId
+                                : "Our system was not confident about scaling the book to this format.",
                         })) ||
                     (this.doesNotExist() &&
                         l10n.formatMessage({
