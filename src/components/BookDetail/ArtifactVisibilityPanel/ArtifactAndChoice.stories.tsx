@@ -46,6 +46,7 @@ export const ArtifactAndChoiceStory: Story = {
                                 visibilitySettings={
                                     new ArtifactVisibilitySettings(
                                         harvester,
+                                        undefined,
                                         librarian,
                                         user
                                     )
