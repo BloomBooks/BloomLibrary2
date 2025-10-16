@@ -6,7 +6,7 @@ import { convertContentfulCollectionToICollection } from "./Contentful";
 import { kTopicList } from "./ClosedVocabularies";
 import { useContentful } from "../connection/UseContentful";
 import { useGetLoggedInUser } from "../connection/LoggedInUser";
-import { BooleanOptions, IFilter } from "../IFilter";
+import { BooleanOptions, IFilter } from "FilterTypes";
 import { IntlShape, useIntl } from "react-intl";
 import { getLocalizedCollectionLabel } from "../localization/CollectionLabel";
 import { appHostedSegment } from "../components/appHosted/AppHostedUtils";
@@ -77,7 +77,7 @@ function useGetContentfulCollection(
         templateKey = `[Template ${Capitalize(nameParts[0])} Collection]`;
     }
 
-    const { loading, result } = useContentful(
+    const { loading, result } = useContentful<IRawCollection>(
         collectionName
             ? {
                   content_type: "collection",
@@ -97,7 +97,7 @@ function useGetContentfulCollection(
     if (loading) {
         return { loading, result: [] };
     }
-    return { loading, result: result as IRawCollection[] };
+    return { loading, result: result ?? [] };
 }
 
 // Basically a map of collectionName to ICollection

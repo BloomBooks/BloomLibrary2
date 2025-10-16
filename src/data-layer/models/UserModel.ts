@@ -1,11 +1,6 @@
 // Business domain model for User entity
 import { CommonEntityFields } from "../types/CommonTypes";
 
-export interface InformEditorResult {
-    // Will be typed properly when we examine the current implementation
-    [key: string]: any;
-}
-
 export class UserModel implements CommonEntityFields {
     public objectId: string = "";
     public createdAt: string = "";
@@ -17,7 +12,7 @@ export class UserModel implements CommonEntityFields {
     public username: string = "";
     public moderator: boolean = false;
     public showTroubleshootingStuff: boolean = false;
-    public informEditorResult?: InformEditorResult;
+    public informEditorResult?: unknown;
 
     constructor(data?: Partial<UserModel>) {
         if (data) {

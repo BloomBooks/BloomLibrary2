@@ -196,12 +196,12 @@ export const CollectionReport: React.FunctionComponent<ICollectionReportProps> =
                                 exportCsv(`${collection.label}`, exportBookData)
                             }
                         >
-                            <img
-                                alt={l10n.formatMessage({
+                            <DownloadCsvIcon
+                                role="img"
+                                aria-label={l10n.formatMessage({
                                     id: "stats.download.csvIcon",
                                     defaultMessage: "download CSV",
                                 })}
-                                src={DownloadCsvIcon}
                             />
                         </Button>
                     </div>

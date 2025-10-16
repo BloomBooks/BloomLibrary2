@@ -1,8 +1,11 @@
 import axios from "axios";
-import { ITagRepository } from "../../interfaces/ITagRepository";
+import {
+    ITagRepository,
+    TopicTagRecord,
+} from "../../interfaces/ITagRepository";
 import { TagModel } from "../../models/TagModel";
 import { TagQuery, QueryResult } from "../../types/QueryTypes";
-import { TagFilter } from "../../types/FilterTypes";
+import { TagFilter } from "FilterTypes";
 import { ParseConnection } from "./ParseConnection";
 
 interface ParseTagRecord {
@@ -117,7 +120,7 @@ export class ParseTagRepository implements ITagRepository {
         }
     }
 
-    async getTopicList(): Promise<any[]> {
+    async getTopicList(): Promise<TopicTagRecord[]> {
         const connection = ParseConnection.getConnection();
 
         try {
@@ -136,7 +139,12 @@ export class ParseTagRepository implements ITagRepository {
                 },
             });
 
-            return response.data?.results ?? [];
+            const results: ParseTagRecord[] = response.data?.results ?? [];
+            return results.map((record) => ({
+                objectId: record.objectId,
+                name: record.name ?? "",
+                category: record.category,
+            }));
         } catch (error) {
             console.error("Error retrieving topic list:", error);
             return [];

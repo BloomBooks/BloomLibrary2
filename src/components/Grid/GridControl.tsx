@@ -1,5 +1,5 @@
 import React from "react";
-import { IFilter } from "../../IFilter";
+import { IFilter } from "FilterTypes";
 import { Filter as GridFilter } from "@devexpress/dx-react-grid";
 export interface IGridControlProps {
     showFilterSpec?: boolean;

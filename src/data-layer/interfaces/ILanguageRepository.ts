@@ -1,6 +1,6 @@
 // Repository interface for language-related operations
 import { LanguageQuery, QueryResult } from "../types/QueryTypes";
-import { LanguageFilter } from "../types/FilterTypes";
+import { LanguageFilter } from "FilterTypes";
 
 // Forward declaration - will be implemented in models
 export interface LanguageModel {

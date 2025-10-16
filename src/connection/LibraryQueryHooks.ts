@@ -1,7 +1,7 @@
 import React, { useContext, useMemo, useState, useEffect, useRef } from "react";
 import useAxios, { IReturns, axios, IParams } from "@use-hooks/axios";
 import { AxiosResponse } from "axios";
-import { IFilter, BooleanOptions, parseBooleanOptions } from "../IFilter";
+import { BooleanOptions, IFilter, parseBooleanOptions } from "FilterTypes";
 import { getConnection } from "./ParseServerConnection";
 import {
     getBloomApiBooksUrl,
@@ -22,7 +22,10 @@ import { BookSearchQuery } from "../data-layer/types/QueryTypes";
 import { getFilterForCollectionAndChildren } from "../model/Collections";
 import { doExpensiveClientSideSortingIfNeeded } from "./sorting";
 import { ILanguage } from "../model/Language";
-import { IMinimalBookInfo } from "../components/AggregateGrid/AggregateGridInterfaces";
+import {
+    IMinimalBookInfo,
+    IBasicUserInfo,
+} from "../components/AggregateGrid/AggregateGridInterfaces";
 import {
     IStatsPageProps,
     IBookStat,
@@ -41,7 +44,7 @@ import {
     getTagRepository,
     getLanguageRepository,
 } from "../data-layer";
-import { LanguageModel } from "../data-layer/models/LanguageModel";
+import type { BookEntity } from "../data-layer/interfaces/IBookRepository";
 
 // Re-export functions from BookQueryBuilder for backward compatibility
 export {
@@ -53,14 +56,6 @@ export {
     splitString,
     simplifyInnerQuery,
 } from "./BookQueryBuilder";
-
-// Helper function to convert IFilter to BookFilter format
-export function convertIFilterToBookFilter(filter: IFilter): any {
-    // For now, just pass through the IFilter directly
-    // The repository will handle the conversion internally
-    // TODO: In the future, properly convert to BookFilter format
-    return filter as any;
-}
 
 // we just want a better name
 export interface IAxiosAnswer extends IReturns<any> {}
@@ -219,6 +214,7 @@ export interface IBasicBookInfo {
     copyright: string;
     pageCount: string;
     createdAt: string;
+    uploader?: IBasicUserInfo;
     country?: string;
     phashOfFirstContentImage?: string;
     bookHashFromImages?: string;
@@ -350,7 +346,7 @@ export function useSearchBooks(
 
                 // Parse back the stable parameters
                 const parsedParams = JSON.parse(stableParams);
-                const parsedFilter = JSON.parse(stableFilter);
+                const parsedFilter = JSON.parse(stableFilter) as IFilter;
 
                 const repository = getBookRepository();
 
@@ -363,7 +359,7 @@ export function useSearchBooks(
                     fieldSelection: parsedParams.include
                         ? [parsedParams.include]
                         : undefined,
-                    filter: convertIFilterToBookFilter(parsedFilter),
+                    filter: parsedFilter,
                     orderingScheme: stableOrderingScheme,
                     languageForSorting: stableLanguageForSorting,
                 };
@@ -371,7 +367,10 @@ export function useSearchBooks(
                 const result = await repository.searchBooks(searchQuery);
 
                 if (!isCancelled) {
-                    setBooks(result.books);
+                    const normalizedBooks = result.books.map(
+                        convertBookEntityToBasicBookInfo
+                    );
+                    setBooks(normalizedBooks);
                     setTotalMatchingRecords(result.totalMatchingRecords);
                     setWaiting(false);
                 }
@@ -720,9 +719,12 @@ async function retrieveBookAndUserData() {
     const result = await repository.getBooksForGrid(gridQuery);
 
     // Return in the same format as the old axios call for compatibility
+    const normalizedBooks = result.onePageOfMatchingBooks.map(
+        convertBookEntityToBasicBookInfo
+    );
     return {
         data: {
-            results: result.onePageOfMatchingBooks,
+            results: normalizedBooks,
         },
     };
 }
@@ -775,24 +777,31 @@ export function useGetDataForAggregateGrid(): IMinimalBookInfo[] {
                 } as any;
 
                 const gridResult = await repository.getBooksForGrid(gridQuery);
-                const bookInfos = gridResult.onePageOfMatchingBooks as IMinimalBookInfoPlus[];
+                const basicInfos = gridResult.onePageOfMatchingBooks.map(
+                    convertBookEntityToBasicBookInfo
+                );
 
-                const infos: IMinimalBookInfo[] = bookInfos.map((bookInfo) => {
-                    const info: IMinimalBookInfo = {
+                const infos: IMinimalBookInfo[] = basicInfos.map((bookInfo) => {
+                    const languages = bookInfo.languages || [];
+                    const uploader =
+                        bookInfo.uploader ??
+                        ({
+                            objectId: `${bookInfo.objectId}-uploader`,
+                            createdAt: bookInfo.createdAt,
+                            username: "",
+                        } as IBasicUserInfo);
+
+                    return {
                         objectId: bookInfo.objectId,
                         createdAt: bookInfo.createdAt,
-                        // we need only the level and computedLevel tags
-                        tags: bookInfo.tags.filter((tag) =>
+                        tags: (bookInfo.tags || []).filter((tag) =>
                             tag.toLowerCase().includes("level:")
                         ),
-                        uploader: bookInfo.uploader,
-                        //lang1Tag: bookInfo.show?.pdf?.langTag,
-                        languages: bookInfo.langPointers.map(
-                            (lp) => lp.isoCode
+                        uploader,
+                        languages: languages.map(
+                            (language) => language.isoCode
                         ),
                     };
-                    // Language tag logic commented out as in original - if needed, can be re-enabled
-                    return info;
                 });
 
                 setResult(infos);
@@ -902,6 +911,7 @@ export function useGetTagList(): string[] {
 export function useGetCleanedAndOrderedLanguageList(): ILanguage[] {
     const [languages, setLanguages] = useState<ILanguage[]>([]);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         let isMounted = true;
 
@@ -1129,7 +1139,7 @@ export function useGetBookCount(filter: IFilter): number {
 
     // Create stable references to avoid infinite loops
     const filterString = JSON.stringify(filter);
-    const stableFilter = useMemo(() => JSON.parse(filterString), [
+    const stableFilter = useMemo<IFilter>(() => JSON.parse(filterString), [
         filterString,
     ]);
 
@@ -1142,12 +1152,7 @@ export function useGetBookCount(filter: IFilter): number {
         const fetchCount = async () => {
             try {
                 const repository = getBookRepository();
-                const convertedFilter = convertIFilterToBookFilter(
-                    stableFilter
-                );
-                const bookCount = await repository.getBookCount(
-                    convertedFilter
-                );
+                const bookCount = await repository.getBookCount(stableFilter);
                 setCount(bookCount);
                 setHasError(false);
             } catch (error) {
@@ -1175,7 +1180,7 @@ export function useGetBookCountWithError(
 
     // Create stable references to avoid infinite loops
     const filterString = JSON.stringify(filter);
-    const stableFilter = useMemo(() => JSON.parse(filterString), [
+    const stableFilter = useMemo<IFilter>(() => JSON.parse(filterString), [
         filterString,
     ]);
 
@@ -1188,12 +1193,7 @@ export function useGetBookCountWithError(
         const fetchCount = async () => {
             try {
                 const repository = getBookRepository();
-                const convertedFilter = convertIFilterToBookFilter(
-                    stableFilter
-                );
-                const bookCount = await repository.getBookCount(
-                    convertedFilter
-                );
+                const bookCount = await repository.getBookCount(stableFilter);
                 setCount(bookCount);
                 setHasError(false);
             } catch (error) {
@@ -1287,7 +1287,7 @@ export function useGetBooksForGrid(
     const filterString = JSON.stringify(filter);
     const sortingString = JSON.stringify(sortingArray);
 
-    const stableFilter = useMemo(() => JSON.parse(filterString), [
+    const stableFilter = useMemo<IFilter>(() => JSON.parse(filterString), [
         filterString,
     ]);
     const stableSorting = useMemo(() => JSON.parse(sortingString), [
@@ -1307,16 +1307,18 @@ export function useGetBooksForGrid(
 
                 const repository = getBookRepository();
                 const gridQuery = {
-                    filter: convertIFilterToBookFilter(stableFilter),
+                    filter: stableFilter,
                     pagination: { limit, skip },
                     sorting: stableSorting,
                 };
 
                 const result = await repository.getBooksForGrid(gridQuery);
 
-                // Use the Book instances directly instead of converting to plain objects
-                // The grid columns expect Book instances with methods like getBestLevel()
-                setBooks(result.onePageOfMatchingBooks);
+                const bookInstances = result.onePageOfMatchingBooks.map(
+                    convertBookEntityToBook
+                );
+
+                setBooks(bookInstances);
                 setTotalCount(result.totalMatchingBooksCount);
                 setWaiting(false);
             } catch (err) {
@@ -1358,15 +1360,14 @@ export function useGetRelatedBooks(bookId: string): IBasicBookInfo[] {
                 // Convert to IBasicBookInfo format
                 const convertedBooks = books.map((book) => {
                     const model = book as any; // Temporary workaround for property access
+                    const allTitles = normalizeAllTitles(
+                        model.allTitles ?? model.allTitlesRaw ?? {}
+                    );
                     return {
                         objectId: model.objectId || model.id,
                         baseUrl: model.baseUrl || "",
                         title: model.title || "",
-                        allTitles: JSON.stringify(
-                            model.allTitles
-                                ? Object.fromEntries(model.allTitles)
-                                : {}
-                        ),
+                        allTitles,
                         languages: model.languages || [],
                         features: model.features || [],
                         tags: model.tags || [],
@@ -1399,44 +1400,222 @@ export function useGetRelatedBooks(bookId: string): IBasicBookInfo[] {
     return relatedBooks;
 }
 
-export async function useGetBasicBookInfos(
+export function useGetBasicBookInfos(
     bookIds: string[]
-): Promise<IBasicBookInfo[]> {
-    try {
-        const repository = getBookRepository();
-        const books = await repository.getBooks(bookIds);
+): IBasicBookInfo[] | undefined {
+    const [bookInfos, setBookInfos] = useState<IBasicBookInfo[] | undefined>();
 
-        // Convert to IBasicBookInfo format
-        return books.map((book) => {
-            const model = book as any; // Temporary workaround for property access
-            return {
-                objectId: model.objectId || model.id,
-                baseUrl: model.baseUrl || "",
-                title: model.title || "",
-                allTitles: JSON.stringify(
-                    model.allTitles ? Object.fromEntries(model.allTitles) : {}
-                ),
-                languages: model.languages || [],
-                features: model.features || [],
-                tags: model.tags || [],
-                license: model.license || "",
-                copyright: model.copyright || "",
-                pageCount: model.pageCount || "0",
-                createdAt: model.createdAt || "",
-                harvestState: model.harvestState || "",
-                draft: model.draft || false,
-                inCirculation: model.inCirculation !== false,
-                edition: model.edition || "",
-                country: model.country || "",
-                phashOfFirstContentImage: model.phashOfFirstContentImage || "",
-                bookHashFromImages: model.bookHashFromImages || "",
-                updatedAt: model.updatedAt || "",
+    const serializedIds = useMemo(() => bookIds.slice().sort().join("|"), [
+        bookIds,
+    ]);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        if (bookIds.length === 0) {
+            setBookInfos([]);
+            return () => {
+                isMounted = false;
             };
-        });
-    } catch (error) {
-        console.error("Error fetching basic book infos:", error);
+        }
+
+        const fetchBookInfos = async () => {
+            try {
+                const repository = getBookRepository();
+                const books = await repository.getBooks(bookIds);
+                if (!isMounted) {
+                    return;
+                }
+                const normalized = books.map(convertBookEntityToBasicBookInfo);
+                setBookInfos(normalized);
+            } catch (error) {
+                console.error("Error fetching basic book infos:", error);
+                if (isMounted) {
+                    setBookInfos([]);
+                }
+            }
+        };
+
+        fetchBookInfos();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [serializedIds, bookIds]);
+
+    return bookInfos;
+}
+
+function convertBookEntityToBasicBookInfo(entity: BookEntity): IBasicBookInfo {
+    const record = (entity as unknown) as Record<string, unknown>;
+
+    const objectId = getString(record.objectId) || getString(record.id) || "";
+
+    const allTitles = normalizeAllTitles(record.allTitles);
+
+    return {
+        objectId,
+        baseUrl: getString(record.baseUrl) || "",
+        harvestState: getString(record.harvestState),
+        allTitles,
+        harvestStartedAt: normalizeParseDate(record.harvestStartedAt),
+        title: getString(record.title) || "",
+        languages: normalizeLanguages(record.languages ?? record.langPointers),
+        features: normalizeStringArray(record.features),
+        tags: normalizeStringArray(record.tags),
+        updatedAt: getString(record.updatedAt),
+        lastUploaded: normalizeParseDate(record.lastUploaded),
+        license: getString(record.license) || "",
+        copyright: getString(record.copyright) || "",
+        pageCount:
+            typeof record.pageCount === "number"
+                ? record.pageCount.toString()
+                : getString(record.pageCount) || "0",
+        createdAt: getString(record.createdAt) || "",
+        country: getString(record.country),
+        phashOfFirstContentImage: getString(record.phashOfFirstContentImage),
+        bookHashFromImages: getString(record.bookHashFromImages),
+        edition: getString(record.edition) || "",
+        draft: getBoolean(record.draft),
+        inCirculation: record.inCirculation !== false,
+        score: typeof record.score === "number" ? record.score : undefined,
+        lang1Tag: getString(record.lang1Tag),
+        show: normalizeShow(record.show),
+        uploader: normalizeUploader(record.uploader),
+    };
+}
+
+function getString(value: unknown): string | undefined {
+    return typeof value === "string" ? value : undefined;
+}
+
+function getBoolean(value: unknown): boolean | undefined {
+    return typeof value === "boolean" ? value : undefined;
+}
+
+function normalizeStringArray(value: unknown): string[] {
+    if (!Array.isArray(value)) {
         return [];
     }
+    return value.filter((entry): entry is string => typeof entry === "string");
+}
+
+function normalizeParseDate(value: unknown): { iso: string } | undefined {
+    if (
+        value &&
+        typeof value === "object" &&
+        "iso" in value &&
+        typeof (value as { iso?: unknown }).iso === "string"
+    ) {
+        return { iso: (value as { iso: string }).iso };
+    }
+    if (typeof value === "string") {
+        return { iso: value };
+    }
+    return undefined;
+}
+
+function normalizeAllTitles(value: unknown): IBasicBookInfo["allTitles"] {
+    if (value instanceof Map) {
+        return new Map(value);
+    }
+    if (typeof value === "string") {
+        return value;
+    }
+    if (value && typeof value === "object") {
+        const entries: Array<[string, string]> = [];
+        for (const [key, entryValue] of Object.entries(value)) {
+            if (typeof entryValue === "string") {
+                entries.push([key, entryValue]);
+            }
+        }
+        return new Map(entries);
+    }
+    return "";
+}
+
+function normalizeLanguages(value: unknown): ILanguage[] {
+    if (!Array.isArray(value)) {
+        return [];
+    }
+
+    return value
+        .map((entry) => convertLanguageLike(entry))
+        .filter((entry): entry is ILanguage => entry !== undefined);
+}
+
+function convertLanguageLike(language: unknown): ILanguage | undefined {
+    if (!language || typeof language !== "object") {
+        return undefined;
+    }
+
+    const candidate = language as Record<string, unknown>;
+    const isoCode = getString(candidate.isoCode);
+    const name = getString(candidate.name) || isoCode || "";
+    if (!isoCode) {
+        return undefined;
+    }
+
+    return {
+        isoCode,
+        name,
+        englishName: getString(candidate.englishName),
+        usageCount:
+            typeof candidate.usageCount === "number" ? candidate.usageCount : 0,
+        bannerImageUrl: getString(candidate.bannerImageUrl),
+        objectId: getString(candidate.objectId) || "",
+    };
+}
+
+function normalizeShow(value: unknown): IBasicBookInfo["show"] | undefined {
+    if (
+        value &&
+        typeof value === "object" &&
+        "pdf" in value &&
+        typeof (value as { pdf?: unknown }).pdf === "object"
+    ) {
+        const pdf = (value as { pdf?: unknown }).pdf;
+        if (
+            pdf &&
+            typeof pdf === "object" &&
+            "langTag" in pdf &&
+            typeof (pdf as { langTag?: unknown }).langTag === "string"
+        ) {
+            return { pdf: { langTag: (pdf as { langTag: string }).langTag } };
+        }
+    }
+    return undefined;
+}
+
+function normalizeUploader(value: unknown): IBasicBookInfo["uploader"] {
+    if (!value || typeof value !== "object") {
+        return undefined;
+    }
+
+    const record = value as Record<string, unknown>;
+    const objectId = getString(record.objectId) || "";
+    const createdAt = getString(record.createdAt) || "";
+    const username = getString(record.username) || "";
+
+    if (!objectId && !username) {
+        return undefined;
+    }
+
+    return {
+        objectId,
+        createdAt,
+        username,
+    };
+}
+
+function convertBookEntityToBook(entity: BookEntity): Book {
+    if (entity instanceof Book) {
+        return entity;
+    }
+
+    const book = new Book();
+    Object.assign(book, entity);
+    return book;
 }
 
 // Extract book statistics from raw API data

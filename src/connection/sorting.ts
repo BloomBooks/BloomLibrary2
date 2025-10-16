@@ -4,7 +4,7 @@ import { BookOrderingScheme } from "../model/ContentInterfaces";
 // About all this:   https://issues.bloomlibrary.org/youtrack/issue/BL-11137
 export interface IBookInfoForSorting {
     title: string;
-    allTitles: string;
+    allTitles: string | Map<string, string>;
     sortKey?: string; // optional because it's empty on input but filled out output of sortBooks()
 }
 

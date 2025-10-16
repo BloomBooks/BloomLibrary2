@@ -1,8 +1,9 @@
 import axios from "axios";
+import type { AxiosError } from "axios";
 import { ILanguageRepository } from "../../interfaces/ILanguageRepository";
 import { LanguageModel } from "../../models/LanguageModel";
 import { LanguageQuery, QueryResult } from "../../types/QueryTypes";
-import { LanguageFilter } from "../../types/FilterTypes";
+import { LanguageFilter } from "FilterTypes";
 import { ParseConnection } from "./ParseConnection";
 import {
     getCleanedAndOrderedLanguageList as legacyCleanLanguageList,
@@ -19,6 +20,15 @@ interface ParseLanguageRecord {
     bannerImageUrl?: string;
     createdAt?: string;
     updatedAt?: string;
+}
+
+function isAxiosErrorLike(error: unknown): error is AxiosError {
+    return (
+        typeof error === "object" &&
+        error !== null &&
+        "isAxiosError" in error &&
+        (error as { isAxiosError?: unknown }).isAxiosError === true
+    );
 }
 
 export class ParseLanguageRepository implements ILanguageRepository {
@@ -153,15 +163,20 @@ export class ParseLanguageRepository implements ILanguageRepository {
             );
 
             return finalLanguages;
-        } catch (error) {
+        } catch (error: unknown) {
             // During testing or when ParseServer is unavailable, fail silently
             // to avoid console errors that break tests
-            if (
-                process.env.NODE_ENV === "test" ||
-                (error as any)?.response?.status === 400 ||
-                (error as any)?.code === "ECONNREFUSED"
-            ) {
+            if (process.env.NODE_ENV === "test") {
                 return [];
+            }
+
+            if (isAxiosErrorLike(error)) {
+                if (
+                    error.response?.status === 400 ||
+                    error.code === "ECONNREFUSED"
+                ) {
+                    return [];
+                }
             }
             console.error("Error retrieving cleaned language list:", error);
             return [];

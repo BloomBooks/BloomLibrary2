@@ -175,13 +175,21 @@ export const RightMetadata: React.FunctionComponent<{
                             padding-left: 10px;
                         `}
                     >
-                        {relatedBooks.map((b: Book) => {
+                        {relatedBooks.map((b) => {
+                            const relatedId =
+                                typeof (b as { id?: unknown }).id === "string"
+                                    ? ((b as { id?: string }).id as string)
+                                    : typeof (b as { objectId?: unknown })
+                                          .objectId === "string"
+                                    ? ((b as { objectId?: string })
+                                          .objectId as string)
+                                    : "";
                             return (
-                                <li key={b.id}>
+                                <li key={relatedId || b.title}>
                                     <BlorgLink
                                         newTabIfEmbedded={true}
                                         color="secondary"
-                                        href={`/book/${b.id}`}
+                                        href={`/book/${relatedId}`}
                                     >
                                         {b.title}
                                     </BlorgLink>

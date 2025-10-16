@@ -579,7 +579,7 @@ export class Book {
 // This is used where we only have an IBasicBookInfo, not a full book, but need to get a language-specific title for the book
 export function getBestBookTitle(
     defaultTitle: string,
-    rawAllTitlesJson: string,
+    rawAllTitlesJson: string | Map<string, string>,
     contextLangTag?: string
 ): string {
     if (!contextLangTag) return defaultTitle.replace(/[\r\n\v]+/g, " ");

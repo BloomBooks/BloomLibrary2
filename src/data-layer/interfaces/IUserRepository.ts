@@ -1,6 +1,6 @@
 // Repository interface for user-related operations
 import { UserQuery } from "../types/QueryTypes";
-import { UserFilter } from "../types/FilterTypes";
+import { UserFilter } from "FilterTypes";
 
 // Forward declaration - will be implemented in models
 export interface UserModel {
@@ -10,14 +10,16 @@ export interface UserModel {
     username: string;
     moderator: boolean;
     showTroubleshootingStuff?: boolean;
-    informEditorResult?: any;
+    informEditorResult?: unknown;
 }
 
 export interface CreateUserData {
     username: string;
     email: string;
-    authData?: any;
+    authData?: Record<string, unknown>;
 }
+
+export type BookPermissionMap = Record<string, boolean>;
 
 export interface IUserRepository {
     // Basic CRUD operations
@@ -32,5 +34,8 @@ export interface IUserRepository {
 
     // Specialized operations
     checkUserIsModerator(userId: string): Promise<boolean>;
-    getUserPermissions(userId: string, bookId: string): Promise<any>; // Will type properly later
+    getUserPermissions(
+        userId: string,
+        bookId: string
+    ): Promise<BookPermissionMap>;
 }

@@ -17,7 +17,7 @@ export const ContentfulMultiPartPage: React.FunctionComponent<{
         <div
             className={`base-contentful-page multipart-contentful-page ${props.urlKey}`}
         >
-            {page.fields.parts.map((part: any, index: number) => (
+            {(page.fields.parts ?? []).map((part, index: number) => (
                 <div key={index}>
                     <BlorgMarkdown
                         markdown={part.fields.primary}

@@ -1,5 +1,5 @@
 import { Book } from "../model/Book";
-import { BooleanOptions, IFilter, parseBooleanOptions } from "../IFilter";
+import { BooleanOptions, IFilter, parseBooleanOptions } from "FilterTypes";
 import { processRegExp } from "../Utilities";
 import { kTopicList } from "../model/ClosedVocabularies";
 import { kTagForNoLanguage } from "../model/Language";
@@ -306,25 +306,61 @@ export function constructParseBookQuery(
 
     if (f.topic) {
         delete params.where.topic;
-        if (f.topic === kNameOfNoTopicCollection) {
+
+        const topicFilter = f.topic.trim();
+
+        if (
+            topicFilter.toLowerCase() === kNameOfNoTopicCollection.toLowerCase()
+        ) {
             tagParts.push({
                 $nin: kTopicList.map((t) => "topic:" + t),
             });
-        } else if (f.topic.indexOf(",") >= 0) {
-            const topicsRegex = f.topic
-                .split(",")
-                .map((s) => "topic:" + processRegExp(s))
-                .join("|");
-            tagParts.push({
-                $regex: topicsRegex,
-                ...caseInsensitive,
-            });
         } else {
-            const topicRegex = `^topic:${processRegExp(f.topic)}$`;
-            tagParts.push({
-                $regex: topicRegex,
-                ...caseInsensitive,
+            const topicValues = topicFilter
+                .split(",")
+                .map((s) => s.trim())
+                .filter((s) => s.length > 0);
+
+            const canonicalTopicTags: string[] = [];
+            const unmatchedTopics: string[] = [];
+
+            topicValues.forEach((topicValue) => {
+                const canonicalMatch = kTopicList.find(
+                    (topic) => topic.toLowerCase() === topicValue.toLowerCase()
+                );
+
+                if (canonicalMatch) {
+                    canonicalTopicTags.push(`topic:${canonicalMatch}`);
+                } else {
+                    unmatchedTopics.push(topicValue);
+                }
             });
+
+            canonicalTopicTags.forEach((topicTag) => {
+                tagsAll.push(topicTag);
+            });
+
+            if (unmatchedTopics.length) {
+                if (unmatchedTopics.length === 1) {
+                    const topicRegex = `^topic:${processRegExp(
+                        unmatchedTopics[0]
+                    )}$`;
+                    tagParts.push({
+                        $regex: topicRegex,
+                        ...caseInsensitive,
+                    });
+                } else {
+                    const topicsRegex = unmatchedTopics
+                        .map(
+                            (topicValue) => "topic:" + processRegExp(topicValue)
+                        )
+                        .join("|");
+                    tagParts.push({
+                        $regex: topicsRegex,
+                        ...caseInsensitive,
+                    });
+                }
+            }
         }
     }
     if (tagsAll.length === 1 && tagParts.length === 0) {

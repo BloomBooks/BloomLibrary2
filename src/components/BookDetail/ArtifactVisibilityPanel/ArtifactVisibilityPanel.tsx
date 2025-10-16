@@ -142,11 +142,13 @@ export const StandAloneHarvesterArtifactUserControl: React.FunctionComponent<{
     currentUserIsModerator?: boolean;
     onChange?: () => {};
 }> = (props) => {
-    const book = useGetBookDetail(props.bookId);
-    if (book === undefined) {
+    const { book, loading, error } = useGetBookDetail(props.bookId);
+    if (loading) {
         return <div>Loading...</div>;
     } else if (book === null) {
         return <div>Sorry, we could not find that book.</div>;
+    } else if (error) {
+        return <div>Sorry, there was a problem loading that book.</div>;
     } else {
         return (
             <HarvesterArtifactUserControl

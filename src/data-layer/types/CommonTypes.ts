@@ -6,7 +6,7 @@ export enum BooleanOptions {
     All = "All",
 }
 
-export function parseBooleanOptions(value: any): BooleanOptions {
+export function parseBooleanOptions(value: unknown): BooleanOptions {
     switch (value) {
         case true:
         case "True":
@@ -75,5 +75,7 @@ export interface CountrySpec {
 
 // Internet limits configuration
 export interface InternetLimits {
-    [key: string]: any; // flexible object for various internet limit settings
+    viewContentsInAnyWay?: CountrySpec;
+    downloadAnything?: CountrySpec;
+    downloadShell?: CountrySpec;
 }

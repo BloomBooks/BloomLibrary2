@@ -1,11 +1,7 @@
 // Query-related types for database operations
 import { BookOrderingScheme, Pagination, Sorting } from "./CommonTypes";
-import {
-    BookFilter,
-    LanguageFilter,
-    UserFilter,
-    TagFilter,
-} from "./FilterTypes";
+import { IFilter, LanguageFilter, TagFilter, UserFilter } from "FilterTypes";
+import type { BookEntity } from "../interfaces/IBookRepository";
 
 // Base query interface
 export interface BaseQuery {
@@ -15,13 +11,13 @@ export interface BaseQuery {
 
 // Book query types
 export interface BookSearchQuery extends BaseQuery {
-    filter: BookFilter;
+    filter: IFilter;
     orderingScheme?: BookOrderingScheme;
     languageForSorting?: string;
 }
 
 export interface BookGridQuery extends BaseQuery {
-    filter: BookFilter;
+    filter: IFilter;
     sorting: Sorting[];
 }
 
@@ -51,21 +47,20 @@ export interface QueryResult<T> {
     hasMore?: boolean;
 }
 
-export interface BookSearchResult extends QueryResult<any> {
-    // Will be updated to use BookModel once we create it
-    books: any[];
+export interface BookSearchResult extends QueryResult<BookEntity> {
+    books: BookEntity[];
     totalMatchingRecords: number;
     errorString: string | null;
     waiting: boolean;
 }
 
 export interface BookGridResult {
-    onePageOfMatchingBooks: any[]; // Will be BookModel[]
+    onePageOfMatchingBooks: BookEntity[];
     totalMatchingBooksCount: number;
 }
 
 // Parse server specific result format
-export interface ParseResponseData<T = any> {
+export interface ParseResponseData<T = unknown> {
     count?: number;
     results: Array<T>;
 }

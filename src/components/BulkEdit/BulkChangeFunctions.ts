@@ -1,9 +1,8 @@
-import { IFilter } from "../../IFilter";
+import { IFilter } from "FilterTypes";
 import { DataLayerFactory } from "../../data-layer/factory/DataLayerFactory";
 import { BookModel } from "../../data-layer/models/BookModel";
 import { BookGridQuery } from "../../data-layer/types/QueryTypes";
 import { Sorting } from "../../data-layer/types/CommonTypes";
-import { convertIFilterToBookFilter } from "../../connection/LibraryQueryHooks";
 
 export async function ChangeColumnValueForAllBooksInFilter(
     filter: IFilter,
@@ -15,12 +14,9 @@ export async function ChangeColumnValueForAllBooksInFilter(
         const factory = DataLayerFactory.getInstance();
         const bookRepository = factory.createBookRepository();
 
-        // Convert IFilter to BookFilter format
-        const bookFilter = convertIFilterToBookFilter(filter);
-
         // Create query to get all matching books
         const query: BookGridQuery = {
-            filter: bookFilter,
+            filter,
             sorting: [],
             pagination: {
                 limit: Number.MAX_SAFE_INTEGER, // Get all matching books
@@ -77,12 +73,9 @@ export async function AddTagAllBooksInFilter(
         const factory = DataLayerFactory.getInstance();
         const bookRepository = factory.createBookRepository();
 
-        // Convert IFilter to BookFilter format
-        const bookFilter = convertIFilterToBookFilter(filter);
-
         // Create query to get all matching books with tags
         const query: BookGridQuery = {
-            filter: bookFilter,
+            filter,
             sorting: [],
             pagination: {
                 limit: Number.MAX_SAFE_INTEGER, // Get all matching books
@@ -143,12 +136,9 @@ export async function AddFeatureToAllBooksInFilter(
         const factory = DataLayerFactory.getInstance();
         const bookRepository = factory.createBookRepository();
 
-        // Convert IFilter to BookFilter format
-        const bookFilter = convertIFilterToBookFilter(filter);
-
         // Create query to get all matching books with features
         const query: BookGridQuery = {
-            filter: bookFilter,
+            filter,
             sorting: [],
             pagination: {
                 limit: Number.MAX_SAFE_INTEGER, // Get all matching books

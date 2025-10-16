@@ -56,7 +56,10 @@ export function PreferBooksWithL1MatchingFocusLanguage_DuplicateBookFilter(
                         book.lang1Tag || "en"
                     );
                     if (!titleInContextLang) {
-                        titleInContextLang = book.allTitles?.[0] ?? "";
+                        titleInContextLang = getFirstAvailableTitle(
+                            book.allTitles,
+                            book.title
+                        );
                     }
                 } else if (languageInFocus !== kTagForNoLanguage) {
                     continue; // just skip it. There are surprisingly many books that have some English but don't have the title in English. E.g. 6jFUJ8jeEv
@@ -134,6 +137,31 @@ export function PreferBooksWithL1MatchingFocusLanguage_DuplicateBookFilter(
         }
         return books;
     } else return booksToShow;
+}
+
+function getFirstAvailableTitle(
+    allTitles: IBasicBookInfo["allTitles"],
+    fallbackTitle: string
+): string {
+    if (allTitles instanceof Map) {
+        const iterator = allTitles.values().next();
+        const value = iterator.value;
+        return typeof value === "string" ? value : fallbackTitle;
+    }
+
+    if (typeof allTitles === "string" && allTitles.trim().length > 0) {
+        try {
+            const parsed = JSON.parse(allTitles) as Record<string, unknown>;
+            const firstValue = Object.values(parsed)[0];
+            if (typeof firstValue === "string") {
+                return firstValue;
+            }
+        } catch (error) {
+            console.error("Unable to parse allTitles JSON", error);
+        }
+    }
+
+    return fallbackTitle;
 }
 
 // Even though this is only used in one place, I moved this to this file just to keep similar

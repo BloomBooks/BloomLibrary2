@@ -8,7 +8,7 @@ import {
 import { LanguageModel } from "./LanguageModel";
 import { BookStatsModel } from "../interfaces/IAnalyticsService";
 import axios from "axios";
-import { IInternetLimits, ICountrySpec } from "../../model/Book";
+import { Book, IInternetLimits, ICountrySpec } from "../../model/Book";
 // Note: These imports will be properly resolved when integrating with the existing codebase
 // import { removePunctuation } from "../../Utilities";
 // import stem from "wink-porter2-stemmer";
@@ -20,10 +20,9 @@ const stem = (text: string) => text.toLowerCase();
 // Import the real ArtifactVisibilitySettingsGroup from the existing model
 import { ArtifactVisibilitySettingsGroup as RealArtifactVisibilitySettingsGroup } from "../../model/ArtifactVisibilitySettings";
 
-export interface ArtifactVisibilitySettingsGroup {
-    // Will be properly typed when we migrate this interface
-    [key: string]: any;
-}
+export type ArtifactVisibilitySettingsGroup = RealArtifactVisibilitySettingsGroup;
+
+type BookLike = BookModel | Book;
 
 export interface BookUploader {
     username: string;
@@ -211,12 +210,12 @@ export class BookModel implements CommonEntityFields {
     }
 
     // Utility methods for harvested content
-    public static isHarvested(book: BookModel | any): boolean {
+    public static isHarvested(book: BookLike): boolean {
         return book && book.harvestState === "Done";
     }
 
     public static getThumbnailUrl(
-        book: BookModel | any
+        book: BookLike
     ): { thumbnailUrl: string; isModernThumbnail: boolean } {
         const h = BookModel.getHarvesterProducedThumbnailUrl(book, "256");
         if (h) return { thumbnailUrl: h, isModernThumbnail: true };
@@ -226,7 +225,7 @@ export class BookModel implements CommonEntityFields {
         };
     }
 
-    public static getLegacyThumbnailUrl(book: BookModel | any): string {
+    public static getLegacyThumbnailUrl(book: BookLike): string {
         return (
             BookModel.getCloudFlareUrl(book.baseUrl) +
             "thumbnail-256.png?version=" +
@@ -236,7 +235,7 @@ export class BookModel implements CommonEntityFields {
 
     // Private helper methods
     private static getHarvesterProducedThumbnailUrl(
-        book: any,
+        book: BookLike,
         size: string
     ): string | undefined {
         // Implementation would be extracted from current Book class
@@ -248,9 +247,7 @@ export class BookModel implements CommonEntityFields {
         return inputUrl; // Placeholder
     }
 
-    public static getHarvesterBaseUrl(
-        book: BookModel | any
-    ): string | undefined {
+    public static getHarvesterBaseUrl(book: BookLike): string | undefined {
         // Implementation would be extracted from current Book class
         return undefined; // Placeholder
     }

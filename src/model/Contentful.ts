@@ -1,4 +1,4 @@
-import { parseBooleanOptions } from "../IFilter";
+import { parseBooleanOptions } from "FilterTypes";
 import {
     IBanner,
     IMedia,
@@ -107,7 +107,7 @@ export function convertContentfulCollectionToICollection(
     return result;
 }
 
-interface IContentfulMedia {
+export interface IContentfulMedia {
     fields: {
         title: string; // localized will be something like this: { [key: string]: string };
         description: string; // localized will be something like this: { [key: string]: string };
@@ -136,7 +136,7 @@ export function convertContentfulMediaToIMedia(
     a.url = media.fields.file.url || "";
     return a;
 }
-interface IContentfulEmbeddingSettings {
+export interface IContentfulEmbeddingSettings {
     fields: {
         urlKey: string; // localized will be something like this: { [key: string]: string };
         enabled: boolean;

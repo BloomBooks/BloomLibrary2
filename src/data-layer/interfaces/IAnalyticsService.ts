@@ -1,4 +1,7 @@
 // Analytics service interface for statistics and reporting
+import type { IFilter } from "FilterTypes";
+import type { IStatisticsQuerySpec } from "../../IStatisticsQuerySpec";
+
 export interface BookStatsModel {
     title: string;
     branding: string;
@@ -21,22 +24,27 @@ export interface StatsQuery {
         startDate?: Date;
         endDate?: Date;
     };
-    collectionFilter?: any; // Will type properly later
-    statisticsQuerySpec?: any;
+    collectionFilter?: IFilter;
+    statisticsQuerySpec?: IStatisticsQuerySpec;
 }
 
 export interface IAnalyticsService {
     // Book statistics
-    getBookStats(query: StatsQuery): Promise<any>;
-    getCollectionStats(query: StatsQuery): Promise<any>;
+    getBookStats(query: StatsQuery): Promise<BookStatsModel[]>;
+    getCollectionStats(query: StatsQuery): Promise<BookStatsModel[]>;
 
     // Individual book analytics
-    joinBooksAndStats(books: any[], bookStats: any): void;
-    extractBookStatFromRawData(statRow: any): BookStatsModel;
+    joinBooksAndStats<T extends { objectId?: string; bookInstanceId?: string }>(
+        books: T[],
+        bookStats: BookStatsModel[]
+    ): void;
+    extractBookStatFromRawData(
+        statRow: Record<string, unknown>
+    ): BookStatsModel;
 
     // Reading analytics
     getReadingStats(
         bookIds: string[],
         dateRange?: { startDate?: Date; endDate?: Date }
-    ): Promise<any>;
+    ): Promise<BookStatsModel[]>;
 }

@@ -1,11 +1,12 @@
 import axios from "axios";
 import {
+    BookPermissionMap,
     CreateUserData,
     IUserRepository,
 } from "../../interfaces/IUserRepository";
-import { InformEditorResult, UserModel } from "../../models/UserModel";
+import { UserModel } from "../../models/UserModel";
 import { UserQuery } from "../../types/QueryTypes";
-import { UserFilter } from "../../types/FilterTypes";
+import { UserFilter } from "FilterTypes";
 import { ParseConnection } from "./ParseConnection";
 import {
     getBloomApiBooksUrl,
@@ -204,7 +205,10 @@ export class ParseUserRepository implements IUserRepository {
         }
     }
 
-    async getUserPermissions(userId: string, bookId: string): Promise<any> {
+    async getUserPermissions(
+        userId: string,
+        bookId: string
+    ): Promise<BookPermissionMap> {
         try {
             const response = await axios.get(
                 getBloomApiBooksUrl(bookId, "permissions"),
@@ -214,7 +218,7 @@ export class ParseUserRepository implements IUserRepository {
                 }
             );
 
-            return response.data;
+            return response.data as BookPermissionMap;
         } catch (error) {
             console.error("Error getting user permissions:", error);
             throw error;
@@ -229,9 +233,7 @@ export class ParseUserRepository implements IUserRepository {
             sessionId: user.sessionToken,
             createdAt: user.createdAt ?? new Date().toISOString(),
             updatedAt: user.updatedAt ?? new Date().toISOString(),
-            informEditorResult: user.informEditorResult as
-                | InformEditorResult
-                | undefined,
+            informEditorResult: user.informEditorResult,
             moderator: false,
         });
     }
@@ -321,8 +323,22 @@ export class ParseUserRepository implements IUserRepository {
             }
 
             const moderatorIds = role.users
-                .map((user: any) => user.objectId)
-                .filter((id: string | undefined): id is string => !!id);
+                .map((user: unknown) => {
+                    if (
+                        typeof user === "object" &&
+                        user !== null &&
+                        "objectId" in user &&
+                        typeof (user as { objectId?: unknown }).objectId ===
+                            "string"
+                    ) {
+                        return (user as { objectId: string }).objectId;
+                    }
+                    return undefined;
+                })
+                .filter(
+                    (id: string | undefined): id is string =>
+                        typeof id === "string"
+                );
 
             return new Set<string>(moderatorIds);
         } catch (error) {

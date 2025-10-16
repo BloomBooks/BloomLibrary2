@@ -1,4 +1,4 @@
-import { IFilter } from "../IFilter";
+import { IFilter } from "FilterTypes";
 import axios from "axios";
 import { constructParseBookQuery } from "./BookQueryBuilder";
 
@@ -11,9 +11,14 @@ const headers = {
 const unitTestBaseUrl =
     "https://bloom-parse-server-unittest.azurewebsites.net/parse/";
 
+const axiosClient = axios.create({
+    baseURL: unitTestBaseUrl,
+    headers,
+    timeout: 20000,
+});
+
 async function getBook(filter: IFilter) {
-    return axios.get(`${unitTestBaseUrl}classes/books`, {
-        headers,
+    return axiosClient.get("classes/books", {
         params: constructParseBookQuery({ keys: "title", count: 5 }, filter, [
             "region:Pacific",
             "topic:Math",
@@ -21,32 +26,28 @@ async function getBook(filter: IFilter) {
         ]),
     });
 }
+
 async function createBook(book: any) {
     // We have a rule on the server which says all books must have a title, bookInstanceId, and uploader
     book.title = book.title || "test title";
     book.bookInstanceId = book.bookInstanceId || book.title;
 
-    const result = await axios.post(`${unitTestBaseUrl}classes/books`, book, {
-        headers,
-    });
+    const result = await axiosClient.post("classes/books", book);
     return result.data.objectId;
 }
 
 async function createUser(username: string, password: string) {
-    const result = await axios.post(
-        `${unitTestBaseUrl}users`,
-        { username, password, email: username },
-        {
-            headers,
-        }
-    );
+    const result = await axiosClient.post("users", {
+        username,
+        password,
+        email: username,
+    });
     return [result.data.objectId, result.data.sessionToken];
 }
 
 async function loginUser(username: string, password: string) {
     try {
-        const result = await axios.get(`${unitTestBaseUrl}login`, {
-            headers,
+        const result = await axiosClient.get("login", {
             params: { username, password },
         });
         return [result.data.objectId, result.data.sessionToken];
@@ -56,15 +57,13 @@ async function loginUser(username: string, password: string) {
 }
 
 async function deleteBook(id: string) {
-    return axios.delete(`${unitTestBaseUrl}classes/books/${id}`, {
-        headers,
-    });
+    return axiosClient.delete(`classes/books/${id}`);
 }
 
 // Even though the unit test database is about as wide open as it can be,
 // parse only allows us to delete a user if logged in as that user.
 async function deleteUser(id: string, sessionToken: string) {
-    return axios.delete(`${unitTestBaseUrl}users/${id}`, {
+    return axiosClient.delete(`users/${id}`, {
         headers: { ...headers, "X-Parse-Session-Token": sessionToken },
     });
 }
@@ -93,8 +92,7 @@ async function cleanup() {
         return;
     }
     const [fredId, sessionToken] = fredData;
-    const books = await axios.get(`${unitTestBaseUrl}classes/books`, {
-        headers,
+    const books = await axiosClient.get("classes/books", {
         params: {
             where: {
                 uploader: {
@@ -167,7 +165,10 @@ beforeAll(async () => {
             baseUrl: "non-empty",
         });
     } catch (error) {
-        console.log(JSON.stringify(error));
+        console.error(
+            "LibraryQueryHooks integration setup failed; check Parse test server",
+            error
+        );
         throw error;
     }
 }, 60000); // This function can take a while to run, give it up to 60s

@@ -1,4 +1,4 @@
-import { EntryCollection } from "contentful";
+import { EntryCollection, EntrySkeletonType } from "contentful";
 import { useState, useEffect } from "react";
 import { useIntl } from "react-intl";
 import { getContentfulClient } from "../ContentfulContext";
@@ -8,7 +8,7 @@ const defaultContentfulLocale = "en-US";
 // Basically a map of queryString (created from query) to the raw Contentful query result.
 // This may be the entire set of collections or a single banner definition or any other
 // query result from Contentful.
-const contentfulCache: any = {};
+const contentfulCache: Record<string, unknown> = {};
 
 // Pass the specified query to contentful. Initially will typically return
 // {loading:true} unless the result is already cached. When we have data,
@@ -16,12 +16,12 @@ const contentfulCache: any = {};
 // As a special case, useful when we must call the function by rules of hooks
 // but don't actually want it to query contentful, if query is falsy
 // we return {loading:false result:[]} without sending anything to contentful.
-export function useContentful(
-    query: any
-): { loading: boolean; result: any[] | undefined } {
+export function useContentful<T = unknown>(
+    query: Record<string, unknown> | undefined
+): { loading: boolean; result: T[] | undefined } {
     const [results, setResults] = useState<{
         queryString: string;
-        result: any[] | undefined;
+        result: T[] | undefined;
     }>({ queryString: "", result: undefined });
 
     // see https://github.com/facebook/react/issues/14981
@@ -44,7 +44,7 @@ export function useContentful(
         if (contentfulCache[queryString]) {
             setResults({
                 queryString,
-                result: contentfulCache[queryString],
+                result: contentfulCache[queryString] as T[] | undefined,
             });
             return;
         }
@@ -81,9 +81,12 @@ export function useContentful(
                     // In other words, this limit is not a problem.
                     limit: 1000,
                 })
-                .then((entries: EntryCollection<unknown>) => {
+                .then((entries: EntryCollection<EntrySkeletonType>) => {
                     contentfulCache[queryString] = entries.items;
-                    setResults({ queryString, result: entries.items });
+                    setResults({
+                        queryString,
+                        result: (entries.items as unknown) as T[],
+                    });
                 });
         }
 

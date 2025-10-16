@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { constructParseBookQuery } from "../BookQueryBuilder";
-import { BooleanOptions } from "../../IFilter";
+import { BooleanOptions } from "FilterTypes";
 
 const defaultFilter = {
     inCirculation: BooleanOptions.All,
@@ -8,7 +8,7 @@ const defaultFilter = {
 } as const;
 
 describe("constructParseBookQuery", () => {
-    it("builds a case-insensitive regex for single topic filters", () => {
+    it("normalizes single topic filters to canonical tag", () => {
         const filter = {
             ...defaultFilter,
             topic: "bible",
@@ -16,13 +16,10 @@ describe("constructParseBookQuery", () => {
 
         const query = constructParseBookQuery({}, filter, [], undefined) as any;
 
-        expect(query.where.tags).toEqual({
-            $regex: "^topic:bible$",
-            $options: "i",
-        });
+        expect(query.where.tags).toBe("topic:Bible");
     });
 
-    it("keeps multi-topic filters case-insensitive", () => {
+    it("normalizes multi-topic filters to canonical tags", () => {
         const filter = {
             ...defaultFilter,
             topic: "Bible,Health",
@@ -31,7 +28,20 @@ describe("constructParseBookQuery", () => {
         const query = constructParseBookQuery({}, filter, [], undefined) as any;
 
         expect(query.where.tags).toEqual({
-            $regex: "topic:Bible|topic:Health",
+            $all: ["topic:Bible", "topic:Health"],
+        });
+    });
+
+    it("falls back to regex when topic is unknown", () => {
+        const filter = {
+            ...defaultFilter,
+            topic: "NewTopic",
+        };
+
+        const query = constructParseBookQuery({}, filter, [], undefined) as any;
+
+        expect(query.where.tags).toEqual({
+            $regex: "^topic:NewTopic$",
             $options: "i",
         });
     });

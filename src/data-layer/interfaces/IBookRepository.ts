@@ -5,43 +5,62 @@ import {
     BookSearchResult,
     BookGridResult,
 } from "../types/QueryTypes";
-import { BookFilter } from "../types/FilterTypes";
+import { IFilter } from "FilterTypes";
+import type { BookModel } from "../models/BookModel";
+import type { LanguageModel } from "../models/LanguageModel";
+import type { ParseDate } from "../types/CommonTypes";
+import type { ArtifactVisibilitySettingsGroup } from "../../model/ArtifactVisibilitySettings";
+import type { Book } from "../../model/Book";
 
-// Forward declaration - will be implemented in models
-export interface BookModel {
-    id: string;
-    bookInstanceId: string;
+export interface BasicBookInfoRecord {
+    objectId: string;
     title: string;
     baseUrl: string;
-    // More fields will be added when we create the actual BookModel
+    langPointers?: LanguageModel[];
+    languages?: LanguageModel[];
+    tags?: string[];
+    features?: string[];
+    lastUploaded?: ParseDate;
+    harvestState?: string;
+    harvestStartedAt?: ParseDate;
+    pageCount?: string | number;
+    phashOfFirstContentImage?: string;
+    bookHashFromImages?: string;
+    allTitles?: string;
+    edition?: string;
+    draft?: boolean;
+    rebrand?: boolean;
+    inCirculation?: boolean;
+    show?: Record<string, unknown>;
+    lang1Tag?: string;
+    [key: string]: unknown;
 }
 
-export interface ArtifactVisibilitySettings {
-    // Will be defined based on existing ArtifactVisibilitySettingsGroup
-    [key: string]: any;
-}
+export type ArtifactVisibilitySettings = ArtifactVisibilitySettingsGroup;
+
+export type BookEntity = Book;
 
 export interface IBookRepository {
     // Basic CRUD operations
-    getBook(id: string): Promise<BookModel | null>;
-    getBooks(ids: string[]): Promise<BookModel[]>;
+    getBook(id: string): Promise<BookEntity | null>;
+    getBooks(ids: string[]): Promise<BookEntity[]>;
     searchBooks(query: BookSearchQuery): Promise<BookSearchResult>;
     updateBook(id: string, updates: Partial<BookModel>): Promise<void>;
     deleteBook(id: string): Promise<void>;
 
     // Complex queries
     getBooksForGrid(query: BookGridQuery): Promise<BookGridResult>;
-    getBookCount(filter: BookFilter): Promise<number>;
-    getRelatedBooks(bookId: string): Promise<BookModel[]>;
+    getBookCount(filter: IFilter): Promise<number>;
+    getRelatedBooks(bookId: string): Promise<BookEntity[]>;
 
     // Specialized operations
-    getBookDetail(id: string): Promise<BookModel | null>;
+    getBookDetail(id: string): Promise<BookEntity | null>;
     saveArtifactVisibility(
         id: string,
         settings: ArtifactVisibilitySettings
     ): Promise<void>;
 
     // Additional operations found in current codebase
-    getBasicBookInfos(ids: string[]): Promise<any[]>; // Will type properly later
-    getCurrentBookData(bookId: string): Promise<any>;
+    getBasicBookInfos(ids: string[]): Promise<BasicBookInfoRecord[]>;
+    getCurrentBookData(bookId: string): Promise<BookEntity | null>;
 }

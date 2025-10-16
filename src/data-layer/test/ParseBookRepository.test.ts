@@ -6,7 +6,7 @@ import type { IBookRepository } from "../interfaces/IBookRepository";
 import { ParseBookRepository } from "../implementations/parseserver/ParseBookRepository";
 import { ParseConnection } from "../implementations/parseserver/ParseConnection";
 import type { BookModel } from "../models/BookModel";
-import type { BookFilter } from "../types/FilterTypes";
+import type { IFilter } from "FilterTypes";
 import type { BookSearchResult, BookGridResult } from "../types/QueryTypes";
 
 vi.mock("axios");
@@ -88,7 +88,7 @@ describe("ParseBookRepository", () => {
             expect.stringContaining("classes/books"),
             expect.objectContaining({
                 params: expect.objectContaining({
-                    where: { objectId: "book-1" },
+                    where: JSON.stringify({ objectId: "book-1" }),
                     include: "uploader,langPointers",
                 }),
             })
@@ -99,14 +99,14 @@ describe("ParseBookRepository", () => {
     });
 
     it("searches books using constructed query", async () => {
-        const queryFilter: BookFilter = { search: "science" } as BookFilter;
+        const queryFilter: IFilter = { search: "science" } as IFilter;
         constructParseBookQueryMock.mockImplementationOnce((base, filter) => ({
             ...base,
             where: filter,
             order: "-createdAt",
         }));
 
-        mockedAxios.post.mockResolvedValueOnce({
+        mockedAxios.get.mockResolvedValueOnce({
             data: {
                 results: [
                     { objectId: "book-1", title: "One" },
@@ -129,10 +129,16 @@ describe("ParseBookRepository", () => {
         );
         expect(result.items).toHaveLength(2);
         expect(result.totalCount).toBe(7);
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenCalledWith(
             expect.stringContaining("classes/books"),
-            expect.objectContaining({ _method: "GET" }),
-            expect.any(Object)
+            expect.objectContaining({
+                params: expect.objectContaining({
+                    where: JSON.stringify(queryFilter),
+                    limit: 2,
+                    skip: 0,
+                    count: 1,
+                }),
+            })
         );
     });
 
@@ -174,7 +180,7 @@ describe("ParseBookRepository", () => {
             .mockResolvedValueOnce(searchResult);
 
         const result = await repository.getBooksForGrid({
-            filter: {} as BookFilter,
+            filter: {} as IFilter,
             pagination: { limit: 10, skip: 0 },
         } as any);
 
@@ -190,7 +196,7 @@ describe("ParseBookRepository", () => {
             count: 1,
         }));
 
-        mockedAxios.post.mockResolvedValueOnce({
+        mockedAxios.get.mockResolvedValueOnce({
             data: {
                 results: [],
                 count: 9,
@@ -199,13 +205,18 @@ describe("ParseBookRepository", () => {
 
         const count = await repository.getBookCount({
             search: "history",
-        } as BookFilter);
+        } as IFilter);
 
         expect(count).toBe(9);
-        expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect(mockedAxios.get).toHaveBeenCalledWith(
             expect.stringContaining("classes/books"),
-            expect.objectContaining({ _method: "GET" }),
-            expect.any(Object)
+            expect.objectContaining({
+                params: expect.objectContaining({
+                    where: JSON.stringify({ search: "history" }),
+                    count: 1,
+                    limit: 0,
+                }),
+            })
         );
     });
 
@@ -249,7 +260,7 @@ describe("ParseBookRepository", () => {
         const infos = await repository.getBasicBookInfos(["book-1"]);
 
         expect(infos).toHaveLength(1);
-        expect(infos[0].languages).toEqual([{ objectId: "lang-1" }]);
+        expect(infos[0].languages).toMatchObject([{ objectId: "lang-1" }]);
         expect(infos[0].lang1Tag).toBe("en");
     });
 });

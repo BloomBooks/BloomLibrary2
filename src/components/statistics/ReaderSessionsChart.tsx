@@ -59,7 +59,8 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsPageProps> = (
     });
 
     const mapData = Array.from(counts.keys()).map((x) => {
-        return { date: x, sessionCount: counts.get(x) };
+        const sessionCount = counts.get(x) ?? 0;
+        return { date: x, sessionCount };
     });
 
     sortAndFillInMissingSteps(mapData, byMonth);
@@ -108,7 +109,8 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsPageProps> = (
     };
 
     const labelFormatter: LabelFormatter = (((d: string | number) => {
-        const input = fixVal(d as number);
+        const numericValue = typeof d === "number" ? d : Number.parseFloat(d);
+        const input = fixVal(Number.isFinite(numericValue) ? numericValue : 0);
         let label = input.toString();
         // For large numbers, give 2-3 digits precision plus an indicator,
         // e.g., 43M, 4.3M, 431K,43K,4.3K, 431, 43, 4.
@@ -128,8 +130,12 @@ export const ReaderSessionsChart: React.FunctionComponent<IStatsPageProps> = (
         }
         return (
             <tspan
-                y={d > maxCount / 10 ? 10 : -10}
-                fill={d > maxCount / 10 ? "white" : commonUI.colors.bloomRed}
+                y={numericValue > maxCount / 10 ? 10 : -10}
+                fill={
+                    numericValue > maxCount / 10
+                        ? "white"
+                        : commonUI.colors.bloomRed
+                }
                 //transform={"rotate(90)"} does not work on tspan
             >
                 {label}

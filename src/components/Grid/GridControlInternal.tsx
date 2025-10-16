@@ -44,7 +44,7 @@ import {
     Sorting,
 } from "@devexpress/dx-react-grid";
 import { TableCell, useTheme } from "@material-ui/core";
-import { IFilter, BooleanOptions } from "../../IFilter";
+import { BooleanOptions, IFilter } from "FilterTypes";
 import { getBookGridColumnsDefinitions, IGridColumn } from "./GridColumns";
 
 import { useStorageState } from "react-storage-hooks";

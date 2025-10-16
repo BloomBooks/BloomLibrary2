@@ -10,7 +10,7 @@ import {
     MenuItem,
 } from "@material-ui/core";
 
-import { IFilter } from "../../IFilter";
+import { IFilter } from "FilterTypes";
 import { observer } from "mobx-react-lite";
 import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 import { FilterHolder } from "./BulkEditPage";

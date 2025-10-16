@@ -14,7 +14,7 @@ const contentfulClientPreview = Contentful.createClient({
     host: "preview.contentful.com",
 });
 
-export function getContentfulClient(): Contentful.ContentfulClientApi {
+export function getContentfulClient() {
     return window.location.pathname.indexOf("_preview") > -1
         ? contentfulClientPreview
         : contentfulClientPublished;

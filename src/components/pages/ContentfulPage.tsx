@@ -5,9 +5,38 @@ import { documentToReactComponents } from "@contentful/rich-text-react-renderer"
 import { ThemeForLocation } from "./ThemeForLocation";
 import { BlorgMarkdown } from "../markdown/BlorgMarkdown";
 import Container from "@material-ui/core/Container";
-import { convertContentfulMediaToIMedia } from "../../model/Contentful";
+import {
+    convertContentfulMediaToIMedia,
+    IContentfulMedia,
+} from "../../model/Contentful";
+import type { Document } from "@contentful/rich-text-types";
 import { IMedia } from "../../model/ContentInterfaces";
 import { useContentful } from "../../connection/UseContentful";
+
+interface ContentfulPagePart {
+    fields: {
+        primary: string;
+        secondary?: string;
+    };
+}
+
+interface ContentfulPageFields {
+    urlKey: string;
+    label: string;
+    markdownBody: string;
+    hideTitle?: boolean;
+    iconForCardAndDefaultBanner?: IContentfulMedia;
+    excerpt?: string;
+    category: string;
+    css?: string;
+    body?: Document;
+    parts?: ContentfulPagePart[];
+    [key: string]: unknown;
+}
+
+interface IContentfulPageEntry {
+    fields: ContentfulPageFields;
+}
 
 export interface IContentfulPage {
     urlKey: string;
@@ -25,7 +54,7 @@ export interface IContentfulPage {
 
     // NB: purposefully missing here are "body" and "parts" which are probably going away.
     // For now, those can be accessed via the raw fields tag
-    fields: any;
+    fields: ContentfulPageFields;
     css?: string;
 }
 
@@ -59,9 +88,9 @@ export const ContentfulPage: React.FunctionComponent<{ urlKey: string }> = (
             {/* {options:{overrides:{h1:{component:WindowsInstallerDownloads, props:{}}}}} */}
             {page.markdownBody ? (
                 <BlorgMarkdown markdown={page.markdownBody} />
-            ) : (
+            ) : page.fields.body ? (
                 documentToReactComponents(page.fields.body)
-            )}
+            ) : null}
         </div>
     );
 
@@ -89,7 +118,7 @@ export function useContentfulPage(
     contentType: string,
     urlKey: string
 ): IContentfulPage | undefined {
-    const { loading, result: data } = useContentful({
+    const { loading, result: data } = useContentful<IContentfulPageEntry>({
         content_type: `${contentType}`,
         "fields.urlKey": `${urlKey}`,
         include: 10,
