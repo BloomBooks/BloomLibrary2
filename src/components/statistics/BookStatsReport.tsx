@@ -6,10 +6,16 @@ import {
     Grid,
     TableHeaderRow,
     Table,
+    PagingPanel,
 } from "@devexpress/dx-react-grid-material-ui";
-import { SortingState, IntegratedSorting } from "@devexpress/dx-react-grid";
+import {
+    SortingState,
+    IntegratedSorting,
+    PagingState,
+    IntegratedPaging,
+} from "@devexpress/dx-react-grid";
 import { IGridColumn } from "../Grid/GridColumns";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useMemo } from "react";
 import { IStatsPageProps } from "./StatsInterfaces";
 import { useGetBookStats } from "./useGetBookStats";
 import { useProvideDataForExport } from "../../export/exportData";
@@ -22,21 +28,27 @@ export const BookStatsReport: React.FunctionComponent<IStatsPageProps> = (
     props
 ) => {
     const l10n = useIntl();
-    const stats = useGetBookStats(props);
-    useProvideDataForExport(stats, props);
+    const rawStats = useGetBookStats(props);
     const { languagesByBookCount: languages } = useContext(CachedTablesContext);
 
-    if (stats) {
-        for (const stat of stats) {
+    const stats = useMemo(() => {
+        if (!rawStats) return undefined;
+
+        // Create a new array to avoid mutating the original
+        return rawStats.map((stat) => {
             const languageDisplayName = getDisplayNamesFromLanguageCode(
                 stat.language,
                 languages
             )?.combined;
+
             if (languageDisplayName) {
-                stat.languageName = languageDisplayName;
+                return { ...stat, languageName: languageDisplayName };
             }
-        }
-    }
+            return stat;
+        });
+    }, [rawStats, languages]);
+
+    useProvideDataForExport(stats, props);
 
     const columns: IGridColumn[] = [
         { name: "title", title: "Book Title", l10nId: "bookTitle" },
@@ -132,6 +144,11 @@ export const BookStatsReport: React.FunctionComponent<IStatsPageProps> = (
         { columnName: "startedCount" },
     ]);
 
+    // Configure paging with 1000 records per page
+    const [currentPage, setCurrentPage] = useState(0);
+    const [pageSize, setPageSize] = useState(1000);
+    const pageSizes = [100, 500, 1000, 2000];
+
     return (
         <StatsGridWrapper stats={stats}>
             <Grid rows={stats!} columns={columns}>
@@ -141,6 +158,13 @@ export const BookStatsReport: React.FunctionComponent<IStatsPageProps> = (
                 <IntegratedSorting
                     columnExtensions={integratedSortingColumnExtensions}
                 />
+                <PagingState
+                    currentPage={currentPage}
+                    onCurrentPageChange={setCurrentPage}
+                    pageSize={pageSize}
+                    onPageSizeChange={setPageSize}
+                />
+                <IntegratedPaging />
                 <Table
                     columnExtensions={tableColumnExtensions}
                     //cellComponent={CustomTableCell}
@@ -149,6 +173,7 @@ export const BookStatsReport: React.FunctionComponent<IStatsPageProps> = (
                     cellComponent={CustomTableHeaderCell}
                     showSortingControls
                 />
+                <PagingPanel pageSizes={pageSizes} />
             </Grid>
         </StatsGridWrapper>
     );
