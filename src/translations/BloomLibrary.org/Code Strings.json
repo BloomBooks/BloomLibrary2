@@ -519,7 +519,7 @@
         "description": "Heading for the download shellbook dialog. Indicates that the download is about to start after one more step."
     },
     "downloadShellbook.aboutToDownload.message": {
-        "message": "You are about to download {bookTitle} into the Bloom Desktop Application. You need to have <link>Bloom</link> already installed on your computer.",
+        "message": "You are about to download {bookTitle} into the Bloom Editor application. You need to have <link>Bloom</link> already installed on your computer.",
         "description": "{bookTitle} will be replaced by the title of the book being downloaded. The text inside <link></link> will be a link to the downloads page of the Bloom library website."
     },
     "downloadShellbook.aboutToDownload.dontShowAgain": {
