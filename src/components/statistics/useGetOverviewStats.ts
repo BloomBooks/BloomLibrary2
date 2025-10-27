@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { IStatsPageProps, IOverviewStats } from "./StatsInterfaces";
 import { useCollectionStats } from "../../connection/LibraryQueryHooks";
 
@@ -6,7 +7,11 @@ export function useGetOverviewStats(
 ): IOverviewStats | undefined {
     const { response } = useCollectionStats(props, "reading/overview");
 
-    if (response && response["data"] && response["data"]["stats"]) {
+    return useMemo(() => {
+        if (!(response && response["data"] && response["data"]["stats"])) {
+            return undefined;
+        }
+
         const stats = response["data"]["stats"][0];
 
         if (!stats) {
@@ -59,6 +64,5 @@ export function useGetOverviewStats(
             countries: parseInt(stats.countrycount, 10),
         };
         return result;
-    }
-    return undefined;
+    }, [response]);
 }

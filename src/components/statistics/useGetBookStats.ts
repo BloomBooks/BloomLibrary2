@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { IStatsPageProps, IBookStat } from "./StatsInterfaces";
 import {
     useCollectionStats,
@@ -9,11 +10,14 @@ export function useGetBookStats(
 ): IBookStat[] | undefined {
     const { response } = useCollectionStats(props, "reading/per-book");
 
-    if (response && response["data"] && response["data"]["stats"])
-        return response["data"]["stats"].map((s: any) => {
-            return extractBookStatFromRawData(s);
-        });
-    return undefined;
+    return useMemo(() => {
+        if (response && response["data"] && response["data"]["stats"]) {
+            return response["data"]["stats"].map((s: any) => {
+                return extractBookStatFromRawData(s);
+            });
+        }
+        return undefined;
+    }, [response]);
 }
 
 export function useGetBookComprehensionEventStats(
@@ -21,9 +25,12 @@ export function useGetBookComprehensionEventStats(
 ): IBookStat[] | undefined {
     const { response } = useCollectionStats(props, "reading/per-book");
 
-    if (response && response["data"] && response["data"]["stats"])
-        return response["data"]["stats"].map((s: any) => {
-            return extractBookStatFromRawData(s);
-        });
-    return undefined;
+    return useMemo(() => {
+        if (response && response["data"] && response["data"]["stats"]) {
+            return response["data"]["stats"].map((s: any) => {
+                return extractBookStatFromRawData(s);
+            });
+        }
+        return undefined;
+    }, [response]);
 }
