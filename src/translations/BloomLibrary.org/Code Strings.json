@@ -471,6 +471,14 @@
         "description": "",
         "message": "Close"
     },
+    "common.continue": {
+        "description": "",
+        "message": "Continue"
+    },
+    "login.beforeLoginMessage": {
+        "description": "",
+        "message": "Are you trying to log into your account from the Bloom desktop application? Your browser may ask you for some scary permissions, but really, we're simply trying to connect to your Bloom desktop app."
+    },
     "book.concerns": {
         "description": "",
         "message": "What concerns do you have about this book?"

@@ -76,7 +76,7 @@ export const LoginForEditor: React.FunctionComponent<{}> = observer(() => {
                     >
                         {result === IInformEditorResult.Success
                             ? "You successfully logged in! You can now return to Bloom and upload your book."
-                            : "Log in failed. Please try again."}
+                            : 'Login for Bloom Desktop App failed. Make sure that your browser\'s site settings for BloomLibrary.org allow "Network Access" which is a scary way of saying that we can send a message to your Bloom Desktop app'}
                     </CloseableDialog>
                 );
             default:
