@@ -65,6 +65,17 @@ export const LoginForEditor: React.FunctionComponent<{}> = observer(() => {
             </CloseableDialog>
         );
     } else {
+        const l10n = useIntl();
+        const successMsg = l10n.formatMessage({
+            id: "login.succeeded",
+            defaultMessage:
+                "You successfully logged in! You can now return to Bloom and upload your book.",
+        });
+        const failureMsg = l10n.formatMessage({
+            id: "login.failed",
+            defaultMessage:
+                "Login for Bloom Desktop App failed. Make sure that your browser's site settings for BloomLibrary.org allow 'Network Access' which is a scary way of saying that we can send a message to your Bloom Desktop app",
+        });
         switch (result) {
             case IInformEditorResult.Success:
             case IInformEditorResult.Failure:
@@ -75,8 +86,8 @@ export const LoginForEditor: React.FunctionComponent<{}> = observer(() => {
                         }}
                     >
                         {result === IInformEditorResult.Success
-                            ? "You successfully logged in! You can now return to Bloom and upload your book."
-                            : "Log in failed. Please try again."}
+                            ? successMsg
+                            : failureMsg}
                     </CloseableDialog>
                 );
             default:

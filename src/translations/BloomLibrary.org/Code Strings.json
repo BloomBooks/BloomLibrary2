@@ -471,6 +471,22 @@
         "description": "",
         "message": "Close"
     },
+    "common.continue": {
+        "description": "",
+        "message": "Continue"
+    },
+    "login.beforeLoginMessage": {
+        "description": "Priority - Low",
+        "message": "Are you trying to log into your account from the Bloom desktop application? Your browser may ask you for some scary permissions, but really, we're simply trying to connect to your Bloom desktop app."
+    },
+    "login.succeeded": {
+        "description": "Priority - Low",
+        "message": "You successfully logged in! You can now return to Bloom and upload your book."
+    },
+    "login.failed": {
+        "description": "Priority - Low",
+        "message": "Login for Bloom Desktop App failed. Make sure that your browser's site settings for BloomLibrary.org allow 'Network Access' which is a scary way of saying that we can send a message to your Bloom Desktop app"
+    },
     "book.concerns": {
         "description": "",
         "message": "What concerns do you have about this book?"
