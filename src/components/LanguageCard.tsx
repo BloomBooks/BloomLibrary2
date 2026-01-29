@@ -2,7 +2,11 @@ import { css } from "@emotion/react";
 
 import React from "react";
 import { CheapCard } from "./CheapCard";
-import { ILanguage, getDisplayNamesForLanguage } from "../model/Language";
+import {
+    ILanguage,
+    getDisplayNamesForLanguage,
+    kTagForNoLanguage,
+} from "../model/Language";
 import { commonUI } from "../theme";
 import { useResponsiveChoice } from "../responsiveUtilities";
 import { FormattedMessage } from "react-intl";
@@ -43,12 +47,54 @@ export const LanguageCard: React.FunctionComponent<
         ...propsToPassDown
     } = props; // Prevent React warnings
 
-    const { primary, secondary } = getDisplayNamesForLanguage(props);
+    const displayNames = getDisplayNamesForLanguage(props);
     const getResponsiveChoice = useResponsiveChoice();
     const { cardWidthPx, cardHeightPx } = useLanguageCardSpec(props.larger);
     const urlPrefix = props.targetPrefix ?? "/language:";
     const showCount = !useIsAppHosted();
     const cardSpacing = useBaseCardSpec().cardSpacingPx;
+
+    const isPictureBook = isoCode === kTagForNoLanguage;
+
+    // BL-15812 Prefer the autonym (`name`) as the primary label; fall back to existing display logic
+    // for picture books or other special cases where `name` can be empty.
+    const primary = isPictureBook
+        ? displayNames.primary
+        : name.trim()
+        ? name
+        : displayNames.primary;
+
+    // Build the gray header labels explicitly so English and the tag can be separate lines.
+    const secondaryLinesToRender: string[] = [];
+    if (isPictureBook) {
+        // Preserve the historical duplication for picture-book cards.
+        secondaryLinesToRender.push(displayNames.primary);
+    } else {
+        if (englishName && englishName !== primary) {
+            secondaryLinesToRender.push(englishName);
+        }
+        // Match the tag as a whole token to avoid false positives like
+        // "fr" matching the autonym "français".
+        const secondaryTokens = displayNames.secondary
+            ? displayNames.secondary.split(/\s+/)
+            : [];
+        const shouldShowTag =
+            !!isoCode &&
+            secondaryTokens.includes(isoCode) &&
+            isoCode !== englishName &&
+            isoCode !== primary;
+        if (shouldShowTag) {
+            secondaryLinesToRender.push(isoCode);
+        }
+    }
+    const secondaryLineText = secondaryLinesToRender.join(" ");
+    const hasMultipleSecondaryLines = secondaryLinesToRender.length > 1;
+    // Only used for the single-line case, where we can allow two lines of wrap.
+    const shouldTruncateSecondary = secondaryLineText.length >= 18;
+    const [
+        secondaryPrimaryLine,
+        ...secondaryRemainingLines
+    ] = secondaryLinesToRender;
 
     // In the main website, we want language cards to be responsive: smaller and with smaller text on small screens.
     // In the language chooser intended to be embedded in BloomReader, we want larger sizes.
@@ -119,12 +165,25 @@ export const LanguageCard: React.FunctionComponent<
                         line-height: 1em;
                     `}
                 >
-                    <SmartTruncateMarkup
-                        condition={(secondary ?? "").length >= 18}
-                        lines={2}
-                    >
-                        <span>{secondary}</span>
-                    </SmartTruncateMarkup>
+                    {secondaryLinesToRender.length > 0 &&
+                        (hasMultipleSecondaryLines ? (
+                            <React.Fragment>
+                                {/* Clamp the first line so the tag line always stays visible. */}
+                                <SmartTruncateMarkup condition={true} lines={1}>
+                                    <span>{secondaryPrimaryLine}</span>
+                                </SmartTruncateMarkup>
+                                {secondaryRemainingLines.map((line, index) => (
+                                    <div key={`${line}-${index}`}>{line}</div>
+                                ))}
+                            </React.Fragment>
+                        ) : (
+                            <SmartTruncateMarkup
+                                condition={shouldTruncateSecondary}
+                                lines={2}
+                            >
+                                <span>{secondaryPrimaryLine}</span>
+                            </SmartTruncateMarkup>
+                        ))}
                 </div>
             </div>
             <h2
