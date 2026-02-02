@@ -104,9 +104,17 @@ export const AppHostedLanguageGroup: React.FunctionComponent = () => {
         getItemProps: (options: GetItemPropsOptions<any>) => {},
         getMenuProps: (options: GetMenuPropsOptions) => {}
     ) => {
-        languagesToDisplay = getLanguagesMatchingSearchTerm(searchTerm).filter(
-            (lang) => preferredLangCodes.indexOf(lang.isoCode) < 0
-        );
+        const hasSearchTerm = !!searchTerm?.trim();
+        const matchingLanguages = getLanguagesMatchingSearchTerm(searchTerm);
+        // Historically we excluded favorites from the main list to avoid showing duplicates.
+        // However, that makes it look like search is broken when the language you're typing
+        // is already in the "Favorite languages" section (which is also hidden while typing).
+        // In search mode, include favorites in results. BL-15822
+        languagesToDisplay = hasSearchTerm
+            ? matchingLanguages
+            : matchingLanguages.filter(
+                  (lang) => preferredLangCodes.indexOf(lang.isoCode) < 0
+              );
         const prefColor = commonUI.colors.bloomRed;
         // if (!showAll && languagesToDisplay.length > 10) {
         //     languagesToDisplay.splice(10);
