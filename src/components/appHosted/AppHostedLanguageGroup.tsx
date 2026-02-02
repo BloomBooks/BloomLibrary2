@@ -104,9 +104,14 @@ export const AppHostedLanguageGroup: React.FunctionComponent = () => {
         getItemProps: (options: GetItemPropsOptions<any>) => {},
         getMenuProps: (options: GetMenuPropsOptions) => {}
     ) => {
-        languagesToDisplay = getLanguagesMatchingSearchTerm(searchTerm).filter(
-            (lang) => preferredLangCodes.indexOf(lang.isoCode) < 0
-        );
+        const matchingLanguages = getLanguagesMatchingSearchTerm(searchTerm);
+        // Filter out favorites from the main list so we don't show the same language twice.
+        // But show them when favorites are hidden; else they won't show at all. BL-15822
+        languagesToDisplay = !showPreferredLangs
+            ? matchingLanguages
+            : matchingLanguages.filter(
+                  (lang) => !preferredLangCodes.includes(lang.isoCode)
+              );
         const prefColor = commonUI.colors.bloomRed;
         // if (!showAll && languagesToDisplay.length > 10) {
         //     languagesToDisplay.splice(10);
