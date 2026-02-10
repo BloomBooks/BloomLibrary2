@@ -47,20 +47,28 @@ export function getDisplayNamesForLanguage(
     primary: string;
     secondary: string | undefined;
     combined: string;
+    autonym: string;
+    otherSecondaryNames: string;
 } {
     // don't bother showing "zh-CN"... it's not a variant, it's the norm
     if (language.isoCode === "zh-CN") {
-        return navigator.language === "zh-CN"
-            ? {
-                  secondary: "Chinese",
-                  primary: "简体中文",
-                  combined: "简体中文 (Chinese)",
-              }
-            : {
-                  primary: "Chinese",
-                  secondary: "简体中文",
-                  combined: "Chinese (简体中文)",
-              };
+        const result =
+            navigator.language === "zh-CN"
+                ? {
+                      secondary: "Chinese",
+                      primary: "简体中文",
+                      combined: "简体中文 (Chinese)",
+                  }
+                : {
+                      primary: "Chinese",
+                      secondary: "简体中文",
+                      combined: "Chinese (简体中文)",
+                  };
+        return {
+            ...result,
+            autonym: "简体中文",
+            otherSecondaryNames: "",
+        };
     }
 
     // Handle picture books
@@ -73,12 +81,16 @@ export function getDisplayNamesForLanguage(
             primary: localizedLabel,
             secondary: localizedLabel,
             combined: localizedLabel,
+            autonym: localizedLabel,
+            // should never contain autonym or englishName. Currently holds the language
+            // tag if it looks like a variant, otherwise empty.
+            otherSecondaryNames: "",
         };
     }
 
     // this may not be needed for long. We are working on some fixes in BL-11754
     if (language.isoCode === "ase-ML") {
-        return navigator.language.startsWith("fr")
+        const result = navigator.language.startsWith("fr")
             ? {
                   primary:
                       "Langue des Signes des Écoles pour Déficients Auditifs au Mali",
@@ -95,6 +107,11 @@ export function getDisplayNamesForLanguage(
                   combined:
                       "Sign Language of Schools for the Hearing Impaired in Mali",
               };
+        return {
+            ...result,
+            autonym: language.name,
+            otherSecondaryNames: "",
+        };
     }
     let primary: string;
     let secondary: string | undefined;
@@ -114,18 +131,31 @@ export function getDisplayNamesForLanguage(
         primary = language.name;
     }
 
-    // if it looks like this is a variant, add that to the secondary
+    // Determine if the tag should be included in secondary and otherSecondaryNames
+    // We want to include tags that look like variants
+    let otherSecondaryNames = "";
     if (
         language.isoCode &&
         language.isoCode.indexOf("-") > -1 &&
         language.isoCode !== language.englishName &&
         language.isoCode !== language.name
-    )
-        secondary = [secondary, language.isoCode].join(" ").trim();
+    ) {
+        otherSecondaryNames = language.isoCode;
+    }
+
+    if (otherSecondaryNames) {
+        secondary = [secondary, otherSecondaryNames].join(" ").trim();
+    }
 
     const combined = primary + (secondary ? ` (${secondary})` : "");
 
-    return { primary, secondary, combined };
+    return {
+        primary,
+        secondary,
+        combined,
+        autonym: language.name,
+        otherSecondaryNames,
+    };
 }
 
 export function getCleanedAndOrderedLanguageList(
