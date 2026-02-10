@@ -1,10 +1,11 @@
 name: Lighthouse CI
 
 on:
-    workflow_run:
-        workflows: ["Build and Deploy"]
-        types:
-            - completed
+    # Disabling automatic runs for now since it is always failing and we aren't prioritizing fixing it.
+    #    workflow_run:
+    #        workflows: ["Build and Deploy"]
+    #        types:
+    #            - completed
     workflow_dispatch: # Allows manual triggering of the workflow
 
 jobs:
