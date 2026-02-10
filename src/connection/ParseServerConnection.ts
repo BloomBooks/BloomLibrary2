@@ -162,7 +162,13 @@ export async function connectParseServer(
                                 usersResult.data.sessionToken;
 
                             if (isForEditor()) {
-                                informEditorOfSuccessfulLogin(usersResult.data);
+                                if (usersResult.data.email) {
+                                    informEditorOfSuccessfulLogin(
+                                        usersResult.data
+                                    );
+                                } else {
+                                    failedToLoginInToParseServer();
+                                }
                             }
 
                             //console.log("Got ParseServer Session ID");
