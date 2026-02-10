@@ -155,7 +155,10 @@ export async function connectParseServer(
                         }
                     )
                     .then((usersResult) => {
-                        if (usersResult.data.sessionToken) {
+                        if (
+                            usersResult.data.sessionToken &&
+                            usersResult.data.email
+                        ) {
                             LoggedInUser.current = new User(usersResult.data);
                             //Object.assign(CurrentUser, usersResult.data);
                             connection.headers["X-Parse-Session-Token"] =
@@ -169,7 +172,14 @@ export async function connectParseServer(
                             resolve(usersResult.data);
                             //returnParseUser(result.data);
                             checkIfUserIsModerator();
-                        } else failedToLoginInToParseServer();
+                        } else {
+                            failedToLoginInToParseServer();
+                            reject(
+                                new Error(
+                                    "Missing sessionToken or email in usersResult.data"
+                                )
+                            );
+                        }
                     })
                     .catch((err) => {
                         failedToLoginInToParseServer();
