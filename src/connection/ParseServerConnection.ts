@@ -113,8 +113,7 @@ function checkIfUserIsModerator() {
 
 export async function connectParseServer(
     jwtToken: string,
-    userId: string
-    //,returnParseUser: (user: any) => void
+    emailAddress: string
 ) {
     return new Promise<any>((resolve, reject) => {
         const connection = getConnection();
@@ -130,7 +129,7 @@ export async function connectParseServer(
                 `${connection.url}functions/bloomLink`,
                 {
                     token: jwtToken,
-                    id: userId,
+                    id: emailAddress,
                 },
 
                 {
@@ -144,10 +143,11 @@ export async function connectParseServer(
                         `${connection.url}users`,
                         {
                             authData: {
-                                bloom: { token: jwtToken, id: userId },
+                                bloom: { token: jwtToken, id: emailAddress },
                             },
-                            username: userId,
-                            email: userId, // needed in case we are creating a new user
+                            username: emailAddress,
+                            // Parse requires an `email` field when creating a new _User.
+                            email: emailAddress,
                         },
 
                         {
@@ -155,9 +155,17 @@ export async function connectParseServer(
                         }
                     )
                     .then((usersResult) => {
-                        if (usersResult.data.sessionToken) {
+                        // We require BOTH a session token and an email.
+                        // We don't actually know why we would ever get here without either.
+                        // But we were sending posts to Bloom with a missing email value in the payload,
+                        // which caused Bloom's `/bloom/api/external/login` handler to throw a runtime exception. See BL-14503.
+                        // I don't see any reason to pretend a non-editor login was successful if email
+                        // is missing, either. And it simplifies the code to just check up front.
+                        if (
+                            usersResult.data.sessionToken &&
+                            usersResult.data.email
+                        ) {
                             LoggedInUser.current = new User(usersResult.data);
-                            //Object.assign(CurrentUser, usersResult.data);
                             connection.headers["X-Parse-Session-Token"] =
                                 usersResult.data.sessionToken;
 
@@ -165,11 +173,19 @@ export async function connectParseServer(
                                 informEditorOfSuccessfulLogin(usersResult.data);
                             }
 
-                            //console.log("Got ParseServer Session ID");
                             resolve(usersResult.data);
-                            //returnParseUser(result.data);
                             checkIfUserIsModerator();
-                        } else failedToLoginInToParseServer();
+                        } else {
+                            failedToLoginInToParseServer();
+                            // Reject the Promise returned by `connectParseServer()`.
+                            // This lets callers stop the login flow (for example, `firebase.ts` catches this and
+                            // signs the user out of Firebase) rather than silently continuing.
+                            reject(
+                                new Error(
+                                    "Missing sessionToken or email in usersResult.data"
+                                )
+                            );
+                        }
                     })
                     .catch((err) => {
                         failedToLoginInToParseServer();
