@@ -3,7 +3,8 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "yarn copyInBloomPlayer && vite",
+        "//": "default port is 5173 which is the same for BloomDesktop and can create conflicts",
+        "dev": "yarn copyInBloomPlayer && vite --port 5174",
         "serve": "vite preview",
         "build": "yarn copyInBloomPlayer && vite build",
         "build:ci": "set CI=true&& yarn build",
