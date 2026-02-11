@@ -62,9 +62,6 @@
     "feature.blind": {
         "message": "Features for the Visually Impaired"
     },
-    "feature.comic": {
-        "message": "Comic Book"
-    },
     "feature.motion": {
         "message": "Motion Book"
     },
