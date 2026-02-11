@@ -49,7 +49,6 @@ export const Simple: Story = {
                 "blind",
                 "blind:en",
                 "activity",
-                "comic",
             ],
             license: "",
             copyright: "",
