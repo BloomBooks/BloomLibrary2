@@ -21,15 +21,8 @@ export const ComprehensionQuestionsReport: React.FunctionComponent<IStatsPagePro
     props
 ) => {
     const l10n = useIntl();
-    const stats1 = useGetBookComprehensionEventStats(props);
-    useProvideDataForExport(stats1, props);
-    const stats = stats1
-        ? stats1.filter((bookStatInfo) => {
-              // Filter out non-null values
-              // We'll just look at 2 of them. It'd also be fine to check all the relevant fields too, if desired.
-              return bookStatInfo.quizzesTaken && bookStatInfo.questions;
-          })
-        : undefined;
+    const stats = useGetBookComprehensionEventStats(props);
+    useProvideDataForExport(stats, props);
 
     const columns: IGridColumn[] = [
         { name: "title", title: "Book Title", l10nId: "bookTitle" },

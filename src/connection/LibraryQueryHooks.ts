@@ -655,6 +655,7 @@ function makeBookQueryAxiosParams(
 // around the raw REST result, used to quickly make book cards & grid rows.
 export interface IBasicBookInfo {
     objectId: string;
+    bookInstanceId?: string;
     baseUrl: string;
     harvestState?: string;
     //note, here in a "BasicBookInfo", this is just JSON, intentionally not parsed yet,
