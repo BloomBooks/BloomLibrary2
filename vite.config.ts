@@ -30,9 +30,11 @@ export default defineConfig(() => {
             outDir: "build",
             // Before we used vite, assets went into "static", so we're keeping it that way to minimize CD changes.
             assetsDir: "static",
+            rollupOptions: getReadBookInterceptorRollupOptions(),
         },
 
         plugins: [
+            serveReadBookInterceptorPlugin(),
             serveTranslationsPlugin(),
             copyTranslationsPlugin(),
             // if you import an svg file with this ?react at the end, it will be converted to a React component
@@ -43,6 +45,65 @@ export default defineConfig(() => {
         ],
     };
 });
+
+function serveReadBookInterceptorPlugin(): Plugin {
+    const serviceWorkerPath = "/read-book-interceptor-sw.js";
+    const sourcePath = "/src/read-book-interceptor-sw.js";
+
+    return {
+        name: "serve-read-book-interceptor",
+        configureServer(server) {
+            // The read-book interceptor must be served from the site root so it can
+            // register with scope "/" and intercept /book/... requests.
+            server.middlewares.use(
+                serviceWorkerPath,
+                async (_req, res, next) => {
+                    try {
+                        // During dev, transform the src entry on demand and expose it
+                        // at the same root URL we emit in production.
+                        const transformed = await server.transformRequest(
+                            sourcePath
+                        );
+
+                        if (!transformed) {
+                            next();
+                            return;
+                        }
+
+                        res.setHeader("Content-Type", "application/javascript");
+                        res.end(transformed.code);
+                    } catch (error) {
+                        next(error as Error);
+                    }
+                }
+            );
+        },
+    };
+}
+
+// The read-book interceptor is not imported by the app, so we add it as an
+// extra entry and keep its output at the site root for service worker scope.
+function getReadBookInterceptorRollupOptions() {
+    const entryName = "read-book-interceptor-sw";
+
+    return {
+        input: {
+            main: path.resolve(__dirname, "index.html"),
+            [entryName]: path.resolve(
+                __dirname,
+                "src/read-book-interceptor-sw.js"
+            ),
+        },
+        output: {
+            entryFileNames: (chunkInfo: { name: string }) =>
+                chunkInfo.name === entryName
+                    ? "[name].js"
+                    : "static/[name]-[hash].js",
+            chunkFileNames: "static/[name]-[hash].js",
+            assetFileNames: "static/[name]-[hash][extname]",
+        },
+    };
+}
 
 // Copies translation files from src to build
 function copyTranslationsPlugin(): Plugin {
