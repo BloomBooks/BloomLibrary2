@@ -1,29 +1,6 @@
+import { createParseConnectionForHostname } from "./connection/ParseConnectionConfig";
+
 const bloomPlayerPath = "/bloom-player/bloomplayer.htm";
-const parseConnections = {
-    prod: {
-        headers: {
-            "Content-Type": "text/json",
-            "X-Parse-Application-Id":
-                "R6qNTeumQXjJCMutAJYAwPtip1qBulkFyLefkCE5",
-        },
-        url: "https://server.bloomlibrary.org/parse/",
-    },
-    dev: {
-        headers: {
-            "Content-Type": "text/json",
-            "X-Parse-Application-Id":
-                "yrXftBF6mbAuVu3fO6LnhCJiHxZPIdE7gl1DUVGR",
-        },
-        url: "https://dev-server.bloomlibrary.org/parse/",
-    },
-    local: {
-        headers: {
-            "Content-Type": "text/json",
-            "X-Parse-Application-Id": "myAppId",
-        },
-        url: "http://localhost:1337/parse/",
-    },
-};
 // let parseConnection;
 // const harvesterBaseUrlCache = new Map();
 
@@ -187,22 +164,10 @@ async function retrieveBookData(query) {
 }
 
 function getParseConnection() {
-    if (
-        self.location.hostname === "localhost" &&
-        self.location.port === "1337"
-    ) {
-        return parseConnections.local;
-    }
-
-    if (
-        self.location.hostname === "localhost" ||
-        self.location.hostname === "127.0.0.1" ||
-        self.location.hostname.startsWith("dev")
-    ) {
-        return parseConnections.dev;
-    }
-
-    return parseConnections.prod;
+    return createParseConnectionForHostname(
+        self.location.hostname,
+        self.location.port
+    );
 }
 
 function getHarvesterBaseUrl(book) {

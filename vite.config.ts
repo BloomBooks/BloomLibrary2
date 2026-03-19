@@ -1,6 +1,7 @@
 import { defineConfig, Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
+import { build as esbuild } from "esbuild";
 import fs from "fs";
 import path from "path";
 
@@ -30,11 +31,10 @@ export default defineConfig(() => {
             outDir: "build",
             // Before we used vite, assets went into "static", so we're keeping it that way to minimize CD changes.
             assetsDir: "static",
-            rollupOptions: getReadBookInterceptorRollupOptions(),
         },
 
         plugins: [
-            serveReadBookInterceptorPlugin(),
+            bundleReadBookInterceptorPlugin(),
             serveTranslationsPlugin(),
             copyTranslationsPlugin(),
             // if you import an svg file with this ?react at the end, it will be converted to a React component
@@ -46,12 +46,15 @@ export default defineConfig(() => {
     };
 });
 
-function serveReadBookInterceptorPlugin(): Plugin {
+function bundleReadBookInterceptorPlugin(): Plugin {
     const serviceWorkerPath = "/read-book-interceptor-sw.js";
-    const sourcePath = "/src/read-book-interceptor-sw.js";
+    const sourceFilePath = path.resolve(
+        __dirname,
+        "src/read-book-interceptor-sw.js"
+    );
 
     return {
-        name: "serve-read-book-interceptor",
+        name: "bundle-read-book-interceptor",
         configureServer(server) {
             // The read-book interceptor must be served from the site root so it can
             // register with scope "/" and intercept /book/... requests.
@@ -59,50 +62,52 @@ function serveReadBookInterceptorPlugin(): Plugin {
                 serviceWorkerPath,
                 async (_req, res, next) => {
                     try {
-                        // During dev, transform the src entry on demand and expose it
-                        // at the same root URL we emit in production.
-                        const transformed = await server.transformRequest(
-                            sourcePath
+                        // During dev, bundle the worker to a single file so it keeps
+                        // working as a classic service worker even though its source
+                        // imports shared modules from src.
+                        const bundledWorker = await bundleReadBookInterceptor(
+                            sourceFilePath
                         );
 
-                        if (!transformed) {
-                            next();
-                            return;
-                        }
-
                         res.setHeader("Content-Type", "application/javascript");
-                        res.end(transformed.code);
+                        res.end(bundledWorker);
                     } catch (error) {
                         next(error as Error);
                     }
                 }
             );
         },
+        async writeBundle({ dir }) {
+            const buildDir = dir || path.join(__dirname, "build");
+            const bundledWorker = await bundleReadBookInterceptor(
+                sourceFilePath
+            );
+            fs.writeFileSync(
+                path.join(buildDir, "read-book-interceptor-sw.js"),
+                bundledWorker
+            );
+        },
     };
 }
 
-// The read-book interceptor is not imported by the app, so we add it as an
-// extra entry and keep its output at the site root for service worker scope.
-function getReadBookInterceptorRollupOptions() {
-    const entryName = "read-book-interceptor-sw";
+async function bundleReadBookInterceptor(entryPoint: string) {
+    const result = await esbuild({
+        entryPoints: [entryPoint],
+        bundle: true,
+        format: "iife",
+        platform: "browser",
+        target: "es2020",
+        write: false,
+    });
 
-    return {
-        input: {
-            main: path.resolve(__dirname, "index.html"),
-            [entryName]: path.resolve(
-                __dirname,
-                "src/read-book-interceptor-sw.js"
-            ),
-        },
-        output: {
-            entryFileNames: (chunkInfo: { name: string }) =>
-                chunkInfo.name === entryName
-                    ? "[name].js"
-                    : "static/[name]-[hash].js",
-            chunkFileNames: "static/[name]-[hash].js",
-            assetFileNames: "static/[name]-[hash][extname]",
-        },
-    };
+    const outputFile = result.outputFiles?.[0];
+    if (!outputFile) {
+        throw new Error(
+            "Failed to bundle read-book interceptor service worker"
+        );
+    }
+
+    return outputFile.text;
 }
 
 // Copies translation files from src to build

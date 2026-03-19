@@ -3,46 +3,22 @@ import { LoggedInUser, User } from "./LoggedInUser";
 import * as Sentry from "@sentry/browser";
 import { informEditorOfSuccessfulLogin, isForEditor } from "../editor";
 import { DataSource, getDataSource } from "./DataSource";
+import {
+    createParseConnection,
+    IParseConnection,
+} from "./ParseConnectionConfig";
 
 // This file exports a function getConnection(), which returns the headers
 // needed to talk to our Parse Server backend db.
 // It keeps track of whether we're working with dev/staging or production or
 // (via a one-line code change) a local database, and also stores and returns
 // the token we get from parse-server when authorized as a particular user.
-interface IConnection {
-    headers: {
-        "Content-Type": string;
-        "X-Parse-Application-Id"?: string;
-        "X-Parse-Session-Token"?: string;
-    };
-    url: string;
-}
-const prod: IConnection = {
-    headers: {
-        "Content-Type": "text/json",
-        "X-Parse-Application-Id": "R6qNTeumQXjJCMutAJYAwPtip1qBulkFyLefkCE5",
-    },
-    url: "https://server.bloomlibrary.org/parse/",
-};
+const prod = createParseConnection("prod");
+const dev = createParseConnection("dev");
+const local = createParseConnection("local");
 
-const dev: IConnection = {
-    headers: {
-        "Content-Type": "text/json",
-        "X-Parse-Application-Id": "yrXftBF6mbAuVu3fO6LnhCJiHxZPIdE7gl1DUVGR",
-    },
-    url: "https://dev-server.bloomlibrary.org/parse/",
-};
-
-const local: IConnection = {
-    headers: {
-        "Content-Type": "text/json",
-        "X-Parse-Application-Id": "myAppId",
-    },
-    url: "http://localhost:1337/parse/",
-};
-
-export function getConnection(): IConnection {
-    let result: IConnection;
+export function getConnection(): IParseConnection {
+    let result: IParseConnection;
     switch (getDataSource()) {
         default:
         case DataSource.Prod:
