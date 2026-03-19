@@ -8,6 +8,7 @@ import React, {
     useContext,
 } from "react";
 import { useGetBookDetail } from "../connection/LibraryQueryHooks";
+// import { getConnection } from "../connection/ParseServerConnection";
 import { Book } from "../model/Book";
 import { getUrlOfHtmlOfDigitalVersion } from "./BookDetail/ArtifactHelper";
 import { useHistory, useLocation } from "react-router-dom";
@@ -27,6 +28,119 @@ import { useMediaQuery } from "@material-ui/core";
 import { OSFeaturesContext } from "./OSFeaturesContext";
 import { IReadBookPageProps } from "./ReadBookPageCodeSplit";
 
+const readBookInterceptorServiceWorkerUrl = "/read-book-interceptor-sw.js";
+
+// async function configureReadBookRequestInterceptor(
+//     registration: ServiceWorkerRegistration
+// ) {
+//     const worker = navigator.serviceWorker.controller || registration.active;
+//     if (!worker) {
+//         return;
+//     }
+
+//     const connection = getConnection();
+//     await new Promise<void>((resolve, reject) => {
+//         const channel = new MessageChannel();
+//         const timeoutId = window.setTimeout(() => {
+//             reject(
+//                 new Error(
+//                     "Timed out configuring read-book interceptor service worker"
+//                 )
+//             );
+//         }, 3000);
+
+//         channel.port1.onmessage = (event) => {
+//             window.clearTimeout(timeoutId);
+//             if (event.data?.type === "read-book-interceptor-configured") {
+//                 resolve();
+//                 return;
+//             }
+
+//             reject(
+//                 new Error(
+//                     event.data?.message ||
+//                         "Read-book interceptor service worker rejected configuration"
+//                 )
+//             );
+//         };
+
+//         worker.postMessage(
+//             {
+//                 type: "configure-read-book-interceptor",
+//                 payload: {
+//                     url: connection.url,
+//                     applicationId: connection.headers["X-Parse-Application-Id"],
+//                 },
+//             },
+//             [channel.port2]
+//         );
+//     });
+// }
+
+function waitForServiceWorkerActivation(worker: ServiceWorker) {
+    if (worker.state === "activated") {
+        return Promise.resolve();
+    }
+
+    return new Promise<void>((resolve) => {
+        worker.addEventListener("statechange", () => {
+            if (worker.state === "activated") {
+                resolve();
+            }
+        });
+    });
+}
+
+function waitForServiceWorkerControl(timeoutMs = 3000) {
+    if (navigator.serviceWorker.controller) {
+        return Promise.resolve();
+    }
+
+    return new Promise<void>((resolve) => {
+        const timeoutId = window.setTimeout(() => {
+            navigator.serviceWorker.removeEventListener(
+                "controllerchange",
+                onControllerChange
+            );
+            resolve();
+        }, timeoutMs);
+
+        const onControllerChange = () => {
+            window.clearTimeout(timeoutId);
+            navigator.serviceWorker.removeEventListener(
+                "controllerchange",
+                onControllerChange
+            );
+            resolve();
+        };
+
+        navigator.serviceWorker.addEventListener(
+            "controllerchange",
+            onControllerChange
+        );
+    });
+}
+
+async function ensureReadBookRequestInterceptorRegistered() {
+    if (!("serviceWorker" in navigator)) {
+        return;
+    }
+
+    const registration = await navigator.serviceWorker.register(
+        readBookInterceptorServiceWorkerUrl,
+        { scope: "/" }
+    );
+    const worker =
+        registration.installing || registration.waiting || registration.active;
+    if (worker) {
+        await waitForServiceWorkerActivation(worker);
+    }
+
+    await navigator.serviceWorker.ready;
+    await waitForServiceWorkerControl();
+    // await configureReadBookRequestInterceptor(registration);
+}
+
 const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
     const id = props.id;
     const history = useHistory();
@@ -34,6 +148,9 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
     const { mobile } = useContext(OSFeaturesContext);
     const widerThanPhone = useMediaQuery("(min-width:450px)"); // a bit more than the largest phone width in the chrome debugger (411px)
     const higherThanPhone = useMediaQuery("(min-height:450px)");
+    const [iframeInterceptionReady, setIframeInterceptionReady] = useState(
+        !("serviceWorker" in navigator)
+    );
 
     // If either dimension is smaller than a phone, we'll guess we are on one
     // and go full screen automatically.
@@ -102,6 +219,27 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
         // history will ever change, so doing so should be harmless.
     }, [history]);
     useEffect(() => startingBook(), [id]);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        ensureReadBookRequestInterceptorRegistered()
+            .catch((error) => {
+                console.error(
+                    "Unable to register read-book interceptor service worker",
+                    error
+                );
+            })
+            .finally(() => {
+                if (isMounted) {
+                    setIframeInterceptionReady(true);
+                }
+            });
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
 
     // We don't use rotateParams here, because one caller wants to call it
     // immediately after calling setRotateParams, when the new values won't be
@@ -215,9 +353,13 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
     // Here, it does not 'go back' but pushes the detail view as a new history entry.)
     const showBackButton = previousPathname.indexOf(`/book/${id}`) < 0;
 
+    // at http://localhost:5174/player/TkG1dWsW40
+
     const iframeSrc =
         `${bloomPlayerUrl}?url=${encodeURIComponent(
             url
+            // url %2Fs3%2Fbloomharvest-sandbox%2FTkG1dWsW40%252f1768316502115%2Fbloomdigital%252findex.htm
+            // url /s3/bloomharvest-sandbox/TkG1dWsW40%252f1768316502115%2Fbloomdigital%252findex.htm
         )}&showBackButton=${showBackButton}&centerVertically=false&useOriginalPageSize=true&allowToggleAppBar=true` +
         `${langParam}&hideFullScreenButton=${autoFullScreen}&independent=false&host=bloomlibrary`;
 
@@ -304,7 +446,7 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
     // });
     return (
         <React.Fragment>
-            {url === "working" || (
+            {url === "working" || !iframeInterceptionReady || (
                 <iframe
                     title="bloom player"
                     css={css`

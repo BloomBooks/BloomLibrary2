@@ -6,7 +6,7 @@ export enum DataSource {
 
 export function getDataSource(): DataSource {
     //Uncomment to test dev or local data explicitly
-    //return DataSource.Dev;
+    return DataSource.Dev;
     //return DataSource.Local;
 
     if (window.location.hostname.startsWith("dev")) {
