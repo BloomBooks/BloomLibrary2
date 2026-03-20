@@ -4,10 +4,12 @@ const bloomPlayerPath = "/bloom-player/bloomplayer.htm";
 // let parseConnection;
 // const harvesterBaseUrlCache = new Map();
 
+// Activate a newly installed interceptor immediately for the current read session.
 self.addEventListener("install", (event) => {
     event.waitUntil(self.skipWaiting());
 });
 
+// Take control of already-open matching pages so /book/... requests are intercepted right away.
 self.addEventListener("activate", (event) => {
     event.waitUntil(self.clients.claim());
 });
@@ -164,10 +166,7 @@ async function retrieveBookData(query) {
 }
 
 function getParseConnection() {
-    return createParseConnectionForHostname(
-        self.location.hostname,
-        self.location.port
-    );
+    return createParseConnectionForHostname(self.location.hostname);
 }
 
 function getHarvesterBaseUrl(book) {

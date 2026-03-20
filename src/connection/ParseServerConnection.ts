@@ -13,24 +13,14 @@ import {
 // It keeps track of whether we're working with dev/staging or production or
 // (via a one-line code change) a local database, and also stores and returns
 // the token we get from parse-server when authorized as a particular user.
-const prod = createParseConnection("prod");
-const dev = createParseConnection("dev");
-const local = createParseConnection("local");
+const connectionsByDataSource: Record<DataSource, IParseConnection> = {
+    [DataSource.Prod]: createParseConnection(DataSource.Prod),
+    [DataSource.Dev]: createParseConnection(DataSource.Dev),
+    [DataSource.Local]: createParseConnection(DataSource.Local),
+};
 
 export function getConnection(): IParseConnection {
-    let result: IParseConnection;
-    switch (getDataSource()) {
-        default:
-        case DataSource.Prod:
-            result = prod;
-            break;
-        case DataSource.Dev:
-            result = dev;
-            break;
-        case DataSource.Local:
-            result = local;
-            break;
-    }
+    const result = connectionsByDataSource[getDataSource()];
 
     // The browser will not allow us to provide this key here if we're running on
     // Bloom Reader, which intercepts web requests in order to enable zipping data

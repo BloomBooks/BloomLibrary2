@@ -1,3 +1,5 @@
+import { DataSource, getDataSourceForHostname } from "./DataSource";
+
 export interface IParseConnection {
     headers: {
         "Content-Type": string;
@@ -7,13 +9,8 @@ export interface IParseConnection {
     url: string;
 }
 
-type ParseConnectionName = "prod" | "dev" | "local";
-
-const parseConnectionTemplates: Record<
-    ParseConnectionName,
-    IParseConnection
-> = {
-    prod: {
+const parseConnectionTemplates: Record<DataSource, IParseConnection> = {
+    [DataSource.Prod]: {
         headers: {
             "Content-Type": "text/json",
             "X-Parse-Application-Id":
@@ -21,7 +18,7 @@ const parseConnectionTemplates: Record<
         },
         url: "https://server.bloomlibrary.org/parse/",
     },
-    dev: {
+    [DataSource.Dev]: {
         headers: {
             "Content-Type": "text/json",
             "X-Parse-Application-Id":
@@ -29,7 +26,7 @@ const parseConnectionTemplates: Record<
         },
         url: "https://dev-server.bloomlibrary.org/parse/",
     },
-    local: {
+    [DataSource.Local]: {
         headers: {
             "Content-Type": "text/json",
             "X-Parse-Application-Id": "myAppId",
@@ -39,7 +36,7 @@ const parseConnectionTemplates: Record<
 };
 
 export function createParseConnection(
-    connectionName: ParseConnectionName
+    connectionName: DataSource
 ): IParseConnection {
     const template = parseConnectionTemplates[connectionName];
     return {
@@ -49,20 +46,7 @@ export function createParseConnection(
 }
 
 export function createParseConnectionForHostname(
-    hostname: string,
-    port?: string
+    hostname: string
 ): IParseConnection {
-    if (hostname === "localhost" && port === "1337") {
-        return createParseConnection("local");
-    }
-
-    if (
-        hostname === "localhost" ||
-        hostname === "127.0.0.1" ||
-        hostname.startsWith("dev")
-    ) {
-        return createParseConnection("dev");
-    }
-
-    return createParseConnection("prod");
+    return createParseConnection(getDataSourceForHostname(hostname));
 }
