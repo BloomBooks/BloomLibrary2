@@ -36,7 +36,8 @@ async function interceptBookRequest(event) {
     const requestUrl = new URL(event.request.url);
     const requestInfo = parseBookRequest(requestUrl);
     if (!requestInfo) {
-        return fetch(event.request);
+        console.error("Failed to parse book request URL");
+        return new Response("Invalid book request URL", { status: 400 });
     }
 
     console.log(
@@ -51,14 +52,24 @@ async function interceptBookRequest(event) {
             bookData.harvestState !== "Done" ||
             !bookData.baseUrl
         ) {
-            return fetch(event.request);
+            console.error("Book not found or not ready for reading", {
+                bookInstanceId: requestInfo.bookInstanceId,
+                harvestState: bookData?.harvestState,
+                hasBaseUrl: !!bookData?.baseUrl,
+            });
+            return new Response("Book not found or not ready for reading", {
+                status: 404,
+            });
         }
         const harvesterBaseUrl = getHarvesterBaseUrlFromBaseUrl(
             bookData.baseUrl,
             self.location.hostname === "localhost"
         );
         if (!harvesterBaseUrl) {
-            return fetch(event.request);
+            console.error("Failed to construct harvester base URL");
+            return new Response("Failed to construct book URL", {
+                status: 500,
+            });
         }
 
         const redirectUrl = `${getUrlOfHtmlOfDigitalVersion(
@@ -69,7 +80,9 @@ async function interceptBookRequest(event) {
         return Response.redirect(redirectUrl, 302);
     } catch (error) {
         console.error("Failed to redirect Bloom Player book request", error);
-        return fetch(event.request);
+        return new Response("Failed to load book: " + error.message, {
+            status: 500,
+        });
     }
 }
 
