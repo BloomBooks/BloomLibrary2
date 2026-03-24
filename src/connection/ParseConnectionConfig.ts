@@ -1,4 +1,4 @@
-import { DataSource, getDataSourceForHostname } from "./DataSource";
+import { DataSource } from "./DataSource";
 
 export interface IParseConnection {
     headers: {
@@ -43,10 +43,4 @@ export function createParseConnection(
         url: template.url,
         headers: { ...template.headers },
     };
-}
-
-export function createParseConnectionForHostname(
-    hostname: string
-): IParseConnection {
-    return createParseConnection(getDataSourceForHostname(hostname));
 }

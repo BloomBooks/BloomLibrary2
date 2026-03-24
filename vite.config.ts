@@ -34,7 +34,7 @@ export default defineConfig(() => {
         },
 
         plugins: [
-            bundleReadBookInterceptorPlugin(),
+            bundleReadBookInterceptorPlugin(), // For when Bloom Player needs to follow links in books
             serveTranslationsPlugin(),
             copyTranslationsPlugin(),
             // if you import an svg file with this ?react at the end, it will be converted to a React component
