@@ -1,17 +1,21 @@
 export enum DataSource {
-    Prod,
-    Dev,
-    Local,
+    Prod = "prod",
+    Dev = "dev",
+    Local = "local",
 }
 
-export function getDataSource(): DataSource {
+export function getDataSourceForHostname(hostname: string): DataSource {
     //Uncomment to test dev or local data explicitly
     //return DataSource.Dev;
     //return DataSource.Local;
 
-    if (window.location.hostname.startsWith("dev")) {
+    if (hostname.startsWith("dev")) {
         return DataSource.Dev;
     }
 
     return DataSource.Prod;
+}
+
+export function getDataSource(): DataSource {
+    return getDataSourceForHostname(window.location.hostname);
 }
