@@ -223,9 +223,3 @@ function getDownloadUrl(book: Book, fileType: string): string | undefined {
     }
     return undefined;
 }
-export function getUrlOfHtmlOfDigitalVersion(book: Book) {
-    const harvesterBaseUrl = Book.getHarvesterBaseUrl(book);
-    // use this if you are are working on bloom-player and are using the bloom-player npm script tobloomlibrary
-    // bloomPlayerUrl = "http://localhost:3000/bloomplayer-for-developing.htm";
-    return harvesterBaseUrl + "bloomdigital%2findex.htm";
-}
