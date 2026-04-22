@@ -19,15 +19,16 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
     const requestUrl = new URL(event.request.url);
-    if (
-        event.request.method !== "GET" ||
-        !requestUrl.pathname.includes("/book/")
-    ) {
+    if (event.request.method !== "GET" || !isBookContentRequest(requestUrl)) {
         return;
     }
 
     event.respondWith(interceptBookRequest(event));
 });
+
+function isBookContentRequest(requestUrl) {
+    return !!parseBookRequest(requestUrl);
+}
 
 async function interceptBookRequest(event) {
     if (!(await requestCameFromBloomPlayer(event))) {
@@ -125,13 +126,25 @@ async function retrieveBookData(query) {
 }
 
 async function requestCameFromBloomPlayer(event) {
-    const clientId = event.clientId || event.resultingClientId;
-    if (clientId) {
-        const client = await self.clients.get(clientId);
-        if (client && client.url.includes(bloomPlayerPath)) {
-            return true;
-        }
+    if (event.request.referrer.includes(bloomPlayerPath)) {
+        return true;
     }
 
-    return event.request.referrer.includes(bloomPlayerPath);
+    if (!event.clientId) {
+        return false;
+    }
+
+    try {
+        const client = await self.clients.get(event.clientId);
+        if (client?.url.includes(bloomPlayerPath)) {
+            return true;
+        }
+    } catch (error) {
+        console.error(
+            "Failed to inspect service worker client for book navigation interception",
+            error
+        );
+    }
+
+    return false;
 }
