@@ -16,36 +16,42 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v3
 
+            - name: Install pnpm
+              uses: pnpm/action-setup@v4
+
+            - name: Install Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: pnpm
+
             - name: Install dependencies
-              run: |
-                  if [ "${{ github.ref }}" == "refs/heads/master" ]; then
-                    yarn upgrade bloom-player@alpha --network-timeout 1000000000
-                  else
-                    yarn install --frozen-lockfile --network-timeout 1000000000
-                  fi
+              # On master, build:ci:alpha bumps bloom-player to the latest alpha, so we
+              # don't upgrade it here too. Other branches use the locked version.
+              run: pnpm install --frozen-lockfile
 
             - name: Upload translations to Crowdin
               if: github.ref == 'refs/heads/release'
               # Push any new code-based strings to Crowdin
-              run: yarn crowdin-dangerous-upload
+              run: pnpm crowdin-dangerous-upload
               env:
                   BLOOM_CROWDIN_TOKEN: ${{ secrets.BLOOM_CROWDIN_TOKEN }}
 
             - name: Download translations from Crowdin
-              run: yarn crowdin-download
+              run: pnpm crowdin-download
               env:
                   BLOOM_CROWDIN_TOKEN: ${{ secrets.BLOOM_CROWDIN_TOKEN }}
 
             - name: Build
               run: |
                   if [ "${{ github.ref }}" == "refs/heads/master" ]; then
-                    yarn build:ci:alpha
+                    pnpm build:ci:alpha
                   else
-                    yarn build:ci
+                    pnpm build:ci
                   fi
 
             - name: Run tests
-              run: yarn test:ci
+              run: pnpm test:ci
 
             - name: Deploy to S3 - alpha.bloomlibrary.org
               if: github.ref == 'refs/heads/master'

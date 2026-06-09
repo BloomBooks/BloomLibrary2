@@ -144,7 +144,7 @@ function copyTranslationsPlugin(): Plugin {
     };
 }
 
-// Used to serve translation files when running `yarn dev`
+// Used to serve translation files when running `pnpm dev`
 function serveTranslationsPlugin(): Plugin {
     return {
         name: "serve-translations",

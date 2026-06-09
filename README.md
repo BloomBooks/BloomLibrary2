@@ -8,17 +8,17 @@ Language speakers find books in their own language, and book creators find shell
 
 
 ## Get dependencies
-You'll need nodejs and yarn.  Please install [volta](https://github.com/volta-cli/volta) so that you automatically use the correct version of nodejs and yarn that this project requires, as specified in `package.json`.
-Finally, run `yarn` in a command line (e.g. in VSCode) to install the library dependencies.
+You'll need nodejs and pnpm.  Please install [volta](https://github.com/volta-cli/volta) so that you automatically use the correct version of nodejs and pnpm that this project requires, as specified in `package.json`.
+Finally, run `pnpm install` in a command line (e.g. in VSCode) to install the library dependencies.
 
 ## Run locally
-To run the site locally, do `yarn dev`
+To run the site locally, do `pnpm dev`
 
 ## Storybook
-To see various components/scenarios, do `yarn storybook`
+To see various components/scenarios, do `pnpm storybook`
 
 ## Unit Tests
-To run the unit tests, do `yarn test`
+To run the unit tests, do `pnpm test`
 
 
 ### Pointing to Prod, Dev, or Local
@@ -33,8 +33,8 @@ BloomLibrary depends upon on the [bloom-player](https://github.com/BloomBooks/bl
 This is installed as a normal dependency. However, sometimes during the development process you may wish to run your own local build of bloom-player.
 
 If you need to do that, there are a couple options:
-### A) yarn link
-One option is to ```yarn link``` ([docs](https://classic.yarnpkg.com/lang/en/docs/cli/link/)) to the local bloom-player source code on the same computer.
+### A) pnpm link
+One option is to ```pnpm link``` ([docs](https://pnpm.io/cli/link)) to the local bloom-player source code on the same computer.
 
 ### B) manual copy
 Another option is to manually copy the bloom-player's `/dist` folder build to BloomLibrary's `node_modules/bloom-player/dist`.
