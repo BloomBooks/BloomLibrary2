@@ -8,17 +8,16 @@ Language speakers find books in their own language, and book creators find shell
 
 
 ## Get dependencies
-You'll need nodejs and pnpm.  Please install [volta](https://github.com/volta-cli/volta) so that you automatically use the correct version of nodejs and pnpm that this project requires, as specified in `package.json`.
-Finally, run `pnpm install` in a command line (e.g. in VSCode) to install the library dependencies.
+This project uses [Vite+](https://viteplus.dev) (the `vp` CLI) to manage the Node.js runtime and the pnpm package manager, so you don't need to install those separately. Install `vp` (see the [Vite+ docs](https://viteplus.dev)), then run `vp install` in a command line (e.g. in VSCode). That selects the correct Node.js version (from `.node-version`) and the pinned pnpm (from `package.json`), and installs the library dependencies.
 
 ## Run locally
-To run the site locally, do `pnpm dev`
+To run the site locally, do `vp run dev`
 
 ## Storybook
-To see various components/scenarios, do `pnpm storybook`
+To see various components/scenarios, do `vp run storybook`
 
 ## Unit Tests
-To run the unit tests, do `pnpm test`
+To run the unit tests, do `vp run test`
 
 
 ### Pointing to Prod, Dev, or Local

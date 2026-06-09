@@ -144,7 +144,7 @@ function copyTranslationsPlugin(): Plugin {
     };
 }
 
-// Used to serve translation files when running `pnpm dev`
+// Used to serve translation files when running `vp run dev`
 function serveTranslationsPlugin(): Plugin {
     return {
         name: "serve-translations",
