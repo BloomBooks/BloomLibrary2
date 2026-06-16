@@ -24,8 +24,6 @@ allowBuilds:
     esbuild: true
     # core-js postinstall only prints a funding banner. Not needed.
     core-js: false
-    # patch-package uninstall helper; its own script does nothing we rely on.
-    postinstall-postinstall: false
     # transitive (firebase); postinstall sets up the CLI, unused in our build.
     protobufjs: false
     # swiper v6 postinstall only prints a donation banner. Not needed.
