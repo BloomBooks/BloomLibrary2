@@ -1,4 +1,4 @@
-A web site ([bloomlibrary.org](https://bloomlibrary.org)) for sharing literacy materials, especially templates for translation into minority languages.
+A crowd-sourced web site ([bloomlibrary.org](https://bloomlibrary.org)) for sharing literacy materials, especially templates for translation into minority languages.
 
 Language speakers find books in their own language, and book creators find shellbooks to translate. They upload these to share them with the world.
 
