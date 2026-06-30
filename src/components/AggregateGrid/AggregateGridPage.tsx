@@ -75,7 +75,9 @@ export const AggregateGridPage: React.FunctionComponent<{
           }
         : loadingResult;
     const user = useGetLoggedInUser();
-    if (!user) {
+    // On localhost (dev) we don't require login, so the grids can be worked on without
+    // signing in. Everywhere else they remain login-only.
+    if (!user && window.location.hostname !== "localhost") {
         return <div>You must log in to see this page.</div>;
     }
     return (

@@ -20,6 +20,19 @@ export interface IUploaderGridData {
     latestUploadDate?: string; // (not yet implemented)
 }
 
+// Short, stable URL keys for every uploader-grid column (filters + sort/cols/hidden/widths).
+// Must be unique within this grid and not equal a reserved param (sort/cols/hidden/widths).
+const uploaderGridUrlKeys: { [name: string]: string } = {
+    email: "em",
+    bookCount: "bc",
+    languages: "lg",
+    countryNames: "cn",
+    creationDate: "cd",
+    organization: "og",
+    firstUploadDate: "fud",
+    latestUploadDate: "lud",
+};
+
 // Define the function getUploaderGridColumnsDefinitions
 export function getUploaderGridColumnsDefinitions(): IGridColumn[] {
     const definitions: IGridColumn[] = [
@@ -187,7 +200,10 @@ export function getUploaderGridColumnsDefinitions(): IGridColumn[] {
             },
         },
     ];
-    return definitions;
+    return definitions.map((c) => ({
+        ...c,
+        urlKey: uploaderGridUrlKeys[c.name] ?? c.urlKey,
+    }));
 }
 
 export function filterBooksBeforeCreatingUploaderGridRows(

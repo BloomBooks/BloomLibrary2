@@ -25,8 +25,6 @@ import {
     SortingState,
     PagingState,
     CustomPaging,
-    Filter as GridFilter,
-    Sorting,
 } from "@devexpress/dx-react-grid";
 import { TableCell, useTheme } from "@material-ui/core";
 import {
@@ -38,7 +36,7 @@ import {
     adjustListDisplaysForFiltering,
 } from "./LanguageGridColumns";
 import { IGridColumn } from "../Grid/GridColumns";
-import { useStorageState } from "react-storage-hooks";
+import { useGridConfigInUrl } from "../Grid/useGridConfigInUrl";
 import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 import { observer } from "mobx-react-lite";
 import { ILanguageGridControlProps } from "./LanguageGridControl";
@@ -62,10 +60,24 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
             CachedTablesContext
         );
         const user = useGetLoggedInUser();
-        const [gridFilters, setGridFilters] = useState<GridFilter[]>([]);
         const [languageGridColumnDefinitions] = useState(
             getLanguageGridColumnsDefinitions()
         );
+        // Grid configuration (sort, column filters, column order/visibility, widths) lives
+        // in the URL so a view can be bookmarked/shared; column order & visibility also fall
+        // back to the user's personal localStorage preference. See useGridConfigInUrl.
+        const {
+            sortings,
+            setSortings,
+            gridFilters,
+            setGridFilters,
+            columnNamesInDisplayOrder,
+            setColumnNamesInDisplayOrder,
+            hiddenColumnNames,
+            setHiddenColumnNames,
+            columnWidths,
+            setColumnWidths,
+        } = useGridConfigInUrl(languageGridColumnDefinitions, "language-grid");
         const { minimalBookInfo: bookData } = useContext(CachedBookDataContext);
 
         const [totalRowCount, setTotalRowCount] = useState(0);
@@ -280,46 +292,6 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
         >([]);
         const [gridPage, setGridPage] = useState(0);
         const [columns, setColumns] = useState<ReadonlyArray<IGridColumn>>([]);
-        const [sortings, setSortings] = useState<ReadonlyArray<Sorting>>([]);
-        const [
-            columnNamesInDisplayOrder,
-            setColumnNamesInDisplayOrder,
-        ] = useStorageState<string[]>(
-            localStorage,
-            "language-grid-column-order",
-            languageGridColumnDefinitions.map((c) => c.name)
-        );
-
-        // when a new version adds a new column, the list of columns in order will not match
-        // the full list of columns. Instead of coping with this, the devexpress grid just locks down the new
-        // column as the first one. So here we detect added and removed columns, while preserving order.
-        useEffect(() => {
-            const newCompleteSetInDefaultOrder = languageGridColumnDefinitions.map(
-                (c) => c.name
-            );
-            const columnsThatNeedToBeAdded = newCompleteSetInDefaultOrder.filter(
-                (x) => !columnNamesInDisplayOrder.includes(x)
-            );
-            const columnsThatNeedToBeRemoved = columnNamesInDisplayOrder.filter(
-                (x) => !newCompleteSetInDefaultOrder.includes(x)
-            );
-            if (
-                columnsThatNeedToBeAdded.length ||
-                columnsThatNeedToBeRemoved.length
-            ) {
-                const oldOrderWithNewOnesAtEnd = columnNamesInDisplayOrder.concat(
-                    columnsThatNeedToBeAdded
-                );
-                const columnsWithAnyOldOnesRemoved = oldOrderWithNewOnesAtEnd.filter(
-                    (n) => !columnsThatNeedToBeRemoved.includes(n)
-                );
-                setColumnNamesInDisplayOrder(columnsWithAnyOldOnesRemoved);
-            }
-        }, [
-            columnNamesInDisplayOrder,
-            setColumnNamesInDisplayOrder,
-            languageGridColumnDefinitions,
-        ]);
 
         // Apply filtering and sorting to the rows, then set the page of rows to display.
         // Also set the total row count and the export data.
@@ -354,25 +326,6 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
             gridFilters,
             setExportData,
         ]);
-
-        const [hiddenColumnNames, setHiddenColumnNames] = useStorageState<
-            string[]
-        >(
-            localStorage,
-            "language-grid-column-hidden",
-            languageGridColumnDefinitions
-                .filter((c) => !c.defaultVisible)
-                .map((c) => c.name)
-        );
-
-        const defaultColumnWidths = useMemo(
-            () =>
-                languageGridColumnDefinitions.map((c) => ({
-                    columnName: c.name,
-                    width: "auto",
-                })),
-            [languageGridColumnDefinitions]
-        );
 
         if (props.setExportColumnInfo) {
             props.setExportColumnInfo(
@@ -430,14 +383,14 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
                     />
 
                     <FilteringState
-                        defaultFilters={gridFilters}
+                        filters={gridFilters}
                         onFiltersChange={(x) => {
                             setGridFilters(x);
                         }}
                     />
 
                     <SortingState
-                        defaultSorting={[]}
+                        sorting={sortings}
                         onSortingChange={(sorting) => {
                             setSortings(sorting);
                         }}
@@ -457,12 +410,13 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
                     />
                     <TableColumnResizing
                         resizingMode={"nextColumn"}
-                        defaultColumnWidths={defaultColumnWidths}
+                        columnWidths={columnWidths}
+                        onColumnWidthsChange={setColumnWidths}
                     />
                     <TableHeaderRow showSortingControls />
 
                     <TableColumnVisibility
-                        defaultHiddenColumnNames={hiddenColumnNames}
+                        hiddenColumnNames={hiddenColumnNames}
                         onHiddenColumnNamesChange={(names) =>
                             setHiddenColumnNames(names)
                         }

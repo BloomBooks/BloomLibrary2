@@ -26,6 +26,24 @@ export interface ILanguageGridRowData {
 }
 
 // Define the function getLanguageGridColumnsDefinitions
+// Short, stable URL keys for every language-grid column (filters + sort/cols/hidden/widths).
+// Must be unique within this grid and not equal a reserved param (sort/cols/hidden/widths).
+const languageGridUrlKeys: { [name: string]: string } = {
+    exonym: "ex",
+    endonym: "en",
+    otherNames: "on",
+    langTag: "lt",
+    firstSeen: "fs",
+    bookCount: "bc",
+    level1Count: "l1",
+    level2Count: "l2",
+    level3Count: "l3",
+    level4Count: "l4",
+    uploaderCount: "uc",
+    uploaderEmails: "ue",
+    countryName: "cn",
+};
+
 export function getLanguageGridColumnsDefinitions(): IGridColumn[] {
     const definitions: IGridColumn[] = [
         {
@@ -297,7 +315,10 @@ export function getLanguageGridColumnsDefinitions(): IGridColumn[] {
             },
         },
     ];
-    return definitions;
+    return definitions.map((c) => ({
+        ...c,
+        urlKey: languageGridUrlKeys[c.name] ?? c.urlKey,
+    }));
 }
 
 export function filterBooksBeforeCreatingLanguageGridRows(

@@ -17,6 +17,17 @@ export interface ICountryGridRowData {
     bookCount: number;
 }
 
+// Short, stable URL keys for every country-grid column (filters + sort/cols/hidden/widths).
+// Must be unique within this grid and not equal a reserved param (sort/cols/hidden/widths).
+const countryGridUrlKeys: { [name: string]: string } = {
+    name: "nm",
+    code: "cd",
+    knownLanguageCount: "klc",
+    blorgLanguageCount: "blc",
+    blorgLanguageTags: "blt",
+    bookCount: "bc",
+};
+
 // Define the function getCountryGridColumnsDefinitions
 export function getCountryGridColumnsDefinitions(): IGridColumn[] {
     const definitions: IGridColumn[] = [
@@ -131,7 +142,10 @@ export function getCountryGridColumnsDefinitions(): IGridColumn[] {
             },
         },
     ];
-    return definitions;
+    return definitions.map((c) => ({
+        ...c,
+        urlKey: countryGridUrlKeys[c.name] ?? c.urlKey,
+    }));
 }
 
 export function compareCountryGridRows(
