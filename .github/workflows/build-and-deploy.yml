@@ -14,38 +14,42 @@ jobs:
 
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v3
+              uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+            - name: Install Vite+ (manages Node.js and pnpm)
+              uses: voidzero-dev/setup-vp@2dec1e33f4ab2c6d5bce1b0c4607961bb1a3f7a1 # v1.12.0
+              with:
+                  version: 0.1.24
+                  node-version-file: .node-version
+                  cache: true
 
             - name: Install dependencies
-              run: |
-                  if [ "${{ github.ref }}" == "refs/heads/master" ]; then
-                    yarn upgrade bloom-player@alpha --network-timeout 1000000000
-                  else
-                    yarn install --frozen-lockfile --network-timeout 1000000000
-                  fi
+              # On master, build:ci:alpha bumps bloom-player to the latest alpha, so we
+              # don't upgrade it here too. Other branches use the locked version.
+              run: vp install --frozen-lockfile
 
             - name: Upload translations to Crowdin
               if: github.ref == 'refs/heads/release'
               # Push any new code-based strings to Crowdin
-              run: yarn crowdin-dangerous-upload
+              run: vp run crowdin-dangerous-upload
               env:
                   BLOOM_CROWDIN_TOKEN: ${{ secrets.BLOOM_CROWDIN_TOKEN }}
 
             - name: Download translations from Crowdin
-              run: yarn crowdin-download
+              run: vp run crowdin-download
               env:
                   BLOOM_CROWDIN_TOKEN: ${{ secrets.BLOOM_CROWDIN_TOKEN }}
 
             - name: Build
               run: |
                   if [ "${{ github.ref }}" == "refs/heads/master" ]; then
-                    yarn build:ci:alpha
+                    vp run build:ci:alpha
                   else
-                    yarn build:ci
+                    vp run build:ci
                   fi
 
             - name: Run tests
-              run: yarn test:ci
+              run: vp run test:ci
 
             - name: Deploy to S3 - alpha.bloomlibrary.org
               if: github.ref == 'refs/heads/master'

@@ -1,0 +1,37 @@
+# Supply-chain hardening for pnpm. See sillsdev/config-r#26 for the pattern.
+
+# Delay adoption of newly published versions by 7 days (10080 minutes). A
+# compromised release can't be pulled in until it has been public long enough
+# to be noticed and yanked.
+minimumReleaseAge: 10080
+
+# bloom-player is our own controlled package; we want to consume newly published
+# alphas immediately, so exclude it from the release-age delay above.
+minimumReleaseAgeExclude:
+    - bloom-player
+
+# Reject non-registry transitive dependency sources such as git/file/url deps.
+blockExoticSubdeps: true
+
+# Fail install when a dependency wants to run lifecycle/build scripts unless it
+# is allowed below. Arbitrary install scripts are a primary attack vector.
+strictDepBuilds: true
+
+# Decisions for the install-time build scripts pnpm flagged. Only the ones we
+# genuinely need are allowed; everything else is blocked (false).
+allowBuilds:
+    # esbuild downloads the platform-specific binary used by Vite. Required.
+    esbuild: true
+    # core-js postinstall only prints a funding banner. Not needed.
+    core-js: false
+    # transitive (firebase); postinstall sets up the CLI, unused in our build.
+    protobufjs: false
+    # swiper v6 postinstall only prints a donation banner. Not needed.
+    swiper: false
+
+# Save exact versions in package.json instead of adding ^ or ~ prefixes.
+savePrefix: ""
+
+# Pin a transitive dependency version (this was yarn's "resolutions" block).
+overrides:
+    "@types/react": "17.0.83"
