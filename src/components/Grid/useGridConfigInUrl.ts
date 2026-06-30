@@ -261,7 +261,7 @@ export function useGridConfigInUrl(
         didBackfillRef.current = true;
         const urlHadGridConfig = !!(
             (initial.sortings && initial.sortings.length) ||
-            initial.filters ||
+            (initial.filters && initial.filters.length) ||
             initial.order ||
             (initial.widths && initial.widths.length)
         );

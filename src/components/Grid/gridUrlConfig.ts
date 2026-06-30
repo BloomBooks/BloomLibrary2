@@ -330,13 +330,14 @@ export function parseGridConfigFromSearch(
         }
     }
 
-    // map sort/widths tokens (urlKeys) back to internal names, dropping unknowns
+    // map sort/widths tokens (urlKeys) back to internal names, dropping unknowns. toName may
+    // return undefined for an unknown key, so narrow with a type-guard rather than `!`.
     const sortings = decodeSortings(params.get("sort"))
-        ?.map((s) => ({ ...s, columnName: toName(s.columnName)! }))
-        .filter((s) => s.columnName !== undefined);
+        ?.map((s) => ({ ...s, columnName: toName(s.columnName) }))
+        .filter((s): s is Sorting => s.columnName !== undefined);
     const widths = decodeWidths(params.get("widths"))
-        ?.map((w) => ({ ...w, columnName: toName(w.columnName)! }))
-        .filter((w) => w.columnName !== undefined);
+        ?.map((w) => ({ ...w, columnName: toName(w.columnName) }))
+        .filter((w): w is IColumnWidth => w.columnName !== undefined);
 
     // `cols` (visible columns in order) yields both the full order and the hidden set.
     const visibility = decodeVisibleOrder(

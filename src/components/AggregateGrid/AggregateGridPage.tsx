@@ -75,9 +75,13 @@ export const AggregateGridPage: React.FunctionComponent<{
           }
         : loadingResult;
     const user = useGetLoggedInUser();
-    // On localhost (dev) we don't require login, so the grids can be worked on without
-    // signing in. Everywhere else they remain login-only.
-    if (!user && window.location.hostname !== "localhost") {
+    // On a local dev machine (loopback hostnames) we don't require login, so the grids can be
+    // worked on without signing in. Everywhere else -- including a LAN address, where the dev
+    // server is network-exposed -- they remain login-only.
+    const isLocalDev = ["localhost", "127.0.0.1", "::1"].includes(
+        window.location.hostname
+    );
+    if (!user && !isLocalDev) {
         return <div>You must log in to see this page.</div>;
     }
     return (
