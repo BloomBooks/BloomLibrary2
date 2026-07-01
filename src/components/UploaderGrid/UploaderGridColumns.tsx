@@ -1,5 +1,6 @@
 import React from "react";
 import { IGridColumn } from "../Grid/GridColumns";
+import { applyUrlKeys } from "../Grid/gridUrlConfig";
 import { TableFilterRow } from "@devexpress/dx-react-grid-material-ui";
 import { Filter, Sorting } from "@devexpress/dx-react-grid";
 import {
@@ -200,10 +201,7 @@ export function getUploaderGridColumnsDefinitions(): IGridColumn[] {
             },
         },
     ];
-    return definitions.map((c) => ({
-        ...c,
-        urlKey: uploaderGridUrlKeys[c.name] ?? c.urlKey,
-    }));
+    return applyUrlKeys(definitions, uploaderGridUrlKeys);
 }
 
 export function filterBooksBeforeCreatingUploaderGridRows(

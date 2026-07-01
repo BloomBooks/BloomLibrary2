@@ -44,7 +44,11 @@ import {
 } from "@devexpress/dx-react-grid";
 import { TableCell, useTheme } from "@material-ui/core";
 import { IFilter, BooleanOptions } from "../../IFilter";
-import { getBookGridColumnsDefinitions, IGridColumn } from "./GridColumns";
+import {
+    getBookGridColumnsDefinitions,
+    IGridColumn,
+    getColumnsVisibleToUser,
+} from "./GridColumns";
 
 import { useGridConfigInUrl } from "./useGridConfigInUrl";
 import { Book } from "../../model/Book";
@@ -73,6 +77,17 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
         );
         const [expandedRowIds, setExpandedRowIds] = useState<ReactText[]>([]);
 
+        // The columns this user may see (some are moderator-/login-gated). Drives both the
+        // rendered `columns` set and which URL sort/filter config the hook is allowed to honor.
+        const visibleColumnDefinitions = useMemo(
+            () => getColumnsVisibleToUser(bookGridColumnDefinitions, user),
+            [bookGridColumnDefinitions, user]
+        );
+        const availableColumnNames = useMemo(
+            () => visibleColumnDefinitions.map((c) => c.name),
+            [visibleColumnDefinitions]
+        );
+
         // Grid configuration (sort, column filters, column order/visibility, widths) lives
         // in the URL so a view can be bookmarked/shared; column order & visibility also fall
         // back to the user's personal localStorage preference when the URL says nothing.
@@ -90,6 +105,7 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
             setColumnWidths,
         } = useGridConfigInUrl(bookGridColumnDefinitions, "book-grid", {
             initialFilters: props.initialGridFilters,
+            availableColumnNames,
         });
 
         // enhance: make the date nice (remove Hour/Minute/Seconds, show as YYYY-MM-DD)
@@ -141,21 +157,10 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                 descending: s.direction === "desc",
             }))
         );
-        const thisIsAModerator = user?.moderator;
+
         useEffect(() => {
-            setColumns(
-                bookGridColumnDefinitions.filter(
-                    // some columns we include only if we are logged in, or
-                    // logged in with the right permissions
-                    (col) =>
-                        user?.moderator ||
-                        (!col.moderatorOnly && !col.loggedInOnly) ||
-                        (!col.moderatorOnly && col.loggedInOnly && user)
-                )
-            );
-            //setColumnNamesInDisplayOrder(bookGridColumns.map(c => c.name));
-            // todo? useEffect used to depend on router, though doesn't obviously use it.
-        }, [user, thisIsAModerator, bookGridColumnDefinitions]);
+            setColumns(visibleColumnDefinitions);
+        }, [visibleColumnDefinitions]);
 
         // note: this is an embedded function as a way to get at bookGridColumnDefinitions. It's important
         // that we don't reconstruct it on every render, or else we'll lose cursor focus on each key press.

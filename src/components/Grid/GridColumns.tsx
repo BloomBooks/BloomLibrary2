@@ -13,6 +13,7 @@ import titleCase from "title-case";
 import { IFilter, BooleanOptions } from "../../IFilter";
 import { CachedTables } from "../../model/CacheProvider";
 import { BlorgLink } from "../BlorgLink";
+import { User } from "../../connection/LoggedInUser";
 
 export interface IGridColumn extends DevExpressColumn {
     moderatorOnly?: boolean;
@@ -34,6 +35,22 @@ export interface IGridColumn extends DevExpressColumn {
     // to using getCellValue if that doesn't return an object (component).
     // Else it will fallback to b[key].toString().
     getStringValue?: (b: Book) => string;
+}
+
+// The columns a given user is allowed to see: some are gated behind being logged in
+// (loggedInOnly) or being a moderator (moderatorOnly). Every grid uses this both to build the
+// rendered `columns` set and (via useGridConfigInUrl) to ignore URL sort/filter config that
+// names a column this user cannot see. Keep the two in agreement by going through this one helper.
+export function getColumnsVisibleToUser(
+    columns: ReadonlyArray<IGridColumn>,
+    user: User | undefined
+): IGridColumn[] {
+    return columns.filter(
+        (col) =>
+            !!user?.moderator ||
+            (!col.moderatorOnly && !col.loggedInOnly) ||
+            (!col.moderatorOnly && !!col.loggedInOnly && !!user)
+    );
 }
 
 // For some tags, we want to give them their own column. So we don't want to show them in the tags column.

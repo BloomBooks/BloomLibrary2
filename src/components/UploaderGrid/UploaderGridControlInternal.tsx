@@ -35,7 +35,7 @@ import {
     filterUploaderGridRow,
     adjustListDisplaysForFiltering,
 } from "./UploaderGridColumns";
-import { IGridColumn } from "../Grid/GridColumns";
+import { IGridColumn, getColumnsVisibleToUser } from "../Grid/GridColumns";
 import { useGridConfigInUrl } from "../Grid/useGridConfigInUrl";
 import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 import { observer } from "mobx-react-lite";
@@ -67,6 +67,16 @@ const UploaderGridControlInternal: React.FunctionComponent<IUploaderGridControlP
         const [uploaderGridColumnDefinitions] = useState(
             getUploaderGridColumnsDefinitions()
         );
+        // The columns this user may see (some are moderator-/login-gated). Drives both the
+        // rendered `columns` set and which URL sort/filter config the hook is allowed to honor.
+        const visibleColumnDefinitions = useMemo(
+            () => getColumnsVisibleToUser(uploaderGridColumnDefinitions, user),
+            [uploaderGridColumnDefinitions, user]
+        );
+        const availableColumnNames = useMemo(
+            () => visibleColumnDefinitions.map((c) => c.name),
+            [visibleColumnDefinitions]
+        );
         // Grid configuration (sort, column filters, column order/visibility, widths) lives
         // in the URL so a view can be bookmarked/shared; column order & visibility also fall
         // back to the user's personal localStorage preference. See useGridConfigInUrl.
@@ -81,7 +91,9 @@ const UploaderGridControlInternal: React.FunctionComponent<IUploaderGridControlP
             setHiddenColumnNames,
             columnWidths,
             setColumnWidths,
-        } = useGridConfigInUrl(uploaderGridColumnDefinitions, "uploader-grid");
+        } = useGridConfigInUrl(uploaderGridColumnDefinitions, "uploader-grid", {
+            availableColumnNames,
+        });
 
         const { minimalBookInfo: bookData } = useContext(CachedBookDataContext);
 
@@ -264,20 +276,9 @@ const UploaderGridControlInternal: React.FunctionComponent<IUploaderGridControlP
             );
         }
 
-        const thisIsAModerator = user?.moderator;
         useEffect(() => {
-            setColumns(
-                uploaderGridColumnDefinitions.filter(
-                    // some columns we include only if we are logged in, or
-                    // logged in with the right permissions
-                    (col) =>
-                        thisIsAModerator ||
-                        (!col.moderatorOnly && !col.loggedInOnly) ||
-                        (!col.moderatorOnly && col.loggedInOnly && user)
-                )
-            );
-            // todo? useEffect used to depend on router, though doesn't obviously use it.
-        }, [user, thisIsAModerator, uploaderGridColumnDefinitions]);
+            setColumns(visibleColumnDefinitions);
+        }, [visibleColumnDefinitions]);
 
         // note: this is an embedded function as a way to get at languageGridColumnDefinitions. It's important
         // that we don't reconstruct it on every render, or else we'll lose cursor focus on each key press.

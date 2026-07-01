@@ -1,5 +1,6 @@
 import React from "react";
 import { IGridColumn } from "../Grid/GridColumns";
+import { applyUrlKeys } from "../Grid/gridUrlConfig";
 import { TableFilterRow } from "@devexpress/dx-react-grid-material-ui";
 import { Filter, Sorting } from "@devexpress/dx-react-grid";
 import {
@@ -142,10 +143,7 @@ export function getCountryGridColumnsDefinitions(): IGridColumn[] {
             },
         },
     ];
-    return definitions.map((c) => ({
-        ...c,
-        urlKey: countryGridUrlKeys[c.name] ?? c.urlKey,
-    }));
+    return applyUrlKeys(definitions, countryGridUrlKeys);
 }
 
 export function compareCountryGridRows(

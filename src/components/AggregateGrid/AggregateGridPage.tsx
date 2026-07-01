@@ -28,6 +28,7 @@ import { useGetDataForAggregateGrid } from "../../connection/LibraryQueryHooks";
 import { IMinimalBookInfo, ILangTagData } from "./AggregateGridInterfaces";
 import { observer } from "mobx-react-lite";
 import { useGetLoggedInUser, User } from "../../connection/LoggedInUser";
+import { isLocalhost } from "../../connection/DataSource";
 import {
     Plugin,
     Template,
@@ -76,12 +77,8 @@ export const AggregateGridPage: React.FunctionComponent<{
         : loadingResult;
     const user = useGetLoggedInUser();
     // On a local dev machine (loopback hostnames) we don't require login, so the grids can be
-    // worked on without signing in. Everywhere else -- including a LAN address, where the dev
-    // server is network-exposed -- they remain login-only.
-    const isLocalDev = ["localhost", "127.0.0.1", "::1"].includes(
-        window.location.hostname
-    );
-    if (!user && !isLocalDev) {
+    // worked on without signing in. Everywhere else remains login-only. See isLocalhost.
+    if (!user && !isLocalhost()) {
         return <div>You must log in to see this page.</div>;
     }
     return (

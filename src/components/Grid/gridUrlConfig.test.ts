@@ -168,6 +168,17 @@ describe("parseGridConfigFromSearch (URL keys -> internal names)", () => {
         expect(cfg.hidden).toEqual([]);
         expect(cfg.widths).toEqual([{ columnName: "level", width: 90 }]);
     });
+    it("treats a bare/empty filter key as no filter (undefined, not []), so a caller's initialFilters aren't clobbered", () => {
+        // A hand-edited/stale link like ?ti= must NOT flip filters to [] (which would suppress
+        // a fallback); it should read as "no filter present at all".
+        expect(
+            parseGridConfigFromSearch("?ti=", columns).filters
+        ).toBeUndefined();
+        // A real value elsewhere still yields only that filter; the empty key is ignored.
+        expect(
+            parseGridConfigFromSearch("?ti=&lv=4", columns).filters
+        ).toEqual([{ columnName: "level", operation: "contains", value: "4" }]);
+    });
     it("returns filters undefined when no filter params are present", () => {
         expect(
             parseGridConfigFromSearch("?sort=ti:asc", columns).filters

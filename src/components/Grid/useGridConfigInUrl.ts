@@ -44,6 +44,7 @@ import {
     findUrlKeyProblems,
     RESERVED_GRID_PARAM_KEYS,
     IColumnWidth,
+    IGridConfigFromUrl,
 } from "./gridUrlConfig";
 
 export interface IGridConfigInUrl {
@@ -62,10 +63,18 @@ export interface IGridConfigInUrl {
 // storageKeyPrefix is e.g. "book-grid" / "language-grid"; it must match the keys the grids
 // used before so existing users keep their saved column preferences. initialFilters seeds the
 // per-column filters when the URL has none (e.g. the bulk-edit page opens the grid pre-filtered).
+// availableColumnNames (optional) is the set of columns THIS user may see (see
+// getColumnsVisibleToUser). A shared/bookmarked URL can name a column the viewer lacks (e.g. a
+// moderator-only column); such sort/filter entries are ignored in what we hand back to the grid,
+// so nobody ends up sorting/filtering by a column they can neither see nor clear. Defaults to all
+// columns when the caller doesn't supply it. Pass a value that's stable across renders (memoize).
 export function useGridConfigInUrl(
     columnDefinitions: ReadonlyArray<IGridColumn>,
     storageKeyPrefix: string,
-    options?: { initialFilters?: GridFilter[] }
+    options?: {
+        initialFilters?: GridFilter[];
+        availableColumnNames?: ReadonlyArray<string>;
+    }
 ): IGridConfigInUrl {
     const allColumnNames = useMemo(() => columnDefinitions.map((c) => c.name), [
         columnDefinitions,
@@ -117,6 +126,13 @@ export function useGridConfigInUrl(
         defaultHidden
     );
 
+    // The columns THIS user may actually see. URL sort/filter config naming a column outside this
+    // set is dropped from what we expose (see the visible* memos near the return). Defaults to all.
+    const availableSet = useMemo(
+        () => new Set(options?.availableColumnNames ?? allColumnNames),
+        [options?.availableColumnNames, allColumnNames]
+    );
+
     // A sort is only meaningful for a column that is both real and sortable.
     const onlyValidSortings = (sortings: Sorting[] | undefined) =>
         (sortings ?? []).filter((s) => sortableNames.has(s.columnName));
@@ -124,6 +140,30 @@ export function useGridConfigInUrl(
         const known = new Set(allColumnNames);
         return (filters ?? []).filter((f) => known.has(f.columnName));
     };
+
+    // The single precedence pipeline: a dimension present in the URL wins; otherwise fall back to
+    // the seeded initialFilters / personal localStorage layout / column defaults. Both the mount
+    // initializers and the popstate handler go through here so the two can't drift apart.
+    const buildStateFromConfig = (
+        cfg: IGridConfigFromUrl,
+        fallbacks: {
+            storedOrder: string[];
+            storedHidden: string[];
+            initialFilters: GridFilter[] | undefined;
+        }
+    ) => ({
+        sortings: onlyValidSortings(cfg.sortings),
+        filters: onlyKnownFilters(cfg.filters ?? fallbacks.initialFilters),
+        order: reconcileColumnOrder(
+            cfg.order ?? fallbacks.storedOrder,
+            allColumnNames
+        ),
+        hidden: dropUnknownColumns(
+            cfg.hidden ?? fallbacks.storedHidden,
+            allColumnNames
+        ),
+        widths: mergeColumnWidths(allColumnNames, cfg.widths),
+    });
 
     // Parse the URL exactly once (mount). Reads of window.location here are intentional: the
     // URL, not props, is the initial source of truth. (Memo deps are stable -> effectively
@@ -136,23 +176,35 @@ export function useGridConfigInUrl(
             ),
         [columnDefinitions]
     );
-
-    const [sortings, setSortingsState] = useState<Sorting[]>(() =>
-        onlyValidSortings(initial.sortings)
+    const initialState = useMemo(
+        () =>
+            buildStateFromConfig(initial, {
+                storedOrder,
+                storedHidden,
+                initialFilters: options?.initialFilters,
+            }),
+        // Mount snapshot only (mirrors `initial`); later localStorage/prop changes flow through
+        // the setters and popstate, not this one-time seed.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [initial]
     );
-    const [gridFilters, setFiltersState] = useState<GridFilter[]>(() =>
-        onlyKnownFilters(initial.filters ?? options?.initialFilters)
+
+    const [sortings, setSortingsState] = useState<Sorting[]>(
+        initialState.sortings
+    );
+    const [gridFilters, setFiltersState] = useState<GridFilter[]>(
+        initialState.filters
     );
     // order + hidden come together from the URL's `cols` (visible-in-order); if absent, fall
     // back to the personal localStorage layout (order/hidden are stored separately there).
-    const [columnNamesInDisplayOrder, setOrderState] = useState<string[]>(() =>
-        reconcileColumnOrder(initial.order ?? storedOrder, allColumnNames)
+    const [columnNamesInDisplayOrder, setOrderState] = useState<string[]>(
+        initialState.order
     );
-    const [hiddenColumnNames, setHiddenState] = useState<string[]>(() =>
-        dropUnknownColumns(initial.hidden ?? storedHidden, allColumnNames)
+    const [hiddenColumnNames, setHiddenState] = useState<string[]>(
+        initialState.hidden
     );
-    const [columnWidths, setWidthsState] = useState<IColumnWidth[]>(() =>
-        mergeColumnWidths(allColumnNames, initial.widths)
+    const [columnWidths, setWidthsState] = useState<IColumnWidth[]>(
+        initialState.widths
     );
 
     // --- write a single dimension to the address bar without causing a re-render ---
@@ -222,26 +274,13 @@ export function useGridConfigInUrl(
                 window.location.search,
                 columnDefinitions
             );
-            setSortingsState(onlyValidSortings(cfg.sortings));
-            // Mirror mount precedence: URL filters win; else the seeded initialFilters.
-            setFiltersState(
-                onlyKnownFilters(
-                    cfg.filters ?? fallbackRef.current.initialFilters
-                )
-            );
-            setOrderState(
-                reconcileColumnOrder(
-                    cfg.order ?? fallbackRef.current.storedOrder,
-                    allColumnNames
-                )
-            );
-            setHiddenState(
-                dropUnknownColumns(
-                    cfg.hidden ?? fallbackRef.current.storedHidden,
-                    allColumnNames
-                )
-            );
-            setWidthsState(mergeColumnWidths(allColumnNames, cfg.widths));
+            // Same precedence as the mount seed (URL wins; else seeded/localStorage/defaults).
+            const next = buildStateFromConfig(cfg, fallbackRef.current);
+            setSortingsState(next.sortings);
+            setFiltersState(next.filters);
+            setOrderState(next.order);
+            setHiddenState(next.hidden);
+            setWidthsState(next.widths);
         };
         window.addEventListener("popstate", onPop);
         return () => window.removeEventListener("popstate", onPop);
@@ -267,26 +306,63 @@ export function useGridConfigInUrl(
         );
         if (urlHadGridConfig) return;
         writeVisibleOrder(columnNamesInDisplayOrder, hiddenColumnNames);
+        // Also mirror any seeded filters (e.g. bulk-edit's initialFilters) into the bare URL, so
+        // the view the user sees is actually the view a copied/bookmarked link reproduces. When
+        // there are none this is a no-op (writeFilters just clears the — absent — filter keys).
+        writeFilters(gridFilters);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // What we hand to the grid/query excludes any sort/filter on a column this user can't see
+    // (e.g. a moderator-only column named by a shared link). The raw state keeps the full config,
+    // so if the user's available set later widens (auth resolves) the entry re-appears. Column
+    // order/hidden/widths already span every definition and stay unfiltered (as before).
+    const visibleSortings = useMemo(
+        () => sortings.filter((s) => availableSet.has(s.columnName)),
+        [sortings, availableSet]
+    );
+    const visibleGridFilters = useMemo(
+        () => gridFilters.filter((f) => availableSet.has(f.columnName)),
+        [gridFilters, availableSet]
+    );
+
     return {
-        sortings,
+        sortings: visibleSortings,
         setSortings: (next: Sorting[]) => {
-            setSortingsState(next);
+            // `next` only ever covers columns this user can see (the grid never renders the
+            // others). Merge back any sort on a not-currently-available column so raw state and
+            // the URL keep the full config -- otherwise a moderator who edits a sort during the
+            // brief auth-loading window (or on a shared link) would silently lose a sort on a
+            // moderator-only column. Available and unavailable columns are disjoint, so no dupes.
+            const preserved = sortings.filter(
+                (s) => !availableSet.has(s.columnName)
+            );
+            const merged = [...next, ...preserved];
+            setSortingsState(merged);
             writeParam(
                 "sort",
                 encodeSortings(
-                    next.map((s) => ({ ...s, columnName: toKey(s.columnName) }))
+                    merged.map((s) => ({
+                        ...s,
+                        columnName: toKey(s.columnName),
+                    }))
                 )
             );
         },
-        gridFilters,
+        gridFilters: visibleGridFilters,
         setGridFilters: (next: GridFilter[]) => {
+            // Same merge as setSortings: keep filters on columns outside the user's available set
+            // (e.g. during auth loading, or a shared link's moderator-only filter) so they aren't
+            // dropped from state/URL when the user edits a visible filter. (Filter order doesn't
+            // matter to CombineGridAndSearchBoxFilter.)
+            const preserved = gridFilters.filter(
+                (f) => !availableSet.has(f.columnName)
+            );
+            const merged = [...next, ...preserved];
             // Local state first (snappy, focused typing); replaceState mirror second (no
             // re-render, so the focused input is never disturbed).
-            setFiltersState(next);
-            writeFilters(next);
+            setFiltersState(merged);
+            writeFilters(merged);
         },
         columnNamesInDisplayOrder,
         setColumnNamesInDisplayOrder: (next: string[]) => {

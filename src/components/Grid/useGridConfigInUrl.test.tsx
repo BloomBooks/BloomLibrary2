@@ -39,7 +39,9 @@ const DEFAULT_ORDER = ["title", "incoming", "level", "Is Rebrand"];
 const DEFAULT_HIDDEN = ["level", "Is Rebrand"];
 
 let api: IGridConfigInUrl;
-let harnessOptions: { initialFilters?: GridFilter[] } | undefined;
+let harnessOptions:
+    | { initialFilters?: GridFilter[]; availableColumnNames?: string[] }
+    | undefined;
 function Harness() {
     api = useGridConfigInUrl(columns, "test-grid", harnessOptions);
     return null;
@@ -367,6 +369,42 @@ describe("initialFilters (e.g. bulk-edit) seeding & precedence", () => {
             { columnName: "incoming", operation: "contains", value: "true" },
         ]);
     });
+
+    it("mirrors seeded initialFilters into a bare URL on mount (so the shown view is shareable)", () => {
+        harnessOptions = {
+            initialFilters: [
+                {
+                    columnName: "incoming",
+                    operation: "contains",
+                    value: "true",
+                },
+            ],
+        };
+        mount();
+        // The grid is filtered AND the address bar reflects it, so copying the URL reproduces it.
+        expect(api.gridFilters).toEqual([
+            { columnName: "incoming", operation: "contains", value: "true" },
+        ]);
+        expect(param("in")).toBe("true");
+    });
+
+    it("does not let a bare/empty filter param clobber initialFilters", () => {
+        harnessOptions = {
+            initialFilters: [
+                {
+                    columnName: "incoming",
+                    operation: "contains",
+                    value: "true",
+                },
+            ],
+        };
+        // ?ti= carries no real filter; the seeded initialFilters must survive.
+        window.history.replaceState(null, "", "/grid/books?ti=");
+        mount();
+        expect(api.gridFilters).toEqual([
+            { columnName: "incoming", operation: "contains", value: "true" },
+        ]);
+    });
 });
 
 describe("bare-URL backfill (make a localStorage layout shareable)", () => {
@@ -435,5 +473,75 @@ describe("localStorage precedence", () => {
             "level",
             "Is Rebrand",
         ]);
+    });
+});
+
+describe("availableColumnNames (role-restricted columns from a shared link)", () => {
+    it("drops sort/filter on a column this user cannot see", () => {
+        // A shared link sorts and filters by `level`, but this user's available set excludes it
+        // (as if `level` were moderator-only and the viewer is not a moderator).
+        harnessOptions = {
+            availableColumnNames: ["title", "incoming", "Is Rebrand"],
+        };
+        window.history.replaceState(null, "", "/grid/books?sort=lv:asc&lv=4");
+        mount();
+        expect(api.sortings).toEqual([]);
+        expect(api.gridFilters).toEqual([]);
+        // Column order still spans every definition (unchanged behavior).
+        expect(api.columnNamesInDisplayOrder).toContain("level");
+    });
+
+    it("honors sort/filter on a column the user CAN see", () => {
+        harnessOptions = { availableColumnNames: DEFAULT_ORDER };
+        window.history.replaceState(null, "", "/grid/books?sort=lv:asc&lv=4");
+        mount();
+        expect(api.sortings).toEqual([
+            { columnName: "level", direction: "asc" },
+        ]);
+        expect(api.gridFilters).toEqual([
+            { columnName: "level", operation: "contains", value: "4" },
+        ]);
+    });
+
+    it("does not lose a filter on an unavailable column when the user edits a visible one", () => {
+        // 'level' is not available to this user; a shared link filters it plus 'title'.
+        harnessOptions = {
+            availableColumnNames: ["title", "incoming", "Is Rebrand"],
+        };
+        window.history.replaceState(null, "", "/grid/books?lv=4&ti=old");
+        mount();
+        expect(api.gridFilters).toEqual([
+            { columnName: "title", operation: "contains", value: "old" },
+        ]);
+        // The user edits the visible title filter; DevExpress only hands back visible columns.
+        act(() =>
+            api.setGridFilters([
+                { columnName: "title", operation: "contains", value: "new" },
+            ])
+        );
+        // Still only title is visible to this user...
+        expect(api.gridFilters).toEqual([
+            { columnName: "title", operation: "contains", value: "new" },
+        ]);
+        // ...but the unavailable 'level' filter is preserved in state + URL (not clobbered).
+        expect(param("lv")).toBe("4");
+        expect(param("ti")).toBe("new");
+    });
+
+    it("does not lose a sort on an unavailable column when the user changes a visible one", () => {
+        harnessOptions = {
+            availableColumnNames: ["title", "incoming", "Is Rebrand"],
+        };
+        window.history.replaceState(null, "", "/grid/books?sort=lv:asc");
+        mount();
+        expect(api.sortings).toEqual([]);
+        act(() =>
+            api.setSortings([{ columnName: "title", direction: "desc" }])
+        );
+        expect(api.sortings).toEqual([
+            { columnName: "title", direction: "desc" },
+        ]);
+        // Visible title sort plus the preserved (unavailable) level sort.
+        expect(param("sort")).toBe("ti:desc,lv:asc");
     });
 });

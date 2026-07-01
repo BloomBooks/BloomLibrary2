@@ -151,6 +151,20 @@ export function urlKeyForColumn(column: IGridColumn): string {
     return column.urlKey ?? column.name;
 }
 
+// Stamp each column definition with its short URL key from a per-grid `{name: urlKey}` map,
+// leaving any key the map doesn't mention at whatever `urlKey` the definition already had.
+// The country/language/uploader grids end getXGridColumnsDefinitions() with this; the book grid
+// applies the same `map[name] ?? urlKey` merge inline (it also titleCases/sorts in one pass).
+export function applyUrlKeys(
+    definitions: IGridColumn[],
+    urlKeysByName: { [name: string]: string }
+): IGridColumn[] {
+    return definitions.map((c) => ({
+        ...c,
+        urlKey: urlKeysByName[c.name] ?? c.urlKey,
+    }));
+}
+
 export function nameToUrlKeyMap(
     columnDefinitions: ReadonlyArray<IGridColumn>
 ): Map<string, string> {
@@ -319,9 +333,12 @@ export function parseGridConfigFromSearch(
         const key = urlKeyForColumn(column);
         if (reserved.has(key)) continue; // never let a column shadow sort/cols/hidden/widths
         if (!params.has(key)) continue;
-        sawFilterKey = true;
         const value = params.get(key);
+        // Only an actual (non-empty) value counts as "a filter is present". A bare `?ti=`
+        // (hand-edited/stale link) contributes no filter and must NOT flip filters from
+        // `undefined` to `[]`, or it would suppress the caller's initialFilters fallback.
         if (value !== null && value !== "") {
+            sawFilterKey = true;
             filters.push({
                 columnName: column.name,
                 operation: "contains",
