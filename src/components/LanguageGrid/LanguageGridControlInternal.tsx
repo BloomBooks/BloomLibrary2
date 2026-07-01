@@ -303,7 +303,8 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
             ILanguageGridRowData[]
         >([]);
         const [gridPage, setGridPage] = useState(0);
-        const [columns, setColumns] = useState<ReadonlyArray<IGridColumn>>([]);
+        // The columns this user may see; drives the grid's rendered column set.
+        const columns = visibleColumnDefinitions;
 
         // Apply filtering and sorting to the rows, then set the page of rows to display.
         // Also set the total row count and the export data.
@@ -350,10 +351,6 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
                 hiddenColumnNames
             );
         }
-
-        useEffect(() => {
-            setColumns(visibleColumnDefinitions);
-        }, [visibleColumnDefinitions]);
 
         // note: this is an embedded function as a way to get at languageGridColumnDefinitions. It's important
         // that we don't reconstruct it on every render, or else we'll lose cursor focus on each key press.

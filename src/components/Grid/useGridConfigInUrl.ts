@@ -232,7 +232,7 @@ export function useGridConfigInUrl(
         const params = new URLSearchParams(window.location.search);
         const reserved = new Set(RESERVED_GRID_PARAM_KEYS);
         // Clear every per-column filter key, then set the active ones. Leaves
-        // sort/cols/hidden/widths and any unrelated params alone.
+        // sort/cols/widths and any unrelated params alone.
         for (const c of columnDefinitions) {
             const k = urlKeyForColumn(c);
             if (!reserved.has(k)) params.delete(k);

@@ -21,8 +21,8 @@ export interface IUploaderGridData {
     latestUploadDate?: string; // (not yet implemented)
 }
 
-// Short, stable URL keys for every uploader-grid column (filters + sort/cols/hidden/widths).
-// Must be unique within this grid and not equal a reserved param (sort/cols/hidden/widths).
+// Short, stable URL keys for every uploader-grid column (filters + sort/cols/widths).
+// Must be unique within this grid and not equal a reserved param (sort/cols/widths).
 const uploaderGridUrlKeys: { [name: string]: string } = {
     email: "em",
     bookCount: "bc",

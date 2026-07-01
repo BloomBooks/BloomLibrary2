@@ -1,12 +1,6 @@
 import { css } from "@emotion/react";
 
-import React, {
-    useState,
-    useEffect,
-    useMemo,
-    ReactText,
-    useContext,
-} from "react";
+import React, { useState, useMemo, ReactText, useContext } from "react";
 
 import {
     Plugin,
@@ -71,7 +65,6 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
         const user = useGetLoggedInUser();
         const kBooksPerGridPage = 20;
         const [gridPage, setGridPage] = useState(0);
-        const [columns, setColumns] = useState<ReadonlyArray<IGridColumn>>([]);
         const [bookGridColumnDefinitions] = useState(
             getBookGridColumnsDefinitions()
         );
@@ -87,6 +80,8 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
             () => visibleColumnDefinitions.map((c) => c.name),
             [visibleColumnDefinitions]
         );
+        // The columns this user may see; drives the grid's rendered column set.
+        const columns = visibleColumnDefinitions;
 
         // Grid configuration (sort, column filters, column order/visibility, widths) lives
         // in the URL so a view can be bookmarked/shared; column order & visibility also fall
@@ -157,10 +152,6 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                 descending: s.direction === "desc",
             }))
         );
-
-        useEffect(() => {
-            setColumns(visibleColumnDefinitions);
-        }, [visibleColumnDefinitions]);
 
         // note: this is an embedded function as a way to get at bookGridColumnDefinitions. It's important
         // that we don't reconstruct it on every render, or else we'll lose cursor focus on each key press.

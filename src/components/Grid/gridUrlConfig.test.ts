@@ -63,7 +63,7 @@ describe("sortings encode/decode (operate on whatever token is given)", () => {
     });
 });
 
-describe("string array (cols/hidden) encode/decode", () => {
+describe("string array (cols) encode/decode", () => {
     it("round-trips a list; '' => [], absent => undefined", () => {
         expect(encodeStringArray(["ti", "lv"])).toBe("ti,lv");
         expect(decodeStringArray("ti,lv")).toEqual(["ti", "lv"]);

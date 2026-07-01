@@ -27,8 +27,8 @@ export interface ILanguageGridRowData {
 }
 
 // Define the function getLanguageGridColumnsDefinitions
-// Short, stable URL keys for every language-grid column (filters + sort/cols/hidden/widths).
-// Must be unique within this grid and not equal a reserved param (sort/cols/hidden/widths).
+// Short, stable URL keys for every language-grid column (filters + sort/cols/widths).
+// Must be unique within this grid and not equal a reserved param (sort/cols/widths).
 const languageGridUrlKeys: { [name: string]: string } = {
     exonym: "ex",
     endonym: "en",

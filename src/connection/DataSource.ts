@@ -26,5 +26,6 @@ export function getDataSource(): DataSource {
 export function isLocalhost(
     hostname: string = window.location.hostname
 ): boolean {
-    return ["localhost", "127.0.0.1", "::1"].includes(hostname);
+    // window.location.hostname returns the IPv6 loopback bracketed ("[::1]"); accept both forms.
+    return ["localhost", "127.0.0.1", "::1", "[::1]"].includes(hostname);
 }

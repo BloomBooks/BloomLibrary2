@@ -62,8 +62,8 @@ const kTagsToFilterOutOfTagsList = [
 ];
 
 // Short, stable URL keys for every book-grid column (used for filters and inside
-// sort/cols/hidden/widths). Must be unique and must not equal a reserved param
-// (sort/cols/hidden/widths). "ti" avoids colliding with the app's existing "title" search param.
+// sort/cols/widths). Must be unique and must not equal a reserved param
+// (sort/cols/widths). "ti" avoids colliding with the app's existing "title" search param.
 const bookGridUrlKeys: { [name: string]: string } = {
     title: "ti",
     languages: "lg",

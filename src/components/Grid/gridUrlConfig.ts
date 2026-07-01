@@ -76,7 +76,7 @@ export function decodeSortings(value: Maybe): Sorting[] | undefined {
 }
 
 // ---------------------------------------------------------------------------
-// string lists: cols / hidden  (one param: "a,b,c")
+// string lists: cols  (one param: "a,b,c")
 // ---------------------------------------------------------------------------
 
 export function encodeStringArray(
@@ -145,7 +145,7 @@ function dedupeByColumn<T extends { columnName: string }>(items: T[]): T[] {
 // ---------------------------------------------------------------------------
 
 // The query-param identifier for a column: its short `urlKey` if set, otherwise its name.
-// Used both as a filter's param NAME and as the column's token inside sort/cols/hidden/widths,
+// Used both as a filter's param NAME and as the column's token inside sort/cols/widths,
 // so the whole URL reads in the same compact terms (e.g. ?in=true&sort=ti:desc&cols=ti,lg).
 export function urlKeyForColumn(column: IGridColumn): string {
     return column.urlKey ?? column.name;
@@ -331,7 +331,7 @@ export function parseGridConfigFromSearch(
     const filters: GridFilter[] = [];
     for (const column of columnDefinitions) {
         const key = urlKeyForColumn(column);
-        if (reserved.has(key)) continue; // never let a column shadow sort/cols/hidden/widths
+        if (reserved.has(key)) continue; // never let a column shadow sort/cols/widths
         if (!params.has(key)) continue;
         const value = params.get(key);
         // Only an actual (non-empty) value counts as "a filter is present". A bare `?ti=`

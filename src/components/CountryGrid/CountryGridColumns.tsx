@@ -18,8 +18,8 @@ export interface ICountryGridRowData {
     bookCount: number;
 }
 
-// Short, stable URL keys for every country-grid column (filters + sort/cols/hidden/widths).
-// Must be unique within this grid and not equal a reserved param (sort/cols/hidden/widths).
+// Short, stable URL keys for every country-grid column (filters + sort/cols/widths).
+// Must be unique within this grid and not equal a reserved param (sort/cols/widths).
 const countryGridUrlKeys: { [name: string]: string } = {
     name: "nm",
     code: "cd",
