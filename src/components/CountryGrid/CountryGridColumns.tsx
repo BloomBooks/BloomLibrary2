@@ -1,5 +1,6 @@
 import React from "react";
 import { IGridColumn } from "../Grid/GridColumns";
+import { applyUrlKeys } from "../Grid/gridUrlConfig";
 import { TableFilterRow } from "@devexpress/dx-react-grid-material-ui";
 import { Filter, Sorting } from "@devexpress/dx-react-grid";
 import {
@@ -16,6 +17,17 @@ export interface ICountryGridRowData {
     blorgLanguageTags: string[];
     bookCount: number;
 }
+
+// Short, stable URL keys for every country-grid column (filters + sort/cols/widths).
+// Must be unique within this grid and not equal a reserved param (sort/cols/widths).
+const countryGridUrlKeys: { [name: string]: string } = {
+    name: "nm",
+    code: "cd",
+    knownLanguageCount: "klc",
+    blorgLanguageCount: "blc",
+    blorgLanguageTags: "blt",
+    bookCount: "bc",
+};
 
 // Define the function getCountryGridColumnsDefinitions
 export function getCountryGridColumnsDefinitions(): IGridColumn[] {
@@ -131,7 +143,7 @@ export function getCountryGridColumnsDefinitions(): IGridColumn[] {
             },
         },
     ];
-    return definitions;
+    return applyUrlKeys(definitions, countryGridUrlKeys);
 }
 
 export function compareCountryGridRows(

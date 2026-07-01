@@ -1,12 +1,6 @@
 import { css } from "@emotion/react";
 
-import React, {
-    useState,
-    useEffect,
-    useMemo,
-    ReactText,
-    useContext,
-} from "react";
+import React, { useState, useMemo, ReactText, useContext } from "react";
 
 import {
     Plugin,
@@ -41,13 +35,16 @@ import {
     CustomPaging,
     Filter as GridFilter,
     RowDetailState,
-    Sorting,
 } from "@devexpress/dx-react-grid";
 import { TableCell, useTheme } from "@material-ui/core";
 import { IFilter, BooleanOptions } from "../../IFilter";
-import { getBookGridColumnsDefinitions, IGridColumn } from "./GridColumns";
+import {
+    getBookGridColumnsDefinitions,
+    IGridColumn,
+    getColumnsVisibleToUser,
+} from "./GridColumns";
 
-import { useStorageState } from "react-storage-hooks";
+import { useGridConfigInUrl } from "./useGridConfigInUrl";
 import { Book } from "../../model/Book";
 import StaffPanel from "../Admin/StaffPanel";
 import { useGetLoggedInUser, User } from "../../connection/LoggedInUser";
@@ -67,76 +64,48 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
         );
         const user = useGetLoggedInUser();
         const kBooksPerGridPage = 20;
-        const [gridFilters, setGridFilters] = useState<GridFilter[]>(
-            props.initialGridFilters || []
-        );
         const [gridPage, setGridPage] = useState(0);
-        const [columns, setColumns] = useState<ReadonlyArray<IGridColumn>>([]);
-        const [sortings, setSortings] = useState<ReadonlyArray<Sorting>>([]);
         const [bookGridColumnDefinitions] = useState(
             getBookGridColumnsDefinitions()
         );
         const [expandedRowIds, setExpandedRowIds] = useState<ReactText[]>([]);
-        const [
-            columnNamesInDisplayOrder,
-            setColumnNamesInDisplayOrder,
-        ] = useStorageState<string[]>(
-            localStorage,
-            "book-grid-column-order",
-            bookGridColumnDefinitions.map((c) => c.name)
-        );
-        // when a new version adds a new column, the list of columns in order will not match
-        // the full list of columns. Instead of coping with this, the devexpress grid just locks down the new
-        // column as the first one. So here we detect added and removed columns, while preserving order.
-        useEffect(() => {
-            const newCompleteSetInDefaultOrder = bookGridColumnDefinitions.map(
-                (c) => c.name
-            );
-            const columnsThatNeedToBeAdded = newCompleteSetInDefaultOrder.filter(
-                (x) => !columnNamesInDisplayOrder.includes(x)
-            );
-            const columnsThatNeedToBeRemoved = columnNamesInDisplayOrder.filter(
-                (x) => !newCompleteSetInDefaultOrder.includes(x)
-            );
-            if (
-                columnsThatNeedToBeAdded.length ||
-                columnsThatNeedToBeRemoved.length
-            ) {
-                const oldOrderWithNewOnesAtEnd = columnNamesInDisplayOrder.concat(
-                    columnsThatNeedToBeAdded
-                );
-                const columnsWithAnyOldOnesRemoved = oldOrderWithNewOnesAtEnd.filter(
-                    (n) => !columnsThatNeedToBeRemoved.includes(n)
-                );
-                setColumnNamesInDisplayOrder(columnsWithAnyOldOnesRemoved);
-            }
-        }, [
-            columnNamesInDisplayOrder,
-            setColumnNamesInDisplayOrder,
-            bookGridColumnDefinitions,
-        ]);
 
-        const [hiddenColumnNames, setHiddenColumnNames] = useStorageState<
-            string[]
-        >(
-            localStorage,
-            "book-grid-column-hidden",
-            bookGridColumnDefinitions
-                .filter((c) => !c.defaultVisible)
-                .map((c) => c.name)
+        // The columns this user may see (some are moderator-/login-gated). Drives both the
+        // rendered `columns` set and which URL sort/filter config the hook is allowed to honor.
+        const visibleColumnDefinitions = useMemo(
+            () => getColumnsVisibleToUser(bookGridColumnDefinitions, user),
+            [bookGridColumnDefinitions, user]
         );
+        const availableColumnNames = useMemo(
+            () => visibleColumnDefinitions.map((c) => c.name),
+            [visibleColumnDefinitions]
+        );
+        // The columns this user may see; drives the grid's rendered column set.
+        const columns = visibleColumnDefinitions;
+
+        // Grid configuration (sort, column filters, column order/visibility, widths) lives
+        // in the URL so a view can be bookmarked/shared; column order & visibility also fall
+        // back to the user's personal localStorage preference when the URL says nothing.
+        // The hook also reconciles columns added/removed across releases.
+        const {
+            sortings,
+            setSortings,
+            gridFilters,
+            setGridFilters,
+            columnNamesInDisplayOrder,
+            setColumnNamesInDisplayOrder,
+            hiddenColumnNames,
+            setHiddenColumnNames,
+            columnWidths,
+            setColumnWidths,
+        } = useGridConfigInUrl(bookGridColumnDefinitions, "book-grid", {
+            initialFilters: props.initialGridFilters,
+            availableColumnNames,
+        });
 
         // enhance: make the date nice (remove Hour/Minute/Seconds, show as YYYY-MM-DD)
         // enhance: add "in circulation" column
 
-        const defaultColumnWidths = useMemo(
-            () =>
-                bookGridColumnDefinitions.map((c) => ({
-                    columnName: c.name,
-                    width: "auto",
-                })),
-            [bookGridColumnDefinitions]
-        );
         const filterMadeFromPageSearchPlusColumnFilters = CombineGridAndSearchBoxFilter(
             bookGridColumnDefinitions,
             gridFilters,
@@ -183,21 +152,6 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                 descending: s.direction === "desc",
             }))
         );
-        const thisIsAModerator = user?.moderator;
-        useEffect(() => {
-            setColumns(
-                bookGridColumnDefinitions.filter(
-                    // some columns we include only if we are logged in, or
-                    // logged in with the right permissions
-                    (col) =>
-                        user?.moderator ||
-                        (!col.moderatorOnly && !col.loggedInOnly) ||
-                        (!col.moderatorOnly && col.loggedInOnly && user)
-                )
-            );
-            //setColumnNamesInDisplayOrder(bookGridColumns.map(c => c.name));
-            // todo? useEffect used to depend on router, though doesn't obviously use it.
-        }, [user, thisIsAModerator, bookGridColumnDefinitions]);
 
         // note: this is an embedded function as a way to get at bookGridColumnDefinitions. It's important
         // that we don't reconstruct it on every render, or else we'll lose cursor focus on each key press.
@@ -267,7 +221,7 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                     />
 
                     <FilteringState
-                        defaultFilters={gridFilters}
+                        filters={gridFilters}
                         onFiltersChange={(x) => {
                             // if (props.setCurrentFilter) {
                             //     props.setCurrentFilter(
@@ -285,7 +239,7 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                     />
 
                     <SortingState
-                        defaultSorting={[]}
+                        sorting={sortings}
                         onSortingChange={(sorting) => {
                             setSortings(sorting);
                         }}
@@ -310,7 +264,8 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                     />
                     <TableColumnResizing
                         resizingMode={"nextColumn"}
-                        defaultColumnWidths={defaultColumnWidths}
+                        columnWidths={columnWidths}
+                        onColumnWidthsChange={setColumnWidths}
                     />
                     <TableHeaderRow showSortingControls />
 
@@ -331,7 +286,7 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                         />
                     )}
                     <TableColumnVisibility
-                        defaultHiddenColumnNames={hiddenColumnNames}
+                        hiddenColumnNames={hiddenColumnNames}
                         onHiddenColumnNamesChange={(names) =>
                             setHiddenColumnNames(names)
                         }
