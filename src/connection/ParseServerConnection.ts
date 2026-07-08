@@ -79,7 +79,10 @@ function checkIfUserIsModerator() {
 
 export async function connectParseServer(
     jwtToken: string,
-    emailAddress: string
+    emailAddress: string,
+    // The Google/Firebase profile picture, or null when unavailable (e.g. email-password login).
+    // We only pass it through to the editor login POST; Parse itself doesn't use it.
+    photoUrl?: string | null
 ) {
     return new Promise<any>((resolve, reject) => {
         const connection = getConnection();
@@ -136,7 +139,10 @@ export async function connectParseServer(
                                 usersResult.data.sessionToken;
 
                             if (isForEditor()) {
-                                informEditorOfSuccessfulLogin(usersResult.data);
+                                informEditorOfSuccessfulLogin(
+                                    usersResult.data,
+                                    photoUrl
+                                );
                             }
 
                             resolve(usersResult.data);
