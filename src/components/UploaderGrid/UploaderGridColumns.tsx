@@ -1,5 +1,6 @@
 import React from "react";
 import { IGridColumn } from "../Grid/GridColumns";
+import { applyUrlKeys } from "../Grid/gridUrlConfig";
 import { TableFilterRow } from "@devexpress/dx-react-grid-material-ui";
 import { Filter, Sorting } from "@devexpress/dx-react-grid";
 import {
@@ -19,6 +20,19 @@ export interface IUploaderGridData {
     firstUploadDate?: string; // (not yet implemented)
     latestUploadDate?: string; // (not yet implemented)
 }
+
+// Short, stable URL keys for every uploader-grid column (filters + sort/cols/widths).
+// Must be unique within this grid and not equal a reserved param (sort/cols/widths).
+const uploaderGridUrlKeys: { [name: string]: string } = {
+    email: "em",
+    bookCount: "bc",
+    languages: "lg",
+    countryNames: "cn",
+    creationDate: "cd",
+    organization: "og",
+    firstUploadDate: "fud",
+    latestUploadDate: "lud",
+};
 
 // Define the function getUploaderGridColumnsDefinitions
 export function getUploaderGridColumnsDefinitions(): IGridColumn[] {
@@ -187,7 +201,7 @@ export function getUploaderGridColumnsDefinitions(): IGridColumn[] {
             },
         },
     ];
-    return definitions;
+    return applyUrlKeys(definitions, uploaderGridUrlKeys);
 }
 
 export function filterBooksBeforeCreatingUploaderGridRows(
