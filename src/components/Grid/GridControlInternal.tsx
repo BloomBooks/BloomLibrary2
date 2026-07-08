@@ -36,7 +36,15 @@ import {
     Filter as GridFilter,
     RowDetailState,
 } from "@devexpress/dx-react-grid";
-import { TableCell, useTheme } from "@material-ui/core";
+import {
+    Button,
+    Input,
+    InputAdornment,
+    SvgIcon,
+    TableCell,
+    useTheme,
+} from "@material-ui/core";
+import FilterListIcon from "@material-ui/icons/FilterList";
 import { IFilter, BooleanOptions } from "../../IFilter";
 import {
     getBookGridColumnsDefinitions,
@@ -54,6 +62,39 @@ import { CachedTablesContext } from "../../model/CacheProvider";
 import { ILanguage } from "../../model/Language";
 import matchSorter from "match-sorter";
 import { useGetCollection } from "../../model/Collections";
+
+// @material-ui/icons v4 has no FilterListOff (added in MUI v5), so we render the v5 glyph's
+// path directly. Used on the "Clear Filters" button.
+const FilterListOffIcon: React.FunctionComponent<{
+    fontSize?: "small" | "inherit" | "default" | "large";
+}> = (props) => (
+    <SvgIcon fontSize={props.fontSize}>
+        <path d="M10.83 8H21V6H8.83l2 2zm5 5H18v-2h-4.17l2 2zM14 16.83V18h-4v-2h3.17l-3-3H6v-2h2.17l-3-3H3V6h.17L1.39 4.22 2.8 2.81l18.38 18.38-1.41 1.41L14 16.83z" />
+    </SvgIcon>
+);
+
+// The default filter editor with a leading "filter" funnel icon so each free-text filter field
+// reads clearly as a filter. Passed to TableFilterRow's editorComponent; the dropdown-style
+// custom filter cells (ChoicesFilterCell) render their own control and don't use this.
+const FilterFieldEditor: React.FunctionComponent<TableFilterRow.EditorProps> = ({
+    value,
+    disabled,
+    onChange,
+    getMessage,
+}) => (
+    <Input
+        fullWidth
+        disabled={disabled}
+        value={value ?? ""}
+        placeholder={getMessage("filterPlaceholder")}
+        onChange={(e) => onChange(e.target.value)}
+        startAdornment={
+            <InputAdornment position="start">
+                <FilterListIcon fontSize="small" color="disabled" />
+            </InputAdornment>
+        }
+    />
+);
 
 // we need the observer in order to get the logged in user, which may not be immediately available
 const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer(
@@ -197,6 +238,28 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                             </span>
                         )
                     }
+                    {gridFilters.some(
+                        (f) =>
+                            f.value !== undefined &&
+                            f.value !== null &&
+                            f.value !== ""
+                    ) && (
+                        <Button
+                            size="small"
+                            variant="outlined"
+                            startIcon={<FilterListOffIcon fontSize="small" />}
+                            onClick={() => {
+                                setGridPage(0);
+                                setGridFilters([]);
+                            }}
+                            css={css`
+                                margin-left: 20px;
+                                text-transform: none;
+                            `}
+                        >
+                            Clear Filters
+                        </Button>
+                    )}
                     <span
                         css={css`
                             margin-left: 20px;
@@ -293,6 +356,7 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                     />
                     <TableFilterRow
                         cellComponent={FilteringComponentForOneColumn}
+                        editorComponent={FilterFieldEditor}
                     />
                     <Toolbar />
                     <StatusToolbarPlugin />
