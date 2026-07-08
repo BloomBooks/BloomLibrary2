@@ -15,6 +15,20 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { commonUI } from "../../theme";
 import { ControlsBox } from "./ControlsBox";
 
+// These MUST be defined at module scope, not inside the component. React.lazy()
+// returns a new component type on every call, so creating them during render
+// makes React unmount and remount the children on every re-render, throwing away
+// their state. In particular that reset StaffPanel's "modified" flag (disabling
+// Save) whenever hiding a book re-rendered this via the observed inCirculation.
+// BL-16519.
+// causes webpack to create a chunk for this which we only download as needed.
+const StaffPanel = React.lazy(
+    () => import(/* webpackChunkName: "staffPanel" */ "../Admin/StaffPanel")
+);
+const ReactJsonView = React.lazy(
+    () => import(/* webpackChunkName: "react-json-view" */ "react-json-view")
+);
+
 export const StaffControlsBox: React.FunctionComponent<{
     book: Book;
 }> = (props: { book: Book }) => {
@@ -23,15 +37,6 @@ export const StaffControlsBox: React.FunctionComponent<{
     const showControlsBox = userIsModerator;
 
     if (!showControlsBox) return <Fragment />;
-
-    // causes webpack to create a chunk for this which we only download as needed.
-    const StaffPanel = React.lazy(
-        () => import(/* webpackChunkName: "staffPanel" */ "../Admin/StaffPanel")
-    );
-    const ReactJsonView = React.lazy(
-        () =>
-            import(/* webpackChunkName: "react-json-view" */ "react-json-view")
-    );
 
     const prepareArtifactInfo = (a?: ArtifactVisibilitySettings) =>
         a && {
