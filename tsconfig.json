@@ -24,12 +24,11 @@
         "allowJs": true,
         "skipLibCheck": true,
         "esModuleInterop": true,
-        "moduleResolution": "node",
+        // "bundler" matches how Vite actually resolves modules (respects package.json
+        // "exports"), and avoids the "node"/node10 deprecation that TS 6.0 turns into a
+        // hard error (so no "ignoreDeprecations" crutch is needed; ready for TS 7.0).
+        "moduleResolution": "bundler",
         "isolatedModules": true,
-        // TS 6.0 deprecates moduleResolution "node" (node10); it still works in 6.x.
-        // Keep the existing resolution behavior for now rather than switching modes.
-        // This will need to be revisited before upgrading to TypeScript 7.0.
-        "ignoreDeprecations": "6.0",
         // TS 6.0 flipped this default from false to true. Keep it off to preserve
         // the prior level of checking rather than start flagging side-effect imports.
         "noUncheckedSideEffectImports": false,
