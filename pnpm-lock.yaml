@@ -273,8 +273,8 @@ importers:
                 specifier: 1.3.1
                 version: 1.3.1
             bloom-player:
-                specifier: 2.19.5
-                version: 2.19.5
+                specifier: 2.20.1
+                version: 2.20.1
             concurrently:
                 specifier: 5.1.0
                 version: 5.1.0
@@ -3732,10 +3732,10 @@ packages:
                 integrity: sha512-pvcNpa0UU69UT341rO6AYy4FVAIkUHuZXRIWbq+zHnsVcRzDDjIAhGuuYoi0d//cwIwtt4pkpKycWEfjdV+vww==,
             }
 
-    bloom-player@2.19.5:
+    bloom-player@2.20.1:
         resolution:
             {
-                integrity: sha512-DmOVqB5PiuDBPxGB45xkwlAABmj7kgX87DBdXnVeAUnNXSbzB37dxJ7D8GrxDAGbNO4ZFA8n12DmLEklb8UJ1A==,
+                integrity: sha512-OgcZQYYBSmY1UhrmJhM7mcBbjvj/JyVQxymdOJYDfb0sLTRJGTl4xOCQFtmiqQ4yVyCq7nYeTZpPxBQHytwx8A==,
             }
 
     body-parser@1.20.5:
@@ -12306,7 +12306,7 @@ snapshots:
             readable-stream: 2.3.8
             safe-buffer: 5.2.1
 
-    bloom-player@2.19.5: {}
+    bloom-player@2.20.1: {}
 
     body-parser@1.20.5:
         dependencies:
