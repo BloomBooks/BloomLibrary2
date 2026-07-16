@@ -1,5 +1,6 @@
 import React from "react";
 import { IGridColumn } from "../Grid/GridColumns";
+import { applyUrlKeys } from "../Grid/gridUrlConfig";
 import { TableFilterRow } from "@devexpress/dx-react-grid-material-ui";
 import { Filter, Sorting } from "@devexpress/dx-react-grid";
 import {
@@ -26,6 +27,24 @@ export interface ILanguageGridRowData {
 }
 
 // Define the function getLanguageGridColumnsDefinitions
+// Short, stable URL keys for every language-grid column (filters + sort/cols/widths).
+// Must be unique within this grid and not equal a reserved param (sort/cols/widths).
+const languageGridUrlKeys: { [name: string]: string } = {
+    exonym: "ex",
+    endonym: "en",
+    otherNames: "on",
+    langTag: "lt",
+    firstSeen: "fs",
+    bookCount: "bc",
+    level1Count: "l1",
+    level2Count: "l2",
+    level3Count: "l3",
+    level4Count: "l4",
+    uploaderCount: "uc",
+    uploaderEmails: "ue",
+    countryName: "cn",
+};
+
 export function getLanguageGridColumnsDefinitions(): IGridColumn[] {
     const definitions: IGridColumn[] = [
         {
@@ -297,7 +316,7 @@ export function getLanguageGridColumnsDefinitions(): IGridColumn[] {
             },
         },
     ];
-    return definitions;
+    return applyUrlKeys(definitions, languageGridUrlKeys);
 }
 
 export function filterBooksBeforeCreatingLanguageGridRows(

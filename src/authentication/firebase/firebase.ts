@@ -87,8 +87,13 @@ async function getFirebaseAuthInternal() {
         if (!user || !user.emailVerified || !user.email) {
             return;
         }
+        // The Google/Firebase profile picture. It is populated by Google sign-in and is
+        // null/empty for email-password logins. We thread it down to the editor login POST
+        // (see informEditorOfSuccessfulLogin). Normalize empty string to null so we never
+        // send "" downstream.
+        const photoUrl = user.photoURL || null;
         user.getIdToken().then((idToken: string) => {
-            connectParseServer(idToken, user.email!)
+            connectParseServer(idToken, user.email!, photoUrl)
                 // .then(result =>
                 //     console.log("ConnectParseServer resolved with " + result)
                 // )
