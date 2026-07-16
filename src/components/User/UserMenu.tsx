@@ -42,9 +42,9 @@ export const UserMenu: React.FunctionComponent<IUserMenuProps> = (props) => {
     // combinations is visible at any one time, a single state works for both.
     const [anchorEl, setAnchorEl] = useState(null as Element | null);
 
-    const [loggedInUser, setLoggedInUser] = useState<firebase.User | null>(
-        null
-    );
+    const [loggedInUser, setLoggedInUser] = useState<
+        ReturnType<typeof firebase.auth>["currentUser"]
+    >(null);
     const user = LoggedInUser.current;
 
     const history = useHistory(); // used to jump to My Books
