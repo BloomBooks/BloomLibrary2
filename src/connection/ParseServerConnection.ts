@@ -19,6 +19,9 @@ const connectionsByDataSource: Record<DataSource, IParseConnection> = {
     [DataSource.Local]: createParseConnection(DataSource.Local),
 };
 
+let activeParseLoginPromise: Promise<any> | undefined;
+let activeParseLoginEmail: string | undefined;
+
 export function getConnection(): IParseConnection {
     const result = connectionsByDataSource[getDataSource()];
 
@@ -40,6 +43,25 @@ export function getConnection(): IParseConnection {
     }
 
     return result;
+}
+
+function getHeadersForParseLogin(connection: IParseConnection) {
+    const headers = { ...connection.headers };
+    delete headers["X-Parse-Session-Token"];
+    return headers;
+}
+
+export function hasActiveParseSession(emailAddress?: string): boolean {
+    const currentUser = LoggedInUser.current;
+    if (!currentUser) {
+        return false;
+    }
+
+    if (emailAddress && currentUser.email !== emailAddress) {
+        return false;
+    }
+
+    return !!getConnection().headers["X-Parse-Session-Token"];
 }
 
 // This should only be called when there is a current user logged in.
@@ -84,8 +106,18 @@ export async function connectParseServer(
     // We only pass it through to the editor login POST; Parse itself doesn't use it.
     photoUrl?: string | null
 ) {
-    return new Promise<any>((resolve, reject) => {
-        const connection = getConnection();
+    if (
+        activeParseLoginPromise !== undefined &&
+        activeParseLoginEmail === emailAddress
+    ) {
+        return activeParseLoginPromise;
+    }
+
+    const connection = getConnection();
+    const loginHeaders = getHeadersForParseLogin(connection);
+    const alreadyHadSession = hasActiveParseSession(emailAddress);
+
+    const loginPromise = new Promise<any>((resolve, reject) => {
         // Run a cloud code function (bloomLink) which,
         // if this is a new Firebase user with the email of a known parse server user, will link them.
         // It will do nothing if
@@ -102,7 +134,7 @@ export async function connectParseServer(
                 },
 
                 {
-                    headers: connection.headers,
+                    headers: loginHeaders,
                 }
             )
             .then(() => {
@@ -120,7 +152,7 @@ export async function connectParseServer(
                         },
 
                         {
-                            headers: connection.headers,
+                            headers: loginHeaders,
                         }
                     )
                     .then((usersResult) => {
@@ -148,7 +180,7 @@ export async function connectParseServer(
                             resolve(usersResult.data);
                             checkIfUserIsModerator();
                         } else {
-                            failedToLoginInToParseServer();
+                            failedToLoginInToParseServer(!alreadyHadSession);
                             // Reject the Promise returned by `connectParseServer()`.
                             // This lets callers stop the login flow (for example, `firebase.ts` catches this and
                             // signs the user out of Firebase) rather than silently continuing.
@@ -160,7 +192,7 @@ export async function connectParseServer(
                         }
                     })
                     .catch((err) => {
-                        failedToLoginInToParseServer();
+                        failedToLoginInToParseServer(!alreadyHadSession);
                         reject(err);
                     });
             })
@@ -168,20 +200,35 @@ export async function connectParseServer(
                 console.log(
                     "The `Bloom Link` call failed:" + JSON.stringify(err)
                 );
-                failedToLoginInToParseServer();
+                failedToLoginInToParseServer(!alreadyHadSession);
                 reject(err);
             });
     });
+
+    const trackedPromise = loginPromise.finally(() => {
+        if (activeParseLoginPromise === trackedPromise) {
+            activeParseLoginPromise = undefined;
+            activeParseLoginEmail = undefined;
+        }
+    });
+
+    activeParseLoginPromise = trackedPromise;
+    activeParseLoginEmail = emailAddress;
+
+    return trackedPromise;
 }
-function failedToLoginInToParseServer() {
+
+function failedToLoginInToParseServer(showAlert: boolean) {
     Sentry.captureException(
         new Error(
             "Login to parse server failed after successful firebase login"
         )
     );
-    alert(
-        "Oops, something went wrong when trying to log you into our database."
-    );
+    if (showAlert) {
+        alert(
+            "Oops, something went wrong when trying to log you into our database."
+        );
+    }
 }
 // Remove the parse session header when the user logs out.
 // This is probably redundant since currently the logout process reloads the whole page.

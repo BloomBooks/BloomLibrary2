@@ -1,5 +1,5 @@
 import { observable, makeObservable, autorun } from "mobx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // This is currently just a subset of what ParseServer returns,
 // so don't go renaming anything
@@ -47,11 +47,14 @@ export const LoggedInUser: UserHolder = new UserHolder();
 // OR USE A MORE SPECIFIC HOOK LIKE useGetUserIsModerator().
 export function useGetLoggedInUser(): User | undefined {
     const [user, setUser] = useState(LoggedInUser.current);
-    autorun(() => {
-        if (LoggedInUser.current !== user) {
+    useEffect(() => {
+        const dispose = autorun(() => {
             setUser(LoggedInUser.current);
-        }
-    });
+        });
+
+        return dispose;
+    }, []);
+
     return user;
 }
 
@@ -59,11 +62,14 @@ export function useGetUserIsModerator(): boolean | undefined {
     const [isModerator, setUserIsModerator] = useState(
         LoggedInUser.current?.moderator
     );
-    autorun(() => {
-        if (LoggedInUser.current?.moderator !== isModerator) {
+    useEffect(() => {
+        const dispose = autorun(() => {
             setUserIsModerator(LoggedInUser.current?.moderator);
-        }
-    });
+        });
+
+        return dispose;
+    }, []);
+
     return isModerator;
 }
 

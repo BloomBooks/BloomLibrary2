@@ -1,6 +1,6 @@
 import { css } from "@emotion/react";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button, Menu, MenuItem } from "@material-ui/core";
 import loginIcon from "../../assets/NoUser.svg";
 // Note, currently using the "compat" version of firebase v9, which doesn't support treeshaking. No reason, just a TODO to upgrade to full v9 API.
@@ -45,6 +45,7 @@ export const UserMenu: React.FunctionComponent<IUserMenuProps> = (props) => {
     const [loggedInUser, setLoggedInUser] = useState<
         ReturnType<typeof firebase.auth>["currentUser"]
     >(null);
+    const loggedInUserRef = useRef(loggedInUser);
     const user = LoggedInUser.current;
 
     const history = useHistory(); // used to jump to My Books
@@ -56,6 +57,10 @@ export const UserMenu: React.FunctionComponent<IUserMenuProps> = (props) => {
         showTroubleshootingStuff,
         setShowTroubleshootingStuff,
     ] = useShowTroubleshootingStuff();
+
+    useEffect(() => {
+        loggedInUserRef.current = loggedInUser;
+    }, [loggedInUser]);
 
     /*useEffect(() => {
         firebase
@@ -85,44 +90,43 @@ export const UserMenu: React.FunctionComponent<IUserMenuProps> = (props) => {
             });
     }, []);*/
 
-    useEffect(
-        () =>
-            firebaseAuthStateChanged(() => {
-                const kSecondsPerDay = 24 * 60 * 60;
-                // If someone is now logged in, and it wasn't who we previously had logged
-                // in (or more likely no one was previously logged in), report login
-                if (
-                    firebase.auth()?.currentUser?.email &&
-                    loggedInUser?.email !== firebase.auth()?.currentUser?.email
-                ) {
-                    setCookie("loggedIn", "true", {
-                        maxAge: 360 * kSecondsPerDay,
-                        path: "/",
-                    });
-                    // In previous blorg, we tracked the user name, but we're avoiding PII now.
-                    track("Log In", {});
-                }
-                // If no one is now logged in and someone was, report logout.
-                // Review: we won't (and probably can't?) get a report when the browser
-                // or tab shuts down and similar.
-                if (
-                    !firebase.auth()?.currentUser?.email &&
-                    loggedInUser?.email
-                ) {
-                    setCookie("loggedIn", "false", {
-                        maxAge: 360 * kSecondsPerDay,
-                        path: "/",
-                    });
-                    track("Log Out", {});
-                }
-                setLoggedInUser(firebase.auth().currentUser);
-                // console.log(
-                //     "$$$$$$$$$$$$ onAuthStateChanged " +
-                //         firebase.auth().currentUser
-                // );
-            }),
-        [loggedInUser, setCookie]
-    );
+    useEffect(() => {
+        firebaseAuthStateChanged(() => {
+            const kSecondsPerDay = 24 * 60 * 60;
+            const currentUser = firebase.auth().currentUser;
+            const previousLoggedInUser = loggedInUserRef.current;
+
+            // If someone is now logged in, and it wasn't who we previously had logged
+            // in (or more likely no one was previously logged in), report login
+            if (
+                currentUser?.email &&
+                previousLoggedInUser?.email !== currentUser.email
+            ) {
+                setCookie("loggedIn", "true", {
+                    maxAge: 360 * kSecondsPerDay,
+                    path: "/",
+                });
+                // In previous blorg, we tracked the user name, but we're avoiding PII now.
+                track("Log In", {});
+            }
+            // If no one is now logged in and someone was, report logout.
+            // Review: we won't (and probably can't?) get a report when the browser
+            // or tab shuts down and similar.
+            if (!currentUser?.email && previousLoggedInUser?.email) {
+                setCookie("loggedIn", "false", {
+                    maxAge: 360 * kSecondsPerDay,
+                    path: "/",
+                });
+                track("Log Out", {});
+            }
+            loggedInUserRef.current = currentUser;
+            setLoggedInUser(currentUser);
+            // console.log(
+            //     "$$$$$$$$$$$$ onAuthStateChanged " +
+            //         firebase.auth().currentUser
+            // );
+        });
+    }, [setCookie]);
     useEffect(() => {
         getCurrentUser().then((currentUser) => {
             if (currentUser !== null) {
