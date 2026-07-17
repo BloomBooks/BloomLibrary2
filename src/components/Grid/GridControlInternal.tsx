@@ -113,9 +113,14 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
 
         // The columns this user may see (some are moderator-/login-gated). Drives both the
         // rendered `columns` set and which URL sort/filter config the hook is allowed to honor.
+        // user.moderator flips in place (same User object) shortly after login resolves; read it
+        // during render so the mobx observer stays subscribed, and include it in the deps so the
+        // memo recomputes -- the `user` identity alone never changes when the flag arrives.
+        const isModerator = user?.moderator;
         const visibleColumnDefinitions = useMemo(
             () => getColumnsVisibleToUser(bookGridColumnDefinitions, user),
-            [bookGridColumnDefinitions, user]
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+            [bookGridColumnDefinitions, user, isModerator]
         );
         const availableColumnNames = useMemo(
             () => visibleColumnDefinitions.map((c) => c.name),
@@ -125,9 +130,9 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
         const columns = visibleColumnDefinitions;
 
         // Grid configuration (sort, column filters, column order/visibility, widths) lives
-        // in the URL so a view can be bookmarked/shared; column order & visibility also fall
-        // back to the user's personal localStorage preference when the URL says nothing.
-        // The hook also reconciles columns added/removed across releases.
+        // in the URL so a view can be bookmarked/shared; anything absent from the URL means
+        // the column-definition defaults. The hook also reconciles columns added/removed
+        // across releases.
         const {
             sortings,
             setSortings,
