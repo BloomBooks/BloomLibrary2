@@ -200,7 +200,7 @@ export function findUrlKeyProblems(
 // reconciliation / validation helpers
 // ---------------------------------------------------------------------------
 
-// Turn a candidate column order (from the URL, possibly stale) into a
+// Turn a candidate column order (from the URL or a legacy saved layout, possibly stale) into a
 // complete, valid order: keep known names in their given order, drop names that are no
 // longer real columns, and append any columns missing from the candidate (e.g. a column
 // added in a newer release) at the end in their default order.
@@ -257,7 +257,8 @@ export function encodeVisibleOrder(
 // Inverse of encodeVisibleOrder. From the `cols` value, produce the full column order (the
 // visible columns in the given order, slotted into their factory positions; hidden columns
 // keep their factory slots) and the hidden set (every column not listed). Returns undefined
-// when `cols` is absent (caller falls back to the column-definition defaults).
+// when `cols` is absent (caller falls back to the personal saved layout or the
+// column-definition defaults).
 export function decodeVisibleOrder(
     value: Maybe,
     columnDefinitions: ReadonlyArray<IGridColumn>
@@ -309,7 +310,8 @@ export interface IGridConfigFromUrl {
     sortings?: Sorting[];
     filters?: GridFilter[]; // undefined => no filter params present at all
     // order + hidden are derived together from the single `cols` param (visible-in-order).
-    // Both undefined when `cols` is absent (caller falls back to the column-definition defaults).
+    // Both undefined when `cols` is absent (caller falls back to the personal saved layout
+    // or the column-definition defaults).
     order?: string[]; // full column order (all columns)
     hidden?: string[];
     widths?: IColumnWidth[];

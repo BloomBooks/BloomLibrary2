@@ -79,8 +79,9 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
             [visibleColumnDefinitions]
         );
         // Grid configuration (sort, column filters, column order/visibility, widths) lives
-        // in the URL so a view can be bookmarked/shared; anything absent from the URL means
-        // the column-definition defaults. See useGridConfigInUrl.
+        // in the URL so a view can be bookmarked/shared; a bare URL gets the user's saved
+        // view (column layout, sort, widths -- never filters; localStorage), else the
+        // column-definition defaults. See useGridConfigInUrl.
         const {
             sortings,
             setSortings,
@@ -92,6 +93,7 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
             setHiddenColumnNames,
             columnWidths,
             setColumnWidths,
+            resetView,
         } = useGridConfigInUrl(languageGridColumnDefinitions, "language-grid", {
             availableColumnNames,
         });
@@ -428,7 +430,7 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
                         cellComponent={FilteringComponentForOneColumn}
                     />
                     <Toolbar />
-                    {ModeratorStatusToolbarPlugin(theme, user)}
+                    {ModeratorStatusToolbarPlugin(theme, user, resetView)}
                     <ColumnChooser />
                     <PagingPanel />
                 </Grid>

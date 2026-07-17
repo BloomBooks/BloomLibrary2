@@ -20,7 +20,13 @@ const columns: IGridColumn[] = [
         defaultVisible: true,
         sortingEnabled: true,
     },
-    { name: "incoming", title: "Incoming", urlKey: "in", defaultVisible: true },
+    {
+        name: "incoming",
+        title: "Incoming",
+        urlKey: "in",
+        defaultVisible: true,
+        moderatorOnly: true, // like the real column; exercises the migration cleansing
+    },
     {
         name: "level",
         title: "Level",
@@ -69,7 +75,7 @@ function param(key: string) {
 }
 
 beforeEach(() => {
-    localStorage.clear(); // the hook must never touch localStorage; cleared so tests can assert that
+    localStorage.clear(); // isolate the personal saved layout between tests
     harnessOptions = undefined;
     window.history.replaceState(null, "", "/grid/books");
 });
@@ -407,36 +413,118 @@ describe("initialFilters (e.g. bulk-edit) seeding & precedence", () => {
     });
 });
 
-describe("the URL is the only source of grid config (no persistence)", () => {
-    it("a bare URL yields the factory-default view and stays bare", () => {
+describe("personal saved view (columns/sort/widths in localStorage; a URL with grid params still wins)", () => {
+    it("a bare URL with nothing saved yields the factory-default view and stays bare", () => {
         mount();
         expect(window.location.search).toBe("");
         expect(api.columnNamesInDisplayOrder).toEqual(DEFAULT_ORDER);
         expect(api.hiddenColumnNames).toEqual(DEFAULT_HIDDEN);
     });
 
-    it("layout changes go to the URL only; a fresh bare URL is factory default again", () => {
+    it("remembers a layout change and restores it on a later bare-URL visit, backfilling the URL", () => {
         mount();
         act(() => api.setHiddenColumnNames([...DEFAULT_HIDDEN, "incoming"]));
         expect(param("cols")).toBe("ti");
-        // Nothing was persisted anywhere...
-        expect(localStorage.getItem("test-grid-column-hidden")).toBeNull();
-        expect(localStorage.getItem("test-grid-column-order")).toBeNull();
-        // ...so a remount on a bare URL is back to the factory default (incoming visible).
+        // The layout (and only the layout) was remembered, in the same compact cols encoding.
+        expect(localStorage.getItem("test-grid-cols")).toBe("ti");
+        // A fresh visit on a bare URL restores it...
         unmount();
         window.history.replaceState(null, "", "/grid/books");
         mount();
-        expect(api.hiddenColumnNames).toEqual(DEFAULT_HIDDEN);
+        expect(api.hiddenColumnNames).toEqual([
+            "incoming",
+            "level",
+            "Is Rebrand",
+        ]);
+        // ...and mirrors it into the address bar, so the shown view is shareable as-is.
+        expect(param("cols")).toBe("ti");
     });
 
-    it("a URL with grid params is respected as-is (shared link)", () => {
+    it("restores a saved reorder on a bare URL", () => {
+        localStorage.setItem("test-grid-cols", "in,ti");
+        mount();
+        expect(api.columnNamesInDisplayOrder).toEqual([
+            "incoming",
+            "title",
+            "level",
+            "Is Rebrand",
+        ]);
+        expect(api.hiddenColumnNames).toEqual(DEFAULT_HIDDEN);
+        expect(param("cols")).toBe("in,ti"); // backfilled
+    });
+
+    it("remembers sort and widths, restores them on a bare visit; filters are NOT remembered", () => {
+        mount();
+        act(() =>
+            api.setSortings([{ columnName: "level", direction: "desc" }])
+        );
+        act(() =>
+            api.setColumnWidths([
+                { columnName: "title", width: 250 },
+                { columnName: "incoming", width: "auto" },
+                { columnName: "level", width: "auto" },
+                { columnName: "Is Rebrand", width: "auto" },
+            ])
+        );
+        act(() =>
+            api.setGridFilters([
+                { columnName: "title", operation: "contains", value: "math" },
+            ])
+        );
+        expect(localStorage.getItem("test-grid-sort")).toBe("lv:desc");
+        expect(localStorage.getItem("test-grid-widths")).toBe("ti:250");
+        unmount();
+        window.history.replaceState(null, "", "/grid/books");
+        mount();
+        // sort + widths came back (and were backfilled into the URL)...
+        expect(api.sortings).toEqual([
+            { columnName: "level", direction: "desc" },
+        ]);
+        expect(
+            api.columnWidths.find((w) => w.columnName === "title")!.width
+        ).toBe(250);
+        expect(param("sort")).toBe("lv:desc");
+        expect(param("widths")).toBe("ti:250");
+        // ...but the filter did not (a silently re-applied filter reads as missing books).
+        expect(api.gridFilters).toEqual([]);
+        expect(param("ti")).toBeNull();
+    });
+
+    it("clearing the sort forgets it (URL and storage stay clean)", () => {
+        mount();
+        act(() =>
+            api.setSortings([{ columnName: "level", direction: "desc" }])
+        );
+        expect(localStorage.getItem("test-grid-sort")).toBe("lv:desc");
+        act(() => api.setSortings([]));
+        expect(param("sort")).toBeNull();
+        expect(localStorage.getItem("test-grid-sort")).toBeNull();
+    });
+
+    it("returning to the factory default forgets the saved layout (URL and storage stay clean)", () => {
+        mount();
+        act(() => api.setHiddenColumnNames([...DEFAULT_HIDDEN, "incoming"]));
+        expect(localStorage.getItem("test-grid-cols")).toBe("ti");
+        act(() => api.setHiddenColumnNames(DEFAULT_HIDDEN));
+        expect(param("cols")).toBeNull();
+        expect(localStorage.getItem("test-grid-cols")).toBeNull();
+    });
+
+    it("never mixes the saved layout into a URL that already has grid params (shared link)", () => {
+        localStorage.setItem("test-grid-cols", "in,ti");
         window.history.replaceState(null, "", "/grid/books?ti=math");
         mount();
+        // The link is respected as-is: its filter stays, the personal layout is NOT applied...
         expect(param("ti")).toBe("math");
         expect(param("cols")).toBeNull();
+        expect(api.columnNamesInDisplayOrder).toEqual(DEFAULT_ORDER);
+        expect(api.hiddenColumnNames).toEqual(DEFAULT_HIDDEN);
+        // ...and merely viewing the link does not disturb the saved layout.
+        expect(localStorage.getItem("test-grid-cols")).toBe("in,ti");
     });
 
-    it("cols in the URL fully determines visibility (unlisted = hidden)", () => {
+    it("lets cols in the URL override the saved layout (unlisted = hidden)", () => {
+        localStorage.setItem("test-grid-cols", "in,ti");
         window.history.replaceState(null, "", "/grid/books?cols=ti");
         mount();
         expect(api.hiddenColumnNames).toEqual([
@@ -444,6 +532,106 @@ describe("the URL is the only source of grid config (no persistence)", () => {
             "level",
             "Is Rebrand",
         ]);
+        expect(localStorage.getItem("test-grid-cols")).toBe("in,ti");
+    });
+
+    it("resetView returns to the factory default and forgets the saved view (but keeps filters)", () => {
+        mount();
+        act(() => api.setHiddenColumnNames([...DEFAULT_HIDDEN, "incoming"]));
+        act(() =>
+            api.setSortings([{ columnName: "level", direction: "desc" }])
+        );
+        act(() =>
+            api.setColumnWidths([
+                { columnName: "title", width: 250 },
+                { columnName: "incoming", width: "auto" },
+                { columnName: "level", width: "auto" },
+                { columnName: "Is Rebrand", width: "auto" },
+            ])
+        );
+        act(() =>
+            api.setGridFilters([
+                { columnName: "title", operation: "contains", value: "math" },
+            ])
+        );
+        act(() => api.resetView());
+        // The view is factory default again...
+        expect(api.columnNamesInDisplayOrder).toEqual(DEFAULT_ORDER);
+        expect(api.hiddenColumnNames).toEqual(DEFAULT_HIDDEN);
+        expect(api.sortings).toEqual([]);
+        expect(api.columnWidths.every((w) => w.width === "auto")).toBe(true);
+        // ...nothing view-related is left in the URL or storage...
+        expect(param("cols")).toBeNull();
+        expect(param("sort")).toBeNull();
+        expect(param("widths")).toBeNull();
+        expect(localStorage.getItem("test-grid-cols")).toBeNull();
+        expect(localStorage.getItem("test-grid-sort")).toBeNull();
+        expect(localStorage.getItem("test-grid-widths")).toBeNull();
+        // ...but the filter (visible in the filter row, never persisted) survives.
+        expect(api.gridFilters).toEqual([
+            { columnName: "title", operation: "contains", value: "math" },
+        ]);
+        expect(param("ti")).toBe("math");
+    });
+
+    it("migrates the pre-BL-16569 two-key JSON layout once, then deletes the old keys", () => {
+        localStorage.setItem(
+            "test-grid-column-order",
+            JSON.stringify(["incoming", "title", "level", "Is Rebrand"])
+        );
+        localStorage.setItem(
+            "test-grid-column-hidden",
+            JSON.stringify(["level", "Is Rebrand", "title"])
+        );
+        mount();
+        // visible-in-order was [incoming] => saved/backfilled as cols=in
+        expect(localStorage.getItem("test-grid-cols")).toBe("in");
+        expect(param("cols")).toBe("in");
+        expect(api.hiddenColumnNames).toEqual(["title", "level", "Is Rebrand"]);
+        expect(localStorage.getItem("test-grid-column-order")).toBeNull();
+        expect(localStorage.getItem("test-grid-column-hidden")).toBeNull();
+    });
+
+    it("migration un-hides a gated default-visible column (the BL-16569 poison)", () => {
+        localStorage.setItem(
+            "test-grid-column-order",
+            JSON.stringify(DEFAULT_ORDER)
+        );
+        // A stale legacy list hides `incoming` (moderator-only, default-visible) -- the very
+        // state that made the moderator columns vanish. Migration must not carry it forward.
+        localStorage.setItem(
+            "test-grid-column-hidden",
+            JSON.stringify(["incoming", "level", "Is Rebrand"])
+        );
+        mount();
+        expect(api.hiddenColumnNames).toEqual(DEFAULT_HIDDEN); // incoming visible again
+        // After cleansing, this layout IS the factory default, so nothing is kept at all.
+        expect(localStorage.getItem("test-grid-cols")).toBeNull();
+        expect(window.location.search).toBe("");
+    });
+
+    it("migrating a factory-default legacy layout keeps everything bare", () => {
+        localStorage.setItem(
+            "test-grid-column-order",
+            JSON.stringify(DEFAULT_ORDER)
+        );
+        localStorage.setItem(
+            "test-grid-column-hidden",
+            JSON.stringify(DEFAULT_HIDDEN)
+        );
+        mount();
+        expect(window.location.search).toBe("");
+        expect(localStorage.getItem("test-grid-cols")).toBeNull();
+        expect(localStorage.getItem("test-grid-column-order")).toBeNull();
+    });
+
+    it("discards (and purges) a malformed legacy layout, leaving the factory default", () => {
+        localStorage.setItem("test-grid-column-order", "not json");
+        mount();
+        expect(api.columnNamesInDisplayOrder).toEqual(DEFAULT_ORDER);
+        expect(api.hiddenColumnNames).toEqual(DEFAULT_HIDDEN);
+        expect(localStorage.getItem("test-grid-column-order")).toBeNull();
+        expect(localStorage.getItem("test-grid-cols")).toBeNull();
     });
 });
 

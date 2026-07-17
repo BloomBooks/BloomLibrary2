@@ -28,6 +28,7 @@ import { useGetDataForAggregateGrid } from "../../connection/LibraryQueryHooks";
 import { IMinimalBookInfo, ILangTagData } from "./AggregateGridInterfaces";
 import { observer } from "mobx-react-lite";
 import { useGetLoggedInUser, User } from "../../connection/LoggedInUser";
+import { ResetGridViewButton } from "../Grid/ResetGridViewButton";
 import { isLocalhost } from "../../connection/DataSource";
 import {
     Plugin,
@@ -377,7 +378,9 @@ export function getLangTagDataForIrregularLangCode(
 
 export const ModeratorStatusToolbarPlugin = (
     theme: Theme,
-    user: User | undefined
+    user: User | undefined,
+    // when provided, a quiet reset-view button is placed just left of the column chooser
+    onResetView?: () => void
 ) => (
     <Plugin name="ShowModeratorStatus">
         <Template name="toolbarContent">
@@ -391,6 +394,7 @@ export const ModeratorStatusToolbarPlugin = (
                 {user && `${user.moderator ? "Moderator" : ""}`}
             </span>
             <TemplatePlaceholder />
+            {onResetView && <ResetGridViewButton onReset={onResetView} />}
         </Template>
     </Plugin>
 );

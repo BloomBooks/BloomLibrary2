@@ -1,8 +1,11 @@
 // Reusable hook that keeps a grid's configuration (sort, per-column filters, which columns
 // are shown, their order, and any resized widths) in the URL so a view can be bookmarked or
-// shared. The URL is the ONLY source of grid configuration: params present in the URL win,
-// and anything absent means the column-definition defaults. (Nothing is persisted per user;
-// to keep a custom view, bookmark its URL.)
+// shared. At runtime the URL is the ONLY source of grid configuration: params present in the
+// URL win, and anything absent means the column-definition defaults -- with one mount-time
+// exception: the user's personal saved view -- column order/visibility, sort, and widths
+// (never filters) -- is remembered in localStorage as the same compact strings the URL params
+// use, and a BARE url (no grid params at all) is seeded from it and immediately backfilled
+// into the address bar, after which the URL-only rule holds. See "personal saved view" below.
 //
 // Why we touch the URL with native history.replaceState instead of react-router /
 // use-query-params: the filter row is a free-typing text input. Writing the URL through the
@@ -19,8 +22,9 @@
 // so the stale router search is never used to compose a destination. Real Back/Forward fires a
 // genuine popstate, which both react-router and the listener below handle.
 //
-// Precedence on load: a dimension present in the URL wins; otherwise the column-definition
-// defaults (plus the caller's initialFilters seeding, e.g. the bulk-edit page).
+// Precedence on load: a dimension present in the URL wins; a completely bare URL gets the
+// personal saved view (cols/sort/widths); otherwise the column-definition defaults (plus the
+// caller's initialFilters seeding, e.g. the bulk-edit page).
 //
 // The URL speaks in each column's short `urlKey` (see gridUrlConfig); internally the grid uses
 // the column `name`. This hook maps name->key when writing and parseGridConfigFromSearch maps
@@ -59,9 +63,13 @@ export interface IGridConfigInUrl {
     setHiddenColumnNames: (hidden: string[]) => void;
     columnWidths: IColumnWidth[];
     setColumnWidths: (widths: IColumnWidth[]) => void;
+    // One click back to the factory-default view (columns/order, sort, widths -- not filters,
+    // which have their own Clear Filters button). Also forgets the personal saved view.
+    resetView: () => void;
 }
 
-// gridName (e.g. "book-grid") only labels dev-time diagnostics. initialFilters seeds the
+// gridName (e.g. "book-grid") namespaces the personal saved view in localStorage and labels
+// dev-time diagnostics. initialFilters seeds the
 // per-column filters when the URL has none (e.g. the bulk-edit page opens the grid pre-filtered).
 // availableColumnNames (optional) is the set of columns THIS user may see (see
 // getColumnsVisibleToUser). A shared/bookmarked URL can name a column the viewer lacks (e.g. a
@@ -114,6 +122,100 @@ export function useGridConfigInUrl(
         }
     }, [columnDefinitions, gridName]);
 
+    // -----------------------------------------------------------------------
+    // personal saved view (column order/visibility, sort, widths -- never filters)
+    // -----------------------------------------------------------------------
+    // The user's last column layout (`cols`), sort, and column widths are remembered as the
+    // SAME compact strings the URL params use (see gridUrlConfig), so restoring is literally
+    // "as if your last cols/sort/widths were in the URL" -- one pipeline, nothing to drift.
+    // Filters are deliberately NOT remembered: a filter silently re-applied on a later visit
+    // reads as "where did my books go?", and it would fight the bulk-edit initialFilters
+    // seeding. The saved view acts only at mount: a BARE url (no grid params at all) is
+    // seeded from it, and the backfill effect below then writes it into the address bar, so
+    // after mount the URL is once again the only source of truth. A URL that already carries
+    // any grid param is an explicit/shared view and is never mixed with the personal one.
+    // Each dimension is saved when the user changes it and removed when it returns to its
+    // factory default (mirroring when the URL param exists).
+    //
+    // Why this can't re-create BL-16569 (moderator columns missing after login): the layout
+    // state spans the full column namespace regardless of who is logged in, and the column
+    // chooser never offers a gated column to a user who lacks it, so a layout saved while
+    // logged out still lists the moderator columns as visible. (Like a bookmarked URL, though,
+    // a saved layout is an exact snapshot: a column added in a later release stays hidden for
+    // a user with a saved layout until re-chosen or reset.)
+    const savedKey = (param: string) => `${gridName}-${param}`;
+    const writeSaved = (param: string, value: string | undefined) => {
+        try {
+            if (value === undefined)
+                window.localStorage.removeItem(savedKey(param));
+            else window.localStorage.setItem(savedKey(param), value);
+        } catch {
+            // localStorage unavailable/full: the view just isn't remembered.
+        }
+    };
+    // One-time migration from the two-key JSON format the grids used before BL-16569 (raw
+    // order/hidden name arrays; sort and widths were never persisted in that era): the old
+    // arrays go through the same reconciliation the URL path uses, the result is saved under
+    // the new key, and the old keys are deleted.
+    const migrateLegacySavedLayout = (): string | undefined => {
+        const legacyOrder = window.localStorage.getItem(
+            `${gridName}-column-order`
+        );
+        const legacyHidden = window.localStorage.getItem(
+            `${gridName}-column-hidden`
+        );
+        if (legacyOrder === null && legacyHidden === null) return undefined;
+        // Delete first so even a malformed value is purged rather than retried forever.
+        window.localStorage.removeItem(`${gridName}-column-order`);
+        window.localStorage.removeItem(`${gridName}-column-hidden`);
+        const order = reconcileColumnOrder(
+            legacyOrder ? JSON.parse(legacyOrder) : allColumnNames,
+            allColumnNames
+        );
+        // The legacy hidden lists in the wild are where BL-16569's pain lived: they can
+        // name moderator-/login-gated columns the user never chose to hide (gating and
+        // defaults shifted across releases, and a stale list re-asserted itself forever).
+        // So the one-time migration un-hides any gated column that is default-visible; a
+        // user who really wants it hidden can hide it again once. Layouts saved in the NEW
+        // format only ever hide a gated column by deliberate choice, so this cleansing is
+        // not needed (and not applied) anywhere else.
+        const gatedDefaultVisible = new Set(
+            columnDefinitions
+                .filter(
+                    (c) =>
+                        (c.moderatorOnly || c.loggedInOnly) && c.defaultVisible
+                )
+                .map((c) => c.name)
+        );
+        const hidden = dropUnknownColumns(
+            legacyHidden ? JSON.parse(legacyHidden) : defaultHidden,
+            allColumnNames
+        ).filter((name) => !gatedDefaultVisible.has(name));
+        const encoded = encodeVisibleOrder(order, hidden, columnDefinitions);
+        // undefined = the legacy layout was just the factory default: nothing to keep.
+        if (encoded !== undefined)
+            window.localStorage.setItem(savedKey("cols"), encoded);
+        return encoded;
+    };
+    // Read once per mount.
+    const [savedAtMount] = useState<{
+        cols?: string;
+        sort?: string;
+        widths?: string;
+    }>(() => {
+        try {
+            const read = (param: string) =>
+                window.localStorage.getItem(savedKey(param)) ?? undefined;
+            return {
+                cols: read("cols") ?? migrateLegacySavedLayout(),
+                sort: read("sort"),
+                widths: read("widths"),
+            };
+        } catch {
+            return {};
+        }
+    });
+
     // The columns THIS user may actually see. URL sort/filter config naming a column outside this
     // set is dropped from what we expose (see the visible* memos near the return). Defaults to all.
     const availableSet = useMemo(
@@ -149,16 +251,40 @@ export function useGridConfigInUrl(
     });
 
     // Parse the URL exactly once (mount). Reads of window.location here are intentional: the
-    // URL, not props, is the initial source of truth. (Memo deps are stable -> effectively
-    // mount-only; the result is consumed solely by the useState initializers below.)
-    const initial = useMemo(
-        () =>
-            parseGridConfigFromSearch(
-                window.location.search,
-                columnDefinitions
-            ),
-        [columnDefinitions]
-    );
+    // URL, not props, is the initial source of truth. A completely BARE url falls back to the
+    // personal saved view (see above), by re-parsing AS IF the saved params were the query
+    // string -- the same parser, so the two sources cannot diverge. Filters can never appear
+    // in the synthetic string, so the initialFilters fallback is unaffected. (Memo deps are
+    // stable -> effectively mount-only; the result is consumed by the useState initializers
+    // below and the one-time backfill effect.)
+    const { initial, urlWasBare } = useMemo(() => {
+        let cfg = parseGridConfigFromSearch(
+            window.location.search,
+            columnDefinitions
+        );
+        const bare = !(
+            cfg.sortings?.length ||
+            cfg.filters?.length ||
+            cfg.order ||
+            cfg.widths?.length
+        );
+        if (bare) {
+            const params = new URLSearchParams();
+            if (savedAtMount.cols !== undefined)
+                params.set("cols", savedAtMount.cols);
+            if (savedAtMount.sort !== undefined)
+                params.set("sort", savedAtMount.sort);
+            if (savedAtMount.widths !== undefined)
+                params.set("widths", savedAtMount.widths);
+            const synthetic = params.toString();
+            if (synthetic)
+                cfg = parseGridConfigFromSearch(
+                    "?" + synthetic,
+                    columnDefinitions
+                );
+        }
+        return { initial: cfg, urlWasBare: bare };
+    }, [columnDefinitions, savedAtMount]);
     const initialState = useMemo(
         () =>
             buildStateFromConfig(initial, {
@@ -176,8 +302,8 @@ export function useGridConfigInUrl(
     const [gridFilters, setFiltersState] = useState<GridFilter[]>(
         initialState.filters
     );
-    // order + hidden come together from the URL's `cols` (visible-in-order); if absent, the
-    // factory defaults apply.
+    // order + hidden come together from the URL's `cols` (visible-in-order); on a bare URL the
+    // personal saved view was merged into `initial`; otherwise the factory defaults apply.
     const [columnNamesInDisplayOrder, setOrderState] = useState<string[]>(
         initialState.order
     );
@@ -226,14 +352,32 @@ export function useGridConfigInUrl(
         }
         commitSearch(params);
     };
+    // Each write* helper mirrors one dimension to the address bar AND remembers it as the
+    // personal saved view (an encoder returning undefined = factory default = param removed
+    // and nothing to remember). writeFilters above deliberately has no saved counterpart.
+
     // `cols` carries visibility + order together (see gridUrlConfig). Both setColumns and
     // setHidden funnel through here. encodeVisibleOrder returns undefined when the view matches
     // the factory default, so writeParam then removes `cols` and the URL stays clean.
     const writeVisibleOrder = (order: string[], hidden: string[]) => {
-        writeParam(
-            "cols",
-            encodeVisibleOrder(order, hidden, columnDefinitions)
+        const encoded = encodeVisibleOrder(order, hidden, columnDefinitions);
+        writeParam("cols", encoded);
+        writeSaved("cols", encoded);
+    };
+    const writeSort = (next: Sorting[]) => {
+        const encoded = encodeSortings(
+            next.map((s) => ({ ...s, columnName: toKey(s.columnName) }))
         );
+        writeParam("sort", encoded);
+        writeSaved("sort", encoded);
+    };
+    const writeWidths = (next: IColumnWidth[]) => {
+        // encodeWidths keeps only resized columns; all-auto => param/saved removed.
+        const encoded = encodeWidths(
+            next.map((w) => ({ ...w, columnName: toKey(w.columnName) }))
+        );
+        writeParam("widths", encoded);
+        writeSaved("widths", encoded);
     };
 
     // --- back/forward (and manual URL edits): re-read the URL into local state ---
@@ -251,7 +395,9 @@ export function useGridConfigInUrl(
                 window.location.search,
                 columnDefinitions
             );
-            // Same precedence as the mount seed (URL wins; else seeded filters/defaults).
+            // Same precedence as the mount seed (URL wins; else seeded filters/defaults). The
+            // personal saved view is deliberately NOT consulted here: it acts only at mount,
+            // and the mount backfill writes it into our own history entries anyway.
             const next = buildStateFromConfig(cfg, fallbackRef.current);
             setSortingsState(next.sortings);
             setFiltersState(next.filters);
@@ -264,23 +410,21 @@ export function useGridConfigInUrl(
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [columnDefinitions, allColumnNames, sortableNames]);
 
-    // On a BARE url (no grid params at all), mirror any seeded filters (e.g. bulk-edit's
-    // initialFilters) into the URL on mount, so the view the user sees is actually the view a
-    // copied/bookmarked link reproduces. When there are none this is a no-op. A URL that
-    // already carries any grid param is treated as explicit/shared and left untouched. (A bare
-    // URL otherwise IS the factory-default view, so nothing else needs writing.)
+    // On a BARE url (no grid params at all), mirror the view we actually seeded into the URL on
+    // mount -- the personal saved view (each write* is a no-op at its factory default) and any
+    // seeded filters (e.g. bulk-edit's initialFilters) -- so the view the user sees is the view
+    // a copied/bookmarked link reproduces, and the URL is once again the only source of truth
+    // from here on. A URL that already carries any grid param is treated as explicit/shared and
+    // left untouched -- we never inject one viewer's saved view into someone else's link.
     const didBackfillRef = useRef(false);
     useEffect(() => {
         if (didBackfillRef.current) return;
         didBackfillRef.current = true;
-        const urlHadGridConfig = !!(
-            (initial.sortings && initial.sortings.length) ||
-            (initial.filters && initial.filters.length) ||
-            initial.order ||
-            (initial.widths && initial.widths.length)
-        );
-        if (urlHadGridConfig) return;
+        if (!urlWasBare) return;
         if (gridFilters.length) writeFilters(gridFilters);
+        writeVisibleOrder(columnNamesInDisplayOrder, hiddenColumnNames);
+        writeSort(sortings);
+        writeWidths(columnWidths);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -310,15 +454,7 @@ export function useGridConfigInUrl(
             );
             const merged = [...next, ...preserved];
             setSortingsState(merged);
-            writeParam(
-                "sort",
-                encodeSortings(
-                    merged.map((s) => ({
-                        ...s,
-                        columnName: toKey(s.columnName),
-                    }))
-                )
-            );
+            writeSort(merged);
         },
         gridFilters: visibleGridFilters,
         setGridFilters: (next: GridFilter[]) => {
@@ -349,13 +485,23 @@ export function useGridConfigInUrl(
         columnWidths,
         setColumnWidths: (next: IColumnWidth[]) => {
             setWidthsState(next);
-            // encodeWidths keeps only resized columns; all-auto => param removed.
-            writeParam(
-                "widths",
-                encodeWidths(
-                    next.map((w) => ({ ...w, columnName: toKey(w.columnName) }))
-                )
-            );
+            writeWidths(next);
+        },
+        resetView: () => {
+            // Set every view dimension to its factory default; the write* helpers then remove
+            // the URL params AND the saved-view entries (every encoder returns undefined at
+            // the default), so future bare visits are factory-default too. Filters are left
+            // alone: they're visible/clearable in the filter row and never persisted.
+            const order = [...allColumnNames];
+            const hidden = [...defaultHidden];
+            const widths = mergeColumnWidths(allColumnNames, undefined);
+            setOrderState(order);
+            setHiddenState(hidden);
+            setSortingsState([]);
+            setWidthsState(widths);
+            writeVisibleOrder(order, hidden);
+            writeSort([]);
+            writeWidths(widths);
         },
     };
 }

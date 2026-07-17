@@ -53,6 +53,7 @@ import {
 } from "./GridColumns";
 
 import { useGridConfigInUrl } from "./useGridConfigInUrl";
+import { ResetGridViewButton } from "./ResetGridViewButton";
 import { Book } from "../../model/Book";
 import StaffPanel from "../Admin/StaffPanel";
 import { useGetLoggedInUser, User } from "../../connection/LoggedInUser";
@@ -130,9 +131,10 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
         const columns = visibleColumnDefinitions;
 
         // Grid configuration (sort, column filters, column order/visibility, widths) lives
-        // in the URL so a view can be bookmarked/shared; anything absent from the URL means
-        // the column-definition defaults. The hook also reconciles columns added/removed
-        // across releases.
+        // in the URL so a view can be bookmarked/shared; a bare URL gets the user's saved
+        // view (column layout, sort, widths -- never filters; localStorage), else the
+        // column-definition defaults. The hook also reconciles columns added/removed
+        // across releases. See useGridConfigInUrl.
         const {
             sortings,
             setSortings,
@@ -144,6 +146,7 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
             setHiddenColumnNames,
             columnWidths,
             setColumnWidths,
+            resetView,
         } = useGridConfigInUrl(bookGridColumnDefinitions, "book-grid", {
             initialFilters: props.initialGridFilters,
             availableColumnNames,
@@ -275,6 +278,8 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
                         {user && `${user.moderator ? "Moderator" : ""}`}
                     </span>
                     <TemplatePlaceholder />
+                    {/* last item before the ColumnChooser's button, i.e. just left of it */}
+                    <ResetGridViewButton onReset={resetView} />
                 </Template>
             </Plugin>
         );

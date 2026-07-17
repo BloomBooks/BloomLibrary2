@@ -84,8 +84,9 @@ const CountryGridControlInternal: React.FunctionComponent<ICountryGridControlPro
             [visibleColumnDefinitions]
         );
         // Grid configuration (sort, column filters, column order/visibility, widths) lives
-        // in the URL so a view can be bookmarked/shared; anything absent from the URL means
-        // the column-definition defaults. See useGridConfigInUrl.
+        // in the URL so a view can be bookmarked/shared; a bare URL gets the user's saved
+        // view (column layout, sort, widths -- never filters; localStorage), else the
+        // column-definition defaults. See useGridConfigInUrl.
         const {
             sortings,
             setSortings,
@@ -97,6 +98,7 @@ const CountryGridControlInternal: React.FunctionComponent<ICountryGridControlPro
             setHiddenColumnNames,
             columnWidths,
             setColumnWidths,
+            resetView,
         } = useGridConfigInUrl(countryGridColumnDefinitions, "country-grid", {
             availableColumnNames,
         });
@@ -396,7 +398,7 @@ const CountryGridControlInternal: React.FunctionComponent<ICountryGridControlPro
                         cellComponent={FilteringComponentForOneColumn}
                     />
                     <Toolbar />
-                    {ModeratorStatusToolbarPlugin(theme, user)}
+                    {ModeratorStatusToolbarPlugin(theme, user, resetView)}
                     <ColumnChooser />
                     <PagingPanel />
                 </Grid>
