@@ -20,13 +20,7 @@ const columns: IGridColumn[] = [
         defaultVisible: true,
         sortingEnabled: true,
     },
-    {
-        name: "incoming",
-        title: "Incoming",
-        urlKey: "in",
-        defaultVisible: true,
-        moderatorOnly: true, // like the real column; exercises the migration cleansing
-    },
+    { name: "incoming", title: "Incoming", urlKey: "in", defaultVisible: true },
     {
         name: "level",
         title: "Level",
@@ -572,66 +566,6 @@ describe("personal saved view (columns/sort/widths in localStorage; a URL with g
             { columnName: "title", operation: "contains", value: "math" },
         ]);
         expect(param("ti")).toBe("math");
-    });
-
-    it("migrates the pre-BL-16569 two-key JSON layout once, then deletes the old keys", () => {
-        localStorage.setItem(
-            "test-grid-column-order",
-            JSON.stringify(["incoming", "title", "level", "Is Rebrand"])
-        );
-        localStorage.setItem(
-            "test-grid-column-hidden",
-            JSON.stringify(["level", "Is Rebrand", "title"])
-        );
-        mount();
-        // visible-in-order was [incoming] => saved/backfilled as cols=in
-        expect(localStorage.getItem("test-grid-cols")).toBe("in");
-        expect(param("cols")).toBe("in");
-        expect(api.hiddenColumnNames).toEqual(["title", "level", "Is Rebrand"]);
-        expect(localStorage.getItem("test-grid-column-order")).toBeNull();
-        expect(localStorage.getItem("test-grid-column-hidden")).toBeNull();
-    });
-
-    it("migration un-hides a gated default-visible column (the BL-16569 poison)", () => {
-        localStorage.setItem(
-            "test-grid-column-order",
-            JSON.stringify(DEFAULT_ORDER)
-        );
-        // A stale legacy list hides `incoming` (moderator-only, default-visible) -- the very
-        // state that made the moderator columns vanish. Migration must not carry it forward.
-        localStorage.setItem(
-            "test-grid-column-hidden",
-            JSON.stringify(["incoming", "level", "Is Rebrand"])
-        );
-        mount();
-        expect(api.hiddenColumnNames).toEqual(DEFAULT_HIDDEN); // incoming visible again
-        // After cleansing, this layout IS the factory default, so nothing is kept at all.
-        expect(localStorage.getItem("test-grid-cols")).toBeNull();
-        expect(window.location.search).toBe("");
-    });
-
-    it("migrating a factory-default legacy layout keeps everything bare", () => {
-        localStorage.setItem(
-            "test-grid-column-order",
-            JSON.stringify(DEFAULT_ORDER)
-        );
-        localStorage.setItem(
-            "test-grid-column-hidden",
-            JSON.stringify(DEFAULT_HIDDEN)
-        );
-        mount();
-        expect(window.location.search).toBe("");
-        expect(localStorage.getItem("test-grid-cols")).toBeNull();
-        expect(localStorage.getItem("test-grid-column-order")).toBeNull();
-    });
-
-    it("discards (and purges) a malformed legacy layout, leaving the factory default", () => {
-        localStorage.setItem("test-grid-column-order", "not json");
-        mount();
-        expect(api.columnNamesInDisplayOrder).toEqual(DEFAULT_ORDER);
-        expect(api.hiddenColumnNames).toEqual(DEFAULT_HIDDEN);
-        expect(localStorage.getItem("test-grid-column-order")).toBeNull();
-        expect(localStorage.getItem("test-grid-cols")).toBeNull();
     });
 });
 

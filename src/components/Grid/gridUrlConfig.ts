@@ -201,8 +201,8 @@ export function findUrlKeyProblems(
 // reconciliation / validation helpers
 // ---------------------------------------------------------------------------
 
-// Turn a candidate column order (from the URL, the personal saved view in localStorage, or a
-// legacy saved layout -- any of which may be stale) into a
+// Turn a candidate column order (from the URL or the personal saved view in localStorage --
+// either may be stale) into a
 // complete, valid order: keep known names in their given order, drop names that are no
 // longer real columns, and append any columns missing from the candidate (e.g. a column
 // added in a newer release) at the end in their default order.

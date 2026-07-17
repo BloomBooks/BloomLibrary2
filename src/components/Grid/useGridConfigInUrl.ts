@@ -153,50 +153,6 @@ export function useGridConfigInUrl(
             // localStorage unavailable/full: the view just isn't remembered.
         }
     };
-    // One-time migration from the two-key JSON format the grids used before BL-16569 (raw
-    // order/hidden name arrays; sort and widths were never persisted in that era): the old
-    // arrays go through the same reconciliation the URL path uses, the result is saved under
-    // the new key, and the old keys are deleted.
-    const migrateLegacySavedLayout = (): string | undefined => {
-        const legacyOrder = window.localStorage.getItem(
-            `${gridName}-column-order`
-        );
-        const legacyHidden = window.localStorage.getItem(
-            `${gridName}-column-hidden`
-        );
-        if (legacyOrder === null && legacyHidden === null) return undefined;
-        // Delete first so even a malformed value is purged rather than retried forever.
-        window.localStorage.removeItem(`${gridName}-column-order`);
-        window.localStorage.removeItem(`${gridName}-column-hidden`);
-        const order = reconcileColumnOrder(
-            legacyOrder ? JSON.parse(legacyOrder) : allColumnNames,
-            allColumnNames
-        );
-        // The legacy hidden lists in the wild are where BL-16569's pain lived: they can
-        // name moderator-/login-gated columns the user never chose to hide (gating and
-        // defaults shifted across releases, and a stale list re-asserted itself forever).
-        // So the one-time migration un-hides any gated column that is default-visible; a
-        // user who really wants it hidden can hide it again once. Layouts saved in the NEW
-        // format only ever hide a gated column by deliberate choice, so this cleansing is
-        // not needed (and not applied) anywhere else.
-        const gatedDefaultVisible = new Set(
-            columnDefinitions
-                .filter(
-                    (c) =>
-                        (c.moderatorOnly || c.loggedInOnly) && c.defaultVisible
-                )
-                .map((c) => c.name)
-        );
-        const hidden = dropUnknownColumns(
-            legacyHidden ? JSON.parse(legacyHidden) : defaultHidden,
-            allColumnNames
-        ).filter((name) => !gatedDefaultVisible.has(name));
-        const encoded = encodeVisibleOrder(order, hidden, columnDefinitions);
-        // undefined = the legacy layout was just the factory default: nothing to keep.
-        if (encoded !== undefined)
-            window.localStorage.setItem(savedKey("cols"), encoded);
-        return encoded;
-    };
     // Read once per mount.
     const [savedAtMount] = useState<{
         cols?: string;
@@ -207,7 +163,7 @@ export function useGridConfigInUrl(
             const read = (param: string) =>
                 window.localStorage.getItem(savedKey(param)) ?? undefined;
             return {
-                cols: read("cols") ?? migrateLegacySavedLayout(),
+                cols: read("cols"),
                 sort: read("sort"),
                 widths: read("widths"),
             };
