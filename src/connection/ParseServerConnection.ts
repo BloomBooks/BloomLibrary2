@@ -219,12 +219,16 @@ export async function connectParseServer(
 }
 
 function failedToLoginInToParseServer(showAlert: boolean) {
-    Sentry.captureException(
-        new Error(
-            "Login to parse server failed after successful firebase login"
-        )
-    );
+    // Only report/alert when this is a "real" login failure. When the user already
+    // had an active Parse session (showAlert === false), a failed repeat login is
+    // benign: we neither nag the user with an alert nor report a spurious error to
+    // Sentry (which would be noise that could mask genuine login failures).
     if (showAlert) {
+        Sentry.captureException(
+            new Error(
+                "Login to parse server failed after successful firebase login"
+            )
+        );
         alert(
             "Oops, something went wrong when trying to log you into our database."
         );
