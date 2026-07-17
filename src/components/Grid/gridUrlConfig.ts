@@ -3,7 +3,8 @@
 // Each grid screen (book, language, country, uploader) lets the user sort, filter,
 // show/hide columns, reorder columns, and resize columns. We keep that configuration in
 // the URL so a view can be bookmarked or shared. useGridConfigInUrl.ts wires this to React
-// state and the address bar.
+// state and the address bar; it also remembers the user's cols/sort/widths values in
+// localStorage (the "personal saved view") using these same encodings.
 //
 // URL scheme (each grid is on its own route, so these don't collide between grids, nor with
 // the book grid's path :search segment or the start/end date params):
@@ -200,7 +201,8 @@ export function findUrlKeyProblems(
 // reconciliation / validation helpers
 // ---------------------------------------------------------------------------
 
-// Turn a candidate column order (from the URL or a legacy saved layout, possibly stale) into a
+// Turn a candidate column order (from the URL, the personal saved view in localStorage, or a
+// legacy saved layout -- any of which may be stale) into a
 // complete, valid order: keep known names in their given order, drop names that are no
 // longer real columns, and append any columns missing from the candidate (e.g. a column
 // added in a newer release) at the end in their default order.
@@ -257,8 +259,8 @@ export function encodeVisibleOrder(
 // Inverse of encodeVisibleOrder. From the `cols` value, produce the full column order (the
 // visible columns in the given order, slotted into their factory positions; hidden columns
 // keep their factory slots) and the hidden set (every column not listed). Returns undefined
-// when `cols` is absent (caller falls back to the personal saved layout or the
-// column-definition defaults).
+// when `cols` is absent (caller falls back to the personal saved view in localStorage, or
+// the column-definition defaults).
 export function decodeVisibleOrder(
     value: Maybe,
     columnDefinitions: ReadonlyArray<IGridColumn>
@@ -310,8 +312,8 @@ export interface IGridConfigFromUrl {
     sortings?: Sorting[];
     filters?: GridFilter[]; // undefined => no filter params present at all
     // order + hidden are derived together from the single `cols` param (visible-in-order).
-    // Both undefined when `cols` is absent (caller falls back to the personal saved layout
-    // or the column-definition defaults).
+    // Both undefined when `cols` is absent (caller falls back to the personal saved view
+    // in localStorage, or the column-definition defaults).
     order?: string[]; // full column order (all columns)
     hidden?: string[];
     widths?: IColumnWidth[];

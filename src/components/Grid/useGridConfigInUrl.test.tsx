@@ -75,7 +75,7 @@ function param(key: string) {
 }
 
 beforeEach(() => {
-    localStorage.clear(); // isolate the personal saved layout between tests
+    localStorage.clear(); // isolate the personal saved view between tests
     harnessOptions = undefined;
     window.history.replaceState(null, "", "/grid/books");
 });

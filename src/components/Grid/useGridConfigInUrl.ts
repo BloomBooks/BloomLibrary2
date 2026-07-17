@@ -31,7 +31,7 @@
 // key->name when reading.
 //
 // Assumes one grid instance per route (the params sort/cols/widths + per-column filter keys are
-// global to the query string).
+// global to the query string; gridName namespaces the personal saved view in localStorage).
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Filter as GridFilter, Sorting } from "@devexpress/dx-react-grid";
@@ -231,9 +231,11 @@ export function useGridConfigInUrl(
         return (filters ?? []).filter((f) => known.has(f.columnName));
     };
 
-    // The single precedence pipeline: a dimension present in the URL wins; otherwise the seeded
-    // initialFilters (filters only) or the column-definition defaults. Both the mount
-    // initializers and the popstate handler go through here so the two can't drift apart.
+    // The single precedence pipeline: a dimension present in the given config wins (usually
+    // parsed from the real URL; at mount on a bare URL it's the personal saved view parsed as
+    // if it were one); otherwise the seeded initialFilters (filters only) or the
+    // column-definition defaults. Both the mount initializers and the popstate handler go
+    // through here so the two can't drift apart.
     const buildStateFromConfig = (
         cfg: IGridConfigFromUrl,
         fallbacks: {
