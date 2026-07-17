@@ -2403,6 +2403,59 @@
   resolved "https://registry.npmjs.org/@storybook/types/-/types-8.3.6.tgz#8c5c15e8869dd3218a73748db75bb7ef709262b9"
   integrity sha512-EY+bjIxxmKkFrL7CyDQb3EXbmy0+Y9OieaPrNNM7QXTfGgp81lXhfqMX3HLMMjplk+rcxVJLyzXSBx0nIn91fQ==
 
+"@supabase/auth-js@2.110.7":
+  version "2.110.7"
+  resolved "https://registry.npmjs.org/@supabase/auth-js/-/auth-js-2.110.7.tgz#9b26a906651f514f198cd18f43596831b19bfcfa"
+  integrity sha512-M5Bpl4hCv6kHcOO/xM06Dyfg1mYLHljMkp1plhzG9IRZPc3czvyMsSN1XpL5+GKisOKM3lSN59zhpcm6sMVXfA==
+  dependencies:
+    tslib "2.8.1"
+
+"@supabase/functions-js@2.110.7":
+  version "2.110.7"
+  resolved "https://registry.npmjs.org/@supabase/functions-js/-/functions-js-2.110.7.tgz#be5b0515cccfb3110ae35510b5dcda87508f7e58"
+  integrity sha512-megYmexlYEoR/0qlsr4Snh9wtzAodO7MAri3NMevZrXzNvQRKlvmTcSBoKGLQEPDakgDZMqbMdf9DwoZz6qfoA==
+  dependencies:
+    tslib "2.8.1"
+
+"@supabase/phoenix@0.4.5":
+  version "0.4.5"
+  resolved "https://registry.npmjs.org/@supabase/phoenix/-/phoenix-0.4.5.tgz#28f6a0dc020f53f171899b9c6021eecfe2a112d1"
+  integrity sha512-aAn9H9ovVyeApKy11OWOrrOGq8DV68yWeH4ud2lN9fzn4aO8Zb5GLL9m1pUg9nLqIcT+ZDfAcsZe0E/nqdv2lw==
+
+"@supabase/postgrest-js@2.110.7":
+  version "2.110.7"
+  resolved "https://registry.npmjs.org/@supabase/postgrest-js/-/postgrest-js-2.110.7.tgz#aadcac8699799a150c1b14b9692e8c10e0867df3"
+  integrity sha512-ban6YV0djhVaqVYezlOARKLIuOBSvLLhyQVZjA2nxPrtswhxHCl1+gI4giFgI9ATQAaMNbUZb4JXiuL5lEA/5g==
+  dependencies:
+    tslib "2.8.1"
+
+"@supabase/realtime-js@2.110.7":
+  version "2.110.7"
+  resolved "https://registry.npmjs.org/@supabase/realtime-js/-/realtime-js-2.110.7.tgz#1944ed96fd2cc340e4f4f433217594bc1e32c7f6"
+  integrity sha512-AMtZjyFA2gsmjuxopPNS/sRznLQHG0Ht5x+ytTPTOh3vAcOTUlVRLx7gW4/CONNnbb3PKOkE+HmM35HOSbmomQ==
+  dependencies:
+    "@supabase/phoenix" "0.4.5"
+    tslib "2.8.1"
+
+"@supabase/storage-js@2.110.7":
+  version "2.110.7"
+  resolved "https://registry.npmjs.org/@supabase/storage-js/-/storage-js-2.110.7.tgz#a197aea05f11276d804fca0fc0e6faade76ed9fd"
+  integrity sha512-2tcDE8cjEDy1uKxKavBpKQod1JdMV1jDXQag48TCa+kycmJOltc0yVabC0BUlhOwAl6WykXU2aOsH3ELMtZrmQ==
+  dependencies:
+    iceberg-js "^0.8.1"
+    tslib "2.8.1"
+
+"@supabase/supabase-js@^2.110.7":
+  version "2.110.7"
+  resolved "https://registry.npmjs.org/@supabase/supabase-js/-/supabase-js-2.110.7.tgz#06b9691539b4c8fe138632f26426d2c3b73f66da"
+  integrity sha512-AnfO3A230Shy6RMO7cya3Wl1OcXnABJrzH8vP+fY7/RFjhzcchB7DjKkkTIAntlwekD+GkSFzEvt2tC+D4Fp8w==
+  dependencies:
+    "@supabase/auth-js" "2.110.7"
+    "@supabase/functions-js" "2.110.7"
+    "@supabase/postgrest-js" "2.110.7"
+    "@supabase/realtime-js" "2.110.7"
+    "@supabase/storage-js" "2.110.7"
+
 "@svgr/babel-plugin-add-jsx-attribute@8.0.0":
   version "8.0.0"
   resolved "https://registry.npmjs.org/@svgr/babel-plugin-add-jsx-attribute/-/babel-plugin-add-jsx-attribute-8.0.0.tgz#4001f5d5dd87fa13303e36ee106e3ff3a7eb8b22"
@@ -6288,6 +6341,11 @@ hyphenate-style-name@^1.0.3:
   resolved "https://registry.yarnpkg.com/hyphenate-style-name/-/hyphenate-style-name-1.0.4.tgz#691879af8e220aea5750e8827db4ef62a54e361d"
   integrity sha512-ygGZLjmXfPHj+ZWh6LwbC37l43MhfztxetbFCoYTM2VjkIUpeHgSNn7QIyVFj7YQ1Wl9Cbw5sholVJPzWvC2MQ==
 
+iceberg-js@^0.8.1:
+  version "0.8.1"
+  resolved "https://registry.npmjs.org/iceberg-js/-/iceberg-js-0.8.1.tgz#47d893468293a010385e1c70123f29d0fc1d9912"
+  integrity sha512-1dhVQZXhcHje7798IVM+xoo/1ZdVfzOMIc8/rgVSijRK38EDqOJoGula9N/8ZI5RD8QTxNQtK/Gozpr+qUqRRA==
+
 iconv-lite@0.4.24, iconv-lite@~0.4.13:
   version "0.4.24"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.24.tgz#2022b4b25fbddc21d2f524974a474aafe733908b"
@@ -10022,6 +10080,11 @@ tsconfig-paths@^4.2.0:
     json5 "^2.2.2"
     minimist "^1.2.6"
     strip-bom "^3.0.0"
+
+tslib@2.8.1:
+  version "2.8.1"
+  resolved "https://registry.npmjs.org/tslib/-/tslib-2.8.1.tgz#612efe4ed235d567e8aba5f2a5fab70280ade83f"
+  integrity sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==
 
 tslib@^1.8.1, tslib@^1.9.0:
   version "1.10.0"

@@ -16,6 +16,12 @@ interface RepositoryImplementations {
     ParseTagRepository: new () => ITagRepository;
     ParseAuthenticationService: new () => IAuthenticationService;
     ParseAnalyticsService: new () => IAnalyticsService;
+    SupabaseBookRepository: new () => IBookRepository;
+    SupabaseUserRepository: new () => IUserRepository;
+    SupabaseLanguageRepository: new () => ILanguageRepository;
+    SupabaseTagRepository: new () => ITagRepository;
+    SupabaseAuthenticationService: new () => IAuthenticationService;
+    SupabaseAnalyticsService: new () => IAnalyticsService;
 }
 
 export enum DataLayerImplementation {
@@ -73,8 +79,12 @@ export class DataLayerFactory {
                 throw new Error("Mock implementation not yet available");
 
             case DataLayerImplementation.Supabase:
-                // Will implement during Supabase migration
-                throw new Error("Supabase implementation not yet available");
+                if (!this.implementations.SupabaseBookRepository) {
+                    throw new Error(
+                        "SupabaseBookRepository implementation not registered"
+                    );
+                }
+                return new this.implementations.SupabaseBookRepository();
 
             default:
                 throw new Error(
@@ -97,7 +107,12 @@ export class DataLayerFactory {
                 throw new Error("Mock implementation not yet available");
 
             case DataLayerImplementation.Supabase:
-                throw new Error("Supabase implementation not yet available");
+                if (!this.implementations.SupabaseUserRepository) {
+                    throw new Error(
+                        "SupabaseUserRepository implementation not registered"
+                    );
+                }
+                return new this.implementations.SupabaseUserRepository();
 
             default:
                 throw new Error(
@@ -120,7 +135,12 @@ export class DataLayerFactory {
                 throw new Error("Mock implementation not yet available");
 
             case DataLayerImplementation.Supabase:
-                throw new Error("Supabase implementation not yet available");
+                if (!this.implementations.SupabaseLanguageRepository) {
+                    throw new Error(
+                        "SupabaseLanguageRepository implementation not registered"
+                    );
+                }
+                return new this.implementations.SupabaseLanguageRepository();
 
             default:
                 throw new Error(
@@ -143,7 +163,12 @@ export class DataLayerFactory {
                 throw new Error("Mock implementation not yet available");
 
             case DataLayerImplementation.Supabase:
-                throw new Error("Supabase implementation not yet available");
+                if (!this.implementations.SupabaseTagRepository) {
+                    throw new Error(
+                        "SupabaseTagRepository implementation not registered"
+                    );
+                }
+                return new this.implementations.SupabaseTagRepository();
 
             default:
                 throw new Error(
@@ -166,7 +191,12 @@ export class DataLayerFactory {
                 throw new Error("Mock implementation not yet available");
 
             case DataLayerImplementation.Supabase:
-                throw new Error("Supabase implementation not yet available");
+                if (!this.implementations.SupabaseAuthenticationService) {
+                    throw new Error(
+                        "SupabaseAuthenticationService implementation not registered"
+                    );
+                }
+                return new this.implementations.SupabaseAuthenticationService();
 
             default:
                 throw new Error(
@@ -189,7 +219,12 @@ export class DataLayerFactory {
                 throw new Error("Mock implementation not yet available");
 
             case DataLayerImplementation.Supabase:
-                throw new Error("Supabase implementation not yet available");
+                if (!this.implementations.SupabaseAnalyticsService) {
+                    throw new Error(
+                        "SupabaseAnalyticsService implementation not registered"
+                    );
+                }
+                return new this.implementations.SupabaseAnalyticsService();
 
             default:
                 throw new Error(
