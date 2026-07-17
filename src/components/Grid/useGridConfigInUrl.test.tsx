@@ -69,7 +69,7 @@ function param(key: string) {
 }
 
 beforeEach(() => {
-    localStorage.clear();
+    localStorage.clear(); // the hook must never touch localStorage; cleared so tests can assert that
     harnessOptions = undefined;
     window.history.replaceState(null, "", "/grid/books");
 });
@@ -407,65 +407,36 @@ describe("initialFilters (e.g. bulk-edit) seeding & precedence", () => {
     });
 });
 
-describe("bare-URL backfill (make a localStorage layout shareable)", () => {
-    it("writes the localStorage-derived view into a bare URL as compact deltas", () => {
-        localStorage.setItem(
-            "test-grid-column-order",
-            JSON.stringify(["incoming", "title", "level", "Is Rebrand"])
-        );
-        localStorage.setItem(
-            "test-grid-column-hidden",
-            JSON.stringify(["Is Rebrand"]) // level revealed vs default
-        );
-        mount();
-        // single cols param = the visible columns in order (incoming,title,level; Is Rebrand hidden)
-        expect(param("cols")).toBe("in,ti,lv");
-    });
-
-    it("leaves a bare URL bare when the layout equals the factory default", () => {
+describe("the URL is the only source of grid config (no persistence)", () => {
+    it("a bare URL yields the factory-default view and stays bare", () => {
         mount();
         expect(window.location.search).toBe("");
+        expect(api.columnNamesInDisplayOrder).toEqual(DEFAULT_ORDER);
+        expect(api.hiddenColumnNames).toEqual(DEFAULT_HIDDEN);
     });
 
-    it("does NOT inject local layout into a URL that already has grid params (shared link)", () => {
-        localStorage.setItem(
-            "test-grid-column-order",
-            JSON.stringify(["incoming", "title", "level", "Is Rebrand"])
-        );
+    it("layout changes go to the URL only; a fresh bare URL is factory default again", () => {
+        mount();
+        act(() => api.setHiddenColumnNames([...DEFAULT_HIDDEN, "incoming"]));
+        expect(param("cols")).toBe("ti");
+        // Nothing was persisted anywhere...
+        expect(localStorage.getItem("test-grid-column-hidden")).toBeNull();
+        expect(localStorage.getItem("test-grid-column-order")).toBeNull();
+        // ...so a remount on a bare URL is back to the factory default (incoming visible).
+        unmount();
+        window.history.replaceState(null, "", "/grid/books");
+        mount();
+        expect(api.hiddenColumnNames).toEqual(DEFAULT_HIDDEN);
+    });
+
+    it("a URL with grid params is respected as-is (shared link)", () => {
         window.history.replaceState(null, "", "/grid/books?ti=math");
         mount();
-        // respected as-is: the shared filter stays, our local reorder is NOT added
         expect(param("ti")).toBe("math");
         expect(param("cols")).toBeNull();
     });
-});
 
-describe("localStorage precedence", () => {
-    it("uses personal localStorage column prefs when the URL is silent", () => {
-        localStorage.setItem(
-            "test-grid-column-hidden",
-            JSON.stringify(["incoming"])
-        );
-        localStorage.setItem(
-            "test-grid-column-order",
-            JSON.stringify(["incoming", "title", "level", "Is Rebrand"])
-        );
-        mount();
-        expect(api.hiddenColumnNames).toEqual(["incoming"]);
-        expect(api.columnNamesInDisplayOrder).toEqual([
-            "incoming",
-            "title",
-            "level",
-            "Is Rebrand",
-        ]);
-    });
-
-    it("lets the URL override the localStorage prefs", () => {
-        localStorage.setItem(
-            "test-grid-column-hidden",
-            JSON.stringify(["incoming"])
-        );
-        // cols=ti => only title visible; URL wins over the localStorage hidden set
+    it("cols in the URL fully determines visibility (unlisted = hidden)", () => {
         window.history.replaceState(null, "", "/grid/books?cols=ti");
         mount();
         expect(api.hiddenColumnNames).toEqual([

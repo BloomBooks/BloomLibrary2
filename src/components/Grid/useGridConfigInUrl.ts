@@ -1,6 +1,8 @@
 // Reusable hook that keeps a grid's configuration (sort, per-column filters, which columns
 // are shown, their order, and any resized widths) in the URL so a view can be bookmarked or
-// shared, while still honoring the user's personal column preferences stored in localStorage.
+// shared. The URL is the ONLY source of grid configuration: params present in the URL win,
+// and anything absent means the column-definition defaults. (Nothing is persisted per user;
+// to keep a custom view, bookmark its URL.)
 //
 // Why we touch the URL with native history.replaceState instead of react-router /
 // use-query-params: the filter row is a free-typing text input. Writing the URL through the
@@ -17,18 +19,17 @@
 // so the stale router search is never used to compose a destination. Real Back/Forward fires a
 // genuine popstate, which both react-router and the listener below handle.
 //
-// Precedence on load: a dimension present in the URL wins; otherwise we fall back to
-// localStorage (for column order/visibility) or the column-definition defaults.
+// Precedence on load: a dimension present in the URL wins; otherwise the column-definition
+// defaults (plus the caller's initialFilters seeding, e.g. the bulk-edit page).
 //
 // The URL speaks in each column's short `urlKey` (see gridUrlConfig); internally the grid uses
 // the column `name`. This hook maps name->key when writing and parseGridConfigFromSearch maps
 // key->name when reading.
 //
 // Assumes one grid instance per route (the params sort/cols/widths + per-column filter keys are
-// global to the query string; storageKeyPrefix namespaces only localStorage).
+// global to the query string).
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useStorageState } from "react-storage-hooks";
 import { Filter as GridFilter, Sorting } from "@devexpress/dx-react-grid";
 import { IGridColumn } from "./GridColumns";
 import {
@@ -60,8 +61,7 @@ export interface IGridConfigInUrl {
     setColumnWidths: (widths: IColumnWidth[]) => void;
 }
 
-// storageKeyPrefix is e.g. "book-grid" / "language-grid"; it must match the keys the grids
-// used before so existing users keep their saved column preferences. initialFilters seeds the
+// gridName (e.g. "book-grid") only labels dev-time diagnostics. initialFilters seeds the
 // per-column filters when the URL has none (e.g. the bulk-edit page opens the grid pre-filtered).
 // availableColumnNames (optional) is the set of columns THIS user may see (see
 // getColumnsVisibleToUser). A shared/bookmarked URL can name a column the viewer lacks (e.g. a
@@ -70,7 +70,7 @@ export interface IGridConfigInUrl {
 // columns when the caller doesn't supply it. Pass a value that's stable across renders (memoize).
 export function useGridConfigInUrl(
     columnDefinitions: ReadonlyArray<IGridColumn>,
-    storageKeyPrefix: string,
+    gridName: string,
     options?: {
         initialFilters?: GridFilter[];
         availableColumnNames?: ReadonlyArray<string>;
@@ -108,23 +108,11 @@ export function useGridConfigInUrl(
             if (problems.length)
                 // eslint-disable-next-line no-console
                 console.error(
-                    `[${storageKeyPrefix}] grid urlKey problems:\n` +
+                    `[${gridName}] grid urlKey problems:\n` +
                         problems.join("\n")
                 );
         }
-    }, [columnDefinitions, storageKeyPrefix]);
-
-    // Personal defaults: same localStorage keys the grids used before this feature.
-    const [storedOrder, setStoredOrder] = useStorageState<string[]>(
-        localStorage,
-        `${storageKeyPrefix}-column-order`,
-        allColumnNames
-    );
-    const [storedHidden, setStoredHidden] = useStorageState<string[]>(
-        localStorage,
-        `${storageKeyPrefix}-column-hidden`,
-        defaultHidden
-    );
+    }, [columnDefinitions, gridName]);
 
     // The columns THIS user may actually see. URL sort/filter config naming a column outside this
     // set is dropped from what we expose (see the visible* memos near the return). Defaults to all.
@@ -141,27 +129,22 @@ export function useGridConfigInUrl(
         return (filters ?? []).filter((f) => known.has(f.columnName));
     };
 
-    // The single precedence pipeline: a dimension present in the URL wins; otherwise fall back to
-    // the seeded initialFilters / personal localStorage layout / column defaults. Both the mount
+    // The single precedence pipeline: a dimension present in the URL wins; otherwise the seeded
+    // initialFilters (filters only) or the column-definition defaults. Both the mount
     // initializers and the popstate handler go through here so the two can't drift apart.
     const buildStateFromConfig = (
         cfg: IGridConfigFromUrl,
         fallbacks: {
-            storedOrder: string[];
-            storedHidden: string[];
             initialFilters: GridFilter[] | undefined;
         }
     ) => ({
         sortings: onlyValidSortings(cfg.sortings),
         filters: onlyKnownFilters(cfg.filters ?? fallbacks.initialFilters),
         order: reconcileColumnOrder(
-            cfg.order ?? fallbacks.storedOrder,
+            cfg.order ?? allColumnNames,
             allColumnNames
         ),
-        hidden: dropUnknownColumns(
-            cfg.hidden ?? fallbacks.storedHidden,
-            allColumnNames
-        ),
+        hidden: dropUnknownColumns(cfg.hidden ?? defaultHidden, allColumnNames),
         widths: mergeColumnWidths(allColumnNames, cfg.widths),
     });
 
@@ -179,11 +162,9 @@ export function useGridConfigInUrl(
     const initialState = useMemo(
         () =>
             buildStateFromConfig(initial, {
-                storedOrder,
-                storedHidden,
                 initialFilters: options?.initialFilters,
             }),
-        // Mount snapshot only (mirrors `initial`); later localStorage/prop changes flow through
+        // Mount snapshot only (mirrors `initial`); later prop changes flow through
         // the setters and popstate, not this one-time seed.
         // eslint-disable-next-line react-hooks/exhaustive-deps
         [initial]
@@ -195,8 +176,8 @@ export function useGridConfigInUrl(
     const [gridFilters, setFiltersState] = useState<GridFilter[]>(
         initialState.filters
     );
-    // order + hidden come together from the URL's `cols` (visible-in-order); if absent, fall
-    // back to the personal localStorage layout (order/hidden are stored separately there).
+    // order + hidden come together from the URL's `cols` (visible-in-order); if absent, the
+    // factory defaults apply.
     const [columnNamesInDisplayOrder, setOrderState] = useState<string[]>(
         initialState.order
     );
@@ -259,13 +240,9 @@ export function useGridConfigInUrl(
 
     // Keep the latest fallbacks in a ref so the popstate listener doesn't need to re-bind.
     const fallbackRef = useRef({
-        storedOrder,
-        storedHidden,
         initialFilters: options?.initialFilters,
     });
     fallbackRef.current = {
-        storedOrder,
-        storedHidden,
         initialFilters: options?.initialFilters,
     };
     useEffect(() => {
@@ -274,7 +251,7 @@ export function useGridConfigInUrl(
                 window.location.search,
                 columnDefinitions
             );
-            // Same precedence as the mount seed (URL wins; else seeded/localStorage/defaults).
+            // Same precedence as the mount seed (URL wins; else seeded filters/defaults).
             const next = buildStateFromConfig(cfg, fallbackRef.current);
             setSortingsState(next.sortings);
             setFiltersState(next.filters);
@@ -287,13 +264,11 @@ export function useGridConfigInUrl(
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [columnDefinitions, allColumnNames, sortableNames]);
 
-    // On a BARE url (no grid params at all), backfill the address bar from the user's current
-    // (localStorage-derived) view so the URL is shareable without manually toggling everything.
-    // encodeVisibleOrder writes nothing when the layout matches the factory default, so a bare
-    // default view stays bare. A URL that already carries any grid param is treated as
-    // explicit/shared and left untouched -- we never inject one viewer's saved layout into
-    // someone else's link. (Only column order/visibility live in localStorage; sort, filters and
-    // widths are URL-only, so on a bare url they're empty and nothing is written for them.)
+    // On a BARE url (no grid params at all), mirror any seeded filters (e.g. bulk-edit's
+    // initialFilters) into the URL on mount, so the view the user sees is actually the view a
+    // copied/bookmarked link reproduces. When there are none this is a no-op. A URL that
+    // already carries any grid param is treated as explicit/shared and left untouched. (A bare
+    // URL otherwise IS the factory-default view, so nothing else needs writing.)
     const didBackfillRef = useRef(false);
     useEffect(() => {
         if (didBackfillRef.current) return;
@@ -305,11 +280,7 @@ export function useGridConfigInUrl(
             (initial.widths && initial.widths.length)
         );
         if (urlHadGridConfig) return;
-        writeVisibleOrder(columnNamesInDisplayOrder, hiddenColumnNames);
-        // Also mirror any seeded filters (e.g. bulk-edit's initialFilters) into the bare URL, so
-        // the view the user sees is actually the view a copied/bookmarked link reproduces. When
-        // there are none this is a no-op (writeFilters just clears the — absent — filter keys).
-        writeFilters(gridFilters);
+        if (gridFilters.length) writeFilters(gridFilters);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -367,14 +338,12 @@ export function useGridConfigInUrl(
         columnNamesInDisplayOrder,
         setColumnNamesInDisplayOrder: (next: string[]) => {
             setOrderState(next);
-            setStoredOrder(next); // update personal default too
             // `cols` encodes visible-columns-in-order, so it depends on the current hidden set.
             writeVisibleOrder(next, hiddenColumnNames);
         },
         hiddenColumnNames,
         setHiddenColumnNames: (next: string[]) => {
             setHiddenState(next);
-            setStoredHidden(next); // update personal default too
             writeVisibleOrder(columnNamesInDisplayOrder, next);
         },
         columnWidths,
