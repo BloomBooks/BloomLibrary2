@@ -38,9 +38,6 @@ RUN_SUPABASE_TESTS=true npx vitest run src/data-layer/test/SupabaseRead.integrat
 - Free-text search: AND of `ilike` over the precomputed `search` column; no
   relevance ranking (Mongo `$text`/`$score`). Default-ordered searches fall
   back to newest-first.
-- Search facets implemented: `title:`, `uploader:`, `feature:`, `rebrand:`,
-  `language:`, `bookInstanceId:`, `level:`. Others (e.g. `copyright:`,
-  `publisher:`) are recognized and skipped with a console.warn.
 - Bare search words are not matched against the tag vocabulary.
 - Wildcard tag patterns (`bookshelf:X*`) are skipped (needs an RPC for
   per-array-element matching).

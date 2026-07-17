@@ -3,11 +3,10 @@
 // (src/connection/BookQueryBuilder.ts) as closely as is practical against a
 // relational schema. Divergences from the Parse behavior are called out in
 // comments below; the notable ones (also listed in the PR description) are:
-//   - Faceted search only understands: title:, uploader:, language:, feature:,
-//     rebrand:, bookInstanceId:, level:. Other facets (copyright:, country:,
-//     publisher:, originalPublisher:, edition:, branding(ProjectName):,
-//     license:, phash:, bookHash:, harvestState:) are not translated and are
-//     silently ignored (documented as a TODO below).
+//   - All of Parse's search facets are translated (title:, uploader:,
+//     language:, feature:, rebrand:, bookInstanceId:, level:, copyright:,
+//     country:, publisher:, originalPublisher:, edition:,
+//     branding(ProjectName):, license:, phash:, bookHash:, harvestState:).
 //   - Wildcard tag patterns (e.g. "bookshelf:X*", "*suffix") are not
 //     translated to a Postgres pattern match; such tag conditions are
 //     skipped rather than applied incorrectly.
@@ -59,6 +58,15 @@ function toPostgresArrayLiteral(values: string[]): string {
         values.map((v) => '"' + v.replace(/(["\\])/g, "\\$1") + '"').join(",") +
         "}"
     );
+}
+
+// Escapes LIKE/ILIKE metacharacters so a facet value is matched literally.
+function escapeLikePattern(value: string): string {
+    return value.replace(/([\\%_])/g, "\\$1");
+}
+
+function camelToSnake(name: string): string {
+    return name.replace(/(?<=[a-z0-9])([A-Z])/g, "_$1").toLowerCase();
 }
 
 function isWildcardTag(tag: string): boolean {
@@ -370,24 +378,40 @@ export async function applyBookFilter(
                 case "level":
                     tagRequirements.push(...buildLevelRequirements(facetValue));
                     break;
+                // The following mirror constructParseBookQuery(): a
+                // case-insensitive "contains" for the free-text-ish fields...
                 case "copyright":
                 case "country":
                 case "publisher":
                 case "originalPublisher":
                 case "edition":
                 case "brandingProjectName":
-                case "branding":
+                case "branding": {
+                    const column =
+                        facetLabel === "branding"
+                            ? "branding_project_name"
+                            : camelToSnake(facetLabel);
+                    q = q.ilike(column, `%${escapeLikePattern(facetValue)}%`);
+                    break;
+                }
+                // ...an exact-but-case-insensitive match for license
+                // (Parse uses ^value$)...
                 case "license":
+                    q = q.ilike("license", escapeLikePattern(facetValue));
+                    break;
+                // ...a case-SENSITIVE contains for phash...
                 case "phash":
-                case "bookHash":
-                case "harvestState":
-                    // Recognized Parse facets, not yet translated to Supabase
-                    // filters -- see module-level TODO. Skipped rather than
-                    // treated as a literal tag (which would incorrectly
-                    // require a tag like "country:US" that can't exist).
-                    console.warn(
-                        `Supabase book query: search facet "${facetLabel}:" is not yet supported, ignoring.`
+                    q = q.like(
+                        "phash_of_first_content_image",
+                        `%${escapeLikePattern(facetValue)}%`
                     );
+                    break;
+                // ...and exact equality for these two.
+                case "bookHash":
+                    q = q.eq("book_hash_from_images", facetValue);
+                    break;
+                case "harvestState":
+                    q = q.eq("harvest_state", facetValue);
                     break;
                 default:
                     // Only reached for parts that aren't one of the facet

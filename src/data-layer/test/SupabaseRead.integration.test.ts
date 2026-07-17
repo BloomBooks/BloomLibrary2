@@ -89,5 +89,91 @@ const shouldRunSupabaseTests = process.env.RUN_SUPABASE_TESTS === "true";
                 expect(typeof language.usageCount).toBe("number");
             });
         }, 30000);
+
+        // Regression guards: every filter must CONSTRAIN. A dropped filter
+        // silently degenerates to "all books", which looks like a result
+        // (this is exactly how the unimplemented bookHash: facet escaped —
+        // /bookHash:xyz showed all 112 books).
+
+        async function getTotalBookCount(): Promise<number> {
+            return bookRepository.getBookCount({} as IFilter);
+        }
+
+        it("bookHash: search facet returns only books with that hash", async () => {
+            // Find a real hash in whatever data is loaded, then search for it.
+            const seed = await bookRepository.searchBooks({
+                filter: {} as IFilter,
+                pagination: { limit: 50, skip: 0 },
+            });
+            const withHash = seed.books.find(
+                (b) => (b as any).bookHashFromImages
+            );
+            expect(
+                withHash,
+                "sample data should include a hashed book"
+            ).toBeTruthy();
+            const hash = (withHash as any).bookHashFromImages as string;
+
+            const result = await bookRepository.searchBooks({
+                filter: { search: `bookHash:${hash}` } as IFilter,
+            });
+
+            const total = await getTotalBookCount();
+            expect(result.errorString).toBeNull();
+            expect(result.books.length).toBeGreaterThan(0);
+            expect(result.books.length).toBeLessThan(total);
+            result.books.forEach((b) =>
+                expect((b as any).bookHashFromImages).toBe(hash)
+            );
+        }, 30000);
+
+        it("title: search facet constrains results", async () => {
+            const seed = await bookRepository.searchBooks({
+                filter: {} as IFilter,
+                pagination: { limit: 5, skip: 0 },
+            });
+            // Use a distinctive-enough fragment of a real title.
+            const fragment = seed.books[0].title
+                .split(/\s+/)
+                .find((w) => w.length >= 5);
+            expect(fragment).toBeTruthy();
+
+            const result = await bookRepository.searchBooks({
+                filter: { search: `title:${fragment}` } as IFilter,
+            });
+
+            const total = await getTotalBookCount();
+            expect(result.errorString).toBeNull();
+            expect(result.books.length).toBeGreaterThan(0);
+            expect(result.books.length).toBeLessThan(total);
+            result.books.forEach((b) =>
+                expect(b.title.toLowerCase()).toContain(fragment!.toLowerCase())
+            );
+        }, 30000);
+
+        it("the 'Other' topic (exclude all known topics) neither errors nor returns everything", async () => {
+            // Exercises the negated array-overlap path (.not("tags","ov",...)),
+            // which requires a PostgreSQL array literal — this query used to
+            // 400 on every language page's "Other" row.
+            const result = await bookRepository.searchBooks({
+                filter: { topic: "Other" } as IFilter,
+            });
+
+            const { kTopicList } = await import(
+                "../../model/ClosedVocabularies"
+            );
+            const canonical = new Set(kTopicList.map((t) => `topic:${t}`));
+            const total = await getTotalBookCount();
+            expect(result.errorString).toBeNull();
+            expect(result.books.length).toBeLessThan(total);
+            // "Other" means no CANONICAL topic; non-canonical topic tags
+            // (e.g. topic:Spiritual) legitimately remain, as in Parse.
+            result.books.forEach((b) => {
+                const canonicalTopics = (b.tags ?? []).filter((t: string) =>
+                    canonical.has(t)
+                );
+                expect(canonicalTopics).toEqual([]);
+            });
+        }, 30000);
     }
 );
