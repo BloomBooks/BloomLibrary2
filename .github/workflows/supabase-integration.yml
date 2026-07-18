@@ -23,11 +23,14 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
-            - name: Set up Node
-              uses: actions/setup-node@v4
+            # Same Node+pnpm toolchain setup as build-and-deploy.yml (the repo
+            # switched from yarn to pnpm via corepack's packageManager field).
+            - name: Install Vite+ (manages Node.js and pnpm)
+              uses: voidzero-dev/setup-vp@2dec1e33f4ab2c6d5bce1b0c4607961bb1a3f7a1 # v1.12.0
               with:
-                  node-version: "22"
-                  cache: "yarn"
+                  version: 0.1.24
+                  node-version-file: .node-version
+                  cache: true
 
             - name: Install Supabase CLI
               uses: supabase/setup-cli@v1
@@ -67,7 +70,7 @@ jobs:
                   exit 1
 
             - name: Install dependencies
-              run: yarn install --frozen-lockfile --network-timeout 1000000000
+              run: vp install --frozen-lockfile
 
             - name: Run Supabase read integration tests
               run: >
