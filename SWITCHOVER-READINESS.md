@@ -14,7 +14,7 @@ sweep, bloom-core-supabase backend inventory) on 2026-07-18.
 |---|------|--------|-------|
 | A1 | Search relevance ranking (Parse $text/$score vs ilike-AND + newest-first) | ❌ open — needs Postgres FTS (tsvector + rank) in backend + client ordering | both repos |
 | A2 | Non-canonical `topic:` filters silently return nothing (Parse regex-ORs) | ❌ open — TODO'd for an RPC | both repos |
-| A3 | `tags.category` column missing → `TagModel.category` always undefined | ❌ open — confirm UI impact, then schema+sync+mapper | both repos |
+| A3 | `tags.category` column missing → `TagModel.category` always undefined | ✅ accepted — verified zero UI consumers of TagModel.category in anon scope (only Contentful page fields use `.category`) | — |
 | A4 | `sendConcernEmail` throws under Supabase ("Report this book" is anon-reachable) | ❌ open — needs edge function or transitional routing to Parse cloud fn | both repos |
 | A5 | `anyOfThese`/`derivedFrom` union IDs client-side then `.in("id",…)` — scale risk | ⚠ verify at production scale | blorg |
 | A6 | Wildcard tag inside any-of list fails closed | ⚠ accepted (no known caller); covered by unit tests where reachable | blorg |
@@ -36,7 +36,7 @@ sweep, bloom-core-supabase backend inventory) on 2026-07-18.
 | C1 | `export/freeLearningIO.ts` raw Parse REST call w/ hardcoded prod app id | ❌ open — route through repository or retire |
 | C2 | Bloom API auth bridge (`connection/ApiConnection.ts`) reads session token from a singleton login no longer populates — confirmed live bug | ✅ fixed (8f2265c); follow-up: same dead-singleton reads remain in LibraryQueries/LibraryQueryHooks/LibraryUpdates (see C4) |
 | C3 | Stats path posts Parse query DSL (`$regex`, `$score`) to api.bloomlibrary.org | ❌ open — needs server-side plan; document as external dependency |
-| C4 | Dead/duplicate Parse plumbing (`connection/ParseServerConnection.ts` dead fns, `LibraryUpdates.updateBook`, duplicated connection config) | ❌ open — delete/consolidate |
+| C4 | Dead/duplicate Parse plumbing (`connection/ParseServerConnection.ts` dead fns, `LibraryUpdates.updateBook`, duplicated connection config) | ✅ both files deleted; live calls rewired to data-layer ParseConnection (01b37a1) |
 
 ## D. Guardrails for out-of-scope paths
 
