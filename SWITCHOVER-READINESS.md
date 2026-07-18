@@ -37,6 +37,7 @@ sweep, bloom-core-supabase backend inventory) on 2026-07-18.
 | C2 | Bloom API auth bridge (`connection/ApiConnection.ts`) reads session token from a singleton login no longer populates — confirmed live bug | ✅ fixed (8f2265c); follow-up: same dead-singleton reads remain in LibraryQueries/LibraryQueryHooks/LibraryUpdates (see C4) |
 | C3 | Stats path posts Parse query DSL (`$regex`, `$score`) to api.bloomlibrary.org | ❌ open — needs server-side plan; document as external dependency |
 | C4 | Dead/duplicate Parse plumbing (`connection/ParseServerConnection.ts` dead fns, `LibraryUpdates.updateBook`, duplicated connection config) | ✅ both files deleted; live calls rewired to data-layer ParseConnection (01b37a1) |
+| C5 | Book-navigation interceptor service worker (`src/book-navigation-interceptor-sw.js`, new from master 2026-07-18 merge) does anonymous Parse REST reads (`classes/books` by bookInstanceId via `ParseConnectionConfig`) — a service worker can't easily share the app's data-layer | ❌ open — anon-read scope, so it IS a switchover blocker; needs a Supabase query path (or an impl-switched fetch) inside the SW. Discovered while integrating master; not yet decided/scheduled |
 
 ## D. Guardrails for out-of-scope paths
 
