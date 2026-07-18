@@ -270,22 +270,23 @@ describe("applyBookFilter", () => {
             }
         );
 
-        // NOTE: possible bug: the `edition:` case in the facet switch below
-        // is dead code. splitString() (src/connection/BookQueryBuilder.ts)
-        // only ever carves a `part` like "edition:2nd" out of the search
-        // string if the prefix appears in its own `facets` list -- and that
-        // list does NOT include "edition:" (it has copyright:, country:,
-        // publisher:, originalPublisher:, brandingProjectName:, branding:,
-        // etc., but no edition:). So "edition:2nd" is never recognized as a
-        // facet; it falls through untouched and gets AND-ilike'd against the
-        // `search` column as one opaque word instead of hitting the
-        // `edition` column. This file's own header comment (top of
-        // SupabaseBookQueryBuilder.ts) claims "edition:" is among the
-        // translated facets, which is not the current behavior. This is
-        // pre-existing: the same shared `facets` list is used by Parse's
-        // constructParseBookQuery(), so Parse likely never supported an
-        // `edition:` search facet either -- this documents current (shared)
-        // behavior rather than a Supabase-specific regression.
+        // NOTE: decided 2026-07-18: there is no `edition:` search facet, and
+        // there never was a reachable one. splitString() (src/connection/
+        // BookQueryBuilder.ts) only ever carves a `part` like "edition:2nd"
+        // out of the search string if the prefix appears in its own
+        // `facets` list -- and that list does NOT include "edition:" (it
+        // has copyright:, country:, publisher:, originalPublisher:,
+        // brandingProjectName:, branding:, etc., but no edition:). So
+        // "edition:2nd" is never recognized as a facet; it falls through
+        // untouched and gets AND-ilike'd against the `search` column as one
+        // opaque word. The same shared `facets` list is used by Parse's
+        // constructParseBookQuery(), so this was never reachable on either
+        // backend. The corresponding dead `case "edition":` switch branches
+        // have been removed from both SupabaseBookQueryBuilder.ts and
+        // BookQueryBuilder.ts, and this file's header comment corrected to
+        // stop listing "edition:" among the translated facets. This test
+        // remains to pin down the intended (shared) behavior: `edition:` in
+        // a search string is plain free text, not a facet.
         it("edition: is NOT recognized as a search facet (missing from the shared facets list)", async () => {
             const { calls } = await runFilter({
                 search: "edition:2nd",

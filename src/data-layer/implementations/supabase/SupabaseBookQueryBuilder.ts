@@ -5,8 +5,12 @@
 // comments below; the notable ones (also listed in the PR description) are:
 //   - All of Parse's search facets are translated (title:, uploader:,
 //     language:, feature:, rebrand:, bookInstanceId:, level:, copyright:,
-//     country:, publisher:, originalPublisher:, edition:,
+//     country:, publisher:, originalPublisher:,
 //     branding(ProjectName):, license:, phash:, bookHash:, harvestState:).
+//     (There is no `edition:` search facet -- the shared `facets` list in
+//     BookQueryBuilder.ts never included it, so it was never reachable on
+//     either backend; decided 2026-07-18 to leave it unsupported rather
+//     than add it.)
 //   - Wildcard tag patterns (e.g. "bookshelf:X*", "*suffix") are matched via
 //     the generated books.tags_text column (see wildcardTagToLikePattern),
 //     except inside an any-of list, where they fail closed (no known caller).
@@ -416,7 +420,6 @@ export async function applyBookFilter(
                 case "country":
                 case "publisher":
                 case "originalPublisher":
-                case "edition":
                 case "brandingProjectName":
                 case "branding": {
                     const column =

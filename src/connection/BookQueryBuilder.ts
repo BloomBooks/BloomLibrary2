@@ -161,7 +161,6 @@ export function constructParseBookQuery(
                 case "country":
                 case "publisher":
                 case "originalPublisher":
-                case "edition":
                 case "brandingProjectName":
                 case "branding":
                     if (facetLabel === "branding")
