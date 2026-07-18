@@ -145,10 +145,12 @@ export const StandAloneHarvesterArtifactUserControl: React.FunctionComponent<{
     const { book, loading, error } = useGetBookDetail(props.bookId);
     if (loading) {
         return <div>Loading...</div>;
+    } else if (error) {
+        // Check error before book === null: a failed load leaves book null,
+        // and reporting it as "not found" would be misleading.
+        return <div>Sorry, there was a problem loading that book.</div>;
     } else if (book === null) {
         return <div>Sorry, we could not find that book.</div>;
-    } else if (error) {
-        return <div>Sorry, there was a problem loading that book.</div>;
     } else {
         return (
             <HarvesterArtifactUserControl
