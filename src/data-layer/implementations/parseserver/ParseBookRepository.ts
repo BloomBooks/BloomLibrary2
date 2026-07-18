@@ -17,7 +17,10 @@ import {
 import { BooleanOptions, BookOrderingScheme } from "../../types/CommonTypes";
 import { ParseConnection } from "./ParseConnection";
 import { Book, createBookFromParseServerData } from "../../../model/Book";
-import { constructParseBookQuery } from "../../../connection/BookQueryBuilder";
+import {
+    constructParseBookQuery,
+    constructParseSortOrder,
+} from "../../../connection/BookQueryBuilder";
 import { ArtifactVisibilitySettingsGroup } from "../../../model/ArtifactVisibilitySettings";
 
 type ParseBookRecord = {
@@ -92,7 +95,9 @@ export class ParseBookRepository implements IBookRepository {
         try {
             const queryParams = constructParseBookQuery(
                 {
-                    keys: this.getGridBookKeys(),
+                    keys: query.fieldSelection?.length
+                        ? query.fieldSelection.join(",")
+                        : this.getGridBookKeys(),
                     include: "uploader,langPointers",
                     limit: query.pagination?.limit || 50,
                     skip: query.pagination?.skip || 0,
@@ -107,6 +112,13 @@ export class ParseBookRepository implements IBookRepository {
             const params: Record<string, unknown> = { ...queryParams };
             if (params.where) {
                 params.where = JSON.stringify(params.where);
+            }
+
+            // Honor caller-supplied column sorting (e.g. the moderator grid),
+            // overriding the ordering scheme's default order.
+            const order = constructParseSortOrder(query.sorting ?? []);
+            if (order) {
+                params.order = order;
             }
 
             const response = await axios.get<ParseBookResponse>(
@@ -150,8 +162,11 @@ export class ParseBookRepository implements IBookRepository {
 
         try {
             const params = this.convertBookModelToParseData(updates);
-            // Mark as library user control to prevent unwanted changes
-            Object.assign(params, { updateSource: "libraryUserControl" });
+            // Mark as library user control to prevent unwanted changes, unless
+            // the caller already supplied an update source (e.g. bulk edit).
+            if (params.updateSource === undefined) {
+                Object.assign(params, { updateSource: "libraryUserControl" });
+            }
 
             await axios.put(`${connection.url}classes/books/${id}`, params, {
                 headers: connection.headers,
@@ -181,6 +196,8 @@ export class ParseBookRepository implements IBookRepository {
             filter: query.filter,
             pagination: query.pagination,
             orderingScheme: BookOrderingScheme.Default,
+            sorting: query.sorting,
+            fieldSelection: query.fieldSelection,
         });
 
         return {
@@ -284,7 +301,11 @@ export class ParseBookRepository implements IBookRepository {
         id: string,
         settings: ArtifactVisibilitySettingsGroup
     ): Promise<void> {
-        await this.updateBook(id, settings as Partial<BookModel>);
+        // Parse stores artifact visibility in the "show" column, so send the
+        // settings group under that key (see convertBookModelToParseData).
+        await this.updateBook(id, ({
+            show: settings,
+        } as unknown) as Partial<BookModel>);
     }
 
     // Additional operations found in current codebase
@@ -354,7 +375,8 @@ export class ParseBookRepository implements IBookRepository {
         if (book.baseUrl !== undefined) data.baseUrl = book.baseUrl;
         if (book.license !== undefined) data.license = book.license;
         if (book.copyright !== undefined) data.copyright = book.copyright;
-        if (book.tags !== undefined) data.tags = book.tags.join(",");
+        // Parse stores books.tags as an array of strings, so send it as-is.
+        if (book.tags !== undefined) data.tags = book.tags;
         if (book.summary !== undefined) data.summary = book.summary;
         if (book.pageCount !== undefined)
             data.pageCount = book.pageCount.toString();
@@ -396,6 +418,17 @@ export class ParseBookRepository implements IBookRepository {
             data.keywordStems = book.keywordStems;
         if (book.librarianNote !== undefined)
             data.librarianNote = book.librarianNote;
+
+        // Artifact visibility is stored in the Parse "show" column. It is not a
+        // BookModel field, so it arrives as an extra property (see
+        // saveArtifactVisibility).
+        const show = (book as { show?: unknown }).show;
+        if (show !== undefined) data.show = show;
+
+        // Preserve a caller-supplied update source (e.g. bulk edit).
+        // updateBook() otherwise defaults this to "libraryUserControl".
+        const updateSource = (book as { updateSource?: unknown }).updateSource;
+        if (updateSource !== undefined) data.updateSource = updateSource;
 
         return data;
     }

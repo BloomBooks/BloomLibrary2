@@ -16,6 +16,13 @@ const createBookFromParseServerDataMock = vi.hoisted(() => vi.fn());
 
 vi.mock("../../connection/BookQueryBuilder", () => ({
     constructParseBookQuery: constructParseBookQueryMock,
+    constructParseSortOrder: (
+        sortingArray: { columnName: string; descending: boolean }[]
+    ) => {
+        if (!sortingArray?.length) return "";
+        const { columnName, descending } = sortingArray[0];
+        return descending ? "-" + columnName : columnName;
+    },
 }));
 
 vi.mock("../../model/Book", () => ({
@@ -155,11 +162,75 @@ describe("ParseBookRepository", () => {
             expect.stringContaining("classes/books/book-5"),
             expect.objectContaining({
                 title: "Updated",
-                tags: "topic:science,level:1",
+                // Parse stores tags as an array, so it must be sent as an array.
+                tags: ["topic:science", "level:1"],
                 pageCount: "32",
                 updateSource: "libraryUserControl",
             }),
             expect.any(Object)
+        );
+    });
+
+    it("preserves a caller-supplied update source (e.g. bulk edit)", async () => {
+        mockedAxios.put.mockResolvedValueOnce({ data: {} });
+
+        await repository.updateBook("book-9", ({
+            harvestState: "Requested",
+            updateSource: "bloom-library-bulk-edit",
+        } as unknown) as Partial<BookModel>);
+
+        expect(mockedAxios.put).toHaveBeenCalledWith(
+            expect.stringContaining("classes/books/book-9"),
+            expect.objectContaining({
+                harvestState: "Requested",
+                updateSource: "bloom-library-bulk-edit",
+            }),
+            expect.any(Object)
+        );
+    });
+
+    it("saves artifact visibility under the Parse show column", async () => {
+        mockedAxios.put.mockResolvedValueOnce({ data: {} });
+
+        const settings = {
+            pdf: { harvester: true, user: false },
+            epub: undefined,
+        };
+
+        await repository.saveArtifactVisibility("book-7", settings as any);
+
+        expect(mockedAxios.put).toHaveBeenCalledWith(
+            expect.stringContaining("classes/books/book-7"),
+            expect.objectContaining({
+                show: settings,
+                updateSource: "libraryUserControl",
+            }),
+            expect.any(Object)
+        );
+    });
+
+    it("applies caller-supplied grid sorting to the query order", async () => {
+        constructParseBookQueryMock.mockImplementationOnce((base) => ({
+            ...base,
+            where: {},
+            order: "-createdAt",
+        }));
+
+        mockedAxios.get.mockResolvedValueOnce({
+            data: { results: [], count: 0 },
+        });
+
+        await repository.getBooksForGrid({
+            filter: {} as IFilter,
+            sorting: [{ columnName: "title", descending: true }],
+            pagination: { limit: 10, skip: 0 },
+        } as any);
+
+        expect(mockedAxios.get).toHaveBeenCalledWith(
+            expect.stringContaining("classes/books"),
+            expect.objectContaining({
+                params: expect.objectContaining({ order: "-title" }),
+            })
         );
     });
 

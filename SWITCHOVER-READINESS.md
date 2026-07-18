@@ -44,6 +44,7 @@ sweep, bloom-core-supabase backend inventory) on 2026-07-18.
 |---|------|--------|
 | D1 | Under supabase impl: login/write UI must not route into throwing stubs (decide: hide, disable, or keep Parse-backed) | ✅ decided 2026-07-18 — mixed mode: keep auth/user Parse-backed. Supabase registration binds ParseAuthenticationService/ParseUserRepository under the Supabase impl keys (`implementations/supabase/index.ts`); getBloomApiHeaders() therefore carries the real Parse session token. Covered by DataLayer.test.ts |
 | D2 | Analytics interface unwired on both sides (Parse side unregistered) — confirm nothing calls `getAnalyticsService()` before wiring | ✅ verified (zero callers) |
+| D3 | Moderator grid column sorting not honored by the Supabase read path (`SupabaseBookRepository.getBooksForGrid` hardcodes `BookOrderingScheme.Default`; `applyOrdering` only maps ordering *schemes*, not arbitrary grid columns) | ⚠ known gap, moderator-scope only. The Parse path was fixed to thread `query.sorting` through (`constructParseSortOrder`). Supabase moderator writes (`updateBook`/`saveArtifactVisibility`) also still throw "not implemented", so the whole moderator grid/edit path is Parse-backed under mixed mode; column sorting on a future Supabase moderator path would need a column→db-column ordering map. Out of anon-browsing scope. |
 
 ## E. Backend dependencies (bloom-core-supabase)
 

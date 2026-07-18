@@ -14,6 +14,9 @@ export interface BookSearchQuery extends BaseQuery {
     filter: IFilter;
     orderingScheme?: BookOrderingScheme;
     languageForSorting?: string;
+    // Caller-supplied column sorting (e.g. the moderator grid). When present it
+    // overrides the ordering scheme's default order.
+    sorting?: Sorting[];
 }
 
 export interface BookGridQuery extends BaseQuery {

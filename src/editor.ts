@@ -1,6 +1,5 @@
 import { axios } from "@use-hooks/axios";
-import { IInformEditorResult } from "./connection/LoggedInUser";
-import { DataLayerFactory } from "./data-layer/factory/DataLayerFactory";
+import { IInformEditorResult, LoggedInUser } from "./connection/LoggedInUser";
 
 function getPort() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -24,18 +23,16 @@ export function informEditorOfSuccessfulLogin(userData: any) {
     axios
         .post(`${getEditorApiUrl()}login`, postData)
         .then(() => {
-            const authService = DataLayerFactory.getInstance().createAuthenticationService();
-            const currentUser = authService.getCurrentUser();
-            if (currentUser) {
-                (currentUser as any).informEditorResult =
+            // Update the live logged-in user that the waiting screen observes
+            // (LoginForEditor via useGetLoggedInUser), not a throwaway snapshot.
+            if (LoggedInUser.current) {
+                LoggedInUser.current.informEditorResult =
                     IInformEditorResult.Success;
             }
         })
         .catch((err) => {
-            const authService = DataLayerFactory.getInstance().createAuthenticationService();
-            const currentUser = authService.getCurrentUser();
-            if (currentUser) {
-                (currentUser as any).informEditorResult =
+            if (LoggedInUser.current) {
+                LoggedInUser.current.informEditorResult =
                     IInformEditorResult.Failure;
             }
 

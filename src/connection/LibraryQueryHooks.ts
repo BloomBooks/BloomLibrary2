@@ -1270,7 +1270,12 @@ export function useGetBooksForGrid(
     filter: IFilter,
     sortingArray: { columnName: string; descending: boolean }[],
     skip: number,
-    limit: number
+    limit: number,
+    // Comma-separated list of fields to fetch; defaults to the full grid keys.
+    keysToGet?: string,
+    // When true, skip the query entirely (e.g. while the collection is still
+    // loading and we have no filter yet).
+    doNotRunQuery?: boolean
 ): {
     onePageOfMatchingBooks: Book[];
     totalMatchingBooksCount: number;
@@ -1297,7 +1302,7 @@ export function useGetBooksForGrid(
     const collectionReady = useProcessDerivativeFilter(stableFilter);
 
     useEffect(() => {
-        if (!collectionReady || hasStarted.current) return;
+        if (doNotRunQuery || !collectionReady || hasStarted.current) return;
         hasStarted.current = true;
 
         const fetchBooks = async () => {
@@ -1310,6 +1315,9 @@ export function useGetBooksForGrid(
                     filter: stableFilter,
                     pagination: { limit, skip },
                     sorting: stableSorting,
+                    fieldSelection: keysToGet
+                        ? keysToGet.split(",")
+                        : undefined,
                 };
 
                 const result = await repository.getBooksForGrid(gridQuery);
@@ -1333,7 +1341,15 @@ export function useGetBooksForGrid(
         };
 
         fetchBooks();
-    }, [stableFilter, stableSorting, skip, limit, collectionReady]);
+    }, [
+        stableFilter,
+        stableSorting,
+        skip,
+        limit,
+        keysToGet,
+        doNotRunQuery,
+        collectionReady,
+    ]);
 
     return {
         onePageOfMatchingBooks: books,

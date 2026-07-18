@@ -84,7 +84,9 @@ export const CollectionReport: React.FunctionComponent<ICollectionReportProps> =
             descending: s.direction === "desc",
         })),
         0,
-        kBooksPerPage
+        kBooksPerPage,
+        reportBookKeys,
+        doNotRunQuery
     );
 
     const haveBooks: boolean = !!(matchingBooks && matchingBooks.length);
