@@ -13,6 +13,17 @@ import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
 import { getHarvesterBaseUrlFromBaseUrl } from "./BookUrlUtils";
 import stem from "wink-porter2-stemmer";
 
+// Report a failed book save to the user. This restores the user-visible failure
+// reporting from the legacy connection layer: LibraryUpdates.updateBook() caught
+// a failed save and showed an alert(error) so a moderator whose edit did not save
+// found out. The data-layer repository pattern that replaced it left the save
+// methods below rejecting silently (their call sites are all fire-and-forget), so
+// we re-add the alert here and also console.error the underlying error.
+function reportBookSaveFailure(error: unknown): void {
+    console.error(error);
+    alert(error);
+}
+
 export function createBookFromParseServerData(pojo: any): Book {
     const b = Object.assign(new Book(), pojo);
     // change to a more transparent name internally, and make an observable object
@@ -327,23 +338,31 @@ export class Book {
         );
 
         const bookRepository = DataLayerFactory.getInstance().createBookRepository();
-        await bookRepository.updateBook(this.id, {
-            tags,
-            inCirculation: this.inCirculation,
-            draft: this.draft,
-            summary: this.summary?.trim(),
-            librarianNote: this.librarianNote,
-            publisher: this.publisher,
-            originalPublisher: this.originalPublisher,
-            languages: this.languages, // Let repository handle language conversion
-            features: this.features,
-            title: this.title?.trim(),
-            keywords: this.keywords,
-            keywordStems: this.keywordStems,
-            edition: this.edition,
-            harvestState: this.harvestState,
-            rebrand: this.rebrand,
-        } as any);
+        // Callers of saveAdminData() are fire-and-forget, so a rejection here would
+        // be swallowed silently. Report the failure to the user (see
+        // reportBookSaveFailure) instead of letting a moderator believe the edit
+        // saved. We deliberately don't re-throw: there is no caller to handle it.
+        try {
+            await bookRepository.updateBook(this.id, {
+                tags,
+                inCirculation: this.inCirculation,
+                draft: this.draft,
+                summary: this.summary?.trim(),
+                librarianNote: this.librarianNote,
+                publisher: this.publisher,
+                originalPublisher: this.originalPublisher,
+                languages: this.languages, // Let repository handle language conversion
+                features: this.features,
+                title: this.title?.trim(),
+                keywords: this.keywords,
+                keywordStems: this.keywordStems,
+                edition: this.edition,
+                harvestState: this.harvestState,
+                rebrand: this.rebrand,
+            } as any);
+        } catch (error) {
+            reportBookSaveFailure(error);
+        }
     }
 
     private static readonly keywordDelimiter: string = " ";
@@ -377,10 +396,16 @@ export class Book {
 
     public async saveArtifactVisibility() {
         const bookRepository = DataLayerFactory.getInstance().createBookRepository();
-        await bookRepository.saveArtifactVisibility(
-            this.id,
-            this.artifactsToOfferToUsers
-        );
+        // As with saveAdminData(), the call sites are fire-and-forget, so report a
+        // failed save to the user rather than swallowing the rejection silently.
+        try {
+            await bookRepository.saveArtifactVisibility(
+                this.id,
+                this.artifactsToOfferToUsers
+            );
+        } catch (error) {
+            reportBookSaveFailure(error);
+        }
     }
 
     // e.g. system:Incoming
