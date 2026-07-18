@@ -17,24 +17,24 @@ sweep, bloom-core-supabase backend inventory) on 2026-07-18.
 | A3 | `tags.category` column missing → `TagModel.category` always undefined | ❌ open — confirm UI impact, then schema+sync+mapper | both repos |
 | A4 | `sendConcernEmail` throws under Supabase ("Report this book" is anon-reachable) | ❌ open — needs edge function or transitional routing to Parse cloud fn | both repos |
 | A5 | `anyOfThese`/`derivedFrom` union IDs client-side then `.in("id",…)` — scale risk | ⚠ verify at production scale | blorg |
-| A6 | Wildcard tag inside any-of list fails closed | ⚠ accepted (no known caller) — guard test wanted | blorg |
+| A6 | Wildcard tag inside any-of list fails closed | ⚠ accepted (no known caller); covered by unit tests where reachable | blorg |
 
 ## B. Test safety net
 
 | # | Item | Status |
 |---|------|--------|
-| B1 | Unit tests for `SupabaseBookQueryBuilder` (~646 lines, riskiest layer, currently 0 unit tests) | ❌ in progress |
-| B2 | Unit tests for `SupabaseBookMapper` | ❌ in progress |
+| B1 | Unit tests for `SupabaseBookQueryBuilder` (~646 lines, riskiest layer) | ✅ 60 tests, CI-safe (30a03fa) |
+| B2 | Unit tests for `SupabaseBookMapper` | ✅ 9 tests (30a03fa) |
 | B3 | Integration suite breadth (real collection filter shapes, guards for A6) | ⚠ thin (9 tests) |
 | B4 | Contract tests runnable in CI (local stack in GH Actions; db repo CI already resets a stack) | ❌ open |
-| B5 | Runtime smoke test: browse the app with `VITE_DATA_LAYER_IMPL=supabase` against local stack | ❌ in progress |
+| B5 | Runtime smoke test: browse the app with `VITE_DATA_LAYER_IMPL=supabase` against local stack | ✅ passed 2026-07-18 (home/search/detail/language/topic; zero data-layer failures) |
 
 ## C. Parse usage outside the data layer (switchover blockers)
 
 | # | Item | Status |
 |---|------|--------|
 | C1 | `export/freeLearningIO.ts` raw Parse REST call w/ hardcoded prod app id | ❌ open — route through repository or retire |
-| C2 | Bloom API auth bridge (`connection/ApiConnection.ts`) reads session token from a singleton login no longer populates — likely live bug today | ❌ in progress — verify + fix |
+| C2 | Bloom API auth bridge (`connection/ApiConnection.ts`) reads session token from a singleton login no longer populates — confirmed live bug | ✅ fixed (8f2265c); follow-up: same dead-singleton reads remain in LibraryQueries/LibraryQueryHooks/LibraryUpdates (see C4) |
 | C3 | Stats path posts Parse query DSL (`$regex`, `$score`) to api.bloomlibrary.org | ❌ open — needs server-side plan; document as external dependency |
 | C4 | Dead/duplicate Parse plumbing (`connection/ParseServerConnection.ts` dead fns, `LibraryUpdates.updateBook`, duplicated connection config) | ❌ open — delete/consolidate |
 
