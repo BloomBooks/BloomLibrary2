@@ -1,10 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // getBloomApiHeaders must read the Parse session token from the ACTIVE
-// data-layer authentication service (where the real login flow stores it),
-// not from the legacy ParseServerConnection singleton (which nothing populates
-// anymore). We mock the data-layer index so this stays a focused unit test and
-// doesn't drag the whole factory/registration into scope.
+// data-layer authentication service, where the real login flow stores it (via
+// ParseConnection.setSessionToken). We mock the data-layer index so this stays a
+// focused unit test and doesn't drag the whole factory/registration into scope.
 const getSessionTokenMock = vi.fn<() => string | undefined>();
 
 vi.mock("../data-layer", () => ({

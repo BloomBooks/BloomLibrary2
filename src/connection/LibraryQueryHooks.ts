@@ -2,7 +2,7 @@ import React, { useContext, useMemo, useState, useEffect, useRef } from "react";
 import useAxios, { IReturns, axios, IParams } from "@use-hooks/axios";
 import { AxiosResponse } from "axios";
 import { BooleanOptions, IFilter, parseBooleanOptions } from "FilterTypes";
-import { getConnection } from "./ParseServerConnection";
+import { ParseConnection } from "../data-layer/implementations/parseserver/ParseConnection";
 import {
     getBloomApiBooksUrl,
     getBloomApiUrl,
@@ -139,7 +139,7 @@ function makeBookQueryAxiosParams(
     //console.log("finalParams: " + JSON.stringify(finalParams));
 
     return {
-        url: `${getConnection().url}classes/books`,
+        url: `${ParseConnection.getConnection().url}classes/books`,
         // The "rules of hooks" require that if we're ever going to run a useEffect, we have to *always* run it
         // So we can't conditionally run this useBookQueryInternal(). But useAxios does give this way to run its
         // internal useEffect() but not actually run the query.
@@ -156,7 +156,7 @@ function makeBookQueryAxiosParams(
             JSON.stringify(limit) +
             JSON.stringify(skip),
         options: {
-            headers: getConnection().headers,
+            headers: ParseConnection.getConnection().headers,
             // The filter may be too complex to pass in the URL (ie, GET params).  So we use POST with data that
             // specifies that the underlying operation is actually a GET.  (This doesn't seem to be documented, but
             // Andrew discovered that it works, and I got a confirming message on the parse-server slack channel.)

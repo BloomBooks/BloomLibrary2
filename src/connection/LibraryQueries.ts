@@ -1,5 +1,5 @@
 import { axios } from "@use-hooks/axios";
-import { getConnection } from "./ParseServerConnection";
+import { ParseConnection } from "../data-layer/implementations/parseserver/ParseConnection";
 import { bookDetailFields } from "./BookQueryBuilder";
 import { getBloomApiUrl } from "./ApiConnection";
 
@@ -22,8 +22,8 @@ export async function retrieveBookData(
     limitCount: number,
     keysToGet?: string
 ) {
-    return axios.get(`${getConnection().url}classes/books`, {
-        headers: getConnection().headers,
+    return axios.get(`${ParseConnection.getConnection().url}classes/books`, {
+        headers: ParseConnection.getConnection().headers,
         params: {
             ...query, // this is first so that the order that was part of the original query (and anything else) can be overridden by the user using the grid
             count: 1, // causes it to return the count
@@ -47,10 +47,10 @@ export async function retrieveBookStats(
     return axios.post(`${getBloomApiUrl()}/stats/reading/per-book`, {
         filter: {
             parseDBQuery: {
-                url: `${getConnection().url}classes/books`,
+                url: `${ParseConnection.getConnection().url}classes/books`,
                 method: "GET",
                 options: {
-                    headers: getConnection().headers,
+                    headers: ParseConnection.getConnection().headers,
                     params: {
                         order: sortOrder,
                         skip: skipCount,
@@ -66,9 +66,9 @@ export async function retrieveBookStats(
 
 // Get the current information about one book.
 export async function retrieveCurrentBookData(bookId: string) {
-    const headers = getConnection().headers;
+    const headers = ParseConnection.getConnection().headers;
     const result = await axios.get(
-        `${getConnection().url}classes/books/${bookId}`,
+        `${ParseConnection.getConnection().url}classes/books/${bookId}`,
         {
             headers,
             params: { keys: bookDetailFields },
