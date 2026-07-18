@@ -538,6 +538,7 @@ export class ParseBookRepository implements IBookRepository {
             "harvestLog,harvestStartedAt,tags,pageCount,phashOfFirstContentImage,bookHashFromImages,show,credits,country," +
             "features,internetLimits,librarianNote,uploader,langPointers,importedBookSourceUrl," +
             "downloadCount,publisher,originalPublisher,brandingProjectName,keywords,edition,rebrand,leveledReaderLevel," +
+            "allTitles," +
             "analytics_finishedCount,analytics_startedCount,analytics_shellDownloads"
         );
     }
