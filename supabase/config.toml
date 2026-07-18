@@ -1,0 +1,60 @@
+# Minimal Supabase scaffold used ONLY to spin up a throwaway local stack in CI
+# (see .github/workflows/supabase-integration.yml) so the gated
+# RUN_SUPABASE_TESTS integration suites can run against a real Postgres +
+# PostgREST. It is NOT used for local development or any deployed environment.
+#
+# Ports intentionally match the defaults baked into
+# src/data-layer/implementations/supabase/SupabaseConnection.ts
+# (API 127.0.0.1:44321) and the bloom-core-supabase dev stack (db 44322), so no
+# VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY overrides are needed: the tests use
+# supabase-js defaults + the standard local demo anon key.
+#
+# Everything not required for anonymous read-path tests (studio, mailpit,
+# realtime, storage, analytics, edge functions, connection pooler) is disabled
+# to keep `supabase start` fast and reliable in CI. Only db, PostgREST (rest),
+# the Kong API gateway, and auth start.
+project_id = "blorg-ci"
+
+[api]
+enabled = true
+port = 44321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+# The "more filter shapes" suite fetches all ~699 books in one page with a
+# limit of 1000, so the PostgREST row cap must be >= that.
+max_rows = 1000
+
+[db]
+port = 44322
+shadow_port = 44320
+# Must match the fixture's source cluster (pg_dump was run against Postgres 17).
+major_version = 17
+
+[db.pooler]
+enabled = false
+
+[realtime]
+enabled = false
+
+[studio]
+enabled = false
+
+[inbucket]
+enabled = false
+
+[storage]
+enabled = false
+
+[edge_runtime]
+enabled = false
+
+[analytics]
+enabled = false
+
+# Auth (GoTrue) is not exercised by the anonymous read tests, but is left
+# enabled because it is a well-trodden, reliable part of `supabase start`; the
+# tests never hit it. The default local JWT secret is used, which is what makes
+# the hard-coded local demo anon key in SupabaseConnection.ts valid.
+[auth]
+enabled = true
+site_url = "http://127.0.0.1:3000"
