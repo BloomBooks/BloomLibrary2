@@ -33,7 +33,7 @@ sweep, bloom-core-supabase backend inventory) on 2026-07-18.
 
 | # | Item | Status |
 |---|------|--------|
-| C1 | `export/freeLearningIO.ts` raw Parse REST call w/ hardcoded prod app id | ❌ open — route through repository or retire |
+| C1 | `export/freeLearningIO.ts` raw Parse REST call w/ hardcoded prod app id | ✅ routed through book repository (81e88ff); accepted narrowing: inCirculation strictly-true vs legacy true-or-unset |
 | C2 | Bloom API auth bridge (`connection/ApiConnection.ts`) reads session token from a singleton login no longer populates — confirmed live bug | ✅ fixed (8f2265c); follow-up: same dead-singleton reads remain in LibraryQueries/LibraryQueryHooks/LibraryUpdates (see C4) |
 | C3 | Stats path posts Parse query DSL (`$regex`, `$score`) to api.bloomlibrary.org | ❌ open — needs server-side plan; document as external dependency |
 | C4 | Dead/duplicate Parse plumbing (`connection/ParseServerConnection.ts` dead fns, `LibraryUpdates.updateBook`, duplicated connection config) | ✅ both files deleted; live calls rewired to data-layer ParseConnection (01b37a1) |
