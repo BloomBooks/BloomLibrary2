@@ -31,9 +31,9 @@ export const BookOwnerControlsBox: React.FunctionComponent<{
     const l10n = useIntl();
     const { bloomDesktopAvailable } = useContext(OSFeaturesContext);
 
-    const [firebaseUser, setFirebaseUserUrl] = useState<firebase.User | null>(
-        null
-    );
+    const [firebaseUser, setFirebaseUserUrl] = useState<
+        ReturnType<typeof firebase.auth>["currentUser"]
+    >(null);
     useEffect(() => {
         getCurrentUser().then((currentUser) => {
             if (currentUser !== null) {

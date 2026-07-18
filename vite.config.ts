@@ -1,6 +1,7 @@
 import { defineConfig, Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
+import { build as esbuild } from "esbuild";
 import fs from "fs";
 import path from "path";
 
@@ -41,6 +42,7 @@ export default defineConfig(() => {
         },
 
         plugins: [
+            bundleBookNavigationInterceptorPlugin(), // For when Bloom Player needs to follow links in books
             serveTranslationsPlugin(),
             copyTranslationsPlugin(),
             // if you import an svg file with this ?react at the end, it will be converted to a React component
@@ -51,6 +53,70 @@ export default defineConfig(() => {
         ],
     };
 });
+
+function bundleBookNavigationInterceptorPlugin(): Plugin {
+    const serviceWorkerPath = "/book-navigation-interceptor-sw.js";
+    const sourceFilePath = path.resolve(
+        __dirname,
+        "src/book-navigation-interceptor-sw.js"
+    );
+
+    return {
+        name: "bundle-book-navigation-interceptor",
+        configureServer(server) {
+            // The book-navigation interceptor must be served from the site root so it can
+            // register with scope "/" and intercept /book/... requests to make book navigation/links inside books work
+            server.middlewares.use(
+                serviceWorkerPath,
+                async (_req, res, next) => {
+                    try {
+                        // During dev, bundle the worker to a single file so it keeps
+                        // working as a classic service worker even though its source
+                        // imports shared modules from src.
+                        const bundledWorker = await bundleBookNavigationInterceptor(
+                            sourceFilePath
+                        );
+
+                        res.setHeader("Content-Type", "application/javascript");
+                        res.end(bundledWorker);
+                    } catch (error) {
+                        next(error as Error);
+                    }
+                }
+            );
+        },
+        async writeBundle({ dir }) {
+            const buildDir = dir || path.join(__dirname, "build");
+            const bundledWorker = await bundleBookNavigationInterceptor(
+                sourceFilePath
+            );
+            fs.writeFileSync(
+                path.join(buildDir, "book-navigation-interceptor-sw.js"),
+                bundledWorker
+            );
+        },
+    };
+}
+
+async function bundleBookNavigationInterceptor(entryPoint: string) {
+    const result = await esbuild({
+        entryPoints: [entryPoint],
+        bundle: true,
+        format: "iife",
+        platform: "browser",
+        target: "es2020",
+        write: false,
+    });
+
+    const outputFile = result.outputFiles?.[0];
+    if (!outputFile) {
+        throw new Error(
+            "Failed to bundle book-navigation interceptor service worker"
+        );
+    }
+
+    return outputFile.text;
+}
 
 // Copies translation files from src to build
 function copyTranslationsPlugin(): Plugin {
@@ -86,7 +152,7 @@ function copyTranslationsPlugin(): Plugin {
     };
 }
 
-// Used to serve translation files when running `yarn dev`
+// Used to serve translation files when running `vp run dev`
 function serveTranslationsPlugin(): Plugin {
     return {
         name: "serve-translations",

@@ -1,10 +1,11 @@
 name: Lighthouse CI
 
 on:
-    workflow_run:
-        workflows: ["Build and Deploy"]
-        types:
-            - completed
+    # Disabling automatic runs for now since it is always failing and we aren't prioritizing fixing it.
+    #    workflow_run:
+    #        workflows: ["Build and Deploy"]
+    #        types:
+    #            - completed
     workflow_dispatch: # Allows manual triggering of the workflow
 
 jobs:
@@ -12,9 +13,9 @@ jobs:
         runs-on: ubuntu-latest
         if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'master') }}
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
             - name: Audit root using Lighthouse
-              uses: treosh/lighthouse-ci-action@v12
+              uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # 12.6.2
               with:
                   urls: |
                       https://alpha.bloomlibrary.org
@@ -25,7 +26,7 @@ jobs:
             # We have to run this separately with a separate budget file because the redirect causes
             # lighthouse to think we are running at the root
             - name: Audit /covid19 using Lighthouse
-              uses: treosh/lighthouse-ci-action@v12
+              uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # 12.6.2
               with:
                   urls: |
                       https://alpha.bloomlibrary.org/covid19

@@ -4,11 +4,50 @@ import "./index.css";
 import * as Sentry from "@sentry/browser";
 import App from "./App";
 import "./data-layer";
-import * as serviceWorker from "./serviceWorker";
+// import * as serviceWorker from "./serviceWorker";
 import { createBrowserHistory } from "history";
 import { isEmbedded } from "./components/Embedding/EmbeddingHost";
 import { initializeFirebase } from "./authentication/firebase/firebase";
 import { isAppHosted } from "./components/appHosted/AppHostedUtils";
+
+// Google Translate can often break react sites. See https://issues.chromium.org/issues/41407169.
+// We seem to be hitting this mostly (exclusively?) because of our use of react-truncate-markup.
+// See issue at https://github.com/patrik-piskay/react-truncate-markup/issues/65.
+// React itself proposes the patch below (see https://github.com/facebook/react/issues/11538#issuecomment-417504600):
+if (typeof Node === "function" && Node.prototype) {
+    const originalRemoveChild = Node.prototype.removeChild;
+    Node.prototype.removeChild = function <T extends Node>(child: T): T {
+        if (child.parentNode !== this) {
+            if (console) {
+                console.error(
+                    "Cannot remove a child from a different parent",
+                    child,
+                    this
+                );
+            }
+            return child;
+        }
+        return originalRemoveChild.call(this, child) as T;
+    };
+    const originalInsertBefore = Node.prototype.insertBefore;
+    Node.prototype.insertBefore = function <T extends Node>(
+        newNode: T,
+        referenceNode: Node | null
+    ): T {
+        if (referenceNode && referenceNode.parentNode !== this) {
+            if (console) {
+                console.error(
+                    "Cannot insert before a reference node from a different parent",
+                    referenceNode,
+                    this
+                );
+            }
+            return newNode;
+        }
+        return originalInsertBefore.call(this, newNode, referenceNode) as T;
+    };
+}
+// End patch for Google Translate
 
 try {
     // we're sending errors so long as we're not running on localhost
@@ -75,4 +114,8 @@ ReactDOM.render(<App />, document.getElementById("root"));
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+
+// As of March 2026, we are adding another service worker (book-navigation-interceptor) and this line is causing problems
+// by sporadically unregistering that one. If we ever want to use this service worker in the future, we need to make sure
+// everything is scoped currently
+// serviceWorker.unregister();

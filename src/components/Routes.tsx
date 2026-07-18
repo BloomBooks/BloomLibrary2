@@ -102,7 +102,9 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                         path="/test-embedding/:code*"
                         render={({ match }) => {
                             return (
-                                <TestEmbeddingPage code={match.params.code} />
+                                <TestEmbeddingPage
+                                    code={match.params.code ?? ""}
+                                />
                             );
                         }}
                     ></Route>
@@ -183,7 +185,10 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                                 url.startsWith("/grid/books/") ||
                                 url === "/grid/books"
                             ) {
-                                let filter = match.params.filter.substring(5);
+                                // The url check above guarantees the param is present.
+                                let filter = (
+                                    match.params.filter ?? ""
+                                ).substring(5);
                                 if (filter.startsWith("/"))
                                     filter = filter.substring(1);
                                 return <GridPage filters={filter} />;
@@ -194,6 +199,7 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                             } else if (match.params.filter === "uploaders") {
                                 return <AggregateGridPage type="uploader" />;
                             } else if (
+                                match.params.filter &&
                                 isValidFilterForGrid(match.params.filter)
                             ) {
                                 return (
@@ -212,7 +218,7 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                         render={({ match }) => {
                             return (
                                 <BulkEditPageCodeSplit
-                                    filters={match.params.filter}
+                                    filters={match.params.filter ?? ""}
                                 />
                             );
                         }}
@@ -356,9 +362,11 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
                                     );
                                 default:
                                     return (
+                                        // This is the "/" route, which has no
+                                        // :segments param; the root collection
+                                        // is what no segments means.
                                         <DefaultRouteComponent
                                             locationPathname={location.pathname}
-                                            segments={match.params.segments}
                                         />
                                     );
                             }
@@ -384,7 +392,9 @@ export const Routes: React.FunctionComponent<{}> = (props) => {
 // The fallthrough/default component when a route doesn't match something else.
 export const DefaultRouteComponent: React.FunctionComponent<{
     locationPathname: string;
-    segments: string;
+    // undefined on the "/" route (and an empty /:segments* match), which
+    // splitPathname treats as the root collection.
+    segments?: string;
 }> = (props) => {
     if (window.self !== window.top) {
         return (
@@ -406,7 +416,7 @@ export const DefaultRouteComponent: React.FunctionComponent<{
 // - everything is a filter: collectionName is root.read
 // - collection works out to "read": change to "root.read"
 export function splitPathname(
-    pathname: string
+    pathname?: string
 ): {
     embeddedSettingsUrlKey: string | undefined;
     collectionName: string;
@@ -592,7 +602,8 @@ export function setBloomLibraryTitle(title: string): void {
 }
 
 export const CollectionWrapper: React.FunctionComponent<{
-    segments: string;
+    // undefined means the root collection (see splitPathname).
+    segments?: string;
     embeddedSettings?: IEmbedSettings;
 }> = (props) => {
     const { collectionName, filters } = splitPathname(props.segments);

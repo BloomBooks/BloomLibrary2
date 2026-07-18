@@ -43,7 +43,7 @@ export const DownloadPreflightDialog: React.FunctionComponent<IDownloadPreflight
             <DialogContent>
                 <FormattedMessage
                     id="downloadShellbook.aboutToDownload.message"
-                    defaultMessage="You are about to download {bookTitle} into the Bloom Desktop Application. You need to have <link>Bloom</link> already installed on your computer."
+                    defaultMessage="You are about to download {bookTitle} into the Bloom Editor application. You need to have <link>Bloom</link> already installed on your computer."
                     values={{
                         bookTitle: (
                             <em>

@@ -1,9 +1,12 @@
 {
     "workbench.colorCustomizations": {
-        "statusBar.background": "#49d668",
-        "statusBar.debuggingBackground": "#49d668",
+        "statusBar.background": "#549d3e",
         "statusBar.noFolderBackground": "#49d668",
-        "statussBar.prominentBackground": "#D65649"
+        "statussBar.prominentBackground": "#D65649",
+        "statusBar.foreground": "#e7e7e7",
+        "statusBarItem.hoverBackground": "#6bbb53",
+        "statusBarItem.remoteBackground": "#549d3e",
+        "statusBarItem.remoteForeground": "#e7e7e7"
     },
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -29,5 +32,6 @@
         "uilang",
         "voca",
         "yagni"
-    ]
+    ],
+    "peacock.color": "#549d3e"
 }

@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import { useGetBookDetail } from "../connection/LibraryQueryHooks";
 import { Book } from "../model/Book";
-import { getUrlOfHtmlOfDigitalVersion } from "./BookDetail/ArtifactHelper";
+import { getUrlOfHtmlOfDigitalVersion } from "../model/BookUrlUtils";
 import { useHistory, useLocation } from "react-router-dom";
 import { useTrack } from "../analytics/Analytics";
 import { getBookAnalyticsInfo } from "../analytics/BookAnalyticsInfo";
@@ -27,6 +27,137 @@ import { useMediaQuery } from "@material-ui/core";
 import { OSFeaturesContext } from "./OSFeaturesContext";
 import { IReadBookPageProps } from "./ReadBookPageCodeSplit";
 
+// To make links in books able to open other books, we need to intercept requests from the Bloom Player iframe to our
+// /book/... URLs. To do that, we register a service worker that intercepts those requests
+// instead of trying to load them as pages. This file is the service worker that does that interception.
+// It is registered in ReadBookPage.tsx and bundled into our build by vite.config.ts.
+const bookNavigationInterceptorServiceWorkerUrl =
+    "/book-navigation-interceptor-sw.js";
+
+// Let's not risk totally blocking the page if something goes wrong
+// with the service worker, since most books won't have links anyway
+const serviceWorkerRegistrationTimeoutMs = 5000;
+
+function waitForServiceWorkerActivation(
+    worker: ServiceWorker,
+    timeoutMs = serviceWorkerRegistrationTimeoutMs
+) {
+    if (worker.state === "activated") {
+        return Promise.resolve();
+    }
+
+    return new Promise<void>((resolve, reject) => {
+        const timeoutId = window.setTimeout(() => {
+            worker.removeEventListener("statechange", onStateChange);
+            console.error(
+                "Book navigation interceptor service worker activation timed out",
+                { state: worker.state, timeoutMs }
+            );
+            reject(new Error("Service worker activation timed out"));
+        }, timeoutMs);
+
+        const onStateChange = () => {
+            if (worker.state === "activated") {
+                window.clearTimeout(timeoutId);
+                worker.removeEventListener("statechange", onStateChange);
+                resolve();
+            } else if (worker.state === "redundant") {
+                window.clearTimeout(timeoutId);
+                worker.removeEventListener("statechange", onStateChange);
+                console.error(
+                    "Book navigation interceptor service worker became redundant"
+                );
+                reject(new Error("Service worker became redundant"));
+            }
+        };
+
+        worker.addEventListener("statechange", onStateChange);
+    });
+}
+
+function waitForServiceWorkerReady(
+    timeoutMs = serviceWorkerRegistrationTimeoutMs
+) {
+    return new Promise<ServiceWorkerRegistration>((resolve, reject) => {
+        const timeoutId = window.setTimeout(() => {
+            console.error(
+                "Timed out waiting for book navigation interceptor service worker readiness",
+                { timeoutMs }
+            );
+            reject(new Error("Timed out waiting for service worker readiness"));
+        }, timeoutMs);
+
+        navigator.serviceWorker.ready
+            .then((registration) => {
+                window.clearTimeout(timeoutId);
+                resolve(registration);
+            })
+            .catch((error) => {
+                window.clearTimeout(timeoutId);
+                console.error(
+                    "Failed while waiting for book navigation interceptor service worker readiness",
+                    error
+                );
+                reject(error);
+            });
+    });
+}
+
+function waitForServiceWorkerControl(
+    timeoutMs = serviceWorkerRegistrationTimeoutMs
+) {
+    if (navigator.serviceWorker.controller) {
+        return Promise.resolve();
+    }
+
+    return new Promise<void>((resolve) => {
+        const timeoutId = window.setTimeout(() => {
+            navigator.serviceWorker.removeEventListener(
+                "controllerchange",
+                onControllerChange
+            );
+            console.error(
+                "Book navigation interceptor service worker did not take control before timeout",
+                { timeoutMs }
+            );
+            resolve();
+        }, timeoutMs);
+
+        const onControllerChange = () => {
+            window.clearTimeout(timeoutId);
+            navigator.serviceWorker.removeEventListener(
+                "controllerchange",
+                onControllerChange
+            );
+            resolve();
+        };
+
+        navigator.serviceWorker.addEventListener(
+            "controllerchange",
+            onControllerChange
+        );
+    });
+}
+
+async function ensureBookNavigationInterceptorRegistered() {
+    if (!("serviceWorker" in navigator)) {
+        return;
+    }
+
+    const registration = await navigator.serviceWorker.register(
+        bookNavigationInterceptorServiceWorkerUrl,
+        { scope: "/" }
+    );
+    const worker =
+        registration.installing || registration.waiting || registration.active;
+    if (worker) {
+        await waitForServiceWorkerActivation(worker);
+    }
+
+    await waitForServiceWorkerReady();
+    await waitForServiceWorkerControl();
+}
+
 const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
     const id = props.id;
     const history = useHistory();
@@ -34,6 +165,9 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
     const { mobile } = useContext(OSFeaturesContext);
     const widerThanPhone = useMediaQuery("(min-width:450px)"); // a bit more than the largest phone width in the chrome debugger (411px)
     const higherThanPhone = useMediaQuery("(min-height:450px)");
+    const [iframeInterceptionReady, setIframeInterceptionReady] = useState(
+        !("serviceWorker" in navigator)
+    );
 
     // If either dimension is smaller than a phone, we'll guess we are on one
     // and go full screen automatically.
@@ -102,6 +236,19 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
         // history will ever change, so doing so should be harmless.
     }, [history]);
     useEffect(() => startingBook(), [id]);
+
+    useEffect(() => {
+        ensureBookNavigationInterceptorRegistered()
+            .catch((error) => {
+                console.error(
+                    "Unable to register book navigation interceptor service worker",
+                    error
+                );
+            })
+            .finally(() => {
+                setIframeInterceptionReady(true);
+            });
+    }, []);
 
     // We don't use rotateParams here, because one caller wants to call it
     // immediately after calling setRotateParams, when the new values won't be
@@ -198,7 +345,12 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
         getBookAnalyticsInfo(book, contextLangTag, "read"),
         !!book
     );
-    const url = book ? getUrlOfHtmlOfDigitalVersion(book) : "working"; // url=working shows a loading icon
+    const url = book
+        ? getUrlOfHtmlOfDigitalVersion(
+              Book.getHarvesterBaseUrl(book),
+              "index.htm"
+          ) || "working"
+        : "working"; // url=working shows a loading icon
 
     // use the bloomplayer.htm we copy into our public/ folder, where CRA serves from
     // TODO: this isn't working with react-router, but I don't know how RR even gets run inside of this iframe
@@ -309,7 +461,7 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
     // });
     return (
         <React.Fragment>
-            {url === "working" || (
+            {url === "working" || !iframeInterceptionReady || (
                 <iframe
                     title="bloom player"
                     css={css`
@@ -342,33 +494,6 @@ function exitFullscreen() {
     } else if ((document as any).webkitExitFullScreen) {
         (document as any).webkitExitFullScreen(); // Safari, maybe Chrome on IOS?
     }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function getHarvesterBaseUrl(book: Book) {
-    // typical input url:
-    // https://s3.amazonaws.com/BloomLibraryBooks-Sandbox/ken%40example.com%2faa647178-ed4d-4316-b8bf-0dc94536347d%2fsign+language+test%2f
-    // want:
-    // https://s3.amazonaws.com/bloomharvest-sandbox/ken%40example.com%2faa647178-ed4d-4316-b8bf-0dc94536347d/
-    // We come up with that URL by
-    //  (a) changing BloomLibraryBooks{-Sandbox} to bloomharvest{-sandbox}
-    //  (b) strip off everything after the next-to-final slash
-    let folderWithoutLastSlash = book.baseUrl;
-    if (book.baseUrl.endsWith("%2f")) {
-        folderWithoutLastSlash = book.baseUrl.substring(
-            0,
-            book.baseUrl.length - 3
-        );
-    }
-    const index = folderWithoutLastSlash.lastIndexOf("%2f");
-    const pathWithoutBookName = folderWithoutLastSlash.substring(0, index);
-    return (
-        pathWithoutBookName
-            .replace("BloomLibraryBooks-Sandbox", "bloomharvest-sandbox")
-            .replace("BloomLibraryBooks", "bloomharvest") + "/"
-    );
-    // Using slash rather than %2f at the end helps us download as the filename we want.
-    // Otherwise, the filename can be something like ken@example.com_007b3c03-52b7-4689-80bd-06fd4b6f9f28_Fox+and+Frog.bloompub
 }
 
 // though we normally don't like to export defaults, this is required for react.lazy (code splitting)

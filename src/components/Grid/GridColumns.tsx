@@ -13,11 +13,16 @@ import titleCase from "title-case";
 import { BooleanOptions, IFilter } from "FilterTypes";
 import { CachedTables } from "../../model/CacheProvider";
 import { BlorgLink } from "../BlorgLink";
+import { User } from "../../connection/LoggedInUser";
 
 export interface IGridColumn extends DevExpressColumn {
     moderatorOnly?: boolean;
     loggedInOnly?: boolean;
     defaultVisible?: boolean;
+    // Short, collision-free key used for this column's filter in the URL query string.
+    // Defaults to `name`. Set it when the name is long or would collide with another query
+    // param (e.g. the "title" column vs. this app's existing "title" search param).
+    urlKey?: string;
     // A column definition specifies this if it needs a custom filter control
     getCustomFilterComponent?: FunctionComponent<TableFilterRow.CellProps>;
     // Given a BloomLibrary filter, modify it to include the value the user has set while using this column's filter control.
@@ -32,6 +37,22 @@ export interface IGridColumn extends DevExpressColumn {
     getStringValue?: (b: Book) => string;
 }
 
+// The columns a given user is allowed to see: some are gated behind being logged in
+// (loggedInOnly) or being a moderator (moderatorOnly). Every grid uses this both to build the
+// rendered `columns` set and (via useGridConfigInUrl) to ignore URL sort/filter config that
+// names a column this user cannot see. Keep the two in agreement by going through this one helper.
+export function getColumnsVisibleToUser(
+    columns: ReadonlyArray<IGridColumn>,
+    user: User | undefined
+): IGridColumn[] {
+    return columns.filter(
+        (col) =>
+            !!user?.moderator ||
+            (!col.moderatorOnly && !col.loggedInOnly) ||
+            (!col.moderatorOnly && !!col.loggedInOnly && !!user)
+    );
+}
+
 // For some tags, we want to give them their own column. So we don't want to show them in the tags column.
 const kTagsToFilterOutOfTagsList = [
     "topic:",
@@ -39,6 +60,47 @@ const kTagsToFilterOutOfTagsList = [
     "level:",
     "computedLevel", // added this one only because it gets in the way
 ];
+
+// Short, stable URL keys for every book-grid column (used for filters and inside
+// sort/cols/widths). Must be unique and must not equal a reserved param
+// (sort/cols/widths). "ti" avoids colliding with the app's existing "title" search param.
+const bookGridUrlKeys: { [name: string]: string } = {
+    title: "ti",
+    languages: "lg",
+    languagecodes: "lc",
+    tags: "tg",
+    features: "ft",
+    country: "co",
+    incoming: "in",
+    level: "lv",
+    leveledReaderLevel: "lrl",
+    topic: "tp",
+    harvestState: "hs",
+    harvestLog: "hl",
+    harvestStartedAt: "hsa",
+    summary: "sm",
+    notes: "nt",
+    inCirculation: "ic",
+    draft: "dr",
+    "Is Rebrand": "rb",
+    license: "li",
+    copyright: "cr",
+    brandingProjectName: "bp",
+    pageCount: "pc",
+    phashOfFirstContentImage: "ph",
+    bookHashFromImages: "bh",
+    createdAt: "ca",
+    updatedAt: "ua",
+    credits: "cd",
+    publisher: "pb",
+    originalPublisher: "op",
+    uploader: "up",
+    keywords: "kw",
+    bookInstanceId: "bi",
+    analytics_startedCount: "asc",
+    analytics_finishedCount: "afc",
+    analytics_shellDownloads: "asd",
+};
 
 export function getBookGridColumnsDefinitions(): IGridColumn[] {
     const definitions: IGridColumn[] = [
@@ -406,6 +468,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             if (c.title === undefined) {
                 x.title = titleCase(c.name);
             }
+            x.urlKey = bookGridUrlKeys[c.name] ?? c.urlKey;
             return x;
         })
         .sort((a, b) => {
@@ -476,7 +539,9 @@ const ChoicesFilterCell: React.FunctionComponent<
         choices: string[];
     }
 > = (props) => {
-    const [value, setValue] = useState(props.filter?.value || "");
+    // Controlled by the current filter (which the URL can change via back/forward), so the shown
+    // selection always matches the grid's active filter — no private copy that can go stale.
+    const value = props.filter?.value || "";
     return (
         <TableCell
             css={css`
@@ -509,7 +574,6 @@ const ChoicesFilterCell: React.FunctionComponent<
                     width: 100%;
                 `}
                 onChange={(e) => {
-                    setValue(e.target.value as string);
                     props.onFilter({
                         columnName: props.column.name,
                         operation: "contains",
@@ -531,9 +595,9 @@ const ChoicesFilterCell: React.FunctionComponent<
 const TagExistsFilterCell: React.FunctionComponent<TableFilterRow.CellProps> = (
     props
 ) => {
-    const [checked, setChecked] = useState(
-        props.filter?.value === "true" || false
-    );
+    // Controlled by the current filter (URL/back-forward can change it), so the checkbox never
+    // shows a stale state that disagrees with the grid's active filter.
+    const checked = props.filter?.value === "true";
     return (
         <TableCell padding="checkbox">
             <Checkbox
@@ -548,7 +612,6 @@ const TagExistsFilterCell: React.FunctionComponent<TableFilterRow.CellProps> = (
                         // we're switching to the opposite of what `checked` was
                         value: !checked ? "true" : "false",
                     });
-                    setChecked(!checked);
                 }}
             />
         </TableCell>

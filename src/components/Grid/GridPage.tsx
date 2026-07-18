@@ -16,6 +16,7 @@ import {
 } from "./GridExport";
 import { observer } from "mobx-react-lite";
 import { useGetLoggedInUser } from "../../connection/LoggedInUser";
+import { isLocalhost } from "../../connection/DataSource";
 
 export function isValidFilterForGrid(filter: string): boolean {
     return !filter || filter.startsWith(":search:");
@@ -37,7 +38,9 @@ export const GridPage: React.FunctionComponent<{ filters: string }> = observer(
         const l10n = useIntl();
 
         const user = useGetLoggedInUser();
-        if (!user) {
+        // On a local dev machine (loopback hostnames) we don't require login, so the grids can
+        // be worked on without signing in. Everywhere else remains login-only. See isLocalhost.
+        if (!user && !isLocalhost()) {
             return <div>You must log in to see this page.</div>;
         }
         return (

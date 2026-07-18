@@ -25,8 +25,6 @@ import {
     SortingState,
     PagingState,
     CustomPaging,
-    Filter as GridFilter,
-    Sorting,
 } from "@devexpress/dx-react-grid";
 import { TableCell, useTheme } from "@material-ui/core";
 import {
@@ -37,8 +35,8 @@ import {
     filterLanguageGridRow,
     adjustListDisplaysForFiltering,
 } from "./LanguageGridColumns";
-import { IGridColumn } from "../Grid/GridColumns";
-import { useStorageState } from "react-storage-hooks";
+import { IGridColumn, getColumnsVisibleToUser } from "../Grid/GridColumns";
+import { useGridConfigInUrl } from "../Grid/useGridConfigInUrl";
 import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 import { observer } from "mobx-react-lite";
 import { ILanguageGridControlProps } from "./LanguageGridControl";
@@ -62,10 +60,43 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
             CachedTablesContext
         );
         const user = useGetLoggedInUser();
-        const [gridFilters, setGridFilters] = useState<GridFilter[]>([]);
         const [languageGridColumnDefinitions] = useState(
             getLanguageGridColumnsDefinitions()
         );
+        // The columns this user may see (some are moderator-/login-gated). Drives both the
+        // rendered `columns` set and which URL sort/filter config the hook is allowed to honor.
+        // user.moderator flips in place (same User object) shortly after login resolves; read it
+        // during render so the mobx observer stays subscribed, and include it in the deps so the
+        // memo recomputes -- the `user` identity alone never changes when the flag arrives.
+        const isModerator = user?.moderator;
+        const visibleColumnDefinitions = useMemo(
+            () => getColumnsVisibleToUser(languageGridColumnDefinitions, user),
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+            [languageGridColumnDefinitions, user, isModerator]
+        );
+        const availableColumnNames = useMemo(
+            () => visibleColumnDefinitions.map((c) => c.name),
+            [visibleColumnDefinitions]
+        );
+        // Grid configuration (sort, column filters, column order/visibility, widths) lives
+        // in the URL so a view can be bookmarked/shared; a bare URL gets the user's saved
+        // view (column layout, sort, widths -- never filters; localStorage), else the
+        // column-definition defaults. See useGridConfigInUrl.
+        const {
+            sortings,
+            setSortings,
+            gridFilters,
+            setGridFilters,
+            columnNamesInDisplayOrder,
+            setColumnNamesInDisplayOrder,
+            hiddenColumnNames,
+            setHiddenColumnNames,
+            columnWidths,
+            setColumnWidths,
+            resetView,
+        } = useGridConfigInUrl(languageGridColumnDefinitions, "language-grid", {
+            availableColumnNames,
+        });
         const { minimalBookInfo: bookData } = useContext(CachedBookDataContext);
 
         const [totalRowCount, setTotalRowCount] = useState(0);
@@ -279,47 +310,8 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
             ILanguageGridRowData[]
         >([]);
         const [gridPage, setGridPage] = useState(0);
-        const [columns, setColumns] = useState<ReadonlyArray<IGridColumn>>([]);
-        const [sortings, setSortings] = useState<ReadonlyArray<Sorting>>([]);
-        const [
-            columnNamesInDisplayOrder,
-            setColumnNamesInDisplayOrder,
-        ] = useStorageState<string[]>(
-            localStorage,
-            "language-grid-column-order",
-            languageGridColumnDefinitions.map((c) => c.name)
-        );
-
-        // when a new version adds a new column, the list of columns in order will not match
-        // the full list of columns. Instead of coping with this, the devexpress grid just locks down the new
-        // column as the first one. So here we detect added and removed columns, while preserving order.
-        useEffect(() => {
-            const newCompleteSetInDefaultOrder = languageGridColumnDefinitions.map(
-                (c) => c.name
-            );
-            const columnsThatNeedToBeAdded = newCompleteSetInDefaultOrder.filter(
-                (x) => !columnNamesInDisplayOrder.includes(x)
-            );
-            const columnsThatNeedToBeRemoved = columnNamesInDisplayOrder.filter(
-                (x) => !newCompleteSetInDefaultOrder.includes(x)
-            );
-            if (
-                columnsThatNeedToBeAdded.length ||
-                columnsThatNeedToBeRemoved.length
-            ) {
-                const oldOrderWithNewOnesAtEnd = columnNamesInDisplayOrder.concat(
-                    columnsThatNeedToBeAdded
-                );
-                const columnsWithAnyOldOnesRemoved = oldOrderWithNewOnesAtEnd.filter(
-                    (n) => !columnsThatNeedToBeRemoved.includes(n)
-                );
-                setColumnNamesInDisplayOrder(columnsWithAnyOldOnesRemoved);
-            }
-        }, [
-            columnNamesInDisplayOrder,
-            setColumnNamesInDisplayOrder,
-            languageGridColumnDefinitions,
-        ]);
+        // The columns this user may see; drives the grid's rendered column set.
+        const columns = visibleColumnDefinitions;
 
         // Apply filtering and sorting to the rows, then set the page of rows to display.
         // Also set the total row count and the export data.
@@ -355,25 +347,6 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
             setExportData,
         ]);
 
-        const [hiddenColumnNames, setHiddenColumnNames] = useStorageState<
-            string[]
-        >(
-            localStorage,
-            "language-grid-column-hidden",
-            languageGridColumnDefinitions
-                .filter((c) => !c.defaultVisible)
-                .map((c) => c.name)
-        );
-
-        const defaultColumnWidths = useMemo(
-            () =>
-                languageGridColumnDefinitions.map((c) => ({
-                    columnName: c.name,
-                    width: "auto",
-                })),
-            [languageGridColumnDefinitions]
-        );
-
         if (props.setExportColumnInfo) {
             props.setExportColumnInfo(
                 columnNamesInDisplayOrder.filter((cn) =>
@@ -385,21 +358,6 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
                 hiddenColumnNames
             );
         }
-
-        const thisIsAModerator = user?.moderator;
-        useEffect(() => {
-            setColumns(
-                languageGridColumnDefinitions.filter(
-                    // some columns we include only if we are logged in, or
-                    // logged in with the right permissions
-                    (col) =>
-                        thisIsAModerator ||
-                        (!col.moderatorOnly && !col.loggedInOnly) ||
-                        (!col.moderatorOnly && col.loggedInOnly && user)
-                )
-            );
-            // todo? useEffect used to depend on router, though doesn't obviously use it.
-        }, [user, thisIsAModerator, languageGridColumnDefinitions]);
 
         // note: this is an embedded function as a way to get at languageGridColumnDefinitions. It's important
         // that we don't reconstruct it on every render, or else we'll lose cursor focus on each key press.
@@ -430,14 +388,14 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
                     />
 
                     <FilteringState
-                        defaultFilters={gridFilters}
+                        filters={gridFilters}
                         onFiltersChange={(x) => {
                             setGridFilters(x);
                         }}
                     />
 
                     <SortingState
-                        defaultSorting={[]}
+                        sorting={sortings}
                         onSortingChange={(sorting) => {
                             setSortings(sorting);
                         }}
@@ -457,12 +415,13 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
                     />
                     <TableColumnResizing
                         resizingMode={"nextColumn"}
-                        defaultColumnWidths={defaultColumnWidths}
+                        columnWidths={columnWidths}
+                        onColumnWidthsChange={setColumnWidths}
                     />
                     <TableHeaderRow showSortingControls />
 
                     <TableColumnVisibility
-                        defaultHiddenColumnNames={hiddenColumnNames}
+                        hiddenColumnNames={hiddenColumnNames}
                         onHiddenColumnNamesChange={(names) =>
                             setHiddenColumnNames(names)
                         }
@@ -471,7 +430,7 @@ const LanguageGridControlInternal: React.FunctionComponent<ILanguageGridControlP
                         cellComponent={FilteringComponentForOneColumn}
                     />
                     <Toolbar />
-                    {ModeratorStatusToolbarPlugin(theme, user)}
+                    {ModeratorStatusToolbarPlugin(theme, user, resetView)}
                     <ColumnChooser />
                     <PagingPanel />
                 </Grid>

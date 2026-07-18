@@ -19,9 +19,9 @@ const cases = [
     ["bible comic", "super-bible"],
     ["bible comics", "super-bible"],
     ["grid", "grid"],
-    ["comic book", "comics"],
-    ["german", "language:de"],
     ["motion book", "motion"],
+    ["sign language", "sign-language"],
+    ["german", "language:de"],
     ["swahili", "language:swh"],
     ["spanish", "language:es"],
 ];

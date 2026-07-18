@@ -40,8 +40,8 @@ export const MissingFontNotice: React.FunctionComponent<{ book: Book }> = (
                 id: "book.missingFontsNotice",
                 defaultMessage:
                     "We cannot fully present this book because it uses one or more fonts that BloomLibrary.org does not have. Please help us to find each font by clicking on its name and answering some questions: ",
-            })}
-            &nbsp;{listOfLinks}
+            })}{" "}
+            {listOfLinks}
             {"."}
         </BookProblemNotice>
     );

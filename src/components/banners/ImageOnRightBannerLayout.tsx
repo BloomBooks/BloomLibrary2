@@ -7,6 +7,7 @@ import { Blurb } from "./Blurb";
 import useMedia from "use-media";
 import { Breadcrumbs } from "../Breadcrumbs";
 import { BookCount } from "../BookCount";
+import { standardBannerHeight } from "./StandardBannerLayout";
 
 export const ImageOnRightBannerLayout: React.FunctionComponent<{
     collection: ICollection;
@@ -35,6 +36,7 @@ export const ImageOnRightBannerLayout: React.FunctionComponent<{
                     css={css`
                         display: flex;
                         flex-direction: row;
+                        max-height: ${standardBannerHeight};
                     `}
                 >
                     <Blurb {...props} hideTitle={props.banner.hideTitle} />

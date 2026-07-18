@@ -284,6 +284,10 @@
         "message": "You have permission to modify this book",
         "description": ""
     },
+    "book.invalidFontsNotice": {
+        "message": "We cannot fully present this book because it uses one or more fonts that are not known to be free and open-licensed.  Therefore, the PDF and source files are all we are allowed to distribute.  Please try to replace these fonts with ones that have open licenses:",
+        "description": ""
+    },
     "book.metadata.level": {
         "description": "",
         "message": "Level {levelNumber}"
@@ -383,6 +387,14 @@
     "book.artifacts.visibility.scaling": {
         "description": "",
         "message": "Our system was not confident about scaling the book to this format."
+    },
+    "harvest-reason-copyright-license-restriction": {
+        "description": "",
+        "message": "The book's copyright license restricts distribution."
+    },
+    "harvest-reason-epub-deemed-unsuitable": {
+        "description": "",
+        "message": "The EPUB format was deemed unsuitable due to the complexity of some page layouts."
     },
     "book.artifacts.doesnotexist": {
         "description": "",
@@ -507,7 +519,7 @@
         "description": "Heading for the download shellbook dialog. Indicates that the download is about to start after one more step."
     },
     "downloadShellbook.aboutToDownload.message": {
-        "message": "You are about to download {bookTitle} into the Bloom Desktop Application. You need to have <link>Bloom</link> already installed on your computer.",
+        "message": "You are about to download {bookTitle} into the Bloom Editor application. You need to have <link>Bloom</link> already installed on your computer.",
         "description": "{bookTitle} will be replaced by the title of the book being downloaded. The text inside <link></link> will be a link to the downloads page of the Bloom library website."
     },
     "downloadShellbook.aboutToDownload.dontShowAgain": {

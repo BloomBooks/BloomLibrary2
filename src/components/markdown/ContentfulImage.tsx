@@ -15,7 +15,7 @@ export const ContentfulImage: React.FunctionComponent<{
             // possible to query for that at this time.
             .getAsset(props.id)
             .then((asset) => {
-                setUrl(asset.fields.file.url);
+                setUrl(asset.fields.file?.url);
                 setDescription(asset.fields.description);
             });
     }, [props.id]);

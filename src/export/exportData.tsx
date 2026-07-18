@@ -64,7 +64,11 @@ function csvEncode(value: string): string {
     if (!value) return "";
 
     let needsQuotes = false;
-    needsQuotes = value.indexOf(",") > -1 || value.startsWith("=HYPERLINK(");
+    needsQuotes =
+        value.indexOf(",") > -1 ||
+        value.startsWith("=HYPERLINK(") ||
+        value.startsWith('"') || // BL-15583
+        value.endsWith('"');
 
     // escape newline characters
     value = value.replace(/\n/g, "\\n").replace(/\r/g, "\\r");

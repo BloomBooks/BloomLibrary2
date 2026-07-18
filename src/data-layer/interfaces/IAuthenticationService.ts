@@ -3,7 +3,13 @@ import { UserModel } from "./IUserRepository";
 
 export interface IAuthenticationService {
     // Authentication operations
-    connectUser(jwtToken: string, userId: string): Promise<UserModel>;
+    connectUser(
+        jwtToken: string,
+        emailAddress: string,
+        // The Google/Firebase profile picture, or null when unavailable (e.g. email-password
+        // login). Only passed through to the editor login POST; the backend doesn't use it.
+        photoUrl?: string | null
+    ): Promise<UserModel>;
     logout(): Promise<void>;
 
     // Current user state

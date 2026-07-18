@@ -12,7 +12,13 @@ export class ParseAuthenticationService implements IAuthenticationService {
     private authStateListeners: ((user: UserModel | undefined) => void)[] = [];
     private userRepository = new ParseUserRepository();
 
-    async connectUser(jwtToken: string, userId: string): Promise<UserModel> {
+    async connectUser(
+        jwtToken: string,
+        emailAddress: string,
+        // The Google/Firebase profile picture, or null when unavailable (e.g. email-password login).
+        // We only pass it through to the editor login POST; Parse itself doesn't use it.
+        photoUrl?: string | null
+    ): Promise<UserModel> {
         const connection = ParseConnection.getConnection();
 
         try {
@@ -20,7 +26,7 @@ export class ParseAuthenticationService implements IAuthenticationService {
                 `${connection.url}functions/bloomLink`,
                 {
                     token: jwtToken,
-                    id: userId,
+                    id: emailAddress,
                 },
                 {
                     headers: connection.headers,
@@ -42,10 +48,11 @@ export class ParseAuthenticationService implements IAuthenticationService {
                 `${connection.url}users`,
                 {
                     authData: {
-                        bloom: { token: jwtToken, id: userId },
+                        bloom: { token: jwtToken, id: emailAddress },
                     },
-                    username: userId,
-                    email: userId, // needed in case we are creating a new user
+                    username: emailAddress,
+                    // Parse requires an `email` field when creating a new _User.
+                    email: emailAddress,
                 },
                 {
                     headers: connection.headers,
@@ -58,16 +65,26 @@ export class ParseAuthenticationService implements IAuthenticationService {
                 : new Error("Parse user login failed");
         }
 
-        if (!usersResult.data.sessionToken) {
+        // We require BOTH a session token and an email.
+        // We don't actually know why we would ever get here without either.
+        // But we were sending posts to Bloom with a missing email value in the payload,
+        // which caused Bloom's `/bloom/api/external/login` handler to throw a runtime exception. See BL-14503.
+        // I don't see any reason to pretend a non-editor login was successful if email
+        // is missing, either. And it simplifies the code to just check up front.
+        // Throwing lets callers stop the login flow (for example, `firebase.ts` catches this
+        // and signs the user out of Firebase) rather than silently continuing.
+        if (!usersResult.data.sessionToken || !usersResult.data.email) {
             this.failedToLoginInToParseServer();
-            throw new Error("No session token received");
+            throw new Error(
+                "Missing sessionToken or email in usersResult.data"
+            );
         }
 
         LoggedInUser.current = new User(usersResult.data);
         ParseConnection.setSessionToken(usersResult.data.sessionToken);
 
         if (isForEditor()) {
-            informEditorOfSuccessfulLogin(usersResult.data);
+            informEditorOfSuccessfulLogin(usersResult.data, photoUrl);
         }
 
         const isModerator = await this.userRepository.checkUserIsModerator(
@@ -80,8 +97,8 @@ export class ParseAuthenticationService implements IAuthenticationService {
 
         const userModel = new UserModel({
             objectId: usersResult.data.objectId,
-            username: usersResult.data.username || userId,
-            email: usersResult.data.email || userId,
+            username: usersResult.data.username || emailAddress,
+            email: usersResult.data.email || emailAddress,
             sessionId: usersResult.data.sessionToken,
             createdAt: usersResult.data.createdAt || new Date().toISOString(),
             updatedAt: usersResult.data.updatedAt || new Date().toISOString(),

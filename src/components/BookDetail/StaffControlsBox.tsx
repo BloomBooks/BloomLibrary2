@@ -1,7 +1,6 @@
 import { css } from "@emotion/react";
 
 import React, { Fragment } from "react";
-import { observer } from "mobx-react-lite";
 import {
     Accordion,
     AccordionSummary,
@@ -16,23 +15,28 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { commonUI } from "../../theme";
 import { ControlsBox } from "./ControlsBox";
 
+// These MUST be defined at module scope, not inside the component. React.lazy()
+// returns a new component type on every call, so creating them during render
+// makes React unmount and remount the children on every re-render, throwing away
+// their state. In particular that reset StaffPanel's "modified" flag (disabling
+// Save) whenever hiding a book re-rendered this via the observed inCirculation.
+// BL-16519.
+// causes webpack to create a chunk for this which we only download as needed.
+const StaffPanel = React.lazy(
+    () => import(/* webpackChunkName: "staffPanel" */ "../Admin/StaffPanel")
+);
+const ReactJsonView = React.lazy(
+    () => import(/* webpackChunkName: "react-json-view" */ "react-json-view")
+);
+
 export const StaffControlsBox: React.FunctionComponent<{
     book: Book;
-}> = observer((props: { book: Book }) => {
+}> = (props: { book: Book }) => {
     const userIsModerator = useGetUserIsModerator();
     const l10n = useIntl(); // we don't really care about localizing, but it's needed for some of the calls below
     const showControlsBox = userIsModerator;
 
     if (!showControlsBox) return <Fragment />;
-
-    // causes webpack to create a chunk for this which we only download as needed.
-    const StaffPanel = React.lazy(
-        () => import(/* webpackChunkName: "staffPanel" */ "../Admin/StaffPanel")
-    );
-    const ReactJsonView = React.lazy(
-        () =>
-            import(/* webpackChunkName: "react-json-view" */ "react-json-view")
-    );
 
     const prepareArtifactInfo = (a?: ArtifactVisibilitySettings) =>
         a && {
@@ -43,6 +47,7 @@ export const StaffControlsBox: React.FunctionComponent<{
             decision: a.decision,
             hasHarvesterDecided: a.hasHarvesterDecided(),
             isHarvesterHide: a.isHarvesterHide(),
+            harvesterReasonToHideId: a.harvesterReasonToHideId,
             hasLibrarianDecided: a.hasLibrarianDecided(),
             isLibrarianHide: a.isLibrarianHide(),
             getDecisionSansUser: a.getDecisionSansUser(),
@@ -135,4 +140,4 @@ export const StaffControlsBox: React.FunctionComponent<{
             </Accordion>
         </ControlsBox>
     );
-});
+};

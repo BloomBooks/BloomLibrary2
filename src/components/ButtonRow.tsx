@@ -47,7 +47,10 @@ export const ButtonRow: React.FunctionComponent<{
                         margin-right: 0 !important;
                     }
                     background-color: white !important;
-                    span {
+                    span,
+                    // Adding "span font" here is a quick hack to fix a problem Google Translate introduces
+                    // where the text ends up white on a white button.
+                    span font {
                         font-weight: 600;
                         color: ${commonUI.colors
                             .resourcesAreaTextOnWhite} !important;

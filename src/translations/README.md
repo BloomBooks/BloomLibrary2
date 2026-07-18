@@ -46,4 +46,4 @@ To set your browser language, you can
 -   add `?uilang=<code>` to the url (but this gets lost)
 -   enter `uilang=<code>` in the search box
 
-You will need to get local language files with `yarn crowdin-download` to test locally. This requires setting a `BLOOM_CROWDIN_TOKEN` environment variable. This token isn't visible on the Crowdin site; it only shows it once. So you have to get it from another Bloom developer or from the Azure configuration.
+You will need to get local language files with `vp run crowdin-download` to test locally. This requires setting a `BLOOM_CROWDIN_TOKEN` environment variable. This token isn't visible on the Crowdin site; it only shows it once. So you have to get it from another Bloom developer or from the Azure configuration.

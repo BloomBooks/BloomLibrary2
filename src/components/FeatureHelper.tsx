@@ -1,6 +1,5 @@
 import React from "react";
 import ActivityIcon from "../assets/Activity.svg?react";
-import ComicIcon from "../assets/Comic.svg?react";
 import MotionIcon from "../assets/Motion.svg?react";
 import SignLanguageIcon from "../assets/Sign Language.svg?react";
 import TalkingBookIcon from "../assets/Talking Book.svg?react";
@@ -36,7 +35,7 @@ export const featureIconHeight = 12;
 // (appears next to the language in the languages list) or not (appears on the left of the
 // feature bar). In addition, the icon is given as a function that takes some props and
 // returns a react component.
-// It would be simpler to, e.g., import comicIcon from "../assets/Comic.svg?react"
+// It would be simpler to, e.g., import someIcon from "../assets/Some.svg?react"
 // (which yields a url), then let the icon: simply be that string, and let the code
 // that wants the icon make an <img> with src={feature.icon}. But then we can't use
 // fill: to control the color.
@@ -101,28 +100,6 @@ export const featureSpecs: IFeatureSpec[] = [
         },
         languageDependent: true,
         englishLabel: "Features for the Visually Impaired",
-    },
-    {
-        featureKey: "comic",
-        //featureTitle: "Comic Books",
-        filter: { feature: "comic" },
-        // description: (
-        //     <div>
-        //         Comic Books contain comic speech bubbles, captions, and/or other
-        //         text which appears over images.
-        //     </div>
-        // ),
-        icon(props) {
-            return (
-                <ComicIcon
-                    title={getLocalizedLabel(this)}
-                    {...props}
-                ></ComicIcon>
-            );
-        },
-        languageDependent: false,
-        collectionHref: "comics",
-        englishLabel: "Comic Book",
     },
     {
         featureKey: "motion",

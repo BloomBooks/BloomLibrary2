@@ -10,6 +10,7 @@ import {
     getDefaultBookStat,
 } from "../components/statistics/StatsInterfaces";
 import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
+import { getHarvesterBaseUrlFromBaseUrl } from "./BookUrlUtils";
 import stem from "wink-porter2-stemmer";
 
 export function createBookFromParseServerData(pojo: any): Book {
@@ -171,6 +172,13 @@ export class Book {
 
     public getMissingFontNames(): string[] {
         const fixedMarker = "MissingFont - ";
+        return this.harvestLog
+            .filter((entry) => entry.indexOf(fixedMarker) >= 0)
+            .map((entry) => entry.split(fixedMarker)[1].trim());
+    }
+
+    public getInvalidFontNames(): string[] {
+        const fixedMarker = "InvalidFont - ";
         return this.harvestLog
             .filter((entry) => entry.indexOf(fixedMarker) >= 0)
             .map((entry) => entry.split(fixedMarker)[1].trim());
@@ -589,32 +597,9 @@ export class Book {
         if (!Book.isHarvested(book)) {
             return undefined;
         }
-
-        // typical input url:
-        // https://s3.amazonaws.com/BloomLibraryBooks-Sandbox/ken%40example.com%2faa647178-ed4d-4316-b8bf-0dc94536347d%2fsign+language+test%2f
-        // want:
-        // https://s3.amazonaws.com/bloomharvest-sandbox/ken%40example.com%2faa647178-ed4d-4316-b8bf-0dc94536347d/
-        // We come up with that URL by
-        //  (a) changing BloomLibraryBooks{-Sandbox} to bloomharvest{-sandbox}
-        //  (b) strip off everything after the next-to-final slash
-        let folderWithoutLastSlash = baseUrl;
-
-        if (baseUrl.endsWith("%2f")) {
-            folderWithoutLastSlash = baseUrl.substring(0, baseUrl.length - 3);
-        }
-        if (window.location.hostname === "localhost") {
-            folderWithoutLastSlash = folderWithoutLastSlash.replace(
-                "https://s3.amazonaws.com",
-                "/s3" // vite proxy server can use this to overcome CORS
-            );
-        }
-
-        const index = folderWithoutLastSlash.lastIndexOf("%2f");
-        const pathWithoutBookName = folderWithoutLastSlash.substring(0, index);
-        return (
-            pathWithoutBookName
-                .replace("BloomLibraryBooks-Sandbox", "bloomharvest-sandbox")
-                .replace("BloomLibraryBooks", "bloomharvest") + "/"
+        return getHarvesterBaseUrlFromBaseUrl(
+            baseUrl,
+            window.location.hostname === "localhost"
         );
         // Using slash rather than %2f at the end helps us download as the filename we want.
         // Otherwise, the filename can be something like ken@example.com_007b3c03-52b7-4689-80bd-06fd4b6f9f28_Fox+and+Frog.bloompub
