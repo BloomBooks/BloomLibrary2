@@ -16,7 +16,7 @@ sweep, bloom-core-supabase backend inventory) on 2026-07-18.
 | A2 | Non-canonical `topic:` filters silently return nothing (Parse regex-ORs) | ❌ open — TODO'd for an RPC | both repos |
 | A3 | `tags.category` column missing → `TagModel.category` always undefined | ✅ accepted — verified zero UI consumers of TagModel.category in anon scope (only Contentful page fields use `.category`) | — |
 | A4 | `sendConcernEmail` throws under Supabase ("Report this book" is anon-reachable) | ❌ open — needs edge function or transitional routing to Parse cloud fn | both repos |
-| A5 | `anyOfThese`/`derivedFrom` union IDs client-side then `.in("id",…)` — scale risk | ⚠ verify at production scale | blorg |
+| A5 | `anyOfThese`/`derivedFrom` union IDs client-side then `.in("id",…)` — scale risk | ✅ verified at 699 local books: broad search ~150ms, anyOfThese ~120ms (75f566b); re-check after full data sync | blorg |
 | A6 | Wildcard tag inside any-of list fails closed | ⚠ accepted (no known caller); covered by unit tests where reachable | blorg |
 
 ## B. Test safety net
@@ -25,7 +25,7 @@ sweep, bloom-core-supabase backend inventory) on 2026-07-18.
 |---|------|--------|
 | B1 | Unit tests for `SupabaseBookQueryBuilder` (~646 lines, riskiest layer) | ✅ 60 tests, CI-safe (30a03fa) |
 | B2 | Unit tests for `SupabaseBookMapper` | ✅ 9 tests (30a03fa) |
-| B3 | Integration suite breadth (real collection filter shapes, guards for A6) | ⚠ thin (9 tests) |
+| B3 | Integration suite breadth (real collection filter shapes, guards for A6) | ✅ 21 gated tests across 2 files (75f566b); known gap: derivedFrom publisher-negation branch lacks real-data coverage in the sample |
 | B4 | Contract tests runnable in CI (local stack in GH Actions; db repo CI already resets a stack) | ❌ open |
 | B5 | Runtime smoke test: browse the app with `VITE_DATA_LAYER_IMPL=supabase` against local stack | ✅ passed 2026-07-18 (home/search/detail/language/topic; zero data-layer failures) |
 
