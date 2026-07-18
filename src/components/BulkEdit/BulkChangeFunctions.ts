@@ -96,7 +96,15 @@ export async function AddTagAllBooksInFilter(
         let changeCount = 0;
 
         for (const book of result.onePageOfMatchingBooks) {
-            const currentTags = (book as any).tags || [];
+            // getBooksForGrid returns Book instances whose "level:X" tag has been
+            // stripped out of tags and stored separately in book.level (see
+            // Book.updateTagsFromParseServerData). Because a tags update replaces
+            // the whole array, we must re-add it here (mirroring Book.saveAdminData)
+            // or a bulk tag change would silently erase every book's reading level.
+            const currentTags = [...((book as any).tags || [])];
+            if ((book as any).level) {
+                currentTags.push("level:" + (book as any).level);
+            }
             let newTags = [...currentTags];
 
             // a tag that starts with "-" means that we want to remove it
