@@ -270,6 +270,74 @@ const BIG_LIMIT = 1000;
             );
         }, 30000);
 
+        it("topic: filter resolves a NON-canonical topic to real books via the match_topic_tags RPC", async () => {
+            const { kTopicList } = await import(
+                "../../model/ClosedVocabularies"
+            );
+            const canonicalLc = new Set(kTopicList.map((t) => t.toLowerCase()));
+            // Find a topic:<X> tag whose <X> is NOT canonical AND is actually
+            // carried by at least one visible book -- exactly the case the
+            // Supabase builder used to silently drop (empty shelf where Parse
+            // showed books). The tag vocabulary contains topic:<X> entries no
+            // current book uses, so probe (via an exact otherTags match) until
+            // one with hits turns up.
+            const allTags = await tagRepository.getTagList();
+            const nonCanonicalCandidates = allTags.filter(
+                (t) =>
+                    t.startsWith("topic:") &&
+                    !canonicalLc.has(t.slice("topic:".length).toLowerCase())
+            );
+            let nonCanonicalTag: string | undefined;
+            for (const candidate of nonCanonicalCandidates) {
+                const probe = await bookRepository.searchBooks({
+                    filter: { otherTags: candidate } as IFilter,
+                    pagination: { limit: 1, skip: 0 },
+                });
+                if (probe.books.length > 0) {
+                    nonCanonicalTag = candidate;
+                    break;
+                }
+            }
+            expect(
+                nonCanonicalTag,
+                "expected at least one non-canonical topic:<X> tag carried by a book"
+            ).toBeTruthy();
+            const topicValue = nonCanonicalTag!.slice("topic:".length);
+
+            const result = await bookRepository.searchBooks({
+                filter: { topic: topicValue } as IFilter,
+                pagination: { limit: BIG_LIMIT, skip: 0 },
+            });
+            const total = await getTotalBookCount();
+
+            expect(result.errorString).toBeNull();
+            // The whole point of the RPC: a non-canonical topic now returns
+            // books instead of an empty shelf.
+            expect(result.books.length).toBeGreaterThan(0);
+            expect(result.books.length).toBeLessThan(total);
+            result.books.forEach((b) =>
+                expect(b.tags ?? []).toContain(nonCanonicalTag)
+            );
+
+            // bookCount stays consistent with searchBooks for this filter.
+            const count = await bookRepository.getBookCount({
+                topic: topicValue,
+            } as IFilter);
+            expect(count).toBe(result.totalMatchingRecords);
+            expect(count).toBe(result.books.length);
+        }, 30000);
+
+        it("topic: filter with a nonsense non-canonical value returns an empty shelf", async () => {
+            const result = await bookRepository.searchBooks({
+                filter: {
+                    topic: "ZzzDefinitelyNotARealTopic__xyz",
+                } as IFilter,
+                pagination: { limit: BIG_LIMIT, skip: 0 },
+            });
+            expect(result.errorString).toBeNull();
+            expect(result.books.length).toBe(0);
+        }, 30000);
+
         it("anyOfThese unions two sub-filters with correct client-side de-duping", async () => {
             const subFilterA: IFilter = { feature: "talkingBook" } as IFilter;
             const subFilterB: IFilter = {

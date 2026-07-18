@@ -14,8 +14,10 @@
 //   - Wildcard tag patterns (e.g. "bookshelf:X*", "*suffix") are matched via
 //     the generated books.tags_text column (see wildcardTagToLikePattern),
 //     except inside an any-of list, where they fail closed (no known caller).
-//   - Unmatched (non-canonical) `topic` values, which Parse resolves with a
-//     regex-OR across tag values, are skipped the same way.
+//   - Non-canonical `topic` values (not in kTopicList), which Parse resolves
+//     with a case-insensitive regex over the tag values, are resolved to
+//     matching tag names by the match_topic_tags RPC and then required as an
+//     "any of these tags" constraint (see buildTopicRequirements).
 //   - Free-text `search` terms use `.ilike()` against the precomputed
 //     `search` column (AND of words), which has no relevance ranking, unlike
 //     Mongo's $text/$score. Ordering falls back to created_at desc in that
@@ -259,7 +261,33 @@ function applyTagRequirements(
     return q;
 }
 
-function buildTopicRequirements(topic: string): TagRequirement[] {
+// Resolves non-canonical topic values (those not in kTopicList) to the set of
+// matching tag names via the match_topic_tags RPC, mirroring Parse's
+// case-insensitive regex over the tag array: an anchored ^topic:value$ (exact,
+// case-insensitive) match for a single value, or an unanchored topic:value
+// substring match OR-ed across values for several. The RPC and its faithfulness
+// notes live in bloom-core-supabase (20260718000000_add_match_topic_tags_rpc.sql).
+async function resolveNonCanonicalTopicTags(
+    client: SupabaseClient,
+    topicValues: string[]
+): Promise<string[]> {
+    const { data, error } = await client.rpc("match_topic_tags", {
+        topic_names: topicValues,
+    });
+    if (error) {
+        console.error(
+            "Error resolving non-canonical topic value(s) via match_topic_tags RPC:",
+            error
+        );
+        return [];
+    }
+    return (data ?? []) as string[];
+}
+
+async function buildTopicRequirements(
+    client: SupabaseClient,
+    topic: string
+): Promise<TagRequirement[]> {
     const requirements: TagRequirement[] = [];
     const topicFilter = topic.trim();
 
@@ -294,15 +322,20 @@ function buildTopicRequirements(topic: string): TagRequirement[] {
         requirements.push({ kind: "all", values: canonicalTopicTags });
     }
     if (unmatchedTopics.length > 0) {
-        // Parse resolves these via a regex-OR against tag values. There's no
-        // simple per-element regex operator available through PostgREST, so
-        // unmatched/non-canonical topic names are dropped. TODO: implement
-        // via an RPC if this turns out to matter for the anon browsing paths.
-        console.warn(
-            `Supabase book query: ignoring unmatched topic value(s): ${unmatchedTopics.join(
-                ", "
-            )}`
+        // Parse resolved these via a case-insensitive regex-OR against tag
+        // values; the match_topic_tags RPC reproduces that server-side and
+        // returns the matching topic tag names. Requiring "any" of them
+        // (overlaps) composes (AND) with the canonical "all" requirement above
+        // exactly as Parse's $and did. Fail CLOSED (__no_match__) when nothing
+        // matches, matching Parse's empty result for an unresolvable topic.
+        const matchedTags = await resolveNonCanonicalTopicTags(
+            client,
+            unmatchedTopics
         );
+        requirements.push({
+            kind: "any",
+            values: matchedTags.length > 0 ? matchedTags : ["__no_match__"],
+        });
     }
 
     return requirements;
@@ -490,7 +523,9 @@ export async function applyBookFilter(
     }
 
     if (wf.topic) {
-        tagRequirements.push(...buildTopicRequirements(wf.topic));
+        tagRequirements.push(
+            ...(await buildTopicRequirements(client, wf.topic))
+        );
     }
 
     if (plainTags.length > 0) {

@@ -93,6 +93,9 @@ export class FakeQuery implements PromiseLike<FakeQueryResult> {
     maybeSingle(...args: unknown[]): this {
         return this.push("maybeSingle", args);
     }
+    rpc(...args: unknown[]): this {
+        return this.push("rpc", args);
+    }
 
     then<TResult1 = FakeQueryResult, TResult2 = never>(
         onfulfilled?:
@@ -126,6 +129,17 @@ export class FakeSupabaseClient {
     from(table: string): FakeQuery {
         const q = new FakeQuery(table, this.resolver);
         this.queries.push(q);
+        return q;
+    }
+
+    // Stand-in for supabase-js's client.rpc(fn, params). The returned builder
+    // is thenable (like postgrest-js's), so callers can `await client.rpc(...)`.
+    // The synthetic table name `rpc:<fn>` lets resolvers/assertions single it
+    // out, and the initial recorded call captures the fn name + params.
+    rpc(fn: string, params?: Record<string, unknown>): FakeQuery {
+        const q = new FakeQuery(`rpc:${fn}`, this.resolver);
+        this.queries.push(q);
+        q.rpc(fn, params);
         return q;
     }
 

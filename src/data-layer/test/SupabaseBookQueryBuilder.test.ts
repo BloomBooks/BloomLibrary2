@@ -482,20 +482,121 @@ describe("applyBookFilter", () => {
             ]);
         });
 
-        it("drops non-canonical topic values with a console.warn, keeping canonical ones", async () => {
-            const warnSpy = vi
-                .spyOn(console, "warn")
-                .mockImplementation(() => {});
-            const { calls } = await runFilter({
-                topic: "Health,NotARealTopic",
-            } as IFilter);
+        // A resolver that answers the match_topic_tags RPC with the given tag
+        // names and everything else (the outer books query) with an empty set.
+        function topicRpcResolver(tags: string[]): FakeQueryResolver {
+            return (table) =>
+                table === "rpc:match_topic_tags"
+                    ? { data: tags, error: null }
+                    : { data: [], error: null, count: 0 };
+        }
+
+        it("resolves a single non-canonical topic via the match_topic_tags RPC and requires any matched tag (overlaps)", async () => {
+            const { calls, client } = await runFilter(
+                { topic: "Spiritual" } as IFilter,
+                topicRpcResolver(["topic:Spiritual"])
+            );
+            // The non-canonical value is sent (prefix-less) to the RPC...
+            const rpcQuery = client.queriesFor("rpc:match_topic_tags")[0];
+            expect(rpcQuery.calls).toEqual([
+                {
+                    method: "rpc",
+                    args: ["match_topic_tags", { topic_names: ["Spiritual"] }],
+                },
+            ]);
+            // ...and the returned tag names become an any-of (overlaps) tag req.
+            expect(calls).toEqual([
+                ...DEFAULT_GUARDS,
+                { method: "overlaps", args: ["tags", ["topic:Spiritual"]] },
+            ]);
+        });
+
+        it("combines a canonical topic (contains) with an RPC-resolved non-canonical topic (overlaps)", async () => {
+            const { calls, client } = await runFilter(
+                { topic: "Health,Spiritual" } as IFilter,
+                topicRpcResolver(["topic:Spiritual"])
+            );
+            // Only the non-canonical value goes to the RPC; the canonical one
+            // is handled locally.
+            const rpcQuery = client.queriesFor("rpc:match_topic_tags")[0];
+            expect(rpcQuery.calls).toEqual([
+                {
+                    method: "rpc",
+                    args: ["match_topic_tags", { topic_names: ["Spiritual"] }],
+                },
+            ]);
             expect(calls).toEqual([
                 ...DEFAULT_GUARDS,
                 { method: "contains", args: ["tags", ["topic:Health"]] },
+                { method: "overlaps", args: ["tags", ["topic:Spiritual"]] },
             ]);
-            expect(warnSpy).toHaveBeenCalledWith(
-                expect.stringContaining("NotARealTopic")
+        });
+
+        it("passes every non-canonical topic to a single RPC call and overlaps all matched tags", async () => {
+            const { calls, client } = await runFilter(
+                { topic: "Spiritual,Template" } as IFilter,
+                topicRpcResolver(["topic:Spiritual", "topic:Template"])
             );
+            const rpcQueries = client.queriesFor("rpc:match_topic_tags");
+            expect(rpcQueries).toHaveLength(1);
+            expect(rpcQueries[0].calls).toEqual([
+                {
+                    method: "rpc",
+                    args: [
+                        "match_topic_tags",
+                        { topic_names: ["Spiritual", "Template"] },
+                    ],
+                },
+            ]);
+            expect(calls).toEqual([
+                ...DEFAULT_GUARDS,
+                {
+                    method: "overlaps",
+                    args: ["tags", ["topic:Spiritual", "topic:Template"]],
+                },
+            ]);
+        });
+
+        it("fails closed (__no_match__) when the RPC resolves a non-canonical topic to no tags", async () => {
+            const { calls } = await runFilter(
+                { topic: "NotARealTopic" } as IFilter,
+                topicRpcResolver([])
+            );
+            expect(calls).toEqual([
+                ...DEFAULT_GUARDS,
+                { method: "overlaps", args: ["tags", ["__no_match__"]] },
+            ]);
+        });
+
+        it("keeps a canonical topic but fails closed on an unresolvable non-canonical one", async () => {
+            const { calls } = await runFilter(
+                { topic: "Health,NotARealTopic" } as IFilter,
+                topicRpcResolver([])
+            );
+            expect(calls).toEqual([
+                ...DEFAULT_GUARDS,
+                { method: "contains", args: ["tags", ["topic:Health"]] },
+                { method: "overlaps", args: ["tags", ["__no_match__"]] },
+            ]);
+        });
+
+        it("logs and fails closed if the match_topic_tags RPC errors", async () => {
+            const errorSpy = vi
+                .spyOn(console, "error")
+                .mockImplementation(() => {});
+            const resolver: FakeQueryResolver = (table) =>
+                table === "rpc:match_topic_tags"
+                    ? { data: null, error: { message: "boom" } }
+                    : { data: [], error: null, count: 0 };
+            const { calls } = await runFilter(
+                { topic: "Spiritual" } as IFilter,
+                resolver
+            );
+            expect(calls).toEqual([
+                ...DEFAULT_GUARDS,
+                { method: "overlaps", args: ["tags", ["__no_match__"]] },
+            ]);
+            expect(errorSpy).toHaveBeenCalled();
         });
 
         it('"Other" excludes every canonical topic via a negated array overlap', async () => {
