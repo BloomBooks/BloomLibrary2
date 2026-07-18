@@ -14,7 +14,7 @@ import "./index";
 import { ParseAuthenticationService } from "./implementations/parseserver/ParseAuthenticationService";
 import { ParseUserRepository } from "./implementations/parseserver/ParseUserRepository";
 import { ParseBookRepository } from "./implementations/parseserver/ParseBookRepository";
-import { SupabaseBookRepository } from "./implementations/supabase/SupabaseBookRepository";
+import { HybridBookRepository } from "./implementations/supabase/HybridBookRepository";
 import { SupabaseLanguageRepository } from "./implementations/supabase/SupabaseLanguageRepository";
 import { SupabaseTagRepository } from "./implementations/supabase/SupabaseTagRepository";
 
@@ -157,8 +157,11 @@ describe("Mixed mode (Supabase reads, Parse auth/user)", () => {
     test("book/language/tag repositories are Supabase-backed under Supabase impl", () => {
         factory.setImplementation(DataLayerImplementation.Supabase);
 
+        // Book is mixed-mode too: the hybrid serves Supabase reads but
+        // delegates writes to Parse (see HybridBookRepository). Language and
+        // tag reads are pure Supabase.
         expect(factory.createBookRepository()).toBeInstanceOf(
-            SupabaseBookRepository
+            HybridBookRepository
         );
         expect(factory.createLanguageRepository()).toBeInstanceOf(
             SupabaseLanguageRepository

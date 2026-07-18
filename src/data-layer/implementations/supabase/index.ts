@@ -1,11 +1,12 @@
 import { DataLayerFactory } from "../../factory/DataLayerFactory";
-import { SupabaseBookRepository } from "./SupabaseBookRepository";
+import { HybridBookRepository } from "./HybridBookRepository";
 import { SupabaseLanguageRepository } from "./SupabaseLanguageRepository";
 import { SupabaseTagRepository } from "./SupabaseTagRepository";
 import { SupabaseAnalyticsService } from "./SupabaseAnalyticsService";
 // Mixed mode (see below): under the Supabase impl we deliberately register the
 // Parse-backed authentication service and user repository, imported from the
-// parseserver folder, in place of the Supabase stubs.
+// parseserver folder, in place of the Supabase stubs. Book writes are handled
+// the same way, via HybridBookRepository (reads Supabase, writes Parse).
 import { ParseAuthenticationService } from "../parseserver/ParseAuthenticationService";
 import { ParseUserRepository } from "../parseserver/ParseUserRepository";
 
@@ -26,14 +27,23 @@ import { ParseUserRepository } from "../parseserver/ParseUserRepository";
 // wiring means Bloom API calls carry the real Parse session token even while
 // the read path is Supabase.
 //
+// Book WRITES are mixed-mode for the same reason: SupabaseBookRepository's
+// write methods are unimplemented (they throw) and safe writes need the
+// Supabase auth milestone. So instead of the bare SupabaseBookRepository we
+// register HybridBookRepository under the Supabase impl key — it serves reads
+// from Supabase and delegates updateBook/deleteBook/saveArtifactVisibility to
+// ParseBookRepository (authenticated by the same Parse session token as above).
+//
 // The Supabase stub files are intentionally left in place — they are the
 // eventual real implementations. Only this registration wiring changes. When
-// the Supabase auth milestone lands, swap these two lines back to
-// SupabaseAuthenticationService / SupabaseUserRepository.
+// the Supabase auth (and book write) milestone lands, swap the auth/user lines
+// back to SupabaseAuthenticationService / SupabaseUserRepository and register
+// the bare SupabaseBookRepository in place of HybridBookRepository.
 // ---------------------------------------------------------------------------
 export function registerSupabaseImplementations(): void {
     DataLayerFactory.getInstance().registerImplementations({
-        SupabaseBookRepository,
+        // Mixed mode: Supabase reads, Parse writes (see HybridBookRepository).
+        SupabaseBookRepository: HybridBookRepository,
         SupabaseLanguageRepository,
         SupabaseTagRepository,
         SupabaseAnalyticsService,
