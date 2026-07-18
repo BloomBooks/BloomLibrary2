@@ -15,7 +15,7 @@ sweep, bloom-core-supabase backend inventory) on 2026-07-18.
 | A1 | Search relevance ranking (Parse $text/$score vs ilike-AND + newest-first) | ⚠ deferred by decision 2026-07-18 — accepted degraded for switchover test period; revisit after data-migration milestone | both repos |
 | A2 | Non-canonical `topic:` filters silently return nothing (Parse regex-ORs) | ❌ open — TODO'd for an RPC | both repos |
 | A3 | `tags.category` column missing → `TagModel.category` always undefined | ✅ accepted — verified zero UI consumers of TagModel.category in anon scope (only Contentful page fields use `.category`) | — |
-| A4 | `sendConcernEmail` throws under Supabase ("Report this book" is anon-reachable) | ❌ open — needs edge function or transitional routing to Parse cloud fn | both repos |
+| A4 | `sendConcernEmail` throws under Supabase ("Report this book" is anon-reachable) | ✅ send-concern-email edge function built (bloom-core-supabase branch `send-concern-email`, unmerged); Supabase client impl wired to it; mixed mode (D1) meanwhile routes the live path via Parse | both repos |
 | A5 | `anyOfThese`/`derivedFrom` union IDs client-side then `.in("id",…)` — scale risk | ✅ verified at 699 local books: broad search ~150ms, anyOfThese ~120ms (75f566b); re-check after full data sync | blorg |
 | A6 | Wildcard tag inside any-of list fails closed | ⚠ accepted (no known caller); covered by unit tests where reachable | blorg |
 

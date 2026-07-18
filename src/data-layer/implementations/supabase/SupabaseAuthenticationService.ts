@@ -7,6 +7,7 @@
 // would actually perform an auth action throw.
 import { IAuthenticationService } from "../../interfaces/IAuthenticationService";
 import { UserModel } from "../../models/UserModel";
+import { SupabaseConnection } from "./SupabaseConnection";
 
 const NOT_IMPLEMENTED = "not implemented in Supabase data layer yet";
 
@@ -49,7 +50,25 @@ export class SupabaseAuthenticationService implements IAuthenticationService {
         return false;
     }
 
-    async sendConcernEmail(): Promise<void> {
-        throw new Error(NOT_IMPLEMENTED);
+    // Unlike the rest of this class, this is a real implementation: it calls
+    // the send-concern-email edge function (bloom-core-supabase), which
+    // replaces the Parse cloud function of the same purpose. Note that under
+    // the current mixed-mode registration (SWITCHOVER-READINESS.md D1) the
+    // live path is still ParseAuthenticationService; this becomes active when
+    // Supabase auth lands.
+    async sendConcernEmail(
+        fromAddress: string,
+        content: string,
+        bookId: string
+    ): Promise<void> {
+        const { error } = await SupabaseConnection.getClient().functions.invoke(
+            "send-concern-email",
+            {
+                body: { fromAddress, content, bookId },
+            }
+        );
+        if (error) {
+            throw new Error(`Failed to send concern email: ${error.message}`);
+        }
     }
 }
