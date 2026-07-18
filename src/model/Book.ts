@@ -48,6 +48,28 @@ export interface IInternetLimits {
     // vice versa in another.
 }
 
+// ---------------------------------------------------------------------------
+// Extracted-tag round-trip seam. READ THIS BEFORE ADDING A PREFIX.
+//
+// On load, Book.updateTagsFromParseServerData() EXTRACTS certain tags out of
+// book.tags and into typed fields on the Book (currently only "level:X" ->
+// book.level), then REMOVES those tags from book.tags. That makes book.tags a
+// LOSSY view of the real tag set, so every code path that writes tags back to
+// the server MUST re-merge the extracted fields or the write silently deletes
+// them. That silent deletion is exactly the bulk-edit level-deletion bug this
+// seam is hardening against.
+//
+// extractedTagPrefixes and Book.getTagsForSaving() are a MATCHED PAIR:
+//   * updateTagsFromParseServerData() only strips (and captures into a typed
+//     field) tags whose "name:" prefix is in extractedTagPrefixes, and
+//   * getTagsForSaving() re-appends the tag for EVERY one of those fields.
+// INVARIANT: any prefix added to this list MUST also get (a) a capture branch
+// in updateTagsFromParseServerData() and (b) a re-merge in getTagsForSaving().
+// The round-trip test in Book.test.ts parameterizes over this list, so a prefix
+// that isn't captured-and-re-merged turns that test red.
+// ---------------------------------------------------------------------------
+export const extractedTagPrefixes = ["level:"];
+
 // This is basically the data object we get from Parse Server about a book.
 // We can't reasonably improve the data model there, but we improve it in
 // various ways as we construct this object from the Parse Server data.
@@ -165,21 +187,49 @@ export class Book {
         } else return undefined;
     }
 
+    // Strips extracted tags (see the extractedTagPrefixes note above the class)
+    // out of the raw tag list and into typed fields. Counterpart of
+    // getTagsForSaving(), which re-merges them on the way back out.
     private updateTagsFromParseServerData(tags1: string[]) {
-        const tags = [...tags1];
-        for (let i = 0; i < tags.length; i++) {
-            const tag: string = tags[i];
+        const tags: string[] = [];
+        const captured = new Set<string>();
+        for (const tag of tags1) {
             const parts = tag.split(":");
-            if (parts.length !== 2) {
-                continue;
+            const prefix =
+                parts.length === 2 ? parts[0].trim() + ":" : undefined;
+            // Capture the first tag of each extracted prefix into its typed
+            // field and drop it from tags. Every prefix in extractedTagPrefixes
+            // MUST have a branch here and a matching re-merge in
+            // getTagsForSaving().
+            if (
+                prefix !== undefined &&
+                extractedTagPrefixes.includes(prefix) &&
+                !captured.has(prefix)
+            ) {
+                if (prefix === "level:") {
+                    this.level = parts[1].trim();
+                    captured.add(prefix);
+                    continue;
+                }
             }
-            if (parts[0].trim() === "level") {
-                this.level = parts[1].trim();
-                tags.splice(i, 1);
-                break;
-            }
+            tags.push(tag);
         }
         this.tags = tags;
+    }
+
+    // Re-merges the extracted typed fields (see the extractedTagPrefixes note
+    // above the class) back into a tag array suitable for saving. Pass the
+    // (possibly edited) tags you intend to save; defaults to this.tags. For
+    // every extracted field, appends its "prefix:value" tag when the field is
+    // set and no tag with that prefix is already present, so the round trip
+    // load -> edit -> save never silently drops an extracted tag.
+    public getTagsForSaving(baseTags: string[] = this.tags): string[] {
+        const tags = [...baseTags];
+        // Re-merge EVERY prefix in extractedTagPrefixes here.
+        if (this.level && !tags.some((t) => t.startsWith("level:"))) {
+            tags.push("level:" + this.level);
+        }
+        return tags;
     }
     // Make various changes to the object we get from parse server to make it more
     // convenient for various BloomLibrary uses.
@@ -259,12 +309,10 @@ export class Book {
     }
 
     public async saveAdminData() {
-        // In finishCreationFromParseServerData(), we stripped level out of tags
-        // now we want to put it back in the version we send if it exists
-        const tags = [...this.tags];
-        if (this.level) {
-            tags.push("level:" + this.level);
-        }
+        // finishCreationFromParseServerData() stripped the extracted tags (e.g.
+        // level) out of this.tags; getTagsForSaving() re-merges them so we don't
+        // save a tag list with them missing.
+        const tags = this.getTagsForSaving();
 
         [this.keywords, this.keywordStems] = Book.getKeywordsAndStems(
             this.keywordsText
