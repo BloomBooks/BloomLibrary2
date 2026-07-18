@@ -38,9 +38,12 @@ RUN_SUPABASE_TESTS=true npx vitest run src/data-layer/test/SupabaseRead.integrat
 - Free-text search: AND of `ilike` over the precomputed `search` column; no
   relevance ranking (Mongo `$text`/`$score`). Default-ordered searches fall
   back to newest-first.
-- Bare search words are not matched against the tag vocabulary.
-- Wildcard tag patterns (`bookshelf:X*`) are skipped (needs an RPC for
-  per-array-element matching).
+- Bare search words are not matched against the tag vocabulary (same as the
+  current Parse data-layer implementation, which also passes an empty tag
+  list to splitString).
+- Wildcard tag patterns (`bookshelf:X*`) match via the generated
+  `books.tags_text` column, except inside an any-of list (fails closed;
+  no known caller produces that).
 - `anyOfThese` unions sub-query results client-side.
 - `tags` has no `category` in the Supabase schema; `TagModel.category` is
   always undefined.

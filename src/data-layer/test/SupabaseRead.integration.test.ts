@@ -151,6 +151,27 @@ const shouldRunSupabaseTests = process.env.RUN_SUPABASE_TESTS === "true";
             );
         }, 30000);
 
+        it("wildcard tag patterns (prefix*) constrain to matching tags", async () => {
+            // topic:Animal Stories exists in the sample; "topic:Anim*" must
+            // match it per element, not be dropped (which would return all
+            // books) nor match nothing.
+            const result = await bookRepository.searchBooks({
+                filter: { otherTags: "topic:Anim*" } as IFilter,
+            });
+
+            const total = await getTotalBookCount();
+            expect(result.errorString).toBeNull();
+            expect(result.books.length).toBeGreaterThan(0);
+            expect(result.books.length).toBeLessThan(total);
+            result.books.forEach((b) => {
+                expect(
+                    (b.tags ?? []).some((t: string) =>
+                        t.startsWith("topic:Anim")
+                    )
+                ).toBe(true);
+            });
+        }, 30000);
+
         it("the 'Other' topic (exclude all known topics) neither errors nor returns everything", async () => {
             // Exercises the negated array-overlap path (.not("tags","ov",...)),
             // which requires a PostgreSQL array literal — this query used to

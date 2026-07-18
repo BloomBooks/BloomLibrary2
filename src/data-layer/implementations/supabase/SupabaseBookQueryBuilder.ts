@@ -7,9 +7,9 @@
 //     language:, feature:, rebrand:, bookInstanceId:, level:, copyright:,
 //     country:, publisher:, originalPublisher:, edition:,
 //     branding(ProjectName):, license:, phash:, bookHash:, harvestState:).
-//   - Wildcard tag patterns (e.g. "bookshelf:X*", "*suffix") are not
-//     translated to a Postgres pattern match; such tag conditions are
-//     skipped rather than applied incorrectly.
+//   - Wildcard tag patterns (e.g. "bookshelf:X*", "*suffix") are matched via
+//     the generated books.tags_text column (see wildcardTagToLikePattern),
+//     except inside an any-of list, where they fail closed (no known caller).
 //   - Unmatched (non-canonical) `topic` values, which Parse resolves with a
 //     regex-OR across tag values, are skipped the same way.
 //   - Free-text `search` terms use `.ilike()` against the precomputed
@@ -71,6 +71,20 @@ function camelToSnake(name: string): string {
 
 function isWildcardTag(tag: string): boolean {
     return tag.startsWith("*") || tag.endsWith("*");
+}
+
+// Converts a wildcard tag pattern to a LIKE pattern against books.tags_text,
+// a generated column rendering the tags array as "|tag1|tag2|...|" so LIKE
+// can anchor on element boundaries. Mirrors Parse's getPossiblyAnchoredRegex:
+// "X*" = element starts with X, "*X" = ends with X, "*X*" = contains X
+// (case-sensitive, like the Mongo $regex Parse used).
+function wildcardTagToLikePattern(tag: string): string {
+    const starts = tag.endsWith("*");
+    const ends = tag.startsWith("*");
+    const core = escapeLikePattern(tag.replace(/^\*/, "").replace(/\*$/, ""));
+    if (starts && ends) return `%${core}%`;
+    if (starts) return `%|${core}%`;
+    return `%${core}|%`;
 }
 
 async function resolveLanguageIdsForIsoCode(
@@ -199,24 +213,42 @@ function applyTagRequirements(
     requirements: TagRequirement[]
 ): SupabaseQuery {
     for (const requirement of requirements) {
-        const values = requirement.values.filter((v) => !isWildcardTag(v));
-        if (values.length === 0) {
-            continue; // Wildcard-only requirement; nothing safe to apply. See TODO above.
-        }
+        const exact = requirement.values.filter((v) => !isWildcardTag(v));
+        const wildcards = requirement.values.filter(isWildcardTag);
         switch (requirement.kind) {
             case "all":
-                for (const v of values) {
+                for (const v of exact) {
                     q = q.contains("tags", [v]);
+                }
+                for (const w of wildcards) {
+                    q = q.like("tags_text", wildcardTagToLikePattern(w));
                 }
                 break;
             case "any":
-                q = q.overlaps("tags", values);
+                if (wildcards.length > 0) {
+                    // No known caller produces an OR-list containing wildcard
+                    // tags (they arise from bookshelf collection filters,
+                    // which are "all" requirements). Fail CLOSED rather than
+                    // dropping the constraint and returning everything.
+                    console.warn(
+                        "Supabase book query: wildcard tags in an any-of requirement are not supported; returning no matches for it:",
+                        wildcards
+                    );
+                    q = q.overlaps("tags", ["__no_match__"]);
+                } else {
+                    q = q.overlaps("tags", exact);
+                }
                 break;
             case "none":
-                // .not() does not serialize JS arrays the way .overlaps() does;
-                // it needs a PostgreSQL array literal or the server rejects it
-                // with "malformed array literal" (22P02).
-                q = q.not("tags", "ov", toPostgresArrayLiteral(values));
+                if (exact.length > 0) {
+                    // .not() does not serialize JS arrays the way .overlaps()
+                    // does; it needs a PostgreSQL array literal or the server
+                    // rejects it with "malformed array literal" (22P02).
+                    q = q.not("tags", "ov", toPostgresArrayLiteral(exact));
+                }
+                for (const w of wildcards) {
+                    q = q.not("tags_text", "like", wildcardTagToLikePattern(w));
+                }
                 break;
         }
     }

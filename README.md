@@ -44,7 +44,7 @@ of real production books. Auth/writes still require Parse.
    ```
 
 2. Clone [bloom-core-supabase](https://github.com/BloomBooks/bloom-core-supabase)
-   (e.g. to `C:\dev\bloom-core-supabase`) and in it run `pnpm install`.
+   (e.g. to `D:\bloom-core-supabase`) and in it run `pnpm install`.
 
 3. Start the local Supabase stack and create the schema. If Docker Desktop is
    also installed, point the CLI at Podman's pipe first:
@@ -69,7 +69,7 @@ of real production books. Auth/writes still require Parse.
 
 ```powershell
 podman machine start                             # after a reboot
-cd C:\dev\bloom-core-supabase
+cd D:\bloom-core-supabase
 $env:DOCKER_HOST = "npipe:////./pipe/podman-machine-default"
 pnpm exec supabase start -x logflare,vector
 ```
