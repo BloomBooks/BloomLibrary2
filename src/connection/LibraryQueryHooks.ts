@@ -1170,13 +1170,19 @@ export function useGetBookCount(filter: IFilter): number {
     return count;
 }
 
-// Enhanced version that also returns error state
+// Enhanced version that also returns error state and a loading flag.
+// `loading` is true until the count for the *current* filter has arrived, so
+// callers can suppress a stale count from a previous filter (see BookCount).
 export function useGetBookCountWithError(
     filter: IFilter
-): { count: number; hasError: boolean } {
+): { count: number; hasError: boolean; loading: boolean } {
     const [count, setCount] = useState(0);
     const [hasError, setHasError] = useState(false);
-    const hasStarted = useRef(false);
+    const [fetching, setFetching] = useState(true);
+    // Which filter the current `count` was fetched for. Read during render so a
+    // filter change is detected synchronously (before the effect runs) and we
+    // never display the previous filter's count.
+    const loadedFilterString = useRef<string | undefined>(undefined);
 
     // Create stable references to avoid infinite loops
     const filterString = JSON.stringify(filter);
@@ -1187,81 +1193,83 @@ export function useGetBookCountWithError(
     const collectionReady = useProcessDerivativeFilter(stableFilter);
 
     useEffect(() => {
-        if (!collectionReady || hasStarted.current) return;
-        hasStarted.current = true;
+        if (!collectionReady) return;
+        // Each filter change starts a fresh fetch and cancels the previous one,
+        // so a stale in-flight response can't overwrite the current count and
+        // we don't setState after unmount.
+        let cancelled = false;
+        setFetching(true);
 
         const fetchCount = async () => {
             try {
                 const repository = getBookRepository();
                 const bookCount = await repository.getBookCount(stableFilter);
+                if (cancelled) return;
                 setCount(bookCount);
                 setHasError(false);
             } catch (error) {
+                if (cancelled) return;
                 console.error("Error getting book count:", error);
                 setCount(0);
                 setHasError(true);
             } finally {
-                hasStarted.current = false;
+                if (!cancelled) {
+                    loadedFilterString.current = filterString;
+                    setFetching(false);
+                }
             }
         };
 
         fetchCount();
-    }, [stableFilter, collectionReady]);
 
-    return { count, hasError };
+        return () => {
+            cancelled = true;
+        };
+    }, [stableFilter, collectionReady, filterString]);
+
+    // Loading while a fetch is in flight OR the current count still belongs to
+    // a previous filter (detected synchronously via the ref).
+    const loading = fetching || loadedFilterString.current !== filterString;
+    return { count, hasError, loading };
 }
 
 export function useGetBookCountRaw(
     filter: IFilter,
     shouldSkipQuery?: boolean
 ): IAxiosAnswer {
-    // This is a legacy hook that returns axios-style results for backward compatibility
-    const { count, hasError } = useGetBookCountWithError(filter);
-    const [result, setResult] = useState<any>({
-        loading: true,
-        error: null,
-        response: null,
-        query: "",
-        reFetch: () => {},
-    });
-
+    // This is a legacy hook that returns axios-style results for backward
+    // compatibility. The result is computed synchronously from
+    // useGetBookCountWithError so that a `loading` state (e.g. right after a
+    // filter change) is reflected in the same render, and callers never see a
+    // stale count for the new filter.
+    const { count, hasError, loading } = useGetBookCountWithError(filter);
     const filterString = JSON.stringify(filter);
 
-    useEffect(() => {
-        if (shouldSkipQuery) {
-            setResult({
-                loading: false,
-                error: null,
-                response: {
-                    data: { count: 0 },
-                },
-                query: filterString,
-                reFetch: () => {},
-            });
-            return;
-        }
+    // Typed as any to match the historical loose shape (query is a string and
+    // reFetch is a no-op here, unlike the real axios hook's IReturns); the
+    // consumers only read .loading/.error/.response.data.count.
+    const result: any = {
+        query: filterString,
+        reFetch: () => {},
+    };
 
-        if (hasError) {
-            // Return error state when API failed
-            setResult({
-                loading: false,
-                error: new Error("Failed to fetch book count"),
-                response: null,
-                query: filterString,
-                reFetch: () => {},
-            });
-        } else {
-            setResult({
-                loading: false,
-                error: null,
-                response: {
-                    data: { count: count },
-                },
-                query: filterString,
-                reFetch: () => {},
-            });
-        }
-    }, [count, hasError, shouldSkipQuery, filterString]);
+    if (shouldSkipQuery) {
+        result.loading = false;
+        result.error = null;
+        result.response = { data: { count: 0 } };
+    } else if (loading) {
+        result.loading = true;
+        result.error = null;
+        result.response = null;
+    } else if (hasError) {
+        result.loading = false;
+        result.error = new Error("Failed to fetch book count");
+        result.response = null;
+    } else {
+        result.loading = false;
+        result.error = null;
+        result.response = { data: { count } };
+    }
 
     return result;
 }

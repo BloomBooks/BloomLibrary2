@@ -48,6 +48,26 @@ function toParseDate(
     return value ? { iso: new Date(value).toISOString() } : undefined;
 }
 
+// Mirrors ParseBookRepository.extractLang1Tag: the primary language tag for a
+// basic book info is stored on the artifact-visibility "show" blob under
+// pdf.langTag. Consumers (ByLanguageGroups, LanguageFeatureList,
+// DuplicateBookFilter) rely on this, so the Supabase read path must populate it
+// the same way Parse does.
+function extractLang1Tag(show: unknown): string | undefined {
+    if (typeof show !== "object" || show === null) {
+        return undefined;
+    }
+    const pdf = (show as Record<string, unknown>)["pdf"];
+    if (
+        typeof pdf === "object" &&
+        pdf !== null &&
+        typeof (pdf as { langTag?: unknown }).langTag === "string"
+    ) {
+        return (pdf as { langTag: string }).langTag;
+    }
+    return undefined;
+}
+
 export class SupabaseBookRepository implements IBookRepository {
     async getBook(id: string): Promise<Book | null> {
         const client = SupabaseConnection.getClient();
@@ -317,6 +337,7 @@ export class SupabaseBookRepository implements IBookRepository {
             rebrand: row.rebrand ?? undefined,
             inCirculation: row.in_circulation ?? undefined,
             show: row.show ?? undefined,
+            lang1Tag: extractLang1Tag(row.show),
         };
     }
 }
