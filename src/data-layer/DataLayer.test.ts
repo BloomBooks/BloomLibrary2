@@ -5,6 +5,18 @@ import {
 } from "./factory/DataLayerFactory";
 import { BookModel, UserModel, LanguageModel, TagModel } from "./models";
 import { BooleanOptions, BookOrderingScheme } from "./types/CommonTypes";
+// Importing the data-layer barrel for its side effect: it registers both the
+// Parse and Supabase implementations (including the mixed-mode wiring) exactly
+// as the app does at startup. Doing it via the barrel — rather than calling the
+// register functions directly — keeps evaluation in the same order the app
+// uses, avoiding a circular-import hazard (ApiConnection -> data-layer index).
+import "./index";
+import { ParseAuthenticationService } from "./implementations/parseserver/ParseAuthenticationService";
+import { ParseUserRepository } from "./implementations/parseserver/ParseUserRepository";
+import { ParseBookRepository } from "./implementations/parseserver/ParseBookRepository";
+import { SupabaseBookRepository } from "./implementations/supabase/SupabaseBookRepository";
+import { SupabaseLanguageRepository } from "./implementations/supabase/SupabaseLanguageRepository";
+import { SupabaseTagRepository } from "./implementations/supabase/SupabaseTagRepository";
 
 describe("Data Layer Setup", () => {
     test("DataLayerFactory should be singleton", () => {
@@ -115,5 +127,55 @@ describe("Data Layer Setup", () => {
 
         expect(BookOrderingScheme.Default).toBe("default");
         expect(BookOrderingScheme.TitleAlphabetical).toBe("title");
+    });
+});
+
+// Mixed mode: when running with the Supabase implementation, book/language/tag
+// READS come from Supabase, but AUTHENTICATION and USER operations remain
+// Parse-backed so login and moderator workflows keep working during the
+// transition. See SWITCHOVER-READINESS.md item D1 and
+// src/data-layer/implementations/supabase/index.ts.
+describe("Mixed mode (Supabase reads, Parse auth/user)", () => {
+    const factory = DataLayerFactory.getInstance();
+
+    afterEach(() => {
+        // Leave the singleton on its documented default for other tests.
+        factory.setImplementation(DataLayerImplementation.ParseServer);
+    });
+
+    test("auth service and user repository are Parse-backed under Supabase impl", () => {
+        factory.setImplementation(DataLayerImplementation.Supabase);
+
+        expect(factory.createAuthenticationService()).toBeInstanceOf(
+            ParseAuthenticationService
+        );
+        expect(factory.createUserRepository()).toBeInstanceOf(
+            ParseUserRepository
+        );
+    });
+
+    test("book/language/tag repositories are Supabase-backed under Supabase impl", () => {
+        factory.setImplementation(DataLayerImplementation.Supabase);
+
+        expect(factory.createBookRepository()).toBeInstanceOf(
+            SupabaseBookRepository
+        );
+        expect(factory.createLanguageRepository()).toBeInstanceOf(
+            SupabaseLanguageRepository
+        );
+        expect(factory.createTagRepository()).toBeInstanceOf(
+            SupabaseTagRepository
+        );
+    });
+
+    test("ParseServer impl still returns Parse book repository (mixed mode is Supabase-only)", () => {
+        factory.setImplementation(DataLayerImplementation.ParseServer);
+
+        expect(factory.createBookRepository()).toBeInstanceOf(
+            ParseBookRepository
+        );
+        expect(factory.createAuthenticationService()).toBeInstanceOf(
+            ParseAuthenticationService
+        );
     });
 });

@@ -42,7 +42,7 @@ sweep, bloom-core-supabase backend inventory) on 2026-07-18.
 
 | # | Item | Status |
 |---|------|--------|
-| D1 | Under supabase impl: login/write UI must not route into throwing stubs (decide: hide, disable, or keep Parse-backed) | ❌ decision needed |
+| D1 | Under supabase impl: login/write UI must not route into throwing stubs (decide: hide, disable, or keep Parse-backed) | ✅ decided 2026-07-18 — mixed mode: keep auth/user Parse-backed. Supabase registration binds ParseAuthenticationService/ParseUserRepository under the Supabase impl keys (`implementations/supabase/index.ts`); getBloomApiHeaders() therefore carries the real Parse session token. Covered by DataLayer.test.ts |
 | D2 | Analytics interface unwired on both sides (Parse side unregistered) — confirm nothing calls `getAnalyticsService()` before wiring | ✅ verified (zero callers) |
 
 ## E. Backend dependencies (bloom-core-supabase)
