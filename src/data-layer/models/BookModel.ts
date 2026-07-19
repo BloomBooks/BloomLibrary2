@@ -169,7 +169,7 @@ export class BookModel implements CommonEntityFields {
 
     public getBestTitle(langISO?: string): string {
         const t = langISO ? this.allTitles.get(langISO) : this.title;
-        return (t || this.title).replace(/[\\r\\n\\v]+/g, " ");
+        return (t || this.title).replace(/[\r\n\v]+/g, " ");
     }
 
     public getKeywordsText(): string {
