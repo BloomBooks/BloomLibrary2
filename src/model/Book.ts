@@ -1,6 +1,5 @@
 import { observable, makeObservable } from "mobx";
-import { updateBook } from "../connection/LibraryUpdates";
-import { retrieveCurrentBookData } from "../connection/LibraryQueries";
+import { DataLayerFactory } from "../data-layer/factory/DataLayerFactory";
 import { ArtifactVisibilitySettingsGroup } from "./ArtifactVisibilitySettings";
 import { ILanguage } from "./Language";
 import { removePunctuation } from "../Utilities";
@@ -13,6 +12,17 @@ import {
 import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
 import { getHarvesterBaseUrlFromBaseUrl } from "./BookUrlUtils";
 import stem from "wink-porter2-stemmer";
+
+// Report a failed book save to the user. This restores the user-visible failure
+// reporting from the legacy connection layer: LibraryUpdates.updateBook() caught
+// a failed save and showed an alert(error) so a moderator whose edit did not save
+// found out. The data-layer repository pattern that replaced it left the save
+// methods below rejecting silently (their call sites are all fire-and-forget), so
+// we re-add the alert here and also console.error the underlying error.
+function reportBookSaveFailure(error: unknown): void {
+    console.error(error);
+    alert(error);
+}
 
 export function createBookFromParseServerData(pojo: any): Book {
     const b = Object.assign(new Book(), pojo);
@@ -49,6 +59,28 @@ export interface IInternetLimits {
     // may be possible to read it (but not download it) in one country, and
     // vice versa in another.
 }
+
+// ---------------------------------------------------------------------------
+// Extracted-tag round-trip seam. READ THIS BEFORE ADDING A PREFIX.
+//
+// On load, Book.updateTagsFromParseServerData() EXTRACTS certain tags out of
+// book.tags and into typed fields on the Book (currently only "level:X" ->
+// book.level), then REMOVES those tags from book.tags. That makes book.tags a
+// LOSSY view of the real tag set, so every code path that writes tags back to
+// the server MUST re-merge the extracted fields or the write silently deletes
+// them. That silent deletion is exactly the bulk-edit level-deletion bug this
+// seam is hardening against.
+//
+// extractedTagPrefixes and Book.getTagsForSaving() are a MATCHED PAIR:
+//   * updateTagsFromParseServerData() only strips (and captures into a typed
+//     field) tags whose "name:" prefix is in extractedTagPrefixes, and
+//   * getTagsForSaving() re-appends the tag for EVERY one of those fields.
+// INVARIANT: any prefix added to this list MUST also get (a) a capture branch
+// in updateTagsFromParseServerData() and (b) a re-merge in getTagsForSaving().
+// The round-trip test in Book.test.ts parameterizes over this list, so a prefix
+// that isn't captured-and-re-merged turns that test red.
+// ---------------------------------------------------------------------------
+export const extractedTagPrefixes = ["level:"];
 
 // This is basically the data object we get from Parse Server about a book.
 // We can't reasonably improve the data model there, but we improve it in
@@ -174,21 +206,49 @@ export class Book {
         } else return undefined;
     }
 
+    // Strips extracted tags (see the extractedTagPrefixes note above the class)
+    // out of the raw tag list and into typed fields. Counterpart of
+    // getTagsForSaving(), which re-merges them on the way back out.
     private updateTagsFromParseServerData(tags1: string[]) {
-        const tags = [...tags1];
-        for (let i = 0; i < tags.length; i++) {
-            const tag: string = tags[i];
+        const tags: string[] = [];
+        const captured = new Set<string>();
+        for (const tag of tags1) {
             const parts = tag.split(":");
-            if (parts.length !== 2) {
-                continue;
+            const prefix =
+                parts.length === 2 ? parts[0].trim() + ":" : undefined;
+            // Capture the first tag of each extracted prefix into its typed
+            // field and drop it from tags. Every prefix in extractedTagPrefixes
+            // MUST have a branch here and a matching re-merge in
+            // getTagsForSaving().
+            if (
+                prefix !== undefined &&
+                extractedTagPrefixes.includes(prefix) &&
+                !captured.has(prefix)
+            ) {
+                if (prefix === "level:") {
+                    this.level = parts[1].trim();
+                    captured.add(prefix);
+                    continue;
+                }
             }
-            if (parts[0].trim() === "level") {
-                this.level = parts[1].trim();
-                tags.splice(i, 1);
-                break;
-            }
+            tags.push(tag);
         }
         this.tags = tags;
+    }
+
+    // Re-merges the extracted typed fields (see the extractedTagPrefixes note
+    // above the class) back into a tag array suitable for saving. Pass the
+    // (possibly edited) tags you intend to save; defaults to this.tags. For
+    // every extracted field, appends its "prefix:value" tag when the field is
+    // set and no tag with that prefix is already present, so the round trip
+    // load -> edit -> save never silently drops an extracted tag.
+    public getTagsForSaving(baseTags: string[] = this.tags): string[] {
+        const tags = [...baseTags];
+        // Re-merge EVERY prefix in extractedTagPrefixes here.
+        if (this.level && !tags.some((t) => t.startsWith("level:"))) {
+            tags.push("level:" + this.level);
+        }
+        return tags;
     }
     // Make various changes to the object we get from parse server to make it more
     // convenient for various BloomLibrary uses.
@@ -267,43 +327,42 @@ export class Book {
         }
     }
 
-    public saveAdminDataToParse() {
-        // In finishCreationFromParseServerData(), we stripped level out of tags
-        // now we want to put it back in the version we send to Parse if it exists
-        const tags = [...this.tags];
-        if (this.level) {
-            tags.push("level:" + this.level);
-        }
-
-        const reconstructedLanguagePointers = this.languages.map((l) => {
-            return {
-                __type: "Pointer",
-                className: "language",
-                objectId: l.objectId,
-            };
-        });
+    public async saveAdminData() {
+        // finishCreationFromParseServerData() stripped the extracted tags (e.g.
+        // level) out of this.tags; getTagsForSaving() re-merges them so we don't
+        // save a tag list with them missing.
+        const tags = this.getTagsForSaving();
 
         [this.keywords, this.keywordStems] = Book.getKeywordsAndStems(
             this.keywordsText
         );
 
-        updateBook(this.id, {
-            tags,
-            inCirculation: this.inCirculation,
-            draft: this.draft,
-            summary: this.summary?.trim(),
-            librarianNote: this.librarianNote,
-            publisher: this.publisher,
-            originalPublisher: this.originalPublisher,
-            langPointers: reconstructedLanguagePointers,
-            features: this.features,
-            title: this.title?.trim(),
-            keywords: this.keywords,
-            keywordStems: this.keywordStems,
-            edition: this.edition,
-            harvestState: this.harvestState,
-            rebrand: this.rebrand,
-        });
+        const bookRepository = DataLayerFactory.getInstance().createBookRepository();
+        // Callers of saveAdminData() are fire-and-forget, so a rejection here would
+        // be swallowed silently. Report the failure to the user (see
+        // reportBookSaveFailure) instead of letting a moderator believe the edit
+        // saved. We deliberately don't re-throw: there is no caller to handle it.
+        try {
+            await bookRepository.updateBook(this.id, {
+                tags,
+                inCirculation: this.inCirculation,
+                draft: this.draft,
+                summary: this.summary?.trim(),
+                librarianNote: this.librarianNote,
+                publisher: this.publisher,
+                originalPublisher: this.originalPublisher,
+                languages: this.languages, // Let repository handle language conversion
+                features: this.features,
+                title: this.title?.trim(),
+                keywords: this.keywords,
+                keywordStems: this.keywordStems,
+                edition: this.edition,
+                harvestState: this.harvestState,
+                rebrand: this.rebrand,
+            } as any);
+        } catch (error) {
+            reportBookSaveFailure(error);
+        }
     }
 
     private static readonly keywordDelimiter: string = " ";
@@ -335,8 +394,18 @@ export class Book {
         return stem(removePunctuation(keyword.toLowerCase()));
     }
 
-    public saveArtifactVisibilityToParseServer() {
-        updateBook(this.id, { show: this.artifactsToOfferToUsers });
+    public async saveArtifactVisibility() {
+        const bookRepository = DataLayerFactory.getInstance().createBookRepository();
+        // As with saveAdminData(), the call sites are fire-and-forget, so report a
+        // failed save to the user rather than swallowing the rejection silently.
+        try {
+            await bookRepository.saveArtifactVisibility(
+                this.id,
+                this.artifactsToOfferToUsers
+            );
+        } catch (error) {
+            reportBookSaveFailure(error);
+        }
     }
 
     // e.g. system:Incoming
@@ -359,11 +428,12 @@ export class Book {
     // To avoid this, when making such an update we fetch the most current book data
     // before changing anything.
     public async setBooleanTagAndSave(name: string, value: boolean) {
-        const currentData = await retrieveCurrentBookData(this.id);
+        const bookRepository = DataLayerFactory.getInstance().createBookRepository();
+        const currentData = await bookRepository.getCurrentBookData(this.id);
         Object.assign(this, currentData);
         this.finishCreationFromParseServerData(this.id);
         this.setBooleanTag(name, value);
-        this.saveAdminDataToParse();
+        await this.saveAdminData();
     }
 
     public getBestTitle(langISO?: string): string {
@@ -567,7 +637,7 @@ export class Book {
 // This is used where we only have an IBasicBookInfo, not a full book, but need to get a language-specific title for the book
 export function getBestBookTitle(
     defaultTitle: string,
-    rawAllTitlesJson: string,
+    rawAllTitlesJson: string | Map<string, string>,
     contextLangTag?: string
 ): string {
     if (!contextLangTag) return defaultTitle.replace(/[\r\n\v]+/g, " ");
@@ -588,9 +658,18 @@ export function getBookTitleInLanguageOrUndefined(
     return contextTitle?.replace(/[\r\n\v]+/g, " ");
 }
 
-function parseAllTitles(allTitlesString: string): Map<string, string> {
+function parseAllTitles(
+    allTitlesStringOrMap: string | Map<string, string>
+): Map<string, string> {
     const map = new Map<string, string>();
     try {
+        // Handle case where allTitles is already a Map (from BookModel)
+        if (allTitlesStringOrMap instanceof Map) {
+            return new Map(allTitlesStringOrMap);
+        }
+
+        // Handle case where allTitles is a JSON string (from IBasicBookInfo)
+        const allTitlesString = allTitlesStringOrMap as string;
         const allTitles =
             (allTitlesString &&
                 JSON.parse(
@@ -607,7 +686,7 @@ function parseAllTitles(allTitlesString: string): Map<string, string> {
         });
     } catch (error) {
         console.error(error);
-        console.error(`While parsing allTitles ${allTitlesString}`);
+        console.error(`While parsing allTitles ${allTitlesStringOrMap}`);
     }
     return map;
 }

@@ -1,0 +1,79 @@
+name: Supabase Integration Tests
+
+# Spins up a throwaway local Supabase stack (see supabase/config.toml), loads a
+# scrubbed SQL fixture (src/data-layer/test/fixtures/supabase-fixture.sql), and
+# runs the gated RUN_SUPABASE_TESTS read-path integration suites against it.
+# Nothing here touches any real/production backend.
+
+on:
+    push:
+        branches:
+            - master
+            - release
+            - embed
+            - SupabaseMigration
+    pull_request:
+    workflow_dispatch:
+
+jobs:
+    supabase-integration:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            # Same Node+pnpm toolchain setup as build-and-deploy.yml (the repo
+            # switched from yarn to pnpm via corepack's packageManager field).
+            - name: Install Vite+ (manages Node.js and pnpm)
+              uses: voidzero-dev/setup-vp@2dec1e33f4ab2c6d5bce1b0c4607961bb1a3f7a1 # v1.12.0
+              with:
+                  version: 0.1.24
+                  node-version-file: .node-version
+                  cache: true
+
+            - name: Install Supabase CLI
+              uses: supabase/setup-cli@v1
+              with:
+                  version: latest
+
+            - name: Start Supabase (db, rest, api, auth only)
+              # Unneeded services are disabled in supabase/config.toml, so a plain
+              # start brings up just Postgres, PostgREST, Kong, and auth.
+              run: supabase start
+
+            - name: Load scrubbed fixture and reload PostgREST
+              env:
+                  DB_URL: postgresql://postgres:postgres@127.0.0.1:44322/postgres
+              run: |
+                  psql "$DB_URL" -v ON_ERROR_STOP=1 -f src/data-layer/test/fixtures/supabase-fixture.sql
+                  # Nudge PostgREST to pick up the freshly created tables/RPC.
+                  psql "$DB_URL" -c "NOTIFY pgrst, 'reload schema';"
+
+            - name: Wait for PostgREST to serve the loaded data
+              env:
+                  # Standard supabase local demo anon key (same one baked into
+                  # SupabaseConnection.ts); safe to hard-code, it is not a secret.
+                  ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+              run: |
+                  for i in $(seq 1 30); do
+                      body=$(curl -s "http://127.0.0.1:44321/rest/v1/books?select=id&limit=1" \
+                          -H "apikey: $ANON_KEY" -H "Authorization: Bearer $ANON_KEY" || true)
+                      if echo "$body" | grep -q '"id"'; then
+                          echo "PostgREST is serving books."
+                          exit 0
+                      fi
+                      echo "Waiting for PostgREST schema reload ($i/30)... last response: $body"
+                      sleep 2
+                  done
+                  echo "PostgREST never served the fixture data" >&2
+                  exit 1
+
+            - name: Install dependencies
+              run: vp install --frozen-lockfile
+
+            - name: Run Supabase read integration tests
+              run: >
+                  RUN_SUPABASE_TESTS=true npx vitest run
+                  src/data-layer/test/SupabaseRead.integration.test.ts
+                  src/data-layer/test/SupabaseRead.more.integration.test.ts

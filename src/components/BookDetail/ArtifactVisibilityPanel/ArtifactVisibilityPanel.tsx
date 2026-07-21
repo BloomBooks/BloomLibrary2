@@ -52,7 +52,7 @@ export const HarvesterArtifactUserControl: React.FunctionComponent<{
             artifactSettings.librarian = decision;
         }
 
-        book.saveArtifactVisibilityToParseServer();
+        book.saveArtifactVisibility();
         if (props.onChange) props.onChange();
     };
 
@@ -142,9 +142,13 @@ export const StandAloneHarvesterArtifactUserControl: React.FunctionComponent<{
     currentUserIsModerator?: boolean;
     onChange?: () => {};
 }> = (props) => {
-    const book = useGetBookDetail(props.bookId);
-    if (book === undefined) {
+    const { book, loading, error } = useGetBookDetail(props.bookId);
+    if (loading) {
         return <div>Loading...</div>;
+    } else if (error) {
+        // Check error before book === null: a failed load leaves book null,
+        // and reporting it as "not found" would be misleading.
+        return <div>Sorry, there was a problem loading that book.</div>;
     } else if (book === null) {
         return <div>Sorry, we could not find that book.</div>;
     } else {

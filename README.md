@@ -23,6 +23,79 @@ To run the unit tests, do `vp run test`
 ### Pointing to Prod, Dev, or Local
 BloomLibrary talks to a [Parse](https://parseplatform.org/) server to get the list of books. This can be the Production Parse server, or the Development Parse server, or a locally hosted Parse server. You can manually change which server it talks to if needed. See `ParseServerConnection.ts`.
 
+## Supabase (local database)
+
+We are migrating the database from Parse Server to Supabase (Postgres). On the
+`SupabaseMigration` branch, the anonymous read path (grids, search, book detail,
+language/topic menus) can run against a **local** Supabase filled with a sample
+of real production books. Auth/writes still require Parse.
+
+### One-time setup (Windows)
+
+1. Install [Podman](https://podman.io/) and create its VM
+   (Docker Desktop also works, but Podman is our documented path):
+
+   ```powershell
+   winget install RedHat.Podman
+   podman machine init
+   podman machine set --rootful   # rootless port forwarding doesn't reach the Windows host
+   podman machine start
+   ```
+
+2. Clone [bloom-core-supabase](https://github.com/BloomBooks/bloom-core-supabase)
+   (e.g. to `D:\bloom-core-supabase`) and in it run `pnpm install`.
+
+3. Start the local Supabase stack and create the schema. If Docker Desktop is
+   also installed, point the CLI at Podman's pipe first:
+
+   ```powershell
+   $env:DOCKER_HOST = "npipe:////./pipe/podman-machine-default"
+   pnpm exec supabase start -x logflare,vector
+   pnpm exec supabase db reset      # applies migrations + seed
+   ```
+
+   Note: the local ports are 44321 (API), 44322 (DB), 44323 (Studio) — not the
+   Supabase defaults; see that repo's README for why (Windows excluded port
+   ranges) and for other gotchas.
+
+4. Import ~100 real books from production Parse (idempotent; re-run to refresh):
+
+   ```powershell
+   pnpm --filter @bloom/sync-tool import-sample
+   ```
+
+### Running blorg against it (each session)
+
+```powershell
+podman machine start                             # after a reboot
+cd D:\bloom-core-supabase
+$env:DOCKER_HOST = "npipe:////./pipe/podman-machine-default"
+pnpm exec supabase start -x logflare,vector
+```
+
+then here:
+
+```
+VITE_DATA_LAYER_IMPL=supabase yarn dev
+```
+
+Parse remains the default when the env var is unset. Collections still come
+from Contentful, stats from api.bloomlibrary.org, thumbnails/artifacts from
+production S3 — only the book database is local.
+
+### Supabase integration tests
+
+With the local stack running and sample data imported:
+
+```
+RUN_SUPABASE_TESTS=true yarn vitest run src/data-layer/test/SupabaseRead.integration.test.ts
+```
+
+These assert against live query behavior (including that filters actually
+constrain results — pure unit tests with a mocked client can't catch
+PostgREST serialization or dropped-filter bugs). Implementation notes and
+known v0 divergences: `src/data-layer/implementations/supabase/README.md`.
+
 ## Localization
 
 See details in `src/translations/README.md`.

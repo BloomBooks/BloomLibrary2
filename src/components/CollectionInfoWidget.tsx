@@ -3,7 +3,7 @@ import React from "react"; // see https://github.com/emotion-js/emotion/issues/1
 
 import FilterTiltShiftIcon from "@material-ui/icons/FilterTiltShift";
 
-import { BooleanOptions, IFilter } from "../IFilter";
+import { BooleanOptions, IFilter } from "FilterTypes";
 import { ICollection } from "../model/ContentInterfaces";
 import { kContentfulSpace } from "../ContentfulContext";
 import { getFilterForCollectionAndChildren } from "../model/Collections";

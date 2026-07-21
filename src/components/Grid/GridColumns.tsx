@@ -10,7 +10,7 @@ import { Checkbox, TableCell, Select, MenuItem } from "@material-ui/core";
 import { Book } from "../../model/Book";
 import QueryString from "qs";
 import titleCase from "title-case";
-import { IFilter, BooleanOptions } from "../../IFilter";
+import { BooleanOptions, IFilter } from "FilterTypes";
 import { CachedTables } from "../../model/CacheProvider";
 import { BlorgLink } from "../BlorgLink";
 import { User } from "../../connection/LoggedInUser";
@@ -527,7 +527,7 @@ const RebrandCheckbox: React.FunctionComponent<{
             checked={checked}
             onChange={(e) => {
                 props.book.rebrand = e.target.checked;
-                props.book.saveAdminDataToParse();
+                props.book.saveAdminData();
                 setChecked(e.target.checked);
             }}
         />

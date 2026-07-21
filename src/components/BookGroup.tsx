@@ -11,7 +11,7 @@ import LazyLoad, {
     forceCheck as forceCheckLazyLoadComponents,
 } from "react-lazyload";
 
-import { IFilter } from "../IFilter";
+import { IFilter } from "FilterTypes";
 import {
     useSearchBooks,
     IBasicBookInfo,

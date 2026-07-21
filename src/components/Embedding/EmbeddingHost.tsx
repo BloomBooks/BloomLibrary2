@@ -1,6 +1,9 @@
 import React, { useEffect } from "react";
 import { useContentful } from "../../connection/UseContentful";
-import { convertContentfulEmbeddingSettingsToIEmbedSettings } from "../../model/Contentful";
+import {
+    convertContentfulEmbeddingSettingsToIEmbedSettings,
+    IContentfulEmbeddingSettings,
+} from "../../model/Contentful";
 import { splitPathname, CollectionWrapper } from "../Routes";
 import { useLocation } from "react-router-dom";
 
@@ -15,7 +18,7 @@ export const EmbeddingHost: React.FunctionComponent<{
     const query = new URLSearchParams(location.search);
     const domain = query.get("bl-domain");
 
-    const response1 = useContentful({
+    const response1 = useContentful<IContentfulDomainEmbeddingSettings>({
         content_type: "domainEmbeddingSettings",
         "fields.domain": domain,
         include: 1,
@@ -24,7 +27,7 @@ export const EmbeddingHost: React.FunctionComponent<{
     const { collectionName, embeddedSettingsUrlKey } = splitPathname(
         props.urlSegments
     );
-    const { result, loading } = useContentful({
+    const { result, loading } = useContentful<IContentfulEmbeddingSettings>({
         content_type: "embeddingSettings",
         "fields.urlKey": embeddedSettingsUrlKey,
         include: 1,
@@ -96,15 +99,20 @@ export const EmbeddingHost: React.FunctionComponent<{
 };
 
 // Returns true if embedding is allowed for the domain.
+interface IContentfulDomainEmbeddingSettings {
+    fields: {
+        collectionUrlKeys?: string;
+    };
+}
+
 function doesDomainAllowEmbedding(
-    collectionName: string, // The name of the collection for which we are checking if embedding is allowed.
-    result: any[] | undefined // the result from a useContentful call to check the domainEmbedSettings
+    collectionName: string,
+    result: IContentfulDomainEmbeddingSettings[] | undefined
 ): boolean {
     if (result && result.length >= 1) {
         // Check collectionUrlKeys and check if we match a pattern
         // If collectionUrlKeys is empty, allow any pattern
-        const collectionUrlKeys = (result[0].fields["collectionUrlKeys"] ||
-            "*") as string;
+        const collectionUrlKeys = result[0].fields.collectionUrlKeys || "*";
 
         const patterns = collectionUrlKeys.split(",");
 

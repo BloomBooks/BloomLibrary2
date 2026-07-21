@@ -45,7 +45,7 @@ import {
     useTheme,
 } from "@material-ui/core";
 import FilterListIcon from "@material-ui/icons/FilterList";
-import { IFilter, BooleanOptions } from "../../IFilter";
+import { BooleanOptions, IFilter } from "FilterTypes";
 import {
     getBookGridColumnsDefinitions,
     IGridColumn,
@@ -194,12 +194,12 @@ const GridControlInternal: React.FunctionComponent<IGridControlProps> = observer
             totalMatchingBooksCount,
         } = useGetBooksForGrid(
             filterMadeFromPageSearchPlusColumnFilters,
-            kBooksPerGridPage,
-            gridPage * kBooksPerGridPage,
             sortings.map((s) => ({
                 columnName: s.columnName,
                 descending: s.direction === "desc",
-            }))
+            })),
+            gridPage * kBooksPerGridPage,
+            kBooksPerGridPage
         );
 
         // note: this is an embedded function as a way to get at bookGridColumnDefinitions. It's important

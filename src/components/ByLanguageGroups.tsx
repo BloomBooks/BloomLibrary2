@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useMemo } from "react";
-import { IFilter } from "../IFilter";
+import { IFilter } from "FilterTypes";
 import { CachedTablesContext } from "../model/CacheProvider";
 import {
     getDisplayNamesForLanguage,

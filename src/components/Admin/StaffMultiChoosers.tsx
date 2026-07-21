@@ -93,7 +93,7 @@ export const TagsChooser: React.FunctionComponent<{
             getSelectedValues={() =>
                 props.book.tags
                     .slice()
-                    // TODO: this is only safe if something (e.g. Book.saveAdminDataToParse) is going to put it back
+                    // TODO: this is only safe if something (e.g. Book.saveAdminData) is going to put it back
                     // Try not filtering, and instead try hiding
                     //.filter((t) => !tagIsShownElsewhereInUI(t))
                     .sort()

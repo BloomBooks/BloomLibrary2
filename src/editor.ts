@@ -59,12 +59,18 @@ export function informEditorOfSuccessfulLogin(
     axios
         .post(`${getEditorApiUrl()}login`, postData)
         .then(() => {
-            LoggedInUser.current!.informEditorResult =
-                IInformEditorResult.Success;
+            // Update the live logged-in user that the waiting screen observes
+            // (LoginForEditor via useGetLoggedInUser), not a throwaway snapshot.
+            if (LoggedInUser.current) {
+                LoggedInUser.current.informEditorResult =
+                    IInformEditorResult.Success;
+            }
         })
         .catch((err) => {
-            LoggedInUser.current!.informEditorResult =
-                IInformEditorResult.Failure;
+            if (LoggedInUser.current) {
+                LoggedInUser.current.informEditorResult =
+                    IInformEditorResult.Failure;
+            }
             notifiedSessionToken = undefined;
 
             console.error("Unable to inform editor of successful login.");

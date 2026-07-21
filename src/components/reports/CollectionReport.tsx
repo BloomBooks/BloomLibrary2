@@ -79,12 +79,12 @@ export const CollectionReport: React.FunctionComponent<ICollectionReportProps> =
         totalMatchingBooksCount,
     } = useGetBooksForGrid(
         collection?.filter ?? {},
-        kBooksPerPage,
-        0,
         sortings.map((s) => ({
             columnName: s.columnName,
             descending: s.direction === "desc",
         })),
+        0,
+        kBooksPerPage,
         reportBookKeys,
         doNotRunQuery
     );
@@ -198,12 +198,12 @@ export const CollectionReport: React.FunctionComponent<ICollectionReportProps> =
                                 exportCsv(`${collection.label}`, exportBookData)
                             }
                         >
-                            <img
-                                alt={l10n.formatMessage({
+                            <DownloadCsvIcon
+                                role="img"
+                                aria-label={l10n.formatMessage({
                                     id: "stats.download.csvIcon",
                                     defaultMessage: "download CSV",
                                 })}
-                                src={DownloadCsvIcon}
                             />
                         </Button>
                     </div>

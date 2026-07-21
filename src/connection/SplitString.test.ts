@@ -1,4 +1,4 @@
-import { splitString } from "./LibraryQueryHooks";
+import { splitString } from "./BookQueryBuilder";
 
 it("simple otherSearchTerms", () => {
     const { otherSearchTerms, specialParts } = splitString("dogs cats", []);

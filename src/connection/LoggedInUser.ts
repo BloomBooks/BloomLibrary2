@@ -22,7 +22,7 @@ export class User {
     public sessionId: string;
     public email: string;
     public username: string;
-    public moderator: boolean; // set by ParseServerConnection.checkIfUserIsModerator() after successful login; not a built-in field.
+    public moderator: boolean; // set by ParseAuthenticationService (via ParseUserRepository.checkUserIsModerator) after successful login; not a built-in field.
     public showTroubleshootingStuff: boolean;
     public informEditorResult: IInformEditorResult;
 }

@@ -4,7 +4,7 @@ import React from "react";
 
 import { Breadcrumbs } from "../Breadcrumbs";
 import { GridControl } from "./GridControl";
-import { IFilter } from "../../IFilter";
+import { IFilter } from "FilterTypes";
 import { useSetBrowserTabTitle } from "../Routes";
 import Button from "@material-ui/core/Button";
 import { useIntl } from "react-intl";
@@ -65,7 +65,14 @@ export const GridPage: React.FunctionComponent<{ filters: string }> = observer(
                         display: flex;
                     `}
                 >
-                    <Button onClick={() => getAllGridDataAndExportCsv()}>
+                    <Button
+                        onClick={() => {
+                            getAllGridDataAndExportCsv().catch((error) => {
+                                console.error("Failed to export CSV:", error);
+                                // TODO: Show user-friendly error notification
+                            });
+                        }}
+                    >
                         <img
                             alt={l10n.formatMessage({
                                 id: "stats.download.csvIcon",

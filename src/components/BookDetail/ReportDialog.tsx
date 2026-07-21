@@ -8,10 +8,12 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import { Book } from "../../model/Book";
 import { FormattedMessage, useIntl } from "react-intl";
-import { LoggedInUser } from "../../connection/LoggedInUser";
+import { useGetLoggedInUser } from "../../connection/LoggedInUser";
 import { ShowLoginDialog } from "../User/LoginDialog";
-import { sendConcernEmail } from "../../connection/ParseServerConnection";
+import { getAuthenticationService } from "../../data-layer";
 import { BookThumbnail } from "./BookThumbnail";
+
+const authenticationService = getAuthenticationService();
 
 // Manages a dialog used to report problems/concerns with Bloom Books.
 export const ReportDialog: React.FunctionComponent<{
@@ -22,7 +24,7 @@ export const ReportDialog: React.FunctionComponent<{
 }> = (props) => {
     const l10n = useIntl();
     const [reportContent, setReportContent] = useState("");
-    const user = LoggedInUser.current;
+    const user = useGetLoggedInUser();
     const loggedIn = !!user;
     const pleaseSignInFrame = l10n.formatMessage({
         id: "toUseThisSignIn",
@@ -138,11 +140,12 @@ export const ReportDialog: React.FunctionComponent<{
                         variant="contained"
                         disabled={!reportContent}
                         onClick={() => {
-                            sendConcernEmail(
-                                user!.email,
-                                reportContent,
-                                props.book.id
-                            )
+                            authenticationService
+                                .sendConcernEmail(
+                                    user!.email,
+                                    reportContent,
+                                    props.book.id
+                                )
                                 .then(() => {
                                     alert(
                                         l10n.formatMessage({

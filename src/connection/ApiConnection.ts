@@ -1,5 +1,5 @@
 import { DataSource, getDataSource } from "./DataSource";
-import { getConnection } from "./ParseServerConnection";
+import { getAuthenticationService } from "../data-layer";
 
 export function getBloomApiUrl(): string {
     // Developer, if you want to test a local backend, temporarily uncomment this.
@@ -31,10 +31,17 @@ function addEnvironmentParam(urlStr: string): string {
         : urlStr;
 }
 
-export function getBloomApiHeaders() {
-    return {
-        "Authentication-Token": getConnection().headers[
-            "X-Parse-Session-Token"
-        ],
-    };
+export function getBloomApiHeaders(): Record<string, string> {
+    // Resolve the auth service lazily here (inside the function, never at module
+    // top level): ApiConnection is imported very widely, and the data-layer
+    // index registers its implementations at import time, so touching the
+    // service during this module's evaluation risks a circular-import /
+    // registration-order hazard. Called at request time, the service is ready.
+    //
+    // The session token now lives in the active data-layer authentication
+    // service (the ParseServer impl stores it in ParseConnection). Under the
+    // Supabase impl getSessionToken() returns undefined, so we omit the header
+    // entirely, matching anonymous behavior.
+    const sessionToken = getAuthenticationService().getSessionToken();
+    return sessionToken ? { "Authentication-Token": sessionToken } : {};
 }

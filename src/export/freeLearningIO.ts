@@ -1,13 +1,13 @@
-import { Book, createBookFromParseServerData } from "../model/Book";
+import { Book } from "../model/Book";
 import { ArtifactType } from "../components/BookDetail/ArtifactHelper";
-import { axios } from "@use-hooks/axios";
 import { getArtifactUrl } from "../components/BookDetail/ArtifactHelper";
 import { getBloomApiUrl } from "../connection/ApiConnection";
+import { getBookRepository } from "../data-layer";
+import { IFilter } from "FilterTypes";
 import FileSaver from "file-saver";
 
 export async function giveFreeLearningCsv() {
-    const rawBookRecords = await getFreeLearningBooks(); // Harvested, In Circulation, tag:FreeLearningIO
-    let books = rawBookRecords.map((b) => createBookFromParseServerData(b));
+    let books = await getFreeLearningBooks(); // Harvested, In Circulation, tag:FreeLearningIO
     // they only want open licensed books
     console.log(
         `Before filtering for license, there are ${books.length} books `
@@ -152,31 +152,31 @@ function fields(book: Book, isoCode: string): Array<string | undefined> {
         return [];
     }
 }
-function getFreeLearningBooks(): Promise<any[]> {
-    return new Promise<any[]>((resolve, reject) =>
-        axios
-            .get("https://server.bloomlibrary.org/parse/classes/books", {
-                headers: {
-                    "X-Parse-Application-Id":
-                        "R6qNTeumQXjJCMutAJYAwPtip1qBulkFyLefkCE5",
-                },
-                params: {
-                    limit: 1000000,
-                    where: {
-                        harvestState: "Done",
-                        inCirculation: { $in: [true, null] },
-                        tags: { $all: ["system:FreeLearningIO"] },
-                    },
-                    include: "langPointers",
-                },
-            })
-            .then((result) => {
-                resolve(result.data.results);
-            })
-            .catch((err) => {
-                reject(err);
-            })
-    );
+async function getFreeLearningBooks(): Promise<Book[]> {
+    // Was a raw Parse query against a hardcoded production server:
+    //   where: { harvestState: "Done", inCirculation: { $in: [true, null] }, tags: { $all: ["system:FreeLearningIO"] } }
+    //   include: "langPointers", limit: 1000000
+    // "harvestState:Done" is expressed via the search-facet syntax both
+    // repository implementations recognize (see splitString()/facets in
+    // src/connection/BookQueryBuilder.ts and the matching switch case in
+    // SupabaseBookQueryBuilder.ts); IFilter has no dedicated harvestState field.
+    // otherTags carries the single required tag (equivalent to $all with one
+    // value). inCirculation is left unset, which both repositories default to
+    // BooleanOptions.Yes (in_circulation === true) -- see note in the C1 report
+    // about why this isn't a perfect match for the old $in:[true, null].
+    const filter: IFilter = {
+        otherTags: "system:FreeLearningIO",
+        search: "harvestState:Done",
+    };
+
+    const result = await getBookRepository().searchBooks({
+        filter,
+        // Number.MAX_SAFE_INTEGER is the established "fetch everything, don't
+        // paginate" idiom elsewhere in this codebase (e.g. BulkChangeFunctions.ts),
+        // replacing the raw call's limit: 1000000.
+        pagination: { limit: Number.MAX_SAFE_INTEGER, skip: 0 },
+    });
+    return result.books;
 }
 
 function csvEncode(incomingValue: string): string {

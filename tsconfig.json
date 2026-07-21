@@ -28,6 +28,10 @@
         // "exports"), and avoids the "node"/node10 deprecation that TS 6.0 turns into a
         // hard error (so no "ignoreDeprecations" crutch is needed; ready for TS 7.0).
         "moduleResolution": "bundler",
+        // No baseUrl (deprecated in TS 6.0): paths entries resolve relative to this file.
+        "paths": {
+            "FilterTypes": ["./src/data-layer/types/FilterTypes"]
+        },
         "isolatedModules": true,
         // TS 6.0 flipped this default from false to true. Keep it off to preserve
         // the prior level of checking rather than start flagging side-effect imports.

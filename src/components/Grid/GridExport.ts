@@ -1,18 +1,12 @@
 import { exportCsv } from "../../export/exportData";
-import { Book, createBookFromParseServerData } from "../../model/Book";
-import { CachedTables } from "../../model/CacheProvider";
-import { IFilter } from "../../IFilter";
+import { Book } from "../../model/Book";
+import { IFilter } from "FilterTypes";
 import { Filter as GridFilter } from "@devexpress/dx-react-grid";
-import {
-    constructParseSortOrder,
-    constructParseBookQuery,
-    joinBooksAndStats,
-} from "../../connection/LibraryQueryHooks";
-import {
-    retrieveBookData,
-    retrieveBookStats,
-} from "../../connection/LibraryQueries";
 import { getBookGridColumnsDefinitions, IGridColumn } from "./GridColumns";
+import { DataLayerFactory } from "../../data-layer/factory/DataLayerFactory";
+import { BookModel } from "../../data-layer/models/BookModel";
+import { BookGridQuery } from "../../data-layer/types/QueryTypes";
+import { Sorting } from "../../data-layer/types/CommonTypes";
 
 let static_books: Book[] = [];
 let static_columnsInOrder: string[] = [];
@@ -46,28 +40,45 @@ export function setGridExportColumnInfo(
     static_sortingArray = sortingArray;
 }
 
-export function getAllGridDataAndExportCsv(): void {
-    const order = constructParseSortOrder(static_sortingArray);
-    const query = constructParseBookQuery(
-        {},
-        static_completeFilter,
-        CachedTables.tags
-    );
-    const bookDataPromise = retrieveBookData(query, order, 0, 10000000);
-    const bookStatsPromise = retrieveBookStats(query, order, 0, 10000000);
-    Promise.all([bookDataPromise, bookStatsPromise]).then(
-        ([bookData, bookStats]) => {
-            const totalMatchingBooksCount = bookData.data["count"] as number;
-            if (!totalMatchingBooksCount) return;
-            static_books = bookData.data["results"].map((r: object) =>
-                createBookFromParseServerData(r)
-            );
-            joinBooksAndStats(static_books, bookStats.data);
+export async function getAllGridDataAndExportCsv(): Promise<void> {
+    try {
+        const factory = DataLayerFactory.getInstance();
+        const bookRepository = factory.createBookRepository();
 
-            exportCsv("Grid", exportData);
-            static_books = []; // allow garbage collection since we don't need this data any longer.
-        }
-    );
+        // Convert sorting array to repository format
+        const sorting: Sorting[] = static_sortingArray.map((sort) => ({
+            columnName: sort.columnName,
+            descending: sort.descending,
+        }));
+
+        // Create the query
+        const query: BookGridQuery = {
+            filter: static_completeFilter,
+            sorting: sorting,
+            pagination: {
+                limit: 10000000, // Large limit to get all matching results
+                skip: 0,
+            },
+        };
+
+        // Get the data using repository
+        const result = await bookRepository.getBooksForGrid(query);
+
+        if (!result.totalMatchingBooksCount) return;
+
+        // Convert BookModels to Books for compatibility with existing export logic
+        static_books = result.onePageOfMatchingBooks.map((bookModel: any) => {
+            const book = new Book();
+            Object.assign(book, bookModel);
+            return book;
+        });
+
+        exportCsv("Grid", exportData);
+        static_books = []; // allow garbage collection since we don't need this data any longer.
+    } catch (error) {
+        console.error("Error exporting grid data:", error);
+        // TODO: Show user-friendly error message
+    }
 }
 
 function exportData(): string[][] {
