@@ -370,6 +370,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
         {
             name: "brandingProjectName",
             title: "Branding",
+            moderatorOnly: true, // requested by BL-16583: sometimes exposes emails
             getCellValue: (b: Book) => b.brandingProjectName,
             sortingEnabled: true,
             addToFilter: (filter: IFilter, value: string) => {
