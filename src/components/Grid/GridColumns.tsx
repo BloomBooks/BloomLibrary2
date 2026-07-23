@@ -53,6 +53,19 @@ export function getColumnsVisibleToUser(
     );
 }
 
+// Facet search values (e.g. the `foo` in `title:foo`) are terminated at the first space by
+// the search parser (see getFacetPartWithOrWithoutQuotes in LibraryQueryHooks.ts). So an
+// unquoted multi-word value like `title:foo bar` matches only `foo` against the field and
+// turns `bar` into a separate full-text keyword ANDed onto the query. That makes multi-word
+// grid filters silently return nothing or the wrong rows. Wrapping the value in quotes makes
+// the parser treat the whole phrase as the facet value (it strips the quotes back off before
+// querying). Single-word values are left untouched so dropdown/single-token facets are
+// unaffected. Embedded quotes are escaped, which the parser understands.
+function quoteFacetValueIfNeeded(value: string): string {
+    if (!/\s/.test(value)) return value;
+    return `"${value.replace(/"/g, '\\"')}"`;
+}
+
 // For some tags, we want to give them their own column. So we don't want to show them in the tags column.
 const kTagsToFilterOutOfTagsList = [
     "topic:",
@@ -127,7 +140,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
                 </BlorgLink>
             ),
             addToFilter: (filter: IFilter, value: string) => {
-                filter.search += ` title:${value}`;
+                filter.search += ` title:${quoteFacetValueIfNeeded(value)}`;
             },
         },
         {
@@ -187,7 +200,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             defaultVisible: false,
             getCellValue: (b: Book) => b.features.join(","),
             addToFilter: (filter: IFilter, value: string) => {
-                filter.search += ` feature:${value}`;
+                filter.search += ` feature:${quoteFacetValueIfNeeded(value)}`;
             },
         },
         {
@@ -196,7 +209,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             defaultVisible: false,
             sortingEnabled: true,
             addToFilter: (filter: IFilter, value: string) => {
-                filter.search += ` country:${value}`;
+                filter.search += ` country:${quoteFacetValueIfNeeded(value)}`;
             },
         },
         {
@@ -228,7 +241,9 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             ),
             // TODO: we need a way to query to for a missing level indicator
             addToFilter: (filter: IFilter, value: string) => {
-                filter.search += ` level:${titleCase(value)}`;
+                filter.search += ` level:${quoteFacetValueIfNeeded(
+                    titleCase(value)
+                )}`;
             },
         },
         {
@@ -264,7 +279,9 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             name: "harvestState",
             sortingEnabled: true,
             addToFilter: (filter: IFilter, value: string) => {
-                filter.search += ` harvestState:${value}`;
+                filter.search += ` harvestState:${quoteFacetValueIfNeeded(
+                    value
+                )}`;
             },
             getCustomFilterComponent: (props: TableFilterRow.CellProps) => (
                 <ChoicesFilterCell
@@ -356,7 +373,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             name: "license",
             sortingEnabled: true,
             addToFilter: (filter: IFilter, value: string) => {
-                filter.search += ` license:${value} `;
+                filter.search += ` license:${quoteFacetValueIfNeeded(value)} `;
             },
         },
         {
@@ -364,7 +381,9 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             sortingEnabled: true,
 
             addToFilter: (filter: IFilter, value: string) => {
-                filter.search += ` copyright:${value} `;
+                filter.search += ` copyright:${quoteFacetValueIfNeeded(
+                    value
+                )} `;
             },
         },
         {
@@ -374,7 +393,9 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             getCellValue: (b: Book) => b.brandingProjectName,
             sortingEnabled: true,
             addToFilter: (filter: IFilter, value: string) => {
-                filter.search += ` brandingProjectName:${value} `;
+                filter.search += ` brandingProjectName:${quoteFacetValueIfNeeded(
+                    value
+                )} `;
             },
         },
         { name: "pageCount", sortingEnabled: true },
@@ -387,21 +408,27 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             title: "Original Credits",
             sortingEnabled: true,
             addToFilter: (filter: IFilter, value: string) => {
-                filter.search += ` originalCredits:${value} `;
+                filter.search += ` originalCredits:${quoteFacetValueIfNeeded(
+                    value
+                )} `;
             },
         },
         {
             name: "publisher",
             sortingEnabled: true,
             addToFilter: (filter: IFilter, value: string) => {
-                filter.search += ` publisher:${value} `;
+                filter.search += ` publisher:${quoteFacetValueIfNeeded(
+                    value
+                )} `;
             },
         },
         {
             name: "originalPublisher",
             sortingEnabled: true,
             addToFilter: (filter: IFilter, value: string) => {
-                filter.search += ` originalPublisher:${value} `;
+                filter.search += ` originalPublisher:${quoteFacetValueIfNeeded(
+                    value
+                )} `;
             },
         },
         {
@@ -419,7 +446,7 @@ export function getBookGridColumnsDefinitions(): IGridColumn[] {
             ),
             getStringValue: (b: Book) => b.uploader?.username ?? "",
             addToFilter: (filter: IFilter, value: string) => {
-                filter.search += ` uploader:${value} `;
+                filter.search += ` uploader:${quoteFacetValueIfNeeded(value)} `;
             },
         },
         {

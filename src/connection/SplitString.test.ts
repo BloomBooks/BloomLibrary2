@@ -242,3 +242,17 @@ it("doesn't crash with facet empry string search", () => {
     expect(specialParts.length).toBe(1);
     expect(specialParts.includes("publisher:"));
 });
+
+it("handles originalCredits with a space", () => {
+    const {
+        otherSearchTerms,
+        specialParts,
+    } = splitString('frogs originalCredits:"Book Dash" topic:Math', [
+        "something irrelevant",
+        "topic:Math",
+    ]);
+    expect(otherSearchTerms).toEqual("frogs");
+    expect(specialParts.length).toBe(2);
+    expect(specialParts).toContain("originalCredits:Book Dash");
+    expect(specialParts).toContain("topic:Math");
+});
