@@ -938,6 +938,7 @@ const facets = [
     "feature:",
     "originalPublisher:", // must come before "publisher:", since "originalPublisher:" includes the other as a substring
     "publisher:",
+    "originalCredits:",
     "language:",
     "brandingProjectName:",
     "branding:",
@@ -1206,8 +1207,12 @@ export function constructParseBookQuery(
                 case "edition":
                 case "brandingProjectName":
                 case "branding":
+                case "originalCredits":
                     if (facetLabel === "branding")
                         facetLabel = "brandingProjectName";
+                    else if (facetLabel === "originalCredits")
+                        // What Bloom calls "original credits" is stored in the "credits" field on parse
+                        facetLabel = "credits";
                     // partial match
                     params.where[facetLabel] = regex(facetValue);
                     break;
