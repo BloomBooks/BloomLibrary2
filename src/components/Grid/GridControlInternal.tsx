@@ -466,7 +466,10 @@ function CombineGridAndSearchBoxFilter(
             inCirculation: BooleanOptions.Yes,
         });
         f.anyOfThese.push({
-            search: `uploader:${user.email}`,
+            // Match this user's own books by uploader objectId (an indexed pointer lookup) rather
+            // than `search: uploader:<email>`, which is an unindexed regex $inQuery over the whole
+            // _User table and times out (500) inside this $or on large data. See BL-16563.
+            uploaderObjectId: user.objectId,
             draft: BooleanOptions.All,
             inCirculation: BooleanOptions.All,
         });

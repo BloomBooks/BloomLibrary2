@@ -1550,6 +1550,18 @@ export function constructParseBookQuery(
         params.where.hasBloomPub = true;
     }
 
+    // Restrict to a single uploader by their _User objectId. This is an indexed pointer-equality
+    // lookup; prefer it over `search: "uploader:<email>"`, which compiles to a regex $inQuery over
+    // the entire _User table and can time out (500) inside an $or. See BL-16563.
+    delete params.where.uploaderObjectId;
+    if (f.uploaderObjectId) {
+        params.where.uploader = {
+            __type: "Pointer",
+            className: "_User",
+            objectId: f.uploaderObjectId,
+        };
+    }
+
     if (f.anyOfThese) {
         delete params.where.anyOfThese;
         params.where.$or = [];
