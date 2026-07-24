@@ -68,4 +68,9 @@ export interface IFilter {
     leveledReaderLevel?: number;
 
     bookInstanceId?: string;
+
+    // Restrict to books whose uploader is exactly this user (a Parse Pointer to _User,
+    // matched by objectId). This is an indexed pointer lookup, unlike `search: "uploader:<email>"`
+    // which compiles to an unindexed regex $inQuery over the whole _User table. See BL-16563.
+    uploaderObjectId?: string;
 }

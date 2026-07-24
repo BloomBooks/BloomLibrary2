@@ -202,15 +202,16 @@ export function useGetCollection(
         // I don't think we'll ever first see this except as a root. If we do, may need to figure
         // a way to move it to cacheChildCollections
         if (explicitCollection.urlKey === "my-books") {
-            if (user) {
-                const email = user.email;
-                if (email) {
-                    const filterOnUserAsUploader: IFilter = {};
-                    filterOnUserAsUploader.search = `uploader:${email}`;
-                    filterOnUserAsUploader.draft = BooleanOptions.All;
-                    filterOnUserAsUploader.inCirculation = BooleanOptions.All;
-                    explicitCollection.filter = filterOnUserAsUploader;
-                }
+            if (user?.objectId) {
+                // Match the user's own books by uploader objectId (an indexed pointer lookup)
+                // rather than `search: "uploader:<email>"`, which is an unindexed regex $inQuery
+                // over the whole _User table and can time out (500). Same fix as BL-16563.
+                const filterOnUserAsUploader: IFilter = {
+                    uploaderObjectId: user.objectId,
+                    draft: BooleanOptions.All,
+                    inCirculation: BooleanOptions.All,
+                };
+                explicitCollection.filter = filterOnUserAsUploader;
             }
         }
         collection = explicitCollection;
