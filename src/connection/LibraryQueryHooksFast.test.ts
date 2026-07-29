@@ -1,4 +1,4 @@
-import { IFilter } from "../IFilter";
+import { IFilter, BooleanOptions } from "../IFilter";
 import {
     constructParseBookQuery,
     kNameOfNoTopicCollection,
@@ -36,6 +36,49 @@ it("builds proper parse query for anyOfThese field", () => {
     expect(resultString).toContain(
         '"$or":[{"tags":"bookshelf:first"},{"tags":"bookshelf:second"},{"tags":"bookshelf:third"}]'
     );
+});
+
+it("builds uploader Pointer query for uploaderObjectId (BL-16563)", () => {
+    const inputFilter: IFilter = {
+        uploaderObjectId: "abc123",
+    };
+    const result = constructParseBookQuery(
+        { count: 1, limit: 0 },
+        inputFilter,
+        []
+    );
+    const resultString = JSON.stringify(result);
+    // A direct, indexed pointer equality -- not a regex $inQuery over the _User table.
+    expect(resultString).toContain(
+        '"uploader":{"__type":"Pointer","className":"_User","objectId":"abc123"}'
+    );
+    expect(resultString).not.toContain("$inQuery");
+    // The raw field must not leak into the where clause.
+    expect(resultString).not.toContain("uploaderObjectId");
+});
+
+it("uses uploader Pointer inside an anyOfThese ($or) branch (BL-16563)", () => {
+    // Mirrors the non-moderator grid filter: public books OR this user's own books.
+    const inputFilter: IFilter = {
+        anyOfThese: [
+            { draft: BooleanOptions.No, inCirculation: BooleanOptions.Yes },
+            {
+                uploaderObjectId: "me789",
+                draft: BooleanOptions.All,
+                inCirculation: BooleanOptions.All,
+            },
+        ],
+    };
+    const result = constructParseBookQuery(
+        { count: 1, limit: 0 },
+        inputFilter,
+        []
+    );
+    const resultString = JSON.stringify(result);
+    expect(resultString).toContain(
+        '"uploader":{"__type":"Pointer","className":"_User","objectId":"me789"}'
+    );
+    expect(resultString).not.toContain("$inQuery");
 });
 
 it("builds proper parse query for recursive anyOfThese field", () => {
