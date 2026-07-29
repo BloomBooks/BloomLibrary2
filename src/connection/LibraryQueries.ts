@@ -15,9 +15,17 @@ export async function retrieveBookData(
     limitCount: number,
     keysToGet?: string
 ) {
-    return axios.get(`${getConnection().url}classes/books`, {
-        headers: getConnection().headers,
-        params: {
+    // Use POST with _method:"GET" so the (potentially long) query travels in the request body
+    // rather than the URL. A real GET puts the whole where-clause + keys + include in the query
+    // string; the non-moderator grid filter (an $or with extra conditions) made that URL long
+    // enough to be rejected at the network edge before reaching parse-server -- the browser just
+    // sees "Failed to fetch", so the grid showed "No data" even though the query was valid and the
+    // (POST-based) count query returned a count. The count query already uses this trick; see the
+    // note in makeBookQueryAxiosParams (LibraryQueryHooks). BL-16563.
+    return axios.post(
+        `${getConnection().url}classes/books`,
+        {
+            _method: "GET",
             ...query, // this is first so that the order that was part of the original query (and anything else) can be overridden by the user using the grid
             count: 1, // causes it to return the count
             order: sortOrder,
@@ -27,7 +35,10 @@ export async function retrieveBookData(
             // fluff up fields that reference other tables
             include: gridBookIncludeFields,
         },
-    });
+        {
+            headers: getConnection().headers,
+        }
+    );
 }
 
 // Get statistics for a number of books for the grid page
