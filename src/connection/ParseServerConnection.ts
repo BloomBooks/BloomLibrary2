@@ -86,6 +86,14 @@ export async function connectParseServer(
 ) {
     return new Promise<any>((resolve, reject) => {
         const connection = getConnection();
+        // If someone is already logged in (e.g. logging in again without reloading the page),
+        // we must not send their session token. Parse-server would then treat the POST to users
+        // as the current user re-linking their authData and return no new sessionToken,
+        // so the login would fail (BL-17000). We use our own copy of the headers rather than
+        // clearing the shared ones, so that if another login finishes while this one is in
+        // progress, its new session token can't leak into this one's requests.
+        const loginHeaders = { ...connection.headers };
+        delete loginHeaders["X-Parse-Session-Token"];
         // Run a cloud code function (bloomLink) which,
         // if this is a new Firebase user with the email of a known parse server user, will link them.
         // It will do nothing if
@@ -102,7 +110,7 @@ export async function connectParseServer(
                 },
 
                 {
-                    headers: connection.headers,
+                    headers: loginHeaders,
                 }
             )
             .then(() => {
@@ -120,32 +128,36 @@ export async function connectParseServer(
                         },
 
                         {
-                            headers: connection.headers,
+                            headers: loginHeaders,
                         }
                     )
                     .then((usersResult) => {
+                        // When this POST creates the user (201), parse-server's reply leaves out the
+                        // fields we sent, including email and username, so fall back to the verified
+                        // Firebase email, which is what we sent for both (BL-17000).
+                        const userData = {
+                            ...usersResult.data,
+                            email: usersResult.data.email || emailAddress,
+                            username: usersResult.data.username || emailAddress,
+                        };
                         // We require BOTH a session token and an email.
-                        // We don't actually know why we would ever get here without either.
-                        // But we were sending posts to Bloom with a missing email value in the payload,
+                        // We were sending posts to Bloom with a missing email value in the payload,
                         // which caused Bloom's `/bloom/api/external/login` handler to throw a runtime exception. See BL-14503.
                         // I don't see any reason to pretend a non-editor login was successful if email
                         // is missing, either. And it simplifies the code to just check up front.
-                        if (
-                            usersResult.data.sessionToken &&
-                            usersResult.data.email
-                        ) {
-                            LoggedInUser.current = new User(usersResult.data);
+                        if (userData.sessionToken && userData.email) {
+                            LoggedInUser.current = new User(userData);
                             connection.headers["X-Parse-Session-Token"] =
-                                usersResult.data.sessionToken;
+                                userData.sessionToken;
 
                             if (isForEditor()) {
                                 informEditorOfSuccessfulLogin(
-                                    usersResult.data,
+                                    userData,
                                     photoUrl
                                 );
                             }
 
-                            resolve(usersResult.data);
+                            resolve(userData);
                             checkIfUserIsModerator();
                         } else {
                             failedToLoginInToParseServer();
