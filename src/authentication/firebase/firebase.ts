@@ -3,7 +3,11 @@
 // Note, currently using the "compat" version of firebase v9, which doesn't support treeshaking. No reason, just a TODO to upgrade to full v9 API.
 // See https://firebase.google.com/docs/web/modular-upgrade
 import firebase from "firebase/compat/app";
-import { connectParseServer } from "../../connection/ParseServerConnection";
+import {
+    connectParseServer,
+    hasActiveParseSession,
+} from "../../connection/ParseServerConnection";
+import { LoggedInUser } from "../../connection/LoggedInUser";
 import { getCookie } from "../../Utilities";
 import { isLogoutMode } from "../authentication";
 
@@ -98,6 +102,15 @@ async function getFirebaseAuthInternal() {
                 //     console.log("ConnectParseServer resolved with " + result)
                 // )
                 .catch((err) => {
+                    if (
+                        LoggedInUser.current?.email === user.email &&
+                        hasActiveParseSession(user.email!)
+                    ) {
+                        console.log(
+                            "*** Ignoring Parse login error because an existing Parse session is still active"
+                        );
+                        return;
+                    }
                     console.log(
                         "*** Signing out of firebase because of an error connecting to ParseServer"
                     );
