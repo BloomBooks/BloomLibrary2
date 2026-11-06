@@ -8,6 +8,9 @@ import { createBrowserHistory } from "history";
 import { isEmbedded } from "./components/Embedding/EmbeddingHost";
 import { initializeFirebase } from "./authentication/firebase/firebase";
 import { isAppHosted } from "./components/appHosted/AppHostedUtils";
+import { axios as useHooksAxios } from "@use-hooks/axios";
+import axios from "axios";
+import { reportServerErrorsToSentry } from "./connection/ReportServerErrors";
 
 // Google Translate can often break react sites. See https://issues.chromium.org/issues/41407169.
 // We seem to be hitting this mostly (exclusively?) because of our use of react-truncate-markup.
@@ -61,6 +64,12 @@ try {
 } catch (error) {
     console.error(error);
 }
+
+// Report requests that the server fails (5xx), which the UI otherwise often hides (BL-17086).
+// useAxios() and most of our code use the axios copy inside @use-hooks/axios; the rest use the
+// axios package directly.
+reportServerErrorsToSentry(useHooksAxios);
+reportServerErrorsToSentry(axios);
 
 // supports authentication, including automatic login if a cookie supports it.
 // We don't ever allow things to behave as logged-in in embedded Bloom Library instances.
