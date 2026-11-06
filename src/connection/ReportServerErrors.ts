@@ -55,10 +55,10 @@ export function reportIfServerError(error: AxiosError): boolean {
     Sentry.withScope((scope) => {
         scope.setTag("serverErrorStatus", String(status));
         scope.setTag("serverErrorPath", path);
-        // The query itself is what we need to reproduce it. We deliberately leave out
-        // the headers, which carry the user's session token.
+        // The query string is what we need to reproduce a failing query. We deliberately
+        // send neither the headers, which carry the user's session token, nor the request
+        // body, which for the login calls carries their Firebase token and email.
         scope.setExtra("params", truncate(safeStringify(error.config?.params)));
-        scope.setExtra("data", truncate(safeStringify(error.config?.data)));
         scope.setExtra(
             "response",
             truncate(safeStringify(error.response?.data))

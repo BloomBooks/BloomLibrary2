@@ -35,6 +35,8 @@ function makeError(status: number | undefined, data?: unknown): AxiosError {
             method: "get",
             params: { where: '{"$or":[]}', count: 1 },
             headers: { "X-Parse-Session-Token": "secret" },
+            data:
+                '{"authData":{"bloom":{"token":"firebase-jwt","id":"a@b.org"}}}',
         },
         response:
             status === undefined
@@ -69,9 +71,11 @@ describe("reportIfServerError", () => {
         expect(captured[0].extras.params).toContain('{\\"$or\\":[]}');
     });
 
-    it("never sends the session token", () => {
+    it("never sends the session token or the request body", () => {
         reportIfServerError(makeError(500, { error: "boom" }));
         expect(JSON.stringify(captured)).not.toContain("secret");
+        expect(JSON.stringify(captured)).not.toContain("firebase-jwt");
+        expect(JSON.stringify(captured)).not.toContain("a@b.org");
     });
 
     it("reports the same failure only once per page load", () => {
