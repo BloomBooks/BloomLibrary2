@@ -1569,11 +1569,17 @@ export function constructParseBookQuery(
 
     if (f.anyOfThese) {
         delete params.where.anyOfThese;
-        params.where.$or = [];
-        for (const child of f.anyOfThese) {
-            const pbq = constructParseBookQuery({}, child, []) as any;
-            simplifyInnerQuery(pbq.where, child);
-            params.where.$or.push(pbq.where);
+        if (f.anyOfThese.length === 0) {
+            // "Any of none" matches no books. MongoDB rejects an empty $or with a 500
+            // (BL-17086), so say "no books" with a condition that is valid but never true.
+            params.where.objectId = { $in: [] };
+        } else {
+            params.where.$or = [];
+            for (const child of f.anyOfThese) {
+                const pbq = constructParseBookQuery({}, child, []) as any;
+                simplifyInnerQuery(pbq.where, child);
+                params.where.$or.push(pbq.where);
+            }
         }
     }
     // console.log(
