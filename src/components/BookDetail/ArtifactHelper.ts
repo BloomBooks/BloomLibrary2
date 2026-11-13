@@ -4,6 +4,13 @@ import {
     ArtifactVisibilitySettingsGroup,
 } from "../../model/ArtifactVisibilitySettings";
 import { IntlShape } from "react-intl";
+import { getBloomApiUrl } from "../../connection/ApiConnection";
+import {
+    FsBucketKind,
+    getFsBucketName,
+    getFsUrl,
+    kServeDownloadsThroughFs,
+} from "../../model/FsUrl";
 
 // The order here matters. See ArtifactVisibilityPanel.getExistingArtifactTypeKeys().
 export enum ArtifactType {
@@ -23,6 +30,11 @@ export function getArtifactUrl(
     // we don't want a new entry for that in ArtifactVisibilitySettings.
     forEdit?: boolean
 ): string {
+    if (kServeDownloadsThroughFs) {
+        const fsUrl = getFsDownloadUrl(book, artifactType);
+        if (fsUrl) return fsUrl;
+        // otherwise use the S3 URL, as below
+    }
     let url;
     switch (artifactType) {
         case ArtifactType.readOnline:
@@ -54,6 +66,87 @@ export function getArtifactUrl(
     url = url.replace(/\+/g, "%20");
 
     return url;
+}
+
+// The URL of a downloadable file via api.bloomlibrary.org/v1/fs (see FsUrl.ts), or undefined
+// if this artifact type isn't served that way or we can't work out a versioned URL (the caller
+// then uses the S3 URL).
+export function getFsDownloadUrl(
+    book: Book,
+    artifactType: ArtifactType
+): string | undefined {
+    if (artifactType === ArtifactType.pdf) {
+        // The PDF Bloom uploaded, in the book's folder in the upload bucket. We need the raw
+        // book name, because the harvester's cleanup of the name doesn't apply to it.
+        const rawName = book.baseUrl && getRawBookNameFromUrl(book.baseUrl);
+        return rawName
+            ? getFsUploadedFileUrl(book, [`${rawName}.pdf`])
+            : undefined;
+    }
+    const harvestedFileType =
+        artifactType === ArtifactType.bloomReader
+            ? "bloompub"
+            : artifactType === ArtifactType.epub ||
+              artifactType === ArtifactType.bloomSource
+            ? artifactType
+            : undefined;
+    if (!harvestedFileType || !book.baseUrl) return undefined;
+    const segments = getHarvestedFilePathSegments(book, harvestedFileType);
+    return segments ? getFsHarvestedFileUrl(book, segments) : undefined;
+}
+
+// The versioned fs URL of a file in the book's folder in the upload bucket, or undefined if
+// we can't make one. Only an upload changes these files, so the version is the last upload.
+export function getFsUploadedFileUrl(
+    book: Book,
+    s3EncodedPathSegments: string[]
+): string | undefined {
+    return getVersionedFsUrl(
+        book,
+        "upload",
+        book.lastUploadedDate,
+        s3EncodedPathSegments
+    );
+}
+
+// The versioned fs URL of a file the harvester made for this book, or undefined if we can't
+// make one, including whenever the harvest isn't "Done".
+// A harvest can happen without an upload, so these files are versioned by the harvest.
+// harvestStartedAt is set when a harvest starts, while harvestState is not yet "Done", so once
+// it is "Done", the files under that version are the finished ones.
+export function getFsHarvestedFileUrl(
+    book: Book,
+    s3EncodedPathSegments: string[]
+): string | undefined {
+    if (!Book.isHarvested(book) || !book.harvestStartedAt) return undefined;
+    return getVersionedFsUrl(
+        book,
+        "harvest",
+        new Date(book.harvestStartedAt.iso),
+        s3EncodedPathSegments
+    );
+}
+
+function getVersionedFsUrl(
+    book: Book,
+    bucketKind: FsBucketKind,
+    version: Date | undefined,
+    s3EncodedPathSegments: string[]
+): string | undefined {
+    if (!book.baseUrl || !book.id) return undefined;
+    try {
+        return getFsUrl(
+            getBloomApiUrl(),
+            getFsBucketName(book.baseUrl, bucketKind),
+            book.id,
+            version,
+            s3EncodedPathSegments
+        );
+    } catch (e) {
+        // e.g. malformed %-escapes in the baseUrl; the S3 URL may still work
+        console.error(e);
+        return undefined;
+    }
 }
 
 function getBookOrderUrl(book: Book, forEdit: boolean) {
@@ -205,21 +298,29 @@ function getDownloadUrl(book: Book, fileType: string): string | undefined {
     if (!harvesterBaseUrl) {
         return undefined;
     }
+    const segments = getHarvestedFilePathSegments(book, fileType);
+    return segments ? harvesterBaseUrl + segments.join("/") : undefined;
+}
 
+// The path, within the book's folder in the harvest bucket, of the file of this type that the
+// harvester produced, as S3-encoded segments (e.g. ["epub", "Fox+and+Frog.epub"]).
+function getHarvestedFilePathSegments(
+    book: Book,
+    fileType: string
+): string[] | undefined {
     const bookName = getBookNamePartOfUrl(book.baseUrl);
-
-    if (bookName) {
-        if (fileType === "bloompub" || fileType === "bloomSource") {
-            let fileExt = `.${fileType}`;
-            if (fileType === "bloompub") {
-                fileExt =
-                    book.bloomPUBVersion && book.bloomPUBVersion >= 1
-                        ? ".bloompub"
-                        : ".bloomd";
-            }
-            return harvesterBaseUrl + bookName + fileExt;
-        }
-        return harvesterBaseUrl + fileType + "/" + bookName + "." + fileType;
+    if (!bookName) {
+        return undefined;
     }
-    return undefined;
+    if (fileType === "bloompub" || fileType === "bloomSource") {
+        let fileExt = `.${fileType}`;
+        if (fileType === "bloompub") {
+            fileExt =
+                book.bloomPUBVersion && book.bloomPUBVersion >= 1
+                    ? ".bloompub"
+                    : ".bloomd";
+        }
+        return [bookName + fileExt];
+    }
+    return [fileType, bookName + "." + fileType];
 }
