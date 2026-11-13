@@ -567,10 +567,18 @@ function Capitalize(s: string): string {
     return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 }
 
-export function getFilterForCollectionAndChildren(collection: ICollection) {
+// Returns undefined when neither the collection nor any of its descendants has a filter.
+// Most callers treat undefined as "don't query for books" (BL-9742, BL-10126); a caller that
+// combines the result with other conditions must make undefined match no books instead.
+// (Returning an empty anyOfThese used to send Parse an empty $or, which MongoDB rejects
+// with a 500. See BL-17086.)
+export function getFilterForCollectionAndChildren(
+    collection: ICollection
+): IFilter | undefined {
     if (!collection) return undefined;
     const filters: IFilter[] = [];
     gatherCollectionAndChildrenFilters(collection, filters);
+    if (filters.length === 0) return undefined;
     const filter: IFilter = {
         anyOfThese: filters,
     };
