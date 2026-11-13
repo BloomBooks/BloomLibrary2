@@ -104,13 +104,9 @@ describe("getArtifactUrl with downloads through fs", () => {
 
     it("uses S3 when the name has malformed escapes", () => {
         const book = makeBook("BloomLibraryBooks", "100%+sure");
-        const consoleError = vi
-            .spyOn(console, "error")
-            .mockImplementation(() => {});
         expect(getArtifactUrl(book, ArtifactType.pdf)).toBe(
             "https://s3.amazonaws.com/BloomLibraryBooks/gxa5xS0Jk4/1794605671678/100%%20sure/100%%20sure.pdf"
         );
-        consoleError.mockRestore();
     });
 
     it("leaves reading online and shellbooks alone", () => {
