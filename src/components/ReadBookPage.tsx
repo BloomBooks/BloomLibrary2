@@ -162,7 +162,8 @@ async function ensureBookNavigationInterceptorRegistered() {
 
 // The URL of the harvested html of the book, which Bloom Player finds the rest of the book's
 // files relative to. Through api.bloomlibrary.org/v1/fs if we can (see FsUrl.ts), so they all
-// come through Cloudflare at a versioned URL; otherwise straight from S3.
+// come through Cloudflare (at the same version, once fs URLs carry one); otherwise straight
+// from S3.
 function getUrlOfBookToRead(book: Book): string | undefined {
     return (
         (kReadOnlineThroughFs &&

@@ -9,6 +9,7 @@ import {
     FsBucketKind,
     getFsBucketName,
     getFsUrl,
+    kFsUrlsIncludeVersion,
     kServeDownloadsThroughFs,
 } from "../../model/FsUrl";
 
@@ -102,25 +103,31 @@ function getS3UrlOfFile(book: Book, file: IBookFile): string | undefined {
         : undefined;
 }
 
-// The versioned URL of the file via api.bloomlibrary.org/v1/fs (see FsUrl.ts), or undefined if
-// we can't make one (the caller then uses the S3 URL).
-// Only an upload changes the files in the upload bucket, so they are versioned by the last
-// upload. A harvest can happen without an upload, so harvested files are versioned by the
-// harvest. harvestStartedAt is set when a harvest starts, while harvestState is not yet "Done",
-// so once it is "Done", the files under that version are the finished ones.
+// The URL of the file via api.bloomlibrary.org/v1/fs (see FsUrl.ts), or undefined if we can't
+// make one (the caller then uses the S3 URL).
+// Harvested files exist only once the harvest is "Done", so until then there is no URL.
+// When fs URLs carry a version (kFsUrlsIncludeVersion): only an upload changes the files in the
+// upload bucket, so they are versioned by the last upload. A harvest can happen without an
+// upload, so harvested files are versioned by the harvest. harvestStartedAt is set when a harvest
+// starts, while harvestState is not yet "Done", so once it is "Done", the files under that
+// version are the finished ones.
 function getFsUrlOfFile(book: Book, file: IBookFile): string | undefined {
+    if (!book.baseUrl) return undefined;
     let version: Date | undefined;
     if (file.bucket === "upload") {
         version = book.lastUploadedDate;
-    } else if (Book.isHarvested(book) && book.harvestStartedAt) {
-        version = new Date(book.harvestStartedAt.iso);
+    } else {
+        if (!Book.isHarvested(book)) return undefined;
+        version = book.harvestStartedAt
+            ? new Date(book.harvestStartedAt.iso)
+            : undefined;
     }
-    if (!book.baseUrl) return undefined;
     try {
         return getFsUrl(
             getBloomApiUrl(),
             getFsBucketName(book.baseUrl, file.bucket),
             book.id,
+            kFsUrlsIncludeVersion,
             version,
             file.s3EncodedPathSegments
         );
@@ -130,8 +137,8 @@ function getFsUrlOfFile(book: Book, file: IBookFile): string | undefined {
     }
 }
 
-// The versioned fs URL of a file the harvester made for this book (see getFsUrlOfFile), or
-// undefined if we can't make one, including whenever the harvest isn't "Done".
+// The fs URL of a file the harvester made for this book (see getFsUrlOfFile), or undefined if
+// we can't make one, including whenever the harvest isn't "Done".
 export function getFsHarvestedFileUrl(
     book: Book,
     s3EncodedPathSegments: string[]

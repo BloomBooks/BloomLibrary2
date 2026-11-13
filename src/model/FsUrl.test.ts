@@ -63,6 +63,7 @@ describe("getFsUrl", () => {
                 api,
                 "harvest",
                 "XmdUIm6vEa",
+                true,
                 new Date("2026-10-01T12:00:00.000Z"),
                 ["epub", "Fox+and+Frog.epub"]
             )
@@ -71,27 +72,41 @@ describe("getFsUrl", () => {
         );
     });
 
+    it("leaves the version out when told to, whether or not there is one", () => {
+        expect(
+            getFsUrl(api, "harvest", "XmdUIm6vEa", false, new Date(1000), [
+                "epub",
+                "Fox+and+Frog.epub",
+            ])
+        ).toBe(`${api}/fs/harvest/XmdUIm6vEa/epub/Fox%20and%20Frog.epub`);
+        expect(
+            getFsUrl(api, "upload", "XmdUIm6vEa", false, undefined, ["A.pdf"])
+        ).toBe(`${api}/fs/upload/XmdUIm6vEa/A.pdf`);
+    });
+
     it("encodes every segment of the path", () => {
         expect(
-            getFsUrl(api, "dev-upload", "abc", new Date(1000), [
+            getFsUrl(api, "dev-upload", "abc", true, new Date(1000), [
                 "audio",
                 "one+%2b+one.mp3",
             ])
         ).toBe(`${api}/fs/dev-upload/abc@1000/audio/one%20%252B%20one.mp3`);
     });
 
-    it("gives no URL when there is no usable version, so the caller uses S3", () => {
+    it("gives no versioned URL without a usable version, so the caller uses S3", () => {
         expect(
-            getFsUrl(api, "upload", "XmdUIm6vEa", undefined, ["A.pdf"])
+            getFsUrl(api, "upload", "XmdUIm6vEa", true, undefined, ["A.pdf"])
         ).toBeUndefined();
         expect(
-            getFsUrl(api, "upload", "XmdUIm6vEa", new Date("bad"), ["A.pdf"])
+            getFsUrl(api, "upload", "XmdUIm6vEa", true, new Date("bad"), [
+                "A.pdf",
+            ])
         ).toBeUndefined();
     });
 
     it("gives no URL without a book id", () => {
         expect(
-            getFsUrl(api, "upload", "", new Date(1000), ["A.pdf"])
+            getFsUrl(api, "upload", "", false, new Date(1000), ["A.pdf"])
         ).toBeUndefined();
     });
 });
