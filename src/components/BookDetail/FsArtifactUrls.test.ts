@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Book } from "../../model/Book";
 import {
     ArtifactType,
@@ -6,10 +6,15 @@ import {
     getFsHarvestedFileUrl,
 } from "./ArtifactHelper";
 
-// Turn the downloads flag on for these tests, to check what getArtifactUrl does when it is on.
+// Turn the downloads flag on for these tests, to check what getArtifactUrl does when it is on,
+// and let each test say whether fs URLs carry a version.
+const flags = vi.hoisted(() => ({ includeVersion: false }));
 vi.mock("../../model/FsUrl", async (importOriginal) => ({
     ...(await importOriginal<typeof import("../../model/FsUrl")>()),
     kServeDownloadsThroughFs: true,
+    get kFsUrlsIncludeVersion() {
+        return flags.includeVersion;
+    },
 }));
 
 // Under jsdom we are on localhost, so getBloomApiUrl() gives the vite proxy's path.
@@ -35,26 +40,27 @@ function makeBook(
     return book;
 }
 
-describe("getArtifactUrl with downloads through fs", () => {
-    const book = makeBook("BloomLibraryBooks", "Fox+and+%2b+Frog+n%c9%a8g");
-    const harvestFolder = `${api}/fs/harvest/gxa5xS0Jk4@${harvestedMs}`;
-    const name = "Fox%20and%20%252B%20Frog%20n%C9%A8g";
+const book = makeBook("BloomLibraryBooks", "Fox+and+%2b+Frog+n%c9%a8g");
+const name = "Fox%20and%20%252B%20Frog%20n%C9%A8g";
 
-    it("versions the uploaded PDF by the last upload", () => {
-        expect(getArtifactUrl(book, ArtifactType.pdf)).toBe(
-            `${api}/fs/upload/gxa5xS0Jk4@${uploadedMs}/${name}.pdf`
-        );
+describe("getArtifactUrl with downloads through fs, without versions (today)", () => {
+    beforeEach(() => {
+        flags.includeVersion = false;
     });
 
-    it("versions harvested files by the harvest", () => {
+    it("gives unversioned fs URLs for every download", () => {
+        expect(getArtifactUrl(book, ArtifactType.pdf)).toBe(
+            `${api}/fs/upload/gxa5xS0Jk4/${name}.pdf`
+        );
+        const folder = `${api}/fs/harvest/gxa5xS0Jk4`;
         expect(getArtifactUrl(book, ArtifactType.epub)).toBe(
-            `${harvestFolder}/epub/${name}.epub`
+            `${folder}/epub/${name}.epub`
         );
         expect(getArtifactUrl(book, ArtifactType.bloomReader)).toBe(
-            `${harvestFolder}/${name}.bloompub`
+            `${folder}/${name}.bloompub`
         );
         expect(getArtifactUrl(book, ArtifactType.bloomSource)).toBe(
-            `${harvestFolder}/${name}.bloomSource`
+            `${folder}/${name}.bloomSource`
         );
     });
 
@@ -63,17 +69,30 @@ describe("getArtifactUrl with downloads through fs", () => {
             bloomPUBVersion: undefined,
         });
         expect(getArtifactUrl(old, ArtifactType.bloomReader)).toBe(
-            `${harvestFolder}/Old.bloomd`
+            `${api}/fs/harvest/gxa5xS0Jk4/Old.bloomd`
         );
     });
 
     it("uses the dev buckets for sandbox books", () => {
         const sandbox = makeBook("BloomLibraryBooks-Sandbox", "A+Book");
         expect(getArtifactUrl(sandbox, ArtifactType.pdf)).toBe(
-            `${api}/fs/dev-upload/gxa5xS0Jk4@${uploadedMs}/A%20Book.pdf`
+            `${api}/fs/dev-upload/gxa5xS0Jk4/A%20Book.pdf`
         );
         expect(getArtifactUrl(sandbox, ArtifactType.epub)).toBe(
-            `${api}/fs/dev-harvest/gxa5xS0Jk4@${harvestedMs}/epub/A%20Book.epub`
+            `${api}/fs/dev-harvest/gxa5xS0Jk4/epub/A%20Book.epub`
+        );
+    });
+
+    it("doesn't need to know a version", () => {
+        const book = makeBook("BloomLibraryBooks", "A+Book", {
+            harvestStartedAt: undefined,
+            lastUploadedDate: undefined,
+        });
+        expect(getArtifactUrl(book, ArtifactType.pdf)).toBe(
+            `${api}/fs/upload/gxa5xS0Jk4/A%20Book.pdf`
+        );
+        expect(getArtifactUrl(book, ArtifactType.epub)).toBe(
+            `${api}/fs/harvest/gxa5xS0Jk4/epub/A%20Book.epub`
         );
     });
 
@@ -84,21 +103,7 @@ describe("getArtifactUrl with downloads through fs", () => {
         expect(getArtifactUrl(book, ArtifactType.epub)).toBe("");
         // The PDF doesn't depend on the harvest.
         expect(getArtifactUrl(book, ArtifactType.pdf)).toBe(
-            `${api}/fs/upload/gxa5xS0Jk4@${uploadedMs}/A%20Book.pdf`
-        );
-    });
-
-    it("uses S3 when there is no version", () => {
-        const book = makeBook("BloomLibraryBooks", "A+Book", {
-            harvestStartedAt: undefined,
-            lastUploadedDate: undefined,
-        });
-        // On localhost, Book.getHarvesterBaseUrl goes through the vite /s3 proxy.
-        expect(getArtifactUrl(book, ArtifactType.epub)).toBe(
-            "/s3/bloomharvest/gxa5xS0Jk4%2f1794605671678/epub/A%20Book.epub"
-        );
-        expect(getArtifactUrl(book, ArtifactType.pdf)).toBe(
-            "https://s3.amazonaws.com/BloomLibraryBooks/gxa5xS0Jk4/1794605671678/A%20Book/A%20Book.pdf"
+            `${api}/fs/upload/gxa5xS0Jk4/A%20Book.pdf`
         );
     });
 
@@ -119,24 +124,64 @@ describe("getArtifactUrl with downloads through fs", () => {
     });
 });
 
-describe("getFsHarvestedFileUrl", () => {
-    it("makes the base Bloom Player reads a book from", () => {
-        const book = makeBook("BloomLibraryBooks", "A+Book");
-        expect(getFsHarvestedFileUrl(book, ["bloomdigital", "index.htm"])).toBe(
-            `${api}/fs/harvest/gxa5xS0Jk4@${harvestedMs}/bloomdigital/index.htm`
+describe("getArtifactUrl with downloads through fs, with versions", () => {
+    beforeEach(() => {
+        flags.includeVersion = true;
+    });
+
+    it("versions the uploaded PDF by the last upload", () => {
+        expect(getArtifactUrl(book, ArtifactType.pdf)).toBe(
+            `${api}/fs/upload/gxa5xS0Jk4@${uploadedMs}/${name}.pdf`
         );
     });
 
-    it("gives nothing unless the harvest is Done", () => {
-        for (const harvestState of [
-            "New",
-            "Requested",
-            "InProgress",
-            "Failed",
-        ]) {
-            const book = makeBook("BloomLibraryBooks", "A+Book", {
-                harvestState,
-            });
+    it("versions harvested files by the harvest", () => {
+        const folder = `${api}/fs/harvest/gxa5xS0Jk4@${harvestedMs}`;
+        expect(getArtifactUrl(book, ArtifactType.epub)).toBe(
+            `${folder}/epub/${name}.epub`
+        );
+        expect(getArtifactUrl(book, ArtifactType.bloomReader)).toBe(
+            `${folder}/${name}.bloompub`
+        );
+        expect(getArtifactUrl(book, ArtifactType.bloomSource)).toBe(
+            `${folder}/${name}.bloomSource`
+        );
+    });
+
+    it("uses S3 when there is no version", () => {
+        const book = makeBook("BloomLibraryBooks", "A+Book", {
+            harvestStartedAt: undefined,
+            lastUploadedDate: undefined,
+        });
+        // On localhost, Book.getHarvesterBaseUrl goes through the vite /s3 proxy.
+        expect(getArtifactUrl(book, ArtifactType.epub)).toBe(
+            "/s3/bloomharvest/gxa5xS0Jk4%2f1794605671678/epub/A%20Book.epub"
+        );
+        expect(getArtifactUrl(book, ArtifactType.pdf)).toBe(
+            "https://s3.amazonaws.com/BloomLibraryBooks/gxa5xS0Jk4/1794605671678/A%20Book/A%20Book.pdf"
+        );
+    });
+});
+
+describe("getFsHarvestedFileUrl", () => {
+    it("makes the base Bloom Player reads a book from", () => {
+        const book = makeBook("BloomLibraryBooks", "A+Book");
+        flags.includeVersion = true;
+        expect(getFsHarvestedFileUrl(book, ["bloomdigital", "index.htm"])).toBe(
+            `${api}/fs/harvest/gxa5xS0Jk4@${harvestedMs}/bloomdigital/index.htm`
+        );
+        flags.includeVersion = false;
+        expect(getFsHarvestedFileUrl(book, ["bloomdigital", "index.htm"])).toBe(
+            `${api}/fs/harvest/gxa5xS0Jk4/bloomdigital/index.htm`
+        );
+    });
+
+    it("gives nothing unless the harvest is Done, with or without versions", () => {
+        const book = makeBook("BloomLibraryBooks", "A+Book", {
+            harvestState: "InProgress",
+        });
+        for (const includeVersion of [false, true]) {
+            flags.includeVersion = includeVersion;
             expect(
                 getFsHarvestedFileUrl(book, ["bloomdigital", "index.htm"])
             ).toBeUndefined();

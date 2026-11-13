@@ -5,25 +5,29 @@
 // worker in cloudflare/worker.js) finds the book's S3 folder from its database id, so these URLs
 // also don't expose the S3 address (which can contain the uploader's email).
 //
-// URL shape: /v1/fs/{bucket}/{bookId}@{version}/{path within the book's folder}
+// URL shape: /v1/fs/{bucket}/{bookId}[@{version}]/{path within the book's folder}
 // - bucket is "upload" or "harvest" ("dev-" prefixed for the sandbox buckets).
 // - version is the epoch ms of the last time the files could have changed. It lets the worker
 //   cache a file for a long time: a new version is a new URL, so nothing ever needs purging.
 //   It is in the path, not a query string, so that relative links inside a book (which is how
 //   Bloom Player finds images, audio and css) inherit it. "@" never occurs in a Parse id, so the
 //   worker can split it off.
-// We only ever build versioned URLs. When we can't tell the version, callers use the S3 URL,
-// as before. Unversioned fs URLs and S3 URLs keep working for OPDS, old links and old clients.
+// S3 URLs and fs URLs without a version keep working for OPDS, old links and old clients.
 
-// Serve downloads (PDF, ePUB, BloomPUB, .bloomSource) through fs.
-// Leave this off until the worker in bloom-core-supabase handles versioned fs URLs in
-// production (today it treats "{bookId}@{version}" as the book id, so the request 404s).
+// Serve downloads (PDF, ePUB, BloomPUB, .bloomSource) through fs. This works with today's
+// production worker as long as kFsUrlsIncludeVersion is off.
 export const kServeDownloadsThroughFs = false;
 
 // Have Bloom Player read books online through fs, so the book's html and all its relative
-// assets (images, audio, css...) come through Cloudflare.
-// Leave this off until the worker handles versioned fs URLs in production (see above).
+// assets (images, audio, css...) come through Cloudflare. Leave this off until
+// kFsUrlsIncludeVersion is on: without a version the worker can't cache a book's many files for
+// long, and there is no way to purge them when the book is re-harvested.
 export const kReadOnlineThroughFs = false;
+
+// Put "@{version}" in fs URLs. Leave this off until the worker in bloom-core-supabase handles
+// versioned fs URLs in production: today it treats "{bookId}@{version}" as the book id, so the
+// request 404s. When it is on, a file whose version we can't tell is fetched from S3 instead.
+export const kFsUrlsIncludeVersion = false;
 
 export type FsBucketKind = "upload" | "harvest";
 
@@ -49,19 +53,27 @@ export function toFsPathSegment(s3EncodedSegment: string): string {
         .replace(/%2B/g, "%252B");
 }
 
-// The versioned fs URL of a file in a book's folder, or undefined if there is no usable version
-// (the caller should then use the S3 URL).
+// The fs URL of a file in a book's folder, or undefined if we can't make one (the caller should
+// then use the S3 URL).
 // apiUrl is e.g. "https://api.bloomlibrary.org/v1" (see getBloomApiUrl()).
+// With includeVersion, the URL carries the version, and there is no URL without a usable version.
+// Without it, version is ignored.
 // s3EncodedPathSegments is the path within the book's folder, each segment encoded as in the
 // book's S3 URL (e.g. ["epub", "Fox+and+Frog.epub"]).
 export function getFsUrl(
     apiUrl: string,
     bucket: string,
     bookId: string,
+    includeVersion: boolean,
     version: Date | undefined,
     s3EncodedPathSegments: string[]
 ): string | undefined {
-    if (!bookId || !version || isNaN(version.getTime())) return undefined;
+    if (!bookId) return undefined;
+    let versionPart = "";
+    if (includeVersion) {
+        if (!version || isNaN(version.getTime())) return undefined;
+        versionPart = `@${version.getTime()}`;
+    }
     const path = s3EncodedPathSegments.map(toFsPathSegment).join("/");
-    return `${apiUrl}/fs/${bucket}/${bookId}@${version.getTime()}/${path}`;
+    return `${apiUrl}/fs/${bucket}/${bookId}${versionPart}/${path}`;
 }
