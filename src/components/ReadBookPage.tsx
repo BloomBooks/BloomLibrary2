@@ -10,6 +10,8 @@ import React, {
 import { useGetBookDetail } from "../connection/LibraryQueryHooks";
 import { Book } from "../model/Book";
 import { getUrlOfHtmlOfDigitalVersion } from "../model/BookUrlUtils";
+import { kReadOnlineThroughFs } from "../model/FsUrl";
+import { getFsHarvestedFileUrl } from "./BookDetail/ArtifactHelper";
 import { useHistory, useLocation } from "react-router-dom";
 import { useTrack } from "../analytics/Analytics";
 import { getBookAnalyticsInfo } from "../analytics/BookAnalyticsInfo";
@@ -156,6 +158,21 @@ async function ensureBookNavigationInterceptorRegistered() {
 
     await waitForServiceWorkerReady();
     await waitForServiceWorkerControl();
+}
+
+// The URL of the harvested html of the book, which Bloom Player finds the rest of the book's
+// files relative to. Through api.bloomlibrary.org/v1/fs if we can (see FsUrl.ts), so they all
+// come through Cloudflare (at the same version, once fs URLs carry one); otherwise straight
+// from S3.
+function getUrlOfBookToRead(book: Book): string | undefined {
+    return (
+        (kReadOnlineThroughFs &&
+            getFsHarvestedFileUrl(book, ["bloomdigital", "index.htm"])) ||
+        getUrlOfHtmlOfDigitalVersion(
+            Book.getHarvesterBaseUrl(book),
+            "index.htm"
+        )
+    );
 }
 
 const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
@@ -340,12 +357,7 @@ const ReadBookPage: React.FunctionComponent<IReadBookPageProps> = (props) => {
         getBookAnalyticsInfo(book, contextLangTag, "read"),
         !!book
     );
-    const url = book
-        ? getUrlOfHtmlOfDigitalVersion(
-              Book.getHarvesterBaseUrl(book),
-              "index.htm"
-          ) || "working"
-        : "working"; // url=working shows a loading icon
+    const url = book ? getUrlOfBookToRead(book) || "working" : "working"; // url=working shows a loading icon
 
     // use the bloomplayer.htm we copy into our public/ folder, where CRA serves from
     // TODO: this isn't working with react-router, but I don't know how RR even gets run inside of this iframe
