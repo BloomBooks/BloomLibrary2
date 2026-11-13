@@ -30,32 +30,22 @@ export function getArtifactUrl(
     // we don't want a new entry for that in ArtifactVisibilitySettings.
     forEdit?: boolean
 ): string {
-    if (kServeDownloadsThroughFs) {
-        const fsUrl = getFsDownloadUrl(book, artifactType);
-        if (fsUrl) return fsUrl;
-        // otherwise use the S3 URL, as below
-    }
     let url;
     switch (artifactType) {
         case ArtifactType.readOnline:
             return `/readBook/${book.id}`;
-        case ArtifactType.bloomReader:
-            url = getDownloadUrl(book, "bloompub");
-            break;
         case ArtifactType.shellbook:
             url = getBookOrderUrl(book, !!forEdit);
             break;
-        case ArtifactType.pdf:
-            // We need the raw book name here, because we're going for the PDF
-            // the Bloom uploaded, and it doesn't apply the same cleanup as the
-            // harvester.
-            url = `${book.baseUrl}${getRawBookNameFromUrl(
-                book.baseUrl
-            )}.pdf`.replace(/%2f/g, "/");
+        default: {
+            const file = getDownloadFile(book, artifactType);
+            if (!file) return "";
+            const fsUrl =
+                kServeDownloadsThroughFs && getFsUrlOfFile(book, file);
+            if (fsUrl) return fsUrl;
+            url = getS3UrlOfFile(book, file);
             break;
-        default:
-            url = getDownloadUrl(book, artifactType);
-            break;
+        }
     }
     if (!url) return "";
 
@@ -68,85 +58,85 @@ export function getArtifactUrl(
     return url;
 }
 
-// The URL of a downloadable file via api.bloomlibrary.org/v1/fs (see FsUrl.ts), or undefined
-// if this artifact type isn't served that way or we can't work out a versioned URL (the caller
-// then uses the S3 URL).
-export function getFsDownloadUrl(
+// A file in one of the book's folders in S3: the upload bucket (what Bloom uploaded) or the
+// harvest bucket (what the harvester made from it). The path within the folder is given as
+// segments encoded as in the book's S3 URL (e.g. ["epub", "Fox+and+Frog.epub"]).
+interface IBookFile {
+    bucket: FsBucketKind;
+    s3EncodedPathSegments: string[];
+}
+
+function getDownloadFile(
     book: Book,
     artifactType: ArtifactType
-): string | undefined {
+): IBookFile | undefined {
     if (artifactType === ArtifactType.pdf) {
-        // The PDF Bloom uploaded, in the book's folder in the upload bucket. We need the raw
-        // book name, because the harvester's cleanup of the name doesn't apply to it.
-        const rawName = book.baseUrl && getRawBookNameFromUrl(book.baseUrl);
-        return rawName
-            ? getFsUploadedFileUrl(book, [`${rawName}.pdf`])
-            : undefined;
+        // We need the raw book name here, because we're going for the PDF
+        // the Bloom uploaded, and it doesn't apply the same cleanup as the
+        // harvester.
+        return {
+            bucket: "upload",
+            s3EncodedPathSegments: [
+                `${getRawBookNameFromUrl(book.baseUrl)}.pdf`,
+            ],
+        };
     }
-    const harvestedFileType =
-        artifactType === ArtifactType.bloomReader
-            ? "bloompub"
-            : artifactType === ArtifactType.epub ||
-              artifactType === ArtifactType.bloomSource
-            ? artifactType
-            : undefined;
-    if (!harvestedFileType || !book.baseUrl) return undefined;
-    const segments = getHarvestedFilePathSegments(book, harvestedFileType);
-    return segments ? getFsHarvestedFileUrl(book, segments) : undefined;
-}
-
-// The versioned fs URL of a file in the book's folder in the upload bucket, or undefined if
-// we can't make one. Only an upload changes these files, so the version is the last upload.
-export function getFsUploadedFileUrl(
-    book: Book,
-    s3EncodedPathSegments: string[]
-): string | undefined {
-    return getVersionedFsUrl(
+    if (!book.baseUrl) return undefined;
+    const segments = getHarvestedFilePathSegments(
         book,
-        "upload",
-        book.lastUploadedDate,
-        s3EncodedPathSegments
+        artifactType === ArtifactType.bloomReader ? "bloompub" : artifactType
     );
+    return segments && { bucket: "harvest", s3EncodedPathSegments: segments };
 }
 
-// The versioned fs URL of a file the harvester made for this book, or undefined if we can't
-// make one, including whenever the harvest isn't "Done".
-// A harvest can happen without an upload, so these files are versioned by the harvest.
-// harvestStartedAt is set when a harvest starts, while harvestState is not yet "Done", so once
-// it is "Done", the files under that version are the finished ones.
+function getS3UrlOfFile(book: Book, file: IBookFile): string | undefined {
+    if (file.bucket === "upload") {
+        return `${book.baseUrl}${file.s3EncodedPathSegments.join("/")}`.replace(
+            /%2f/g,
+            "/"
+        );
+    }
+    const harvesterBaseUrl = Book.getHarvesterBaseUrl(book);
+    return harvesterBaseUrl
+        ? harvesterBaseUrl + file.s3EncodedPathSegments.join("/")
+        : undefined;
+}
+
+// The versioned URL of the file via api.bloomlibrary.org/v1/fs (see FsUrl.ts), or undefined if
+// we can't make one (the caller then uses the S3 URL).
+// Only an upload changes the files in the upload bucket, so they are versioned by the last
+// upload. A harvest can happen without an upload, so harvested files are versioned by the
+// harvest. harvestStartedAt is set when a harvest starts, while harvestState is not yet "Done",
+// so once it is "Done", the files under that version are the finished ones.
+function getFsUrlOfFile(book: Book, file: IBookFile): string | undefined {
+    let version: Date | undefined;
+    if (file.bucket === "upload") {
+        version = book.lastUploadedDate;
+    } else if (Book.isHarvested(book) && book.harvestStartedAt) {
+        version = new Date(book.harvestStartedAt.iso);
+    }
+    if (!book.baseUrl) return undefined;
+    try {
+        return getFsUrl(
+            getBloomApiUrl(),
+            getFsBucketName(book.baseUrl, file.bucket),
+            book.id,
+            version,
+            file.s3EncodedPathSegments
+        );
+    } catch {
+        // malformed %-escapes in the baseUrl; use the S3 URL
+        return undefined;
+    }
+}
+
+// The versioned fs URL of a file the harvester made for this book (see getFsUrlOfFile), or
+// undefined if we can't make one, including whenever the harvest isn't "Done".
 export function getFsHarvestedFileUrl(
     book: Book,
     s3EncodedPathSegments: string[]
 ): string | undefined {
-    if (!Book.isHarvested(book) || !book.harvestStartedAt) return undefined;
-    return getVersionedFsUrl(
-        book,
-        "harvest",
-        new Date(book.harvestStartedAt.iso),
-        s3EncodedPathSegments
-    );
-}
-
-function getVersionedFsUrl(
-    book: Book,
-    bucketKind: FsBucketKind,
-    version: Date | undefined,
-    s3EncodedPathSegments: string[]
-): string | undefined {
-    if (!book.baseUrl || !book.id) return undefined;
-    try {
-        return getFsUrl(
-            getBloomApiUrl(),
-            getFsBucketName(book.baseUrl, bucketKind),
-            book.id,
-            version,
-            s3EncodedPathSegments
-        );
-    } catch (e) {
-        // e.g. malformed %-escapes in the baseUrl; the S3 URL may still work
-        console.error(e);
-        return undefined;
-    }
+    return getFsUrlOfFile(book, { bucket: "harvest", s3EncodedPathSegments });
 }
 
 function getBookOrderUrl(book: Book, forEdit: boolean) {
@@ -291,15 +281,6 @@ export function getBookNamePartOfUrl(baseUrl: string): string | undefined {
         result = "Book";
     }
     return result;
-}
-
-function getDownloadUrl(book: Book, fileType: string): string | undefined {
-    const harvesterBaseUrl = Book.getHarvesterBaseUrl(book);
-    if (!harvesterBaseUrl) {
-        return undefined;
-    }
-    const segments = getHarvestedFilePathSegments(book, fileType);
-    return segments ? harvesterBaseUrl + segments.join("/") : undefined;
 }
 
 // The path, within the book's folder in the harvest bucket, of the file of this type that the
