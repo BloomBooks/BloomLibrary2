@@ -213,6 +213,7 @@ function getDownloadUrl(book: Book, fileType: string): string | undefined {
     const bookName = getBookNamePartOfUrl(book.baseUrl);
 
     if (bookName) {
+        let path: string[];
         if (fileType === "bloompub" || fileType === "bloomSource") {
             let fileExt = `.${fileType}`;
             if (fileType === "bloompub") {
@@ -221,32 +222,26 @@ function getDownloadUrl(book: Book, fileType: string): string | undefined {
                         ? ".bloompub"
                         : ".bloomd";
             }
-            return (
-                getDownloadFsUrl(book, "harvest", [bookName + fileExt]) ??
-                harvesterBaseUrl + bookName + fileExt
-            );
+            path = [bookName + fileExt];
+        } else {
+            path = [fileType, bookName + "." + fileType];
         }
-        const fileName = bookName + "." + fileType;
         return (
-            getDownloadFsUrl(book, "harvest", [fileType, fileName]) ??
-            harvesterBaseUrl + fileType + "/" + fileName
+            getDownloadFsUrl(book, "harvest", path) ??
+            harvesterBaseUrl + path.join("/")
         );
     }
     return undefined;
 }
 
-// The URL of a file in the book's upload or harvest folder through api.bloomlibrary.org/v1/fs
-// (see FsUrl.ts), so downloads go through Cloudflare instead of straight to S3.
-// Undefined if we can't make one; the caller then uses the S3 URL.
-// s3EncodedPathSegments are encoded as in the book's S3 URL (e.g. ["epub", "Fox+and+Frog.epub"]).
+// The fs URL (see FsUrl.ts) of a file in the book's upload or harvest folder, or undefined if we
+// can't make one, in which case the caller uses the S3 URL.
 function getDownloadFsUrl(
     book: Book,
     bucket: FsBucketKind,
     s3EncodedPathSegments: string[]
 ): string | undefined {
     if (!book.baseUrl || !book.id) return undefined;
-    // Harvested files are complete only once the harvest is Done.
-    if (bucket === "harvest" && !Book.isHarvested(book)) return undefined;
     try {
         return getFsUrl(
             getBloomApiUrl(),
