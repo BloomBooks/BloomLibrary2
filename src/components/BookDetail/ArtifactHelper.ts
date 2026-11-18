@@ -33,7 +33,10 @@ export function getArtifactUrl(
             url = getDownloadUrl(book, "bloompub");
             break;
         case ArtifactType.shellbook:
-            url = getBookOrderUrl(book, !!forEdit);
+            // Whatever writes the `baseUrl` to our books database encodes space as `+` (at least up
+            // through now, August 2024), and the orderFile comes from the baseUrl, so re-encode `+`
+            // as `%20`. (Download URLs never contain `+`.)
+            url = getBookOrderUrl(book, !!forEdit).replace(/\+/g, "%20");
             break;
         case ArtifactType.pdf: {
             // We need the raw book name here, because we're going for the PDF
@@ -53,15 +56,7 @@ export function getArtifactUrl(
             url = getDownloadUrl(book, artifactType);
             break;
     }
-    if (!url) return "";
-
-    // Whatever writes the `baseUrl` to our books database encodes space as `+` (at least up through now, August 2024).
-    // This messes up the file name when you download, as you get "Hello+World.pdf".
-    // So here we just re-encode the `+` as `%20` and when downloaded the file is "Hello World.pdf".
-    // Since those URLs encode `+` as `%2b`, "one + one = two.pdf" will also to come out correctly.
-    url = url.replace(/\+/g, "%20");
-
-    return url;
+    return url || "";
 }
 
 // The file name a download link should save as: the last path segment of its URL, without the
@@ -224,27 +219,22 @@ function getDownloadUrl(book: Book, fileType: string): string | undefined {
     }
 
     const bookName = getBookNamePartOfUrl(book.baseUrl);
+    if (!bookName) return undefined;
 
-    if (bookName) {
-        let path: string[];
-        if (fileType === "bloompub" || fileType === "bloomSource") {
-            let fileExt = `.${fileType}`;
-            if (fileType === "bloompub") {
-                fileExt =
-                    book.bloomPUBVersion && book.bloomPUBVersion >= 1
-                        ? ".bloompub"
-                        : ".bloomd";
-            }
-            path = [bookName + fileExt];
-        } else {
-            path = [fileType, bookName + "." + fileType];
-        }
-        const version = book.harvestStartedAt
-            ? new Date(book.harvestStartedAt.iso)
-            : undefined;
-        return getDownloadFsUrl(book, "harvest", path, version);
+    let path: string[];
+    if (fileType === "bloompub") {
+        const isBloomPub = book.bloomPUBVersion && book.bloomPUBVersion >= 1;
+        path = [bookName + (isBloomPub ? ".bloompub" : ".bloomd")];
+    } else if (fileType === "bloomSource") {
+        path = [bookName + ".bloomSource"];
+    } else {
+        // e.g. epub/{name}.epub
+        path = [fileType, `${bookName}.${fileType}`];
     }
-    return undefined;
+    const version = book.harvestStartedAt
+        ? new Date(book.harvestStartedAt.iso)
+        : undefined;
+    return getDownloadFsUrl(book, "harvest", path, version);
 }
 
 // The fs URL (see FsUrl.ts) of a file in the book's upload or harvest folder, versioned when we
