@@ -39,10 +39,14 @@ export function getArtifactUrl(
             // We need the raw book name here, because we're going for the PDF
             // the Bloom uploaded, and it doesn't apply the same cleanup as the
             // harvester.
+            // Only an upload changes the files in the upload bucket.
             const pdfName = `${getRawBookNameFromUrl(book.baseUrl)}.pdf`;
-            url =
-                getDownloadFsUrl(book, "upload", [pdfName]) ??
-                `${book.baseUrl}${pdfName}`.replace(/%2f/g, "/");
+            url = getDownloadFsUrl(
+                book,
+                "upload",
+                [pdfName],
+                book.lastUploadedDate
+            );
             break;
         }
         default:
@@ -204,9 +208,11 @@ export function getBookNamePartOfUrl(baseUrl: string): string | undefined {
     return result;
 }
 
+// The fs URL of a file the harvester made, offered only once the harvest is "Done".
+// harvestStartedAt is set when a harvest starts, so once it is "Done", the files under that
+// version are the finished ones.
 function getDownloadUrl(book: Book, fileType: string): string | undefined {
-    const harvesterBaseUrl = Book.getHarvesterBaseUrl(book);
-    if (!harvesterBaseUrl) {
+    if (!book.baseUrl || !Book.isHarvested(book)) {
         return undefined;
     }
 
@@ -226,20 +232,22 @@ function getDownloadUrl(book: Book, fileType: string): string | undefined {
         } else {
             path = [fileType, bookName + "." + fileType];
         }
-        return (
-            getDownloadFsUrl(book, "harvest", path) ??
-            harvesterBaseUrl + path.join("/")
-        );
+        const version = book.harvestStartedAt
+            ? new Date(book.harvestStartedAt.iso)
+            : undefined;
+        return getDownloadFsUrl(book, "harvest", path, version);
     }
     return undefined;
 }
 
-// The fs URL (see FsUrl.ts) of a file in the book's upload or harvest folder, or undefined if we
-// can't make one, in which case the caller uses the S3 URL.
+// The fs URL (see FsUrl.ts) of a file in the book's upload or harvest folder, versioned when we
+// know the version, or undefined if we can't make one. There is deliberately no S3 fallback:
+// S3 URLs can contain the uploader's email, and baseUrl would then go into the link unchecked.
 function getDownloadFsUrl(
     book: Book,
     bucket: FsBucketKind,
-    s3EncodedPathSegments: string[]
+    s3EncodedPathSegments: string[],
+    version: Date | undefined
 ): string | undefined {
     if (!book.baseUrl || !book.id) return undefined;
     try {
@@ -247,7 +255,8 @@ function getDownloadFsUrl(
             getBloomApiUrl(),
             getFsBucketName(book.baseUrl, bucket),
             book.id,
-            s3EncodedPathSegments
+            s3EncodedPathSegments,
+            version
         );
     } catch {
         // malformed %-escapes in the baseUrl

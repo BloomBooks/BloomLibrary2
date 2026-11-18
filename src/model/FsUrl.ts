@@ -5,8 +5,11 @@
 // worker in cloudflare/worker.js) finds the book's S3 folder from its database id, so these URLs
 // also don't expose the S3 address (which can contain the uploader's email).
 //
-// URL shape: /v1/fs/{bucket}/{bookId}/{path within the book's folder}
+// URL shape: /v1/fs/{bucket}/{bookId}/{path within the book's folder}[?v={epochMs}]
 // where bucket is "upload" or "harvest" ("dev-" prefixed for the sandbox buckets).
+// The version is the time the file last changed. The worker caches a versioned URL for a year,
+// so a new upload or harvest gets a new URL instead of a stale cached file. (Until the worker
+// supports it, ?v= is ignored: the file is served, just not cached.)
 
 export type FsBucketKind = "upload" | "harvest";
 
@@ -35,13 +38,17 @@ export function toFsPathSegment(s3EncodedSegment: string): string {
 // apiUrl is e.g. "https://api.bloomlibrary.org/v1" (see getBloomApiUrl()).
 // s3EncodedPathSegments is the path within the book's folder, each segment encoded as in the
 // book's S3 URL (e.g. ["epub", "Fox+and+Frog.epub"]).
+// version is when the file last changed; without a valid one the URL has no version.
 // Throws URIError if a segment holds malformed %-escapes.
 export function getFsUrl(
     apiUrl: string,
     bucket: string,
     bookId: string,
-    s3EncodedPathSegments: string[]
+    s3EncodedPathSegments: string[],
+    version?: Date
 ): string {
     const path = s3EncodedPathSegments.map(toFsPathSegment).join("/");
-    return `${apiUrl}/fs/${bucket}/${bookId}/${path}`;
+    const ms = version?.getTime();
+    const query = ms !== undefined && !isNaN(ms) ? `?v=${ms}` : "";
+    return `${apiUrl}/fs/${bucket}/${bookId}/${path}${query}`;
 }
