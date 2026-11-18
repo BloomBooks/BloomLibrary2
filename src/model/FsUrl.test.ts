@@ -68,6 +68,19 @@ describe("getFsUrl", () => {
             `${api}/fs/dev-upload/abc/one%20%252B%20one.pdf`
         );
     });
+
+    it("adds ?v= with the version in epoch ms, only when the version is valid", () => {
+        const at = new Date("2025-03-04T05:06:07.890Z");
+        expect(getFsUrl(api, "harvest", "abc", ["a.epub"], at)).toBe(
+            `${api}/fs/harvest/abc/a.epub?v=${at.getTime()}`
+        );
+        expect(getFsUrl(api, "harvest", "abc", ["a.epub"], undefined)).toBe(
+            `${api}/fs/harvest/abc/a.epub`
+        );
+        expect(
+            getFsUrl(api, "harvest", "abc", ["a.epub"], new Date("nope"))
+        ).toBe(`${api}/fs/harvest/abc/a.epub`);
+    });
 });
 
 describe("getFsBucketName", () => {
