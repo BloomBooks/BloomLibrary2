@@ -35,3 +35,4 @@ savePrefix: ""
 # Pin a transitive dependency version (this was yarn's "resolutions" block).
 overrides:
     "@types/react": "17.0.83"
+    vite: "6.4.6"
