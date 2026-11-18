@@ -64,6 +64,13 @@ export function getArtifactUrl(
     return url;
 }
 
+// The file name a download link should save as: the last path segment of its URL, without the
+// ?v= version.
+export function getDownloadFileName(url: string): string {
+    const path = url.split("?")[0];
+    return path.substring(path.lastIndexOf("/") + 1);
+}
+
 function getBookOrderUrl(book: Book, forEdit: boolean) {
     if (!book.baseUrl) return "";
 

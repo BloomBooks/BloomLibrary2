@@ -16,6 +16,7 @@ import {
     getArtifactDownloadAltText,
     getArtifactUrl,
     getArtifactVisibilitySettings,
+    getDownloadFileName,
 } from "./ArtifactHelper";
 import { OSFeaturesContext } from "../OSFeaturesContext";
 import { ArtifactVisibilitySettings } from "../../model/ArtifactVisibilitySettings";
@@ -185,10 +186,17 @@ export const DownloadsGroup: React.FunctionComponent<{
                             hidden: hideEpubButton,
                             analyticsType: "epub",
                         },
-                    ].map((a: IArtifactUI) => {
-                        const artifactUrl = getArtifactUrl(props.book, a.type);
-                        const parts = artifactUrl.split("/");
-                        const fileName = parts[parts.length - 1];
+                    ].map((artifact: IArtifactUI) => {
+                        const artifactUrl = getArtifactUrl(
+                            props.book,
+                            artifact.type
+                        );
+                        const fileName = getDownloadFileName(artifactUrl);
+                        // No URL (e.g. a name we can't encode) means nothing to download.
+                        const a = {
+                            ...artifact,
+                            enabled: artifact.enabled && !!artifactUrl,
+                        };
                         return (
                             !a.hidden && (
                                 <Tooltip

@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { Book } from "../../model/Book";
-import { ArtifactType, getArtifactUrl } from "./ArtifactHelper";
+import {
+    ArtifactType,
+    getArtifactUrl,
+    getDownloadFileName,
+} from "./ArtifactHelper";
 
 // Under jsdom we are on localhost, so getBloomApiUrl() gives the vite proxy's path.
 const api = "/api/v1";
@@ -127,5 +131,19 @@ describe("getArtifactUrl downloads through fs", () => {
         expect(getArtifactUrl(book, ArtifactType.shellbook)).toMatch(
             /^bloom:\/\/localhost\/order\?/
         );
+    });
+});
+
+describe("getDownloadFileName", () => {
+    it("is the last path segment, without the version", () => {
+        expect(
+            getDownloadFileName(
+                `${api}/fs/harvest/abc/epub/A%20Book.epub?v=123`
+            )
+        ).toBe("A%20Book.epub");
+        expect(getDownloadFileName(`${api}/fs/upload/abc/A%20Book.pdf`)).toBe(
+            "A%20Book.pdf"
+        );
+        expect(getDownloadFileName("")).toBe("");
     });
 });
