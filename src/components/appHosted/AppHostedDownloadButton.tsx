@@ -8,6 +8,7 @@ import {
     getArtifactUrl,
     ArtifactType,
     getArtifactVisibilitySettings,
+    getDownloadFileName,
 } from "../BookDetail/ArtifactHelper";
 import { Book } from "../../model/Book";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
@@ -63,13 +64,14 @@ export const AppHostedDownloadButton: React.FunctionComponent<{
 
     const shouldShow =
         artifactType &&
+        // No URL (e.g. a name we can't encode) means nothing to download.
+        artifactUrl &&
         getArtifactVisibilitySettings(props.book, artifactType)?.decision ===
             true;
 
     if (!shouldShow) return <React.Fragment />;
 
-    const parts = artifactUrl.split("/");
-    const fileName = parts[parts.length - 1];
+    const fileName = getDownloadFileName(artifactUrl);
     const currentLangCode = new URLSearchParams(search).get("lang");
 
     return (
