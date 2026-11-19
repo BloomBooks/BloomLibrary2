@@ -18,6 +18,7 @@ import {
     getArtifactVisibilitySettings,
     getDownloadFileName,
 } from "./ArtifactHelper";
+import { asDownloadUrl } from "../../model/FsUrl";
 import { OSFeaturesContext } from "../OSFeaturesContext";
 import { ArtifactVisibilitySettings } from "../../model/ArtifactVisibilitySettings";
 import { track } from "../../analytics/Analytics";
@@ -246,7 +247,9 @@ export const DownloadsGroup: React.FunctionComponent<{
                                                                 );
                                                             } else {
                                                                 followUrl(
-                                                                    artifactUrl,
+                                                                    asDownloadUrl(
+                                                                        artifactUrl
+                                                                    ),
                                                                     fileName
                                                                 );
                                                                 const params = getBookAnalyticsInfo(

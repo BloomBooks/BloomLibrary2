@@ -10,6 +10,7 @@ import {
     getArtifactVisibilitySettings,
     getDownloadFileName,
 } from "../BookDetail/ArtifactHelper";
+import { asDownloadUrl } from "../../model/FsUrl";
 import { Book } from "../../model/Book";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { track } from "../../analytics/Analytics";
@@ -77,7 +78,7 @@ export const AppHostedDownloadButton: React.FunctionComponent<{
     return (
         // A link to download the file
         <a
-            href={artifactUrl}
+            href={asDownloadUrl(artifactUrl)}
             // This is more than a hint. Without an explicit download attribute,
             // the browser will reload the whole SPA as it first tries to navigate
             // to the URL, then discovers that it's just a download.

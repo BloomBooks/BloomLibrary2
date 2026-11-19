@@ -7,6 +7,7 @@ import { commonUI } from "../../theme";
 import { getArtifactUrl, getDownloadFileName } from "./ArtifactHelper";
 import { Book } from "../../model/Book";
 import { ArtifactType } from "./ArtifactHelper";
+import { asDownloadUrl } from "../../model/FsUrl";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { track } from "../../analytics/Analytics";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -25,7 +26,7 @@ export const ReadOfflineButton: React.FunctionComponent<IProps> = (props) => {
     return (
         // A link to download the .bloomd/.bloompub file
         <a
-            href={artifactUrl}
+            href={asDownloadUrl(artifactUrl)}
             // This is more than a hint. Without an explicit download attribute,
             // the browser will reload the whole SPA as it first tries to navigate
             // to the URL, then discovers that it's just a download.
