@@ -5,7 +5,7 @@
 // worker in cloudflare/worker.js) finds the book's S3 folder from its database id, so these URLs
 // also don't expose the S3 address (which can contain the uploader's email).
 //
-// URL shape: /v1/fs/{bucket}/{bookId}/{path within the book's folder}[?v={epochMs}]
+// URL shape: /v1/fs/{bucket}/{bookId}/{path within the book's folder}[?v={epochMs}][&download=1]
 // where bucket is "upload" or "harvest" ("dev-" prefixed for the sandbox buckets).
 // The version is the time the file last changed. The worker caches a versioned URL for a year,
 // so a new upload or harvest gets a new URL instead of a stale cached file. (Until the worker
@@ -51,4 +51,11 @@ export function getFsUrl(
     const ms = version?.getTime();
     const query = ms !== undefined && !isNaN(ms) ? `?v=${ms}` : "";
     return `${apiUrl}/fs/${bucket}/${bookId}/${path}${query}`;
+}
+
+// The URL a download button should use: download=1 makes api.bloomlibrary.org send the file as a
+// download, under its real name, even one a browser would otherwise show (a PDF). A link's
+// download attribute can't do that: browsers ignore it for a file on another host.
+export function asDownloadUrl(fsUrl: string): string {
+    return `${fsUrl}${fsUrl.includes("?") ? "&" : "?"}download=1`;
 }

@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { getFsBucketName, getFsUrl, toFsPathSegment } from "./FsUrl";
+import {
+    asDownloadUrl,
+    getFsBucketName,
+    getFsUrl,
+    toFsPathSegment,
+} from "./FsUrl";
 
 // What the fs function does to one path segment before appending it to the S3 folder URL:
 // handler.ts decodes it once, then encodeUnicode() in BookData.ts turns "+" into space, decodes
@@ -102,5 +107,13 @@ describe("getFsBucketName", () => {
                 "upload"
             )
         ).toBe("upload");
+    });
+});
+
+describe("asDownloadUrl", () => {
+    it("adds download=1 after any version", () => {
+        const base = "https://api.bloomlibrary.org/v1/fs/upload/abc/Book.pdf";
+        expect(asDownloadUrl(base)).toBe(`${base}?download=1`);
+        expect(asDownloadUrl(`${base}?v=123`)).toBe(`${base}?v=123&download=1`);
     });
 });
