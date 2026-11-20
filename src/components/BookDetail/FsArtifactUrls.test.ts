@@ -125,6 +125,13 @@ describe("getArtifactUrl downloads through fs", () => {
         expect(getArtifactUrl(hostile, ArtifactType.epub)).toBe("");
     });
 
+    it("offers no PDF when the book's name can't be found in its baseUrl", () => {
+        const noName = makeBook("BloomLibraryBooks", "A+Book", {
+            baseUrl: "https://s3.amazonaws.com/BloomLibraryBooks/no-folders",
+        });
+        expect(getArtifactUrl(noName, ArtifactType.pdf)).toBe("");
+    });
+
     it("leaves reading online and shellbooks alone", () => {
         expect(getArtifactUrl(book, ArtifactType.readOnline)).toBe(
             "/readBook/gxa5xS0Jk4"

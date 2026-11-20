@@ -48,13 +48,15 @@ export function getArtifactUrl(
             // the Bloom uploaded, and it doesn't apply the same cleanup as the
             // harvester.
             // Only an upload changes the files in the upload bucket.
-            const pdfName = `${getRawBookNameFromUrl(book.baseUrl)}.pdf`;
-            url = getDownloadFsUrl(
-                book,
-                "upload",
-                [pdfName],
-                book.lastUploadedDate
-            );
+            const rawName = book.baseUrl && getRawBookNameFromUrl(book.baseUrl);
+            url =
+                rawName &&
+                getDownloadFsUrl(
+                    book,
+                    "upload",
+                    [`${rawName}.pdf`],
+                    book.lastUploadedDate
+                );
             break;
         }
         default:
