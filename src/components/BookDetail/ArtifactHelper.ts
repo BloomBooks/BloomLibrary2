@@ -5,7 +5,12 @@ import {
 } from "../../model/ArtifactVisibilitySettings";
 import { IntlShape } from "react-intl";
 import { getBloomApiUrl } from "../../connection/ApiConnection";
-import { FsBucketKind, getFsBucketName, getFsUrl } from "../../model/FsUrl";
+import {
+    asDownloadUrl,
+    FsBucketKind,
+    getFsBucketName,
+    getFsUrl,
+} from "../../model/FsUrl";
 
 // The order here matters. See ArtifactVisibilityPanel.getExistingArtifactTypeKeys().
 export enum ArtifactType {
@@ -30,7 +35,7 @@ export function getArtifactUrl(
         case ArtifactType.readOnline:
             return `/readBook/${book.id}`;
         case ArtifactType.bloomReader:
-            url = getDownloadUrl(book, "bloompub");
+            url = getHarvestedFileUrl(book, "bloompub");
             break;
         case ArtifactType.shellbook:
             // Whatever writes the `baseUrl` to our books database encodes space as `+` (at least up
@@ -53,10 +58,22 @@ export function getArtifactUrl(
             break;
         }
         default:
-            url = getDownloadUrl(book, artifactType);
+            url = getHarvestedFileUrl(book, artifactType);
             break;
     }
     return url || "";
+}
+
+// What a download link needs, or undefined when there is nothing to download (e.g. a name we
+// can't encode). href asks api.bloomlibrary.org to send the file as a download under its real
+// name (download=1); fileName is for the link's download attribute.
+export function getArtifactDownload(
+    book: Book,
+    artifactType: ArtifactType
+): { href: string; fileName: string } | undefined {
+    const url = getArtifactUrl(book, artifactType);
+    if (!url) return undefined;
+    return { href: asDownloadUrl(url), fileName: getDownloadFileName(url) };
 }
 
 // The file name a download link should save as: the last path segment of its URL, without the
@@ -213,7 +230,7 @@ export function getBookNamePartOfUrl(baseUrl: string): string | undefined {
 // The fs URL of a file the harvester made, offered only once the harvest is "Done".
 // harvestStartedAt is set when a harvest starts, so once it is "Done", the files under that
 // version are the finished ones.
-function getDownloadUrl(book: Book, fileType: string): string | undefined {
+function getHarvestedFileUrl(book: Book, fileType: string): string | undefined {
     if (!book.baseUrl || !Book.isHarvested(book)) {
         return undefined;
     }

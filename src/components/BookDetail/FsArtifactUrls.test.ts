@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { Book } from "../../model/Book";
 import {
     ArtifactType,
+    getArtifactDownload,
     getArtifactUrl,
     getDownloadFileName,
 } from "./ArtifactHelper";
@@ -131,6 +132,24 @@ describe("getArtifactUrl downloads through fs", () => {
         expect(getArtifactUrl(book, ArtifactType.shellbook)).toMatch(
             /^bloom:\/\/localhost\/order\?/
         );
+    });
+});
+
+describe("getArtifactDownload", () => {
+    it("asks for a download, named without the query", () => {
+        expect(getArtifactDownload(book, ArtifactType.pdf)).toEqual({
+            href: `${api}/fs/upload/gxa5xS0Jk4/${name}.pdf?v=${uploadedMs}&download=1`,
+            fileName: `${name}.pdf`,
+        });
+    });
+
+    it("gives nothing when there is nothing to download", () => {
+        const notHarvested = makeBook("BloomLibraryBooks", "A+Book", {
+            harvestState: "InProgress",
+        });
+        expect(
+            getArtifactDownload(notHarvested, ArtifactType.epub)
+        ).toBeUndefined();
     });
 });
 
