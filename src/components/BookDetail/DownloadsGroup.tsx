@@ -14,11 +14,9 @@ import { Book } from "../../model/Book";
 import {
     ArtifactType,
     getArtifactDownloadAltText,
-    getArtifactUrl,
+    getArtifactDownload,
     getArtifactVisibilitySettings,
-    getDownloadFileName,
 } from "./ArtifactHelper";
-import { asDownloadUrl } from "../../model/FsUrl";
 import { OSFeaturesContext } from "../OSFeaturesContext";
 import { ArtifactVisibilitySettings } from "../../model/ArtifactVisibilitySettings";
 import { track } from "../../analytics/Analytics";
@@ -188,10 +186,11 @@ export const DownloadsGroup: React.FunctionComponent<{
                             analyticsType: "epub",
                         },
                     ].map((a: IArtifactUI) => {
-                        const artifactUrl = getArtifactUrl(props.book, a.type);
-                        const fileName = getDownloadFileName(artifactUrl);
-                        // No URL (e.g. a name we can't encode) means nothing to download.
-                        const enabled = a.enabled && !!artifactUrl;
+                        const download = getArtifactDownload(
+                            props.book,
+                            a.type
+                        );
+                        const enabled = a.enabled && !!download;
                         return (
                             !a.hidden && (
                                 <Tooltip
@@ -230,7 +229,7 @@ export const DownloadsGroup: React.FunctionComponent<{
                                         // Can't do this or the tooltip doesn't work:
                                         // disabled={!enabled}
                                         onClick={() => {
-                                            if (enabled)
+                                            if (download && a.enabled)
                                                 props.book
                                                     .checkCountryPermissions(
                                                         "downloadAnything"
@@ -247,10 +246,8 @@ export const DownloadsGroup: React.FunctionComponent<{
                                                                 );
                                                             } else {
                                                                 followUrl(
-                                                                    asDownloadUrl(
-                                                                        artifactUrl
-                                                                    ),
-                                                                    fileName
+                                                                    download.href,
+                                                                    download.fileName
                                                                 );
                                                                 const params = getBookAnalyticsInfo(
                                                                     props.book,

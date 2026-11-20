@@ -5,12 +5,10 @@ import Button from "@material-ui/core/Button";
 import DownloadIcon from "../../assets/download_white_24dp.svg";
 import { commonUI } from "../../theme";
 import {
-    getArtifactUrl,
+    getArtifactDownload,
     ArtifactType,
     getArtifactVisibilitySettings,
-    getDownloadFileName,
 } from "../BookDetail/ArtifactHelper";
-import { asDownloadUrl } from "../../model/FsUrl";
 import { Book } from "../../model/Book";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
 import { track } from "../../analytics/Analytics";
@@ -56,33 +54,27 @@ export const AppHostedDownloadButton: React.FunctionComponent<{
 
     const artifactType = useGetArtifactType();
 
-    function useGetArtifactUrl() {
-        return artifactType && getArtifactUrl(props.book, artifactType);
-    }
-
-    const artifactUrl = useGetArtifactUrl();
-    const fileSize = useGetArtifactSize(artifactUrl);
-
-    const shouldShow =
+    const download =
         artifactType &&
-        // No URL (e.g. a name we can't encode) means nothing to download.
-        artifactUrl &&
         getArtifactVisibilitySettings(props.book, artifactType)?.decision ===
-            true;
+            true
+            ? getArtifactDownload(props.book, artifactType)
+            : undefined;
+    // Only ask for the size of a file we offer.
+    const fileSize = useGetArtifactSize(download?.href ?? "");
 
-    if (!shouldShow) return <React.Fragment />;
+    if (!download) return <React.Fragment />;
 
-    const fileName = getDownloadFileName(artifactUrl);
     const currentLangCode = new URLSearchParams(search).get("lang");
 
     return (
         // A link to download the file
         <a
-            href={asDownloadUrl(artifactUrl)}
+            href={download.href}
             // This is more than a hint. Without an explicit download attribute,
             // the browser will reload the whole SPA as it first tries to navigate
             // to the URL, then discovers that it's just a download.
-            download={fileName}
+            download={download.fileName}
             className={props.className} // support emotion
             onClick={() => {
                 const params = getBookAnalyticsInfo(
