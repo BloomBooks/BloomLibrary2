@@ -6,6 +6,7 @@ import { ThemeProvider } from "@material-ui/core";
 import { LoginDialog } from "./components/User/LoginDialog";
 import { LocalizationProvider } from "./localization/LocalizationProvider";
 import UnderConstruction from "./components/UnderConstruction";
+import StagingApiNotice from "./components/StagingApiNotice";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import { RouterContent } from "./model/RouterContent";
 import CacheProvider from "./model/CacheProvider";
@@ -59,6 +60,7 @@ export const App: React.FunctionComponent<{}> = (props) => {
                             <CacheProvider>
                                 <OSFeaturesProvider>
                                     <UnderConstruction />
+                                    <StagingApiNotice />
                                     <Router>
                                         <QueryParamProvider
                                             ReactRouterRoute={Route}

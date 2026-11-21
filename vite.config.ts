@@ -18,6 +18,13 @@ export default defineConfig(() => {
                     secure: true,
                     rewrite: (path) => path.replace(/^\/api/, ""),
                 },
+                // The same, for when a page is opened with ?api=staging (see getApiChoice()).
+                "/staging-api": {
+                    target: "https://staging-api.bloomlibrary.org",
+                    changeOrigin: true,
+                    secure: true,
+                    rewrite: (path) => path.replace(/^\/staging-api/, ""),
+                },
                 "/s3": {
                     target: "https://s3.amazonaws.com",
                     changeOrigin: true,
