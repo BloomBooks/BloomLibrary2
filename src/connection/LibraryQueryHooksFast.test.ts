@@ -3,6 +3,8 @@ import {
     constructParseBookQuery,
     kNameOfNoTopicCollection,
 } from "./LibraryQueryHooks";
+import { getFilterForCollectionAndChildren } from "../model/Collections";
+import { ICollection } from "../model/ContentInterfaces";
 
 // Test code in LibraryQueryHooks.ts that doesn't need to use axios (ie, hit the internet)
 
@@ -223,4 +225,43 @@ it("build proper parse query for derivedFrom with topic and 'search':'level:empt
     expect(resultString).toContain(
         '"$and":[{"tags":{"$nin":["level:1","level:2","level:3","level:4","computedLevel:1","computedLevel:2","computedLevel:3","computedLevel:4"]}},{"tags":"topic:Animal Stories"},{"bookLineageArray":{"$select":{"query":{"className":"books","where":{"tags":"bookshelf:African Storybook"}},"key":"bookInstanceId"}}},{"tags":{"$ne":"bookshelf:African Storybook"}}],'
     );
+});
+
+it("never sends an empty $or for an empty anyOfThese, and matches no books (BL-17086)", () => {
+    const inputFilter: IFilter = { anyOfThese: [] };
+    const result = constructParseBookQuery(
+        { count: 1, limit: 0 },
+        inputFilter,
+        []
+    ) as any;
+    // MongoDB rejects `$or: []` and Parse returns a 500.
+    expect(result.where.$or).toBeUndefined();
+    expect(result.where.anyOfThese).toBeUndefined();
+    // "Any of none" must match nothing, not the whole library.
+    expect(result.where.objectId).toEqual({ $in: [] });
+});
+
+describe("getFilterForCollectionAndChildren (BL-17086)", () => {
+    const makeCollection = (
+        filter: IFilter | undefined,
+        childCollections: ICollection[] = []
+    ) => (({ filter, childCollections } as unknown) as ICollection);
+
+    it("returns undefined when neither the collection nor its children have a filter", () => {
+        const collection = makeCollection(undefined, [
+            makeCollection(undefined),
+            makeCollection(undefined, [makeCollection(undefined)]),
+        ]);
+        expect(getFilterForCollectionAndChildren(collection)).toBeUndefined();
+    });
+
+    it("gathers the children's filters into anyOfThese", () => {
+        const collection = makeCollection(undefined, [
+            makeCollection(undefined),
+            makeCollection({ otherTags: "bookshelf:first" }),
+        ]);
+        expect(getFilterForCollectionAndChildren(collection)).toEqual({
+            anyOfThese: [{ otherTags: "bookshelf:first" }],
+        });
+    });
 });

@@ -84,9 +84,12 @@ export function makeVirtualCollectionOfBooksInCollectionThatHaveLanguage(
     ) {
         layoutOfLanguagePage = "by-level";
     }
-    const baseCollectionFilter =
-        baseCollection.filter ??
-        getFilterForCollectionAndChildren(baseCollection);
+    // If neither the collection nor its children have a filter, the subset must match no books.
+    // Spreading undefined below would leave just the language, i.e. the whole library (BL-17086).
+    const baseCollectionFilter = baseCollection.filter ??
+        getFilterForCollectionAndChildren(baseCollection) ?? {
+            anyOfThese: [],
+        };
     return {
         ...baseCollection,
         iconForCardAndDefaultBanner: undefined, // Gives us the default books icon instead of the collection's icon for every language card
