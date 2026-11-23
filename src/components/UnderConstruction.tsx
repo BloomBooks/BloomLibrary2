@@ -1,9 +1,7 @@
-import { css } from "@emotion/react";
-
 import React from "react";
-import { Alert, AlertTitle } from "@material-ui/lab";
-import { Snackbar } from "@material-ui/core";
 import { isAppHosted } from "./appHosted/AppHostedUtils";
+import { OverlayBanner } from "./OverlayBanner";
+import { isUsingStagingApi } from "../connection/ApiConnection";
 
 export const UnderConstruction: React.FunctionComponent<{}> = () => {
     const showUnderConstruction =
@@ -14,43 +12,18 @@ export const UnderConstruction: React.FunctionComponent<{}> = () => {
         !isAppHosted();
 
     const [open, setOpen] = React.useState(true);
-    const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
-        if (reason === "clickaway") {
-            return;
-        }
-
-        setOpen(false);
-    };
-    return showUnderConstruction ? (
-        <Snackbar open={open} onClose={handleClose}>
-            <Alert
-                variant="filled"
-                severity="info"
-                elevation={6}
-                onClose={handleClose}
-            >
-                <AlertTitle>Under Construction</AlertTitle>
-                <div
-                    css={css`
-                        display: inline;
-                    `}
-                >
-                    Thanks for previewing this "next" version of Bloom Library.
-                    If you run into problems, head back to{" "}
-                    <a
-                        css={css`
-                            color: white;
-                        `}
-                        href="https://bloomlibrary.org"
-                    >
-                        bloomlibrary.org
-                    </a>
-                </div>
-            </Alert>
-        </Snackbar>
-    ) : (
-        <React.Fragment />
-    );
+    return showUnderConstruction && open ? (
+        <OverlayBanner
+            title="Under Construction"
+            onClose={() => setOpen(false)}
+            // Sit above the staging API banner (StagingApiNotice) when it is showing too.
+            bottomOffset={isUsingStagingApi() ? 90 : 0}
+        >
+            Thanks for previewing this "alpha" version of Bloom Library. If you
+            run into problems, head back to{" "}
+            <a href="https://bloomlibrary.org">bloomlibrary.org</a>
+        </OverlayBanner>
+    ) : null;
 };
 
 export default UnderConstruction;
