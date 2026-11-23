@@ -4,7 +4,7 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import BloomPubIcon from "../../assets/BloomPubWhite.svg";
 import { commonUI } from "../../theme";
-import { getArtifactUrl } from "./ArtifactHelper";
+import { getArtifactDownloadUrl } from "./ArtifactHelper";
 import { Book } from "../../model/Book";
 import { ArtifactType } from "./ArtifactHelper";
 import { getBookAnalyticsInfo } from "../../analytics/BookAnalyticsInfo";
@@ -18,17 +18,20 @@ interface IProps {
 }
 export const ReadOfflineButton: React.FunctionComponent<IProps> = (props) => {
     const l10n = useIntl();
-    const artifactUrl = getArtifactUrl(props.book, ArtifactType.bloomReader);
-    const parts = artifactUrl.split("/");
-    const fileName = parts[parts.length - 1];
+    const downloadUrl = getArtifactDownloadUrl(
+        props.book,
+        ArtifactType.bloomReader
+    );
+    if (!downloadUrl) return null;
     return (
         // A link to download the .bloomd/.bloompub file
         <a
-            href={artifactUrl}
+            href={downloadUrl}
             // This is more than a hint. Without an explicit download attribute,
             // the browser will reload the whole SPA as it first tries to navigate
             // to the URL, then discovers that it's just a download.
-            download={fileName}
+            // Empty, because the server names the file.
+            download=""
             onClick={() => {
                 const params = getBookAnalyticsInfo(
                     props.book,

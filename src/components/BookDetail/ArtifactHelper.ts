@@ -4,6 +4,13 @@ import {
     ArtifactVisibilitySettingsGroup,
 } from "../../model/ArtifactVisibilitySettings";
 import { IntlShape } from "react-intl";
+import { getBloomApiUrl } from "../../connection/ApiConnection";
+import {
+    asDownloadUrl,
+    FsBucketKind,
+    getFsBucketName,
+    getFsUrl,
+} from "../../model/FsUrl";
 
 // The order here matters. See ArtifactVisibilityPanel.getExistingArtifactTypeKeys().
 export enum ArtifactType {
@@ -28,32 +35,46 @@ export function getArtifactUrl(
         case ArtifactType.readOnline:
             return `/readBook/${book.id}`;
         case ArtifactType.bloomReader:
-            url = getDownloadUrl(book, "bloompub");
+            url = getHarvestedFileUrl(book, "bloompub");
             break;
         case ArtifactType.shellbook:
-            url = getBookOrderUrl(book, !!forEdit);
+            // Whatever writes the `baseUrl` to our books database encodes space as `+` (at least up
+            // through now, August 2024), and the orderFile comes from the baseUrl, so re-encode `+`
+            // as `%20`. (Download URLs never contain `+`.)
+            url = getBookOrderUrl(book, !!forEdit).replace(/\+/g, "%20");
             break;
-        case ArtifactType.pdf:
+        case ArtifactType.pdf: {
             // We need the raw book name here, because we're going for the PDF
             // the Bloom uploaded, and it doesn't apply the same cleanup as the
             // harvester.
-            url = `${book.baseUrl}${getRawBookNameFromUrl(
-                book.baseUrl
-            )}.pdf`.replace(/%2f/g, "/");
+            const rawName = book.baseUrl && getRawBookNameFromUrl(book.baseUrl);
+            url =
+                rawName &&
+                getDownloadFsUrl(
+                    book,
+                    "upload",
+                    [`${rawName}.pdf`],
+                    book.lastUploadedDate // only an upload changes the upload bucket's files
+                );
             break;
+        }
         default:
-            url = getDownloadUrl(book, artifactType);
+            url = getHarvestedFileUrl(book, artifactType);
             break;
     }
-    if (!url) return "";
+    return url || "";
+}
 
-    // Whatever writes the `baseUrl` to our books database encodes space as `+` (at least up through now, August 2024).
-    // This messes up the file name when you download, as you get "Hello+World.pdf".
-    // So here we just re-encode the `+` as `%20` and when downloaded the file is "Hello World.pdf".
-    // Since those URLs encode `+` as `%2b`, "one + one = two.pdf" will also to come out correctly.
-    url = url.replace(/\+/g, "%20");
-
-    return url;
+// The URL a download link uses, or undefined when there is nothing to download (e.g. a name we
+// can't encode). It asks api.bloomlibrary.org to send the file as a download under its real name
+// (download=1), so the link's download attribute should be empty: a name there would be ignored
+// on another host, and the server's name wins anyway.
+export function getArtifactDownloadUrl(
+    book: Book,
+    artifactType: ArtifactType
+): string | undefined {
+    const url = getArtifactUrl(book, artifactType);
+    return url ? asDownloadUrl(url) : undefined;
 }
 
 function getBookOrderUrl(book: Book, forEdit: boolean) {
@@ -200,26 +221,53 @@ export function getBookNamePartOfUrl(baseUrl: string): string | undefined {
     return result;
 }
 
-function getDownloadUrl(book: Book, fileType: string): string | undefined {
-    const harvesterBaseUrl = Book.getHarvesterBaseUrl(book);
-    if (!harvesterBaseUrl) {
+// The fs URL of a file the harvester made, offered only once the harvest is "Done".
+// harvestStartedAt is set when a harvest starts, so once it is "Done", the files under that
+// version are the finished ones.
+function getHarvestedFileUrl(book: Book, fileType: string): string | undefined {
+    if (!book.baseUrl || !Book.isHarvested(book)) {
         return undefined;
     }
 
     const bookName = getBookNamePartOfUrl(book.baseUrl);
+    if (!bookName) return undefined;
 
-    if (bookName) {
-        if (fileType === "bloompub" || fileType === "bloomSource") {
-            let fileExt = `.${fileType}`;
-            if (fileType === "bloompub") {
-                fileExt =
-                    book.bloomPUBVersion && book.bloomPUBVersion >= 1
-                        ? ".bloompub"
-                        : ".bloomd";
-            }
-            return harvesterBaseUrl + bookName + fileExt;
-        }
-        return harvesterBaseUrl + fileType + "/" + bookName + "." + fileType;
+    let path: string[];
+    if (fileType === "bloompub") {
+        const isBloomPub = book.bloomPUBVersion && book.bloomPUBVersion >= 1;
+        path = [bookName + (isBloomPub ? ".bloompub" : ".bloomd")];
+    } else if (fileType === "bloomSource") {
+        path = [bookName + ".bloomSource"];
+    } else {
+        // e.g. epub/{name}.epub
+        path = [fileType, `${bookName}.${fileType}`];
     }
-    return undefined;
+    const version = book.harvestStartedAt
+        ? new Date(book.harvestStartedAt.iso)
+        : undefined;
+    return getDownloadFsUrl(book, "harvest", path, version);
+}
+
+// The fs URL (see FsUrl.ts) of a file in the book's upload or harvest folder, versioned when we
+// know the version, or undefined if we can't make one. There is deliberately no S3 fallback:
+// S3 URLs can contain the uploader's email, and baseUrl would then go into the link unchecked.
+function getDownloadFsUrl(
+    book: Book,
+    bucket: FsBucketKind,
+    s3EncodedPathSegments: string[],
+    version: Date | undefined
+): string | undefined {
+    if (!book.baseUrl || !book.id) return undefined;
+    try {
+        return getFsUrl(
+            getBloomApiUrl(),
+            getFsBucketName(book.baseUrl, bucket),
+            book.id,
+            s3EncodedPathSegments,
+            version
+        );
+    } catch {
+        // malformed %-escapes in the baseUrl
+        return undefined;
+    }
 }

@@ -14,7 +14,7 @@ import { Book } from "../../model/Book";
 import {
     ArtifactType,
     getArtifactDownloadAltText,
-    getArtifactUrl,
+    getArtifactDownloadUrl,
     getArtifactVisibilitySettings,
 } from "./ArtifactHelper";
 import { OSFeaturesContext } from "../OSFeaturesContext";
@@ -186,9 +186,11 @@ export const DownloadsGroup: React.FunctionComponent<{
                             analyticsType: "epub",
                         },
                     ].map((a: IArtifactUI) => {
-                        const artifactUrl = getArtifactUrl(props.book, a.type);
-                        const parts = artifactUrl.split("/");
-                        const fileName = parts[parts.length - 1];
+                        const downloadUrl =
+                            a.enabled && !a.hidden
+                                ? getArtifactDownloadUrl(props.book, a.type)
+                                : undefined;
+                        const enabled = !!downloadUrl;
                         return (
                             !a.hidden && (
                                 <Tooltip
@@ -208,16 +210,16 @@ export const DownloadsGroup: React.FunctionComponent<{
                                 >
                                     <IconButton
                                         css={css`
-                                            cursor: ${!a.enabled
+                                            cursor: ${!enabled
                                                 ? "default"
                                                 : "pointer"};
                                         `}
-                                        disableRipple={!a.enabled}
-                                        disableFocusRipple={!a.enabled}
-                                        disableTouchRipple={!a.enabled}
+                                        disableRipple={!enabled}
+                                        disableFocusRipple={!enabled}
+                                        disableTouchRipple={!enabled}
                                         // Only way I've found to disable the hover ripple:
                                         style={
-                                            !a.enabled
+                                            !enabled
                                                 ? {
                                                       backgroundColor:
                                                           "transparent",
@@ -225,9 +227,9 @@ export const DownloadsGroup: React.FunctionComponent<{
                                                 : {}
                                         }
                                         // Can't do this or the tooltip doesn't work:
-                                        // disabled={!a.enabled}
+                                        // disabled={!enabled}
                                         onClick={() => {
-                                            if (a.enabled)
+                                            if (downloadUrl)
                                                 props.book
                                                     .checkCountryPermissions(
                                                         "downloadAnything"
@@ -243,9 +245,10 @@ export const DownloadsGroup: React.FunctionComponent<{
                                                                     `Sorry, the uploader of this book has restricted downloading it to ${otherCountryRequired}`
                                                                 );
                                                             } else {
+                                                                // Empty: the server names the file.
                                                                 followUrl(
-                                                                    artifactUrl,
-                                                                    fileName
+                                                                    downloadUrl,
+                                                                    ""
                                                                 );
                                                                 const params = getBookAnalyticsInfo(
                                                                     props.book,
@@ -265,7 +268,7 @@ export const DownloadsGroup: React.FunctionComponent<{
                                     have an href, and then we can't impose conditions on doing the download. */}
                                         <span role="link" key={a.alt}>
                                             {a.icon({
-                                                fill: a.enabled
+                                                fill: enabled
                                                     ? commonUI.colors.bloomBlue
                                                     : commonUI.colors
                                                           .disabledIconGray,
@@ -323,8 +326,9 @@ export function followUrl(url: string, fileName?: string) {
     // Set the HREF to the thing we want to download.
     a.href = url;
 
-    // Use download attribute to specify filename and prevent actually navigating
-    if (fileName) {
+    // Use download attribute to specify filename and prevent actually navigating.
+    // An empty one lets the server's Content-Disposition name the file.
+    if (fileName !== undefined) {
         a.setAttribute("download", fileName);
     }
 
