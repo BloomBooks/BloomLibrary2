@@ -5,7 +5,7 @@ import Button from "@material-ui/core/Button";
 import DownloadIcon from "../../assets/download_white_24dp.svg";
 import { commonUI } from "../../theme";
 import {
-    getArtifactUrl,
+    getArtifactDownloadUrl,
     ArtifactType,
     getArtifactVisibilitySettings,
 } from "../BookDetail/ArtifactHelper";
@@ -54,32 +54,29 @@ export const AppHostedDownloadButton: React.FunctionComponent<{
 
     const artifactType = useGetArtifactType();
 
-    function useGetArtifactUrl() {
-        return artifactType && getArtifactUrl(props.book, artifactType);
-    }
-
-    const artifactUrl = useGetArtifactUrl();
-    const fileSize = useGetArtifactSize(artifactUrl);
-
     const shouldShow =
-        artifactType &&
+        !!artifactType &&
         getArtifactVisibilitySettings(props.book, artifactType)?.decision ===
             true;
+    const downloadUrl = shouldShow
+        ? getArtifactDownloadUrl(props.book, artifactType)
+        : undefined;
+    // Only ask for the size of a file we offer.
+    const fileSize = useGetArtifactSize(downloadUrl ?? "");
 
-    if (!shouldShow) return <React.Fragment />;
+    if (!downloadUrl) return <React.Fragment />;
 
-    const parts = artifactUrl.split("/");
-    const fileName = parts[parts.length - 1];
     const currentLangCode = new URLSearchParams(search).get("lang");
 
     return (
         // A link to download the file
         <a
-            href={artifactUrl}
+            href={downloadUrl}
             // This is more than a hint. Without an explicit download attribute,
             // the browser will reload the whole SPA as it first tries to navigate
             // to the URL, then discovers that it's just a download.
-            download={fileName}
+            // Empty, because the server names the file.
+            download=""
             className={props.className} // support emotion
             onClick={() => {
                 const params = getBookAnalyticsInfo(
